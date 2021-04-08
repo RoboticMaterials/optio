@@ -7,7 +7,7 @@
 
 export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
     let widgetInfo = {}
-    widgetInfo.id = location._id
+    widgetInfo.id = location.id
 
     widgetInfo.heightWidth = '1'
 

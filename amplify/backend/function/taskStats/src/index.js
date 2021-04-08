@@ -39,7 +39,7 @@ exports.handler = async (event) => {
 	let ids = []
 
 	tasks.forEach(task => {
-		ids.push(task.task_id)
+		ids.push(task.taskId)
 	});
 
 	let uniqueChars = [...new Set(ids)]
@@ -79,7 +79,7 @@ exports.handler = async (event) => {
 	
 		stats = {
 					// 'task_name' : items[0]['task_name'],
-					'task_id' : items[0]['task_id'],
+					'taskId' : items[0]['taskId'],
 					'times_run' : num_of_items, 
 					'avg_run_time' : Math.round(time_avg),
 					'successes' : success_count,
@@ -93,8 +93,7 @@ exports.handler = async (event) => {
 		id: '1',
 		organizationId: '1',
 		device_type: '1',
-		task_id: '1',
-		_id: 'not_an_ID',
+		taskId: '1',
 		custom_task: calculatedTasks 
 	}
 };

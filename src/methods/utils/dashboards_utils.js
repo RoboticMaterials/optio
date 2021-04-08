@@ -13,11 +13,11 @@ import {
     CUSTOM_TASK_ID
 } from "../../constants/route_constants";
 
-export const getChargeButton = ({name: positionName, _id: positionId}) => {
+export const getChargeButton = ({name: positionName, id: positionId}) => {
     return {
         name: positionName,
         color: '#FFFF4B',
-        task_id: 'custom_task',
+        taskId: 'custom_task',
         custom_task: {
             'type': 'position_move',
             'position': positionId,
@@ -32,7 +32,7 @@ export const getIdleButton = ({idle_location: idleLocationId}) => {
     return {
         name: CUSTOM_IDLE_TASK_NAME,
         color: '#FF4B4B',
-        task_id: 'custom_task',
+        taskId: 'custom_task',
         custom_task: {
             'type': 'position_move',
             'position': idleLocationId,
@@ -56,7 +56,7 @@ export const postToDashboards = (dashboardName) => {
 
 export const findDashboardByID = (availableDashboards, ID) => {
     const dashboardNameIndex = Object.values(availableDashboards).findIndex(d => {
-        return d._id === ID;
+        return d.id === ID;
     })
     return dashboardNameIndex
 }
@@ -115,7 +115,7 @@ export const handleAvailableTasks = (tasks, station) => {
             const idleButton = {
                 'name': CUSTOM_IDLE_TASK_NAME,
                 'color': '#FF4B4B',
-                'task_id': 'custom_task',
+                'taskId': 'custom_task',
                 'custom_task': {
                     'type': 'position_move',
                     'position': station.idle_location,
@@ -134,10 +134,10 @@ export const handleAvailableTasks = (tasks, station) => {
                 const chargeButton = {
                     'name': position.name,
                     'color': '#FFFF4B',
-                    'task_id': 'custom_task',
+                    'taskId': 'custom_task',
                     'custom_task': {
                         'type': 'position_move',
-                        'position': position._id,
+                        'position': position.id,
                         'device_type': 'MiR_100',
                     },
                     'deviceType': 'MiR_100',
@@ -149,9 +149,9 @@ export const handleAvailableTasks = (tasks, station) => {
     }
     else {
         Object.values(tasks).forEach(task => {
-            if ((task.type == 'push' || task.type == 'both') && task.load.station == station._id) {
+            if ((task.type == 'push' || task.type == 'both') && task.load.station == station.id) {
                 availableTasks.push(task)
-            } else if ((task.type == 'pull' || task.type == 'both') && task.unload.station == station._id) {
+            } else if ((task.type == 'pull' || task.type == 'both') && task.unload.station == station.id) {
                 availableTasks.push(task)
             }
         })
@@ -169,7 +169,7 @@ export const handleCurrentDashboard = (dashboards, dashboardID) => {
     availableDash = Object.values(availableDash)
 
     const dashboardNameIndex = Object.values(availableDash).findIndex(d => {
-        return d._id === dashboardID;
+        return d.id === dashboardID;
     })
 
     return availableDash[dashboardNameIndex]
@@ -206,10 +206,10 @@ export const getIsFinishEnabled = (availableProcessIds) => {
     return isNonEmptyArray(availableProcessIds)
 }
 
-export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId, id: buttonId, positionId}) => {
+export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {taskId: currButtonTaskId, id: buttonId, positionId}) => {
     for(const existingDashboardButton of existingDashboardButtons) {
         const {
-            task_id: existingButtonTaskId = "",
+            taskId: existingButtonTaskId = "",
             id: existingButtonId,
             custom_task
         } = existingDashboardButton || {}

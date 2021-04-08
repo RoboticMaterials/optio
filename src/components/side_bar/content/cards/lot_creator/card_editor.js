@@ -401,7 +401,7 @@ const CardEditor = (props) => {
 										name="moveLocation"
 										labelField={'name'}
 										options={dropdownOptions}
-										valueField={"_id"}
+										valueField={"id"}
 									/>
 								</div>
 
@@ -477,7 +477,7 @@ const CardEditor = (props) => {
 												name="object"
 												labelField={'name'}
 												options={Object.values(objects)}
-												valueField={"_id"}
+												valueField={"id"}
 												// label={'Choose Draggable'}
 												onDropdownOpen={() => {
 												}}
@@ -662,13 +662,13 @@ const CardEditor = (props) => {
 
 										var modifiedData = data
 
-										// maps id value changes to names (eg if station_id changed, replaces the station_ids with the corresponding station names)
-										if(Object.keys(modifiedData).includes("station_id") || Object.keys(modifiedData).includes("route_id")) {
+										// maps id value changes to names (eg if stationId changed, replaces the stationIds with the corresponding station names)
+										if(Object.keys(modifiedData).includes("stationId") || Object.keys(modifiedData).includes("routeId")) {
 
-											// handle station_id change
-											if(Object.keys(modifiedData).includes("station_id")) {
+											// handle stationId change
+											if(Object.keys(modifiedData).includes("stationId")) {
 												const {
-													station_id: {
+													stationId: {
 														new: newStationId,
 														old: oldStationId
 													},
@@ -683,10 +683,10 @@ const CardEditor = (props) => {
 												}
 											}
 
-											// handle route_id change
-											if(Object.keys(modifiedData).includes("route_id")) {
+											// handle routeId change
+											if(Object.keys(modifiedData).includes("routeId")) {
 												const {
-													route_id: {
+													routeId: {
 														new: newRouteId,
 														old: oldRouteId
 													},

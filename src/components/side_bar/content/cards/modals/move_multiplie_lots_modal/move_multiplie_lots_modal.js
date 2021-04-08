@@ -88,12 +88,12 @@ const MoveMultipleLotsModal = (props) => {
 		setStationsAttributes([
 			{
 				name: BIN_THEMES.QUEUE.DISPLAY_NAME,
-				_id: BIN_IDS.QUEUE
+				id: BIN_IDS.QUEUE
 			},
 			...tempStationAttributes,
 			{
 				name: BIN_THEMES.FINISH.DISPLAY_NAME,
-				_id: BIN_IDS.FINISH
+				id: BIN_IDS.FINISH
 			}
 		])
 
@@ -118,7 +118,7 @@ const MoveMultipleLotsModal = (props) => {
 
 				{lotsToRender.map((currItem) => {
 					const {
-						cardId = "",
+						id: cardId = "",
 						processId = "",
 						binId = ""
 					} = currItem || {}
@@ -164,7 +164,7 @@ const MoveMultipleLotsModal = (props) => {
 			let index = 0
 			for(const currItem of lotsToRender) {
 				const {
-					cardId = "",
+					id: cardId = "",
 					binId = ""
 				} = currItem || {}
 

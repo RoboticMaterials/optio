@@ -37,6 +37,19 @@ export const FIELD_COMPONENT_NAMES = {
 	CALENDAR_START_END: "CALENDAR_START_END",
 }
 
+export const LOT_NON_TEMPLATE_FIELDS = {
+	id: "id",
+	organizationId: "organizationId",
+	createdAt: "createdAt",
+	updatedAt: "updatedAt",
+	bins: "bins",
+	flags: "flags",
+	lotNumber: "lotNumber",
+	lotTemplateId: "lotTemplateId",
+	name: "name",
+	process_id: "process_id",
+}
+
 export const FIELD_DATA_TYPES = {
 	STRING: "STRING",
 	EMAIL: "EMAIL",
@@ -111,14 +124,14 @@ export const SIDE_BAR_MODES = {
 }
 
 export const EMPTY_DEFAULT_FIELDS =  [
-	[{_id: 0, ...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG, fieldName: "description", key: 0}],
-	[{_id: 1, ...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END, fieldName: "dates", key: 1}]
+	[{id: 0, ...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG, fieldName: "description", key: 0}],
+	[{id: 1, ...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END, fieldName: "dates", key: 1}]
 ]
 
 export const BASIC_LOT_TEMPLATE = {
 	fields: EMPTY_DEFAULT_FIELDS,
 	name: "Basic",
-	_id: BASIC_LOT_TEMPLATE_ID
+	id: BASIC_LOT_TEMPLATE_ID
 }
 
 export const DEFAULT_NAME_DISPLAY_NAME = "Name"

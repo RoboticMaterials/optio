@@ -1,7 +1,7 @@
 import {deepCopy} from "./utils";
 import {SORT_MODES} from "../../constants/common_contants";
 import {isObject} from "./object_utils";
-import {isArray} from "./array_utils";
+import {isArray, isNonEmptyArray} from "./array_utils";
 import {defaultBins, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES, SORT_DIRECTIONS} from "../../constants/lot_contants";
 import {BASIC_FIELD_DEFAULTS} from "../../constants/form_constants";
 import {toIntegerOrZero} from "./number_utils";
@@ -85,7 +85,6 @@ export const convertCardDate = (cardDate) => {
 	* extracts initial values from the current lot and maps them to the template parameter
 	* */
 export const getInitialValues = (lotTemplate, card) => {
-
 	let initialValues = {} // initialize to empty object
 
 	// make sure lotTemplate is object to avoid errors
@@ -102,7 +101,7 @@ export const getInitialValues = (lotTemplate, card) => {
 				// extract properties of currItem
 				const {
 					fieldName,
-					_id: fieldId,
+					id: fieldId,
 					component,
 					key
 				} = currItem || {}
@@ -112,8 +111,8 @@ export const getInitialValues = (lotTemplate, card) => {
 				// if card already has a value, use it. Otherwise, use appropriate default value for field type
 				switch(component) {
 					case FIELD_COMPONENT_NAMES.TEXT_BOX: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
@@ -123,8 +122,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.TEXT_BOX_BIG: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
@@ -134,8 +133,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
-						initialValues[fieldName] = isObject(card) ?
-							((isValidDateString(card[fieldName]) ? new Date(card[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							((isValidDateString(card.templateValues[fieldName]) ? new Date(card.templateValues[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
 							:
 							isObject(initialValues) ?
 								((isValidDateString(initialValues[fieldName]) ? new Date(initialValues[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
@@ -146,8 +145,8 @@ export const getInitialValues = (lotTemplate, card) => {
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
 						let updatedValues = [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE]
-						if(isObject(card) && isArray(card[fieldName])) {
-							const val = card[fieldName]
+						if((isObject(card) && isObject(card.templateValues)) && isArray(card.templateValues[fieldName])) {
+							const val = card.templateValues[fieldName]
 							if(val.length > 0 && val[0] !== null) {
 								updatedValues[0] = new Date(val[0])
 							}
@@ -161,8 +160,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
@@ -198,7 +197,7 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 		name: payloadName,	// extract reserved fields
 		bins,				// extract reserved fields
 		processId: selectedProcessId,			// extract reserved fields
-		_id,				// extract reserved fields
+		id,				// extract reserved fields
 		quantity,			// extract reserved fields
 		...remainingPayload
 	} = excel
@@ -207,13 +206,44 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 		name: payloadName ? payloadName : "",
 		bins: bins ? bins : defaultBins,
 		processId: selectedProcessId ? selectedProcessId : (processId ? processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
-		_id,
-		[lotTemplate._id]: {
+		id,
+		[lotTemplate.id]: {
 			...getInitialValues(lotTemplate),
 			...remainingPayload
 		}
 	}
 }
+
+export const getFieldValueFromPath = (item, path, name) => {
+
+
+	if(isNonEmptyArray(path)) {
+		let fieldValue = {...item}
+
+		for(let i = 0; i < path.length; i++) {
+			fieldValue = fieldValue[path[i]]
+		}
+		return fieldValue[name]
+	}
+	else if(path) {
+		const {
+			[path]: pathObj
+		} = item || {}
+
+		const {
+			[name]: fieldValue
+		} = pathObj || {}
+
+		return fieldValue
+	}
+	else if(name) {
+		return item[name]
+	}
+
+	return null
+
+}
+
 /*
 * This function receives an array of cards as an argument and sorts them based on the {sortMode} argument.
 *
@@ -223,14 +253,14 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 * @param {string} sortMode - string identifier of mode to sort by
 * */
 export const sortBy = (arr, sortMode, sortDirection) => {
-
 	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
 	const {
 		dataType,
 		label,
 		index,
-		fieldName
+		fieldName,
+		fieldPath,
 	} = sortMode
 
 	switch(dataType) {
@@ -244,12 +274,8 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 		}
 		case FIELD_DATA_TYPES.DATE: {
 			arr.sort((itemA, itemB) => {
-				const {
-					[fieldName]: valA
-				} = itemA
-				const {
-					[fieldName]: valB
-				} = itemB
+				const valA = getFieldValueFromPath(itemA, fieldPath, fieldName)
+				const valB = getFieldValueFromPath(itemB, fieldPath, fieldName)
 
 				if(!valA) return 1
 				if(!valB) return -1
@@ -265,12 +291,8 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 		}
 		case FIELD_DATA_TYPES.DATE_RANGE: {
 			arr.sort((itemA, itemB) => {
-				const {
-					[fieldName]: rangeA
-				} = itemA
-				const {
-					[fieldName]: rangeB
-				} = itemB
+				const rangeA = getFieldValueFromPath(itemA, fieldPath, fieldName)
+				const rangeB = getFieldValueFromPath(itemB, fieldPath, fieldName)
 
 				if(!rangeA) return 1
 				if(!rangeB) return -1
@@ -291,12 +313,8 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 		}
 		case FIELD_DATA_TYPES.STRING: {
 			arr.sort((itemA, itemB) => {
-				const {
-					[fieldName]: stringA
-				} = itemA
-				const {
-					[fieldName]: stringB
-				} = itemB
+				const stringA = getFieldValueFromPath(itemA, fieldPath, fieldName)
+				const stringB = getFieldValueFromPath(itemB, fieldPath, fieldName)
 
 				if(!stringA) return 1
 
@@ -313,23 +331,18 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 			break
 		}
 		case FIELD_DATA_TYPES.INTEGER: {
-
 			arr.sort((itemA, itemB) => {
-				const {
-					[fieldName]: stringA
-				} = itemA
-				const {
-					[fieldName]: stringB
-				} = itemB
+				const valA = getFieldValueFromPath(itemA, fieldPath, fieldName)
+				const valB = getFieldValueFromPath(itemB, fieldPath, fieldName)
 
-				if(stringA === null) return 1
+				if(valA === null) return 1
 
 				if(isAscending) {
-					if(stringA >= stringB) return 1
+					if(valA >= valB) return 1
 					return -1
 				}
 				else {
-					if(stringA >= stringB) return -1
+					if(valA >= valB) return -1
 					return 1
 				}
 			})

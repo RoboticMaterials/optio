@@ -37,11 +37,11 @@ const TaskQueueListItem = (props) => {
     const editingTask = useSelector(state => state.tasksReducer.editingTask)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask) || {}
     const {
-        _id: selectedTaskId
+        id: selectedTaskId
     } = selectedTask
 
     const {
-        _id: taskId
+        id: taskId
     } = task || {}
 
     const [isSelected, setIsSelected] = useState(false)
@@ -65,14 +65,14 @@ const TaskQueueListItem = (props) => {
      * This is probably being used to display HILs
      */
     const handleTaskItemClicked = () => {
-        if(item.task_id !== 'custom_task'){
+        if(item.taskId !== 'custom_task'){
             dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
         }
     }
 
     const handleMouseEnter = async () => {
-        if (!editingTask && !!tasks[item.task_id]) {
-            await dispatch(taskActions.selectTask(item.task_id))
+        if (!editingTask && !!tasks[item.taskId]) {
+            await dispatch(taskActions.selectTask(item.taskId))
         }
     }
 

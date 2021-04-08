@@ -30,11 +30,11 @@ const TimelineZone = SortableContainer((props) => {
 
 			{selectedProcesses.map((currProcess) => {
 					const processCards = cards.filter((currCard) => {
-						return currCard.process_id === currProcess._id
+						return currCard.processId === currProcess.id
 					})
 
 					const {
-						_id: processId,
+						id: processId,
 						name: processName
 					} = currProcess
 
@@ -50,8 +50,8 @@ const TimelineZone = SortableContainer((props) => {
 
 									const {
 										name: cardName,
-										_id: cardId,
-										station_id: stationId,
+										id: cardId,
+										stationId: stationId,
 										start_date,
 										end_date
 									} = card

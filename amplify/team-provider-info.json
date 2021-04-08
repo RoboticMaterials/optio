@@ -19,16 +19,38 @@
       "function": {
         "handleTaskQueue": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/handleTaskQueue-7364687331492f725575-build.zip"
+          "s3Key": "amplify-builds/handleTaskQueue-2f552b373352764d7a6d-build.zip"
         },
         "taskStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/taskStats-7377613342506e525568-build.zip"
+          "s3Key": "amplify-builds/taskStats-7a50364d667152417530-build.zip"
         },
         "stationStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/stationStats-4436424248506e586b4e-build.zip"
+          "s3Key": "amplify-builds/stationStats-68764c717a5757754a4c-build.zip"
         }
+      }
+    }
+  },
+  "idupdate": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-rmstudiocloud-idupdate-150231-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-idupdate-150231-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-idupdate-150231-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-rmstudiocloud-idupdate-150231-deployment",
+      "UnauthRoleName": "amplify-rmstudiocloud-idupdate-150231-unauthRole",
+      "StackName": "amplify-rmstudiocloud-idupdate-150231",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-rmstudiocloud-idupdate-150231/925edc00-97e4-11eb-97d8-069c988534ce",
+      "AmplifyAppId": "d2a1qaxuhr89b4"
+    },
+    "categories": {
+      "auth": {
+        "rmstudiocloud298656c6": {}
+      },
+      "function": {
+        "handleTaskQueue": {},
+        "taskStats": {}
       }
     }
   }

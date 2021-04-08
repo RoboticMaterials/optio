@@ -26,7 +26,7 @@ export default function ObjectsContent(props) {
     const [selectedObjectCopy, setSelectedObjectCopy] = useState(null)
 
     const updateType = (type) => {
-        dispatch(objectActions.setObjectAttributes(selectedObject._id.$oid, { type }))
+        dispatch(objectActions.setObjectAttributes(selectedObject.id.$oid, { type }))
     }
 
     if (editing) {
@@ -37,7 +37,7 @@ export default function ObjectsContent(props) {
                         content={'objects'}
                         mode={'create'}
                         onClickBack={() => {
-                            if (selectedObject._id.$oid == '__NEW') {
+                            if (selectedObject.id.$oid == '__NEW') {
                                 dispatch(objectActions.removeObject('__NEW'))
                             } else {
                                 dispatch(objectActions.updateObject(selectedObjectCopy))
@@ -49,11 +49,11 @@ export default function ObjectsContent(props) {
                         }}
 
                         onClickSave={() => {
-                            if (selectedObject._id.$oid == '__NEW_OBJECT') {
-                                delete selectedObject._id
+                            if (selectedObject.id.$oid == '__NEW_OBJECT') {
+                                delete selectedObject.id
                                 dispatch(objectActions.postObject(selectedObject))
                             } else {
-                                dispatch(objectActions.putObject(selectedObject, selectedObject._id.$oid))
+                                dispatch(objectActions.putObject(selectedObject, selectedObject.id.$oid))
                             }
                             dispatch(objectActions.deselectObject())
                             dispatch(setAction(null))
@@ -77,7 +77,7 @@ export default function ObjectsContent(props) {
                 <div style={{ height: "100%" }}></div>
 
                 <Button schema={'objects'} secondary onClick={() => {
-                    dispatch(objectActions.deleteObject(selectedObject._id.$oid));
+                    dispatch(objectActions.deleteObject(selectedObject.id.$oid));
                     dispatch(objectActions.deselectObject());
                     toggleEditing(false)
                 }}>Delete</Button>
@@ -88,8 +88,8 @@ export default function ObjectsContent(props) {
             <ContentList
                 title={'Objects'}
                 schema={'objects'}
-                elements={Object.values(objects).filter((item) => item.map_id === currentMap._id)}
-                onMouseEnter={(object) => dispatch(objectActions.selectObject(object._id.$oid))}
+                elements={Object.values(objects).filter((item) => item.mapId === currentMap.id)}
+                onMouseEnter={(object) => dispatch(objectActions.selectObject(object.id.$oid))}
                 onMouseLeave={() => dispatch(objectActions.deselectObject())}
                 onClick={() => {
                     setSelectedObjectCopy(deepCopy(selectedObject))
@@ -98,8 +98,8 @@ export default function ObjectsContent(props) {
                 onPlus={() => {
                     dispatch(objectActions.addObject({
                         name: "",
-                        _id: { $oid: '__NEW_OBJECT' },
-                        map_id: currentMap._id,
+                        id: { $oid: '__NEW_OBJECT' },
+                        mapId: currentMap.id,
                     }))
                     dispatch(setAction('NEW'))
                     dispatch(objectActions.selectObject('__NEW_OBJECT'))

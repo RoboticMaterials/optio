@@ -56,41 +56,41 @@ def handler(event, context):
 
     info['timespan'] = arguments['timeSpan']
 
-    station_id = arguments['station_id']
+    stationId = arguments['stationId']
 
     output = False
 
-    calculated_data = get_stats(station_id, info,  output)
+    calculated_data = get_stats(stationId, info,  output)
 
     return {
         'date': calculated_data['date_title'],
         'organizationId': 'orgId',
-        'stationId': arguments['station_id'],
+        'stationId': arguments['stationId'],
         'throughPut': calculated_data['throughPut']
     }
 
 # Analytics functions
-def get_stats(station_id, info, output=False):
+def get_stats(stationId, info, output=False):
 
     data = {}
 
     if info['timespan'] == 'day':
-        data['throughPut'], data['date_title'] = calc_day_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_day_stats(stationId,  index=info['index'], output=output)
     elif info['timespan'] == 'line':
-        data['throughPut'], data['date_title'] = calc_day_line_stats(station_id,  index=info['index'])
+        data['throughPut'], data['date_title'] = calc_day_line_stats(stationId,  index=info['index'])
     elif info['timespan'] == 'week':
-        data['throughPut'], data['date_title'] = calc_week_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_week_stats(stationId,  index=info['index'], output=output)
     elif info['timespan'] == 'month':
-        data['throughPut'], data['date_title'] = calc_6_week_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_6_week_stats(stationId,  index=info['index'], output=output)
     else:
-        data['throughPut'], data['date_title'] = calc_year_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_year_stats(stationId,  index=info['index'], output=output)
     
     return data
 
-def create_data(station_id, start_utc, end_utc, labels, output=False):
+def create_data(stationId, start_utc, end_utc, labels, output=False):
 
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(station_id) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
+        FilterExpression=Key('station').eq(stationId) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
     )
 
     events_data = station_events_response['Items']
@@ -144,7 +144,7 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
         
     return rtn_data
 
-def calc_day_stats(station_id,  index, output=False):
+def calc_day_stats(stationId,  index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_time_frame = start_of_today + datetime.timedelta(days=-index, hours=0, minutes=0, seconds=0, microseconds=0)
@@ -167,14 +167,14 @@ def calc_day_stats(station_id,  index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
 
     return rtn_data, date_title
 
-def calc_day_line_stats(station_id, index=0):
+def calc_day_line_stats(stationId, index=0):
     # scan and filter data
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(station_id)
+        FilterExpression=Key('station').eq(stationId)
     )
 
     # Pull data out
@@ -209,7 +209,7 @@ def calc_day_line_stats(station_id, index=0):
     return rtn_data, date_title
 
 
-def calc_week_stats(station_id, index, output=False):
+def calc_week_stats(stationId, index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_week = start_of_today + datetime.timedelta(days=-start_of_today.weekday())
@@ -228,12 +228,12 @@ def calc_week_stats(station_id, index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
 
-def calc_6_week_stats(station_id, index=0, output=False):
+def calc_6_week_stats(stationId, index=0, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_6_weeks = start_of_today + datetime.timedelta(weeks=-5, days=-start_of_today.weekday())
@@ -259,11 +259,11 @@ def calc_6_week_stats(station_id, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
-def calc_year_stats(station_id, index=0, output=False):
+def calc_year_stats(stationId, index=0, output=False):
     year = datetime.datetime.now(tz).year - index
     date_title = year
 
@@ -281,6 +281,6 @@ def calc_year_stats(station_id, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title

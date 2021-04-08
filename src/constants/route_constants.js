@@ -25,7 +25,7 @@ export const defaultTask = {
     device_types: [],
     handoff: true,
     track_quantity: true,
-    map_id: null,
+    mapId: null,
     new: true,
     processes: [],
     load: {

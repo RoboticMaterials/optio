@@ -64,7 +64,7 @@ const CreateScheduleForm = (props) => {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const isSmall = width < widthBreakPoint
 
-    const tasksArr = Object.values(tasks).filter((task) => task.map_id === currentMap._id) // get copy of tasks as arr here instead of calling Object.values() multiple times
+    const tasksArr = Object.values(tasks).filter((task) => task.mapId === currentMap.id) // get copy of tasks as arr here instead of calling Object.values() multiple times
 
     const themeContext = useContext(ThemeContext)
 
@@ -98,13 +98,13 @@ const CreateScheduleForm = (props) => {
             interval_on,
             time_interval,
             stop_time,
-            map_id,
+            mapId,
             next_time
         } = values
 
         // eextract properties into new object for submission
         const submitItem = {
-            task_id: task[0]?._id,
+            taskId: task[0]?.id,
             days_on,
             name: name,
             schedule_on: schedule_on,
@@ -113,7 +113,7 @@ const CreateScheduleForm = (props) => {
             time_interval: time_interval.format("HH:mm:ss"),
             stop_time: stop_time.format("HH:mm:ss"),
             next_time: next_time,
-            map_id: map_id,
+            mapId: mapId,
         }
 
         // update existing object - PUT request
@@ -125,7 +125,7 @@ const CreateScheduleForm = (props) => {
         } else if (formMode === FORM_MODES.CREATE) {
             // dispatch post action
             const createdSchedule = await dispatch(postSchedule(submitItem))
-            setSelectedScheduleId(createdSchedule?._id?.$oid) // set selected schedule id, which will update the form mode from create to update
+            setSelectedScheduleId(createdSchedule?.id?.$oid) // set selected schedule id, which will update the form mode from create to update
         }
 
         // close form optionally
@@ -168,18 +168,18 @@ const CreateScheduleForm = (props) => {
                 time_interval: selectedScheduleItem.time_interval ? moment(timeString24HrToDate(selectedScheduleItem.time_interval)) : nowTimeString,
                 interval_on: selectedScheduleItem.interval_on,
                 next_time: selectedScheduleItem.next_time,
-                map_id: currentMap._id,
+                mapId: currentMap.id,
                 stop_time: selectedScheduleItem.stop_time ? moment(timeString24HrToDate(selectedScheduleItem.stop_time)) : nowTimeString,
                 name: selectedScheduleItem.name ? selectedScheduleItem.name : '',
                 selectedScheduleId: selectedScheduleItem.id,
-                task: (selectedScheduleItem.task_id && tasks[selectedScheduleItem.task_id]) ?
-                    [tasks[selectedScheduleItem.task_id]]
+                task: (selectedScheduleItem.taskId && tasks[selectedScheduleItem.taskId]) ?
+                    [tasks[selectedScheduleItem.taskId]]
                     :
                     // if task id equals TASK DELETED, the corresponding task has been deleted,
                     // set task property to reflect this
-                    selectedScheduleItem.task_id == 'TASK DELETED' ?
+                    selectedScheduleItem.taskId == 'TASK DELETED' ?
                         [{
-                            _id:
+                            id:
                                 "TASK DELETED"
                             ,
                             name: 'TASK DELETED'
@@ -187,7 +187,7 @@ const CreateScheduleForm = (props) => {
                         :
                         // NO task, and task id isn't deleted, set set to default value that will prevent the dropdownsearch from throwing an error
                         [{
-                            _id:
+                            id:
                                 "TEMP_NEW_SCHEDULE_ID"
                             ,
                             name: ''
@@ -199,7 +199,7 @@ const CreateScheduleForm = (props) => {
             // no schedule was found, return template
         } else {
             let newScheduleTemplate = getScheduleItemTemplate()
-            newScheduleTemplate.map_id = currentMap._id
+            newScheduleTemplate.mapId = currentMap.id
             return newScheduleTemplate
         }
     }
@@ -328,10 +328,10 @@ const CreateScheduleForm = (props) => {
                                         name="task"
                                         options={tasksArr
                                             // Filters outs any tasks that don't belong to the current map
-                                            .filter(task => task.map_id === currentMap._id)
+                                            .filter(task => task.mapId === currentMap.id)
                                         }
                                         // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
-                                        valueField={tasksArr.length > 0 ? "_id" : 'id'}
+                                        valueField={tasksArr.length > 0 ? "id" : 'id'}
                                         label={'Choose Task'}
                                         onDropdownOpen={() => {
                                             dispatch(getTasks())

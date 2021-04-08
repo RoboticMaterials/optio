@@ -63,8 +63,7 @@ export async function postPosition(position) {
       organizationId: userOrgId,
       pos_x: parseFloat(position.pos_x),
       pos_y: parseFloat(position.pos_y),
-      _id: position._id.toString(),
-      id: position._id
+      id: position.id
     }
 
     delete input.neame
@@ -89,7 +88,6 @@ export async function putPosition(position, ID) {
       pos_y: parseFloat(position.pos_y),
       x: parseInt(position.x),
       y: parseInt(position.y),
-      _id: position._id.toString()
     }
 
     // delete input.id

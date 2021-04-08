@@ -11,7 +11,7 @@ import * as styled from "./lot_queue.style";
 
 const LotQueue = ((props) => {
 	const {
-		station_id = "QUEUE",
+		stationId = "QUEUE",
 		stationName = "Unnamed",
 		onCardClick,
 		cards,
@@ -89,7 +89,7 @@ const LotQueue = ((props) => {
 					)
 				}
 			}}
-			station_id={station_id}
+			stationId={stationId}
 			stationName = {stationName}
 			onCardClick={onCardClick}
 			cards = {cards}

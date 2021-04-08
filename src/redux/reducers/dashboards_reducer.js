@@ -151,7 +151,7 @@ export default function dashboardsReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                dashboards: {...state.dashboards, [action.payload._id]: action.payload},
+                dashboards: {...state.dashboards, [action.payload.id]: action.payload},
             }
 
         case PUT_DASHBOARD_FAILURE:

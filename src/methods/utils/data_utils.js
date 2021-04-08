@@ -3,15 +3,15 @@ import { uuidv4 } from './utils';
 import { timeStringRegex, oidRegex } from './regex_utils';
 
 export function formatScheduleItem(scheduleItem) {
-  scheduleItem.id = scheduleItem._id.$oid;
+  scheduleItem.id = scheduleItem.id.$oid;
   if(!scheduleItem.name) scheduleItem.name = "a";
   if(!scheduleItem.label) scheduleItem.label = "";
 
 
   // check oid
-  const taskOidIsValid = oidRegex.test(scheduleItem.task_id);
+  const taskOidIsValid = oidRegex.test(scheduleItem.taskId);
   if(!taskOidIsValid) {
-    scheduleItem.task_id = null;
+    scheduleItem.taskId = null;
   }
 
 

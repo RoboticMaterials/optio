@@ -60,7 +60,7 @@ const Cards = (props) => {
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
-    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id))
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
         height: undefined,
@@ -86,7 +86,7 @@ const Cards = (props) => {
     * filters processes by map id
     * */
     useEffect(() => {
-        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id))
     }, [processes])
 
     /*
@@ -187,13 +187,13 @@ const Cards = (props) => {
             lotsBetween.forEach((currLotToAdd) => {
                 const {
                     binId: currAddingBinId,
-                    cardId: currAddingLotId,
-                    process_id: currAddingProcessId,
+                    id: currAddingLotId,
+                    processId: currAddingProcessId,
                 } = currLotToAdd
 
                 const existingIndex = selectedCards.findIndex((currExistingLot) => {
                     const {
-                        cardId: currExistingLotId,
+                        id: currExistingLotId,
                         binId: currExistingBinId,
                         processId: currExistingProcessId
                     } = currExistingLot
@@ -208,7 +208,7 @@ const Cards = (props) => {
                             [
                                 ...previous,
                                 {
-                                    cardId: currAddingLotId,
+                                    id: currAddingLotId,
                                     processId: currAddingProcessId,
                                     binId: currAddingBinId
                                 }
@@ -237,13 +237,13 @@ const Cards = (props) => {
             lotsBetween.forEach((currLotToAdd) => {
                 const {
                     binId: currAddingBinId,
-                    cardId: currAddingLotId,
-                    process_id: currAddingProcessId,
+                    id: currAddingLotId,
+                    processId: currAddingProcessId,
                 } = currLotToAdd
 
 
                 tempSelectedCards.push({
-                    cardId: currAddingLotId,
+                    id: currAddingLotId,
                     processId: currAddingProcessId,
                     binId: currAddingBinId
                 })
@@ -261,7 +261,7 @@ const Cards = (props) => {
             // get index of lot in selected cards
             const existingIndex = selectedCards.findIndex((currLot) => {
                 const {
-                    cardId: currLotId,
+                    id: currLotId,
                     binId: currBinId,
                     processId: currExistingProcessId
                 } = currLot
@@ -273,7 +273,7 @@ const Cards = (props) => {
             if(existingIndex === -1) {
                 setSelectedCards([
                     ...selectedCards,
-                    { cardId: lotId, processId, binId }
+                    { id: lotId, processId, binId }
                 ])
             }
             // otherwise lot is in selectedCards already, so remove
@@ -287,7 +287,7 @@ const Cards = (props) => {
         * */
         else {
             onShowCardEditor(true)
-            setSelectedCard({ cardId: lotId, processId, binId })
+            setSelectedCard({ id: lotId, processId, binId })
         }
     }
 
@@ -301,7 +301,7 @@ const Cards = (props) => {
 
     const handleAddLotClick = (processId) => {
         onShowCardEditor(true)
-        setSelectedCard({ cardId: null, processId, binId: null })
+        setSelectedCard({ id: null, processId, binId: null })
     }
 
     return (
@@ -331,7 +331,7 @@ const Cards = (props) => {
             <LotEditorContainer
                 isOpen={showCardEditor}
                 onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
+                cardId={selectedCard ? selectedCard.id : null}
                 processId={selectedCard ? selectedCard.processId : null}
                 binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{

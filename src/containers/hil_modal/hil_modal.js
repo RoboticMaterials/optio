@@ -45,22 +45,22 @@ const HILModal = () => {
 
             const item = taskQueue[taskQueueItemClicked]
             const type = item.device_type
-            const hilType = tasks[item.task_id].type
+            const hilType = tasks[item.taskId].type
 
             // Sets the HIL Message, the reason why it would undefined is that its a human load task
             // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
             // since it doesnt come from the backend, there's no hil message in the task Q Item
             let hilMessage = item.hil_message
             if (!hilMessage) {
-                hilMessage = tasks[item.task_id].load.instructions
+                hilMessage = tasks[item.taskId].load.instructions
             }
 
             if (type === 'human') {
-                onSetShowModalId(item._id)
+                onSetShowModalId(item.id)
             }
 
             else if (!!taskQueue[taskQueueItemClicked].hil_station_id) {
-                onSetShowModalId(item._id)
+                onSetShowModalId(item.id)
             }
 
             //else {return null}
@@ -73,14 +73,14 @@ const HILModal = () => {
         if (hilResponse === 'unload') return
 
         return Object.values(taskQueue).forEach((item) => {
-            const id = item._id
+            const id = item.id
 
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the
             // most recent in the list
             //
             // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
-            if (!!item.hil_station_id && !!tasks[item.task_id] && item.device_type !== 'human') {
+            if (!!item.hil_station_id && !!tasks[item.taskId] && item.device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 stations[item.hil_station_id].dashboards.forEach((dashboard) => {
@@ -98,12 +98,12 @@ const HILModal = () => {
                 // If active hils matches the dashboard selected (found in params) then display hil
                 // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
                 if (Object.keys(activeHilDashboards).includes(dashboardID) && !showModalId) {
-                    onSetShowModalId(item._id)
+                    onSetShowModalId(item.id)
                 }
 
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
-                    onSetShowModalId(item._id)
+                    onSetShowModalId(item.id)
                 }
                 else {
                     //return null
@@ -113,14 +113,14 @@ const HILModal = () => {
             // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
-            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask === item._id) {
+            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask === item.id) {
 
                 let hilMessage = item.hil_message
                 if (!hilMessage) {
-                    hilMessage = tasks[item.task_id].load.instructions
+                    hilMessage = tasks[item.taskId].load.instructions
                 }
                 if (item.hil_response !== false) {
-                    onSetShowModalId(item._id)
+                    onSetShowModalId(item.id)
                 }
 
             }
@@ -143,7 +143,7 @@ const HILModal = () => {
             const item = taskQueue[showModalId]
             let hilMessage = item.hil_message
 
-            const task = tasks[item.task_id]
+            const task = tasks[item.taskId]
             const hilType = task.type
             if (item.device_type === 'human') {
                 const loadStation = stations[task.load.station]
@@ -157,7 +157,7 @@ const HILModal = () => {
 
                 }
             }
-            return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
+            return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item.id} item={item} />
         }
         else {
             return null
@@ -222,17 +222,17 @@ const HILModal = () => {
                             // Add the timer to r{edux
                             onSetHilTimers({
                                 ...hilTimers,
-                                [item._id]: biasedTimer.toFixed(0),
+                                [item.id]: biasedTimer.toFixed(0),
                             })
                             //If the timer goes to Zero then stop the timer
                             if (biasedTimer <= 0) {
                                 onSetHilTimers({
                                     ...hilTimers,
-                                    [item._id]: 0,
+                                    [item.id]: 0,
                                 })
 
                                 // Update redux
-                                delete hilTimers[item._id]
+                                delete hilTimers[item.id]
                                 onSetHilTimers({
                                     ...hilTimers,
                                 })
@@ -276,7 +276,7 @@ const HILModal = () => {
                 })
 
                 // Update redux
-                delete hilTimers[item._id]
+                delete hilTimers[item.id]
                 onSetHilTimers({
                     ...hilTimers,
                 })

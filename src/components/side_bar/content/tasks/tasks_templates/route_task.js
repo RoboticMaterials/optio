@@ -24,7 +24,7 @@ const RouteTask = {
         sound: null,
         instructions: 'Unload'
     },
-    _id: uuid.v4(),
+    id: uuid.v4(),
 }
 
 export default RouteTask

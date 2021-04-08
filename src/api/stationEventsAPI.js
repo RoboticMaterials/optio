@@ -24,11 +24,9 @@ import { getTask } from './tasks_api'
 
 export default async function postStationEvent(stationData) {
     try {
-        console.log(stationData);
-
         const userOrgId = await getUserOrgId()
 
-        const task = await getTask(stationData.task_id)
+        const task = await getTask(stationData.taskId)
 
         const input = {
             organizationId: userOrgId,

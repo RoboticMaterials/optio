@@ -65,7 +65,7 @@ const DeviceEdit = (props) => {
     const dispatch = useDispatch()
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchPutDevice = (device) => dispatch(putDevices(device, device._id))
+    const dispatchPutDevice = (device) => dispatch(putDevices(device, device.id))
     const dispatchPostStatus = (status) => dispatch(postStatus(status))
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -127,7 +127,7 @@ const DeviceEdit = (props) => {
         let connectionText = ''
 
         // Have to use the naked device state since that is the one that is being update by the backend
-        const device = devices[selectedDevice._id]
+        const device = devices[selectedDevice.id]
 
 
         // Sets the connection variables according to the state of
@@ -239,8 +239,8 @@ const DeviceEdit = (props) => {
                     label="Idle Location for MiR Cart"
                     style={{ backgroundColor: 'white' }}
                     labelField="name"
-                    valueField="_id"
-                    options={locationsSortedAlphabetically(Object.values(positions)).filter(pos => pos.map_id === currentMap._id)}
+                    valueField="id"
+                    options={locationsSortedAlphabetically(Object.values(positions)).filter(pos => pos.mapId === currentMap.id)}
                     values={(!!selectedDevice.idle_location && !!positions[selectedDevice.idle_location])  ? [positions[selectedDevice.idle_location]] : []}
                     dropdownGap={2}
                     noDataLabel="No matches found"
@@ -249,7 +249,7 @@ const DeviceEdit = (props) => {
 
 
 
-                        const idleLocation = values[0]._id
+                        const idleLocation = values[0].id
                         dispatchSetSelectedDevice({
                             ...selectedDevice,
                             idle_location: idleLocation,
@@ -335,7 +335,7 @@ const DeviceEdit = (props) => {
     // Opens up the device dashboard
     const onEditDeviceDashboard = () => {
         const dashboardID = selectedDevice.dashboards[0]
-        const deviceID = selectedDevice._id
+        const deviceID = selectedDevice.id
 
         history.push(`/locations/${deviceID}/dashboards/${dashboardID}/editing`)
         dispatchHoverStationInfo({ id: deviceID })
@@ -355,7 +355,7 @@ const DeviceEdit = (props) => {
 
             // Handle Idle Location changes
             // If the idle location of selected device and the unedited version of selected device is different, then change the dashboard button
-            if (selectedDevice.idle_location !== devices[selectedDevice._id].idle_location) {
+            if (selectedDevice.idle_location !== devices[selectedDevice.id].idle_location) {
 
                 const dashboard = dashboards[selectedDevice.dashboards[0]]
 
@@ -365,7 +365,7 @@ const DeviceEdit = (props) => {
                     // Map through buttons
                     dashboard.buttons.map((button, ind) => {
                         // If the button uses the old idle location, then delete the button
-                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice.id].idle_location) {
 
                             // Delete button
                             dashboard.buttons.splice(ind, 1)
@@ -381,7 +381,7 @@ const DeviceEdit = (props) => {
 
                     dashboard.buttons.map((button, ind) => {
                         // If the button uses the old idle location, then update
-                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice.id].idle_location) {
                             // button exists so dont add a new on
                             idleButtonExists = true
 
@@ -403,7 +403,7 @@ const DeviceEdit = (props) => {
                         const newButton = {
                             'name': 'Send to Idle Location',
                             'color': '#FF4B4B',
-                            'task_id': 'custom_task',
+                            'taskId': 'custom_task',
                             'custom_task': {
                                 'type': 'position_move',
                                 'position': selectedDevice.idle_location,
@@ -419,7 +419,7 @@ const DeviceEdit = (props) => {
 
 
                 // Put the dashboard
-                await dispatchPutDashboard(dashboard, dashboard._id.$oid)
+                await dispatchPutDashboard(dashboard, dashboard.id.$oid)
             }
             // Handle Values Passed in through Formik
             if (Object.values(values).length > 0) {
@@ -429,7 +429,7 @@ const DeviceEdit = (props) => {
                 }
             }
 
-            await dispatchPutDevice(deviceCopy, deviceCopy._id)
+            await dispatchPutDevice(deviceCopy, deviceCopy.id)
         }
 
 

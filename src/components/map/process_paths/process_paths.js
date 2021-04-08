@@ -18,7 +18,7 @@ const ProcessPaths = (props) => {
         return selectedProcess.routes.map((route, ind) => {
             if( isObject(route) ) {
                 return (
-                    <TaskPaths d3={d3} route={route} key={route._id} />
+                    <TaskPaths d3={d3} route={route} key={route.id} />
                 )
             }
             else {

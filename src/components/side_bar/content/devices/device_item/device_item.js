@@ -27,7 +27,7 @@ const DeviceItem = (props) => {
 
     const batteryRectWidth = isSmall ? 20 : 25
     const batteryRectRx = batteryRectWidth / 5
-    const deviceID = device._id
+    const deviceID = device.id
     const deviceName = device.device_name
 
     const dispatch = useDispatch()
@@ -44,10 +44,10 @@ const DeviceItem = (props) => {
 
     // Sets the location of the device
     useEffect(() => {
-        if (!!device.station_id && device.device_model !== 'MiR100' && !stationId) setStationId(device.station_id)
+        if (!!device.stationId && device.device_model !== 'MiR100' && !stationId) setStationId(device.stationId)
 
         // If the device does not have a station_id but there is one in state, then set the state to false (this happens when a devices location is deleted)
-        if (!!stationId && !device.station_id) setStationId(false)
+        if (!!stationId && !device.stationId) setStationId(false)
 
     }, [device])
 
@@ -274,7 +274,7 @@ const DeviceItem = (props) => {
             {/* SVG for Gradient Circle. Has 2 linear gradients and conditional statements based on the deviceType. Had to use 2 gradient elements because they are global. Changing the stopColor just changes the global element making all gradients those colors */}
             <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 518 518" style={{ position: 'absolute', overflow: 'visible' }}>
                 <defs>
-                    <linearGradient id={device._id} y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
+                    <linearGradient id={device.id} y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
                         <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
                         <stop offset="0.99" style={{ stopColor: deviceType.stopGradientColor }} />
                     </linearGradient>
@@ -283,7 +283,7 @@ const DeviceItem = (props) => {
                 <g id="Layer_2" data-name="Layer 2">
                     <g id="Layer_1-2" data-name="Layer 1">
 
-                        <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: `url(#${device._id})` }} />
+                        <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: `url(#${device.id})` }} />
 
                     </g>
                 </g>

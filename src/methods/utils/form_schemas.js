@@ -152,7 +152,7 @@ export const moveSchema = Yup.object().shape({
         Yup.object().shape({
             name: Yup.string()
                 .required('Location is missing name.'),
-            _id: Yup.string()
+            id: Yup.string()
                 .required('Location is missing ID.'),
         })
     ).required('Please select a location.'),
@@ -347,7 +347,7 @@ Yup.addMethod(Yup.string, "uniqueByPath", function (message, arrPath) {
                         id
                     } = currParentValue
 
-                    if (name === value && parent._id !== id) return createError({ path, message })
+                    if (name === value && parent.id !== id) return createError({ path, message })
                 }
             }
         }
@@ -467,7 +467,7 @@ export const LotFormSchema = Yup.object().shape({
     fields: Yup.array().of(
         Yup.array().of(
             Yup.object().shape({
-                _id: Yup.string()
+                id: Yup.string()
                     .required('Field missing ID.'),
                 fieldName: Yup.string()
                     .min(1, '1 character minimum.')
@@ -583,7 +583,7 @@ export const locationSchema = (stations, selectedLocation) => {
 
     let stationNames = []
     Object.values(stations).forEach(station => {
-        if (!!selectedLocation && station._id === selectedLocation._id) {
+        if (!!selectedLocation && station.id === selectedLocation.id) {
 
         }
         else {

@@ -64,7 +64,7 @@ const TestsContainer = (props) => {
             "GET",
             "DELETE"
         ],
-        _id: "blah-blah",
+        id: "blah-blah",
         created_by: "/v2.0.0/users/mirconst-guid-0000-0004-users0000000",
         created_by_id: "mirconst-guid-0000-0004-users0000000",
         created_by_name: "Distributor",

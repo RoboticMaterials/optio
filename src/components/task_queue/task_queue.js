@@ -45,13 +45,13 @@ const TaskQueueMenu = (props) => {
                 let queueItemClone = clone_object(queueItem);
                 // Sees if task is a custom task
                 let task = {}
-                if (queueItem.task_id == 'custom_task') {
+                if (queueItem.taskId == 'custom_task') {
                     task = {
                         name: 'Simple Move',
                         mission_status: 'Austin, Please Add Mission Status',
                     }
                 } else {
-                    task = tasks ? tasks[queueItem.task_id] : {}
+                    task = tasks ? tasks[queueItem.taskId] : {}
 
                 }
 
@@ -86,9 +86,9 @@ const TaskQueueMenu = (props) => {
         const type = item.device_type
         // extract properties
         const { name } = item
-        const id = item?._id
+        const id = item?.id
         const status = item.mission_status
-        const task = tasks[item.task_id]
+        const task = tasks[item.taskId]
 
         // return the component with the items properties as props
         return (

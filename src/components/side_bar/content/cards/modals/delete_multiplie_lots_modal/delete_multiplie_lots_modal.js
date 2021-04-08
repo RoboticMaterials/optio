@@ -40,7 +40,7 @@ const DeleteMultipleLotsModal = props => {
 			<sharedStyles.Container>
 				{selectedCards.map((currItem) => {
 					const {
-						cardId = "",
+						id: cardId = "",
 						processId = "",
 						binId = ""
 					} = currItem || {}
@@ -64,7 +64,7 @@ const DeleteMultipleLotsModal = props => {
 	const onDeleteLots = async () => {
 		for (const currItem of selectedCards) {
 			const {
-				cardId = "",
+				id: cardId = "",
 				processId = "",
 				binId = ""
 			} = currItem || {}

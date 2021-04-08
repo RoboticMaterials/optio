@@ -93,7 +93,7 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case POST_TASK_SUCCESS:
-            const ID = deepCopy(action.payload._id)
+            const ID = deepCopy(action.payload.id)
             return {
                 ...state,
                 tasks: {
@@ -129,7 +129,7 @@ export default function tasksReducer(state = defaultState, action) {
                 ...state,
                 tasks: {
                     ...state.tasks,
-                    [action.payload._id]: action.payload,
+                    [action.payload.id]: action.payload,
                 }
             }
 
@@ -172,7 +172,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case ADD_TASK:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload.task._id] = action.payload.task
+            tasksCopy[action.payload.task.id] = action.payload.task
             return {
                 ...state,
                 tasks: tasksCopy
@@ -189,13 +189,13 @@ export default function tasksReducer(state = defaultState, action) {
 
         case UPDATE_TASK:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload.task._id] = action.payload.task
+            tasksCopy[action.payload.task.id] = action.payload.task
 
             if (state.selectedTask !== null) {
                 return {
                     ...state,
                     tasks: tasksCopy,
-                    selectedTask: tasksCopy[state.selectedTask._id]
+                    selectedTask: tasksCopy[state.selectedTask.id]
                 }
             } else {
                 return {
@@ -211,7 +211,7 @@ export default function tasksReducer(state = defaultState, action) {
                 return {
                     ...state,
                     tasks: deepCopy(action.payload.tasks),
-                    selectedTask: deepCopy(action.payload.tasks[state.selectedTask._id])
+                    selectedTask: deepCopy(action.payload.tasks[state.selectedTask.id])
                 }
             } else {
                 return {
@@ -256,7 +256,7 @@ export default function tasksReducer(state = defaultState, action) {
         case SET_TASK_ATTRIBUTES: {
             var newState
 
-            if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
+            if (isObject(state.selectedTask) && state.selectedTask.id === action.payload.id) {
                 newState = {
                     ...state,
                     tasks: state.tasks[action.payload.id] ?

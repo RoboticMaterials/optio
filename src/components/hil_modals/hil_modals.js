@@ -126,7 +126,7 @@ const HILModals = (props) => {
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
     } = selectedDashboard || {}
 
-    const currentTask = tasks[item.task_id]
+    const currentTask = tasks[item.taskId]
 
     const {
         type,
@@ -144,7 +144,7 @@ const HILModals = (props) => {
 
     const {
         name: selectedLotName,
-        _id: selectedLotId,
+        id: selectedLotId,
         bins
     } = selectedLot || {}
 
@@ -175,8 +175,8 @@ const HILModals = (props) => {
     // handles initial display of lot selector
     useEffect(() => {
 
-        const currentTask = tasks[item.task_id]
-        const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
+        const currentTask = tasks[item.taskId]
+        const routeProcesses = getRouteProcesses(currentTask?.id).map((currProcess) => currProcess.id) || []
 
         //If the task doesn't belong to a process, skip the lot selector screen and go straight to HIL modal
         if (!!routeProcesses[0]) {
@@ -207,7 +207,7 @@ const HILModals = (props) => {
     * */
     useEffect(() => {
 
-        const taskProcesses = getRouteProcesses(selectedTask?._id).map((currProcess) => currProcess._id)
+        const taskProcesses = getRouteProcesses(selectedTask?.id).map((currProcess) => currProcess.id)
 
         if ((taskProcesses && Array.isArray(taskProcesses) && (taskProcesses.length > 0))) {
             setIsProcessTask(true)
@@ -216,7 +216,7 @@ const HILModals = (props) => {
                 .filter((currCard) => {
                     const {
                         bins,
-                        process_id: currCardProcessId
+                        processId: currCardProcessId
                     } = currCard || {}
 
                     if (bins) {
@@ -351,14 +351,14 @@ const HILModals = (props) => {
         dispatchGetCards()
         dispatchGetLotTemplates()
 
-        const currentTask = tasks[item.task_id]
+        const currentTask = tasks[item.taskId]
         setSelectedTask(currentTask)
         if (currentTask) {
             if (!!currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
         }
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
+        if (currentTask && currentTask?.load?.station === item.hilStationId || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
             setShowLotSelector(true)
@@ -395,8 +395,8 @@ const HILModals = (props) => {
     }, [selectedLot], [tasks])
 
     useEffect(() => {
-        const currentTask = tasks[item.task_id]
-        const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
+        const currentTask = tasks[item.taskId]
+        const routeProcesses = getRouteProcesses(currentTask?.id).map((currProcess) => currProcess.id) || []
 
 
         //If the route is part of a process and at least 1 lot is present display the
@@ -422,7 +422,7 @@ const HILModals = (props) => {
         let newItem = {
             ...item,
             hil_response: true,
-            lot_id: selectedLotId,
+            lotId: selectedLotId,
         }
 
         // If its a load, then add a quantity to the response
@@ -452,7 +452,7 @@ const HILModals = (props) => {
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        await dispatchPutTaskQueue({...newItem, _id: ID}, ID)
+        await dispatchPutTaskQueue({...newItem}, ID)
 
         await postStationEvent(newItem)
     }
@@ -476,7 +476,7 @@ const HILModals = (props) => {
             ...item,
             hil_response: false
         }
-        delete newItem._id
+        delete newItem.id
 
         if(newItem.device_type === 'human'){
             await dispatchDeleteTaskQueueItem(newItem.id)
@@ -578,8 +578,8 @@ const HILModals = (props) => {
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
+                            !!hilTimers[item.id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item.id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 
@@ -622,8 +622,8 @@ const HILModals = (props) => {
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
+                            !!hilTimers[item.id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item.id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 
@@ -711,8 +711,8 @@ const HILModals = (props) => {
 
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
+                            !!hilTimers[item.id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item.id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 
@@ -1031,16 +1031,16 @@ const HILModals = (props) => {
                                 })
                                 .map((currLot, lotIndex) => {
                                     const {
-                                        _id: lotId,
+                                        id: lotId,
                                         name,
-                                        object_id,
+                                        objectId,
                                         cardId,
                                         start_date,
                                         end_date,
                                         bins = {},
                                         flags,
                                         lotNumber,
-                                        process_id: processId = "",
+                                        processId: processId = "",
                                         lotTemplateId
                                     } = currLot
 
@@ -1057,7 +1057,7 @@ const HILModals = (props) => {
                                     const templateValues = getLotTemplateData(lotTemplateId, currLot)
 
                                     // const lotName = lots[lot_id] ? lots[lot_id].name : null
-                                    const objectName = objects[object_id] ? objects[object_id].name : null
+                                    const objectName = objects[objectId] ? objects[objectId].name : null
 
                                     return (
                                         <styled.CardContainer>

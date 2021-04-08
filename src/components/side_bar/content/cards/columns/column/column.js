@@ -21,14 +21,15 @@ import {useDispatch, useSelector} from "react-redux";
 import * as styled from "./column.style";
 
 /// utils
-import {getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
+import {getBinQuantity, getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
+import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
 
 	const {
-		station_id,
+		stationId,
 		stationName = "Unnamed",
 		onCardClick,
 		selectedCards,
@@ -64,13 +65,14 @@ const Column = ((props) => {
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
+
 		cards.forEach((currLot) => {
 			const {
 				count = 0
 			} = currLot || {}
 
 			tempNumberOfLots = parseInt(tempNumberOfLots) + 1
-			tempLotQuantitySummation = parseInt(tempLotQuantitySummation) + parseInt(count)
+			tempLotQuantitySummation = parseInt(tempLotQuantitySummation) + parseInt(getBinQuantity(currLot, stationId))
 		})
 
 		setNumberOfLots(tempNumberOfLots)
@@ -98,8 +100,8 @@ const Column = ((props) => {
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
 			binId,
-			cardId,
-			process_id: oldProcessId,
+			id: cardId,
+			processId: oldProcessId,
 			...remainingPayload
 		} = payload
 
@@ -119,7 +121,7 @@ const Column = ((props) => {
 	const getSelectedIndex = (lotId, binId) => {
 		return selectedCards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
@@ -140,7 +142,7 @@ const Column = ((props) => {
 				binId: currBinId
 			} = currLot || {}
 
-			if((currBinId === station_id) && (i > addedIndex)) {
+			if((currBinId === stationId) && (i > addedIndex)) {
 				addedIndex = i
 			}
 		}
@@ -156,7 +158,7 @@ const Column = ((props) => {
 	const getIsLastSelected = (lotId) => {
 		const lastSelected = getLastSelected() || {}
 		const {
-			cardId: currLotId,
+			id: currLotId,
 		} = lastSelected
 
 		return lotId === currLotId
@@ -165,25 +167,25 @@ const Column = ((props) => {
 	const getBetweenSelected = (lotId) => {
 		const lastSelected = getLastSelected() || {}
 		const {
-			cardId: lastSelectedLotId,
+			id: lastSelectedLotId,
 		} = lastSelected
 
 		const selectedIndex = cards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
-			return (lastSelectedLotId === currLotId) && (station_id === currBinId)
+			return (lastSelectedLotId === currLotId) && (stationId === currBinId)
 		})
 
 		const existingIndex = cards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
-			return (lotId === currLotId) && (station_id === currBinId)
+			return (lotId === currLotId) && (stationId === currBinId)
 		})
 
 		if(selectedIndex === -1) {
@@ -206,15 +208,13 @@ const Column = ((props) => {
 			if(addedIndex !== null) {
 				const {
 					binId,
-					cardId,
-					count,
-					// process_id: oldProcessId,
+					id: cardId,
 					...remainingPayload
 				} = payload
 
 				await dispatchSetDroppingLotId(cardId, binId)
 
-				if(!(binId === station_id)) {
+				if(!(binId === stationId)) {
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -225,19 +225,19 @@ const Column = ((props) => {
 
 					if(movedBin) {
 						// already contains items in bin
-						if(oldBins[station_id] && movedBin) {
+						if(oldBins[stationId] && movedBin) {
 
 							// handle updating lot
 							{
-								const oldCount = parseInt(oldBins[station_id]?.count || 0)
+								const oldCount = parseInt(oldBins[stationId]?.count || 0)
 								const movedCount = parseInt(movedBin?.count || 0)
 
 								await dispatchPutCard({
 									...remainingPayload,
 									bins: {
 										...remainingOldBins,
-										[station_id]: {
-											...oldBins[station_id],
+										[stationId]: {
+											...oldBins[stationId],
 											count:  oldCount + movedCount
 										}
 									}
@@ -263,7 +263,7 @@ const Column = ((props) => {
 									...remainingPayload,
 									bins: {
 										...remainingOldBins,
-										[station_id]: {
+										[stationId]: {
 											...movedBin,
 										}
 									}
@@ -277,7 +277,7 @@ const Column = ((props) => {
 								if(existingIndex !== -1) {
 									setSelectedCards(immutableReplace(selectedCards, {
 										...selectedCards[existingIndex],
-										binId: station_id
+										binId: stationId
 									}, existingIndex))
 								}
 							}
@@ -313,7 +313,7 @@ const Column = ((props) => {
 						if(isSource) {
 							const {
 								binId,
-								cardId
+								id: cardId
 							} = payload
 
 							dispatchSetDraggingLotId(cardId)
@@ -343,11 +343,9 @@ const Column = ((props) => {
 				>
 					{cards.map((card, index) => {
 						const {
-							_id,
 							count = 0,
 							name,
-							object_id,
-							cardId,
+							id: cardId,
 							flags,
 							lotNumber,
 							totalQuantity,
@@ -358,10 +356,7 @@ const Column = ((props) => {
 
 						const templateValues = getLotTemplateData(lotTemplateId, card)
 
-						// const lotName = lots[lot_id] ? lots[lot_id].name : null
-						const objectName = objects[object_id] ? objects[object_id].name : null
-
-						const isSelected = getIsSelected(cardId, station_id)
+						const isSelected = getIsSelected(cardId, stationId)
 						const isDragging = draggingLotId === cardId
 						const isHovering = hoveringLotId === cardId
 
@@ -382,7 +377,7 @@ const Column = ((props) => {
 									style={{
 									}}
 								>
-									<Lot
+									<LotContainer
 										glow={isLastSelected}
 										isFocused={isDragging || isHovering}
 										enableFlagSelector={true}
@@ -390,14 +385,9 @@ const Column = ((props) => {
 										selectable={selectable}
 										isSelected={isSelected}
 										key={cardId}
-										// processName={processName}
-										totalQuantity={totalQuantity}
-										lotNumber={lotNumber}
-										name={name}
-										objectName={objectName}
-										count={count}
-										id={cardId}
-										flags={flags || []}
+										lotId={cardId}
+										binId={stationId}
+										enableFlagSelector={true}
 										index={index}
 										onClick={(e)=> {
 											const payload = getBetweenSelected(cardId)
@@ -406,7 +396,7 @@ const Column = ((props) => {
 												{
 													lotId: cardId,
 													processId: processId,
-													binId: station_id
+													binId: stationId
 												},
 												payload
 											)

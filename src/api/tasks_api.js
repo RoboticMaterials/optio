@@ -61,7 +61,7 @@ export async function getTask(id) {
       query: tasksByOrgId,
       variables:{
         organizationId: userOrgId,
-        filter: {_id: {eq: id}}
+        filter: {id: {eq: id}}
       }
     })
 
@@ -87,7 +87,7 @@ export async function postTask(task) {
     const input = {
       ...task,
       organizationId: userOrgId,
-      id: task._id,
+      id: task.id,
       device_types: JSON.stringify(task.device_types),
       processes: JSON.stringify(task.processes),
       load: JSON.stringify(task.load),
@@ -117,7 +117,7 @@ export async function deleteTask(id) {
       query: tasksByOrgId,
       variables:{
         organizationId: userOrgId,
-        filter: {_id: {eq: id}}
+        filter: {id: {eq: id}}
       }
     })
 

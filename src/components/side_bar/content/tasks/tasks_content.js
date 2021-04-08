@@ -75,7 +75,7 @@ export default function TaskContent(props) {
 
     //Parameters to pass into handlePostTaskQueue dispatch
     const dashboardID = getLoadStationDashboard(selectedTask)
-    const Id = selectedTask ? selectedTask._id : {}
+    const Id = selectedTask ? selectedTask.id : {}
     const name = selectedTask ? selectedTask.name : {}
     const custom = false
     const fromSideBar = true
@@ -195,7 +195,7 @@ export default function TaskContent(props) {
 
                         tasksSortedAlphabetically(Object.values(tasks))
                             // Filters outs any tasks that don't belong to the current map
-                            .filter(task => task.map_id === currentMap._id)
+                            .filter(task => task.mapId === currentMap.id)
                             // Filter out empty tasks that are somehow created when choosing an existing task to add to a process in the process tab
                             // These are deleted by the cleaner function on page refresh but in the meantime dont show in the list view
                             .filter(task => task.load.position !== null)

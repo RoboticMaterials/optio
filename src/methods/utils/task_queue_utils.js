@@ -10,7 +10,7 @@ export const isRouteInQueue = (routeId, deviceType) => {
 	for(const currTaskQueueItem of Object.values(taskQueue)) {
 		const {
 			device_type: currDeviceType = "",
-			task_id: currRouteId = ""
+			taskId: currRouteId = ""
 		} = currTaskQueueItem || {}
 
 		const currRoute = routes[currRouteId] || {}

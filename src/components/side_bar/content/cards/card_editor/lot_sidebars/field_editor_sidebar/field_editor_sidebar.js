@@ -84,11 +84,11 @@ const LotEditorSidebar = (props) => {
                         const {
                             component,
                             key,
-                            _id
+                            id
                         } = payload
 
                         if(isSource) {
-                            dispatchSetFieldDragging(_id)
+                            dispatchSetFieldDragging(id)
                         }
 
                     }}
@@ -102,7 +102,7 @@ const LotEditorSidebar = (props) => {
                         const {
                             component,
                             key,
-                            _id
+                            id
                         } = payload
 
                         if(isSource) {
@@ -123,7 +123,7 @@ const LotEditorSidebar = (props) => {
                         const payload = {
                             key: selected[0],
                             ...selected[1],
-                            _id: uuidv4(),
+                            id: uuidv4(),
                             fieldName: ""
                         }
                         return payload
@@ -198,7 +198,7 @@ const LotEditorSidebar = (props) => {
                         const {
                             fields,
                             name,
-                            _id: currTemplateId
+                            id: currTemplateId
                         } = currTemplate
                         //
 

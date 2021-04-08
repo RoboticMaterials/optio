@@ -63,7 +63,7 @@ export async function postObject(object) {
 
     const input =  {
       ...object,
-      id: object._id,
+      id: object.id,
       organizationId: userOrgId
     }
     const dataJson = await API.graphql({

@@ -2,13 +2,13 @@ projects:
   rmstudiocloud:
     schemaPath: amplify/backend/api/rmstudiocloud/build/schema.graphql
     includes:
-      - src/graphql/**/*.js
+      - src/graphql/**/*.ts
     excludes:
       - ./amplify/**
     extensions:
       amplify:
-        codeGenTarget: javascript
-        generatedFileName: ''
+        codeGenTarget: typescript
+        generatedFileName: src/API.ts
         docsFilePath: src/graphql
         region: us-east-2
         apiId: null

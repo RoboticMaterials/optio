@@ -9,12 +9,12 @@ const Device = () => {
 
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
-        if (!!selectedStation && !!selectedStation.device_id && station.device_id !== selectedStation.device_id) selected = false
-        if (!!selectedStation && !selectedStation.device_id) selected = false
+        if (!!selectedStation && !!selectedStation.deviceId && station.deviceId !== selectedStation.deviceId) selected = false
+        if (!!selectedStation && !selectedStation.deviceId) selected = false
 
         let device = {}
         try {
-            device = devices[station.device_id]
+            device = devices[station.deviceId]
 
         } catch (error) {
             console.log('Device is undefined and I dont know why...')
@@ -37,7 +37,7 @@ const Device = () => {
 
                 <svg xmlns="http://www.w3.org/2000/svg" id={`${rd3tClassName}-device`}>
                     <defs>
-                        <linearGradient id={device._id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
+                        <linearGradient id={device.id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
                             <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
                             <stop offset="1" style={{ stopColor: deviceType.stopGradientColor }} />
                         </linearGradient>
@@ -45,7 +45,7 @@ const Device = () => {
                     <g id="Layer_2" data-name="Layer 2">
                         <g id="Layer_1-2" data-name="Layer 1">
                             <rect fill='#4d4d4d' width="360" height="240" rx="30" />
-                            <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={deviceType.svgPath} />
+                            <path style={{ fill: !selected ? 'gray' : `url(#${device.id})` }} d={deviceType.svgPath} />
                         </g>
                     </g>
                 </svg>
@@ -59,7 +59,7 @@ const Device = () => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" id={`${rd3tClassName}-device`}>
             <defs>
-                <linearGradient id={device._id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
+                <linearGradient id={device.id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
                     <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
                     <stop offset="1" style={{ stopColor: deviceType.stopGradientColor }} />
                 </linearGradient>
@@ -67,7 +67,7 @@ const Device = () => {
             <g id="Layer_2" data-name="Layer 2">
                 <g id="Layer_1-2" data-name="Layer 1">
                     <rect fill='#4d4d4d' width="360" height="240" rx="30" />
-                    <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={DeviceTypes['Mir100'].svgPath} />
+                    <path style={{ fill: !selected ? 'gray' : `url(#${device.id})` }} d={DeviceTypes['Mir100'].svgPath} />
                 </g>
             </g>
         </svg>

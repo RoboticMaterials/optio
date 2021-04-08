@@ -110,7 +110,7 @@ const Settings = () => {
             ...dashboard,
             locked: locked
           }
-          dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+          dispatchPutDashboard(newDashboard, newDashboard.id?.$oid)
         }
       })
 
@@ -160,7 +160,7 @@ const Settings = () => {
         const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
-            delete serverSettingsState._id
+            delete serverSettingsState.id
             await dispatchPostSettings(serverSettingsState)
         }
 
@@ -182,7 +182,7 @@ const Settings = () => {
 
     // Handles Time zone (NOT WORKING)
     const TimeZone = () => {
-      const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+      const selectedMap = maps.find((map) => map.id === mapReducer.currentMap?.id)
 
         return (
           <styled.SettingContainer>
@@ -333,7 +333,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+        const selectedMap = maps.find((map) => map.id === mapReducer.currentMap?.id)
         return (
             <styled.SettingContainer>
 
@@ -346,7 +346,7 @@ const Settings = () => {
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
                         labelField="name"
-                        valueField="_id"
+                        valueField="id"
                         options={maps}
                         values={selectedMap ? [selectedMap] : []}
                         dropdownGap={2}
@@ -356,7 +356,7 @@ const Settings = () => {
                             // update current map
                             setMapSettingsState(values[0])
                             // update current map in local storage
-                            handleUpdateLocalSettings({ currentMap: values[0]._id })
+                            handleUpdateLocalSettings({ currentMap: values[0].id })
                         }}
                         className="w-100"
                     />

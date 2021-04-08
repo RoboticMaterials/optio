@@ -29,7 +29,7 @@ const LotContainer = (props) => {
         lotTemplateId,
         name,
         flags,
-        process_id: processId
+        processId: processId
     } = lot || {}
 
     useEffect(() => {

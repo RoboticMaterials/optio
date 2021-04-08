@@ -16,7 +16,7 @@ const log = logger.getLogger('Api')
 // Export default function to log errors
 export default function (error) {
 
-    console.log(error)
+    console.error(error)
     // Error 😨
     if (error.response) {
         /*

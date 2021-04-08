@@ -47,14 +47,14 @@ const NewButtonForm = (props) => {
     const dispatch = useDispatch()
     const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
 
-    const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
-    const _id = editingButton?._id
+    const editingButton = report_buttons.find((currButton) => currButton.id === buttonId)
+    const id = editingButton?.id
     const description = editingButton?.description
     const iconClassName = editingButton?.iconClassName
     const color = editingButton?.color
     const label = editingButton?.label
 
-    const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
+    const formMode = id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
     const onSubmit = (values, formMode) => {
         // extract values and default values
@@ -75,7 +75,7 @@ const NewButtonForm = (props) => {
                     report_buttons: old_report_buttons.map((currButton) => {
 
                         // if this is the button being updating, update values
-                        if (currButton._id === _id) {
+                        if (currButton.id === id) {
                             return {
                                 ...currButton,
                                 description,
@@ -91,7 +91,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                dispatchPutDashboard(updatedDashboard, dashboard._id)
+                dispatchPutDashboard(updatedDashboard, dashboard.id)
             }
 
             // create new button
@@ -102,7 +102,7 @@ const NewButtonForm = (props) => {
                         // spread original buttons and add new one with form values
                         ...old_report_buttons,
                         {
-                            _id: uuid.v4(),
+                            id: uuid.v4(),
                             description,
                             iconClassName,
                             color,
@@ -113,7 +113,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                dispatchPutDashboard(updatedDashboard, dashboard._id)
+                dispatchPutDashboard(updatedDashboard, dashboard.id)
             }
 
             // close form
@@ -131,11 +131,11 @@ const NewButtonForm = (props) => {
         const updatedDashboard = {
             ...dashboard,
             // filter through buttons, keep all but one with matching id of current button
-            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+            report_buttons: report_buttons.filter((currOldButton) => currOldButton.id !== id)
         }
 
         // update dashboard
-        dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
+        dispatchPutDashboard(updatedDashboard, dashboard.id.$oid)
 
         // close form
         cancel()
@@ -376,7 +376,7 @@ const ReportModal = (props) => {
     const sendReport = async (button) => {
         setSubmitting(true)
         const {
-            _id,
+            id,
             iconClassName,
             color,
             ...rest
@@ -384,9 +384,9 @@ const ReportModal = (props) => {
 
         const reportEvent = {
             // save identifying info
-            dashboard_id: dashboard._id,
-            station_id: dashboard.station,
-            report_button_id: _id,
+            dashboardId: dashboard.id,
+            stationId: dashboard.station,
+            reportButtonId: id,
             date: new Date().getTime(),
 
             // spread rest of buttons data - commented out for now, get remaining data from actual report button when its needed
@@ -475,22 +475,22 @@ const ReportModal = (props) => {
                                         const label = currReportButton?.label
                                         const iconClassName = currReportButton?.iconClassName || ""
                                         const color = currReportButton?.color || "red"
-                                        const _id = currReportButton?._id
+                                        const id = currReportButton?.id
                                         return (
                                             <DashboardButton
                                                 title={label}
-                                                key={_id}
+                                                key={id}
                                                 type={null}
                                                 iconClassName={iconClassName}
                                                 iconColor={color}
                                                 onClick={() => {
                                                     if (editing) {
                                                         setAddingNew(true)
-                                                        setButtonId(_id)
+                                                        setButtonId(id)
                                                     }
                                                     else {
                                                         // setSending(true)
-                                                        // setButtonId(_id)
+                                                        // setButtonId(id)
                                                         sendReport(currReportButton)
                                                     }
                                                 }}
@@ -512,11 +512,11 @@ const ReportModal = (props) => {
                                                             const updatedDashboard = {
                                                                 ...dashboard,
                                                                 // filter through buttons, keep all but one with matching id of current button
-                                                                report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                                                report_buttons: report_buttons.filter((currOldButton) => currOldButton.id !== id)
                                                             }
 
                                                             // update dashboard
-                                                            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                            dispatchPutDashboard(updatedDashboard, dashboard.id.$oid)
                                                         }}
                                                     >
                                                         <i

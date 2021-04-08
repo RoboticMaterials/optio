@@ -117,7 +117,7 @@ const DashboardsList = (props) => {
         targetDashboardCopy.buttons.push(button) // add new button
 
         // dispatch action to update api and redux
-        onPutDashboard(targetDashboardCopy, targetDashboardCopy._id)
+        onPutDashboard(targetDashboardCopy, targetDashboardCopy.id)
     }
 
     const handleNew = (button) => {
@@ -150,15 +150,15 @@ const DashboardsList = (props) => {
         postDashboardPromise.then(async postedDashboard => {
 
             let stationDashboards = selectedDashboardType.dashboards
-            stationDashboards.push(postedDashboard._id)
-            await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
-            const stationID = station._id
-            delete station._id
+            stationDashboards.push(postedDashboard.id)
+            await dispatch(stationActions.setStationAttributes(station.id, { dashboards: stationDashboards }))
+            const stationID = station.id
+            delete station.id
             await onPutStation(station, stationID)
 
             if (button == null) { // Drop not click
                 // Go into the new dashboard
-                setSelectedDashboard(postedDashboard._id)
+                setSelectedDashboard(postedDashboard.id)
             }
         })
     }
@@ -184,7 +184,7 @@ const DashboardsList = (props) => {
 
             // get dashboard properties
             let name = currDashboard.name
-            let ID = currDashboard._id
+            let ID = currDashboard.id
             let buttons = currDashboard.buttons
             let deleted = false
 

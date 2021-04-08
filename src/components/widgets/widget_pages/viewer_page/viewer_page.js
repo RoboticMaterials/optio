@@ -11,9 +11,9 @@ logger.setLevel("silent")
 
 // some hard coded values for now
 // Set this to use a specific peer id instead of a random one
-var our_default_id;
-var our_id;
-var peer_id = 5555
+var ourDefaultId;
+var ourId;
+var peerId = 5555
 var ws_server = "10.1.10.6";
 var ws_port;
 
@@ -22,7 +22,7 @@ const getOurId = () => {
 }
 
 // Fetch the peer id to use
-our_id = our_default_id || getOurId()
+ourId = ourDefaultId || getOurId()
 
 ws_port = ws_port || '8443';
 
@@ -52,7 +52,7 @@ const ViewerPage = () => {
     }, []);
 
     const startConnection = () => {
-        client = reconnectingWebRTCSocket(ws_url, getOurId(), peer_id)
+        client = reconnectingWebRTCSocket(ws_url, getOurId(), peerId)
         client.addRemoteTrackListener(setStreams);
         client.onStateChange(setIsConnected);
         client.addErrorListener(setError);
@@ -122,8 +122,8 @@ const ViewerPage = () => {
                 <StreamInfo
                     status={status}
                     error={error}
-                    outID={our_id}
-                    peerID={peer_id}
+                    outId={ourId}
+                    peerId={peerId}
                     loading={!streamConnected}
                     streams={streams}
                 />

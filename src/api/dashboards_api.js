@@ -111,7 +111,6 @@ export async function postDashboards(dashboards) {
 
 export async function putDashboards(dashboard, ID) {
     try {
-
         let dashboardInput = {
             id: ID ? ID : dashboard.id,
             organizationId: dashboard.organizationId,
@@ -125,12 +124,36 @@ export async function putDashboards(dashboard, ID) {
             data: JSON.stringify(dashboard),
         }
 
-        await API.graphql({
+        const response = await API.graphql({
             query: updateDashboard,
             variables: { input: dashboardInput }
         })
 
-        return dashboardInput
+        const {
+            data: responseData
+        } = response || {}
+
+        const {
+            updateDashboard: updateDashboardData
+        } = responseData || {}
+
+        const {
+            createdAt,
+            data,
+            id,
+            organizationId,
+            updatedAt,
+        } = updateDashboardData || {}
+
+        const parsedData = JSON.parse(data)
+
+        return {
+            createdAt,
+            ...parsedData,
+            id,
+            organizationId,
+            updatedAt
+        }
 
     } catch (error) {
         // Error 😨

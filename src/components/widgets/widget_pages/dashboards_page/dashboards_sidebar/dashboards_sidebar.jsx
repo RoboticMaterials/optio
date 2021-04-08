@@ -40,19 +40,19 @@ export const OPERATION_TYPES = {
         schema: "error",
         name: "Report",
         key: "REPORT",
-        _id: 0
+        id: 0
     },
     KICK_OFF: {
         schema: "kick_off",
         key: "KICK_OFF",
         name: "Kick off",
-        _id: 1
+        id: 1
     },
     FINISH: {
         schema: "finish",
         key: "FINISH",
         name: "Finish",
-        _id: 2
+        id: 2
     }
 }
 
@@ -144,7 +144,7 @@ const DashboardsSidebar = (props) => {
         })
 
         // dispatch action to add task to queue
-        const postPromise = dispatch(postTaskQueue({ _id: uuid.v4(), "task_id": Id }))
+        const postPromise = dispatch(postTaskQueue({ id: uuid.v4(), "taskId": Id }))
         postPromise.then(() => {
             try {
                 // code409 is returned if task is already in the queue
@@ -199,7 +199,7 @@ const DashboardsSidebar = (props) => {
                         name: task.name,
                         color: task.color,
                         type: TYPES.ROUTES.key,
-                        task_id: task.task_id,
+                        taskId: task.taskId,
                         id: task.id,
                         custom_task: task.custom_task,
                         deviceType: task.deviceType,
@@ -211,8 +211,8 @@ const DashboardsSidebar = (props) => {
                         name: task.name,
                         color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
                         type: TYPES.ROUTES.key,
-                        task_id: task._id,
-                        id: task._id,
+                        taskId: task.id,
+                        id: task.id,
                     }
                 }
 
@@ -239,7 +239,7 @@ const DashboardsSidebar = (props) => {
             const button = getOperationButton(currKey)
             return {
                 ...button,
-                id: currValue._id,
+                id: currValue.id,
             }
         })
     }
@@ -311,7 +311,7 @@ const DashboardsSidebar = (props) => {
                                     const {
                                         name: currButtonName,
                                         color: currButtonColor,
-                                        task_id: currButtonTaskId,
+                                        taskId: currButtonTaskId,
                                         id: currButtonId,
                                         type: currButtonType,
                                         custom_task
@@ -320,13 +320,13 @@ const DashboardsSidebar = (props) => {
                                         position: positionId
                                     } = custom_task || {}
 
-                                    const dashboardContainsTask = getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId, id: currButtonId, positionId })
+                                    const dashboardContainsTask = getDashboardContainsRouteButton({ buttons: existingButtons }, { taskId: currButtonTaskId, id: currButtonId, positionId })
                                     return (
                                         <DashboardSidebarButton
                                             key={`dashboard-sidebar-button-${currButtonId}`}
                                             name={currButtonName}
                                             color={currButtonColor}
-                                            task_id={currButtonTaskId}
+                                            taskId={currButtonTaskId}
                                             id={currButtonId}
                                             clickable={clickable}
                                             onTaskClick={handleTaskClick}

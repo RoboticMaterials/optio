@@ -69,7 +69,7 @@ export const getLotTemplates = () =>  async (dispatch) => {
         // make request
         const lotTemplates = await api.getLotTemplates();
 
-        const lotTemplatesObj = convertArrayToObject(lotTemplates, "_id")
+        const lotTemplatesObj = convertArrayToObject(lotTemplates, "id")
 
         // return payload for redux
         return {

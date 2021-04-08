@@ -109,7 +109,7 @@ export default function skillsReducer(state = defaultState, action) {
         case PUT_SKILLS_SUCCESS:
             skillsClone = deepCopy(state.skills);
             index = skillsClone.findIndex(s => {
-                return s._id.$oid === action.payload._id.$oid;
+                return s.id.$oid === action.payload.id.$oid;
             });
             skillsClone.splice(index, 1, action.payload);
             return  Object.assign({}, state, {
@@ -134,7 +134,7 @@ export default function skillsReducer(state = defaultState, action) {
         case DELETE_SKILLS_SUCCESS:
             skillsClone = deepCopy(state.skills);
             index = skillsClone.findIndex(s => {
-                return s._id.$oid === action.payload.skillId;
+                return s.id.$oid === action.payload.skillId;
             })
             skillsClone.splice(index, 1);
             return  Object.assign({}, state, {

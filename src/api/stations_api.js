@@ -86,8 +86,7 @@ export async function postStation(station) {
       pos_y: parseFloat(station.pos_y),
       x: parseFloat(station.x),
       y: parseFloat(station.y),
-      _id: station._id.toString(),
-      id: station._id
+      id: station.id
     }
 
     delete input.neame
@@ -130,6 +129,8 @@ export async function putStation(station, ID) {
       variables: { input: input }
     })
 
+    console.log("put dashbaord dataJson",dataJson)
+
     return dataJson;
   } catch (error) {
     // Error 😨
@@ -140,12 +141,10 @@ export async function putStation(station, ID) {
 export async function getStationAnalytics(id, timeSpan) {
   try {
 
-    console.log(id, timeSpan);
-
     const dataJ = await API.graphql({
       query: stationStats,
       variables: { 
-          station_id: id,
+          stationId: id,
           timeSpan: timeSpan.timespan, 
           index: timeSpan.index
       }

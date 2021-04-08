@@ -49,7 +49,7 @@ export const getDashboards = () => {
 
             const normalizedDashboards = {}
             dashboards.map((dashboard) => {
-                normalizedDashboards[dashboard._id.$oid] = dashboard
+                normalizedDashboards[dashboard.id.$oid] = dashboard
             })
 
             return onSuccess(normalizedDashboards)
@@ -75,7 +75,7 @@ export const postDashboard = (dashboard) => {
 
         try {
             onStart();
-            delete dashboard._id
+            delete dashboard.id
             const newDashboard = await api.postDashboards(dashboard);
             return onSuccess(newDashboard)
         } catch (error) {
@@ -99,7 +99,7 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            delete dashboard._id
+            delete dashboard.id
             const updateDashboard = await api.putDashboards(dashboard, ID);
             return onSuccess(updateDashboard)
         } catch (error) {

@@ -58,7 +58,7 @@ export const getTasks = () => {
 
             const normalizedTasks = {}
             tasks.map((task) => {
-                normalizedTasks[task._id] = task
+                normalizedTasks[task.id] = task
                 return task
             })
 
@@ -263,7 +263,7 @@ export const saveFormRoute = (formRoute) => {
         } = formRoute
         // get objectId
         const {
-            _id: objectId
+            id: objectId
         } = obj || {}
 
         // create payload
@@ -279,7 +279,7 @@ export const saveFormRoute = (formRoute) => {
 
         // update existing route
         else {
-            dispatch(putRouteClean(payload, payload._id))
+            dispatch(putRouteClean(payload, payload.id))
         }
     }
 }

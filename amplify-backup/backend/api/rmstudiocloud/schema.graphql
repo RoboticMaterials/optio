@@ -1,0 +1,398 @@
+# User related
+
+type User 
+  @model(queries: null)
+  @auth(rules: [
+    # allow all authenticated users
+    { allow: owner },
+    { allow: private, operations: [read]}
+    ])
+  @key(name: "UsersbyOrg", fields: ["organizationId"], queryField: "UsersbyOrg" )
+  @key(name: "UsersbyId", fields: ["id"], queryField: "UsersbyId" )
+{
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  username: String!
+  organization: Organization @connection(fields: ["organizationId"])
+}
+
+type Organization 
+  @model(queries: null)
+  @key(name: "OrgsById", fields: ["organizationId"], queryField: "OrgsById" )
+  @key(name: "OrgsByKey", fields: ["key"], queryField: "OrgsByKey" )
+  @auth(rules: [
+    { allow: private }
+    ]) 
+{
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  name: String!
+  key: String!
+  users: [User] @connection(keyName: "UsersbyOrg", fields: ["organizationId"])
+
+  # Organization's data
+  # stations: [Station] @connection(keyName: "StationsByOrgId", fields: ["organizationId"])
+}
+
+# Data related
+
+type Station
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "StationsByOrgId", fields: ["organizationId"], queryField: "StationsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  name: String!
+  schema: String!
+  type:String!
+  pos_x: Float
+  pos_y: Float
+  rotation: Int!
+  x: Float!
+  y: Float!
+  mapId: String!
+  children: AWSJSON!
+  dashboards: AWSJSON!
+}
+
+type Position
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "PositionsByOrgId", fields: ["organizationId"], queryField: "PositionsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  change_key: String!
+  mapId: String!
+  name: String!
+  parent: String
+  pos_x: Float
+  pos_y: Float
+  rotation: Int
+  schema: String!
+  type: String!
+  x: Int!
+  y: Int!
+}
+
+type Task
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "TasksByOrgId", fields: ["organizationId"], queryField: "TasksByOrgId" )
+  @key(name: "TaskById", fields: ["id"], queryField: "TaskById" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  device_types: AWSJSON!
+  handoff: Boolean!
+  load: AWSJSON!
+  mapId: String!
+  name: String!
+  processes: AWSJSON!
+  quantity: Int!
+  track_quantity: Boolean!
+  type: String!
+  unload: AWSJSON!
+  obj: String!
+  route_object: AWSJSON
+}
+
+type Process
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "ProcessesByOrgId", fields: ["organizationId"], queryField: "ProcessesByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  name: String!
+  broken: Int
+  routes: AWSJSON!
+  mapId: String
+}
+
+type Object 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "ObjectsByOrgId", fields: ["organizationId"], queryField: "ObjectsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  description: String!
+  mapId: String!
+  modelName: String!
+  name: String!
+  dimensions: String
+  quantity: String
+}
+
+type Card
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "CardsByOrgId", fields: ["organizationId"], queryField: "CardsByOrgId" )
+  @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  bins: AWSJSON!
+  flags: AWSJSON!
+  templateValues: AWSJSON!
+  lotNumber: Int!
+  lotTemplateId: String!
+  name: String!
+  process_id: String!
+
+}
+
+type CardEvent
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "CardsEventsByOrgId", fields: ["organizationId"], queryField: "CardsEventsByOrgId" )
+  # @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  cardId: ID!
+  userId: ID
+  username: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  delta: AWSJSON!
+}
+
+type Settings 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "SettingsByOrgId", fields: ["organizationId"], queryField: "SettingsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  MiRMapEnabled: Boolean
+  accessToken: String
+  authenticated: Boolean
+  currentMapId: String
+  deviceEnabled: Boolean
+  loggers: AWSJSON
+  mapViewEnabled: Boolean
+  non_local_api: Boolean
+  non_local_api_ip: String
+  refreshToken: String
+  shiftDetails: AWSJSON
+  toggleDevOptions: Boolean
+  timezone: AWSJSON
+}
+
+type LotTemplate 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "LotTemplatesByOrgId", fields: ["organizationId"], queryField: "LotTemplatesByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  name: String!
+  displayNames: AWSJSON!
+  fields: AWSJSON!
+}
+# Data stream
+
+type Device
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "DevicesByOrgId", fields: ["organizationId"], queryField: "DevicesByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  battery_percentage: Int!
+  connected: Boolean!, 
+  current_task_queue_id: String
+  dashboards: AWSJSON!
+  device_model: String!
+  device_name: String!
+  distance_to_next_target: Int!
+  idle_location: String!
+  mapId: String!
+  position: AWSJSON!
+  shelf_attached: Int!
+  state_text: String!
+}
+
+type Status 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "StatusByOrgId", fields: ["organizationId"], queryField: "StatusByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  active_map: Boolean
+  mir_connection: String
+  pause_status: Boolean
+}
+
+type TaskQueue 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  device_type: String!
+  mission_status: String
+  owner: String
+  task_id: String!
+  custom_task: AWSJSON
+  dashboard: String
+  showModal: Boolean
+  hil_response: Boolean
+  quantity: Int
+  lot_id: String
+  start_time: AWSTimestamp
+  end_time: AWSTimestamp
+
+  hil_station_id: String
+  hil_message: String
+}
+
+type TaskQueueEvents
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  device_type: String!
+  mission_status: String
+  owner: String
+  task_id: String!
+  custom_task: AWSJSON
+  dashboard: String
+  showModal: Boolean
+  hil_response: Boolean
+  quantity: Int
+  lot_id: String
+  start_time: AWSTimestamp
+  end_time: AWSTimestamp
+
+  hil_station_id: String
+  hil_message: String
+}
+
+type Dashboard 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "DashboardsByOrgId", fields: ["organizationId"], queryField: "DashboardsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  
+  # Data
+  data: AWSJSON!
+}
+
+# Subs
+type Subscription {
+  onDeltaStation: Station
+    @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
+
+  onDeltaPosition: Position
+    @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
+
+  onDeltaTask: Task
+    @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
+
+  onDeltaProcess: Process
+    @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
+
+  onDeltaObject: Object
+    @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
+
+  onDeltaCard: Card
+    @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
+
+  ## Data Stream Subscriptions  
+
+  onDeltaDevice: Device
+    @aws_subscribe(mutations: ["createDevice","updateDevice","deleteDevice"])
+
+  onDeltaStatus: Status
+    @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
+
+  onDeltaTaskQueue: TaskQueue
+    @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
+}
+
+# Analysis Queries
+type Mutation {
+  manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
+  taskStats(task_id: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
+}

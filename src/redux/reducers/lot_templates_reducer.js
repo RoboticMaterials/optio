@@ -29,7 +29,7 @@ export default function lotTemplatesReducer(state = defaultState, action) {
     case GET + LOT_TEMPLATE + SUCCESS:
       return {
         ...state,
-        lotTemplates: {...state.lotTemplates, [action.payload.lotTemplate._id]: action.payload.lotTemplate},
+        lotTemplates: {...state.lotTemplates, [action.payload.lotTemplate.id]: action.payload.lotTemplate},
         pending: false,
       }
 
@@ -44,7 +44,7 @@ export default function lotTemplatesReducer(state = defaultState, action) {
     case PUT + LOT_TEMPLATE + SUCCESS:
       return {
         ...state,
-        lotTemplates: {...state.lotTemplates, [action.payload.lotTemplate._id]: action.payload.lotTemplate},
+        lotTemplates: {...state.lotTemplates, [action.payload.lotTemplate.id]: action.payload.lotTemplate},
         pending: false,
       }
 

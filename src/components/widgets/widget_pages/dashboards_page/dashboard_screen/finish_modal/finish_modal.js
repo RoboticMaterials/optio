@@ -42,7 +42,7 @@ const FinishModal = (props) => {
     } = props
 
     // get current buttons, default to empty array
-    const dashboardId = dashboard?._id
+    const dashboardId = dashboard?.id
 
     const theme = useTheme()
 
@@ -111,8 +111,8 @@ const FinishModal = (props) => {
         const {
             bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            processId,
+            id: cardId,
         } = card
 
         if(quantity && quantity > 0) {
@@ -190,7 +190,7 @@ const FinishModal = (props) => {
             })
             .map((currCard, cardIndex) => {
                 const {
-                    _id: lotId,
+                    id: lotId,
                     // count = 0,
                     name,
                     start_date,
@@ -198,7 +198,7 @@ const FinishModal = (props) => {
                     flags,
                     lotNumber,
                     bins = {},
-                    process_id: processId = "",
+                    processId: processId = "",
                     lotTemplateId
                 } = currCard
 

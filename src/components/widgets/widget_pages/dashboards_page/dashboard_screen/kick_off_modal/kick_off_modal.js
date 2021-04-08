@@ -106,7 +106,7 @@ const KickOffModal = (props) => {
     * When a kick-off button is pressed, the lot is to be moved from the queue of the current process it resides in
     * to the first station in the process
     *
-    * This is done by updating the cards station_id and route_id to those of the first station in the first route
+    * This is done by updating the cards stationId and routeId to those of the first station in the first route
     * */
     const moveLot = async (card, quantity) => {
 
@@ -117,14 +117,14 @@ const KickOffModal = (props) => {
         const {
             bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            processId,
+            id: cardId,
         } = card
 
         if(quantity && quantity > 0) {
 
             // get process of card
-            const cardProcess = processes[process_id]
+            const cardProcess = processes[processId]
 
             // get routes of process
             const processRoutes = cardProcess.routes
@@ -157,7 +157,7 @@ const KickOffModal = (props) => {
                 const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
 
 
-                // updated card will maintain all of the cards previous attributes with the station_id and route_id updated
+                // updated card will maintain all of the cards previous attributes with the stationId and routeId updated
                 let updatedCard = {
                     ...card,                                // spread unaltered attributes
                     bins: {
@@ -225,14 +225,14 @@ const KickOffModal = (props) => {
             })
             .map((currCard, cardIndex) => {
                 const {
-                    _id: lotId,
+                    id: lotId,
                     name,
                     start_date,
                     end_date,
                     bins = {},
                     flags,
                     lotNumber,
-                    process_id: processId,
+                    processId: processId,
                     lotTemplateId
                 } = currCard
 
@@ -311,7 +311,6 @@ const KickOffModal = (props) => {
 
             let filteredCards = []
             if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
-                // currCard.station_id === "QUEUE"
                 if(currCard.bins && currCard.bins["QUEUE"]) return true
             }).map((currCard) => {
                 return{

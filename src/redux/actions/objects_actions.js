@@ -65,7 +65,7 @@ export const getObjects = () => {
 
             const normalizedObjects = {}
             objects.map((object) => {
-                normalizedObjects[object._id] = object
+                normalizedObjects[object.id] = object
             })
 
             return onSuccess(normalizedObjects);
