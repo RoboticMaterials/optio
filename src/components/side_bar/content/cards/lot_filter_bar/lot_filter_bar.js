@@ -117,12 +117,12 @@ const LotFilterBar = (props) => {
         <styled.ColumnContainer>
             <styled.Description
                 css={props.descriptionCss}
+                onClick={()=>setOpen(!open)}
             >
                 <styled.ExpandContractIcon
                     className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
                     onClick={()=>setOpen(!open)}
                 />
-
                 Filter
             </styled.Description>
 
