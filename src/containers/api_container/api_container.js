@@ -48,11 +48,11 @@ const ApiContainer = (props) => {
     // Dispatches
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
-    const onGetStations = () => dispatch(getStations())
+    const onGetStations = async () => await dispatch(getStations())
     const onGetPositions = () => dispatch(getPositions())
-    const onGetDashboards = () => dispatch(getDashboards())
+    const onGetDashboards = async () => await dispatch(getDashboards())
     const onGetObjects = () => dispatch(getObjects())
-    const onGetTasks = () => dispatch(getTasks())
+    const onGetTasks = async () => await dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
@@ -399,9 +399,11 @@ const ApiContainer = (props) => {
         const objects = await onGetObjects()
     }
 
-    const loadLocationsData = () => {
-        onGetDashboards()
-        onGetStations()
+    const loadLocationsData = async () => {
+        await onGetStations()
+        await onGetTasks()
+        await onGetDashboards()
+
     }
 
     const loadListViewData = () => {
@@ -428,9 +430,10 @@ const ApiContainer = (props) => {
         dashboards
     */
     const loadDashboardsData = async () => {
-        const dashboards = await onGetDashboards();
-        await onGetCards()
+        await onGetStations()
         await onGetTasks()
+        await onGetDashboards();
+        await onGetCards()
         await onGetProcesses()
 
     }
