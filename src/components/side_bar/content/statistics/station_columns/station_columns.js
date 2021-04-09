@@ -18,7 +18,8 @@ const StationColumns = (props) => {
         setDateTitle,
         dateIndex,
         timeSpan,
-        showReport
+        showReport,
+        dataLoading,
     } = props || {}
 
     const processes = useSelector(state => state.processesReducer.processes)
@@ -27,8 +28,6 @@ const StationColumns = (props) => {
 
 
     const renderStationColumn = useMemo(() => {
-        console.log('QQQQ showReport', showReport)
-
         const processStations = getProcessStations(processes[processId], routes)
         return Object.keys(processStations).map((stationId) => {
             return (
@@ -39,6 +38,7 @@ const StationColumns = (props) => {
                     stationId={stationId}
                     showReport={showReport}
                     setDateTitle={(title => setDateTitle(title))}
+                    dataLoading={loading => dataLoading(loading)}
                 />
             )
         })

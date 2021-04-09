@@ -380,6 +380,7 @@ const StatisticsOverview = (props) => {
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
                     reportData={reportData}
+                    isWidget={true}
                 />
             </styled.PlotsContainer>
 

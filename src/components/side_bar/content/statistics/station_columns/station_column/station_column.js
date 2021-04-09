@@ -24,6 +24,7 @@ const StationColumn = (props) => {
         setDateTitle,
         stationId = '',
         showReport,
+        dataLoading,
     } = props
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -33,7 +34,7 @@ const StationColumn = (props) => {
     const dispatchGetReportEvents = () => dispatch(getReportEvents());
 
     const [throughputData, setThroughputData] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [collapsed, setCollapsed] = useState(false)
     const [reportButtons, setReportButtons] = useState([])
     const [reportData, setReportData] = useState(null)
@@ -57,39 +58,29 @@ const StationColumn = (props) => {
 
             const body = { timespan: timeSpan, index: dateIndex }
 
-            getReportData(body)
+            onGetReportData(body)
+        } else {
+            onGetThroughputData()
         }
     }, [showReport, timeSpan, dateIndex])
 
-    const getReportData = async (body) => {
-        setIsLoading(true)
+    const onGetReportData = async (body) => {
+        setLoading(true)
+        dataLoading(true)
         const reportAnalyticsResponse = await getReportAnalytics(stationId, body)
 
         if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
             setReportData(reportAnalyticsResponse)
+            setDateTitle(reportAnalyticsResponse.date_title)
         }
-        setIsLoading(false)
+        setLoading(false)
+        dataLoading(false)
 
     }
 
-
-
-
-    // On page load, load in the data for today
-    useEffect(() => {
-
-        // TEMP
-        // If the page has been loaded in (see widget pages) then don't delay chart load, 
-        // else delay chart load because it slows down the widget page opening animation.
-        // if (widgetPageLoaded) {
-        //     setDelayChartRender('flex')
-        // } else {
-        //     setTimeout(() => {
-        //         setDelayChartRender('flex')
-        //     }, 300);
-        // }
-
-
+    const onGetThroughputData = () => {
+        dataLoading(true)
+        setLoading(true)
         // TEMP
         const body = { timespan: timeSpan, index: dateIndex }
         const dataPromise = getStationAnalytics(stationId, body)
@@ -112,9 +103,11 @@ const StationColumn = (props) => {
 
             setThroughputData(response)
             setDateTitle(response.date_title)
+            dataLoading(false)
+            setLoading(false)
         })
 
-    }, [timeSpan, dateIndex])
+    }
 
     return (
 
@@ -143,7 +136,7 @@ const StationColumn = (props) => {
                     <ReportChart
                         reportButtons={reportButtons}
                         reportDate={reportData}
-                        isThroughputLoading={isLoading}
+                        isThroughputLoading={loading}
                         timeSpan={timeSpan}
                         reportData={reportData}
                     />
@@ -151,7 +144,7 @@ const StationColumn = (props) => {
                     <ThroughputChart
                         data={throughputData}
                         isWidget={false}
-                        isThroughputLoading={isLoading}
+                        loading={loading}
                         timeSpan={timeSpan}
                         disableTimeSpan={(bool) => {
                             // setTimespanDisabled(bool)

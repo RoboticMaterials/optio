@@ -67,6 +67,10 @@ export const PlotContainer = styled.div`
 
 export const LoadingIcon = styled.i`
     font-size: 1.5rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 `
 
 export const NoDataText = styled.span`

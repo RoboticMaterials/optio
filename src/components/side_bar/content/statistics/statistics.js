@@ -25,10 +25,12 @@ const Statistics = () => {
     const processes = useSelector(state => state.processesReducer.processes)
 
     const [dateIndex, setDateIndex] = useState(0)
-    const [isThroughputLoading, setIsThroughputLoading] = useState(false)
     const [timeSpan, setTimeSpan] = useState('day')
     const [showReport, setShowReport] = useState(false)
     const [date, setDate] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    console.log('QQQQ date', date)
 
     // useEffect(() => {
     //     const newDate = deepCopy(date)
@@ -52,32 +54,8 @@ const Statistics = () => {
 
         setTimeSpan(newTimeSpan)
         setDateIndex(newDateIndex)
+        setTimeSpan(newTimeSpan)
 
-        // Usses a regex to take all characters before a '['
-        // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
-        switch (newTimeSpan) {
-            case 'live':
-                setTimeSpan('live')
-                break
-            case 'day':
-                setTimeSpan('day')
-                break
-            case 'week':
-                setTimeSpan('week')
-                break
-            case 'month':
-                setTimeSpan('month')
-                break
-            case 'year':
-                setTimeSpan('year')
-                break
-            case 'all':
-                setTimeSpan('all')
-                break
-            case 'line':
-                setTimeSpan('line')
-                break
-        }
     }
 
     const renderStationColumns = () => {
@@ -95,7 +73,6 @@ const Statistics = () => {
             });
 
         }
-        console.log('QQQQ showReport', showReport)
 
         return processesToRender.map((processId) => {
             return (
@@ -103,6 +80,7 @@ const Statistics = () => {
                     key={processId}
                     processId={processId}
                     setDateTitle={(title) => setDate(title)}
+                    dataLoading={loading => setLoading(loading)}
                     dateIndex={dateIndex}
                     timeSpan={timeSpan}
                     showReport={showReport}
@@ -129,7 +107,7 @@ const Statistics = () => {
                         <DaySelector
                             date={date}
                             dateIndex={dateIndex}
-                            loading={isThroughputLoading}
+                            loading={loading}
                             onChange={(newIndex) => {
                                 onTimeSpan(timeSpan, newIndex)
                             }}
@@ -141,7 +119,7 @@ const Statistics = () => {
                                 selected={!showReport && timeSpan !== 'line'}
                                 onClick={() => {
                                     setShowReport(false)
-                                    onTimeSpan('day', dateIndex)
+                                    onTimeSpan(timeSpan === 'line' ? 'day' : timeSpan, dateIndex)
                                 }}
                             >
                                 Bar
@@ -160,9 +138,8 @@ const Statistics = () => {
                             <styled.ChartTypeButton
                                 selected={!!showReport && timeSpan !== 'line'}
                                 onClick={() => {
-                                    console.log('QQQQ should be showing reports')
                                     setShowReport(true)
-                                    onTimeSpan('day', dateIndex)
+                                    onTimeSpan(timeSpan === 'line' ? 'day' : timeSpan, dateIndex)
                                 }}
                             >
                                 Reports

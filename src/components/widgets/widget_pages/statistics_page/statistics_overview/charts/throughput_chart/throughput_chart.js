@@ -25,7 +25,7 @@ const ThroughputChart = (props) => {
 
     const {
         data,
-        isThroughputLoading,
+        loading,
         timeSpan,
         loadLineChartData,
         loadBarChartData,
@@ -142,7 +142,6 @@ const ThroughputChart = (props) => {
 
         }
         else {
-            console.log('QQQQ setting line data')
             setLineData(data.throughPut)
             setThroughputData([])
         }
@@ -199,9 +198,9 @@ const ThroughputChart = (props) => {
                 </styled.PlotHeader>
             }
 
-            {isThroughputLoading ?
+            {!!loading ?
                 <styled.PlotContainer>
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
+                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{fontSize: '3rem' }} />
                 </styled.PlotContainer>
                 :
 
