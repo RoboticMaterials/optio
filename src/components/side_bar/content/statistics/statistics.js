@@ -14,7 +14,6 @@ import DaySelector from '../../../basic/day_selector/day_selector'
 import TimeSpaneSelector from '../../../basic/timespan_selector/time_span_selector'
 
 const Statistics = () => {
-    console.log('QQQQ HAR')
 
     let params = useParams()
     const {
@@ -28,6 +27,7 @@ const Statistics = () => {
     const [dateIndex, setDateIndex] = useState(0)
     const [isThroughputLoading, setIsThroughputLoading] = useState(false)
     const [timeSpan, setTimeSpan] = useState('day')
+    const [showReport, setShowReport] = useState(false)
     const [date, setDate] = useState('')
 
     // useEffect(() => {
@@ -90,14 +90,12 @@ const Statistics = () => {
         }
         // Else push all processes
         else {
-            console.log('QQQQ rendering a lot of processes')
             Object.keys(processes).forEach(processId => {
                 processesToRender.push(processId)
             });
 
         }
-
-        console.log('QQQQ rendering array', processesToRender)
+        console.log('QQQQ showReport', showReport)
 
         return processesToRender.map((processId) => {
             return (
@@ -107,6 +105,7 @@ const Statistics = () => {
                     setDateTitle={(title) => setDate(title)}
                     dateIndex={dateIndex}
                     timeSpan={timeSpan}
+                    showReport={showReport}
                 />
             )
         })
@@ -119,25 +118,60 @@ const Statistics = () => {
             />
             <styled.HeaderBar>
                 <styled.HeaderSection style={{ marginLeft: '2rem' }}>
-                    <TimeSpaneSelector
-                        // timespanDisabled={timespanDisabled}
-                        setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
-                        timeSpan={timeSpan}
-                        timespanDisabled={timeSpan === 'line'}
-                    />
-                    <DaySelector
-                        date={date}
-                        dateIndex={dateIndex}
-                        loading={isThroughputLoading}
-                        onChange={(newIndex) => {
-                            onTimeSpan(timeSpan, newIndex)
-                        }}
-                    />
+                    <styled.ColumnContainer>
+
+                        <TimeSpaneSelector
+                            // timespanDisabled={timespanDisabled}
+                            setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
+                            timeSpan={timeSpan}
+                            timespanDisabled={timeSpan === 'line'}
+                        />
+                        <DaySelector
+                            date={date}
+                            dateIndex={dateIndex}
+                            loading={isThroughputLoading}
+                            onChange={(newIndex) => {
+                                onTimeSpan(timeSpan, newIndex)
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer>
+                        <styled.RowContainer>
+                            <styled.ChartTypeButton
+                                selected={!showReport && timeSpan !== 'line'}
+                                onClick={() => {
+                                    setShowReport(false)
+                                    onTimeSpan('day', dateIndex)
+                                }}
+                            >
+                                Bar
+                        </styled.ChartTypeButton>
+
+                            <styled.ChartTypeButton
+                                selected={!showReport && timeSpan === 'line'}
+                                onClick={() => {
+                                    setShowReport(false)
+                                    onTimeSpan('line', dateIndex)
+                                }}
+                            >
+                                Line
+                        </styled.ChartTypeButton>
+
+                            <styled.ChartTypeButton
+                                selected={!!showReport && timeSpan !== 'line'}
+                                onClick={() => {
+                                    console.log('QQQQ should be showing reports')
+                                    setShowReport(true)
+                                    onTimeSpan('day', dateIndex)
+                                }}
+                            >
+                                Reports
+                        </styled.ChartTypeButton>
+                        </styled.RowContainer>
+                    </styled.ColumnContainer>
                 </styled.HeaderSection>
                 <styled.HeaderSection style={{ marginLeft: '2rem' }}>
-                    <button onClick={() => onTimeSpan('day', dateIndex)}>Bar</button>
-                    <button onClick={() => onTimeSpan('line', dateIndex)}>Line</button>
-                    <button onClick={() => {onTimeSpan('reports', dateIndex)}}>Reports</button>
+
                 </styled.HeaderSection>
             </styled.HeaderBar>
             <styled.StationColumnsContainer>

@@ -63,7 +63,7 @@ const StatisticsOverview = (props) => {
     let plotRef = useRef()
 
     const dispatch = useDispatch()
-    const onGetReportEvents = () => dispatch(getReportEvents());
+    const dispatchGetReportEvents = () => dispatch(getReportEvents());
 
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -112,7 +112,7 @@ const StatisticsOverview = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
-        onGetReportEvents() // load report events
+        dispatchGetReportEvents() // load report events
 
 
         if (stations[params.stationID].device_id !== undefined) {

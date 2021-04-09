@@ -15,8 +15,8 @@ export const SinglePlotContainer = styled.div`
 	flex-direction: column;
 	background: ${props => props.theme.bg.primary};
   box-shadow: ${props => props.theme.cardShadow};
-	border-radius: 1.5rem;
-	padding: 1rem;
+	border-radius: 1rem;
+	/* padding: 1rem; */
 	min-width: 60rem;
 	overflow: hidden;
 	
@@ -184,7 +184,7 @@ export const BreakLabel = styled.label`
 
 export const FormIcon = styled.i`
     position: absolute;
-    right: 1rem;
-    top: .25rem;
+    right: .5rem;
+    top: .5rem;
     font-size: 1.25rem;
 `

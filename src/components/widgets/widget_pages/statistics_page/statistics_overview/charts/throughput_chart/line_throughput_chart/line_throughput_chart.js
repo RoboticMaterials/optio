@@ -21,6 +21,7 @@ const LineThroughputChart = (props) => {
         themeContext,
         isData,
         date,
+        loading,
     } = props
 
     const settings = useSelector(state => state.settingsReducer.settings)
