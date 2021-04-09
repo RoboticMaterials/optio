@@ -273,7 +273,7 @@ export const addRouteToDashboards = (route) => {
 
             // only add button if it isn't already in the dashboard
             if(buttonIndex === -1) {
-                dispatch(putDashboard({
+                await dispatch(putDashboard({
                     ...dashboard,
                     buttons: [...dashboard.buttons, newDashboardButton]
                 }, dashboard._id.$oid))
