@@ -13,9 +13,7 @@
 #         ENV
 #         REGION
 
-import json
 import os
-from pprint import pprint
 
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
@@ -99,9 +97,9 @@ def create_data(stationId, start_utc, end_utc, labels, output=False):
     # TODO only fetch data from time frame to make scalable
     df = DataFrame(list(events_data))
 
-    df.time = df.time.astype(float)
-
     if len(df) > 0:
+
+        df.time = df.time.astype(float)
 
         # Create bins for data
         bins = linspace(0, len(df)-1, len(labels)+1)

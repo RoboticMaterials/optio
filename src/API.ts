@@ -32,6 +32,12 @@ export type StationStatsData = {
   throughPut?: string,
 };
 
+export type ReportStatsData = {
+  __typename: "ReportStatsData",
+  date?: string,
+  throughPut?: string,
+};
+
 export type CreateUserInput = {
   id?: string | null,
   organizationId: string,
@@ -1193,25 +1199,55 @@ export type DeleteDashboardInput = {
   id?: string | null,
 };
 
-export type ModelStationEventFilterInput = {
-  id?: ModelIDInput | null,
+export type CreateReportEventInput = {
+  id?: string | null,
+  organizationId: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId: string,
+  date: number,
+  reportButtonId: string,
+  stationId: string,
+};
+
+export type ModelReportEventConditionInput = {
   organizationId?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  object?: ModelStringInput | null,
-  outgoing?: ModelBooleanInput | null,
-  quantity?: ModelIntInput | null,
-  station?: ModelStringInput | null,
-  time?: ModelIntInput | null,
-  and?: Array< ModelStationEventFilterInput | null > | null,
-  or?: Array< ModelStationEventFilterInput | null > | null,
-  not?: ModelStationEventFilterInput | null,
+  dashboardId?: ModelStringInput | null,
+  date?: ModelIntInput | null,
+  reportButtonId?: ModelStringInput | null,
+  stationId?: ModelStringInput | null,
+  and?: Array< ModelReportEventConditionInput | null > | null,
+  or?: Array< ModelReportEventConditionInput | null > | null,
+  not?: ModelReportEventConditionInput | null,
 };
 
-export type ModelStationEventConnection = {
-  __typename: "ModelStationEventConnection",
-  items?:  Array<StationEvent | null > | null,
-  nextToken?: string | null,
+export type ReportEvent = {
+  __typename: "ReportEvent",
+  id?: string,
+  organizationId?: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId?: string,
+  date?: number,
+  reportButtonId?: string,
+  stationId?: string,
+};
+
+export type UpdateReportEventInput = {
+  id: string,
+  organizationId?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId?: string | null,
+  date?: number | null,
+  reportButtonId?: string | null,
+  stationId?: string | null,
+};
+
+export type DeleteReportEventInput = {
+  id?: string | null,
 };
 
 export enum ModelSortDirection {
@@ -1273,6 +1309,27 @@ export type ModelStationFilterInput = {
 export type ModelStationConnection = {
   __typename: "ModelStationConnection",
   items?:  Array<Station | null > | null,
+  nextToken?: string | null,
+};
+
+export type ModelStationEventFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  object?: ModelStringInput | null,
+  outgoing?: ModelBooleanInput | null,
+  quantity?: ModelIntInput | null,
+  station?: ModelStringInput | null,
+  time?: ModelIntInput | null,
+  and?: Array< ModelStationEventFilterInput | null > | null,
+  or?: Array< ModelStationEventFilterInput | null > | null,
+  not?: ModelStationEventFilterInput | null,
+};
+
+export type ModelStationEventConnection = {
+  __typename: "ModelStationEventConnection",
+  items?:  Array<StationEvent | null > | null,
   nextToken?: string | null,
 };
 
@@ -1558,6 +1615,26 @@ export type ModelDashboardConnection = {
   nextToken?: string | null,
 };
 
+export type ModelReportEventFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  dashboardId?: ModelStringInput | null,
+  date?: ModelIntInput | null,
+  reportButtonId?: ModelStringInput | null,
+  stationId?: ModelStringInput | null,
+  and?: Array< ModelReportEventFilterInput | null > | null,
+  or?: Array< ModelReportEventFilterInput | null > | null,
+  not?: ModelReportEventFilterInput | null,
+};
+
+export type ModelReportEventConnection = {
+  __typename: "ModelReportEventConnection",
+  items?:  Array<ReportEvent | null > | null,
+  nextToken?: string | null,
+};
+
 export type ManageTaskQueueMutationVariables = {
   taskQueueItem?: string,
 };
@@ -1627,6 +1704,20 @@ export type StationStatsMutation = {
     __typename: "StationStatsData",
     stationId: string,
     organizationId: string,
+    date: string,
+    throughPut: string,
+  } | null,
+};
+
+export type ReportStatsMutationVariables = {
+  stationId?: string,
+  timeSpan?: string,
+  index?: number,
+};
+
+export type ReportStatsMutation = {
+  reportStats?:  {
+    __typename: "ReportStatsData",
     date: string,
     throughPut: string,
   } | null,
@@ -2808,47 +2899,60 @@ export type DeleteDashboardMutation = {
   } | null,
 };
 
-export type GetStationEventQueryVariables = {
-  id?: string,
+export type CreateReportEventMutationVariables = {
+  input?: CreateReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
 };
 
-export type GetStationEventQuery = {
-  getStationEvent?:  {
-    __typename: "StationEvent",
+export type CreateReportEventMutation = {
+  createReportEvent?:  {
+    __typename: "ReportEvent",
     id: string,
     organizationId: string,
     createdAt?: string | null,
     updatedAt?: string | null,
-    object?: string | null,
-    outgoing: boolean,
-    quantity: number,
-    station: string,
-    time: number,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
   } | null,
 };
 
-export type ListStationEventsQueryVariables = {
-  filter?: ModelStationEventFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
+export type UpdateReportEventMutationVariables = {
+  input?: UpdateReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
 };
 
-export type ListStationEventsQuery = {
-  listStationEvents?:  {
-    __typename: "ModelStationEventConnection",
-    items?:  Array< {
-      __typename: "StationEvent",
-      id: string,
-      organizationId: string,
-      createdAt?: string | null,
-      updatedAt?: string | null,
-      object?: string | null,
-      outgoing: boolean,
-      quantity: number,
-      station: string,
-      time: number,
-    } | null > | null,
-    nextToken?: string | null,
+export type UpdateReportEventMutation = {
+  updateReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
+  } | null,
+};
+
+export type DeleteReportEventMutationVariables = {
+  input?: DeleteReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
+};
+
+export type DeleteReportEventMutation = {
+  deleteReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
   } | null,
 };
 
@@ -3201,7 +3305,7 @@ export type GetCardByIdQueryVariables = {
 };
 
 export type GetCardByIdQuery = {
-  getCardById?:  {
+  GetCardById?:  {
     __typename: "ModelCardConnection",
     items?:  Array< {
       __typename: "Card",
@@ -3425,6 +3529,32 @@ export type DashboardsByOrgIdQuery = {
   } | null,
 };
 
+export type ReportEventByOrgIdQueryVariables = {
+  organizationId?: string | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelReportEventFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ReportEventByOrgIdQuery = {
+  ReportEventByOrgId?:  {
+    __typename: "ModelReportEventConnection",
+    items?:  Array< {
+      __typename: "ReportEvent",
+      id: string,
+      organizationId: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      dashboardId: string,
+      date: number,
+      reportButtonId: string,
+      stationId: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type OnDeltaStationSubscription = {
   onDeltaStation?:  {
     __typename: "Station",
@@ -3592,926 +3722,5 @@ export type OnDeltaTaskQueueSubscription = {
     end_time?: number | null,
     hil_station_id?: string | null,
     hil_message?: string | null,
-  } | null,
-};
-
-export type OnCreateUserSubscription = {
-  onCreateUser?:  {
-    __typename: "User",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    username: string,
-    organization?:  {
-      __typename: "Organization",
-      id: string,
-      organizationId: string,
-      createdAt?: string | null,
-      updatedAt?: string | null,
-      name: string,
-      key: string,
-    } | null,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnUpdateUserSubscription = {
-  onUpdateUser?:  {
-    __typename: "User",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    username: string,
-    organization?:  {
-      __typename: "Organization",
-      id: string,
-      organizationId: string,
-      createdAt?: string | null,
-      updatedAt?: string | null,
-      name: string,
-      key: string,
-    } | null,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnDeleteUserSubscription = {
-  onDeleteUser?:  {
-    __typename: "User",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    username: string,
-    organization?:  {
-      __typename: "Organization",
-      id: string,
-      organizationId: string,
-      createdAt?: string | null,
-      updatedAt?: string | null,
-      name: string,
-      key: string,
-    } | null,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnCreateOrganizationSubscription = {
-  onCreateOrganization?:  {
-    __typename: "Organization",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    key: string,
-    users?:  {
-      __typename: "ModelUserConnection",
-      nextToken?: string | null,
-    } | null,
-  } | null,
-};
-
-export type OnUpdateOrganizationSubscription = {
-  onUpdateOrganization?:  {
-    __typename: "Organization",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    key: string,
-    users?:  {
-      __typename: "ModelUserConnection",
-      nextToken?: string | null,
-    } | null,
-  } | null,
-};
-
-export type OnDeleteOrganizationSubscription = {
-  onDeleteOrganization?:  {
-    __typename: "Organization",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    key: string,
-    users?:  {
-      __typename: "ModelUserConnection",
-      nextToken?: string | null,
-    } | null,
-  } | null,
-};
-
-export type OnCreateStationSubscription = {
-  onCreateStation?:  {
-    __typename: "Station",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    schema: string,
-    type: string,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation: number,
-    x: number,
-    y: number,
-    mapId: string,
-    children: string,
-    dashboards: string,
-  } | null,
-};
-
-export type OnUpdateStationSubscription = {
-  onUpdateStation?:  {
-    __typename: "Station",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    schema: string,
-    type: string,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation: number,
-    x: number,
-    y: number,
-    mapId: string,
-    children: string,
-    dashboards: string,
-  } | null,
-};
-
-export type OnDeleteStationSubscription = {
-  onDeleteStation?:  {
-    __typename: "Station",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    schema: string,
-    type: string,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation: number,
-    x: number,
-    y: number,
-    mapId: string,
-    children: string,
-    dashboards: string,
-  } | null,
-};
-
-export type OnCreateStationEventSubscription = {
-  onCreateStationEvent?:  {
-    __typename: "StationEvent",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    object?: string | null,
-    outgoing: boolean,
-    quantity: number,
-    station: string,
-    time: number,
-  } | null,
-};
-
-export type OnUpdateStationEventSubscription = {
-  onUpdateStationEvent?:  {
-    __typename: "StationEvent",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    object?: string | null,
-    outgoing: boolean,
-    quantity: number,
-    station: string,
-    time: number,
-  } | null,
-};
-
-export type OnDeleteStationEventSubscription = {
-  onDeleteStationEvent?:  {
-    __typename: "StationEvent",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    object?: string | null,
-    outgoing: boolean,
-    quantity: number,
-    station: string,
-    time: number,
-  } | null,
-};
-
-export type OnCreatePositionSubscription = {
-  onCreatePosition?:  {
-    __typename: "Position",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    change_key: string,
-    mapId: string,
-    name: string,
-    parent?: string | null,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation?: number | null,
-    schema: string,
-    type: string,
-    x: number,
-    y: number,
-  } | null,
-};
-
-export type OnUpdatePositionSubscription = {
-  onUpdatePosition?:  {
-    __typename: "Position",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    change_key: string,
-    mapId: string,
-    name: string,
-    parent?: string | null,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation?: number | null,
-    schema: string,
-    type: string,
-    x: number,
-    y: number,
-  } | null,
-};
-
-export type OnDeletePositionSubscription = {
-  onDeletePosition?:  {
-    __typename: "Position",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    change_key: string,
-    mapId: string,
-    name: string,
-    parent?: string | null,
-    pos_x?: number | null,
-    pos_y?: number | null,
-    rotation?: number | null,
-    schema: string,
-    type: string,
-    x: number,
-    y: number,
-  } | null,
-};
-
-export type OnCreateTaskSubscription = {
-  onCreateTask?:  {
-    __typename: "Task",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_types: string,
-    handoff: boolean,
-    load: string,
-    mapId: string,
-    name: string,
-    processes: string,
-    quantity: number,
-    track_quantity: boolean,
-    type: string,
-    unload: string,
-    obj: string,
-    route_object?: string | null,
-  } | null,
-};
-
-export type OnUpdateTaskSubscription = {
-  onUpdateTask?:  {
-    __typename: "Task",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_types: string,
-    handoff: boolean,
-    load: string,
-    mapId: string,
-    name: string,
-    processes: string,
-    quantity: number,
-    track_quantity: boolean,
-    type: string,
-    unload: string,
-    obj: string,
-    route_object?: string | null,
-  } | null,
-};
-
-export type OnDeleteTaskSubscription = {
-  onDeleteTask?:  {
-    __typename: "Task",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_types: string,
-    handoff: boolean,
-    load: string,
-    mapId: string,
-    name: string,
-    processes: string,
-    quantity: number,
-    track_quantity: boolean,
-    type: string,
-    unload: string,
-    obj: string,
-    route_object?: string | null,
-  } | null,
-};
-
-export type OnCreateProcessSubscription = {
-  onCreateProcess?:  {
-    __typename: "Process",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    broken: string,
-    routes: string,
-    mapId?: string | null,
-  } | null,
-};
-
-export type OnUpdateProcessSubscription = {
-  onUpdateProcess?:  {
-    __typename: "Process",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    broken: string,
-    routes: string,
-    mapId?: string | null,
-  } | null,
-};
-
-export type OnDeleteProcessSubscription = {
-  onDeleteProcess?:  {
-    __typename: "Process",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    broken: string,
-    routes: string,
-    mapId?: string | null,
-  } | null,
-};
-
-export type OnCreateObjectSubscription = {
-  onCreateObject?:  {
-    __typename: "Object",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    description: string,
-    mapId: string,
-    modelName: string,
-    name: string,
-    dimensions?: string | null,
-    quantity?: string | null,
-  } | null,
-};
-
-export type OnUpdateObjectSubscription = {
-  onUpdateObject?:  {
-    __typename: "Object",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    description: string,
-    mapId: string,
-    modelName: string,
-    name: string,
-    dimensions?: string | null,
-    quantity?: string | null,
-  } | null,
-};
-
-export type OnDeleteObjectSubscription = {
-  onDeleteObject?:  {
-    __typename: "Object",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    description: string,
-    mapId: string,
-    modelName: string,
-    name: string,
-    dimensions?: string | null,
-    quantity?: string | null,
-  } | null,
-};
-
-export type OnCreateCardSubscription = {
-  onCreateCard?:  {
-    __typename: "Card",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    bins: string,
-    flags: string,
-    templateValues: string,
-    lotNumber: number,
-    lotTemplateId: string,
-    name: string,
-    processId: string,
-  } | null,
-};
-
-export type OnUpdateCardSubscription = {
-  onUpdateCard?:  {
-    __typename: "Card",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    bins: string,
-    flags: string,
-    templateValues: string,
-    lotNumber: number,
-    lotTemplateId: string,
-    name: string,
-    processId: string,
-  } | null,
-};
-
-export type OnDeleteCardSubscription = {
-  onDeleteCard?:  {
-    __typename: "Card",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    bins: string,
-    flags: string,
-    templateValues: string,
-    lotNumber: number,
-    lotTemplateId: string,
-    name: string,
-    processId: string,
-  } | null,
-};
-
-export type OnCreateCardEventSubscription = {
-  onCreateCardEvent?:  {
-    __typename: "CardEvent",
-    id: string,
-    organizationId: string,
-    cardId: string,
-    userId?: string | null,
-    username?: string | null,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    delta: string,
-  } | null,
-};
-
-export type OnUpdateCardEventSubscription = {
-  onUpdateCardEvent?:  {
-    __typename: "CardEvent",
-    id: string,
-    organizationId: string,
-    cardId: string,
-    userId?: string | null,
-    username?: string | null,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    delta: string,
-  } | null,
-};
-
-export type OnDeleteCardEventSubscription = {
-  onDeleteCardEvent?:  {
-    __typename: "CardEvent",
-    id: string,
-    organizationId: string,
-    cardId: string,
-    userId?: string | null,
-    username?: string | null,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    delta: string,
-  } | null,
-};
-
-export type OnCreateSettingsSubscription = {
-  onCreateSettings?:  {
-    __typename: "Settings",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    MiRMapEnabled?: boolean | null,
-    accessToken?: string | null,
-    authenticated?: boolean | null,
-    currentMapId?: string | null,
-    deviceEnabled?: boolean | null,
-    loggers?: string | null,
-    mapViewEnabled?: boolean | null,
-    non_local_api?: boolean | null,
-    non_local_api_ip?: string | null,
-    refreshToken?: string | null,
-    shiftDetails?: string | null,
-    toggleDevOptions?: boolean | null,
-    timezone?: string | null,
-  } | null,
-};
-
-export type OnUpdateSettingsSubscription = {
-  onUpdateSettings?:  {
-    __typename: "Settings",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    MiRMapEnabled?: boolean | null,
-    accessToken?: string | null,
-    authenticated?: boolean | null,
-    currentMapId?: string | null,
-    deviceEnabled?: boolean | null,
-    loggers?: string | null,
-    mapViewEnabled?: boolean | null,
-    non_local_api?: boolean | null,
-    non_local_api_ip?: string | null,
-    refreshToken?: string | null,
-    shiftDetails?: string | null,
-    toggleDevOptions?: boolean | null,
-    timezone?: string | null,
-  } | null,
-};
-
-export type OnDeleteSettingsSubscription = {
-  onDeleteSettings?:  {
-    __typename: "Settings",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    MiRMapEnabled?: boolean | null,
-    accessToken?: string | null,
-    authenticated?: boolean | null,
-    currentMapId?: string | null,
-    deviceEnabled?: boolean | null,
-    loggers?: string | null,
-    mapViewEnabled?: boolean | null,
-    non_local_api?: boolean | null,
-    non_local_api_ip?: string | null,
-    refreshToken?: string | null,
-    shiftDetails?: string | null,
-    toggleDevOptions?: boolean | null,
-    timezone?: string | null,
-  } | null,
-};
-
-export type OnCreateLotTemplateSubscription = {
-  onCreateLotTemplate?:  {
-    __typename: "LotTemplate",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    displayNames: string,
-    fields: string,
-  } | null,
-};
-
-export type OnUpdateLotTemplateSubscription = {
-  onUpdateLotTemplate?:  {
-    __typename: "LotTemplate",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    displayNames: string,
-    fields: string,
-  } | null,
-};
-
-export type OnDeleteLotTemplateSubscription = {
-  onDeleteLotTemplate?:  {
-    __typename: "LotTemplate",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    name: string,
-    displayNames: string,
-    fields: string,
-  } | null,
-};
-
-export type OnCreateDeviceSubscription = {
-  onCreateDevice?:  {
-    __typename: "Device",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    battery_percentage: number,
-    connected: boolean,
-    current_task_queue_id?: string | null,
-    dashboards: string,
-    device_model: string,
-    device_name: string,
-    distance_to_next_target: number,
-    idle_location: string,
-    mapId: string,
-    position: string,
-    shelf_attached: number,
-    state_text: string,
-  } | null,
-};
-
-export type OnUpdateDeviceSubscription = {
-  onUpdateDevice?:  {
-    __typename: "Device",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    battery_percentage: number,
-    connected: boolean,
-    current_task_queue_id?: string | null,
-    dashboards: string,
-    device_model: string,
-    device_name: string,
-    distance_to_next_target: number,
-    idle_location: string,
-    mapId: string,
-    position: string,
-    shelf_attached: number,
-    state_text: string,
-  } | null,
-};
-
-export type OnDeleteDeviceSubscription = {
-  onDeleteDevice?:  {
-    __typename: "Device",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    battery_percentage: number,
-    connected: boolean,
-    current_task_queue_id?: string | null,
-    dashboards: string,
-    device_model: string,
-    device_name: string,
-    distance_to_next_target: number,
-    idle_location: string,
-    mapId: string,
-    position: string,
-    shelf_attached: number,
-    state_text: string,
-  } | null,
-};
-
-export type OnCreateStatusSubscription = {
-  onCreateStatus?:  {
-    __typename: "Status",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    active_map?: boolean | null,
-    mir_connection?: string | null,
-    pause_status?: boolean | null,
-  } | null,
-};
-
-export type OnUpdateStatusSubscription = {
-  onUpdateStatus?:  {
-    __typename: "Status",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    active_map?: boolean | null,
-    mir_connection?: string | null,
-    pause_status?: boolean | null,
-  } | null,
-};
-
-export type OnDeleteStatusSubscription = {
-  onDeleteStatus?:  {
-    __typename: "Status",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    active_map?: boolean | null,
-    mir_connection?: string | null,
-    pause_status?: boolean | null,
-  } | null,
-};
-
-export type OnCreateTaskQueueSubscription = {
-  onCreateTaskQueue?:  {
-    __typename: "TaskQueue",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnUpdateTaskQueueSubscription = {
-  onUpdateTaskQueue?:  {
-    __typename: "TaskQueue",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnDeleteTaskQueueSubscription = {
-  onDeleteTaskQueue?:  {
-    __typename: "TaskQueue",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnCreateTaskQueueEventsSubscription = {
-  onCreateTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnUpdateTaskQueueEventsSubscription = {
-  onUpdateTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnDeleteTaskQueueEventsSubscription = {
-  onDeleteTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    device_type: string,
-    mission_status?: string | null,
-    owner?: string | null,
-    taskId: string,
-    custom_task?: string | null,
-    dashboard?: string | null,
-    showModal?: boolean | null,
-    hil_response?: boolean | null,
-    quantity?: number | null,
-    lotId?: string | null,
-    start_time?: number | null,
-    end_time?: number | null,
-    hil_station_id?: string | null,
-    hil_message?: string | null,
-  } | null,
-};
-
-export type OnCreateDashboardSubscription = {
-  onCreateDashboard?:  {
-    __typename: "Dashboard",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    data: string,
-  } | null,
-};
-
-export type OnUpdateDashboardSubscription = {
-  onUpdateDashboard?:  {
-    __typename: "Dashboard",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    data: string,
-  } | null,
-};
-
-export type OnDeleteDashboardSubscription = {
-  onDeleteDashboard?:  {
-    __typename: "Dashboard",
-    id: string,
-    organizationId: string,
-    createdAt?: string | null,
-    updatedAt?: string | null,
-    data: string,
   } | null,
 };

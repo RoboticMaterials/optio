@@ -416,8 +416,6 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        console.log('item', item);
-
         await onDeleteTaskQueueItem(item.id, item)
         //await onPutTaskQueue(newItem, ID)
 

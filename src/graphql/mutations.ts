@@ -70,6 +70,14 @@ export const stationStats = /* GraphQL */ `
     }
   }
 `;
+export const reportStats = /* GraphQL */ `
+  mutation ReportStats($stationId: ID!, $timeSpan: String!, $index: Int!) {
+    reportStats(stationId: $stationId, timeSpan: $timeSpan, index: $index) {
+      date
+      throughPut
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!
@@ -1135,6 +1143,57 @@ export const deleteDashboard = /* GraphQL */ `
       createdAt
       updatedAt
       data
+    }
+  }
+`;
+export const createReportEvent = /* GraphQL */ `
+  mutation CreateReportEvent(
+    $input: CreateReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    createReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const updateReportEvent = /* GraphQL */ `
+  mutation UpdateReportEvent(
+    $input: UpdateReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    updateReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const deleteReportEvent = /* GraphQL */ `
+  mutation DeleteReportEvent(
+    $input: DeleteReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    deleteReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
     }
   }
 `;
