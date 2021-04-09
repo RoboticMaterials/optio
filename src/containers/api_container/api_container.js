@@ -236,7 +236,6 @@ const ApiContainer = (props) => {
         // clear current interval
         clearInterval(pageDataInterval);
 
-        console.log("pageName",pageName)
         // set new interval for specific page
         switch (pageName) {
 

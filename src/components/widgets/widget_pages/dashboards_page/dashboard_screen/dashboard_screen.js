@@ -69,7 +69,6 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const processes = useSelector(state => { return state.processesReducer.processes })
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -171,8 +170,6 @@ const DashboardScreen = (props) => {
                 if ((availableFinishProcesses !== undefined) && !isNonEmptyArray(availableFinishProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                     if (index !== -1) {
-                        console.log("availableFinishProcesses",availableFinishProcesses)
-                        console.log("processes",processes)
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
