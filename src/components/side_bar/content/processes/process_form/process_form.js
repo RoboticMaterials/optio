@@ -1,26 +1,30 @@
-import {useDispatch, useSelector} from "react-redux";
-import {Formik} from "formik";
-import {processSchema} from "../../../../../methods/utils/form_schemas";
 import React, {useEffect} from "react";
-import {ProcessField} from "../process_field/process_field";
-import uuid from 'uuid'
+
+// actions
 import {
 	deleteRouteClean,
-	deleteTask,
-	putRouteClean,
-	putTask, saveFormRoute,
+	saveFormRoute,
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
-	deleteProcess, deleteProcessClean,
+	deleteProcessClean,
 	postProcesses,
 	putProcesses,
 	setSelectedProcess
 } from "../../../../../redux/actions/processes_actions";
-import * as taskActions from "../../../../../redux/actions/tasks_actions";
-import {isObject} from "../../../../../methods/utils/object_utils";
-import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+
+// functions external
+import {useDispatch, useSelector} from "react-redux";
+import {Formik} from "formik";
+import uuid from 'uuid'
+
+// utils
+import {processSchema} from "../../../../../methods/utils/form_schemas";
+import {isObject} from "../../../../../methods/utils/object_utils";
+
+// components internal
+import {ProcessField} from "../process_field/process_field";
 
 const ProcessForm = (props) => {
 
@@ -30,14 +34,10 @@ const ProcessForm = (props) => {
 
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 
-
 	const dispatch = useDispatch()
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
-
-	const dispatchPostRouteClean = async (route) => await dispatch(taskActions.postRouteClean(route))
-	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))

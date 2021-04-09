@@ -1,19 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-// external functions
-import uuid from 'uuid'
-import { useSelector, useDispatch } from 'react-redux'
-
-// internal components
-import Textbox from '../../../../basic/textbox/textbox.js'
-import Button from '../../../../basic/button/button'
-import TaskField from '../../tasks/task_field/route_field'
-import ContentHeader from '../../content_header/content_header'
-import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-import TextField from "../../../../basic/form/text_field/text_field";
-import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
-
-// Import actions
+// actions
 import {
     deleteRouteClean,
     postRouteClean,
@@ -25,29 +12,40 @@ import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actio
 import { handlePostTaskQueue, postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
+// constants
+import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
 
-// Import Utils
+// functions external
+import uuid from 'uuid'
+import { useSelector, useDispatch } from 'react-redux'
+
+// components internal
+import Textbox from '../../../../basic/textbox/textbox.js'
+import Button from '../../../../basic/button/button'
+import TaskField from '../../tasks/task_field/route_field'
+import ContentHeader from '../../content_header/content_header'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import TextField from "../../../../basic/form/text_field/text_field";
+import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
+import TaskAddedAlert from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import AddRouteButtonPath from '../../../../../graphics/svg/add_route_button_path'
+
+// utils
 import {
     generateDefaultRoute, getLoadStationDashboard,
     getRouteProcesses,
-    isHumanTask,
-    isMiRTask
 } from "../../../../../methods/utils/route_utils";
-import { isBrokenProcess, willRouteAdditionFixProcess, willRouteDeleteBreakProcess } from "../../../../../methods/utils/processes_utils";
+import { isBrokenProcess, willRouteDeleteBreakProcess } from "../../../../../methods/utils/processes_utils";
 import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
+import { throttle } from "../../../../../methods/utils/function_utils";
+import { getSidebarDeviceType, isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
+import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
 
 // styles
 import * as styled from './process_field.style'
 import theme from '../../../../../theme'
-import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
-import { throttle } from "../../../../../methods/utils/function_utils";
-import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
-import TaskAddedAlert
-    from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-import { getSidebarDeviceType, isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
-import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
-import AddRouteButtonPath from '../../../../../graphics/svg/add_route_button_path'
 
 export const ProcessField = (props) => {
     const {
