@@ -29,12 +29,16 @@ import {
     SET_SELECTED_TASK,
     DESELECT_TASK,
     EDITING_TASK, REMOVE_TASKS,
-    SET_SELECTED_HOVERING_TASK,
+    SET_SELECTED_HOVERING_TASK, SET_TASK,
 
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 import { isObject } from "../../methods/utils/object_utils";
+import {createActionType} from "../actions/redux_utils";
+import {SET} from "../types/prefixes";
+import {CARD, TASK} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
 
 
 const defaultState = {
@@ -176,6 +180,21 @@ export default function tasksReducer(state = defaultState, action) {
             return {
                 ...state,
                 tasks: tasksCopy
+            }
+
+        case createActionType([SET, TASK, SUCCESS]): {
+            return {
+                ...state,
+                tasks: {...state.tasks, [action.payload.id]: {...action.payload}},
+            }
+        }
+        case SET_TASK:
+            return {
+                ...state,
+                tasks: {
+                    ...state.tasks,
+                    ...action.payload
+                }
             }
 
         case SET_TASKS:

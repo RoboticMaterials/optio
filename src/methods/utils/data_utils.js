@@ -11,6 +11,25 @@ export const parseLot = (lot) => {
   }
 }
 
+export const parseTask = (task) => {
+  return {
+    ...task,
+    device_types: JSON.parse(task.device_types),
+    processes: JSON.parse(task.processes),
+    load: JSON.parse(task.load),
+    unload: JSON.parse(task.unload),
+    route_object: JSON.parse(task.route_object)
+  }
+}
+
+export const parseProcess = (process) => {
+  return {
+    ...process,
+    routes: JSON.parse(process.routes),
+    broken: JSON.parse(process.broken),
+  }
+}
+
 export function formatScheduleItem(scheduleItem) {
   scheduleItem.id = scheduleItem.id.$oid;
   if(!scheduleItem.name) scheduleItem.name = "a";

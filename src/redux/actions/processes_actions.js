@@ -33,6 +33,11 @@ import * as dashboardsActions from "./dashboards_actions";
 import {deleteTask} from "./tasks_actions";
 
 import * as cardActions from "./card_actions";
+import {createActionType} from "./redux_utils";
+import {REMOVE, SET} from "../types/prefixes";
+import {CARD, PROCESS} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
+import {REMOVE_TASK} from "../types/tasks_types";
 
 export const getProcesses = () => {
     return async dispatch => {
@@ -200,6 +205,16 @@ export const updateProcesses = (processes, d3) => {
 export const setSelectedProcess = (process) => {
     return { type: 'SET_SELECTED_PROCESS', payload: process }
 }
+
+export const setProcess = async (process) => async dispatch => {
+    await dispatch({ type: createActionType([SET, PROCESS, SUCCESS]), payload: process })
+}
+
+export const removeProcess = async (id) => async dispatch => {
+    await dispatch({ type: createActionType([REMOVE, PROCESS, SUCCESS]), payload: { id } })
+}
+
+
 
 export const editingProcess = (bool) => {
     return { type: EDITING_PROCESS, payload: bool }

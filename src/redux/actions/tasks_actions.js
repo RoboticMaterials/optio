@@ -34,6 +34,10 @@ import { deepCopy } from '../../methods/utils/utils';
 import * as api from '../../api/tasks_api'
 import * as processesActions from "./processes_actions";
 import * as dashboardsActions from "./dashboards_actions";
+import {createActionType} from "./redux_utils";
+import {SET} from "../types/prefixes";
+import {TASK} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
 
 // get
 // ******************************
@@ -288,6 +292,11 @@ export const saveFormRoute = (formRoute) => {
 
 export const addTask = (task) => {
     return { type: ADD_TASK, payload: { task } }
+}
+
+
+export const setTask = (task) => {
+    return { type: createActionType([SET, TASK, SUCCESS]), payload: task}
 }
 
 export const setTasks = (tasks) => {

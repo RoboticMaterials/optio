@@ -7,10 +7,10 @@ import { useHistory, useParams } from "react-router-dom";
 import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue, deleteTaskQueueItem, putTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
-import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions'
+import {getTasks, deleteTask, putTask, setTask, removeTask} from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
-import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
+import {getProcesses, putProcesses, removeProcess, setProcess} from '../../redux/actions/processes_actions'
 import { getDataStream } from '../../redux/actions/data_stream_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
@@ -40,7 +40,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import * as subscriptions from '../../graphql/subscriptions';
 import { manageTaskQueue } from '../../graphql/mutations';
 import {getSubscriptionData, getSubscriptionName, streamlinedSubscription} from "../../methods/utils/api_utils";
-import {parseLot} from "../../methods/utils/data_utils";
+import {parseLot, parseProcess, parseTask} from "../../methods/utils/data_utils";
 
 const ApiContainer = (props) => {
 
@@ -68,6 +68,13 @@ const ApiContainer = (props) => {
     const onGetCards = () => dispatch(getCards())
     const dispatchSetCard = (card) => dispatch(setCard(card))
     const onPutCard = (card) => dispatch(putCard(card))
+
+
+    const dispatchSetTask = (task) => dispatch(setTask(task))
+    const dispatchRemoveTask = (id) => dispatch(removeTask(id))
+
+    const dispatchSetProcess = (process) => dispatch(setProcess(process))
+    const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
 
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
@@ -230,7 +237,7 @@ const ApiContainer = (props) => {
             }
 
             case 'dashboards': {
-                loadDashboardsData()
+                getDashboardsSubscription()
                 break
             }
 
@@ -241,7 +248,7 @@ const ApiContainer = (props) => {
             }
 
             case 'tasks': {
-                subs = await loadTasksData()
+                subs = await getTasksSubscription()
                 setCurrentSubscriptions(subs)
                 break
             }
@@ -253,8 +260,7 @@ const ApiContainer = (props) => {
             }
 
             case 'lots': {
-                console.log("yoooo setting sub")
-                subs = await loadCardsData()
+                subs = await getLotsSubscription()
                 setCurrentSubscriptions(subs)
                 break
             }
@@ -262,13 +268,13 @@ const ApiContainer = (props) => {
             case 'processes': {
                 // process lots
                 if (data2 === "lots") {
-                    subs = await loadCardsData()
+                    subs = await getLotsSubscription()
                     setCurrentSubscriptions(subs)
                     break;
                 }
                 // process
                 else {
-                    subs = await loadTasksData()
+                    subs = await getProcessesSubscription()
                     setCurrentSubscriptions(subs)
                     break
                 }
@@ -282,8 +288,16 @@ const ApiContainer = (props) => {
             }
 
             default: {
-                subs = await loadMapData()
-                setCurrentSubscriptions(subs)
+                if(!mapViewEnabled) {
+                    subs = await getListViewSubs()
+                    setCurrentSubscriptions(subs)
+                }
+                else {
+                    subs = await loadMapData()
+                    setCurrentSubscriptions(subs)
+                }
+
+
                 break;
             }
         }
@@ -481,42 +495,43 @@ const ApiContainer = (props) => {
         required data:
         tasks
     */
-    const loadTasksData = async () => {
+    const getTasksSubscription = async () => {
 
-        // Subscribe to stations
-        const tasksSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaTask)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetTasks()
-        },
-            error: error => console.warn(error)
-        });
+        const tasksSubscription = streamlinedSubscription(subscriptions.onDeltaTask, dispatchSetTask, parseTask)
+        const tasksDeleteSubscription = streamlinedSubscription(subscriptions.onDeleteTask, (data) => {
+            const {id: taskId} = data || {}
+            if(taskId) {
+                dispatchRemoveTask(taskId)
+            }
+        }, parseTask)
 
-        // Subscribe to stations
-        const processesSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaProcess)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
+        const processesSubscription = streamlinedSubscription(subscriptions.onDeltaProcess, null, parseTask)
 
-        // Subscribe to stations
-        const objectsSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaObject)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
+        const objectsSubscription = streamlinedSubscription(subscriptions.onDeltaObject, null, parseTask)
 
-        return [tasksSubscription, processesSubscription, objectsSubscription]
+        return [tasksSubscription, tasksDeleteSubscription, processesSubscription, objectsSubscription]
+    }
+
+    const getProcessesSubscription = async () => {
+        const tasksSubscription = streamlinedSubscription(subscriptions.onDeltaTask, dispatchSetTask, parseTask)
+        const tasksDeleteSubscription = streamlinedSubscription(subscriptions.onDeleteTask, (data) => {
+            const {id: taskId} = data || {}
+            if(taskId) {
+                dispatchRemoveTask(taskId)
+            }
+        }, null)
+
+        const processesSubscription = streamlinedSubscription(subscriptions.onDeltaProcess, dispatchSetProcess, parseProcess)
+        const processesDeleteSubscription = streamlinedSubscription(subscriptions.onDeleteProcess, (data) => {
+            const {id: processId} = data || {}
+            if(processId) {
+                dispatchRemoveProcess(processId)
+            }
+        }, null)
+
+        const objectsSubscription = streamlinedSubscription(subscriptions.onDeltaObject, null, parseTask)
+
+        return [tasksSubscription, tasksDeleteSubscription, processesSubscription, objectsSubscription]
     }
 
     /*
@@ -536,11 +551,26 @@ const ApiContainer = (props) => {
         required data:
         dashboards
     */
-    const loadDashboardsData = async () => {
+    const getDashboardsSubscription = async () => {
         await onGetDashboards();
+
         await onGetCards()
+        const cardSubscription = streamlinedSubscription(subscriptions.onDeltaCard, dispatchSetCard, parseLot)
+
         await onGetTasks()
+        const tasksSubscription = streamlinedSubscription(subscriptions.onDeltaTask, dispatchSetTask, parseTask)
+        const tasksDeleteSubscription = streamlinedSubscription(subscriptions.onDeleteTask, (data) => {
+            const {id: taskId} = data || {}
+            if(taskId) {
+                dispatchRemoveTask(taskId)
+            }
+        }, parseTask)
+
+
         await onGetProcesses()
+        const processesSubscription = streamlinedSubscription(subscriptions.onDeltaTask, (data) => console.log("processesSubscription data",data), null)
+
+        return [cardSubscription, tasksSubscription, tasksDeleteSubscription, processesSubscription]
     }
 
     /*
@@ -577,6 +607,21 @@ const ApiContainer = (props) => {
         
     }
 
+    const getListViewSubs = async () => {
+        const stationSubscription = await API.graphql(
+            graphqlOperation(subscriptions.onDeltaStation)
+        ).subscribe({
+            next: () => {
+                // run get stations
+                onGetStations()
+            },
+            error: error => console.warn(error)
+        });
+
+        return stationSubscription
+    }
+
+
     /*
         Loads data pertinent to Settings page
 
@@ -595,7 +640,7 @@ const ApiContainer = (props) => {
         required data:
         cards
     */
-    const loadCardsData = async (processId) => {
+    const getLotsSubscription = async (processId) => {
         if (processId) {
             await onGetProcessCards(processId)
 
@@ -603,10 +648,12 @@ const ApiContainer = (props) => {
             onGetCards()
         }
 
-        const cardSubscription = streamlinedSubscription(subscriptions.onDeltaCard, dispatchSetCard, parseLot)
-
+        // make direct get call call to get data now
         onGetProcesses()
         onGetTasks()
+
+        // make subscription
+        const cardSubscription = streamlinedSubscription(subscriptions.onDeltaCard, dispatchSetCard, parseLot)
 
         return [cardSubscription]
     }

@@ -1,5 +1,9 @@
 export const SCHEDULES = 'SCHEDULES';
 export const SCHEDULE = 'SCHEDULE';
+export const TASK = 'TASK';
+export const TASKS = 'TASKS';
+export const PROCESS = 'PROCESS';
+export const PROCESSES = 'PROCESSES';
 export const CARD = 'CARD';
 export const CARDS = 'CARDS';
 export const SHOW_EDITOR = 'CARDS';
