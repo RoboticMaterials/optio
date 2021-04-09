@@ -69,8 +69,9 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const stations = useSelector(state => state.stationsReducer.stations)
     const {
         name: dashboardName
@@ -156,9 +157,10 @@ const DashboardScreen = (props) => {
 
             if (type === OPERATION_TYPES.KICK_OFF.key) {
                 // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
-                if (!isNonEmptyArray(availableKickOffProcesses)) {
+                if ((availableKickOffProcesses !== undefined) && !isNonEmptyArray(availableKickOffProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                     if (index !== -1) {
+
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
@@ -166,9 +168,11 @@ const DashboardScreen = (props) => {
             }
             else if (type === OPERATION_TYPES.FINISH.key) {
                 // if button type is finish, but dashboard has no available finish processes, remove the finish button
-                if (!isNonEmptyArray(availableFinishProcesses)) {
+                if ((availableFinishProcesses !== undefined) && !isNonEmptyArray(availableFinishProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                     if (index !== -1) {
+                        console.log("availableFinishProcesses",availableFinishProcesses)
+                        console.log("processes",processes)
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true

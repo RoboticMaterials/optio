@@ -236,6 +236,7 @@ const ApiContainer = (props) => {
         // clear current interval
         clearInterval(pageDataInterval);
 
+        console.log("pageName",pageName)
         // set new interval for specific page
         switch (pageName) {
 
@@ -411,10 +412,17 @@ const ApiContainer = (props) => {
         dashboards
     */
     const loadDashboardsData = async () => {
-        const dashboards = await onGetDashboards();
         await onGetCards()
         await onGetTasks()
         await onGetProcesses()
+
+        /*
+        * For now, this MUST come last.
+        *
+        * If this is made first, the dashboards page will do updates without the other data updated first,
+        * which may include incorrectly removing buttons.
+        * */
+        await onGetDashboards()
 
     }
 
