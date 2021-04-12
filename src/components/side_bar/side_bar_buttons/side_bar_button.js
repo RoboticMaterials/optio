@@ -172,12 +172,47 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Summary</style.SideBarButtonText>
+                        <style.SideBarButtonText>Lots</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
         )
     }
+
+    else if (mode === 'statistics') {
+        return (
+            <>
+                {handleConfirmationModal()}
+                <style.SideBarButtonWrapper
+                    currentMode={currentMode}
+                    mode={mode}
+                >
+                    <style.SideBarButtonIcon
+                        className={'icon-statistics'}
+                        onClick={() => {
+                            if (currentMode === 'statisticcs') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else {
+                                const currentPath = history.location.pathname
+                                history.push('/statistics/summary')
+                            }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Statistics</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
+            </>
+        )
+    }
+
 
     else if (mode === 'processes') {
         return (
@@ -275,7 +310,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <div style={{justifyContent: 'flex-end',  flexGrow: '1'}}/>
+                <div style={{ justifyContent: 'flex-end', flexGrow: '1' }} />
                 <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}

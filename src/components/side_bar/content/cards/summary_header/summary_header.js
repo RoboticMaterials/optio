@@ -33,10 +33,10 @@ const SummaryHeader = (props) => {
                 :
                 <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
             }
-            {!!title &&
+            {/* {!!title &&
                 <Button
                     label={title.includes('Statistics') ? 'Lots' : 'Statistics'}
-                    schema={title.includes('Statistics') ? 'lots' : 'charts'}
+                    schema={title.includes('Statistics') ? 'lots' : 'statistics'}
                     secondary
                     onClick={() => {
                         title.includes('Statistics') ?
@@ -45,7 +45,7 @@ const SummaryHeader = (props) => {
                             history.replace('/statistics/summary')
                     }}
                 />
-            }
+            } */}
             <styled.TitleContainer style={{}}>
                 <styled.Title>{title ? title : "untitled"}</styled.Title>
             </styled.TitleContainer>

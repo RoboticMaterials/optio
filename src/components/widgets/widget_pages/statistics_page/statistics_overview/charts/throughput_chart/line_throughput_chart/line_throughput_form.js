@@ -151,7 +151,7 @@ const LineThroughputForm = (props) => {
                                     <styled.Label>{breakName}</styled.Label>
                                     <Switch
                                         name={switchName}
-                                        schema={'charts'}
+                                        schema={'statistics'}
                                         checked={breaksEnabled[ind]}
                                         onChange={() => {
                                             setBreaksEnabled({
@@ -168,7 +168,7 @@ const LineThroughputForm = (props) => {
                                 </styled.BreakLabel> */}
                                         <TimePickerField
                                             disabled={!breakEnabled}
-                                            schema={'charts'}
+                                            schema={'statistics'}
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
@@ -201,7 +201,7 @@ const LineThroughputForm = (props) => {
                                     </styled.BreakLabel> */}
                                         <TimePickerField
                                             disabled={!breakEnabled}
-                                            schema={'charts'}
+                                            schema={'statistics'}
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
@@ -302,7 +302,7 @@ const LineThroughputForm = (props) => {
                                     Start of Shift
                             </styled.Label>
                                 <TimePickerField
-                                    schema={'charts'}
+                                    schema={'statistics'}
                                     mapInput={
                                         (value) => {
                                             if (value) {
@@ -334,7 +334,7 @@ const LineThroughputForm = (props) => {
                                     End of Shift
                             </styled.Label>
                                 <TimePickerField
-                                    schema={'charts'}
+                                    schema={'statistics'}
                                     mapInput={
                                         (value) => {
                                             if (value) {

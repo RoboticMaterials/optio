@@ -92,7 +92,7 @@ const ReportChart = (props) => {
                 >
                     <BarChart
                         data={filteredData.current}
-                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.theme.schema.charts.solid}
+                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.theme.schema.statistics.solid}
                         keys={reportButtonNames}
                         indexBy={'lable'}
                         colorBy={"id"}

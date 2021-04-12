@@ -32,7 +32,7 @@ const LineThroughputChart = (props) => {
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
-    const colors = { Actual: themeContext.schema.charts.solid, Expected: 'rgba(84, 170, 255, 0.4)' }
+    const colors = { Actual: themeContext.schema.statistics.solid, Expected: 'rgba(84, 170, 255, 0.4)' }
 
     /**
     * This converts the incoming data for a line graph

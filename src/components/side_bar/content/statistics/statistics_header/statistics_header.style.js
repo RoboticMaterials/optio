@@ -18,7 +18,7 @@ export const HeaderSection = styled.div`
 export const ChartTypeButton = styled.button`
     ${buttonCss.button}
     margin: .5rem;
-    background-color: ${props => !!props.selected ? props.theme.schema.charts.solid : props.theme.bg.tertiary};
+    background-color: ${props => !!props.selected ? props.theme.schema.statistics.solid : props.theme.bg.tertiary};
     width: 5rem;
     height: 2rem;
 

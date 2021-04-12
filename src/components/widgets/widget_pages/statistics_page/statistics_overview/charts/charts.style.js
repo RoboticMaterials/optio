@@ -94,14 +94,14 @@ export const PlotTitle = styled.h2`
 
 export const ChartButton = styled.button`
     ${buttonCss.button};
-    background-color:${props => props.theme.schema.charts.solid};
+    background-color:${props => props.theme.schema.statistics.solid};
     color: ${props => props.theme.bg.primary};
     margin-top: .5rem;
     margin-bottom: 0.1rem;
     font-size: 1.25rem;
 
     &:hover {
-      background-color:${props => LightenDarkenColor(props.theme.schema.charts.solid, -5)};
+      background-color:${props => LightenDarkenColor(props.theme.schema.statistics.solid, -5)};
     }
 `
 
@@ -163,7 +163,7 @@ export const ChartTypeButton = styled.button`
 
     color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.schema.charts.solid : props.theme.bg.tertiary};
+    background-color: ${props => props.selected ? props.theme.schema.statistics.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
