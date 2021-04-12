@@ -20,6 +20,7 @@ const StationColumns = (props) => {
         timeSpan,
         showReport,
         dataLoading,
+        sortLevel,
     } = props || {}
 
     const processes = useSelector(state => state.processesReducer.processes)
@@ -39,6 +40,7 @@ const StationColumns = (props) => {
                     showReport={showReport}
                     setDateTitle={(title => setDateTitle(title))}
                     dataLoading={loading => dataLoading(loading)}
+                    sortLevel={sortLevel}
                 />
             )
         })

@@ -22,6 +22,7 @@ const LineThroughputChart = (props) => {
         isData,
         date,
         loading,
+        isWidget,
     } = props
 
     const settings = useSelector(state => state.settingsReducer.settings)
@@ -412,12 +413,18 @@ const LineThroughputChart = (props) => {
             {breaksEnabled !== null &&
                 <>
                     {renderResponsiveLine}
-                    {showForm &&
-                        <div style={{ flexGrow: '3' }}>
-                            <LineThroughputForm themeContext={themeContext} />
-                        </div>
+
+                    {isWidget &&
+                        <>
+                            { showForm &&
+                                <div style={{ flexGrow: '3' }}>
+                                    <LineThroughputForm themeContext={themeContext} />
+                                </div>
+                            }
+                            <styled.FormIcon onClick={() => setShowForm(!showForm)} className="fas fa-cog" />
+                        </>
                     }
-                    <styled.FormIcon onClick={() => setShowForm(!showForm)} className="fas fa-cog" />
+
                 </>
             }
 

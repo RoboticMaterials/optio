@@ -25,6 +25,7 @@ const StationColumn = (props) => {
         stationId = '',
         showReport,
         dataLoading,
+        sortLevel,
     } = props
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -62,7 +63,7 @@ const StationColumn = (props) => {
         } else {
             onGetThroughputData()
         }
-    }, [showReport, timeSpan, dateIndex])
+    }, [showReport, timeSpan, dateIndex, sortLevel])
 
     const onGetReportData = async (body) => {
         setLoading(true)
@@ -82,7 +83,7 @@ const StationColumn = (props) => {
         dataLoading(true)
         setLoading(true)
         // TEMP
-        const body = { timespan: timeSpan, index: dateIndex }
+        const body = { timespan: timeSpan, index: dateIndex, sort_index: sortLevel }
         const dataPromise = getStationAnalytics(stationId, body)
         dataPromise.then(response => {
             if (response === undefined) return

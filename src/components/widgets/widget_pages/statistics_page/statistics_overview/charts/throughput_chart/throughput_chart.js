@@ -214,6 +214,7 @@ const ThroughputChart = (props) => {
                             data={lineData ? lineData : []}
                             isData={isData}
                             date={data.date_title}
+                            isWidget={isWidget}
                         />
                         :
                         <BarChart

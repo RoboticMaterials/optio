@@ -244,7 +244,6 @@ const SideBar = (props) => {
             break
 
         case 'statistics':
-            console.log('QQQQ should be showing stats')
             content = <Statistics />
             break
 

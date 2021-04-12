@@ -29,7 +29,7 @@ export const TimespanButton = styled.button`
     text-align: center;
     font-size: 1rem;
     font-weight: ${props => props.selected ? 600 : 400};
-    font-family: ${props => props.thcolor};
+    font-family: ${props => props.theme.font.primary};
 
     border-bottom: ${props => props.selected ? '0.14rem' : '0.02rem'} solid ${props => props.selected ? props.color : props.theme.quaternary};
     box-sizing: border-box;

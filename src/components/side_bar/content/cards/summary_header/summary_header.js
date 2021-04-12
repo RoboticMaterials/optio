@@ -36,7 +36,7 @@ const SummaryHeader = (props) => {
             {!!title &&
                 <Button
                     label={title.includes('Statistics') ? 'Lots' : 'Statistics'}
-                    schema={'charts'}
+                    schema={title.includes('Statistics') ? 'lots' : 'charts'}
                     secondary
                     onClick={() => {
                         title.includes('Statistics') ?

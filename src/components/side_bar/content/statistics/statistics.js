@@ -4,14 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Import Styles
 import * as styled from './statistics.style'
+import { ThemeContext } from 'styled-components';
 
 // Import Components 
 import StationColumns from './station_columns/station_columns'
 import Header from '../cards/summary_header/summary_header'
-
-// Import Basic Components
-import DaySelector from '../../../basic/day_selector/day_selector'
-import TimeSpaneSelector from '../../../basic/timespan_selector/time_span_selector'
+import StatisticsHeader from './statistics_header/statistics_header'
 
 const Statistics = () => {
 
@@ -21,6 +19,7 @@ const Statistics = () => {
         subpage,
         id
     } = params
+    const themeContext = useContext(ThemeContext);
 
     const processes = useSelector(state => state.processesReducer.processes)
 
@@ -29,8 +28,7 @@ const Statistics = () => {
     const [showReport, setShowReport] = useState(false)
     const [date, setDate] = useState('')
     const [loading, setLoading] = useState(false)
-
-    console.log('QQQQ date', date)
+    const [sortLevel, setSortLevel] = useState('')
 
     // useEffect(() => {
     //     const newDate = deepCopy(date)
@@ -56,6 +54,11 @@ const Statistics = () => {
         setDateIndex(newDateIndex)
         setTimeSpan(newTimeSpan)
 
+    }
+
+    const onSelectSort = async (sort) => {
+        console.log('QQQQ sort', sort)
+        setSortLevel(sort)
     }
 
     const renderStationColumns = () => {
@@ -84,6 +87,7 @@ const Statistics = () => {
                     dateIndex={dateIndex}
                     timeSpan={timeSpan}
                     showReport={showReport}
+                    sortLevel={sortLevel}
                 />
             )
         })
@@ -94,63 +98,19 @@ const Statistics = () => {
             <Header
                 title={'Statistics Summary'}
             />
-            <styled.HeaderBar>
-                <styled.HeaderSection style={{ marginLeft: '2rem' }}>
-                    <styled.ColumnContainer>
-
-                        <TimeSpaneSelector
-                            // timespanDisabled={timespanDisabled}
-                            setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
-                            timeSpan={timeSpan}
-                            timespanDisabled={timeSpan === 'line'}
-                        />
-                        <DaySelector
-                            date={date}
-                            dateIndex={dateIndex}
-                            loading={loading}
-                            onChange={(newIndex) => {
-                                onTimeSpan(timeSpan, newIndex)
-                            }}
-                        />
-                    </styled.ColumnContainer>
-                    <styled.ColumnContainer>
-                        <styled.RowContainer>
-                            <styled.ChartTypeButton
-                                selected={!showReport && timeSpan !== 'line'}
-                                onClick={() => {
-                                    setShowReport(false)
-                                    onTimeSpan(timeSpan === 'line' ? 'day' : timeSpan, dateIndex)
-                                }}
-                            >
-                                Bar
-                        </styled.ChartTypeButton>
-
-                            <styled.ChartTypeButton
-                                selected={!showReport && timeSpan === 'line'}
-                                onClick={() => {
-                                    setShowReport(false)
-                                    onTimeSpan('line', dateIndex)
-                                }}
-                            >
-                                Line
-                        </styled.ChartTypeButton>
-
-                            <styled.ChartTypeButton
-                                selected={!!showReport && timeSpan !== 'line'}
-                                onClick={() => {
-                                    setShowReport(true)
-                                    onTimeSpan(timeSpan === 'line' ? 'day' : timeSpan, dateIndex)
-                                }}
-                            >
-                                Reports
-                        </styled.ChartTypeButton>
-                        </styled.RowContainer>
-                    </styled.ColumnContainer>
-                </styled.HeaderSection>
-                <styled.HeaderSection style={{ marginLeft: '2rem' }}>
-
-                </styled.HeaderSection>
-            </styled.HeaderBar>
+            <StatisticsHeader
+                themeContext={themeContext}
+                loading={loading}
+                handleTimeSpan={(timeSpan, index) => {
+                    onTimeSpan(timeSpan, index)
+                }}
+                timeSpan={timeSpan}
+                handleSetShowReport={bool => setShowReport(bool)}
+                showReport={showReport}
+                date={date}
+                dateIndex={dateIndex}
+                handleSelectSort={onSelectSort}
+            />
             <styled.StationColumnsContainer>
                 {renderStationColumns()}
             </styled.StationColumnsContainer>
