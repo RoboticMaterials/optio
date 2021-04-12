@@ -119,7 +119,6 @@ const HILModals = (props) => {
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
     const size = useWindowSize()
     const windowWidth = size.width
-    console.log(quantity)
     const {
         name: dashboardName,
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
