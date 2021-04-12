@@ -52,10 +52,6 @@ const StationColumn = (props) => {
 
     }, [currentStation, stations, dashboards])
 
-    useEffect(() => {
-        console.log('QQQQ sort level', sortLevel)
-    }, [sortLevel])
-
     // On page load, load in the data for today
     useEffect(() => {
         if (!!showReport) {
