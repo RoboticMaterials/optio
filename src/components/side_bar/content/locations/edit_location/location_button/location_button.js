@@ -32,6 +32,8 @@ const LocationButton = (props) => {
             string = 'shelf'
         } else if (string === 'human') {
             string = 'Work Station'
+        } else if (string === 'charger_position') {
+            string = 'Charger'
         }
 
 
@@ -57,10 +59,10 @@ const LocationButton = (props) => {
                 id={`location-type-button-${type}`}
                 isSelected={isSelected}
                 schema={schema}
-            >   
+            >
                 <styled.LocationTypeLabel>{formatString(type)}</styled.LocationTypeLabel>
                     <styled.LocationTypeGraphic
-                        
+
                         fill={LocationTypes[type].color}
                         isNotSelected={!!isSelected && isSelected !== type}
                         stroke={LocationTypes[type].color}

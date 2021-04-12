@@ -264,7 +264,7 @@ const EditLocation = (props) => {
           else {
               await dispatchRemovePosition(selectedPosition._id)
           }
-          
+
             dispatchSetSelectedStationChildrenCopy(null)
             dispatchSetSelectedPosition(null)
             dispatchSetSelectedStation(null)
