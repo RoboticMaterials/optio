@@ -61,6 +61,7 @@ const SideBarButton = (props) => {
                         onLocationEditing(false)
                         onTaskEditing(false)
                         onProcessEditing(false)
+                        dispatchSetPageDataChanged(false)
                     }
                     else {
                         props.setShowSideBarPage(props.mode)
@@ -68,6 +69,7 @@ const SideBarButton = (props) => {
                         onLocationEditing(false)
                         onTaskEditing(false)
                         onProcessEditing(false)
+                        dispatchSetPageDataChanged(false)
                     }
 
                 }}
@@ -85,7 +87,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -116,7 +118,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -147,7 +149,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -181,7 +183,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -211,7 +213,7 @@ const SideBarButton = (props) => {
     else if (mode === 'scheduler') {
         return (
             <>
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -242,7 +244,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -274,12 +276,12 @@ const SideBarButton = (props) => {
             <>
                 {handleConfirmationModal()}
                 <div style={{justifyContent: 'flex-end',  flexGrow: '1'}}/>
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
                     <style.SideBarButtonIcon
-                        
+
                         className={'fas fa-cog'}
                         onClick={() => {
                             if (currentMode === 'lots') {

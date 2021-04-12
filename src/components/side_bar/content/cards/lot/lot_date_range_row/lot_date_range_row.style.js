@@ -51,5 +51,5 @@ export const DateArrow = styled.i`
 	margin-left: .35rem;
 	margin-right: .35rem;
 	color: ${props => props.theme.bg.secondary};
-	font-family: ${props => props.theme.font.primary};
+	// font-family: ${props => props.theme.font.primary};
 `
