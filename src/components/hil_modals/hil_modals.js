@@ -119,7 +119,7 @@ const HILModals = (props) => {
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
     const size = useWindowSize()
     const windowWidth = size.width
-
+    console.log(quantity)
     const {
         name: dashboardName,
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
@@ -940,7 +940,13 @@ const HILModals = (props) => {
 
                                     </styled.HilInputContainer>
                                     {disabledQty &&
-                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity above 0</styled.HilSubText>
+                                      <>
+                                      {quantity < 1 ?
+                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity greater than 0</styled.HilSubText>
+                                        :
+                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity less than the number of available lot items</styled.HilSubText>
+                                      }
+                                      </>
                                     }
                                     {renderSelectedLot()}
                                 </>
