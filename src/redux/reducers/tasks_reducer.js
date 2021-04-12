@@ -182,20 +182,12 @@ export default function tasksReducer(state = defaultState, action) {
                 tasks: tasksCopy
             }
 
-        case createActionType([SET, TASK, SUCCESS]): {
+        case createActionType([SET, TASK]): {
             return {
                 ...state,
                 tasks: {...state.tasks, [action.payload.id]: {...action.payload}},
             }
         }
-        case SET_TASK:
-            return {
-                ...state,
-                tasks: {
-                    ...state.tasks,
-                    ...action.payload
-                }
-            }
 
         case SET_TASKS:
             return {

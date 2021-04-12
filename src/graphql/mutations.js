@@ -50,6 +50,26 @@ export const taskStats = /* GraphQL */ `
     }
   }
 `;
+export const stationStats = /* GraphQL */ `
+  mutation StationStats(
+    $stationId: ID!
+    $timeSpan: String!
+    $index: Int!
+    $sortKey: String
+  ) {
+    stationStats(
+      stationId: $stationId
+      timeSpan: $timeSpan
+      index: $index
+      sortKey: $sortKey
+    ) {
+      stationId
+      organizationId
+      date
+      throughPut
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!
@@ -242,6 +262,60 @@ export const deleteStation = /* GraphQL */ `
       mapId
       children
       dashboards
+    }
+  }
+`;
+export const createStationEvent = /* GraphQL */ `
+  mutation CreateStationEvent(
+    $input: CreateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    createStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const updateStationEvent = /* GraphQL */ `
+  mutation UpdateStationEvent(
+    $input: UpdateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    updateStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const deleteStationEvent = /* GraphQL */ `
+  mutation DeleteStationEvent(
+    $input: DeleteStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    deleteStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
     }
   }
 `;

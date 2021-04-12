@@ -982,9 +982,9 @@ export const onDeleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
-export const onCreateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  subscription OnCreateTaskQueueEventsTaskQueueEvents {
-    onCreateTaskQueueEventsTaskQueueEvents {
+export const onCreateTaskQueueEvents = /* GraphQL */ `
+  subscription OnCreateTaskQueueEvents {
+    onCreateTaskQueueEvents {
       id
       organizationId
       createdAt
@@ -1006,9 +1006,9 @@ export const onCreateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const onUpdateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  subscription OnUpdateTaskQueueEventsTaskQueueEvents {
-    onUpdateTaskQueueEventsTaskQueueEvents {
+export const onUpdateTaskQueueEvents = /* GraphQL */ `
+  subscription OnUpdateTaskQueueEvents {
+    onUpdateTaskQueueEvents {
       id
       organizationId
       createdAt
@@ -1030,9 +1030,9 @@ export const onUpdateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const onDeleteTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  subscription OnDeleteTaskQueueEventsTaskQueueEvents {
-    onDeleteTaskQueueEventsTaskQueueEvents {
+export const onDeleteTaskQueueEvents = /* GraphQL */ `
+  subscription OnDeleteTaskQueueEvents {
+    onDeleteTaskQueueEvents {
       id
       organizationId
       createdAt
@@ -1084,6 +1084,48 @@ export const onDeleteDashboard = /* GraphQL */ `
       createdAt
       updatedAt
       data
+    }
+  }
+`;
+export const onCreateReportEvent = /* GraphQL */ `
+  subscription OnCreateReportEvent {
+    onCreateReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const onUpdateReportEvent = /* GraphQL */ `
+  subscription OnUpdateReportEvent {
+    onUpdateReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const onDeleteReportEvent = /* GraphQL */ `
+  subscription OnDeleteReportEvent {
+    onDeleteReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
     }
   }
 `;

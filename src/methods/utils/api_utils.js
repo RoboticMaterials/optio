@@ -122,9 +122,9 @@ export const streamlinedQuery = async (query, variables, parser) => {
 	return getQueryData(apiResponse, queryName, parser)
 }
 
-export const streamlinedSubscription = (sub, cb, parser) => {
+export const streamlinedSubscription = async (sub, cb, parser) => {
 
-	const subscription = API.graphql(
+	const subscription = await API.graphql(
 		graphqlOperation(sub)
 	).subscribe({
 		next: (subResult) => {

@@ -13,25 +13,31 @@
 #         ENV
 #         REGION
 
-import json
 import os
-from pprint import pprint
 
-import boto3
+from boto3 import resource
 from boto3.dynamodb.conditions import Key
 
 # Analysis Imports
-import pandas as pd
-import numpy as np
+from pandas import DataFrame
+
+from numpy import linspace
+
+from numpy import histogram
+
+from decimal import Decimal
+
 import time
 import datetime 
-import pytz
+
+from pytz import timezone
 
 # set time zone
-tz = pytz.timezone('America/Denver')
+tz = timezone('America/Denver')
 
 # create dynamo class
-dynamodb = boto3.resource('dynamodb', region_name=os.environ['REGION'])
+# i turned off certificate verification but we should turn it back on when we find a solution
+dynamodb = resource('dynamodb', region_name=os.environ['REGION'], verify=False)
 
 # table def parameters of events for stations
 table = dynamodb.Table(os.environ['API_RMSTUDIOCLOUD_STATIONEVENTTABLE_NAME'])
@@ -48,67 +54,59 @@ def handler(event, context):
 
     info['timespan'] = arguments['timeSpan']
 
-    station_id = arguments['station_id']
+    stationId = arguments['stationId']
 
     output = False
 
-    calculated_data = get_stats(station_id, info,  output)
+    calculated_data = get_stats(stationId, info,  output)
 
     return {
         'date': calculated_data['date_title'],
         'organizationId': 'orgId',
-        'stationId': arguments['station_id'],
+        'stationId': arguments['stationId'],
         'throughPut': calculated_data['throughPut']
     }
 
 # Analytics functions
-def get_stats(station_id, info,  output=False):
+def get_stats(stationId, info, output=False):
 
     data = {}
 
     if info['timespan'] == 'day':
-        data['throughPut'], data['date_title'] = calc_day_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_day_stats(stationId,  index=info['index'], output=output)
     elif info['timespan'] == 'line':
-        data['throughPut'], data['date_title'] = calc_day_line_stats(station_id,  index=info['index'])
+        data['throughPut'], data['date_title'] = calc_day_line_stats(stationId,  index=info['index'])
     elif info['timespan'] == 'week':
-        data['throughPut'], data['date_title'] = calc_week_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_week_stats(stationId,  index=info['index'], output=output)
     elif info['timespan'] == 'month':
-        data['throughPut'], data['date_title'] = calc_6_week_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_6_week_stats(stationId,  index=info['index'], output=output)
     else:
-        data['throughPut'], data['date_title'] = calc_year_stats(station_id,  index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_year_stats(stationId,  index=info['index'], output=output)
     
     return data
 
-def create_data(station_id, start_utc, end_utc, labels, output=False):
-
-    # Create bins for data
-    bins = np.linspace(start_utc, end_utc, len(labels)+1)
+def create_data(stationId, start_utc, end_utc, labels, output=False):
 
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(station_id)
+        FilterExpression=Key('station').eq(stationId) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
     )
 
     events_data = station_events_response['Items']
 
     # Fetch data
     # TODO only fetch data from time frame to make scalable
-    df = pd.DataFrame(list(events_data))
-
-    df.time = df.time.astype(float)
+    df = DataFrame(list(events_data))
 
     if len(df) > 0:
-        df = df.set_index('time')
 
-        print(df)
-        print(start_utc)
+        df.time = df.time.astype(float)
 
-        # Crop data
-        df = df[start_utc : end_utc]
-
-        
+        # Create bins for data
+        bins = linspace(0, len(df)-1, len(labels)+1)
 
         # Find unique ids
-        unique_ids = df[start_utc : end_utc]['object'].unique()
+        unique_ids = df[0 : len(df)-1]['object'].unique()
+
         # Bin data for each unique id
         data_dict = {}
 
@@ -118,12 +116,11 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
             else:
                 df_1 = df[df['object'] == object_id]
 
-            
             times = df_1.index.repeat(df_1['quantity'])
-            data, edges = np.histogram(times, bins)
-            data_dict[object_id] = data
 
-            print(times)
+            data, edges = histogram(times, bins)
+
+            data_dict[object_id] = data
             
             # Output graph
             if len(times) > -1 and output:
@@ -145,7 +142,7 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
         
     return rtn_data
 
-def calc_day_stats(station_id,  index, output=False):
+def calc_day_stats(stationId,  index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_time_frame = start_of_today + datetime.timedelta(days=-index, hours=0, minutes=0, seconds=0, microseconds=0)
@@ -168,16 +165,14 @@ def calc_day_stats(station_id,  index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-
-
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
 
     return rtn_data, date_title
 
-def calc_day_line_stats(station_id, index=0):
+def calc_day_line_stats(stationId, index=0):
     # scan and filter data
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(station_id)
+        FilterExpression=Key('station').eq(stationId)
     )
 
     # Pull data out
@@ -186,7 +181,6 @@ def calc_day_line_stats(station_id, index=0):
     # Get station events
     events = list(events_data)
 
-    print(events)
     num_of_events = len(events)
     
     # Split list to outgoing events
@@ -213,7 +207,7 @@ def calc_day_line_stats(station_id, index=0):
     return rtn_data, date_title
 
 
-def calc_week_stats(station_id, index, output=False):
+def calc_week_stats(stationId, index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_week = start_of_today + datetime.timedelta(days=-start_of_today.weekday())
@@ -232,12 +226,12 @@ def calc_week_stats(station_id, index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
 
-def calc_6_week_stats(station_id, index=0, output=False):
+def calc_6_week_stats(stationId, index=0, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_6_weeks = start_of_today + datetime.timedelta(weeks=-5, days=-start_of_today.weekday())
@@ -263,11 +257,11 @@ def calc_6_week_stats(station_id, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
-def calc_year_stats(station_id, index=0, output=False):
+def calc_year_stats(stationId, index=0, output=False):
     year = datetime.datetime.now(tz).year - index
     date_title = year
 
@@ -285,6 +279,6 @@ def calc_year_stats(station_id, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
+    rtn_data = create_data(stationId, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title

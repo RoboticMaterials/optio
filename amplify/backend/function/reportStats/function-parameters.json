@@ -10,7 +10,9 @@
     },
     "api": {
       "rmstudiocloud": [
-        "Query"
+        "Query",
+        "Mutation",
+        "Subscription"
       ]
     },
     "storage": {
@@ -26,13 +28,7 @@
         "update",
         "delete"
       ],
-      "Station:@model(appsync)": [
-        "create",
-        "read",
-        "update",
-        "delete"
-      ],
-      "StationEvent:@model(appsync)": [
+      "ReportEvent:@model(appsync)": [
         "create",
         "read",
         "update",

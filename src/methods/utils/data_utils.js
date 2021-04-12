@@ -1,6 +1,7 @@
 import { uuidv4 } from './utils';
 
 import { timeStringRegex, oidRegex } from './regex_utils';
+import * as dataTypes from "../../redux/types/data_types";
 
 export const parseLot = (lot) => {
   return {
@@ -29,6 +30,18 @@ export const parseProcess = (process) => {
     broken: JSON.parse(process.broken),
   }
 }
+
+export const parseObject = (object) => {
+  return object
+}
+
+export const DATA_PARSERS = {
+  [dataTypes.PROCESS]: parseProcess,
+  [dataTypes.LOT]: parseLot,
+  [dataTypes.TASK]: parseTask,
+  [dataTypes.OBJECT]: parseObject,
+}
+
 
 export function formatScheduleItem(scheduleItem) {
   scheduleItem.id = scheduleItem.id.$oid;

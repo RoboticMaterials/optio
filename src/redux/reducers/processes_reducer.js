@@ -47,14 +47,14 @@ const processesReducer = (state = defaultState, action) => {
 
     switch (action.type) {
 
-        case createActionType([SET, PROCESS, SUCCESS]): {
+        case createActionType([SET, PROCESS]): {
             return {
                 ...state,
                 processes: {...state.processes, [action.payload.id]: {...action.payload}},
             }
         }
 
-        case createActionType([REMOVE, PROCESS, SUCCESS]): {
+        case createActionType([REMOVE, PROCESS]): {
             const {
                 [action.payload.id]: removed,
                 ...remaining

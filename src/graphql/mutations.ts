@@ -70,6 +70,14 @@ export const stationStats = /* GraphQL */ `
     }
   }
 `;
+export const reportStats = /* GraphQL */ `
+  mutation ReportStats($stationId: ID!, $timeSpan: String!, $index: Int!) {
+    reportStats(stationId: $stationId, timeSpan: $timeSpan, index: $index) {
+      date
+      throughPut
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!
@@ -1015,12 +1023,12 @@ export const deleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
-export const createTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  mutation CreateTaskQueueEventsTaskQueueEvents(
-    $input: CreateTaskQueueEventsTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
+export const createTaskQueueEvents = /* GraphQL */ `
+  mutation CreateTaskQueueEvents(
+    $input: CreateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
   ) {
-    createTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
+    createTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt
@@ -1042,12 +1050,12 @@ export const createTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const updateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  mutation UpdateTaskQueueEventsTaskQueueEvents(
-    $input: UpdateTaskQueueEventsTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
+export const updateTaskQueueEvents = /* GraphQL */ `
+  mutation UpdateTaskQueueEvents(
+    $input: UpdateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
   ) {
-    updateTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
+    updateTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt
@@ -1069,12 +1077,12 @@ export const updateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const deleteTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
-  mutation DeleteTaskQueueEventsTaskQueueEvents(
-    $input: DeleteTaskQueueEventsTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
+export const deleteTaskQueueEvents = /* GraphQL */ `
+  mutation DeleteTaskQueueEvents(
+    $input: DeleteTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
   ) {
-    deleteTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
+    deleteTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt
@@ -1135,6 +1143,57 @@ export const deleteDashboard = /* GraphQL */ `
       createdAt
       updatedAt
       data
+    }
+  }
+`;
+export const createReportEvent = /* GraphQL */ `
+  mutation CreateReportEvent(
+    $input: CreateReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    createReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const updateReportEvent = /* GraphQL */ `
+  mutation UpdateReportEvent(
+    $input: UpdateReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    updateReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const deleteReportEvent = /* GraphQL */ `
+  mutation DeleteReportEvent(
+    $input: DeleteReportEventInput!
+    $condition: ModelReportEventConditionInput
+  ) {
+    deleteReportEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
     }
   }
 `;

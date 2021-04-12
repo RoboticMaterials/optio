@@ -32,6 +32,12 @@ export type StationStatsData = {
   throughPut?: string,
 };
 
+export type ReportStatsData = {
+  __typename: "ReportStatsData",
+  date?: string,
+  throughPut?: string,
+};
+
 export type CreateUserInput = {
   id?: string | null,
   organizationId: string,
@@ -1063,7 +1069,7 @@ export type DeleteTaskQueueInput = {
   id?: string | null,
 };
 
-export type CreateTaskQueueEventsTaskQueueEventsInput = {
+export type CreateTaskQueueEventsInput = {
   id?: string | null,
   organizationId: string,
   createdAt?: string | null,
@@ -1084,7 +1090,7 @@ export type CreateTaskQueueEventsTaskQueueEventsInput = {
   hil_message?: string | null,
 };
 
-export type ModelTaskQueueEventsTaskQueueEventsConditionInput = {
+export type ModelTaskQueueEventsConditionInput = {
   organizationId?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
@@ -1102,13 +1108,13 @@ export type ModelTaskQueueEventsTaskQueueEventsConditionInput = {
   end_time?: ModelIntInput | null,
   hil_station_id?: ModelStringInput | null,
   hil_message?: ModelStringInput | null,
-  and?: Array< ModelTaskQueueEventsTaskQueueEventsConditionInput | null > | null,
-  or?: Array< ModelTaskQueueEventsTaskQueueEventsConditionInput | null > | null,
-  not?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
+  and?: Array< ModelTaskQueueEventsConditionInput | null > | null,
+  or?: Array< ModelTaskQueueEventsConditionInput | null > | null,
+  not?: ModelTaskQueueEventsConditionInput | null,
 };
 
-export type TaskQueueEventsTaskQueueEvents = {
-  __typename: "TaskQueueEventsTaskQueueEvents",
+export type TaskQueueEvents = {
+  __typename: "TaskQueueEvents",
   id?: string,
   organizationId?: string,
   createdAt?: string | null,
@@ -1129,7 +1135,7 @@ export type TaskQueueEventsTaskQueueEvents = {
   hil_message?: string | null,
 };
 
-export type UpdateTaskQueueEventsTaskQueueEventsInput = {
+export type UpdateTaskQueueEventsInput = {
   id: string,
   organizationId?: string | null,
   createdAt?: string | null,
@@ -1150,7 +1156,7 @@ export type UpdateTaskQueueEventsTaskQueueEventsInput = {
   hil_message?: string | null,
 };
 
-export type DeleteTaskQueueEventsTaskQueueEventsInput = {
+export type DeleteTaskQueueEventsInput = {
   id?: string | null,
 };
 
@@ -1193,25 +1199,55 @@ export type DeleteDashboardInput = {
   id?: string | null,
 };
 
-export type ModelStationEventFilterInput = {
-  id?: ModelIDInput | null,
+export type CreateReportEventInput = {
+  id?: string | null,
+  organizationId: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId: string,
+  date: number,
+  reportButtonId: string,
+  stationId: string,
+};
+
+export type ModelReportEventConditionInput = {
   organizationId?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  object?: ModelStringInput | null,
-  outgoing?: ModelBooleanInput | null,
-  quantity?: ModelIntInput | null,
-  station?: ModelStringInput | null,
-  time?: ModelIntInput | null,
-  and?: Array< ModelStationEventFilterInput | null > | null,
-  or?: Array< ModelStationEventFilterInput | null > | null,
-  not?: ModelStationEventFilterInput | null,
+  dashboardId?: ModelStringInput | null,
+  date?: ModelIntInput | null,
+  reportButtonId?: ModelStringInput | null,
+  stationId?: ModelStringInput | null,
+  and?: Array< ModelReportEventConditionInput | null > | null,
+  or?: Array< ModelReportEventConditionInput | null > | null,
+  not?: ModelReportEventConditionInput | null,
 };
 
-export type ModelStationEventConnection = {
-  __typename: "ModelStationEventConnection",
-  items?:  Array<StationEvent | null > | null,
-  nextToken?: string | null,
+export type ReportEvent = {
+  __typename: "ReportEvent",
+  id?: string,
+  organizationId?: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId?: string,
+  date?: number,
+  reportButtonId?: string,
+  stationId?: string,
+};
+
+export type UpdateReportEventInput = {
+  id: string,
+  organizationId?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  dashboardId?: string | null,
+  date?: number | null,
+  reportButtonId?: string | null,
+  stationId?: string | null,
+};
+
+export type DeleteReportEventInput = {
+  id?: string | null,
 };
 
 export enum ModelSortDirection {
@@ -1273,6 +1309,27 @@ export type ModelStationFilterInput = {
 export type ModelStationConnection = {
   __typename: "ModelStationConnection",
   items?:  Array<Station | null > | null,
+  nextToken?: string | null,
+};
+
+export type ModelStationEventFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  object?: ModelStringInput | null,
+  outgoing?: ModelBooleanInput | null,
+  quantity?: ModelIntInput | null,
+  station?: ModelStringInput | null,
+  time?: ModelIntInput | null,
+  and?: Array< ModelStationEventFilterInput | null > | null,
+  or?: Array< ModelStationEventFilterInput | null > | null,
+  not?: ModelStationEventFilterInput | null,
+};
+
+export type ModelStationEventConnection = {
+  __typename: "ModelStationEventConnection",
+  items?:  Array<StationEvent | null > | null,
   nextToken?: string | null,
 };
 
@@ -1558,6 +1615,26 @@ export type ModelDashboardConnection = {
   nextToken?: string | null,
 };
 
+export type ModelReportEventFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  dashboardId?: ModelStringInput | null,
+  date?: ModelIntInput | null,
+  reportButtonId?: ModelStringInput | null,
+  stationId?: ModelStringInput | null,
+  and?: Array< ModelReportEventFilterInput | null > | null,
+  or?: Array< ModelReportEventFilterInput | null > | null,
+  not?: ModelReportEventFilterInput | null,
+};
+
+export type ModelReportEventConnection = {
+  __typename: "ModelReportEventConnection",
+  items?:  Array<ReportEvent | null > | null,
+  nextToken?: string | null,
+};
+
 export type ManageTaskQueueMutationVariables = {
   taskQueueItem?: string,
 };
@@ -1627,6 +1704,20 @@ export type StationStatsMutation = {
     __typename: "StationStatsData",
     stationId: string,
     organizationId: string,
+    date: string,
+    throughPut: string,
+  } | null,
+};
+
+export type ReportStatsMutationVariables = {
+  stationId?: string,
+  timeSpan?: string,
+  index?: number,
+};
+
+export type ReportStatsMutation = {
+  reportStats?:  {
+    __typename: "ReportStatsData",
     date: string,
     throughPut: string,
   } | null,
@@ -2673,14 +2764,14 @@ export type DeleteTaskQueueMutation = {
   } | null,
 };
 
-export type CreateTaskQueueEventsTaskQueueEventsMutationVariables = {
-  input?: CreateTaskQueueEventsTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
+export type CreateTaskQueueEventsMutationVariables = {
+  input?: CreateTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsConditionInput | null,
 };
 
-export type CreateTaskQueueEventsTaskQueueEventsMutation = {
-  createTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type CreateTaskQueueEventsMutation = {
+  createTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -2702,14 +2793,14 @@ export type CreateTaskQueueEventsTaskQueueEventsMutation = {
   } | null,
 };
 
-export type UpdateTaskQueueEventsTaskQueueEventsMutationVariables = {
-  input?: UpdateTaskQueueEventsTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
+export type UpdateTaskQueueEventsMutationVariables = {
+  input?: UpdateTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsConditionInput | null,
 };
 
-export type UpdateTaskQueueEventsTaskQueueEventsMutation = {
-  updateTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type UpdateTaskQueueEventsMutation = {
+  updateTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -2731,14 +2822,14 @@ export type UpdateTaskQueueEventsTaskQueueEventsMutation = {
   } | null,
 };
 
-export type DeleteTaskQueueEventsTaskQueueEventsMutationVariables = {
-  input?: DeleteTaskQueueEventsTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
+export type DeleteTaskQueueEventsMutationVariables = {
+  input?: DeleteTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsConditionInput | null,
 };
 
-export type DeleteTaskQueueEventsTaskQueueEventsMutation = {
-  deleteTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type DeleteTaskQueueEventsMutation = {
+  deleteTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -2808,47 +2899,60 @@ export type DeleteDashboardMutation = {
   } | null,
 };
 
-export type GetStationEventQueryVariables = {
-  id?: string,
+export type CreateReportEventMutationVariables = {
+  input?: CreateReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
 };
 
-export type GetStationEventQuery = {
-  getStationEvent?:  {
-    __typename: "StationEvent",
+export type CreateReportEventMutation = {
+  createReportEvent?:  {
+    __typename: "ReportEvent",
     id: string,
     organizationId: string,
     createdAt?: string | null,
     updatedAt?: string | null,
-    object?: string | null,
-    outgoing: boolean,
-    quantity: number,
-    station: string,
-    time: number,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
   } | null,
 };
 
-export type ListStationEventsQueryVariables = {
-  filter?: ModelStationEventFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
+export type UpdateReportEventMutationVariables = {
+  input?: UpdateReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
 };
 
-export type ListStationEventsQuery = {
-  listStationEvents?:  {
-    __typename: "ModelStationEventConnection",
-    items?:  Array< {
-      __typename: "StationEvent",
-      id: string,
-      organizationId: string,
-      createdAt?: string | null,
-      updatedAt?: string | null,
-      object?: string | null,
-      outgoing: boolean,
-      quantity: number,
-      station: string,
-      time: number,
-    } | null > | null,
-    nextToken?: string | null,
+export type UpdateReportEventMutation = {
+  updateReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
+  } | null,
+};
+
+export type DeleteReportEventMutationVariables = {
+  input?: DeleteReportEventInput,
+  condition?: ModelReportEventConditionInput | null,
+};
+
+export type DeleteReportEventMutation = {
+  deleteReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
   } | null,
 };
 
@@ -3201,7 +3305,7 @@ export type GetCardByIdQueryVariables = {
 };
 
 export type GetCardByIdQuery = {
-  getCardById?:  {
+  GetCardById?:  {
     __typename: "ModelCardConnection",
     items?:  Array< {
       __typename: "Card",
@@ -3420,6 +3524,32 @@ export type DashboardsByOrgIdQuery = {
       createdAt?: string | null,
       updatedAt?: string | null,
       data: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ReportEventByOrgIdQueryVariables = {
+  organizationId?: string | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelReportEventFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ReportEventByOrgIdQuery = {
+  ReportEventByOrgId?:  {
+    __typename: "ModelReportEventConnection",
+    items?:  Array< {
+      __typename: "ReportEvent",
+      id: string,
+      organizationId: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      dashboardId: string,
+      date: number,
+      reportButtonId: string,
+      stationId: string,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -4411,9 +4541,9 @@ export type OnDeleteTaskQueueSubscription = {
   } | null,
 };
 
-export type OnCreateTaskQueueEventsTaskQueueEventsSubscription = {
-  onCreateTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type OnCreateTaskQueueEventsSubscription = {
+  onCreateTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4435,9 +4565,9 @@ export type OnCreateTaskQueueEventsTaskQueueEventsSubscription = {
   } | null,
 };
 
-export type OnUpdateTaskQueueEventsTaskQueueEventsSubscription = {
-  onUpdateTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type OnUpdateTaskQueueEventsSubscription = {
+  onUpdateTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4459,9 +4589,9 @@ export type OnUpdateTaskQueueEventsTaskQueueEventsSubscription = {
   } | null,
 };
 
-export type OnDeleteTaskQueueEventsTaskQueueEventsSubscription = {
-  onDeleteTaskQueueEventsTaskQueueEvents?:  {
-    __typename: "TaskQueueEventsTaskQueueEvents",
+export type OnDeleteTaskQueueEventsSubscription = {
+  onDeleteTaskQueueEvents?:  {
+    __typename: "TaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4513,5 +4643,47 @@ export type OnDeleteDashboardSubscription = {
     createdAt?: string | null,
     updatedAt?: string | null,
     data: string,
+  } | null,
+};
+
+export type OnCreateReportEventSubscription = {
+  onCreateReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
+  } | null,
+};
+
+export type OnUpdateReportEventSubscription = {
+  onUpdateReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
+  } | null,
+};
+
+export type OnDeleteReportEventSubscription = {
+  onDeleteReportEvent?:  {
+    __typename: "ReportEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    dashboardId: string,
+    date: number,
+    reportButtonId: string,
+    stationId: string,
   } | null,
 };

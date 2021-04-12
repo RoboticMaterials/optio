@@ -65,7 +65,7 @@ exports.handler = async (event) => {
 		items.forEach(task => {
 
 			let ex_time = task['end_time'] - task['start_time']
-
+			
 			time_sum += ex_time
 	
 			if(task['success']){
@@ -94,7 +94,6 @@ exports.handler = async (event) => {
 		organizationId: '1',
 		device_type: '1',
 		taskId: '1',
-		id: 'not_an_ID',
 		custom_task: calculatedTasks 
 	}
 };

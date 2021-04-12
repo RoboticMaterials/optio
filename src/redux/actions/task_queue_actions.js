@@ -224,12 +224,11 @@ export const handlePostTaskQueue = (props) => {
                 if (deviceType === 'human') {
 
                     const postTask = {
-                        id: uuid.v4(),
                         "device_type": deviceType,
                         "taskId": Id,
                         dashboard: dashboardID,
                         hil_response: null,
-                        showModal: null,
+                        showModal: true,
                     }
                     await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask.id })
                     const postToQueue = dispatch(postTaskQueue(postTask))

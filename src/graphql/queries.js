@@ -2,6 +2,43 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getStationEvent = /* GraphQL */ `
+  query GetStationEvent($id: ID!) {
+    getStationEvent(id: $id) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const listStationEvents = /* GraphQL */ `
+  query ListStationEvents(
+    $filter: ModelStationEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStationEvents(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        object
+        outgoing
+        quantity
+        station
+        time
+      }
+      nextToken
+    }
+  }
+`;
 export const usersbyOrg = /* GraphQL */ `
   query UsersbyOrg(
     $organizationId: ID
@@ -141,6 +178,36 @@ export const stationsByOrgId = /* GraphQL */ `
         mapId
         children
         dashboards
+      }
+      nextToken
+    }
+  }
+`;
+export const stationEventsByOrgId = /* GraphQL */ `
+  query StationEventsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelStationEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    StationEventsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        object
+        outgoing
+        quantity
+        station
+        time
       }
       nextToken
     }

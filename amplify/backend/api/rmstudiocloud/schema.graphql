@@ -68,7 +68,7 @@ type Station
 }
 
 type StationEvent
-  @model #(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [
     { allow: private }
     ])
@@ -182,7 +182,7 @@ type Card
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "CardsByOrgId", fields: ["organizationId"], queryField: "CardsByOrgId" )
-  @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
+  @key(name: "GetCardById", fields: ["id"], queryField: "GetCardById")
 {
   # IDs
   id: ID!
@@ -204,7 +204,6 @@ type CardEvent
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "CardsEventsByOrgId", fields: ["organizationId"], queryField: "CardsEventsByOrgId" )
-  # @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
 {
   # IDs
   id: ID!
@@ -335,7 +334,7 @@ type TaskQueue
   hil_message: String
 }
 
-type TaskQueueEventsTaskQueueEvents
+type TaskQueueEvents
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
@@ -379,10 +378,35 @@ type Dashboard
   data: AWSJSON!
 }
 
+type ReportEvent 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "ReportEventByOrgId", fields: ["organizationId"], queryField: "ReportEventByOrgId" )
+{
+
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  dashboardId: String!
+  date: AWSTimestamp!
+  reportButtonId: String!
+  stationId: String!
+}
+
 type StationStatsData 
 {
   stationId: String!
   organizationId: String!
+  date: String!
+  throughPut: AWSJSON!
+}
+
+type ReportStatsData 
+{
   date: String!
   throughPut: AWSJSON!
 }
@@ -424,4 +448,5 @@ type Mutation {
   manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
   taskStats(taskId: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
   stationStats(stationId: ID!, timeSpan: String!, index: Int!, sortKey: String): StationStatsData @function(name: "stationStats-${env}")
+  reportStats(stationId: ID!, timeSpan: String!, index: Int!): ReportStatsData @function(name: "reportStats-${env}")
 }

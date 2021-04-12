@@ -112,7 +112,6 @@ export async function deleteTaskQueueAll() {
 
 
 export async function deleteTaskQueueItem(id, taskQueueItem) {
-    console.log('delete', id, taskQueueItem);
     try {
         if(taskQueueItem === undefined){
             taskQueueItem = await getTaskQueueItem(id)

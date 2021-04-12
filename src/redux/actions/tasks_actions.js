@@ -296,7 +296,7 @@ export const addTask = (task) => {
 
 
 export const setTask = (task) => {
-    return { type: createActionType([SET, TASK, SUCCESS]), payload: task}
+    return { type: createActionType([SET, TASK]), payload: task}
 }
 
 export const setTasks = (tasks) => {

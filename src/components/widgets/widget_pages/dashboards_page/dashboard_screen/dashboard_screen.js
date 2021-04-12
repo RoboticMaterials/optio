@@ -366,8 +366,6 @@ const DashboardScreen = (props) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 if (!(Id === 'hil_success')) {
-                    console.log('before post DS', { dashboardID, tasks, deviceType, taskQueue, custom });
-
                     onHandlePostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
                 }
                 handleRouteClick(Id, name, custom, deviceType)

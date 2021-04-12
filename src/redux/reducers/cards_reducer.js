@@ -2,7 +2,7 @@ import {
   GET,
   POST,
   DELETE,
-  PUT, SET
+  PUT, SET, REMOVE
 } from '../types/prefixes';
 
 import {
@@ -14,7 +14,7 @@ import {
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR, SHOW_FORM_EDITOR
+  SHOW_EDITOR, SHOW_FORM_EDITOR, PROCESS, LOT
 } from '../types/data_types'
 import {createActionType} from "../actions/redux_utils";
 
@@ -35,7 +35,7 @@ export default function cardsReducer(state = defaultState, action) {
 
   switch (action.type) {
 
-    case createActionType([SET, CARD, SUCCESS]): {
+    case createActionType([SET, LOT]): {
       return {
         ...state,
         cards: {...state.cards, [action.payload.id]: {...action.payload}},
@@ -45,6 +45,35 @@ export default function cardsReducer(state = defaultState, action) {
         pending: false,
       }
     }
+
+    case createActionType([REMOVE, LOT]): {
+      const {
+        [action.payload.id]: removed,
+        ...remaining
+      } = state.processes
+
+      return {
+        ...state,
+        processes: { ...remaining },
+      }
+
+
+      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
+      const {
+
+        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
+        ...unchangedProcessGroups
+
+      } = state.processCards; // extracts payload lot from rest
+
+      return {
+        ...state,
+        cards: {...rest},
+        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        pending: false,
+      }
+    }
+
 
     case GET + CARD + SUCCESS:
       return {

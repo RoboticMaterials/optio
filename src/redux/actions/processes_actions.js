@@ -206,12 +206,12 @@ export const setSelectedProcess = (process) => {
     return { type: 'SET_SELECTED_PROCESS', payload: process }
 }
 
-export const setProcess = async (process) => async dispatch => {
-    await dispatch({ type: createActionType([SET, PROCESS, SUCCESS]), payload: process })
+export const setProcess = (process) => {
+    return { type: createActionType([SET, PROCESS, SUCCESS]), payload: process }
 }
 
-export const removeProcess = async (id) => async dispatch => {
-    await dispatch({ type: createActionType([REMOVE, PROCESS, SUCCESS]), payload: { id } })
+export const removeProcess = (id) => {
+    return { type: createActionType([REMOVE, PROCESS, SUCCESS]), payload: { id } }
 }
 
 

@@ -59,12 +59,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "stationStats",
+            "reportStats",
             {
               "Fn::Join": [
                 "",
                 [
-                  "stationStats",
+                  "reportStats",
                   "-",
                   {
                     "Ref": "env"
@@ -143,12 +143,12 @@
                 ]
               ]
             },
-            "API_RMSTUDIOCLOUD_STATIONTABLE_NAME": {
+            "API_RMSTUDIOCLOUD_REPORTEVENTTABLE_NAME": {
               "Fn::ImportValue": {
-                "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationTable:Name"
+                "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:ReportEventTable:Name"
               }
             },
-            "API_RMSTUDIOCLOUD_STATIONTABLE_ARN": {
+            "API_RMSTUDIOCLOUD_REPORTEVENTTABLE_ARN": {
               "Fn::Join": [
                 "",
                 [
@@ -163,33 +163,7 @@
                   ":table/",
                   {
                     "Fn::ImportValue": {
-                      "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationTable:Name"
-                    }
-                  }
-                ]
-              ]
-            },
-            "API_RMSTUDIOCLOUD_STATIONEVENTTABLE_NAME": {
-              "Fn::ImportValue": {
-                "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationEventTable:Name"
-              }
-            },
-            "API_RMSTUDIOCLOUD_STATIONEVENTTABLE_ARN": {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:aws:dynamodb:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":table/",
-                  {
-                    "Fn::ImportValue": {
-                      "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationEventTable:Name"
+                      "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:ReportEventTable:Name"
                     }
                   }
                 ]
@@ -216,12 +190,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "rmstudiocloudLambdaRoleaf260d51",
+            "rmstudiocloudLambdaRole1d52f1fd",
             {
               "Fn::Join": [
                 "",
                 [
-                  "rmstudiocloudLambdaRoleaf260d51",
+                  "rmstudiocloudLambdaRole1d52f1fd",
                   "-",
                   {
                     "Ref": "env"
@@ -439,6 +413,46 @@
                       "/types/Query/*"
                     ]
                   ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apirmstudiocloudGraphQLAPIIdOutput"
+                      },
+                      "/types/Mutation/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apirmstudiocloudGraphQLAPIIdOutput"
+                      },
+                      "/types/Subscription/*"
+                    ]
+                  ]
                 }
               ]
             },
@@ -598,7 +612,7 @@
                       ":table/",
                       {
                         "Fn::ImportValue": {
-                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationTable:Name"
+                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:ReportEventTable:Name"
                         }
                       }
                     ]
@@ -619,69 +633,7 @@
                       ":table/",
                       {
                         "Fn::ImportValue": {
-                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationTable:Name"
-                        }
-                      },
-                      "/index/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "dynamodb:Put*",
-                "dynamodb:Create*",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:Get*",
-                "dynamodb:BatchGetItem",
-                "dynamodb:List*",
-                "dynamodb:Describe*",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:Update*",
-                "dynamodb:RestoreTable*",
-                "dynamodb:Delete*"
-              ],
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/",
-                      {
-                        "Fn::ImportValue": {
-                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationEventTable:Name"
-                        }
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:dynamodb:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":table/",
-                      {
-                        "Fn::ImportValue": {
-                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:StationEventTable:Name"
+                          "Fn::Sub": "${apirmstudiocloudGraphQLAPIIdOutput}:GetAtt:ReportEventTable:Name"
                         }
                       },
                       "/index/*"
