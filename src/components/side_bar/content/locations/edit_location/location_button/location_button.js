@@ -12,7 +12,8 @@ const LocationButton = (props) => {
         type,
         isSelected,
         handleAddLocation,
-        schema
+        schema,
+        locationAdded,
     } = props
 
     const LocationTypes = {
@@ -50,7 +51,7 @@ const LocationButton = (props) => {
     }
 
     return (
-        <Draggable ref={dragRef} key={`location-button-drag-ref-${type}`} onStart={() => handleAddLocation(type)} onDrag={handleDrag} onStop={handleDragStop} axis="none" position={{x, y}}>
+        <Draggable disabled={!!locationAdded} ref={dragRef} key={`location-button-drag-ref-${type}`} onStart={() => handleAddLocation(type)} onDrag={handleDrag} onStop={handleDragStop} axis="none" position={{x, y}}>
             <styled.LocationTypeButton
                 isSelected={!!isSelected && isSelected === type}
                 isNotSelected={!!isSelected && isSelected !== type}
