@@ -24,6 +24,7 @@ import { deleteDashboard as deleteDashboardByID } from '../graphql/mutations'
 
 // For creating a card
 import { uuidv4 } from '../methods/utils/utils'
+import {parseDashboard} from "../methods/utils/data_utils";
 
 export async function getDashboards() {
     try {
@@ -38,13 +39,7 @@ export async function getDashboards() {
         let GQLdata = []
 
         res.data.DashboardsByOrgId.items.forEach(dash => {
-            let data = JSON.parse(dash.data)
-
-            GQLdata.push( {
-                id: dash.id,
-                organizationId: dash.organizationId,
-                ...data
-            })
+            GQLdata.push(parseDashboard(dash))
         });
         
         // Success 🎉

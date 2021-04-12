@@ -6,11 +6,11 @@ import { useHistory, useParams } from "react-router-dom";
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue, deleteTaskQueueItem, putTaskQueue } from '../../redux/actions/task_queue_actions'
-import { getObjects } from '../../redux/actions/objects_actions'
-import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions'
+import {getObjects, removeObject, setObject} from '../../redux/actions/objects_actions'
+import {getTasks, deleteTask, putTask, setTask, removeTask} from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
-import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
+import {getProcesses, putProcesses, removeProcess, setProcess} from '../../redux/actions/processes_actions'
 import { getDataStream } from '../../redux/actions/data_stream_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
@@ -33,12 +33,19 @@ import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
 import { isEquivalent, deepCopy } from '../../methods/utils/utils'
-import { getCards, getProcessCards, putCard } from "../../redux/actions/card_actions";
+import {getCards, getProcessCards, putCard, setCard} from "../../redux/actions/card_actions";
 
 // Amplify and GQL
 import { API, graphqlOperation } from 'aws-amplify';
 import * as subscriptions from '../../graphql/subscriptions';
 import { manageTaskQueue } from '../../graphql/mutations';
+import {getSubscriptionData, getSubscriptionName, streamlinedSubscription} from "../../methods/utils/api_utils";
+import {DATA_PARSERS, parseLot, parseObject, parseProcess, parseTask} from "../../methods/utils/data_utils";
+import {createActionType} from "../../redux/actions/redux_utils";
+import {REMOVE, SET} from "../../redux/types/prefixes";
+import * as dataTypes from "../../redux/types/data_types";
+import {SUCCESS} from "../../redux/types/suffixes";
+import {capitalizeFirstLetter, constantToPascalCase, toPascalCase} from "../../methods/utils/string_utils";
 
 const ApiContainer = (props) => {
 
@@ -64,7 +71,19 @@ const ApiContainer = (props) => {
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
+    const dispatchSetCard = (card) => dispatch(setCard(card))
     const onPutCard = (card) => dispatch(putCard(card))
+
+
+    const dispatchSetTask = async (task) => await dispatch(setTask(task))
+    const dispatchRemoveTask = async (id) => await dispatch(removeTask(id))
+
+    const dispatchSetProcess = (process) => dispatch(setProcess(process))
+    const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
+
+    const dispatchSetObject = (process) => dispatch(setObject(process))
+    const dispatchRemoveObject = (id) => dispatch(removeObject(id))
+
 
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
@@ -124,53 +143,6 @@ const ApiContainer = (props) => {
 
 
     useEffect(() => {
-
-        subscriptionUpdateFunction()
-
-    }, [params])
-
-
-    const subscriptionUpdateFunction = async () => {
-
-        // unsub from everything
-        if(currentSubscriptions.length){
-            currentSubscriptions.forEach(sub => {
-                if(sub._state !== 'closed'){
-                    sub._cleanup()
-                }                
-            });
-        }
-
-        let subs
-
-        // sub to the right data source
-        switch (history.location.pathname) {
-            case '/locations':
-                subs = await loadMapData()
-                setCurrentSubscriptions(subs)
-                break;
-            case '/tasks':
-                subs = await loadTasksData()
-                setCurrentSubscriptions(subs)
-                break;
-            case '/processes':
-                subs = await loadCardsData()
-                setCurrentSubscriptions(subs)
-             break;
-            case '/lots/summary':
-                subs = await loadCardsData()
-                setCurrentSubscriptions(subs)
-                break;
-            default:
-                subs = await loadMapData()
-                setCurrentSubscriptions(subs)
-                break;
-        }
-
-    }
-    useEffect(() => {
-
-
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
         if (!MiRMapEnabled) {
             let containsMirCart = false
@@ -205,15 +177,9 @@ const ApiContainer = (props) => {
             updateCurrentPage();
         }
 
-    })
+    }, [stopAPICalls, params])
 
     const updateCurrentPage = () => {
-
-        // Unsubscribe for page switch
-        // if(currentSubscriptions){
-        //     currentSubscriptions._cleanup()
-        // }
-
         const currentPageRouter = params
 
         // If the current page state and actual current page are different, then the page has changed so the data interval should change
@@ -234,8 +200,19 @@ const ApiContainer = (props) => {
      */
 
     const setDataInterval = async (pageParams) => {
+        console.log("setDataInterval")
 
-        let sub
+        // unsub from everything
+        if(currentSubscriptions.length){
+            currentSubscriptions.forEach(sub => {
+                console.log("sub cleaning",sub)
+                if(sub._state !== 'closed'){
+                    sub._cleanup()
+                }
+            });
+        }
+
+        let subs = []
 
         let pageName = ''
         const {
@@ -259,61 +236,63 @@ const ApiContainer = (props) => {
         // set new interval for specific page
         switch (pageName) {
 
-            case 'objects':
-                sub = await loadObjectsData()
-                setCurrentSubscriptions(sub)
+            case 'objects': {
+                subs = await getObjectsPageSubscriptions()
+                setCurrentSubscriptions(subs)
                 break;
+            }
 
-            case 'scheduler':
-                loadSchedulerData()
+            case 'dashboards': {
+                setCurrentSubscriptions(await getDashboardsPageSubscription())
                 break
+            }
 
-            case 'dashboards':
-                loadDashboardsData()
+            case 'locations': {
+                setCurrentSubscriptions(await getLocationsPageSubscriptions())
+                break;
+            }
+
+            case 'tasks': {
+                setCurrentSubscriptions(await getTaskPageSubscriptions())
                 break
+            }
 
-            case 'tasks':
-                sub = await loadTasksData()
-                setCurrentSubscriptions(sub)
+            case 'settings': {
+                setCurrentSubscriptions(await getSettingsSubscription())
                 break
+            }
 
-            case 'settings':
-                sub = loadSettingsData()
-                setCurrentSubscriptions(sub)
+            case 'lots': {
+                setCurrentSubscriptions(await getLotsSubscription())
                 break
+            }
 
-            case 'lots':
-                sub = await loadCardsData()
-                setCurrentSubscriptions(sub)
-                break
-
-            case 'processes':
+            case 'processes': {
+                // process lots
                 if (data2 === "lots") {
-                    loadCardsData(data1)
+                    setCurrentSubscriptions(await getLotsSubscription())
+                    break;
                 }
-                else if (data1 === "timeline") {
-                    loadCardsData() // initial call
+                // process
+                else {
+                    setCurrentSubscriptions(await getProcessPageSubscription())
+                    break
                 }
-                else if (data1 === "summary") {
-                    sub = await loadCardsData() // initial call
-                    setCurrentSubscriptions(sub)
+
+                break
+            }
+
+            default: {
+                if(!mapViewEnabled) {
+                    setCurrentSubscriptions(await getListViewSubs())
                 }
                 else {
-                    sub = await loadTasksData()
-                    setCurrentSubscriptions(sub)
+                    setCurrentSubscriptions(await getMapsSubscriptions())
                 }
 
-                break
-
-            case 'more':
-                setPageDataInterval(setInterval(() => loadMoreData(), 10000))
-                // pageDataInterval = ;
                 break;
-
-            default:
-                break;
+            }
         }
-
     }
 
     const loadInitialData = async () => {
@@ -458,8 +437,8 @@ const ApiContainer = (props) => {
                             // when do we update the task???
                             item.taskId === value.data.onDeltaTaskQueue.taskId
                             &&
-                            value.data.onDeltaTaskQueue.hil_response === true 
-                            && 
+                            value.data.onDeltaTaskQueue.hil_response === true
+                            &&
                             value.data.onDeltaTaskQueue.updatedAt
                         )
                         {
@@ -485,147 +464,60 @@ const ApiContainer = (props) => {
     }
 
     /*
-        Loads data pertinent to Objects page
+    * **********************************************BASIC DATA TYPE SUBS BEGIN**********************************************************
+    * */
 
-        required data:
-        objects, poses, models
-    */
-    const loadObjectsData = async () => {
-        // Subscribe to objects
-        const objectsSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaObject)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
+    /*
+    * creates delta and delete subs for resource corresponding to resourceName
+    * */
+    const getResourceSubscription = async (resourceName) => {
+        let subs = []
+        const convertedName = toPascalCase(resourceName)
 
-        return [objectsSubscription]
+        // NOTE: need to subscribe to delete events separately in order to know to remove item from redux instead of insert / replace
+        console.debug("Subscribing to resource delta: ",convertedName)
+        subs.push(await streamlinedSubscription(subscriptions[`onDelta${convertedName}`], (data) => dispatch({ type: createActionType([SET, resourceName]), payload: data }), DATA_PARSERS[resourceName]))
+
+        console.debug("Subscribing to resource delete: ",convertedName)
+        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => dispatch({ type: createActionType([REMOVE, resourceName]), payload: data }), null))
+
+        return subs
     }
 
     /*
-        Loads data pertinent to Tasks page
+    * calls getResourceSubscription for each string in resourceNames
+    * */
+    const getResourceSubscriptions = async (resourceNames) => {
+        let subs = []
 
-        required data:
-        tasks
-    */
-    const loadTasksData = async () => {
+        for(const resourceName of resourceNames) {
+            subs = subs.concat(await getResourceSubscription(resourceName))
+        }
 
-        // Subscribe to stations
-        const tasksSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaTask)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetTasks()
-        },
-            error: error => console.warn(error)
-        });
-
-        // Subscribe to stations
-        const processesSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaProcess)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
-
-        // Subscribe to stations
-        const objectsSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaObject)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
-
-        return [tasksSubscription, processesSubscription, objectsSubscription]
+        return subs
     }
 
     /*
-        Loads data pertinent to Scheduler page
-
-        required data:
-        schedules, tasks
-    */
-    const loadSchedulerData = async () => {
-        const schedules = await onGetSchedules();
-        const tasks = await onGetTasks();
-    }
+    * **********************************************BASIC DATA TYPE SUBS END**********************************************************
+    * */
 
     /*
-        Loads data pertinent to Dashboards page
+    * **********************************************PAGE SUBS BEGIN**********************************************************
+    * */
 
-        required data:
-        dashboards
-    */
-    const loadDashboardsData = async () => {
-        await onGetDashboards();
-        await onGetCards()
-        await onGetTasks()
-        await onGetProcesses()
+    const getObjectsPageSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.OBJECT])
     }
 
-    /*
-      Loads data pertinent to Objects page
-
-      required data:
-      tasks, skills, objects, locations, dashboards, sounds
-    */
-    const loadMapData = async () => {
-
-        // Subscribe to stations
-        const stationSubscription = await API.graphql(
-            graphqlOperation(subscriptions.onDeltaStation)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetStations() 
-        },
-            error: error => console.warn(error)
-        });
-
-        // Subscribe to positions
-        const positionSubscription = await API.graphql(
-            graphqlOperation(subscriptions.onDeltaPosition)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetPositions() 
-        },
-            error: error => console.warn(error)
-        });
-
-        return [stationSubscription, positionSubscription]
-        
+    const getTaskPageSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.PROCESS, dataTypes.TASK, dataTypes.OBJECT])
     }
 
-    /*
-        Loads data pertinent to Settings page
-
-        required data:
-        settings, loggers
-    */
-    const loadSettingsData = async () => {
-        const settings = await onGetSettings();
-        //const localSettings = await onGetLocalSettings()
-        const loggers = await onGetLoggers();
+    const getProcessPageSubscription = async () => {
+        return await getResourceSubscriptions([dataTypes.PROCESS, dataTypes.TASK, dataTypes.OBJECT])
     }
 
-    /*
-        Loads data pertinent to process card view
-
-        required data:
-        cards
-    */
-    const loadCardsData = async (processId) => {
+    const getLotsSubscription = async (processId) => {
         if (processId) {
             await onGetProcessCards(processId)
 
@@ -633,29 +525,51 @@ const ApiContainer = (props) => {
             onGetCards()
         }
 
-        // Subscribe to stations
-        const cardSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaCard)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetCards() 
-        },
-            error: error => console.warn(error)
-        });
-
+        // make direct get call call to get data now
         onGetProcesses()
         onGetTasks()
 
-        return [cardSubscription]
+        return await getResourceSubscriptions([dataTypes.LOT_TEMPLATE, dataTypes.CARD, dataTypes.PROCESS, dataTypes.STATION, dataTypes.TASK])
+
+    }
+
+    const getDashboardsPageSubscription = async () => {
+        onGetCards()
+        onGetDashboards()
+        return await getResourceSubscriptions([dataTypes.CARD, dataTypes.TASK, dataTypes.DASHBOARD, dataTypes.PROCESS])
+    }
+
+    const getLocationsPageSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
+    }
+
+    const getMapsSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
+    }
+
+    const getListViewSubs = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
+    }
+
+
+    /*
+        Loads data pertinent to Settings page
+
+        required data:
+        settings, loggers
+    */
+    const getSettingsSubscription = async () => {
+
+        const settings = await onGetSettings();
+        //const localSettings = await onGetLocalSettings()
+        const loggers = await onGetLoggers();
+
+        return await getResourceSubscriptions([dataTypes.SETTINGS])
     }
 
     /*
-        Loads data pertinent to More page
-    */
-    const loadMoreData = async () => {
-
-    }
+    * **********************************************PAGE SUBS END**********************************************************
+    * */
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  DATA LOADERS SECTION END

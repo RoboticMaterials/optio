@@ -11,6 +11,9 @@ import {
     DEVICE_ENABLED,
 
 } from '../types/setting_types'
+import {createActionType} from "../actions/redux_utils";
+import * as prefixes from "../types/prefixes";
+import * as dataTypes from "../types/data_types";
 
 const defaultState = {
     settings: {
@@ -62,6 +65,18 @@ export const mirUrl = (state = defaultState) => {
 
 const settingsReducer = (state = defaultState, action) => {
     switch (action.type) {
+
+        case createActionType([prefixes.SET, dataTypes.SETTINGS]): {
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    ...action.payload,
+                    loggers: { ...state.settings.loggers, ...action.payload.loggers },
+                },
+                pending: false,
+            }
+        }
 
         case 'apiSim':
             return {

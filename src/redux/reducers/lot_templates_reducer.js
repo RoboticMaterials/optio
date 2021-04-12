@@ -15,6 +15,9 @@ import {
   LOT_TEMPLATE,
   LOT_TEMPLATES
 } from '../types/data_types'
+import {createActionType} from "../actions/redux_utils";
+import * as prefixes from "../types/prefixes";
+import * as dataTypes from "../types/data_types";
 
 
 
@@ -26,6 +29,26 @@ const defaultState = {
 export default function lotTemplatesReducer(state = defaultState, action) {
 
   switch (action.type) {
+
+    case createActionType([prefixes.SET, dataTypes.LOT_TEMPLATE]): {
+      return {
+        ...state,
+        lotTemplates: {...state.lotTemplates, [action.payload.id]: {...action.payload}},
+      }
+    }
+
+    case createActionType([prefixes.REMOVE, dataTypes.LOT_TEMPLATE]): {
+      const {
+        [action.payload.id]: removed,
+        ...remaining
+      } = state.lotTemplates
+
+      return {
+        ...state,
+        lotTemplates: { ...remaining },
+      }
+    }
+
     case GET + LOT_TEMPLATE + SUCCESS:
       return {
         ...state,

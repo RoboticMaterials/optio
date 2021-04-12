@@ -2,7 +2,7 @@ import {
   GET,
   POST,
   DELETE,
-  PUT
+  PUT, SET, REMOVE
 } from '../types/prefixes';
 
 import {
@@ -14,8 +14,9 @@ import {
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR, SHOW_FORM_EDITOR
+  SHOW_EDITOR, SHOW_FORM_EDITOR, PROCESS, LOT
 } from '../types/data_types'
+import {createActionType} from "../actions/redux_utils";
 
 const defaultState = {
 
@@ -33,6 +34,43 @@ export default function cardsReducer(state = defaultState, action) {
   let processCards = {}
 
   switch (action.type) {
+
+    case createActionType([SET, CARD]): {
+      return {
+        ...state,
+        cards: {...state.cards, [action.payload.id]: {...action.payload}},
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.id]: {...action.payload}
+          }},
+        pending: false,
+      }
+    }
+
+    case createActionType([REMOVE, CARD]): {
+
+      const {
+        [action.payload.id]: value,
+        ...rest
+      } = state.cards
+
+      const {
+        [action.payload.processId]: processGroup,
+        ...unchangedProcessGroups
+      } = state.processCards || {}
+
+      const {
+      [action.payload.id]: removedCard, ...remaining
+    } = processGroup || {}
+
+      return {
+        ...state,
+        cards: {...rest},
+        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        pending: false,
+      }
+    }
+
+
     case GET + CARD + SUCCESS:
       return {
         ...state,
@@ -89,13 +127,13 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
+      const { [action.payload.cardId]: value, ...rest } = state.cards
       const {
 
         [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
         ...unchangedProcessGroups
 
-      } = state.processCards; // extracts payload lot from rest
+      } = state.processCards || {}
 
       return {
         ...state,

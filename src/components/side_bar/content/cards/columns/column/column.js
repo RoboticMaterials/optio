@@ -208,9 +208,12 @@ const Column = ((props) => {
 			if(addedIndex !== null) {
 				const {
 					binId,
-					id: cardId,
 					...remainingPayload
 				} = payload
+
+				const {
+					id: cardId
+				} = payload || {}
 
 				await dispatchSetDroppingLotId(cardId, binId)
 

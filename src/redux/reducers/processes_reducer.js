@@ -22,6 +22,10 @@ import {
 } from '../types/processes_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import {createActionType} from "../actions/redux_utils";
+import {REMOVE, SET} from "../types/prefixes";
+import {PROCESS} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
 
 const defaultState = {
     // processes: {'qqq':{
@@ -42,6 +46,25 @@ const processesReducer = (state = defaultState, action) => {
     let processesClone = {}
 
     switch (action.type) {
+
+        case createActionType([SET, PROCESS]): {
+            return {
+                ...state,
+                processes: {...state.processes, [action.payload.id]: {...action.payload}},
+            }
+        }
+
+        case createActionType([REMOVE, PROCESS]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.processes
+
+            return {
+                ...state,
+                processes: { ...remaining },
+            }
+        }
 
         // ======================================== //
         //                                          //

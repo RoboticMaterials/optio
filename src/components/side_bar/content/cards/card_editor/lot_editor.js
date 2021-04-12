@@ -1179,7 +1179,7 @@ const LotEditor = (props) => {
 		handleGetCard(cardId)
 		var timer = setInterval(()=> {
 			handleGetCard(cardId)
-			dispatchGetLotTemplates()
+			// dispatchGetLotTemplates()
 		},5000)
 
 		return () => {

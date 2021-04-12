@@ -41,6 +41,10 @@ import { mapArrayToObjById, deepCopy } from '../../methods/utils/utils';
 import { formatScheduleItem } from '../../methods/utils/data_utils';
 
 import * as api from '../../api/objects_api'
+import {createActionType} from "./redux_utils";
+import {REMOVE, SET} from "../types/prefixes";
+import {OBJECT} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
 
 // get
 // ******************************
@@ -188,6 +192,13 @@ export const deleteObject = (ID) => {
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export const setObject = (object) => {
+    return { type: createActionType([SET, OBJECT, SUCCESS]), payload: object }
+}
+
+export const removeObject = (id) => {
+    return { type: createActionType([REMOVE, OBJECT, SUCCESS]), payload: { id } }
+}
 
 export const addObject = (object) => {
     return { type: ADD_OBJECT, payload: { object } }
@@ -199,10 +210,6 @@ export const updateObject = (object) => {
 
 export const updateObjects = (objects) => {
     return { type: UPDATE_OBJECTS, payload: { objects } }
-}
-
-export const removeObject = (id) => {
-    return { type: REMOVE_OBJECT, payload: { id } }
 }
 
 export const setObjectAttributes = (attr) => {

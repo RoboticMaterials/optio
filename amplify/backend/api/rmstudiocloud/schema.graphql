@@ -1,7 +1,7 @@
 # User related
 
 type User 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [
     # allow all authenticated users
     { allow: owner },
@@ -19,7 +19,7 @@ type User
 }
 
 type Organization 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @key(name: "OrgsById", fields: ["organizationId"], queryField: "OrgsById" )
   @key(name: "OrgsByKey", fields: ["key"], queryField: "OrgsByKey" )
   @auth(rules: [
@@ -41,7 +41,7 @@ type Organization
 # Data related
 
 type Station
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [
     { allow: private }
     ])
@@ -68,7 +68,7 @@ type Station
 }
 
 type StationEvent
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [
     { allow: private }
     ])
@@ -89,7 +89,7 @@ type StationEvent
 }
 
 type Position
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "PositionsByOrgId", fields: ["organizationId"], queryField: "PositionsByOrgId" )
 {
@@ -114,7 +114,7 @@ type Position
 }
 
 type Task
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "TasksByOrgId", fields: ["organizationId"], queryField: "TasksByOrgId" )
   @key(name: "TaskById", fields: ["id"], queryField: "TaskById" )
@@ -141,7 +141,7 @@ type Task
 }
 
 type Process
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "ProcessesByOrgId", fields: ["organizationId"], queryField: "ProcessesByOrgId" )
 {
@@ -159,7 +159,7 @@ type Process
 }
 
 type Object 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "ObjectsByOrgId", fields: ["organizationId"], queryField: "ObjectsByOrgId" )
 {
@@ -179,7 +179,7 @@ type Object
 }
 
 type Card
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "CardsByOrgId", fields: ["organizationId"], queryField: "CardsByOrgId" )
   @key(name: "GetCardById", fields: ["id"], queryField: "GetCardById")
@@ -201,7 +201,7 @@ type Card
 }
 
 type CardEvent
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "CardsEventsByOrgId", fields: ["organizationId"], queryField: "CardsEventsByOrgId" )
 {
@@ -219,7 +219,7 @@ type CardEvent
 }
 
 type Settings 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "SettingsByOrgId", fields: ["organizationId"], queryField: "SettingsByOrgId" )
 {
@@ -245,7 +245,7 @@ type Settings
 }
 
 type LotTemplate 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "LotTemplatesByOrgId", fields: ["organizationId"], queryField: "LotTemplatesByOrgId" )
 {
@@ -263,7 +263,7 @@ type LotTemplate
 # Data stream
 
 type Device
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "DevicesByOrgId", fields: ["organizationId"], queryField: "DevicesByOrgId" )
 {
@@ -289,7 +289,7 @@ type Device
 }
 
 type Status 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "StatusByOrgId", fields: ["organizationId"], queryField: "StatusByOrgId" )
 {
@@ -306,7 +306,7 @@ type Status
 }
 
 type TaskQueue 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
 {
@@ -335,7 +335,7 @@ type TaskQueue
 }
 
 type TaskQueueEvents
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
 {
@@ -364,7 +364,7 @@ type TaskQueueEvents
 }
 
 type Dashboard 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "DashboardsByOrgId", fields: ["organizationId"], queryField: "DashboardsByOrgId" )
 {
@@ -408,7 +408,7 @@ type Map
 }
 
 type ReportEvent 
-  @model(queries: null, subscriptions: null)
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "ReportEventByOrgId", fields: ["organizationId"], queryField: "ReportEventByOrgId" )
 {
@@ -447,31 +447,40 @@ type MapData
 
 # Subs
 type Subscription {
+  onDeltaDashboard: Dashboard
+    @aws_subscribe(mutations: ["createDashboard","updateDashboard"])
+
+  onDeltaSettings: Settings
+    @aws_subscribe(mutations: ["createSettings","updateSettings"])
+
   onDeltaStation: Station
-    @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
+    @aws_subscribe(mutations: ["createStation","updateStation"])
 
   onDeltaPosition: Position
-    @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
+    @aws_subscribe(mutations: ["createPosition","updatePosition"])
 
   onDeltaTask: Task
-    @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
+    @aws_subscribe(mutations: ["createTask","updateTask"])
 
   onDeltaProcess: Process
-    @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
+    @aws_subscribe(mutations: ["createProcess","updateProcess"])
 
   onDeltaObject: Object
-    @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
+    @aws_subscribe(mutations: ["createObject","updateObject"])
 
   onDeltaCard: Card
-    @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
+    @aws_subscribe(mutations: ["createCard","updateCard"])
+
+  onDeltaLotTemplate: LotTemplate
+    @aws_subscribe(mutations: ["createLotTemplate","updateLotTemplate"])
 
   ## Data Stream Subscriptions  
 
   onDeltaDevice: Device
-    @aws_subscribe(mutations: ["createDevice","updateDevice","deleteDevice"])
+    @aws_subscribe(mutations: ["createDevice","updateDevice"])
 
   onDeltaStatus: Status
-    @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
+    @aws_subscribe(mutations: ["createStatus","updateStatus"])
 
   onDeltaTaskQueue: TaskQueue
     @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
