@@ -92,6 +92,7 @@ const TimelineZone = SortableContainer((props) => {
 	return(
 		<styled.Container>
 			<ZoneHeader
+				lotFilterValue={lotFilterValue}
 				selectedProcesses={selectedProcesses}
 				setSelectedProcesses={setSelectedProcesses}
 			/>

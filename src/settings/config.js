@@ -1,0 +1,1 @@
+export default { authenticationNeeded: true, UserPoolId: 'us-east-2_bwsONOHuA', ClientId: '67le6o8lbkc616or6cl5hvdh0p'}

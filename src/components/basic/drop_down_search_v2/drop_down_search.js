@@ -506,7 +506,7 @@ export class DropDownSearch extends Component {
     const { ItemComponent, ReactDropdownSelect, Container } = this.props;
 
     return (
-      <Container css={this.props.containerCss} className={this.props.className} style={!this.props.fixedHeight ? {paddingBottom: this.state.dropdownSize.offsetHeight} : {}}>
+      <Container css={this.props.containerCss} className={this.props.className} style={!this.props.fixedHeight ? {...this.props.containerStyle, paddingBottom: this.state.dropdownSize.offsetHeight} : this.props.containerStyle}>
         <ClickOutside ClickOutsideComponent={this.props.ClickOutsideComponent} onClickOutside={(event) => this.dropDown('close', event)}>
           <ReactDropdownSelect
             css={this.props.reactDropdownSelectCss}

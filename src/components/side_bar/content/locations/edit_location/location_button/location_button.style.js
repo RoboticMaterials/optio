@@ -22,6 +22,7 @@ export const LocationTypeButton = styled.div`
     margin: 0.5rem;
     position: relative;
     opacity: 0.999;
+    z-index: 10000;
 
     box-shadow: ${props => props.isSelected ? `none` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
 

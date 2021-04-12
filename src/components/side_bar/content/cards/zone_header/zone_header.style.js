@@ -1,6 +1,18 @@
 import styled, { css } from "styled-components";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
+// the margin bottom is needed for items in a flex-wrap container in order to maintain spacing when wrapped.
+// don't change unless you adjust everything else accordingly...
+const flexItemCss = css`
+  margin-bottom: 1rem;
+`
+
+// the margin bottom is necessary for spacing when wrapped. Don't change unless you know what you're doing...
+const flexContainerCss = css`
+	margin-bottom: -1rem;
+	flex-wrap: wrap;
+`
+
 const scrollCss = css`
 ::-webkit-scrollbar {
         width: 10px;
@@ -31,58 +43,77 @@ const scrollCss = css`
     }
 `
 
-export const Container = styled.div`
-	  display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    z-index: 20;
-    position: relative;
+export const SortFilterContainer = styled.div`
+	flex: 1;
+	display: flex;
+	flex-wrap: wrap;
+`
 
-  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-    flex-direction: column;
-    //align-items: center;
-    // max-width: 30rem;
-  }
+export const Container = styled.div`
+  ${flexContainerCss}; // uses flex-wrap. Don't change unless you know what you're doing...
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  z-index: 20;
+  position: relative;
+  flex-direction: row;
+  align-items: flex-end;
 `
 
 export const ColumnContainer = styled.div`
   display: flex;
-  
-  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-    flex-direction: row;
-    align-items: center;
-    margin: .5rem 0;
-  }
+  margin-right: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+  background: ${props => props.theme.bg.secondary};
+  padding: 1rem;
+  border-radius: .4rem;
   
   ${props => props.css && props.css};
+`
+
+export const ExpandContractIcon = styled.button`
+	${iconButtonCss};
+  margin-right: .5rem;
+  color: ${props => props.theme.textColor};
 `
 
 export const Description = styled.span`
-  color: ${props => props.theme.bg.octonary};
+  color: ${props => props.theme.textColor};
   white-space: nowrap;
-  margin-right: 0.5rem;
-
-  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-    margin-right: .5rem;
-  }
-  
   ${props => props.css && props.css};
+`
+
+export const ContentContainer = styled.div`
+  display: flex;
+  position: relative;
+  height: fit-content;
+  align-items: center;
+  flex: 1;
+  margin-top: .5rem;
 `
 
 
 
-export const ItemContainer = styled.div`
+export const OptionContainer = styled.div`
+	${flexItemCss};	// this element is used in flex-wrap containers - don't remove unless you adjust everything else accordingly...
+	align-self: stretch;
 	display: flex;
-	position: relative;
-	
-	flex: 1;
+	align-items: center;
+`
 
+// the margin bottom is needed for flex-wrap spacing. Don't change unless you adjust everything else accordingly...
+export const ItemContainer = styled.div`
+	${flexItemCss};	// this element is used in flex-wrap containers - don't remove unless you adjust everything else accordingly...
+	display: flex;
+	align-items: center;
+	
 	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-	  // height: fit-content;
+		flex-wrap: wrap;
 	}
-	@media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
-	  // align-self: stretch;
-	}
+  
+  
 `
 
 export const FlagsContainer = styled.div`
@@ -96,6 +127,8 @@ export const FlagsContainer = styled.div`
 export const rotateButtonContainerCss = css`
   border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem;
+  box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
+  background: ${props => props.theme.bg.tertiary};
 `
 
 export const rotateButtonIconCss = css`

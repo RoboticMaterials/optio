@@ -69,6 +69,7 @@ export const whiteGlow = css`
 export const iconButtonCss = `
   border: none;
   background: transparent;
+  padding: 0;
   outline: none !important;
 `
 

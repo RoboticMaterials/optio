@@ -202,6 +202,12 @@ const ListView = (props) => {
                           color={"black"}
                           onClick={() => {
                              setShowSettings(!showSettings)
+                              if(showSettings) {
+                                  history.push(`/`)
+                              }
+                              else {
+                                  history.push(`/settings`)
+                              }
                           }}
                           active={showSettings}
                           containerStyle={{
