@@ -87,25 +87,22 @@ def get_stats(stationId, info, output=False):
 
 def create_data(stationId, start_utc, end_utc, labels, output=False):
 
+    bins = linspace(start_utc, end_utc, len(labels)+1)
+
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(stationId) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
+        FilterExpression=Key('station').eq(stationId) # & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
     )
 
     events_data = station_events_response['Items']
 
-    # Fetch data
-    # TODO only fetch data from time frame to make scalable
     df = DataFrame(list(events_data))
 
     if len(df) > 0:
 
-        df.time = df.time.astype(float)
-
-        # Create bins for data
-        bins = linspace(0, len(df)-1, len(labels)+1)
-
         # Find unique ids
         unique_ids = df[0 : len(df)-1]['object'].unique()
+
+        df = df.set_index('time')
 
         # Bin data for each unique id
         data_dict = {}

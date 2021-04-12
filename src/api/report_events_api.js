@@ -81,18 +81,23 @@ export async function putReportEvent(reportEvent, ID) {
 export async function getReportAnalytics(stationId, timeSpan) {
     try {
 
-        const input = {
-            stationId,
-            timeSpan,
-            index: 0
-        }
-        
         const dataJson = await API.graphql({
             query: reportStats,
-            variables: { input: input }
+            variables: { 
+                stationId: stationId,
+                timeSpan: timeSpan.timespan, 
+                index: 0
+             }
         })
 
-        return dataJson;
+        let data = {
+            reports: JSON.parse(dataJson.data.reportStats.throughPut),
+            date_title: dataJson.data.reportStats.date
+          }
+
+        console.log(data);
+
+        return data;
 
     } catch (error) {
         // Error 😨

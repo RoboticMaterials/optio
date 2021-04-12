@@ -49,8 +49,6 @@ def handler(event, context):
 
     calculated_data = get_stats(stationId, info,  output)
 
-    print(calculated_data)
-
     return {
         'date': calculated_data['date_title'],
         'throughPut': calculated_data['reports']
@@ -71,51 +69,38 @@ def get_stats(stationId, info, output=False):
     
     return data
 
-def create_data(stationId, start_utc, end_utc, lables, output=False):
+def create_data(stationId, start_utc, end_utc, labels, output=False):
+
+    bins = linspace(start_utc, end_utc, len(labels)+1)
 
     station_events_response = table.scan(
-        FilterExpression=Key('stationId').eq(stationId) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
+        FilterExpression=Key('stationId').eq(stationId) #& Key('date').gt(Decimal(start_utc)) & Key('date').lt(Decimal(end_utc))
     )
     
     events_data = station_events_response['Items']
-
-    # Create bins for data
-    bins = linspace(start_utc, end_utc, len(lables)+1)
 
     df = DataFrame(list(events_data))
 
     if len(df) > 0:
 
-        df.time = df.time.astype(float)
-
-        # Create bins for data
-        bins = linspace(0, len(df)-1, len(labels)+1)
+        unique_ids = df[0 : len(df)-1]['reportButtonId'].unique()
         
         df = df.set_index('date')
-
-        # Find unique ids
-        unique_ids = df[start_utc : end_utc]['report_button_id'].unique()
         
         # Bin data for each unique id
         data_dict = {}
 
         for report_id in unique_ids:
-            df_1 = df[df['report_button_id'] == report_id]
+            df_1 = df[df['reportButtonId'] == report_id]
             times = df_1.index
-            data, edges = np.histogram(times, bins)
+            data, edges = histogram(times, bins)
             data_dict[report_id] = data
             
-            # Output graph
-            if len(times) > -1 and output:
-                print('Data', data)
-                plt.figure(figsize=(30,10))
-                plt.bar(lables, data, color='green')
-                plt.show()
 
         # Format data for frontend
         rtn_data = []
-        for i, lable in enumerate(lables):
-            temp_dict = {'lable':lable}
+        for i, label in enumerate(labels):
+            temp_dict = {'lable':label}
             for report_id in unique_ids:
                 temp_dict[report_id] = int(data_dict[report_id][i])
 
