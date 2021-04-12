@@ -15,6 +15,8 @@ import DashboardsSidebar, {OPERATION_TYPES} from "./dashboards_sidebar/dashboard
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
+import disableBrowserBackButton from 'disable-browser-back-navigation';
+
 import {
     getDashboards,
     setDashboardKickOffProcesses,
@@ -78,6 +80,10 @@ const DashboardsPage = (props) => {
         onUpdateKickoffFinishInfo()
 
     }, [processes])
+
+    useEffect(() => {
+        disableBrowserBackButton()
+    }, [])
 
     const onUpdateKickoffFinishInfo = async () => {
         // list of all processes that the station is the first station of the process
@@ -169,7 +175,7 @@ const DashboardsPage = (props) => {
             const dashID = dashboardType.dashboards[0]
             props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
         } catch (error) {
-            
+
         }
 
         return () => {

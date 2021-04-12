@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect,} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
 
@@ -56,8 +56,8 @@ const App = () => {
 
     const size = useWindowSize()
     const windowWidth = size.width
-
     const mobileMode = windowWidth < widthBreakPoint;
+
 
     useEffect(() => {
       handleLoadLocalData();

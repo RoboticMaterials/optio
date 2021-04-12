@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
-
 // import components
 import WidgetPages from './widget_pages/widget_pages'
 import WidgetButton from './widget_button/widget_button'
@@ -69,6 +68,7 @@ const Widgets = (props) => {
     // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
+
 
         // setTimeout(() => dispatchWidgetLoaded(true), 100)
         dispatchWidgetLoaded(true)
