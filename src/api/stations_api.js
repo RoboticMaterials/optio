@@ -45,7 +45,7 @@ export async function getStations() {
         dashboards: JSON.parse(element.dashboards),
       })
     });
-
+    
     // Success 🎉;
     return GQLdata
 
@@ -77,6 +77,8 @@ export async function postStation(station) {
 
     const userOrgId = await getUserOrgId()
 
+    console.log(station);
+
     const input = {
       ...station,
       organizationId: userOrgId,
@@ -93,7 +95,9 @@ export async function postStation(station) {
 
     const dataJson = await API.graphql({
       query: createStation,
-      variables: { input: input }
+      variables: { 
+        input: input 
+      }
     })
 
     return {
@@ -128,8 +132,6 @@ export async function putStation(station, ID) {
       query: updateStation,
       variables: { input: input }
     })
-
-    console.log("put dashbaord dataJson",dataJson)
 
     return dataJson;
   } catch (error) {

@@ -10,8 +10,6 @@ export const mirURL = (url) => {
 };
 
 export const apiIPAddress = () => {
-    const storeState = store.getState();
-    let apiIPAddress = "";
 
     let localSettings = ls.get("localSettings")
     let parsedLocalSettings = JSON.parse(localSettings)
@@ -25,17 +23,12 @@ export const apiIPAddress = () => {
     if (!!hostServerIpAddress) {
         // If there is no api use the local host
         if (nonLocalIp===false) {
-            return apiIPAddress = 'http://' + '3.140.4.189' + ':5000/api/'
+            return 'http://localhost:5000/api/'
         } else {
-            return apiIPAddress = 'http://' + 
-                                    '3.140.4.189' //hostServerIpAddress MAKE SURE TO PUT THIS BACK
-                                    + ':5000/api/'
-
+            return 'http://' +  hostServerIpAddress + ':5000/api/'
         }
     } else {
-        return 'http://' +
-         '3.140.4.189' //window.location.hostname MAKE SURE TO PUT THIS BACK
-         + ':5000/api/'
+        return 'http://' + window.location.hostname + ':5000/api/'
     }
 
 };

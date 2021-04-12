@@ -78,6 +78,13 @@ export const reportStats = /* GraphQL */ `
     }
   }
 `;
+export const createBlankMap = /* GraphQL */ `
+  mutation CreateBlankMap($organizationId: String!) {
+    createBlankMap(organizationId: $organizationId) {
+      posted
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!
@@ -1143,6 +1150,90 @@ export const deleteDashboard = /* GraphQL */ `
       createdAt
       updatedAt
       data
+    }
+  }
+`;
+export const createMap = /* GraphQL */ `
+  mutation CreateMap(
+    $input: CreateMapInput!
+    $condition: ModelMapConditionInput
+  ) {
+    createMap(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      allowed_methods
+      created_by
+      created_by_id
+      created_by_name
+      map
+      name
+      one_way_map
+      origin_theta
+      origin_x
+      origin_y
+      path_guides
+      paths
+      positions
+      resolution
+      session_id
+    }
+  }
+`;
+export const updateMap = /* GraphQL */ `
+  mutation UpdateMap(
+    $input: UpdateMapInput!
+    $condition: ModelMapConditionInput
+  ) {
+    updateMap(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      allowed_methods
+      created_by
+      created_by_id
+      created_by_name
+      map
+      name
+      one_way_map
+      origin_theta
+      origin_x
+      origin_y
+      path_guides
+      paths
+      positions
+      resolution
+      session_id
+    }
+  }
+`;
+export const deleteMap = /* GraphQL */ `
+  mutation DeleteMap(
+    $input: DeleteMapInput!
+    $condition: ModelMapConditionInput
+  ) {
+    deleteMap(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      allowed_methods
+      created_by
+      created_by_id
+      created_by_name
+      map
+      name
+      one_way_map
+      origin_theta
+      origin_x
+      origin_y
+      path_guides
+      paths
+      positions
+      resolution
+      session_id
     }
   }
 `;

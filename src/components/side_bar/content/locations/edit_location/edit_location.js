@@ -103,6 +103,7 @@ const EditLocation = (props) => {
         if (!!selectedStation) {
             const copyStation = deepCopy(selectedStation)
             copyStation.name = name
+            console.log(selectedStation);
             // Post
             if (!!copyStation.new) {
                 await dispatchPostStation(copyStation)
@@ -131,7 +132,7 @@ const EditLocation = (props) => {
         }
 
         else {
-            throw ('You son of a bitch Trebech')
+            throw ('Error')
         }
 
         onBack(true)

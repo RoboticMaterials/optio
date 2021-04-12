@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "auth": {
+      "rmstudiocloud298656c6": [
+        "create"
+      ]
+    },
+    "api": {
+      "rmstudiocloud": [
+        "Mutation"
+      ]
+    },
+    "storage": {
+      "Map:@model(appsync)": [
+        "create"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

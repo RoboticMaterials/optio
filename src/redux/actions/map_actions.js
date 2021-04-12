@@ -39,8 +39,7 @@ export const getMaps = () => {
       const maps = await api.getMaps();
       return onSuccess(maps.map((currMap) => {
           return {
-              ...currMap,
-              id: currMap._id
+              ...currMap
           }
       }));
     } catch (error) {

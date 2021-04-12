@@ -635,6 +635,46 @@ export const dashboardsByOrgId = /* GraphQL */ `
     }
   }
 `;
+export const mapsByOrgId = /* GraphQL */ `
+  query MapsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelMapFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    MapsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        allowed_methods
+        created_by
+        created_by_id
+        created_by_name
+        map
+        name
+        one_way_map
+        origin_theta
+        origin_x
+        origin_y
+        path_guides
+        paths
+        positions
+        resolution
+        session_id
+      }
+      nextToken
+    }
+  }
+`;
 export const reportEventByOrgId = /* GraphQL */ `
   query ReportEventByOrgId(
     $organizationId: ID

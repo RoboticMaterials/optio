@@ -1,104 +1,60 @@
-import axios from 'axios';
+/** 
+ * All of the API calls for Map 
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 9 20201
+ * Edited by: Daniel Castillo
+ * 
+ **/
 
-import {apiIPAddress} from '../settings/settings';
+// logging for error in API
+import errorLog from './errorLogging'
 
-import log from '../logger';
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
 
-const logger = log.getLogger('Map_Api', "Map");
+// import the GraphQL queries, mutations and subscriptions
+import { mapsByOrgId } from '../graphql/queries.ts'
 
-const operator = 'site_maps';
+import getUserOrgId from './user_api'
 
 export async function getMaps() {
   try {
-    const response = await axios({
-      method: 'GET',
-      url: apiIPAddress() + operator,
-      headers: {
-        'X-API-Key': '123456',
-        'Access-Control-Allow-Origin': '*'
-    }
-    });
+    const userOrgId = await getUserOrgId()
 
-    // Success 🎉
-    // log.debug('res',response);
+    const res = await API.graphql({
+        query: mapsByOrgId,
+        variables: { organizationId: userOrgId }
+      })
 
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-
-    return dataJson;
-
+    return res.data.MapsByOrgId.items;
 
 } catch (error) {
-
     // Error 😨
-    if (error.response) {
-        /*
-         * The request was made and the server responded with a
-         * status code that falls out of the range of 2xx
-         */
-        logger.debug('error.response.data', error.response.data);
-        logger.debug('error.response.status',error.response.status);
-        logger.debug('error.response.headers',error.response.headers);
-    } else if (error.request) {
-        /*
-         * The request was made but no response was received, `error.request`
-         * is an instance of XMLHttpRequest in the browser and an instance
-         * of http.ClientRequest in Node.js
-         */
-        logger.debug('error.request', error.request);
-    } else {
-        // Something happened in setting up the request and triggered an Error
-        logger.debug('error.message', error.message);
-    }
-
-    logger.debug('error', error);
-    throw error;
+    errorLog(error)
   }
-
-
 }
 
 export async function getMap(mapId) {
   try {
-    const response = await axios({
-      method: 'GET',
-      url: apiIPAddress() + operator + '/' + mapId,
-      headers: {
-        'Accept': 'application/json',
-        'X-API-Key': '123456',
-      },
-  });
+    console.log('mapmapmapmap');
 
-  // Success 🎉
-  logger.debug('getMap: response',response);
+    const userOrgId = await getUserOrgId()
 
-  const data = response.data;
-  const dataJson = JSON.parse(data)
-  return dataJson;
+    const res = await API.graphql({
+        query: mapsByOrgId,
+        variables: { 
+          organizationId: userOrgId,
+          filter: {id: {eq: mapId}}
+         }
+      })
 
+    return res.data.MapsByOrgId.items[0] ? res.data.MapsByOrgId.items[0] : {}
 
   } catch (error) {
-
       // Error 😨
-      if (error.response) {
-          /*
-           * The request was made and the server responded with a
-           * status code that falls out of the range of 2xx
-           */
-          logger.debug('error.response.data', error.response.data);
-          logger.debug('error.response.status',error.response.status);
-          logger.debug('error.response.headers',error.response.headers);
-      } else if (error.request) {
-          /*
-           * The request was made but no response was received, `error.request`
-           * is an instance of XMLHttpRequest in the browser and an instance
-           * of http.ClientRequest in Node.js
-           */
-          logger.debug('error.request', error.request);
-      } else {
-          // Something happened in setting up the request and triggered an Error
-          logger.debug('error.message', error.message);
-      }
-      logger.debug('error', error);
+      errorLog(error)
     }
 }

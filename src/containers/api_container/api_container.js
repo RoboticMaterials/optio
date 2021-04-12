@@ -337,7 +337,10 @@ const ApiContainer = (props) => {
         const positions = await onGetPositions()
         const dashboards = await onGetDashboards()
         const objects = await onGetObjects()
-        const sounds = await onGetSounds()
+
+        // Dont needs sounds right now
+        // const sounds = await onGetSounds()
+        
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()

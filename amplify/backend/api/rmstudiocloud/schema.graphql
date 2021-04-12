@@ -378,6 +378,35 @@ type Dashboard
   data: AWSJSON!
 }
 
+type Map
+  @model (queries: null, subscriptions: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "MapsByOrgId", fields: ["organizationId"], queryField: "MapsByOrgId" )
+{
+   # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  allowed_methods: AWSJSON
+  created_by: String
+  created_by_id: String
+  created_by_name: String
+  map: String!
+  name: String
+  one_way_map: String
+  origin_theta: Int
+  origin_x: Int
+  origin_y: Int
+  path_guides: String
+  paths: String
+  positions: String
+  resolution: Float
+  session_id: String
+}
+
 type ReportEvent 
   @model(queries: null, subscriptions: null)
   @auth(rules: [{ allow: private }])
@@ -409,6 +438,11 @@ type ReportStatsData
 {
   date: String!
   throughPut: AWSJSON!
+}
+
+type MapData 
+{
+  posted: Boolean
 }
 
 # Subs
@@ -449,4 +483,5 @@ type Mutation {
   taskStats(taskId: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
   stationStats(stationId: ID!, timeSpan: String!, index: Int!, sortKey: String): StationStatsData @function(name: "stationStats-${env}")
   reportStats(stationId: ID!, timeSpan: String!, index: Int!): ReportStatsData @function(name: "reportStats-${env}")
+  createBlankMap(organizationId: String!): MapData @function(name: "createBlankMap-${env}")
 }

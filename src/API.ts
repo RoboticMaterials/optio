@@ -38,6 +38,11 @@ export type ReportStatsData = {
   throughPut?: string,
 };
 
+export type MapData = {
+  __typename: "MapData",
+  posted?: boolean | null,
+};
+
 export type CreateUserInput = {
   id?: string | null,
   organizationId: string,
@@ -1199,6 +1204,101 @@ export type DeleteDashboardInput = {
   id?: string | null,
 };
 
+export type CreateMapInput = {
+  id?: string | null,
+  organizationId: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  allowed_methods?: string | null,
+  created_by?: string | null,
+  created_by_id?: string | null,
+  created_by_name?: string | null,
+  map: string,
+  name?: string | null,
+  one_way_map?: string | null,
+  origin_theta?: number | null,
+  origin_x?: number | null,
+  origin_y?: number | null,
+  path_guides?: string | null,
+  paths?: string | null,
+  positions?: string | null,
+  resolution?: number | null,
+  session_id?: string | null,
+};
+
+export type ModelMapConditionInput = {
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  allowed_methods?: ModelStringInput | null,
+  created_by?: ModelStringInput | null,
+  created_by_id?: ModelStringInput | null,
+  created_by_name?: ModelStringInput | null,
+  map?: ModelStringInput | null,
+  name?: ModelStringInput | null,
+  one_way_map?: ModelStringInput | null,
+  origin_theta?: ModelIntInput | null,
+  origin_x?: ModelIntInput | null,
+  origin_y?: ModelIntInput | null,
+  path_guides?: ModelStringInput | null,
+  paths?: ModelStringInput | null,
+  positions?: ModelStringInput | null,
+  resolution?: ModelFloatInput | null,
+  session_id?: ModelStringInput | null,
+  and?: Array< ModelMapConditionInput | null > | null,
+  or?: Array< ModelMapConditionInput | null > | null,
+  not?: ModelMapConditionInput | null,
+};
+
+export type Map = {
+  __typename: "Map",
+  id?: string,
+  organizationId?: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  allowed_methods?: string | null,
+  created_by?: string | null,
+  created_by_id?: string | null,
+  created_by_name?: string | null,
+  map?: string,
+  name?: string | null,
+  one_way_map?: string | null,
+  origin_theta?: number | null,
+  origin_x?: number | null,
+  origin_y?: number | null,
+  path_guides?: string | null,
+  paths?: string | null,
+  positions?: string | null,
+  resolution?: number | null,
+  session_id?: string | null,
+};
+
+export type UpdateMapInput = {
+  id: string,
+  organizationId?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  allowed_methods?: string | null,
+  created_by?: string | null,
+  created_by_id?: string | null,
+  created_by_name?: string | null,
+  map?: string | null,
+  name?: string | null,
+  one_way_map?: string | null,
+  origin_theta?: number | null,
+  origin_x?: number | null,
+  origin_y?: number | null,
+  path_guides?: string | null,
+  paths?: string | null,
+  positions?: string | null,
+  resolution?: number | null,
+  session_id?: string | null,
+};
+
+export type DeleteMapInput = {
+  id?: string | null,
+};
+
 export type CreateReportEventInput = {
   id?: string | null,
   organizationId: string,
@@ -1615,6 +1715,37 @@ export type ModelDashboardConnection = {
   nextToken?: string | null,
 };
 
+export type ModelMapFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  allowed_methods?: ModelStringInput | null,
+  created_by?: ModelStringInput | null,
+  created_by_id?: ModelStringInput | null,
+  created_by_name?: ModelStringInput | null,
+  map?: ModelStringInput | null,
+  name?: ModelStringInput | null,
+  one_way_map?: ModelStringInput | null,
+  origin_theta?: ModelIntInput | null,
+  origin_x?: ModelIntInput | null,
+  origin_y?: ModelIntInput | null,
+  path_guides?: ModelStringInput | null,
+  paths?: ModelStringInput | null,
+  positions?: ModelStringInput | null,
+  resolution?: ModelFloatInput | null,
+  session_id?: ModelStringInput | null,
+  and?: Array< ModelMapFilterInput | null > | null,
+  or?: Array< ModelMapFilterInput | null > | null,
+  not?: ModelMapFilterInput | null,
+};
+
+export type ModelMapConnection = {
+  __typename: "ModelMapConnection",
+  items?:  Array<Map | null > | null,
+  nextToken?: string | null,
+};
+
 export type ModelReportEventFilterInput = {
   id?: ModelIDInput | null,
   organizationId?: ModelIDInput | null,
@@ -1720,6 +1851,17 @@ export type ReportStatsMutation = {
     __typename: "ReportStatsData",
     date: string,
     throughPut: string,
+  } | null,
+};
+
+export type CreateBlankMapMutationVariables = {
+  organizationId?: string,
+};
+
+export type CreateBlankMapMutation = {
+  createBlankMap?:  {
+    __typename: "MapData",
+    posted?: boolean | null,
   } | null,
 };
 
@@ -2899,6 +3041,96 @@ export type DeleteDashboardMutation = {
   } | null,
 };
 
+export type CreateMapMutationVariables = {
+  input?: CreateMapInput,
+  condition?: ModelMapConditionInput | null,
+};
+
+export type CreateMapMutation = {
+  createMap?:  {
+    __typename: "Map",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    allowed_methods?: string | null,
+    created_by?: string | null,
+    created_by_id?: string | null,
+    created_by_name?: string | null,
+    map: string,
+    name?: string | null,
+    one_way_map?: string | null,
+    origin_theta?: number | null,
+    origin_x?: number | null,
+    origin_y?: number | null,
+    path_guides?: string | null,
+    paths?: string | null,
+    positions?: string | null,
+    resolution?: number | null,
+    session_id?: string | null,
+  } | null,
+};
+
+export type UpdateMapMutationVariables = {
+  input?: UpdateMapInput,
+  condition?: ModelMapConditionInput | null,
+};
+
+export type UpdateMapMutation = {
+  updateMap?:  {
+    __typename: "Map",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    allowed_methods?: string | null,
+    created_by?: string | null,
+    created_by_id?: string | null,
+    created_by_name?: string | null,
+    map: string,
+    name?: string | null,
+    one_way_map?: string | null,
+    origin_theta?: number | null,
+    origin_x?: number | null,
+    origin_y?: number | null,
+    path_guides?: string | null,
+    paths?: string | null,
+    positions?: string | null,
+    resolution?: number | null,
+    session_id?: string | null,
+  } | null,
+};
+
+export type DeleteMapMutationVariables = {
+  input?: DeleteMapInput,
+  condition?: ModelMapConditionInput | null,
+};
+
+export type DeleteMapMutation = {
+  deleteMap?:  {
+    __typename: "Map",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    allowed_methods?: string | null,
+    created_by?: string | null,
+    created_by_id?: string | null,
+    created_by_name?: string | null,
+    map: string,
+    name?: string | null,
+    one_way_map?: string | null,
+    origin_theta?: number | null,
+    origin_x?: number | null,
+    origin_y?: number | null,
+    path_guides?: string | null,
+    paths?: string | null,
+    positions?: string | null,
+    resolution?: number | null,
+    session_id?: string | null,
+  } | null,
+};
+
 export type CreateReportEventMutationVariables = {
   input?: CreateReportEventInput,
   condition?: ModelReportEventConditionInput | null,
@@ -3524,6 +3756,43 @@ export type DashboardsByOrgIdQuery = {
       createdAt?: string | null,
       updatedAt?: string | null,
       data: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type MapsByOrgIdQueryVariables = {
+  organizationId?: string | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelMapFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type MapsByOrgIdQuery = {
+  MapsByOrgId?:  {
+    __typename: "ModelMapConnection",
+    items?:  Array< {
+      __typename: "Map",
+      id: string,
+      organizationId: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      allowed_methods?: string | null,
+      created_by?: string | null,
+      created_by_id?: string | null,
+      created_by_name?: string | null,
+      map: string,
+      name?: string | null,
+      one_way_map?: string | null,
+      origin_theta?: number | null,
+      origin_x?: number | null,
+      origin_y?: number | null,
+      path_guides?: string | null,
+      paths?: string | null,
+      positions?: string | null,
+      resolution?: number | null,
+      session_id?: string | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,

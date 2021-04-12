@@ -51,17 +51,6 @@ const ErrorTooltip = (props) => {
         //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
     )
 
-    // useEffect(() => {console.log('rebuild'); ReactTooltip.rebuild()}, [tooltip])
-
-
-    // useEffect(() => {
-    //     if (autoFocus) {
-    //         inputRef.current.focus();
-    //     } else {
-    //         inputRef.current.blur();
-    //     }
-    // }, [autoFocus]);
-
     return (
 
         <ContainerComponent

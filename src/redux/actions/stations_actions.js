@@ -97,6 +97,7 @@ export const postStation = (station) => {
             onStart();
             let stationCopy = deepCopy(station)
             stationCopy = await dispatch(onPostStation(stationCopy))
+
             delete stationCopy.temp
             delete stationCopy.new
             const newStation = await api.postStation(stationCopy);
