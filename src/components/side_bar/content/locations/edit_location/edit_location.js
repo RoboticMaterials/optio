@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
@@ -34,7 +34,8 @@ import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
 const EditLocation = (props) => {
     const dispatch = useDispatch()
-
+    let selectedLocationRef = useRef()
+    let selectedStationChildrenCopyRef = useRef()
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -73,6 +74,7 @@ const EditLocation = (props) => {
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
+    const [isLocationDragging, setIsLocationDragging] = useState(false)
 
     const [newName, setNewName] = useState('')
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -92,6 +94,17 @@ const EditLocation = (props) => {
             // dispatchSetSelectedStationChildrenCopy(null)
         }
     }, [])
+
+
+    // These 2 useEffects use refs for onBack()
+    // Since onback is called in the return statement of the usseffect that runs when the component mounts, it keeps in memory the current state on load (redux, useState, etc...)
+    // So this ref will pass in the actual state vs the old state that the useEffect has
+    useEffect(() => {
+        selectedLocationRef.current = selectedLocation
+    }, [selectedLocation])
+    useEffect(() => {
+        selectedStationChildrenCopyRef.current = selectedStationChildrenCopy
+    }, [selectedStationChildrenCopy])
 
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
@@ -144,15 +157,15 @@ const EditLocation = (props) => {
     const onDelete = async () => {
 
         // Station
-        if(!!selectedLocation){
-          if (selectedLocation.schema === 'station') {
-              await dispatchDeleteStation(selectedStation._id)
-          }
+        if (!!selectedLocation) {
+            if (selectedLocation.schema === 'station') {
+                await dispatchDeleteStation(selectedStation._id)
+            }
 
-          // Position
-          else {
-              await dispatchDeletePosition(selectedPosition._id)
-          }
+            // Position
+            else {
+                await dispatchDeletePosition(selectedPosition._id)
+            }
         }
 
         // Adding true to save even though you arent saving
@@ -173,26 +186,24 @@ const EditLocation = (props) => {
         dispatchSetEditingPosition(false)
 
         // If theres a children copy check the children
-        if (!!selectedStationChildrenCopy) {
-            Object.values(selectedStationChildrenCopy).forEach(child => {
+        if (!!selectedStationChildrenCopyRef.current) {
+            Object.values(selectedStationChildrenCopyRef.current).forEach(child => {
                 // If it's a new child remove the position
                 if (!!child.new) {
-
-                    dispatchRemovePosition(child._id)
-
+                    dispatchDeletePosition(child._id)
                 }
             })
         }
         dispatchSetSelectedStationChildrenCopy(null)
 
         // If there's a selected location and its new without saving, then delete
-        if (!!selectedLocation && !!selectedLocation.new && !save) {
-            if (selectedLocation.schema === 'station') {
-                dispatchRemoveStation(selectedLocation._id)
+        if (!!selectedLocationRef.current && !!selectedLocationRef.current.new && !save) {
+            if (selectedLocationRef.current.schema === 'station') {
+                dispatchRemoveStation(selectedLocationRef.current._id)
             }
 
-            else if (selectedLocation.schema === 'position') {
-                dispatchRemovePosition(selectedLocation._id)
+            else if (selectedLocationRef.current.schema === 'position') {
+                dispatchDeletePosition(selectedLocationRef.current._id)
             }
         }
 
@@ -212,6 +223,7 @@ const EditLocation = (props) => {
         defaultAttributes['name'] = newName
         defaultAttributes['map_id'] = currentMap._id
         defaultAttributes['_id'] = uuid.v4()
+        defaultAttributes['temp'] = true
 
         const attributes = deepCopy(LocationTypes[type].attributes)
 
@@ -219,6 +231,7 @@ const EditLocation = (props) => {
             ...defaultAttributes,
             ...attributes
         }
+
 
         // Handle Station addition
         if (attributes.schema === 'station') {
@@ -234,6 +247,27 @@ const EditLocation = (props) => {
 
         else {
             throw ('Schema Does Not exist')
+        }
+    }
+
+    const onRemoveTempLocation = async () => {
+
+        console.log("deleteLoc")
+
+        // Station
+        if(!!selectedLocation && selectedLocation.temp){
+          if (selectedLocation.schema === 'station') {
+              await dispatchRemoveStation(selectedStation._id)
+          }
+
+          // Position
+          else {
+              await dispatchRemovePosition(selectedPosition._id)
+          }
+          
+            dispatchSetSelectedStationChildrenCopy(null)
+            dispatchSetSelectedPosition(null)
+            dispatchSetSelectedStation(null)
         }
     }
 
@@ -317,7 +351,7 @@ const EditLocation = (props) => {
         return types.map((type, i) => {
             const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
-                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation}/>
             )
         })
 
@@ -336,7 +370,7 @@ const EditLocation = (props) => {
 
     return (
         <>
-            <styled.ContentContainer style={{padding: '0'}}>
+            <styled.ContentContainer style={{ padding: '0' }}>
 
                 <ConfirmDeleteModal
                     isOpen={!!confirmDeleteModal}
@@ -405,42 +439,42 @@ const EditLocation = (props) => {
                                         e.preventDefault();
                                     }
                                 }}
-                                style={{flex: '1', margin: '0'}}
+                                style={{ flex: '1', margin: '0' }}
                             >
-                                <styled.ContentContainer style={{height: '100%'}}>
+                                <styled.ContentContainer style={{ height: '100%' }}>
 
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <ContentHeader
-                                        content={'locations'}
-                                        disabled = {selectedLocation === null}
-                                        mode={'create'}
-                                        onClickBack={pageInfoChanged ? () => setConfirmExitModal(true) : () =>onBack()}
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <ContentHeader
+                                            content={'locations'}
+                                            disabled={selectedLocation === null}
+                                            mode={'create'}
+                                            onClickBack={pageInfoChanged ? () => setConfirmExitModal(true) : () => onBack()}
+                                        />
+                                    </div>
+
+                                    <TextField
+                                        name={"locationName"}
+                                        changed={() => handlePageDataChange()}
+                                        textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
+                                        placeholder='Enter Location Name'
+                                        type='text'
+                                        label='Location Name'
+                                        schema='locations'
+                                        InputComponent={Textbox}
+                                        style={{
+                                            'fontSize': '1.2rem',
+                                            'fontWeight': '600',
+                                            'marginBottom': '.5rem',
+                                            'marginTop': '0',
+                                        }}
                                     />
-                                </div>
-
-                                <TextField
-                                    name={"locationName"}
-                                    changed={() => handlePageDataChange()}
-                                    textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
-                                    placeholder='Enter Location Name'
-                                    type='text'
-                                    label='Location Name'
-                                    schema='locations'
-                                    InputComponent={Textbox}
-                                    style={{
-                                        'fontSize': '1.2rem',
-                                        'fontWeight': '600',
-                                        'marginBottom': '.5rem',
-                                        'marginTop': '0',
-                                    }}
-                                />
 
                                 {/* Location Type */}
                                 <styled.DefaultTypesContainer>
 
-                                {!selectedLocation ?
+                                {!selectedLocation || selectedLocation.temp ?
                                     <>
-                                        <styled.LocationTypeContainer>
+                                        <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
                                             <styled.Label schema={'locations'}>Stations</styled.Label>
                                             <styled.LocationButtonConatiner>
                                                 {renderStationButtons()}
@@ -451,62 +485,62 @@ const EditLocation = (props) => {
                                                 <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
                                             </styled.LocationButtonSubtitleContainer> */}
 
-                                        </styled.LocationTypeContainer>
+                                                </styled.LocationTypeContainer>
 
                                         {deviceEnabled &&
-                                            <styled.LocationTypeContainer>
+                                            <styled.LocationTypeContainer  onMouseUp={onRemoveTempLocation}>
                                                 <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
                                                 <styled.LocationButtonConatiner>
                                                     {renderPositionButtons()}
                                                 </styled.LocationButtonConatiner>
 
-                                                {/* <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
+                                                        {/* <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
                                                     <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
                                                     <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
                                                 </styled.LocationButtonSubtitleContainer> */}
 
-                                            </styled.LocationTypeContainer>
+                                                    </styled.LocationTypeContainer>
+                                                }
+                                            </>
+
+                                            :
+                                            <LocationButton
+                                                type={selectedLocation['type']}
+                                                isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
+                                                handleAddLocation={() => null}
+                                            />
+
                                         }
-                                    </>
 
-                                    :
-                                    <LocationButton
-                                        type={selectedLocation['type']}
-                                        isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
-                                        handleAddLocation={() => null}
-                                    />
+                                    </styled.DefaultTypesContainer>
 
-                                }
+                                    {(!!selectedLocation && selectedLocation.schema === 'station') ?
 
-                                </styled.DefaultTypesContainer>
-
-                                {(!!selectedLocation && selectedLocation.schema === 'station') ?
-
-                                <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                                :
-                                <>
-                                    {!!deviceEnabled && !!selectedLocation &&
-                                        <Button
-                                            schema={'locations'}
-                                            secondary
-                                            onClick={() => {
-                                                handleSetPositionToCartCoords()
-                                                dispatchPageDataChanged(true)
-                                            }}
-                                            style={{ marginBottom: '1rem'}}
-                                        >
-                                            Use Cart Location
+                                        <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                        :
+                                        <>
+                                            {!!deviceEnabled && !!selectedLocation &&
+                                                <Button
+                                                    schema={'locations'}
+                                                    secondary
+                                                    onClick={() => {
+                                                        handleSetPositionToCartCoords()
+                                                        dispatchPageDataChanged(true)
+                                                    }}
+                                                    style={{ marginBottom: '1rem' }}
+                                                >
+                                                    Use Cart Location
                                     </Button>
+                                            }
+                                        </>
+
                                     }
-                                </>
-
-                                }
-                                <div style={{ height: "100%" }}></div>
+                                    <div style={{ height: "100%" }}></div>
 
 
-                                {/* Delete Location Button */}
-                                <Button type={'submit'} schema={'locations'} onClick={() => {}} >Save Location</Button>
-                                <Button schema = {'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                    {/* Delete Location Button */}
+                                    <Button type={'submit'} schema={'locations'} onClick={() => { }} >Save Location</Button>
+                                    <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
                         )

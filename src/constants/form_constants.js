@@ -6,6 +6,7 @@ export const LOT_TEMPLATES_RESERVED_FIELD_NAMES = {
 	MOVE_COUNT: "moveCount",
 	MOVE_LOCATION: "moveLocation",
 	NAME: "name",
+	QUANTITY: "quantity",
 	BINS: "bins",
 }
 

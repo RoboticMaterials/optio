@@ -55,7 +55,7 @@ export const SidebarWrapper = styled.div`
     // flex-grow: 0;
 
     background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
-    overflow: hidden;
+    overflow: hidden !important;
 `
 
 export const SidebarContent = styled.div`
@@ -71,7 +71,8 @@ export const SidebarContent = styled.div`
     // border-right: 8px solid ${props => props.theme.bg.quinary};
 
     background-color: ${props => hexToRGBA(props.theme.bg.primary, 0.97)};
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 
 `
 

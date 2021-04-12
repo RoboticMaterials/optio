@@ -103,7 +103,9 @@ const DeviceSchedule = (props) => {
                                             valueField={"_id"}
                                             options={Object.values(positions).filter(positions=>(positions.map_id === currentMap._id))}
                                             mapInput={(val) => {
-                                                return [positions[val]]
+                                                if (!!positions[val]) {
+                                                    return [positions[val]]
+                                                }
                                             }}
                                             mapOutput={(val) => {
                                                 return val[0]._id

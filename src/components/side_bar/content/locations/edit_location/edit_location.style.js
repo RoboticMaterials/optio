@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import * as stylel from '../locations_content.style'
 
 export const ContentContainer = styled(stylel.ContentContainer)`
+
 `
 
 export const Label = styled(stylel.Label)`

@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 
+// styles
 import * as styled from "./rotate_button.style"
 
+// component constant
 const STATES = {
 	STATE_ONE: "STATE_ONE",
 	STATE_TWO: "STATE_TWO"
 }
-
 
 const RotateButton = props => {
 	const {
@@ -18,13 +19,15 @@ const RotateButton = props => {
 		containerCss,
 		iconCss,
 		schema
-
 	} = props
 
-	const [currentState, setCurrentState] = useState(STATES.STATE_ONE)
+	const [currentState, setCurrentState] = useState(STATES.STATE_ONE)	// rotation state
 	const [rotate, setRotate] = useState(false)
 
 
+	/*
+	* sets rotate when currentState changes and calls appropriate callback funcs
+	* */
 	useEffect(() => {
 		if(currentState === STATES.STATE_ONE) {
 			setRotate(false)
@@ -52,9 +55,7 @@ const RotateButton = props => {
 				rotationTime={rotationTime}
 				className={iconName1}
 			>
-
 			</styled.Icon>
-
 		</styled.Container>
 	)
 }
