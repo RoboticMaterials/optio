@@ -14,6 +14,7 @@ export const CARD = 'CARD';
 export const CARDS = 'CARDS';
 export const SHOW_EDITOR = 'CARDS';
 export const SHOW_FORM_EDITOR = 'SHOW__FORM_EDITOR';
+export const SETTINGS = 'SETTINGS';
 export const LOT = 'LOT';
 export const LOT_TEMPLATE = 'LOT_TEMPLATE';
 export const LOT_TEMPLATES = 'LOT_TEMPLATES';

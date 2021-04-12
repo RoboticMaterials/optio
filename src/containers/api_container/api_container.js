@@ -233,7 +233,6 @@ const ApiContainer = (props) => {
             }
         }
 
-        console.log("setDataInterval pageName",pageName)
         // set new interval for specific page
         switch (pageName) {
 
@@ -259,7 +258,7 @@ const ApiContainer = (props) => {
             }
 
             case 'settings': {
-                setCurrentSubscriptions(await loadSettingsData())
+                setCurrentSubscriptions(await getSettingsSubscription())
                 break
             }
 
@@ -472,17 +471,12 @@ const ApiContainer = (props) => {
         let subs = []
         const convertedName = toPascalCase(resourceName)
 
-        console.log("Subscribing to resource delta: ",convertedName)
-        // subscriptions.onDeltaLotTemplate
+        // NOTE: need to subscribe to delete events separately in order to know to remove item from redux instead of insert / replace
+        console.debug("Subscribing to resource delta: ",convertedName)
         subs.push(await streamlinedSubscription(subscriptions[`onDelta${convertedName}`], (data) => dispatch({ type: createActionType([SET, resourceName]), payload: data }), DATA_PARSERS[resourceName]))
 
-        console.log("Subscribing to resource delete: ",convertedName)
-        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => {
-            const {id} = data || {}
-            if(id) {
-                dispatch({ type: createActionType([REMOVE, resourceName]), payload: data })
-            }
-        }, null))
+        console.debug("Subscribing to resource delete: ",convertedName)
+        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => dispatch({ type: createActionType([REMOVE, resourceName]), payload: data }), null))
 
         return subs
     }
@@ -561,10 +555,13 @@ const ApiContainer = (props) => {
         required data:
         settings, loggers
     */
-    const loadSettingsData = async () => {
+    const getSettingsSubscription = async () => {
+
         const settings = await onGetSettings();
         //const localSettings = await onGetLocalSettings()
         const loggers = await onGetLoggers();
+
+        return await getResourceSubscriptions([dataTypes.SETTINGS])
     }
 
     /*

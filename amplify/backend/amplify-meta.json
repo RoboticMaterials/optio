@@ -1,0 +1,228 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-rmstudiocloud-develop-134139-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-develop-134139-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-develop-134139-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+      "UnauthRoleName": "amplify-rmstudiocloud-develop-134139-unauthRole",
+      "StackName": "amplify-rmstudiocloud-develop-134139",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-rmstudiocloud-develop-134139/9abe5f50-996b-11eb-9bc8-0ab90988b012",
+      "AmplifyAppId": "d2a1qaxuhr89b4"
+    }
+  },
+  "auth": {
+    "rmstudiocloud298656c6": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/auth/rmstudiocloud298656c6-cloudformation-template.yml",
+        "logicalId": "authrmstudiocloud298656c6"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.882Z",
+      "output": {
+        "UserPoolId": "us-east-2_HdW9xqBHl",
+        "AppClientIDWeb": "509viau1ke48oupulvhr5rnonj",
+        "AppClientID": "7apvk2mtm82fms2p2nieqn3plq",
+        "IdentityPoolId": "us-east-2:a0ee8145-6d9e-4c8d-910d-6326b9e38e79",
+        "IdentityPoolName": "rmstudiocloud298656c6_identitypool_298656c6__develop",
+        "UserPoolName": "rmstudiocloud298656c6_userpool_298656c6"
+      },
+      "lastPushDirHash": "Cm1RXwQIZ03S3e1t+P4ZM9XSd9k="
+    }
+  },
+  "api": {
+    "rmstudiocloud": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authrmstudiocloud298656c6"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        },
+        "GraphQLAPIIdOutput": "b3o2yco65rhgjibpu3rkiusngm",
+        "GraphQLAPIEndpointOutput": "https://gqnfudrgfbgy5drqadncozg54y.appsync-api.us-east-2.amazonaws.com/graphql"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apirmstudiocloud"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.884Z",
+      "lastPushDirHash": "En6y4wwLkcuFfJLGKT8BWzQ2brs="
+    }
+  },
+  "function": {
+    "handleTaskQueue": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "rmstudiocloud298656c6",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "rmstudiocloud",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2021-04-09T19:44:20.458Z",
+      "lastPackageTimeStamp": "2021-04-09T19:44:20.517Z",
+      "distZipFilename": "handleTaskQueue-53674448337645694d64-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+        "s3Key": "amplify-builds/handleTaskQueue-53674448337645694d64-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/function/handleTaskQueue-cloudformation-template.json",
+        "logicalId": "functionhandleTaskQueue"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.885Z",
+      "output": {
+        "Region": "us-east-2",
+        "Arn": "arn:aws:lambda:us-east-2:571361296658:function:handleTaskQueue-develop",
+        "Name": "handleTaskQueue-develop",
+        "LambdaExecutionRole": "rmstudiocloudLambdaRole3f176af8-develop"
+      },
+      "lastPushDirHash": "pFxH8DM8rqgGlAB5qkIqgR5Hzqs="
+    },
+    "taskStats": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "rmstudiocloud298656c6",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "rmstudiocloud",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2021-04-09T19:44:20.459Z",
+      "lastPackageTimeStamp": "2021-04-09T19:44:20.522Z",
+      "distZipFilename": "taskStats-7a50364d667152417530-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+        "s3Key": "amplify-builds/taskStats-7a50364d667152417530-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/function/taskStats-cloudformation-template.json",
+        "logicalId": "functiontaskStats"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.886Z",
+      "output": {
+        "Region": "us-east-2",
+        "Arn": "arn:aws:lambda:us-east-2:571361296658:function:taskStats-develop",
+        "Name": "taskStats-develop",
+        "LambdaExecutionRole": "rmstudiocloudLambdaRoleddbc064a-develop"
+      },
+      "lastPushDirHash": "O2DketoKNwIcWfM+JmtYkW4sbdk="
+    },
+    "stationStats": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "rmstudiocloud298656c6",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "rmstudiocloud",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2021-04-12T15:23:32.875Z",
+      "lastPackageTimeStamp": "2021-04-12T15:24:01.304Z",
+      "distZipFilename": "stationStats-656c332f456958324b6d-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+        "s3Key": "amplify-builds/stationStats-656c332f456958324b6d-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/function/stationStats-cloudformation-template.json",
+        "logicalId": "functionstationStats"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.887Z",
+      "output": {
+        "Region": "us-east-2",
+        "Arn": "arn:aws:lambda:us-east-2:571361296658:function:stationStats-develop",
+        "Name": "stationStats-develop",
+        "LambdaExecutionRole": "rmstudiocloudLambdaRoleaf260d51-develop"
+      },
+      "lastPushDirHash": "el3/EiX2KmyvzEwQluwvKj6StJI="
+    },
+    "reportStats": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "rmstudiocloud298656c6",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "rmstudiocloud",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2021-04-12T15:23:38.036Z",
+      "lastPackageTimeStamp": "2021-04-12T15:24:03.027Z",
+      "distZipFilename": "reportStats-4966572f6d6169693855-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+        "s3Key": "amplify-builds/reportStats-4966572f6d6169693855-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-rmstudiocloud-develop-134139-deployment/amplify-cfn-templates/function/reportStats-cloudformation-template.json",
+        "logicalId": "functionreportStats"
+      },
+      "lastPushTimeStamp": "2021-04-12T15:32:04.888Z",
+      "output": {
+        "Region": "us-east-2",
+        "Arn": "arn:aws:lambda:us-east-2:571361296658:function:reportStats-develop",
+        "Name": "reportStats-develop",
+        "LambdaExecutionRole": "rmstudiocloudLambdaRole1d52f1fd-develop"
+      },
+      "lastPushDirHash": "IfW/maii8U0B+r9WVap1G0q+9Ik="
+    }
+  }
+}

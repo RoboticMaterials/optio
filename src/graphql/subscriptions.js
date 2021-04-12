@@ -13,6 +13,29 @@ export const onDeltaDashboard = /* GraphQL */ `
     }
   }
 `;
+export const onDeltaSettings = /* GraphQL */ `
+  subscription OnDeltaSettings {
+    onDeltaSettings {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
 export const onDeltaStation = /* GraphQL */ `
   subscription OnDeltaStation {
     onDeltaStation {

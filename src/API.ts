@@ -3566,6 +3566,29 @@ export type OnDeltaDashboardSubscription = {
   } | null,
 };
 
+export type OnDeltaSettingsSubscription = {
+  onDeltaSettings?:  {
+    __typename: "Settings",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    MiRMapEnabled?: boolean | null,
+    accessToken?: string | null,
+    authenticated?: boolean | null,
+    currentMapId?: string | null,
+    deviceEnabled?: boolean | null,
+    loggers?: string | null,
+    mapViewEnabled?: boolean | null,
+    non_local_api?: boolean | null,
+    non_local_api_ip?: string | null,
+    refreshToken?: string | null,
+    shiftDetails?: string | null,
+    toggleDevOptions?: boolean | null,
+    timezone?: string | null,
+  } | null,
+};
+
 export type OnDeltaStationSubscription = {
   onDeltaStation?:  {
     __typename: "Station",

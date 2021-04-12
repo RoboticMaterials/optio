@@ -26,7 +26,7 @@ import getUserOrgId, {getUser} from './user_api'
 import { uuidv4 } from '../methods/utils/utils'
 
 import * as _ from 'lodash'
-import {parseLot} from "../methods/utils/data_utils";
+import {parseLot, stringifyLot} from "../methods/utils/data_utils";
 import {
     getMutationData,
     getTransformName,
@@ -62,12 +62,7 @@ export async function getCard(cardId) {
         })
 
         if(res.data.CardsByOrgId.items[0]){
-            return {
-                ...res.data.CardsByOrgId.items[0],
-                bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
-                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags),
-                templateValues: JSON.parse(res.data.CardsByOrgId.items[0].templateValues),
-            };
+            return parseLot(res.data.CardsByOrgId.items[0])
         }else{
             return null
         }
@@ -87,13 +82,10 @@ export async function postCard(card) {
     try {
         const userOrgId = await getUserOrgId()
 
-        const input = {
+        const input = stringifyLot({
             ...card,
-            templateValues: JSON.stringify(card.templateValues),
-            bins: JSON.stringify(card.bins),
-            flags: JSON.stringify(card.flags),
             organizationId: userOrgId
-        }
+        })
 
         const postedLot = await streamlinedGraphqlCall(TRANSFORMS.MUTATION, createCard, { input: input }, parseLot)
 
@@ -140,12 +132,8 @@ export async function getProcessCards(processId) {
         let GQLdata = []
 
         res.data.CardsByOrgId.items.forEach(card => {
-            GQLdata.push( {
-                ...card,
-                bins: JSON.parse(card.bins),
-                templateValues: JSON.parse(card.templateValues),
-                flags: JSON.parse(card.flags)
-            })
+
+            GQLdata.push(parseLot(card))
         });
 
         return GQLdata;
@@ -175,21 +163,6 @@ export async function deleteCard(ID) {
 
 export async function putCard(card, ID) {
     try {
-
-        const {
-            id,
-            organizationId,
-            createdAt,
-            updatedAt,
-            bins,
-            flags,
-            templateValues,
-            lotNumber,
-            lotTemplateId,
-            name,
-            processId
-        } = card || {}
-
         const oldCard = await getCard(ID)
 
         // get all the keyts possible
@@ -213,17 +186,7 @@ export async function putCard(card, ID) {
             username: user.username
         }
 
-        const input = {
-            id: ID,
-            organizationId,
-            bins: JSON.stringify(bins),
-            flags: JSON.stringify(flags),
-            templateValues: JSON.stringify(templateValues),
-            lotNumber,
-            lotTemplateId,
-            name,
-            processId
-        }
+        const input = stringifyLot({...card, id: ID})
 
         const updatedLot = await streamlinedGraphqlCall(TRANSFORMS.MUTATION, updateCard, { input: input }, parseLot)
 
