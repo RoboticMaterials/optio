@@ -27,6 +27,11 @@ const StationColumns = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    useEffect(() => {
+        console.log('QQQQ columns sort level', sortLevel)
+
+    }, [sortLevel])
+
 
     const renderStationColumn = useMemo(() => {
         const processStations = getProcessStations(processes[processId], routes)
@@ -45,7 +50,7 @@ const StationColumns = (props) => {
             )
         })
 
-    }, [dateIndex, timeSpan, showReport])
+    }, [dateIndex, timeSpan, showReport, sortLevel])
 
     return (
         <styled.RowContainer>
