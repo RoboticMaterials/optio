@@ -28,7 +28,7 @@ const Statistics = () => {
     const [showReport, setShowReport] = useState(false)
     const [date, setDate] = useState('')
     const [loading, setLoading] = useState(false)
-    const [sortLevel, setSortLevel] = useState('')
+    const [sortLevel, setSortLevel] = useState({label: "Object", value: "object"})
 
     // useEffect(() => {
     //     const newDate = deepCopy(date)
@@ -110,6 +110,7 @@ const Statistics = () => {
                 date={date}
                 dateIndex={dateIndex}
                 handleSelectSort={onSelectSort}
+                sortLevel={sortLevel}
             />
             <styled.StationColumnsContainer>
                 {renderStationColumns()}

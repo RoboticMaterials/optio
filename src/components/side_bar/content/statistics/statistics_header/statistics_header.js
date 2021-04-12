@@ -9,7 +9,7 @@ import SortDropdown from '../../../../basic/sort_dropdown/sort_dropdown'
 // Import Components
 import LineThroughputForm from '../../../../widgets/widget_pages/statistics_page/statistics_overview/charts/throughput_chart/line_throughput_chart/line_throughput_form'
 import DaySelector from '../../../../basic/day_selector/day_selector'
-import TimeSpaneSelector from '../../../../basic/timespan_selector/time_span_selector'
+import TimeSpanSelector from '../../../../basic/timespan_selector/time_span_selector'
 
 const StatisticsHeader = (props) => {
 
@@ -22,7 +22,8 @@ const StatisticsHeader = (props) => {
         showReport,
         date,
         dateIndex,
-        handleSelectSort
+        handleSelectSort,
+        sortLevel,
     } = props || {}
 
     const dropDownOptions = [
@@ -45,7 +46,7 @@ const StatisticsHeader = (props) => {
     return (
         <styled.HeaderBar>
             <styled.HeaderSection>
-                <TimeSpaneSelector
+                <TimeSpanSelector
                     // timespanDisabled={timespanDisabled}
                     setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)}
                     timeSpan={timeSpan}
@@ -111,8 +112,9 @@ const StatisticsHeader = (props) => {
                     valueField={'label'}
                     dropDownSearchStyle={{minWidth:'10rem'}}
                     onChange={(val) => {
-                        handleSelectSort(val.value)
+                        handleSelectSort(val)
                     }}
+                    values={[sortLevel]}
                 />
             </styled.HeaderSection>
 

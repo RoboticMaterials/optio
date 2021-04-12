@@ -31,6 +31,7 @@ const ThroughputChart = (props) => {
         loadBarChartData,
         disableTimeSpan,
         isWidget,
+        sortLevel,
     } = props
 
     // redux state
@@ -43,22 +44,25 @@ const ThroughputChart = (props) => {
     const [chartKeys, setChartKeys] = useState(false)
     // const [chartColors, setChartColors] = useState(false)
 
+
+    // Useeffect for sorting bar chart data
     useEffect(() => {
         let tempChartKeys = []  // keys for chart = object names
         // let tempChartColors = {}
         let tempFilteredData = []
-        let deletedObjKeys = []
+        let deletedChartKeys = []
 
         if (showBar) {
             data?.throughPut.forEach((currItem) => {
+                console.log('QQQQ curr item', currItem)
                 const {
                     lable,
-                    ...objectIds
+                    ...sortedIds
                 } = currItem || {}
 
                 let updatedItem = { lable }   // used for changing keys from object ids to object names, keep label the same
 
-                Object.entries(objectIds)
+                Object.entries(sortedIds)
                     .filter((currEntry) => {
                         const [currKey, currVal] = currEntry
 
@@ -66,13 +70,16 @@ const ThroughputChart = (props) => {
                         return currVal > 0
                     })
                     .forEach((currEntry, currIndex) => {
+
+                        // console.log('QQQQ currentry', currEntry)
+
                         const [currKey, currVal] = currEntry
 
                         // for null key, set default name and use value. This is for objectless routes
                         if (currKey === null || currKey === "null") {
 
                             // default name
-                            const currObjectName = "No Object"
+                            const currObjectName = `No ${sortLevel.label}`
 
                             // if name isn't in chart keys, add it, or else it won't show up on the chart
                             if (!tempChartKeys.includes(currObjectName)) {
@@ -84,6 +91,42 @@ const ThroughputChart = (props) => {
 
                         // route does have object id
                         else {
+
+                            const onChartKeys = (name) => {
+                                // if name isn't in chart keys, add it, or else it won't show up on the chart
+                                if (!tempChartKeys.includes(name)) {
+                                    tempChartKeys.push(name)
+                                }
+
+                                // add key,value pair to data item
+                                updatedItem[name] = currVal
+                            }
+
+                            const onDeletedKeys = (key) => {
+                                // if this id isn't already in deletedObjs array, add it
+                                if (!deletedChartKeys.includes(key)) {
+                                    deletedChartKeys.push(key)
+                                }
+
+                                // get index of id in deletedObjs arr
+                                const deletedObjKeyIndex = deletedChartKeys.indexOf(key)
+
+                                // create name using index
+                                const currObjectName = `Deleted ${sortLevel.label} ${deletedObjKeyIndex + 1}`
+
+                                onChartKeys(currObjectName)
+
+                            }
+
+                            switch (sortLevel) {
+                                case sortLevel.value === 'object':
+
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
                             const currObject = objects[currKey]
 
                             // object with id was found
@@ -97,35 +140,12 @@ const ThroughputChart = (props) => {
                                 // format
                                 const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
 
-                                // add curr object to chartKeys if it isn't already in there
-                                if (!tempChartKeys.includes(currObjectNameCapitalized)) {
-                                    tempChartKeys.push(currObjectNameCapitalized)
-                                }
-
-                                // set updateItems value to current value for this object name
-                                updatedItem[currObjectNameCapitalized] = currVal
+                                onChartKeys(currObjectNameCapitalized)
                             }
 
                             // object with id was NOT found
                             else {
-                                // if this id isn't already in deletedObjs array, add it
-                                if (!deletedObjKeys.includes(currKey)) {
-                                    deletedObjKeys.push(currKey)
-                                }
-
-                                // get index of id in deletedObjs arr
-                                const deletedObjKeyIndex = deletedObjKeys.indexOf(currKey)
-
-                                // create name using index
-                                const currObjectName = `Deleted Object ${deletedObjKeyIndex + 1}`
-
-                                // if name isn't in keys, add it, or else it won't show up on the chart
-                                if (!tempChartKeys.includes(currObjectName)) {
-                                    tempChartKeys.push(currObjectName)
-                                }
-
-                                // add key,value pair to data item
-                                updatedItem[currObjectName] = currVal
+                                onDeletedKeys(currKey)
                             }
                         }
                     })
@@ -148,7 +168,7 @@ const ThroughputChart = (props) => {
     }, [data, showBar])
 
     useEffect(() => {
-        if (showBar) {
+        if (showBar || isWidget) {
             disableTimeSpan(false)
         } else {
             disableTimeSpan(true)
@@ -200,7 +220,7 @@ const ThroughputChart = (props) => {
 
             {!!loading ?
                 <styled.PlotContainer>
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{fontSize: '3rem' }} />
+                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem' }} />
                 </styled.PlotContainer>
                 :
 
@@ -245,5 +265,11 @@ const ThroughputChart = (props) => {
         </styled.SinglePlotContainer>
     )
 }
+
+// Specifies the default values for props:
+ThroughputChart.defaultProps = {
+    sortLevel: { label: 'Object', value: 'object' }
+};
+
 
 export default ThroughputChart

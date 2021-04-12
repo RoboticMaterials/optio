@@ -34,7 +34,7 @@ export const TimespanButton = styled.button`
     border-bottom: ${props => props.selected ? '0.14rem' : '0.02rem'} solid ${props => props.selected ? props.color : props.theme.quaternary};
     box-sizing: border-box;
 
-    transition: color 0.5s;
+    transition: color 0.25s;
 
     cursor: pointer;
     z-index: 2;
