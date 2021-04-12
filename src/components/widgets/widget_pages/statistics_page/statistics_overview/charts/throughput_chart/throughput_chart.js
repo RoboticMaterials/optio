@@ -54,7 +54,7 @@ const ThroughputChart = (props) => {
 
         if (showBar) {
             data?.throughPut.forEach((currItem) => {
-                console.log('QQQQ curr item', currItem)
+                // console.log('QQQQ curr item', currItem)
                 const {
                     lable,
                     ...sortedIds
@@ -118,37 +118,42 @@ const ThroughputChart = (props) => {
 
                             }
 
-                            switch (sortLevel) {
-                                case sortLevel.value === 'object':
 
+                            switch (sortLevel.value) {
+                                
+                                case 'object':
+                                    const currObject = objects[currKey]
+
+                                    // object with id was found
+                                    if (isObject(currObject)) {
+
+                                        // get object name
+                                        const {
+                                            name: currObjectName = `Unnamed`
+                                        } = currObject || {}
+
+                                        // format
+                                        const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
+
+                                        onChartKeys(currObjectNameCapitalized)
+                                    }
+
+                                    // object with id was NOT found
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
                                     break;
 
                                 default:
                                     break;
                             }
 
-                            const currObject = objects[currKey]
 
-                            // object with id was found
-                            if (isObject(currObject)) {
 
-                                // get object name
-                                const {
-                                    name: currObjectName = `Unnamed`
-                                } = currObject || {}
-
-                                // format
-                                const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
-
-                                onChartKeys(currObjectNameCapitalized)
-                            }
-
-                            // object with id was NOT found
-                            else {
-                                onDeletedKeys(currKey)
-                            }
                         }
                     })
+
+                console.log('QQQQ updatedItem', updatedItem)
 
                 tempFilteredData.push(updatedItem)
 
