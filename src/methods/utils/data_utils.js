@@ -31,15 +31,38 @@ export const parseProcess = (process) => {
   }
 }
 
+export const parseDashboard = (dashboard) => {
+    const {
+      data,
+      ...rest
+    } = dashboard
+
+    return {
+      ...rest,
+      ...JSON.parse(dashboard.data)
+    }
+
+}
+
 export const parseObject = (object) => {
   return object
 }
 
+export const parseLotTemplate = (lotTemplate) => {
+  return {
+    ...lotTemplate,
+    displayNames: JSON.parse(lotTemplate.displayNames),
+    fields: JSON.parse(lotTemplate.fields),
+  }
+}
+
 export const DATA_PARSERS = {
   [dataTypes.PROCESS]: parseProcess,
-  [dataTypes.LOT]: parseLot,
+  [dataTypes.CARD]: parseLot,
   [dataTypes.TASK]: parseTask,
   [dataTypes.OBJECT]: parseObject,
+  [dataTypes.DASHBOARD]: parseDashboard,
+  [dataTypes.LOT_TEMPLATE]: parseLotTemplate
 }
 
 

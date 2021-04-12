@@ -413,6 +413,9 @@ type ReportStatsData
 
 # Subs
 type Subscription {
+  onDeltaDashboard: Dashboard
+    @aws_subscribe(mutations: ["createDashboard","updateDashboard","deleteDashboard"])
+
   onDeltaStation: Station
     @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
 
@@ -430,6 +433,9 @@ type Subscription {
 
   onDeltaCard: Card
     @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
+
+  onDeltaLotTemplate: LotTemplate
+    @aws_subscribe(mutations: ["createLotTemplate","updateLotTemplate","deleteLotTemplate"])
 
   ## Data Stream Subscriptions  
 

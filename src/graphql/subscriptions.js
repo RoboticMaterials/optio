@@ -2,6 +2,17 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onDeltaDashboard = /* GraphQL */ `
+  subscription OnDeltaDashboard {
+    onDeltaDashboard {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      data
+    }
+  }
+`;
 export const onDeltaStation = /* GraphQL */ `
   subscription OnDeltaStation {
     onDeltaStation {
@@ -110,6 +121,19 @@ export const onDeltaCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+    }
+  }
+`;
+export const onDeltaLotTemplate = /* GraphQL */ `
+  subscription OnDeltaLotTemplate {
+    onDeltaLotTemplate {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
     }
   }
 `;
@@ -1084,6 +1108,48 @@ export const onDeleteDashboard = /* GraphQL */ `
       createdAt
       updatedAt
       data
+    }
+  }
+`;
+export const onCreateReportEvent = /* GraphQL */ `
+  subscription OnCreateReportEvent {
+    onCreateReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const onUpdateReportEvent = /* GraphQL */ `
+  subscription OnUpdateReportEvent {
+    onUpdateReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
+    }
+  }
+`;
+export const onDeleteReportEvent = /* GraphQL */ `
+  subscription OnDeleteReportEvent {
+    onDeleteReportEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      dashboardId
+      date
+      reportButtonId
+      stationId
     }
   }
 `;

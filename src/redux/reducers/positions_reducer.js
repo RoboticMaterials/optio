@@ -29,6 +29,9 @@ import {
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
+import {createActionType} from "../actions/redux_utils";
+import * as prefixes from "../types/prefixes";
+import * as dataTypes from "../types/data_types";
 
 const defaultState = {
     positions: {},
@@ -68,6 +71,22 @@ const positionsReducer = (state = defaultState, action) => {
     switch (action.type) {
 
         // ========== UTILS ========== //
+
+        case createActionType([prefixes.SET, dataTypes.POSITION]): {
+            return onUpdatePosition(action.payload)
+        }
+
+        case createActionType([prefixes.REMOVE, dataTypes.POSITION]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.positions
+
+            return {
+                ...state,
+                positions: { ...remaining },
+            }
+        }
 
         // Adds position to front-end without adding it to the backend
         case ADD_POSITION:

@@ -3555,6 +3555,17 @@ export type ReportEventByOrgIdQuery = {
   } | null,
 };
 
+export type OnDeltaDashboardSubscription = {
+  onDeltaDashboard?:  {
+    __typename: "Dashboard",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    data: string,
+  } | null,
+};
+
 export type OnDeltaStationSubscription = {
   onDeltaStation?:  {
     __typename: "Station",
@@ -3663,6 +3674,19 @@ export type OnDeltaCardSubscription = {
     lotTemplateId: string,
     name: string,
     processId: string,
+  } | null,
+};
+
+export type OnDeltaLotTemplateSubscription = {
+  onDeltaLotTemplate?:  {
+    __typename: "LotTemplate",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    name: string,
+    displayNames: string,
+    fields: string,
   } | null,
 };
 

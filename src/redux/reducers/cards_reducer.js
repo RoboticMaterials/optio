@@ -35,7 +35,7 @@ export default function cardsReducer(state = defaultState, action) {
 
   switch (action.type) {
 
-    case createActionType([SET, LOT]): {
+    case createActionType([SET, CARD]): {
       return {
         ...state,
         cards: {...state.cards, [action.payload.id]: {...action.payload}},
@@ -46,25 +46,21 @@ export default function cardsReducer(state = defaultState, action) {
       }
     }
 
-    case createActionType([REMOVE, LOT]): {
+    case createActionType([REMOVE, CARD]): {
+
       const {
-        [action.payload.id]: removed,
-        ...remaining
-      } = state.processes
+        [action.payload.id]: value,
+        ...rest
+      } = state.cards
 
-      return {
-        ...state,
-        processes: { ...remaining },
-      }
-
-
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
       const {
-
-        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
+        [action.payload.processId]: processGroup,
         ...unchangedProcessGroups
+      } = state.processCards || {}
 
-      } = state.processCards; // extracts payload lot from rest
+      const {
+      [action.payload.id]: removedCard, ...remaining
+    } = processGroup || {}
 
       return {
         ...state,
@@ -131,13 +127,13 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
+      const { [action.payload.cardId]: value, ...rest } = state.cards
       const {
 
         [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
         ...unchangedProcessGroups
 
-      } = state.processCards; // extracts payload lot from rest
+      } = state.processCards || {}
 
       return {
         ...state,

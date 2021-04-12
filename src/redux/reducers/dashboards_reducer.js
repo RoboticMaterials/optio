@@ -23,9 +23,11 @@ import {
 } from '../types/dashboards_types'
 
 import { deepCopy } from '../../methods/utils/utils';
-import {SET} from "../types/prefixes";
-import {DASHBOARD} from "../types/data_types";
+import  * as prefixes from "../types/prefixes";
+import  * as dataTypes from "../types/data_types";
 import {FINISH_ENABLED, KICK_OFF_ENABLED} from "../types/suffixes";
+import {createActionType} from "../actions/redux_utils";
+import {PROCESS} from "../types/data_types";
 
 
 const defaultState = {
@@ -45,7 +47,26 @@ export default function dashboardsReducer(state = defaultState, action) {
 
     switch (action.type) {
 
-        case SET + DASHBOARD + KICK_OFF_ENABLED: {
+        case createActionType([prefixes.SET, dataTypes.DASHBOARD]): {
+            return {
+                ...state,
+                dashboards: {...state.dashboards, [action.payload.id]: {...action.payload}},
+            }
+        }
+
+        case createActionType([prefixes.REMOVE, dataTypes.DASHBOARD]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.dashboards
+
+            return {
+                ...state,
+                dashboards: { ...remaining },
+            }
+        }
+
+        case prefixes.SET + dataTypes.DASHBOARD + KICK_OFF_ENABLED: {
             const {
                 dashboardId,
                 kickOffEnabled
@@ -58,7 +79,7 @@ export default function dashboardsReducer(state = defaultState, action) {
         }
 
 
-        case SET + DASHBOARD + FINISH_ENABLED: {
+        case prefixes.SET + dataTypes.DASHBOARD + FINISH_ENABLED: {
             const {
                 dashboardId,
                 finishEnabled

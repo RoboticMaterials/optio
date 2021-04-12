@@ -45,7 +45,7 @@ import {createActionType} from "../../redux/actions/redux_utils";
 import {REMOVE, SET} from "../../redux/types/prefixes";
 import * as dataTypes from "../../redux/types/data_types";
 import {SUCCESS} from "../../redux/types/suffixes";
-import {capitalizeFirstLetter, onlyFirstLetterCapital} from "../../methods/utils/string_utils";
+import {capitalizeFirstLetter, constantToPascalCase, toPascalCase} from "../../methods/utils/string_utils";
 
 const ApiContainer = (props) => {
 
@@ -243,18 +243,13 @@ const ApiContainer = (props) => {
                 break;
             }
 
-            case 'scheduler': {
-                loadSchedulerData()
-                break
-            }
-
             case 'dashboards': {
                 setCurrentSubscriptions(await getDashboardsPageSubscription())
                 break
             }
 
             case 'locations': {
-                setCurrentSubscriptions(await loadMapData())
+                setCurrentSubscriptions(await getLocationsPageSubscriptions())
                 break;
             }
 
@@ -288,17 +283,12 @@ const ApiContainer = (props) => {
                 break
             }
 
-            case 'more': {
-                setPageDataInterval(setInterval(() => loadMoreData(), 10000))
-                break;
-            }
-
             default: {
                 if(!mapViewEnabled) {
                     setCurrentSubscriptions(await getListViewSubs())
                 }
                 else {
-                    setCurrentSubscriptions(await loadMapData())
+                    setCurrentSubscriptions(await getMapsSubscriptions())
                 }
 
                 break;
@@ -480,13 +470,17 @@ const ApiContainer = (props) => {
     * */
     const getResourceSubscription = async (resourceName) => {
         let subs = []
+        const convertedName = toPascalCase(resourceName)
 
-        subs.push(await streamlinedSubscription(subscriptions[`onDelta${onlyFirstLetterCapital(resourceName)}`], (data) => dispatch({ type: createActionType([SET, resourceName]), payload: data }), DATA_PARSERS[resourceName]))
+        console.log("Subscribing to resource delta: ",convertedName)
+        // subscriptions.onDeltaLotTemplate
+        subs.push(await streamlinedSubscription(subscriptions[`onDelta${convertedName}`], (data) => dispatch({ type: createActionType([SET, resourceName]), payload: data }), DATA_PARSERS[resourceName]))
 
-        subs.push(await streamlinedSubscription(subscriptions[`onDelete${onlyFirstLetterCapital(resourceName)}`], (data) => {
+        console.log("Subscribing to resource delete: ",convertedName)
+        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => {
             const {id} = data || {}
             if(id) {
-                dispatch({ type: createActionType([REMOVE, resourceName]), payload: { id } })
+                dispatch({ type: createActionType([REMOVE, resourceName]), payload: data })
             }
         }, null))
 
@@ -514,23 +508,10 @@ const ApiContainer = (props) => {
     * **********************************************PAGE SUBS BEGIN**********************************************************
     * */
 
-
-    /*
-        Loads data pertinent to Objects page
-
-        required data:
-        objects, poses, models
-    */
     const getObjectsPageSubscriptions = async () => {
         return await getResourceSubscriptions([dataTypes.OBJECT])
     }
 
-    /*
-        Loads data pertinent to Tasks page
-
-        required data:
-        tasks
-    */
     const getTaskPageSubscriptions = async () => {
         return await getResourceSubscriptions([dataTypes.PROCESS, dataTypes.TASK, dataTypes.OBJECT])
     }
@@ -551,79 +532,26 @@ const ApiContainer = (props) => {
         onGetProcesses()
         onGetTasks()
 
-        return await getResourceSubscriptions([dataTypes.LOT, dataTypes.PROCESS, dataTypes.STATION])
+        return await getResourceSubscriptions([dataTypes.LOT_TEMPLATE, dataTypes.CARD, dataTypes.PROCESS, dataTypes.STATION, dataTypes.TASK])
 
     }
 
-    /*
-        Loads data pertinent to Scheduler page
-
-        required data:
-        schedules, tasks
-    */
-    const loadSchedulerData = async () => {
-        const schedules = await onGetSchedules();
-        const tasks = await onGetTasks();
-    }
-
-    /*
-        Loads data pertinent to Dashboards page
-
-        required data:
-        dashboards
-    */
     const getDashboardsPageSubscription = async () => {
         onGetCards()
         onGetDashboards()
-        return await getResourceSubscriptions([dataTypes.LOT, dataTypes.TASK, dataTypes.DASHBOARD, dataTypes.PROCESS])
+        return await getResourceSubscriptions([dataTypes.CARD, dataTypes.TASK, dataTypes.DASHBOARD, dataTypes.PROCESS])
     }
 
-    /*
-      Loads data pertinent to Objects page
+    const getLocationsPageSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
+    }
 
-      required data:
-      tasks, skills, objects, locations, dashboards, sounds
-    */
-    const loadMapData = async () => {
-
-        // Subscribe to stations
-        const stationSubscription = await API.graphql(
-            graphqlOperation(subscriptions.onDeltaStation)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetStations() 
-        },
-            error: error => console.warn(error)
-        });
-
-        // Subscribe to positions
-        const positionSubscription = await API.graphql(
-            graphqlOperation(subscriptions.onDeltaPosition)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetPositions() 
-        },
-            error: error => console.warn(error)
-        });
-
-        return [stationSubscription, positionSubscription]
-        
+    const getMapsSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
     }
 
     const getListViewSubs = async () => {
-        const stationSubscription = await API.graphql(
-            graphqlOperation(subscriptions.onDeltaStation)
-        ).subscribe({
-            next: () => {
-                // run get stations
-                onGetStations()
-            },
-            error: error => console.warn(error)
-        });
-
-        return stationSubscription
+        return await getResourceSubscriptions([dataTypes.STATION, dataTypes.POSITION])
     }
 
 
@@ -637,16 +565,6 @@ const ApiContainer = (props) => {
         const settings = await onGetSettings();
         //const localSettings = await onGetLocalSettings()
         const loggers = await onGetLoggers();
-    }
-
-
-
-
-    /*
-        Loads data pertinent to More page
-    */
-    const loadMoreData = async () => {
-
     }
 
     /*
