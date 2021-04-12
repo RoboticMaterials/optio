@@ -18,9 +18,12 @@ const tableNames = {
 	taskQueueEvents: process.env.API_RMSTUDIOCLOUD_TASKQUEUEEVENTSTABLE_NAME,
 	taskQueue: process.env.API_RMSTUDIOCLOUD_TASKQUEUETABLE_NAME
 }
+// const docClient = new AWS.DynamoDB.DocumentClient({
+// 	endpoint: process.env.DDB_ENDPOINT,
+//  });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
-
+ 
 exports.handler = async (event) => {
 	const orgId = event.arguments.organizationId
 

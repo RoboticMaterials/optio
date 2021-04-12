@@ -126,6 +126,10 @@
         "reportStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
           "s3Key": "amplify-builds/reportStats-4966572f6d6169693855-build.zip"
+        },
+        "createBlankMap": {
+          "deploymentBucketName": "amplify-rmstudiocloud-develop-134139-deployment",
+          "s3Key": "amplify-builds/createBlankMap-796750787a6250653050-build.zip"
         }
       }
     }

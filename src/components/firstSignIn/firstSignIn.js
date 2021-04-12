@@ -19,9 +19,9 @@ import Textbox from '../basic/textbox/textbox'
 // import the API category from Amplify library
 import { API, Auth } from 'aws-amplify'
 
-import { orgsByKey } from '../../graphql/queries'
+import { mapsByOrgId, orgsByKey } from '../../graphql/queries'
 
-import { createUser } from '../../graphql/mutations'
+import { createBlankMap, createUser } from '../../graphql/mutations'
 
 const FirstSignIn = () => {
 
@@ -39,16 +39,31 @@ const FirstSignIn = () => {
     
             const userInput = await Auth.currentAuthenticatedUser();
 
+
             const user = {
                 id: userInput.attributes.sub,
                 organizationId: dataJson.data.OrgsByKey.items[0].organizationId,
                 username: userInput.attributes.email
             }
             
-            await API.graphql({
+            const userData = await API.graphql({
                 query: createUser,
                 variables: { input: user }
             })
+
+            // get the maps for this org
+            const maps = await API.graphql({
+                query: mapsByOrgId,
+                variables: { organizationId: userData.data.createUser.organizationId }
+            })
+
+            // if no map then create one
+            if(maps.data.MapsByOrgId === null){
+                await API.graphql({
+                    query: createBlankMap,
+                    variables: { organizationId: userData.data.createUser.organizationId }
+                })
+            }
 
             history.push('/');
 

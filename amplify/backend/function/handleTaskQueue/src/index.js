@@ -27,6 +27,10 @@ const tableNames = {
 	taskQueue: process.env.API_RMSTUDIOCLOUD_TASKQUEUETABLE_NAME
 }
 
+// const docClient = new AWS.DynamoDB.DocumentClient({
+// 	endpoint: process.env.DDB_ENDPOINT,
+//  });
+
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {

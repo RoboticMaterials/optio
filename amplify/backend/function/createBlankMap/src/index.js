@@ -10,6 +10,10 @@ Amplify Params - DO NOT EDIT */
 
 const AWS = require("aws-sdk");
 
+// const docClient = new AWS.DynamoDB.DocumentClient({
+// 	endpoint: process.env.DDB_ENDPOINT,
+//  });
+
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 const tableNames = {
@@ -19,7 +23,7 @@ const tableNames = {
 const mapData = require('./mapData')
 
 exports.handler = async (event) => {
-
+try {
     const blankMap = {
         id: uuidv4(),
         organizationId: event.arguments.organizationId,
@@ -42,6 +46,10 @@ exports.handler = async (event) => {
         return {
             posted: true
         }
+} catch (error) {
+    console.log(error);
+}
+    
 };
 
 function uuidv4() {

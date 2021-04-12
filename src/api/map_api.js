@@ -29,6 +29,8 @@ export async function getMaps() {
         variables: { organizationId: userOrgId }
       })
 
+      console.log(res);
+
     return res.data.MapsByOrgId.items;
 
 } catch (error) {
