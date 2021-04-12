@@ -1,6 +1,119 @@
 import { uuidv4 } from './utils';
 
 import { timeStringRegex, oidRegex } from './regex_utils';
+import * as dataTypes from "../../redux/types/data_types";
+
+export const parseItem = (obj, keys) => {
+  let tempObj = {...obj}
+  let parsedObj = {}
+
+  for(const key of keys) {
+    const {
+      [key]:currVal,
+      ...rest
+    } = tempObj || {}
+
+    parsedObj[key] = JSON.parse(currVal)
+    tempObj = {...rest}
+  }
+
+  return {
+    ...tempObj,
+    ...parsedObj
+  }
+
+}
+
+export const stringifyItem = (obj, keys) => {
+  let tempObj = {}
+
+    for(const entry of Object.entries(obj)) {
+        const [key, value] = entry
+
+        if(keys.includes(key)) {
+            tempObj[key] = JSON.stringify(value)
+        }
+        else {
+            tempObj[key] = value
+        }
+    }
+
+    return tempObj
+}
+
+// keys that are just saved as JSON chunks for each resource
+const RESOURCE_JSON_KEYS = {
+  [dataTypes.PROCESS]: ["routes", "broken"],
+  [dataTypes.CARD]: ["templateValues", "bins", "flags"],
+  [dataTypes.TASK]: ["device_types", "processes", "load", "unload", "route_object"],
+  [dataTypes.OBJECT]: [],
+  [dataTypes.DASHBOARD]: ["data"],
+  [dataTypes.LOT_TEMPLATE]: ["displayNames", "fields"],
+  [dataTypes.SETTINGS]: ["loggers", "shiftDetails", "timezone"],
+}
+
+// parser for each resource
+export const parseLot = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD])
+export const parseTask = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.TASK])
+export const parseProcess = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
+export const parseLotTemplate = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
+export const parseObject = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.OBJECT])
+export const parseSettings = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
+export const parseDashboard = (dashboard) => {
+  const {
+    data,
+    ...rest
+  } = dashboard
+
+  return {
+    ...rest,
+    ...JSON.parse(dashboard.data)
+  }
+}
+
+// stringifier for each resource
+export const stringifyLot = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD])
+export const stringifyTask = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.TASK])
+export const stringifyProcess = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
+export const stringifyLotTemplate = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
+export const stringifyObject = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.OBJECT])
+export const stringifySettings = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
+export const stringifyDashboard = (dashboard) => {
+    const {
+        id,
+        organizationId,
+        ...rest
+    } = dashboard || {}
+
+    return {
+        id,
+        organizationId,
+        data: JSON.stringify(rest),
+    }
+}
+
+
+// put em all together
+export const DATA_PARSERS = {
+  [dataTypes.PROCESS]: parseProcess,
+  [dataTypes.CARD]: parseLot,
+  [dataTypes.TASK]: parseTask,
+  [dataTypes.OBJECT]: parseObject,
+  [dataTypes.DASHBOARD]: parseDashboard,
+  [dataTypes.LOT_TEMPLATE]: parseLotTemplate,
+  [dataTypes.SETTINGS]: parseSettings,
+}
+
+export const DATA_STRINGIFIERS = {
+  [dataTypes.PROCESS]: stringifyProcess,
+  [dataTypes.CARD]: stringifyLot,
+  [dataTypes.TASK]: stringifyTask,
+  [dataTypes.OBJECT]: stringifyObject,
+  [dataTypes.DASHBOARD]: stringifyDashboard,
+  [dataTypes.LOT_TEMPLATE]: stringifyLotTemplate,
+  [dataTypes.SETTINGS]: stringifySettings,
+}
+
 
 export function formatScheduleItem(scheduleItem) {
   scheduleItem.id = scheduleItem.id.$oid;
@@ -33,9 +146,6 @@ export function formatScheduleItem(scheduleItem) {
 
   if(!scheduleItem.start_time_label)
   if(!scheduleItem.time_interval_label)
-
-  console.log('testtesttest', startTimeIsValid)
-  console.log('test2test2test2test2', timeIntervalIdValid)
 
   return scheduleItem;
 }

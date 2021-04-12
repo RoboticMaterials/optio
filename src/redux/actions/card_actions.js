@@ -5,7 +5,7 @@ import {
     GET,
     POST,
     DELETE,
-    PUT
+    PUT, SET
 } from '../types/prefixes';
 
 import {
@@ -24,6 +24,8 @@ import { scheduleSchema, schedulesSchema } from '../../normalizr/schedules_schem
 
 import log from "../../logger"
 import {convertArrayToObject} from "../../methods/utils/utils";
+import {createActionType} from "./redux_utils";
+import {SUCCESS} from "../types/suffixes";
 
 const logger = log.getLogger("Cards", "Redux")
 logger.setLevel("debug")
@@ -241,6 +243,14 @@ export const putCardAttributes = (attributes, cardId) => async (dispatch, getSta
     return null
 
 
+};
+
+// set card
+// ******************************
+export const setCard = (card ) => async dispatch => {
+    const actionName = createActionType([SET, CARD, SUCCESS])
+    await dispatch({ type: actionName, payload: card })
+    return card
 };
 
 export const showEditor = (bool) => {

@@ -160,7 +160,7 @@ const Settings = () => {
         const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
-            delete serverSettingsState.id
+            // delete serverSettingsState.id
             await dispatchPostSettings(serverSettingsState)
         }
 

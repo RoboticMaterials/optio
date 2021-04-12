@@ -86,7 +86,11 @@ const Cards = (props) => {
     * filters processes by map id
     * */
     useEffect(() => {
-        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id))
+        const tempFilteredProcesses = Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id)
+        setFilteredProcesses(tempFilteredProcesses)
+
+        // the ability to change selected procecsses was removed. So just auto updated for now unless we decide to add back the ability to change them.
+        setSelectedProcesses(tempFilteredProcesses)
     }, [processes])
 
     /*

@@ -32,6 +32,10 @@ import {
 } from '../types/objects_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import {createActionType} from "../actions/redux_utils";
+import {REMOVE, SET} from "../types/prefixes";
+import {OBJECT} from "../types/data_types";
+import {SUCCESS} from "../types/suffixes";
 
 
 const defaultState = {
@@ -49,6 +53,24 @@ export default function objectsReducer(state = defaultState, action) {
 
     switch (action.type) {
 
+        case createActionType([SET, OBJECT]): {
+            return {
+                ...state,
+                objects: {...state.objects, [action.payload.id]: {...action.payload}},
+            }
+        }
+
+        case createActionType([REMOVE, OBJECT]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.objects
+
+            return {
+                ...state,
+                objects: { ...remaining },
+            }
+        }
         // ======================================== //
         //                                          //
         //              Get Objects               //
