@@ -26,9 +26,9 @@ const StatisticsHeader = (props) => {
     } = props || {}
 
     const dropDownOptions = [
-        { label: 'Object' },
-        { label: 'Lot' },
-        { label: 'Process' }
+        { label: 'Object', value:'object' },
+        { label: 'Lot', value: 'lot_id' },
+        { label: 'Route', value: 'route_id' }
 
     ]
 
@@ -111,7 +111,7 @@ const StatisticsHeader = (props) => {
                     valueField={'label'}
                     dropDownSearchStyle={{minWidth:'10rem'}}
                     onChange={(val) => {
-                        handleSelectSort(val.label)
+                        handleSelectSort(val.value)
                     }}
                 />
             </styled.HeaderSection>
