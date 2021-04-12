@@ -33,6 +33,7 @@ import { ThemeContext } from "styled-components";
 // logging
 import log from '../../../../../logger'
 import PropTypes from "prop-types";
+import {uuidv4} from "../../../../../methods/utils/utils";
 const logger = log.getLogger("Dashboards")
 
 export const OPERATION_TYPES = {
@@ -239,7 +240,6 @@ const DashboardsSidebar = (props) => {
             const button = getOperationButton(currKey)
             return {
                 ...button,
-                id: currValue._id,
             }
         })
     }
@@ -344,7 +344,8 @@ const DashboardsSidebar = (props) => {
                                 getChildPayload={index => {
                                     return {
                                         ...availableReportButtons[index],
-                                        name: ""
+                                        name: "",
+                                        id: uuidv4()
                                     }
                                 }}
                             >

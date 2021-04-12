@@ -48,11 +48,11 @@ const ApiContainer = (props) => {
     // Dispatches
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
-    const onGetStations = () => dispatch(getStations())
+    const onGetStations = async () => await dispatch(getStations())
     const onGetPositions = () => dispatch(getPositions())
-    const onGetDashboards = () => dispatch(getDashboards())
+    const onGetDashboards = async () => await dispatch(getDashboards())
     const onGetObjects = () => dispatch(getObjects())
-    const onGetTasks = () => dispatch(getTasks())
+    const onGetTasks = async () => await dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
@@ -115,7 +115,7 @@ const ApiContainer = (props) => {
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
 
 
-        if(!!mapViewEnabled){
+        if (!!mapViewEnabled) {
             setMapDataInterval(setInterval(() => loadMapData(), 10000));
         }
 
@@ -157,18 +157,18 @@ const ApiContainer = (props) => {
             })
 
             // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
-            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)){
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) {
 
-              const updatedLocalSettings = {
-                ...localReducer.localSettings,
-                MiRMapEnabled: containsMirCart,
-              }
+                const updatedLocalSettings = {
+                    ...localReducer.localSettings,
+                    MiRMapEnabled: containsMirCart,
+                }
 
-              onPostLocalSettings(updatedLocalSettings)
+                onPostLocalSettings(updatedLocalSettings)
             }
         }
 
-    }, [devices,MiRMapEnabled])
+    }, [devices, MiRMapEnabled])
 
     useEffect(() => {
 
@@ -251,6 +251,10 @@ const ApiContainer = (props) => {
                 setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
                 break;
 
+            case 'locations':
+                setPageDataInterval(setInterval(() => loadLocationsData(), 5000))
+                break
+
             case 'tasks':
                 setPageDataInterval(setInterval(() => loadTasksData(), 10000))
                 break;
@@ -288,6 +292,9 @@ const ApiContainer = (props) => {
                 break;
 
             default:
+                if(!mapViewEnabled) {
+                    setPageDataInterval(setInterval(() => loadListViewData(), 5000))
+                }
                 break;
         }
 
@@ -363,7 +370,7 @@ const ApiContainer = (props) => {
     }
 
     const loadLocalData = async () => {
-      const localSettings = await onGetLocalSettings()
+        const localSettings = await onGetLocalSettings()
     }
 
 
@@ -392,6 +399,18 @@ const ApiContainer = (props) => {
         const objects = await onGetObjects()
     }
 
+    const loadLocationsData = async () => {
+        await onGetStations()
+        await onGetTasks()
+        await onGetDashboards()
+
+    }
+
+    const loadListViewData = () => {
+        onGetStations()
+        onGetDashboards()
+    }
+
     /*
         Loads data pertinent to Scheduler page
 
@@ -411,8 +430,10 @@ const ApiContainer = (props) => {
         dashboards
     */
     const loadDashboardsData = async () => {
-        await onGetCards()
+        await onGetStations()
         await onGetTasks()
+        await onGetDashboards();
+        await onGetCards()
         await onGetProcesses()
 
         /*
@@ -434,6 +455,8 @@ const ApiContainer = (props) => {
     const loadMapData = async () => {
         const stations = await onGetStations();
         const positions = await onGetPositions();
+        const dashboards = await onGetDashboards();
+
     }
 
     /*
@@ -534,13 +557,13 @@ const ApiContainer = (props) => {
                     const newDashboard = onPostDashoard(newDeviceDashboard)
 
                     return newDashboard.then(async (dashPromise) => {
-                        if (dashPromise._id !== undefined){
-                        // Add new dashboard
-                        device.dashboards.push(dashPromise._id.$oid)
+                        if (dashPromise._id !== undefined) {
+                            // Add new dashboard
+                            device.dashboards.push(dashPromise._id.$oid)
 
-                        // Delete old dashboard
-                        const index = device.dashboards.indexOf(dashboard)
-                        device.dashboards.splice(index, 1)
+                            // Delete old dashboard
+                            const index = device.dashboards.indexOf(dashboard)
+                            device.dashboards.splice(index, 1)
                         }
 
                         await onPutDevice(device, device._id)

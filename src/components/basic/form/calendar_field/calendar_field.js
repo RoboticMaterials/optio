@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useField, useFormikContext } from "formik";
-import Calendar from 'react-calendar'
-import { getMessageFromError } from "../../../../methods/utils/form_utils";
+import React, { useEffect, useState } from 'react'
+
+// functions external
+import PropTypes from 'prop-types'
+import { useField, useFormikContext } from "formik"
 
 // import styles
 import * as styled from './calendar_field.style'
-import ErrorTooltip from "../error_tooltip/error_tooltip";
-import {isEmpty} from "ramda";
-import {isArray} from "../../../../methods/utils/array_utils";
+
+// components internal
+import ErrorTooltip from "../error_tooltip/error_tooltip"
+import Calendar from "../../calendar/calendar"
+
+// utils
+import {isArray} from "../../../../methods/utils/array_utils"
+import { getMessageFromError } from "../../../../methods/utils/form_utils"
+
 
 export const CALENDAR_FIELD_MODES = {
 	START: "START",
@@ -27,59 +33,59 @@ const CalendarField = ({
 	minDate,
 	maxDate,
    selectRange,
+	index,
 	...props
 }) => {
 
-	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext();
-	const [{value: fieldValue, ...field}, {initialValue, ...meta}] = useField(props);
-	const hasError = meta.touched && meta.error;
+	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext()
+	const [{value: fieldValue, name: fieldName, ...field}, {initialValue, ...meta}] = useField(props)
+	const hasError = meta.touched && meta.error
 
-	const errorMessage = getMessageFromError(meta.error);
+	const [currentStartDate, setCurrentStartDate] = useState(isArray(fieldValue) ? fieldValue[0] : null)
+	const [currentEndDate, setCurrentEndDate] = useState(isArray(fieldValue) ? fieldValue[1] : null)
+
+	useEffect(() => {
+		setCurrentStartDate(isArray(fieldValue) ? fieldValue[0] : null)
+		setCurrentEndDate(isArray(fieldValue) ? fieldValue[1] : null)
+	}, [fieldValue, index])
+
+	const errorMessage = getMessageFromError(meta.error)
 
 	return (
 		<Container>
-				<styled.StyledCalendar
-					onDropdownClose={()=>{
-						// set this field to touched if not already
-
-						// call any additional function that was passed as prop
-						onDropdownClose && onDropdownClose();
-					}}
+				<Calendar
 					{...field}
-					selectRange={selectRange}
-					// defaultValue={[initialStartDate, initialEndDate]}
-					value={mapInput(fieldValue)}
-					allowPartialRange
-					minDate={minDate}
-					maxDate={maxDate}
-					// defaultActiveStartDate={initialStartDate}
-					// defaultValue={value}
 					{...props}
+					selectRange={selectRange}
+					value={mapInput( fieldValue)}
+					allowPartialRange
+					minDate={minDate ? minDate : (index !== null && index !== 0) ? currentStartDate : null}
+					maxDate={maxDate ? maxDate : (index !== null && index !== 1) ? currentEndDate : null}
 					onChange={value => {
-						const isTouched = meta.touched;
+						const isTouched = meta.touched
 						if(!isTouched) {
 							setFieldTouched(true)
 						}
 
-						setFieldValue(field.name, mapOutput(value))
+						setFieldValue((index !== null) ? `${fieldName}[${index}]` : fieldName, mapOutput(value))
 
 						onChange && onChange(value)
 					}}
-				/>
-				{/*</style.DefaultFieldDropdownContainer>*/}
 
+				/>
 				<ErrorTooltip
 					visible={hasError}
 					text={errorMessage}
 					ContainerComponent={styled.IconContainerComponent}
 				/>
 		</Container>
-	);
-};
+	)
+}
 
 // Specifies propTypes
 CalendarField.propTypes = {
-};
+	selectRange: PropTypes.bool
+}
 
 // Specifies the default values for props:
 CalendarField.defaultProps = {
@@ -88,6 +94,6 @@ CalendarField.defaultProps = {
 	mapInput: (val) => val,
 	mapOutput: (val) => val,
 	selectRange: false
-};
+}
 
-export default CalendarField;
+export default CalendarField

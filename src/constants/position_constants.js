@@ -127,6 +127,6 @@ export const newPositionTemplate = (name, type, parent, map_id) => {
         y: 0,
         parent: parent,
         _id: uuid.v4(),
-        map_id: map_id
+        map_id: map_id,
     }
 }

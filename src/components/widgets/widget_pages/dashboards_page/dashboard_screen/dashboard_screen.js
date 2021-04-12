@@ -84,7 +84,14 @@ const DashboardScreen = (props) => {
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
-    const [reportModal, setReportModal] = useState(null);
+    const [reportModal, setReportModal] = useState({
+        type: null,
+        id: null
+    });
+    const {
+        type: modalType,
+        id: modalButtonId
+    } = reportModal
     const [displayName, setDisplayName] = useState(dashboardName);
     const [dashboardStation, setDashboardStation] = useState({});
     const {
@@ -372,13 +379,16 @@ const DashboardScreen = (props) => {
                 handleOperationClick()
                 break
             case OPERATION_TYPES.REPORT.key:
-                setReportModal(OPERATION_TYPES.REPORT.key)
+                setReportModal({
+                    type: OPERATION_TYPES.REPORT.key,
+                    id: Id
+                })
                 break
             case OPERATION_TYPES.KICK_OFF.key:
-                setReportModal(OPERATION_TYPES.KICK_OFF.key)
+                setReportModal({type: OPERATION_TYPES.KICK_OFF.key, id: null})
                 break
             case OPERATION_TYPES.FINISH.key:
-                setReportModal(OPERATION_TYPES.FINISH.key)
+                setReportModal({type: OPERATION_TYPES.FINISH.key, id: null})
                 break
             default:
                 break
@@ -424,11 +434,12 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
-            {(reportModal === OPERATION_TYPES.REPORT.key) &&
+            {(modalType === OPERATION_TYPES.REPORT.key) &&
                 <ReportModal
-                    isOpen={!!reportModal}
+                    dashboardButtonId={modalButtonId}
+                    isOpen={!!true}
                     title={"Send Report"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success) => {
 
@@ -445,12 +456,12 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {(reportModal === OPERATION_TYPES.KICK_OFF.key) &&
+            {(modalType === OPERATION_TYPES.KICK_OFF.key) &&
                 <KickOffModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Kick Off"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -465,12 +476,12 @@ const DashboardScreen = (props) => {
                     }}
                 />
             }
-            {(reportModal === OPERATION_TYPES.FINISH.key) &&
+            {(modalType === OPERATION_TYPES.FINISH.key) &&
                 <FinishModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Finish"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
