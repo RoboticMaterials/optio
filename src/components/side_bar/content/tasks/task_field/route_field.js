@@ -152,7 +152,7 @@ const TaskField = (props) => {
     const [didSetHandoff, setDidSetHandoff] = useState(false);
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objectSaveDisabled, setObjectSaveDisabled] = useState(true);
-    const [contentType, setContentType] = useState('new')
+    const [contentType, setContentType] = useState('existing')
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
