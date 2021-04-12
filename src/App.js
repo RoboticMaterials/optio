@@ -37,6 +37,7 @@ import { Auth } from "aws-amplify";
 // Amplify configuration globally
 import Amplify from "aws-amplify";
 import config from "./aws-exports";
+import TaskQueueContainer from "./components/task_queue/task_queue_container";
 
 Amplify.configure(config);
 
@@ -165,6 +166,7 @@ const App = (props) => {
                             <Route
                                 path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
                             >
+                                <TaskQueueContainer/>
                                 <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                             </Route>
                         }

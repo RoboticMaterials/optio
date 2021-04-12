@@ -20,7 +20,13 @@ import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
 import { taskQueueByOrgId } from '../graphql/queries'
-import { createTaskQueue, deleteTaskQueue, updateTaskQueue, manageTaskQueue } from '../graphql/mutations'
+import {
+    createTaskQueue,
+    deleteTaskQueue,
+    updateTaskQueue,
+    manageTaskQueue,
+    deleteCard as deleteCardByID
+} from '../graphql/mutations'
 
 // import {putCard, getCard} from './cards_api'
 
@@ -119,14 +125,21 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
             
         taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
-        await API.graphql({
-            query: manageTaskQueue,
-            variables: { 
-                taskQueueItem: JSON.stringify(taskQueueItem)
-            }
-        });
+        // await API.graphql({
+        //     query: manageTaskQueue,
+        //     variables: {
+        //         taskQueueItem: JSON.stringify(taskQueueItem)
+        //     }
+        // });
 
-        store.dispatch({ type: 'DELETE_TASK_QUEUE_ITEM_SUCCESS', id });
+        const dataJson = await API.graphql({
+            query: deleteTaskQueue,
+            variables: { input: {id} }
+        })
+
+
+
+        // store.dispatch({ type: 'DELETE_TASK_QUEUE_ITEM_SUCCESS', id });
 
         return 'Deleted TQ';
 

@@ -27,14 +27,18 @@ const tableNames = {
 	taskQueue: process.env.API_RMSTUDIOCLOUD_TASKQUEUETABLE_NAME
 }
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient({
+	endpoint: process.env.DDB_ENDPOINT,
+});
 
+console.log("hi")
 exports.handler = async (event) => {
 	try {
 
 		console.log('one', event);
 
 		const taskQueueItem = event.arguments.taskQueueItem
+		console.log("in lambda taskQueueItem",taskQueueItem)
 		
 		const taskParams = {
 			TableName: tableNames.task,

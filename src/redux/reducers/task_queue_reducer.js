@@ -27,6 +27,11 @@ import {
 } from '../types/api_types';
 
 import { clone_object, deepCopy } from '../../methods/utils/utils';
+import {createActionType} from "../actions/redux_utils";
+import * as prefixes from "../types/prefixes";
+import * as dataTypes from "../types/data_types";
+import {REMOVE} from "../types/prefixes";
+import {PROCESS} from "../types/data_types";
 
 const defaultState = {
     taskQueue: {},
@@ -45,6 +50,28 @@ const defaultState = {
 export default function taskQueueReducer(state = defaultState, action) {
     let taskQueue = {}
     switch (action.type) {
+
+        case createActionType([prefixes.SET, dataTypes.TASK_QUEUE]): {
+            return {
+                ...state,
+                taskQueue: {
+                    ...state.taskQueue,
+                    [action.payload.id]: {...action.payload},
+                },
+            }
+        }
+
+        case createActionType([prefixes.REMOVE, dataTypes.TASK_QUEUE]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.taskQueue
+
+            return {
+                ...state,
+                taskQueue: { ...remaining },
+            }
+        }
 
         /**
          * HILs?

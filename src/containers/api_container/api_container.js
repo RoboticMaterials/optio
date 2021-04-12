@@ -364,39 +364,7 @@ const ApiContainer = (props) => {
         status, taskQueue, devices
     */
 
-    // Handle task being created
-    const handleTaskUpdate = async (taskQueueItem) => {
 
-        // get the task 
-        const tasks = await onGetTasks()
-
-        const task = taskQueueItem ? tasks[taskQueueItem.taskId] : null
-
-        // Unload?
-        if(task && task.handoff && taskQueueItem.quantity){
-
-            // set end time
-            taskQueueItem.end_time = Math.round(Date.now() / 1000)
-
-            // tell GQL to run the lambda function
-            await API.graphql({
-                query: manageTaskQueue,
-                variables: { 
-                    taskQueueItem: JSON.stringify(taskQueueItem)
-                }
-              });
-        }else if(taskQueueItem && taskQueueItem.start_time === null && !task.handoff){  
-
-            taskQueueItem.start_time = Math.round(Date.now() / 1000)
-
-            taskQueueItem.hil_station_id = task.unload.station
-
-            taskQueueItem.hil_message = 'Unload'
-
-            // put a start time on th taskQueueItem
-            await onPutTaskQueue(taskQueueItem, taskQueueItem.id)
-        }
-    }
 
     const loadCriticalData = async () => {
 
@@ -420,31 +388,18 @@ const ApiContainer = (props) => {
         //     error: error => console.warn(error)
         // });
 
+        await getResourceSubscription(dataTypes.TASK_QUEUE)
         // Subscribe to taskQueue
         // Only need this one for now
-        API.graphql(
-            graphqlOperation(subscriptions.onDeltaTaskQueue)
-        ).subscribe({
-            next: async ({ provider, value }) => {  
-                // run get queue
-                const taskQ = await onGetTaskQueue()
-
-                Object.values(taskQ).map((item) => {
-                    if (
-                            // when do we update the task???
-                            item.taskId === value.data.onDeltaTaskQueue.taskId
-                            &&
-                            value.data.onDeltaTaskQueue.hil_response === true
-                            &&
-                            value.data.onDeltaTaskQueue.updatedAt
-                        )
-                        {
-                            handleTaskUpdate(value.data.onDeltaTaskQueue)
-                        }
-                })
-        },
-            error: error => console.warn(error)
-        });
+        // API.graphql(
+        //     graphqlOperation(subscriptions.onDeltaTaskQueue)
+        // ).subscribe({
+        //     next: async ({ provider, value }) => {
+        //         // run get queue
+        //         console.log("in hereeee",value)
+        // },
+        //     error: error => console.warn(error)
+        // });
 
         // Subscribe to Devices
         // Taking this out for now because sevices will be added later

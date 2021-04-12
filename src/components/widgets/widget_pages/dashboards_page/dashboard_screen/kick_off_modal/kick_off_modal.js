@@ -315,7 +315,6 @@ const KickOffModal = (props) => {
             }).map((currCard) => {
                 return{
                     ...currCard,
-                    count: currCard.bins["QUEUE"].count
                 }
             })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
