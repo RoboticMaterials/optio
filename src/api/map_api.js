@@ -39,7 +39,6 @@ export async function getMaps() {
 
 export async function getMap(mapId) {
   try {
-    console.log('mapmapmapmap');
 
     const userOrgId = await getUserOrgId()
 
