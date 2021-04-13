@@ -50,9 +50,6 @@ const ThroughputChart = (props) => {
     const [isData, setIsData] = useState(false)
     const [chartKeys, setChartKeys] = useState(false)
 
-    // These values and useEffect for sort level is used to control sort level via widget
-    // If you scroll down to the return statment, yuo will see that if it isWidget then render some new elements
-    // If not widget, this settings are handled in Statistic header in statistic side bar
     const dropDownOptions = [
         { label: 'Object', value: 'object' },
         { label: 'Lot', value: 'lot_id' },
@@ -244,6 +241,8 @@ const ThroughputChart = (props) => {
             minHeight={minHeight}
         >
             {isWidget &&
+                // If its a widget then have some elements here that control the data
+                // These elements all have callbacks to their parent component, which is statistics overveiw
                 <styled.PlotHeader>
                     <styled.PlotTitle>Throughput</styled.PlotTitle>
                     {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
