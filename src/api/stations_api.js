@@ -77,8 +77,6 @@ export async function postStation(station) {
 
     const userOrgId = await getUserOrgId()
 
-    console.log(station);
-
     const input = {
       ...station,
       organizationId: userOrgId,

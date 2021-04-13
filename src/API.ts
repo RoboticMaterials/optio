@@ -639,6 +639,7 @@ export type CreateCardInput = {
   lotTemplateId: string,
   name: string,
   processId: string,
+  count?: number | null,
 };
 
 export type ModelCardConditionInput = {
@@ -652,6 +653,7 @@ export type ModelCardConditionInput = {
   lotTemplateId?: ModelStringInput | null,
   name?: ModelStringInput | null,
   processId?: ModelStringInput | null,
+  count?: ModelIntInput | null,
   and?: Array< ModelCardConditionInput | null > | null,
   or?: Array< ModelCardConditionInput | null > | null,
   not?: ModelCardConditionInput | null,
@@ -670,6 +672,7 @@ export type Card = {
   lotTemplateId?: string,
   name?: string,
   processId?: string,
+  count?: number | null,
 };
 
 export type UpdateCardInput = {
@@ -684,6 +687,7 @@ export type UpdateCardInput = {
   lotTemplateId?: string | null,
   name?: string | null,
   processId?: string | null,
+  count?: number | null,
 };
 
 export type DeleteCardInput = {
@@ -1542,6 +1546,7 @@ export type ModelCardFilterInput = {
   lotTemplateId?: ModelStringInput | null,
   name?: ModelStringInput | null,
   processId?: ModelStringInput | null,
+  count?: ModelIntInput | null,
   and?: Array< ModelCardFilterInput | null > | null,
   or?: Array< ModelCardFilterInput | null > | null,
   not?: ModelCardFilterInput | null,
@@ -2442,6 +2447,7 @@ export type CreateCardMutation = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -2464,6 +2470,7 @@ export type UpdateCardMutation = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -2486,6 +2493,7 @@ export type DeleteCardMutation = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -3523,6 +3531,7 @@ export type CardsByOrgIdQuery = {
       lotTemplateId: string,
       name: string,
       processId: string,
+      count?: number | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -3552,6 +3561,7 @@ export type GetCardByIdQuery = {
       lotTemplateId: string,
       name: string,
       processId: string,
+      count?: number | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -3966,6 +3976,7 @@ export type OnDeltaCardSubscription = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -4493,6 +4504,7 @@ export type OnCreateCardSubscription = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -4510,6 +4522,7 @@ export type OnUpdateCardSubscription = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 
@@ -4527,6 +4540,7 @@ export type OnDeleteCardSubscription = {
     lotTemplateId: string,
     name: string,
     processId: string,
+    count?: number | null,
   } | null,
 };
 

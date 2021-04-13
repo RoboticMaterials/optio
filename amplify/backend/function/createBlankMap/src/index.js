@@ -10,10 +10,6 @@ Amplify Params - DO NOT EDIT */
 
 const AWS = require("aws-sdk");
 
-// const docClient = new AWS.DynamoDB.DocumentClient({
-// 	endpoint: process.env.DDB_ENDPOINT,
-//  });
-
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 const tableNames = {
@@ -23,32 +19,35 @@ const tableNames = {
 const mapData = require('./mapData')
 
 exports.handler = async (event) => {
-try {
-    const blankMap = {
-        id: uuidv4(),
-        organizationId: event.arguments.organizationId,
-        map: mapData.mapData,
-        name: "Blank Map",
-        resolution: 0.05,
-        origin_theta: 0,
-        origin_x: 0,
-        origin_y: 0
-    }
+    console.log(process.env);
+    try {
+        const blankMap = {
+            id: uuidv4(),
+            organizationId: event.arguments.organizationId,
+            map: mapData.mapData,
+            name: "Blank Map",
+            resolution: 0.05,
+            origin_theta: 0,
+            origin_x: 0,
+            origin_y: 0
+        }
 
-    // put the taskQI in the taskQevents
-		const mapParams = {
-			TableName: tableNames.map,
-			Item: blankMap
-		};
+        // put the taskQI in the taskQevents
+        const mapParams = {
+            TableName: tableNames.map,
+            Item: blankMap
+        };
 
-		await docClient.put(mapParams).promise();
+        let map = await docClient.put(mapParams).promise();
+
+        console.log(map);
 
         return {
             posted: true
         }
-} catch (error) {
-    console.log(error);
-}
+    } catch (error) {
+        console.log(error);
+    }
     
 };
 

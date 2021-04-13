@@ -85,7 +85,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "node ./scripts/pre-start.js && react-scripts build",
+    "build": "react-scripts --max_old_space_size=8192 build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "postinstall": "node ./scripts/postinstall.js"

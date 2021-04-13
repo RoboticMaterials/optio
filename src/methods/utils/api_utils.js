@@ -128,7 +128,6 @@ export const streamlinedSubscription = async (sub, cb, parser) => {
 		graphqlOperation(sub)
 	).subscribe({
 		next: (subResult) => {
-			console.log("subResult",subResult)
 			const subName = getSubscriptionName(sub)
 			const data = getSubscriptionData(subResult, subName, parser)
 			cb(data)
@@ -149,15 +148,15 @@ export const streamlinedGraphqlCall = async (transform, query, variables, parser
 	switch(transform) {
 		case TRANSFORMS.MUTATION: {
 			return await streamlinedMutation(query, variables, parser)
-			break
 		}
 		case TRANSFORMS.QUERY: {
 			return await streamlinedQuery(query, variables, parser)
-			break
 		}
 		case TRANSFORMS.SUBSCRIPTION: {
 			break
 		}
+		default:
+			break
 	}
 
 }

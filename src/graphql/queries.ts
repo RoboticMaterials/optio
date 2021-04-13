@@ -373,6 +373,7 @@ export const cardsByOrgId = /* GraphQL */ `
         lotTemplateId
         name
         processId
+        count
       }
       nextToken
     }
@@ -405,6 +406,7 @@ export const getCardById = /* GraphQL */ `
         lotTemplateId
         name
         processId
+        count
       }
       nextToken
     }

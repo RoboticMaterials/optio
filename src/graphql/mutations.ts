@@ -606,6 +606,7 @@ export const createCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;
@@ -626,6 +627,7 @@ export const updateCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;
@@ -646,6 +648,7 @@ export const deleteCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;

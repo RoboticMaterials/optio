@@ -39,7 +39,6 @@ const FirstSignIn = () => {
     
             const userInput = await Auth.currentAuthenticatedUser();
 
-
             const user = {
                 id: userInput.attributes.sub,
                 organizationId: dataJson.data.OrgsByKey.items[0].organizationId,
@@ -58,7 +57,7 @@ const FirstSignIn = () => {
             })
 
             // if no map then create one
-            if(maps.data.MapsByOrgId === null){
+            if(maps.data.MapsByOrgId.items.length === 0){
                 await API.graphql({
                     query: createBlankMap,
                     variables: { organizationId: userData.data.createUser.organizationId }

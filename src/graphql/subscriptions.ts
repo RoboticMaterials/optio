@@ -144,6 +144,7 @@ export const onDeltaCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;
@@ -665,6 +666,7 @@ export const onCreateCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;
@@ -682,6 +684,7 @@ export const onUpdateCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;
@@ -699,6 +702,7 @@ export const onDeleteCard = /* GraphQL */ `
       lotTemplateId
       name
       processId
+      count
     }
   }
 `;

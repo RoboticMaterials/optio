@@ -200,12 +200,9 @@ const ApiContainer = (props) => {
      */
 
     const setDataInterval = async (pageParams) => {
-        console.log("setDataInterval")
-
         // unsub from everything
         if(currentSubscriptions.length){
             currentSubscriptions.forEach(sub => {
-                console.log("sub cleaning",sub)
                 if(sub._state !== 'closed'){
                     sub._cleanup()
                 }
@@ -278,8 +275,6 @@ const ApiContainer = (props) => {
                     setCurrentSubscriptions(await getProcessPageSubscription())
                     break
                 }
-
-                break
             }
 
             default: {
