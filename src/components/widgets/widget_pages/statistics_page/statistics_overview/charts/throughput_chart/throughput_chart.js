@@ -36,6 +36,8 @@ const ThroughputChart = (props) => {
 
     // redux state
     const objects = useSelector(state => state.objectsReducer.objects)
+    const lots = useSelector(state => state.lotsReducer.lots)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
 
     const [showBar, setShowBar] = useState(true)
     const [throughputData, setThroughputData] = useState([])
@@ -53,8 +55,7 @@ const ThroughputChart = (props) => {
         let deletedChartKeys = []
 
         if (showBar) {
-            data?.throughPut.forEach((currItem) => {
-                // console.log('QQQQ curr item', currItem)
+            data?.throughPut?.forEach((currItem) => {
                 const {
                     lable,
                     ...sortedIds
@@ -70,8 +71,6 @@ const ThroughputChart = (props) => {
                         return currVal > 0
                     })
                     .forEach((currEntry, currIndex) => {
-
-                        // console.log('QQQQ currentry', currEntry)
 
                         const [currKey, currVal] = currEntry
 
@@ -118,9 +117,8 @@ const ThroughputChart = (props) => {
 
                             }
 
-
                             switch (sortLevel.value) {
-                                
+
                                 case 'object':
                                     const currObject = objects[currKey]
 
@@ -144,7 +142,47 @@ const ThroughputChart = (props) => {
                                     }
                                     break;
 
+                                case 'lot_id':
+                                    const lot = lots[currKey]
+                                    if (!!lot) {
+                                        onChartKeys(lot.name)
+                                    }
+
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+
+                                case 'route_id':
+                                    const route = tasks[currKey]
+                                    if (!!route) {
+                                        onChartKeys(route.name)
+                                    }
+
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+
                                 default:
+                                    const currObjectDef = objects[currKey]
+
+                                    // object with id was found
+                                    if (isObject(currObjectDef)) {
+
+                                        // get object name
+                                        const {
+                                            name: currObjectName = `Unnamed`
+                                        } = currObjectDef || {}
+
+                                        // format
+                                        const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
+
+                                        onChartKeys(currObjectNameCapitalized)
+                                    }
+
+                                    // object with id was NOT found
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
                                     break;
                             }
 
@@ -152,8 +190,6 @@ const ThroughputChart = (props) => {
 
                         }
                     })
-
-                console.log('QQQQ updatedItem', updatedItem)
 
                 tempFilteredData.push(updatedItem)
 

@@ -87,7 +87,13 @@ const StationColumn = (props) => {
         const dataPromise = getStationAnalytics(stationId, body)
         dataPromise.then(response => {
             console.log('QQQQ response', response)
-            if (response === undefined) return
+            if (response === undefined) {
+                setThroughputData([])
+                setDateTitle('')
+                dataLoading(false)
+                setLoading(false)
+                return
+            }
             // Convert Throughput
             if (timeSpan === 'line') {
                 let convertedThroughput = []
