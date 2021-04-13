@@ -34,7 +34,7 @@ export const ProcessName = styled.h3`
 export const NameContainer = styled.div`
     display: flex;
     flex: 1;
-    align-items: center
+    align-items: center;
     /* max-width: 8rem; */
 
 `

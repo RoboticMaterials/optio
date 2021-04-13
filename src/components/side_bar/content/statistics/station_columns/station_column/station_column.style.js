@@ -14,7 +14,8 @@ export const StationColumnContainer = styled.div`
 export const StationCollapsedContainer = styled.div`
     width: 3rem;
     height: 20rem;
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.primary};
+    box-shadow: ${props => props.theme.cardShadow};
     position: relative;
     margin: 1rem;
     border-radius: .5rem;
