@@ -27,7 +27,7 @@ const StatisticsHeader = (props) => {
     } = props || {}
 
     const dropDownOptions = [
-        { label: 'Object', value:'object' },
+        { label: 'Object', value: 'object' },
         { label: 'Lot', value: 'lot_id' },
         { label: 'Route', value: 'route_id' }
 
@@ -97,28 +97,32 @@ const StatisticsHeader = (props) => {
                 </styled.RowContainer>
             </styled.HeaderSection>
 
-            <styled.HeaderSection style={{ position: 'relative' }}>
-                <styled.RowContainer style={{ alignItems: 'center' }} onClick={() => setShowShiftSettings(!showShiftSettings)}>
-                    <styled.HeaderLabel>Shift Settings</styled.HeaderLabel>
-                    <i style={{ marginLeft: '.5rem' }} className={showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} />
-                </styled.RowContainer>
-                {showShiftSettings && renderShiftSettings()}
-            </styled.HeaderSection>
+            {!showReport && timeSpan === 'line' &&
+                < styled.HeaderSection style={{ position: 'relative' }}>
+                    <styled.RowContainer style={{ alignItems: 'center' }} onClick={() => setShowShiftSettings(!showShiftSettings)}>
+                        <styled.HeaderLabel>Shift Settings</styled.HeaderLabel>
+                        <i style={{ marginLeft: '.5rem' }} className={showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} />
+                    </styled.RowContainer>
+                    {showShiftSettings && renderShiftSettings()}
+                </styled.HeaderSection>
+            }
 
-            <styled.HeaderSection>
-                <SortDropdown
-                    options={dropDownOptions}
-                    labelField={'label'}
-                    valueField={'label'}
-                    dropDownSearchStyle={{minWidth:'10rem'}}
-                    onChange={(val) => {
-                        handleSelectSort(val)
-                    }}
-                    values={[sortLevel]}
-                />
-            </styled.HeaderSection>
+            {!showReport && timeSpan !== 'line' &&
+                <styled.HeaderSection>
+                    <SortDropdown
+                        options={dropDownOptions}
+                        labelField={'label'}
+                        valueField={'label'}
+                        dropDownSearchStyle={{ minWidth: '10rem' }}
+                        onChange={(val) => {
+                            handleSelectSort(val)
+                        }}
+                        values={[sortLevel]}
+                    />
+                </styled.HeaderSection>
+            }
 
-        </styled.HeaderBar>
+        </styled.HeaderBar >
     )
 }
 

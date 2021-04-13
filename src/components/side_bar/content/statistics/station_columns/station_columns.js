@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 
 // Import Styles
@@ -27,6 +27,8 @@ const StationColumns = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    const [collapsed, setCollapsed] = useState(false)
+
     const renderStationColumn = useMemo(() => {
         const processStations = getProcessStations(processes[processId], routes)
         return Object.keys(processStations).map((stationId) => {
@@ -47,14 +49,34 @@ const StationColumns = (props) => {
     }, [dateIndex, timeSpan, showReport, sortLevel])
 
     return (
-        <styled.RowContainer>
-            <styled.ProcessName>{processes[processId].name}</styled.ProcessName>
+        collapsed ?
+            <styled.RowContainer>
+                <styled.NameContainer>
+                    <styled.ProcessName>{processes[processId].name}</styled.ProcessName>
+                    <styled.CollapseIcon
+                        className="fa fa-chevron-right"
+                        aria-hidden="true"
+                        onClick={() => setCollapsed(false)}
+                    />
+                </styled.NameContainer>
 
-            <styled.ChartsContainer>
+            </styled.RowContainer>
+            :
+            <styled.RowContainer>
+                <styled.NameContainer>
+                    <styled.ProcessName>{processes[processId].name}</styled.ProcessName>
+                    <styled.CollapseIcon
+                        className="fa fa-chevron-down"
+                        aria-hidden="true"
+                        onClick={() => setCollapsed(true)}
+                    />
+                </styled.NameContainer>
 
-                {renderStationColumn}
-            </styled.ChartsContainer>
-        </styled.RowContainer>
+                <styled.ChartsContainer>
+
+                    {renderStationColumn}
+                </styled.ChartsContainer>
+            </styled.RowContainer>
     )
 }
 

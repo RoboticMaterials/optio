@@ -89,7 +89,6 @@ const StationColumn = (props) => {
             console.log('QQQQ response', response)
             if (response === undefined) {
                 setThroughputData([])
-                setDateTitle('')
                 dataLoading(false)
                 setLoading(false)
                 return

@@ -41,7 +41,7 @@ export const StationTitle = styled.p`
     text-overflow: ellipsis;
     color: ${props => props.theme.textColor};
     margin: 0;
-    transform: ${props => !!props.rotated && 'rotate(90deg)'} 
+    transform: ${props => !!props.rotated && 'rotate(90deg)'};
 `
 
 export const CollapseIcon = styled.i`

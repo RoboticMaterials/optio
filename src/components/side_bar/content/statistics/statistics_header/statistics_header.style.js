@@ -39,11 +39,12 @@ export const ShiftSettingsContainer = styled.div`
 export const HeaderBar = styled.div`
 	${layoutCss.headerStyle};
     width: 100%;
-    height: 6rem;
+    max-height: 7rem;
     background-color: ${props => props.theme.bg.primary};
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
+    padding: .5rem;
 `
 
 export const RowContainer = styled.div`
