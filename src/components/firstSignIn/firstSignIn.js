@@ -27,46 +27,62 @@ const FirstSignIn = () => {
 
     const [key] = useState('')
 
+    const [errorText, setErrorText] = useState('')
+
     const history = useHistory()
 
     const handleSubmit = async (key) => {
 
+        let dataJson
+
         try {
-            const dataJson = await API.graphql({
+
+            dataJson = await API.graphql({
                 query: orgsByKey,
                 variables: { key: key }
             })
     
-            const userInput = await Auth.currentAuthenticatedUser();
-
-            const user = {
-                id: userInput.attributes.sub,
-                organizationId: dataJson.data.OrgsByKey.items[0].organizationId,
-                username: userInput.attributes.email
-            }
             
-            const userData = await API.graphql({
-                query: createUser,
-                variables: { input: user }
-            })
+        } catch (error) {
+            setErrorText(error)
+        }
 
-            // get the maps for this org
-            const maps = await API.graphql({
-                query: mapsByOrgId,
-                variables: { organizationId: userData.data.createUser.organizationId }
-            })
+        try {
+            if(dataJson.data.OrgsByKey.items[0]){
+            
+                const userInput = await Auth.currentAuthenticatedUser();
 
-            // if no map then create one
-            if(maps.data.MapsByOrgId.items.length === 0){
-                await API.graphql({
-                    query: createBlankMap,
+                const user = {
+                    id: userInput.attributes.sub,
+                    organizationId: dataJson.data.OrgsByKey.items[0].organizationId,
+                    username: userInput.attributes.email
+                }
+                
+                const userData = await API.graphql({
+                    query: createUser,
+                    variables: { input: user }
+                })
+
+                // get the maps for this org
+                const maps = await API.graphql({
+                    query: mapsByOrgId,
                     variables: { organizationId: userData.data.createUser.organizationId }
                 })
+
+                // if no map then create one
+                if(maps.data.MapsByOrgId.items.length === 0){
+                    await API.graphql({
+                        query: createBlankMap,
+                        variables: { organizationId: userData.data.createUser.organizationId }
+                    })
+                }
+
+                history.push('/');
+
+                window.location.reload()
+            }else{
+                setErrorText('There is no organization with that key')
             }
-
-            history.push('/');
-
-            window.location.reload()
     
         } catch (error) {
             console.log(error);
@@ -106,7 +122,11 @@ const FirstSignIn = () => {
                         <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
                     </styled.LogoContainer>
 
-                    <h1> Please provide us with your organizations key </h1>
+                    <styled.SignInUpContainer> Please provide us with your organizations key </styled.SignInUpContainer>
+
+                    <styled.ErrorText>
+                        {errorText}
+                    </styled.ErrorText>
 
                     <Form>
 

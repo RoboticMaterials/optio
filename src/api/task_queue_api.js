@@ -97,10 +97,7 @@ export async function deleteTaskQueueAll() {
         let data = await getTaskQueue()
 
         data.forEach(element => {
-            API.graphql({
-                query: deleteTaskQueue,
-                variables: { input: {id: element.id} }
-            })
+            deleteTaskQueueItem(element.id, element)
         });
         return 'Deleted TQ';
 
