@@ -36,6 +36,7 @@ const ThroughputChart = (props) => {
 
     // redux state
     const objects = useSelector(state => state.objectsReducer.objects)
+    const cards = useSelector(state => state.cardsReducer.cards)
     const lots = useSelector(state => state.lotsReducer.lots)
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
@@ -116,7 +117,6 @@ const ThroughputChart = (props) => {
                                 onChartKeys(currObjectName)
 
                             }
-
                             switch (sortLevel.value) {
 
                                 case 'object':
@@ -143,7 +143,7 @@ const ThroughputChart = (props) => {
                                     break;
 
                                 case 'lot_id':
-                                    const lot = lots[currKey]
+                                    const lot = cards[currKey]
                                     if (!!lot) {
                                         onChartKeys(lot.name)
                                     }
@@ -151,6 +151,7 @@ const ThroughputChart = (props) => {
                                     else {
                                         onDeletedKeys(currKey)
                                     }
+                                    break;
 
                                 case 'route_id':
                                     const route = tasks[currKey]
@@ -161,6 +162,7 @@ const ThroughputChart = (props) => {
                                     else {
                                         onDeletedKeys(currKey)
                                     }
+                                    break;
 
                                 default:
                                     const currObjectDef = objects[currKey]
