@@ -35,8 +35,9 @@ const LocationList = (props) => {
 
     const locations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
-    const locationsArr = locationsSortedAlphabetically(Object.values(locations))
+    const locationsArr = locationsSortedAlphabetically(Object.values(locations).filter(loc => loc.map_id === currentMap._id))
     const devicesArr = Object.values(devices)
 
     const dashboardsArr = [...locationsArr, ...devicesArr]
