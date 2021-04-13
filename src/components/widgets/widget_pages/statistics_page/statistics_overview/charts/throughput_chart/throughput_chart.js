@@ -4,6 +4,9 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import * as styled from '../charts.style'
 import { ThemeContext } from 'styled-components';
 
+// Import Basic Components
+import SortDropdown from '../../../../../../basic/sort_dropdown/sort_dropdown'
+
 // Import components
 import LineThroughputChart from './line_throughput_chart/line_throughput_chart'
 
@@ -32,6 +35,7 @@ const ThroughputChart = (props) => {
         disableTimeSpan,
         isWidget,
         sortLevel,
+        setParentSortLevel,
     } = props
 
     // redux state
@@ -45,8 +49,16 @@ const ThroughputChart = (props) => {
     const [lineData, setLineData] = useState([])
     const [isData, setIsData] = useState(false)
     const [chartKeys, setChartKeys] = useState(false)
-    // const [chartColors, setChartColors] = useState(false)
 
+    // These values and useEffect for sort level is used to control sort level via widget
+    // If you scroll down to the return statment, yuo will see that if it isWidget then render some new elements
+    // If not widget, this settings are handled in Statistic header in statistic side bar
+    const dropDownOptions = [
+        { label: 'Object', value: 'object' },
+        { label: 'Lot', value: 'lot_id' },
+        { label: 'Route', value: 'route_id' }
+
+    ]
 
     // Useeffect for sorting bar chart data
     useEffect(() => {
@@ -208,7 +220,7 @@ const ThroughputChart = (props) => {
             setLineData(data.throughPut)
             setThroughputData([])
         }
-    }, [data, showBar])
+    }, [data, showBar, sortLevel])
 
     useEffect(() => {
         if (showBar || isWidget) {
@@ -237,7 +249,7 @@ const ThroughputChart = (props) => {
                     {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
 
                     {(timeSpan === 'day' || timeSpan === 'line') &&
-                        <>
+                        <styled.RowContainer style={{ marginBottom: '.5rem' }}>
                             <styled.ChartTypeButton
                                 style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                 onClick={() => {
@@ -256,7 +268,19 @@ const ThroughputChart = (props) => {
                             >
                                 Line
                         </styled.ChartTypeButton>
-                        </>
+                        </styled.RowContainer>
+                    }
+                    {timeSpan !== 'line' &&
+                        <SortDropdown
+                            options={dropDownOptions}
+                            labelField={'label'}
+                            valueField={'label'}
+                            dropDownSearchStyle={{ minWidth: '10rem' }}
+                            onChange={(val) => {
+                                setParentSortLevel(val)
+                            }}
+                            values={[sortLevel]}
+                        />
                     }
                 </styled.PlotHeader>
             }

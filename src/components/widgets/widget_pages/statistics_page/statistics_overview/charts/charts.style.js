@@ -5,6 +5,8 @@ import * as styles from '../../statistics_page.style'
 import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
 
 export const PlotHeader = styled.div`
+    ${commonCss.columnContainer};
+    align-items: center;
 	//height: 30rem;
 	//min-height: 30rem;
 `
@@ -109,7 +111,6 @@ export const RowContainer = styled.div`
     ${commonCss.rowContainer};
     justify-content: space-around;
     position: relative;
-    
 `
 
 export const ColumnContainer = styled.div`
