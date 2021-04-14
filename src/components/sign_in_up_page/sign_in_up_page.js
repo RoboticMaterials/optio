@@ -134,6 +134,7 @@ const SignInUpPage = (props) => {
                     if (err) {
                         if (err.message === 'Invalid version. Version should be 1') {
                             setErrorText('Invalid email. Please use a valid email.')
+                            setLoading(false)
                         } else {
                             setErrorText(err.message)
                             setLoading(false)

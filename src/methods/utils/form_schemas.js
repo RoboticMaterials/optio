@@ -242,10 +242,15 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
 
         var index = path.match(rx);
         let megaIndex = 0
-        index.forEach((currItem) => {
+        const last = index.pop()
 
-            megaIndex = megaIndex + parseInt(currItem.replace(reg2,''))
+        index.forEach((currItem) => {
+            const parsedIndex = parseInt(currItem.replace(reg2,''))
+            for(let i = 0; i < parsedIndex; i++) {
+                megaIndex = megaIndex + arr[i].length
+            }
         })
+        megaIndex = megaIndex + parseInt(last.replace(reg2,''))
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -254,6 +259,7 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         let isUnique = true
 
         let currIndex = 0
+
         for (const currItem of arr.flat()) {
             if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
@@ -318,12 +324,17 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
 });
 
 // returns error if value is in arr
-Yup.addMethod(Yup.string, "notIn", function (message, arr) {
+Yup.addMethod(Yup.string, "notIn", function (message, arr, pathToOthers) {
     return this.test("notIn", message, function (value) {
-        const { path, createError } = this;
+        const { path, createError, parent, options } = this
+        const {
+            context
+        } = options || {}
+        const {
+            [pathToOthers]: others = []
+        } = context || {}
 
-
-        for(const item of arr) {
+        for(const item of arr.concat(Object.values(others))) {
             if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
@@ -472,6 +483,7 @@ export const LotFormSchema = Yup.object().shape({
                 fieldName: Yup.string()
                     .min(1, '1 character minimum.')
                     .max(50, '50 character maximum.')
+                    .notIn("This field name is already being used.", [], "displayNames")
                     .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
                     .required('Please enter a name for this field.'),
                 style: Yup.object()

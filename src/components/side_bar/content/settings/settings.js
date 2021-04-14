@@ -30,8 +30,11 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
+import {useHistory} from "react-router-dom";
 
 const Settings = () => {
+
+    const history = useHistory()
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -176,6 +179,9 @@ const Settings = () => {
         await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
+        if(!localSettingsState.mapViewEnabled) {
+            history.push(`/`)
+        }
 
     }
 

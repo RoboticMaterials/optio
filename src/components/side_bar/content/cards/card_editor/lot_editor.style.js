@@ -292,8 +292,7 @@ export const BodyContainer = styled.div`
 	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
-
-	
+  
 `
 
 export const WidgetContainer = styled.div`

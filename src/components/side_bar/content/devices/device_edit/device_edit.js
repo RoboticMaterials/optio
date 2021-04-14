@@ -441,7 +441,7 @@ const DeviceEdit = (props) => {
         let initialValues = {}
         if (!!selectedDevice.schedules && Object.values(selectedDevice.schedules).length > 0) {
             initialValues['schedules'] = Object.values(selectedDevice.schedules)
-        }
+        } 
         if (!!selectedDevice.charge_level) {
             initialValues['charge_level'] = selectedDevice.charge_level
 
