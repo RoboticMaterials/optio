@@ -108,7 +108,7 @@ export default function ContentList(props) {
                                 onMouseEnter={() => props.onMouseEnter(element)}
                                 onMouseLeave={() => props.onMouseLeave(element)}
                             >
-                                <styled.ListItemIconContainer>
+                                <styled.ListItemIconContainer style = {{paddingTop: element.type === "charger_position" ? '0.6rem': '0rem'}}>
 
                                     {props.schema === 'locations' &&
                                         <>
