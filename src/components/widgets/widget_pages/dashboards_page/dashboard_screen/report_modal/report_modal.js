@@ -42,13 +42,15 @@ const NewButtonForm = (props) => {
         editing
     } = props
 
+    console.log(props);
+
     const report_buttons = dashboard?.report_buttons || []
 
 
     const dispatch = useDispatch()
     const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
 
-    const editingButton = report_buttons.find((currButton) => currButton.id === buttonId)
+    const editingButton = report_buttons.find((currButton) => currButton.id === reportButtonId)
     const id = editingButton?.id
     const description = editingButton?.description
     const iconClassName = editingButton?.iconClassName
