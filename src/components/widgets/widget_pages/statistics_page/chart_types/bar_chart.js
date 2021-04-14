@@ -168,12 +168,6 @@ const BarChart = (props) => {
                 legendPosition: 'middle',
                 // legendOffset: 50,
                 ...axisBottom
-
-
-                // format: (value) => {
-                //     console.log('QQQQ val', value.split(' ')[1])
-                //     // value.split(' ')[1]
-                // },
             }}
             axisLeft={{
                 tickSize: 5,

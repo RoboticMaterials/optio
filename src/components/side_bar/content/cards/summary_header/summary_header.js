@@ -1,4 +1,5 @@
 import React from 'react'
+import { useParams } from 'react-router-dom'
 
 // functions external
 import PropTypes from 'prop-types'
@@ -16,7 +17,14 @@ const SummaryHeader = (props) => {
         title
     } = props
 
+    const params = useParams()
     const history = useHistory()
+
+    const {
+        page,
+        subpage,
+        id
+    } = params
 
     return (
         <styled.Header>
@@ -33,19 +41,19 @@ const SummaryHeader = (props) => {
                 :
                 <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
             }
-            {/* {!!title &&
+            {!!title && (page === 'processes') &&
                 <Button
                     label={title.includes('Statistics') ? 'Lots' : 'Statistics'}
                     schema={title.includes('Statistics') ? 'lots' : 'statistics'}
                     secondary
                     onClick={() => {
                         title.includes('Statistics') ?
-                            history.replace('/lots/summary')
+                            history.push('/' + page + '/' + id + "/lots")
                             :
-                            history.replace('/statistics/summary')
+                            history.push('/' + page + '/' + id + "/statistics")
                     }}
                 />
-            } */}
+            }
             <styled.TitleContainer style={{}}>
                 <styled.Title>{title ? title : "untitled"}</styled.Title>
             </styled.TitleContainer>

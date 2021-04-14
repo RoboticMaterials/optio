@@ -82,7 +82,6 @@ const StationColumn = (props) => {
     const onGetThroughputData = () => {
         dataLoading(true)
         setLoading(true)
-        // TEMP
         const body = { timespan: timeSpan, index: dateIndex, sort_index: sortLevel.value }
         const dataPromise = getStationAnalytics(stationId, body)
         dataPromise.then(response => {

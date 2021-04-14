@@ -44,8 +44,6 @@ const LineThroughputChart = (props) => {
     * Uses usememo for performance reasons
     */
     const lineDataConverter = useMemo(() => {
-        console.log('QQQQ data', data)
-
         // The array of converted incoming data
         let convertedData = []
 

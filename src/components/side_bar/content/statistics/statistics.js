@@ -31,12 +31,6 @@ const Statistics = () => {
     const [loading, setLoading] = useState(false)
     const [sortLevel, setSortLevel] = useState({label: "Object", value: "object"})
 
-    // useEffect(() => {
-    //     const newDate = deepCopy(date)
-
-    //     newDate.setDate(date.getDate() + dateIndex)
-    // }, [dateIndex])
-
     /**
      * Gets the new data based on the selected time span and dateIndex
      * 
@@ -58,10 +52,10 @@ const Statistics = () => {
     }
 
     const onSelectSort = async (sort) => {
-        console.log('QQQQ sort', sort)
         setSortLevel(sort)
     }
 
+    // Renders stations in a process
     const renderStationColumns = () => {
 
         let processesToRender = []
@@ -100,6 +94,7 @@ const Statistics = () => {
         <styled.Container>
             <Header
                 title={'Statistics Summary'}
+                showBackButton={page === 'processes'}
             />
             <StatisticsHeader
                 themeContext={themeContext}

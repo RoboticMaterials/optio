@@ -2,27 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from "react-router-dom";
 
-import * as styled from './processes_content.style'
-
-// Import basic components
-import ContentHeader from '../content_header/content_header'
-import Textbox from '../../../basic/textbox/textbox.js'
-import Button from '../../../basic/button/button'
-import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
-import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
-
 import ContentList from '../content_list/content_list'
 
 // Import actions
 import { setSelectedProcess, editingProcess, putProcesses } from '../../../../redux/actions/processes_actions'
-import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
-import { deepCopy } from '../../../../methods/utils/utils'
 import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
 
 import uuid from 'uuid'
-import { uuidv4 } from "../../../../methods/utils/utils";
 import ProcessForm from "./process_form/process_form";
 
 const ProcessesContent = () => {
@@ -77,8 +65,7 @@ const ProcessesContent = () => {
 
     const onCardView = (element) => {
         const currentPath = history.location.pathname
-        // history.push(currentPath + '/' + element._id + "/lots")
-        history.push(currentPath + '/' + element._id + "/statistics")
+        history.push(currentPath + '/' + element._id + "/lots")
     }
 
     if (editing && selectedProcess !== null) { // Editing Mode

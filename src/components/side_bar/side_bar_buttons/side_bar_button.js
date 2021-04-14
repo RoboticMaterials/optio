@@ -28,9 +28,9 @@ const SideBarButton = (props) => {
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
     const dispatch = useDispatch()
-    const onLocationEditing = (props) => dispatch(locationActions.editing(props))
-    const onTaskEditing = (props) => dispatch(tasksActions.editingTask(props))
-    const onProcessEditing = (props) => dispatch(processesActions.editingProcess(props))
+    const dispatchLocationEditing = (props) => dispatch(locationActions.editing(props))
+    const dispatchTaskEditing = (props) => dispatch(tasksActions.editingTask(props))
+    const dispatchProcessEditing = (props) => dispatch(processesActions.editingProcess(props))
     const dispatchSetPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 
@@ -58,17 +58,17 @@ const SideBarButton = (props) => {
                         history.push('/lots/summary')
 
                         setConfirmDeleteModal(null)
-                        onLocationEditing(false)
-                        onTaskEditing(false)
-                        onProcessEditing(false)
+                        dispatchLocationEditing(false)
+                        dispatchTaskEditing(false)
+                        dispatchProcessEditing(false)
                         dispatchSetPageDataChanged(false)
                     }
                     else {
                         props.setShowSideBarPage(props.mode)
                         setConfirmDeleteModal(null)
-                        onLocationEditing(false)
-                        onTaskEditing(false)
-                        onProcessEditing(false)
+                        dispatchLocationEditing(false)
+                        dispatchTaskEditing(false)
+                        dispatchProcessEditing(false)
                         dispatchSetPageDataChanged(false)
                     }
 
