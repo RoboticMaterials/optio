@@ -1,3 +1,6 @@
+// Import Store
+import store from '../../redux/store/index'
+
 export const getMinutesFromMoment = (m) => {
     return m.minutes() + m.hours() * 60;
 }
@@ -156,6 +159,17 @@ export const convert24htoEpoch = (time24h, date) => {
     return epochTime
 }
 
+export const convertDateToLocaleTimeZone = (date, timezone) => {
+    return new Date(date.toLocaleString("en-US", { timeZone: timezone }))
+}
+
 export const convertDateto12h = (date) => {
+    const settingState = store.getState().settingsReducer
+
+    if (!!settingState?.settings?.timezone?.label) {
+        date = convertDateToLocaleTimeZone(date, settingState?.settings?.timezone?.label)
+    }
+
     return convert24hto12h(`${date.getHours()}:${date.getMinutes()}`)
+    
 }

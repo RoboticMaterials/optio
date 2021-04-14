@@ -133,8 +133,6 @@ const DeviceSchedule = (props) => {
                                             format={'hh:mm a'}
                                             autocomplete={"off"}
                                             allowEmpty={false}
-                                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                         />
 
                                     </styled.RowContainer>
