@@ -367,7 +367,7 @@ const ReportModal = (props) => {
     const [editing, setEditing] = useState(false)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
     const [report_buttons, setReport_buttons] = useState([]) // sending report
-    const [reportButtons, setReportButtons] = useState([]) // sending report
+    const [reportButtons, setReportButtons] = useState(null) // sending report
     const [reportButtonId, setReportButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
     const [dragging, setDragging] = useState(null)
@@ -394,12 +394,14 @@ const ReportModal = (props) => {
     } = current || {}
 
     useEffect(() => {
-        const matchingButtons = reportButtons.filter((currReportButtonId) => {
-            return report_buttons.findIndex((currReportButton) => currReportButton._id === currReportButtonId) !== -1
-        })
-        setNoButtons(!(matchingButtons.length > 0))
-        setDidInitialCheckForButtons(true)
-    }, [report_buttons])
+        if(reportButtons !== null) {
+            const matchingButtons = reportButtons.filter((currReportButtonId) => {
+                return report_buttons.findIndex((currReportButton) => currReportButton._id === currReportButtonId) !== -1
+            })
+            setNoButtons(!(matchingButtons.length > 0))
+            setDidInitialCheckForButtons(true)
+        }
+    }, [report_buttons, reportButtons])
 
     useEffect(() => {
         setReport_buttons(dashboard?.report_buttons || [])
@@ -425,7 +427,6 @@ const ReportModal = (props) => {
         } = dashboardButton || {}
 
         setReportButtons(reportButtons)
-
     }, [dashboard])
 
     useEffect(() => {
@@ -471,10 +472,9 @@ const ReportModal = (props) => {
     }
 
     const onDragStart = ({isSource, payload, willAcceptDrop}) => {
-        console.log("onDragStart payload",payload)
         setDragging(payload)
     }
-    const handleDragEnd = (stuff) => {
+    const handleDragEnd = () => {
         setDragging(null)
     }
 
@@ -590,25 +590,11 @@ const ReportModal = (props) => {
                                             enableReinitialize={true}
                                             initialValues={{
                                                 reportButtons: reportButtons
-                                                    // .filter((currReportButtonId, ind) => {
-                                                    //         return report_buttons.findIndex((currReportButton) => currReportButton._id === currReportButtonId) !== -1
-                                                    // })
-                                                    // .map((currReportButtonId, ind) => {
-                                                    //     return report_buttons.find((currItem) => currItem._id === currReportButtonId)
-                                                    // })
                                             }}
                                         >
                                         <Container
                                             onDragStart={onDragStart}
                                             onDragEnd={handleDragEnd}
-                                            // dragClass={"fick"}
-                                            // dropClass={"damn"}
-                                            // dropPlaceholder={{
-                                            //     className: "shit-fuck",
-                                            //     // animationDuration: 10000,
-                                            //     // showOnTop: true
-                                            // }}
-                                            // onDropReady={handleDropReady}
                                             onDrop={handleDrop}
                                             groupName="report-buttons"
                                             getChildPayload={index => values.reportButtons[index]}

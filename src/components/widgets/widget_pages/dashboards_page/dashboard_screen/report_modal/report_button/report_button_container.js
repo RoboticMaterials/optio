@@ -22,7 +22,7 @@ const ReportButtonContainer = (props) => {
 
 	useEffect(() => {
 		setReportButton(reportButtons.find((currItem) => currItem._id === id) || {})
-	}, [id])
+	}, [id, reportButtons])
 
 	const onClickWrapped = useCallback(
 		() => {
