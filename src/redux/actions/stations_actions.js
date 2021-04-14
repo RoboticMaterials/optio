@@ -66,8 +66,10 @@ export const getStations = () => {
             onStart();
             const stations = await api.getStations();
 
+
             const normalizedStations = !!normalize(stations, stationsSchema)?.entities?.stations ? normalize(stations, stationsSchema)?.entities?.stations : {}
 
+            console.log("normalizedStations",normalizedStations)
             return onSuccess(normalizedStations);
         } catch (error) {
             return onError(error);

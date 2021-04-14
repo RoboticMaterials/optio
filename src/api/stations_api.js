@@ -21,30 +21,22 @@ import { API } from 'aws-amplify'
 import { stationsByOrgId } from '../graphql/queries'
 import { createStation, updateStation, stationStats } from '../graphql/mutations'
 import { deleteStation as deleteStationByID } from '../graphql/mutations'
+import {streamlinedGraphqlCall, TRANSFORMS} from "../methods/utils/api_utils";
+import {parseStation} from "../methods/utils/data_utils";
 
 export async function getStations() {
   try {
-
     const userOrgId = await getUserOrgId()
+    const stations = await streamlinedGraphqlCall(
+        TRANSFORMS.QUERY,
+        stationsByOrgId,
+        { organizationId: userOrgId },
+        parseStation
+    )
 
-    const res = await API.graphql({
-      query: stationsByOrgId,
-      variables: { organizationId: userOrgId }
-    })
-
-    let GQLdata = []
-
-    res.data.StationsByOrgId.items.forEach(element => {
-      GQLdata.push( {
-        ...element,
-        children: JSON.parse(element.children),
-        dashboards: JSON.parse(element.dashboards),
-      })
-    });
-    
+    console.log("getStations stations",stations)
     // Success 🎉;
-    return GQLdata
-
+    return stations
   } catch (error) {
     // Error 😨
     errorLog(error)

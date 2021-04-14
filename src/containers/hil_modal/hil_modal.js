@@ -40,6 +40,7 @@ const HILModal = () => {
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
      */
     const handleHilsInTaskQueue = useMemo(() => {
+
         // Handles if a task queue item was clicked and displays that item
         if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
 
@@ -139,6 +140,7 @@ const HILModal = () => {
 
 
     const renderHIL = useMemo(() => {
+
         if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0 && taskQueue[showModalId] !== undefined) {
             const item = taskQueue[showModalId]
             let hilMessage = item.hil_message
@@ -163,7 +165,7 @@ const HILModal = () => {
             return null
         }
 
-    },[taskQueue])
+    },[taskQueue, showModalId])
 
     /**
      * Handles HIL timers and adds them to Redux

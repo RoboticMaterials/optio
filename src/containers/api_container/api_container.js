@@ -301,12 +301,6 @@ const ApiContainer = (props) => {
         const devices = await onGetDevices()
         const maps = await onGetMaps()
 
-        if (maps.length === undefined) {
-            props.onLoad()
-            setApiError(true)
-            return
-        }
-
         const stations = await onGetStations()
         const positions = await onGetPositions()
         const dashboards = await onGetDashboards()
@@ -329,6 +323,12 @@ const ApiContainer = (props) => {
 
         // Data Update Functions
         // const dataUpdate = await onUpdateTaskData(tasks)
+
+        if (maps.length === undefined) {
+            props.onLoad()
+            setApiError(true)
+            return
+        }
 
         // Cleaner Functions
         if (!!mapViewEnabled) {
@@ -364,8 +364,7 @@ const ApiContainer = (props) => {
 
     // Handle task being created
     const handleTaskUpdate = async (taskQueueItem) => {
-
-        // get the task 
+        // get the task
         const tasks = await onGetTasks()
 
         const task = taskQueueItem ? tasks[taskQueueItem.taskId] : null
@@ -384,7 +383,6 @@ const ApiContainer = (props) => {
                 }
               });
         }else if(taskQueueItem && taskQueueItem.start_time === null && !task.handoff){  
-
             taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
             taskQueueItem.hil_station_id = task.unload.station
@@ -420,6 +418,15 @@ const ApiContainer = (props) => {
 
         // Subscribe to taskQueue
         // Only need this one for now
+        API.graphql(
+            graphqlOperation(subscriptions.onDeleteTaskQueue)
+        ).subscribe({
+            next: async ({ provider, value }) => {
+                const taskQ = await onGetTaskQueue()
+            },
+            error: error => console.warn(error)
+        });
+
         API.graphql(
             graphqlOperation(subscriptions.onDeltaTaskQueue)
         ).subscribe({

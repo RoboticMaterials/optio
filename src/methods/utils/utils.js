@@ -70,14 +70,12 @@ export function arraysEqual(_arr1, _arr2) {
 
 // checks if x is a subset of y
 export function objectIsSubet(x, y) {
-    console.log('inside objectIsSubet')
     if (x === y) return true;
     // if both x and y are null or undefined and exactly the same
 
     // failure point 1
     // if they are not strictly equal, they both need to be Objects
     if (!(x instanceof Object) || !(y instanceof Object)) {
-        console.log('objectIsSubet: failed at 1')
         return false;
     }
 
@@ -85,20 +83,17 @@ export function objectIsSubet(x, y) {
     // they must have the exact same prototype chain, the closest we can do is
     // test there constructor.
     if (x.constructor !== y.constructor) {
-        console.log('objectIsSubet: failed at 2')
         return false;
     }
 
 
     for (var p in x) {
-        console.log('var p in x', x)
         if (!x.hasOwnProperty(p)) continue;
         // other properties were tested using x.constructor === y.constructor
 
         // failure point 3
         // allows to compare x[ p ] and y[ p ] when set to undefined
         if (!y.hasOwnProperty(p)) {
-            console.log('objectIsSubet: failed at 3')
             return false;
         }
 
@@ -108,17 +103,12 @@ export function objectIsSubet(x, y) {
 
         // failure point 4
         if (typeof (x[p]) !== "object") {
-            console.log('objectIsSubet: failure point 4:', p)
-            console.log('objectIsSubet: failure point 4:', x[p])
-            console.log('objectIsSubet: failure point 4:', typeof (x[p]))
-            console.log('objectIsSubet: failed at 4')
             return false;
         }
         // Numbers, Strings, Functions, Booleans must be strictly equal
 
         // failure point 5
         if (!objectIsSubet(x[p], y[p])) {
-            console.log('objectIsSubet: failed at 5')
             return false;
         }
         // Objects and Arrays must be tested recursively

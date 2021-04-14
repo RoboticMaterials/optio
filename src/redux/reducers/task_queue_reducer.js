@@ -103,7 +103,7 @@ export default function taskQueueReducer(state = defaultState, action) {
         })
 
             return Object.assign({}, state, {
-                taskQueue: taskQueue,
+                taskQueue: {...state.taskQueue, ...taskQueue},
                 pending: false
             });
 

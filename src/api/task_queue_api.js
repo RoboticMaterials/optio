@@ -71,6 +71,7 @@ export async function getTaskQueueItem(id) {
 
 export async function postTaskQueue(taskQueueItem) {
     try {
+        console.log("taskQueueItem",taskQueueItem)
         const orgId = await getUserOrgId()
 
         const input = {
@@ -110,12 +111,16 @@ export async function deleteTaskQueueAll() {
 
 export async function deleteTaskQueueItem(id, taskQueueItem) {
     try {
+
+        console.log("deleteTaskQueueItem", id, taskQueueItem)
         if(taskQueueItem === undefined){
             taskQueueItem = await getTaskQueueItem(id)
         }
             
         taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
+
+        console.log("calling manageTaskQueue from deleteTaskQueueItem")
         await API.graphql({
             query: manageTaskQueue,
             variables: { 

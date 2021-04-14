@@ -29,13 +29,16 @@ const tableNames = {
 
 const URL = require('url');
 const fetch = require('node-fetch');
+const axios = require('axios');
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient({
+	endpoint: process.env.DDB_ENDPOINT,
+});
 
 exports.handler = async (event) => {
 	try {
 		const taskQueueItem = event.arguments.taskQueueItem
-		
+
 		const taskParams = {
 			TableName: tableNames.task,
 			Key: {
@@ -49,10 +52,10 @@ exports.handler = async (event) => {
 				'id': taskQueueItem.lotId
 			}
 		};
-		
+
 		let task = await docClient.get(taskParams).promise();
 		task = task.Item
-		
+
 		let lot = null
 
 		if(taskQueueItem.lotId){
@@ -61,24 +64,24 @@ exports.handler = async (event) => {
 		}
 		
 		// is there a lot
-		if(lot){			
+		if(lot){
 			// are we moving the whole lot?
 			if(taskQueueItem.quantity === task.totalQuantity){
-				// move the whole lot 
+				// move the whole lot
 				delete lot.bins[task.load.station]
 
 				lot.bins[task.unload.station] = {
 					count: taskQueueItem.quantity
-				}  
+				}
 
 			}else if(lot.bins[task.load.station]){
 				//check how much they want to move and update it accordingly
 				const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
 
 				if(diff === 0){
-					// move the res of the lot 
+					// move the res of the lot
 					delete lot.bins[task.load.station]
-					
+
 					if(lot.bins[task.unload.station]){
 						lot.bins[task.unload.station].count = taskQueueItem.quantity + lot.bins[task.unload.station].count
 					}else{
@@ -98,30 +101,23 @@ exports.handler = async (event) => {
 					}
 				}
 			}
-		
+
 			await handlePostLot(lot, event)
-			
-		}	
+
+		}
 		
 		// put the taskQI in the taskQevents
 		const taskQEventsParams = {
 			TableName: tableNames.taskQueueEvents,
 			Item: taskQueueItem
-			
+
 		};
 
 		await docClient.put(taskQEventsParams).promise();
-		
-		// delete from the TQ
-		const TQParams = {
-			TableName: tableNames.taskQueue,
-			Key: {
-				'id': taskQueueItem.id
-			}
-		};
 
-		await docClient.delete(TQParams).promise();
-	
+		// delete from the TQ
+		await handleDeleteTaskQueueItem(taskQueueItem.id, event)
+
 	} catch (e) {
 		console.log(e)
 	}
@@ -129,6 +125,74 @@ exports.handler = async (event) => {
     return null;
 };
 
+const handleDeleteTaskQueueItem = async (id, event) => {
+
+	try {
+		AWS.config.update({
+			region: process.env.AWS_REGION,
+			credentials: new AWS.Credentials(process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, event.request.headers.authorization)
+		});
+
+		const deleteTaskQueue = `
+			mutation DeleteTaskQueue( $input: DeleteTaskQueueInput!) {
+				deleteTaskQueue(input: $input) {
+					id
+					organizationId
+					createdAt
+					updatedAt
+					device_type
+					mission_status
+					owner
+					taskId
+					custom_task
+					dashboard
+					showModal
+					hil_response
+					quantity
+					lotId
+					start_time
+					end_time
+					hil_station_id
+					hil_message
+				}
+			}
+		`
+
+		const details = {
+			input: {
+				id
+			}
+		};
+
+
+		const post_body = {
+			query: deleteTaskQueue,
+			operationName: 'DeleteTaskQueue',
+			variables: details
+		};
+
+		// POST the GraphQL mutation to AWS AppSync using a signed connection
+
+		const uri = URL.parse(process.env.API_RMSTUDIOCLOUD_GRAPHQLAPIENDPOINTOUTPUT);
+		const httpRequest = new AWS.HttpRequest(uri.href, process.env.REGION);
+		httpRequest.headers.host = uri.host;
+		httpRequest.headers['Content-Type'] = 'application/json';
+		httpRequest.headers['Authorization'] = event.request.headers.authorization;
+		httpRequest.method = 'POST';
+		httpRequest.body = JSON.stringify(post_body);
+
+		const graphqlData = await axios({
+			url: uri.href,
+			method: 'POST',
+			headers: {...httpRequest.headers},
+			data: JSON.stringify(post_body)
+		});
+	}
+	catch(err) {
+		console.log("err",err)
+	}
+
+}
 
 const handlePostLot = async (lot, event) => {
 
@@ -174,7 +238,6 @@ const handlePostLot = async (lot, event) => {
     };
 
 	// POST the GraphQL mutation to AWS AppSync using a signed connection
-
     const uri = URL.parse(process.env.API_RMSTUDIOCLOUD_GRAPHQLAPIENDPOINTOUTPUT);
     const httpRequest = new AWS.HttpRequest(uri.href, process.env.REGION);
     httpRequest.headers.host = uri.host;
@@ -183,24 +246,11 @@ const handlePostLot = async (lot, event) => {
     httpRequest.method = 'POST';
     httpRequest.body = JSON.stringify(post_body);
 
-    AWS.config.credentials.get(err => {
-        // const signer = new AWS.Signers.V4(httpRequest, "appsync", true);
-        // signer.addAuthorization(AWS.config.credentials, AWS.util.date.getDate());
-
-        const options = {
-            method: httpRequest.method,
-            body: httpRequest.body,
-            headers: httpRequest.headers
-        };
-
-        fetch(uri.href, options)
-            .then(res => res.json())
-            .then(json => {
-                console.log(`JSON Response = ${JSON.stringify(json, null, 2)}`);
-            })
-            .catch(err => {
-                console.error(`FETCH ERROR: ${JSON.stringify(err, null, 2)}`);
-            });
-    });
+	const graphqlData = await axios({
+		url: uri.href,
+		method: 'POST',
+		headers: {...httpRequest.headers},
+		data: JSON.stringify(post_body)
+	})
 
 }

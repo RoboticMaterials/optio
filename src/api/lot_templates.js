@@ -124,8 +124,6 @@ export async function postLotTemplate(lotTemplate) {
             variables: { input: input }
         })
 
-        console.log(dataJson);
-
         return {
             ...dataJson.data.createLotTemplate,
             displayNames: lotTemplate.displayNames,

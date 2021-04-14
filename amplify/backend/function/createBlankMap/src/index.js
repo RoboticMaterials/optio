@@ -40,8 +40,6 @@ exports.handler = async (event) => {
 
         let map = await docClient.put(mapParams).promise();
 
-        console.log(map);
-
         return {
             posted: true
         }

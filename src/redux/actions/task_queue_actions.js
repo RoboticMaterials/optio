@@ -68,7 +68,7 @@ export const postTaskQueue = (queueItem) => {
         }
         function onSuccess(createdTaskQueueItem, oldTaskQueueItemId) {
             const payload = { createdTaskQueueItem, oldTaskQueueItemId };
-            dispatch({ type: POST_ + TASK_QUEUE + _SUCCESS, payload });
+            dispatch(postTaskQueueSucess(payload))
             return (
                 createdTaskQueueItem
             );
@@ -80,6 +80,8 @@ export const postTaskQueue = (queueItem) => {
 
         try {
             onStart();
+
+
             const createdTaskQueueItem = await api.postTaskQueue(queueItem);
             return onSuccess(createdTaskQueueItem, queueItem.id);
         } catch (error) {
@@ -87,6 +89,13 @@ export const postTaskQueue = (queueItem) => {
         }
     };
 };
+
+export const postTaskQueueSucess = (payload) => {
+    return { type: POST_ + TASK_QUEUE + _SUCCESS, payload }
+}
+
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // update
@@ -155,8 +164,7 @@ export const deleteTaskQueueItem = (id, item) => {
             dispatch({ type: DELETE_ + TASK_QUEUE_ITEM + _STARTED });
         }
         function onSuccess(response, id) {
-            const payload = { id }
-            dispatch({ type: DELETE_ + TASK_QUEUE_ITEM + _SUCCESS, payload });
+            dispatch(deleteTaskQueueItemSuccess(id));
             return response;
         }
         function onError(error) {
@@ -173,6 +181,12 @@ export const deleteTaskQueueItem = (id, item) => {
         }
     };
 };
+
+export const deleteTaskQueueItemSuccess = (id) => {
+    const payload = { id }
+    return { type: DELETE_ + TASK_QUEUE_ITEM + _SUCCESS, payload }
+}
+
 
 /**
  @param {*} props
@@ -229,15 +243,18 @@ export const handlePostTaskQueue = (props) => {
                         dashboard: dashboardID,
                         hil_response: null,
                         showModal: true,
+                        id: uuid.v4(),
                     }
+
                     await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask.id })
-                    const postToQueue = dispatch(postTaskQueue(postTask))
+                    // const postToQueue = dispatch(postTaskQueue(postTask))
+                    const payload = { createdTaskQueueItem: postTask };
+                    dispatch(postTaskQueueSucess(payload))
 
                     if (fromSideBar) {
-                        postToQueue.then(item => {
-                            const id = item?.id
-                            dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-                        })
+                        // postToQueue.then(item => {
+                            dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: postTask.id })
+                        // })
                     }
                 }
 

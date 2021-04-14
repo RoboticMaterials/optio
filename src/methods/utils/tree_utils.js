@@ -87,7 +87,6 @@ export function tieSkillsToIds(tree, _skills) {
     return postOrderTieToId(tree);
 }
 function postOrderTieToId(node) {
-    console.log('NODE', node);
     for (let i=0; i<node.children.length; i++) {
         node.children[i] = postOrderTieToId(node.children[i]);
     }

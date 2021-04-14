@@ -15,7 +15,13 @@ import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_
 import Button from "../basic/button/button";
 
 // Import Actions
-import { postTaskQueue, putTaskQueue, deleteTaskQueueItem, getTaskQueue } from '../../redux/actions/task_queue_actions'
+import {
+    postTaskQueue,
+    putTaskQueue,
+    deleteTaskQueueItem,
+    getTaskQueue,
+    deleteTaskQueueItemSuccess
+} from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 import { getTasks } from '../../redux/actions/tasks_actions'
 import { setShowModalId } from '../../redux/actions/task_queue_actions'
@@ -74,6 +80,7 @@ const HILModals = (props) => {
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const dispatchPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchPostTaskQueue = async (item) => await dispatch(postTaskQueue(item))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const dispatchSetShowModalId = (id) =>  dispatch(setShowModalId(id))
@@ -452,7 +459,8 @@ const HILModals = (props) => {
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        await dispatchPutTaskQueue({...newItem}, ID)
+        await dispatchPostTaskQueue({...newItem})
+        // await dispatchPutTaskQueue({...newItem}, ID)
 
         await postStationEvent(newItem)
     }
@@ -478,8 +486,11 @@ const HILModals = (props) => {
         }
         delete newItem.id
 
+
+
         if(newItem.device_type === 'human'){
-            await dispatchDeleteTaskQueueItem(newItem.id)
+            dispatch(deleteTaskQueueItemSuccess(taskQueueID))
+            // await dispatchDeleteTaskQueueItem(newItem.id)
         }else{
             await putTaskQueueItem(newItem, taskQueueID)
         }
