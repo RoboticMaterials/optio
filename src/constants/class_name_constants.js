@@ -1,0 +1,1 @@
+export const DRAGGING_GHOST_HIDDEN = "dragging-ghost-hidden"

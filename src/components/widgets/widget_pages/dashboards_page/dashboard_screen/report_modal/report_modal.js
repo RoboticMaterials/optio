@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Modal from 'react-modal';
-import { useDispatch, useSelector } from "react-redux";
-import uuid from 'uuid'
+import React, {useCallback, useEffect, useRef, useState} from "react";
 
 // external components
 import { Formik } from "formik";
+import Modal from 'react-modal';
+import { useDispatch, useSelector } from "react-redux";
+import uuid from 'uuid'
+import { Container, Draggable } from 'react-smooth-dnd';
 
 // internal components
 import ColorField from "../../../../../basic/form/color_field/color_field";
@@ -29,6 +30,10 @@ import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_
 import { postReportEvent, putReportEvent } from "../../../../../../redux/actions/report_event_actions";
 import { reportEventSchema, scheduleSchema } from "../../../../../../methods/utils/form_schemas";
 import { DASHBOARD_BUTTON_COLORS } from "../../../../../../constants/dashboard_contants";
+import {immutableDelete, immutableReplace} from "../../../../../../methods/utils/array_utils";
+import arrayMove from "array-move";
+import {isObject} from "../../../../../../methods/utils/object_utils";
+import ReportModalEditButtons from "./report_modal_edit_buttons/report_modal_edit_buttons";
 
 Modal.setAppElement('body');
 
@@ -39,7 +44,8 @@ const NewButtonForm = (props) => {
         dashboard,
         dashboardButtonId,
         reportButtonId,
-        editing
+        editing,
+        setFieldValue
     } = props
 
     const report_buttons = dashboard?.report_buttons || []
@@ -58,12 +64,35 @@ const NewButtonForm = (props) => {
     const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
     const onSubmit = (values, formMode) => {
+
         // extract values and default values
         const description = values?.description || ""
         const iconClassName = values?.iconClassName
         const color = values?.color || "#ff4b4b"
         const label = values?.label || ""
         const old_report_buttons = dashboard?.report_buttons || []
+
+        // get dashboard's buttons
+        const {
+            buttons = []
+        } = dashboard || {}
+
+        // get index of current dashboard button
+        const dashboardButtonIndex = buttons.findIndex((currButton) => {
+            const {
+                id
+            } = currButton || {}
+
+            return id === dashboardButtonId
+        })
+
+        // get dashboard button
+        const dashboardButton = buttons[dashboardButtonIndex]
+
+        // get dashboard button's report buttons
+        const {
+            reportButtons = []
+        } = dashboardButton || {}
 
         // handle logic for editing buttons
         if (editing) {
@@ -82,7 +111,6 @@ const NewButtonForm = (props) => {
                                 description,
                                 iconClassName,
                                 color,
-                                dashboardButtonId,
                                 label
                             }
                         }
@@ -98,20 +126,26 @@ const NewButtonForm = (props) => {
 
             // create new button
             else if (formMode === FORM_MODES.CREATE) {
+
+                const newReportButton = {
+                    _id: uuid.v4(),
+                    description,
+                    iconClassName,
+                    color,
+                    label
+                }
+
                 const updatedDashboard = {
                     ...dashboard,
                     report_buttons: [
                         // spread original buttons and add new one with form values
                         ...old_report_buttons,
-                        {
-                            _id: uuid.v4(),
-                            description,
-                            iconClassName,
-                            color,
-                            dashboardButtonId,
-                            label
-                        }
-                    ]
+                        newReportButton
+                    ],
+                    buttons: immutableReplace(buttons, {
+                        ...dashboardButton,
+                        reportButtons: [...reportButtons, newReportButton._id]
+                    }, dashboardButtonIndex)
 
                 }
 
@@ -130,11 +164,37 @@ const NewButtonForm = (props) => {
     }
 
     const onDelete = () => {
-        // remove button
+        const {
+            buttons = []
+        } = dashboard || {}
+
+        // get index of dashboard button
+        const dashboardButtonIndex = buttons.findIndex((currButton) => {
+            const {
+                id
+            } = currButton || {}
+
+            return id === dashboardButtonId
+        })
+
+        // get dashboard button
+        const dashboardButton = buttons[dashboardButtonIndex]
+
+        // get dashboard button's report buttons
+        const {
+            reportButtons = []
+        } = dashboardButton || {}
+
+        // get index of current report button
+        const currReportButtonIndex = reportButtons.indexOf(_id)
+
+        // create updated dashboard
         const updatedDashboard = {
             ...dashboard,
-            // filter through buttons, keep all but one with matching id of current button
-            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+            buttons: immutableReplace(buttons, {
+                ...dashboardButton,
+                reportButtons: immutableDelete(reportButtons, currReportButtonIndex)
+            }, dashboardButtonIndex)
         }
 
         // update dashboard
@@ -183,14 +243,6 @@ const NewButtonForm = (props) => {
 
                 return (
                     <styled.StyledForm>
-                        {/*uncomment for widget style instead of big rectangles*/}
-                        {/*<WidgetButton*/}
-                        {/*    containerStyle={{alignSelf: "center"}}*/}
-                        {/*    label={label}*/}
-                        {/*    color={color}*/}
-                        {/*    iconClassName={iconClassName}*/}
-                        {/*    selected={false}*/}
-                        {/*/>*/}
                         {editing &&
                             <DashboardButton
                                 title={label}
@@ -214,18 +266,6 @@ const NewButtonForm = (props) => {
                                     InputComponent={Textbox}
                                     style={{ borderRadius: ".5rem" }}
                                 />
-                                // :
-                                // <styled.TextboxDiv
-                                //     name="label"
-                                //     type="text"
-                                //     placeholder="Label..."
-                                //     // value={label}
-                                //     lines={1}
-                                //     style={{marginBottom: "1rem"}}
-                                //     readonly
-                                // >
-                                //     {label}
-                                // </styled.TextboxDiv>
                             }
                         </div>
 
@@ -266,20 +306,6 @@ const NewButtonForm = (props) => {
                                 null
                         }
 
-                        {/*{!editing &&*/}
-                        {/*<div>*/}
-                        {/*    <styled.Label>Comments</styled.Label>*/}
-                        {/*    <TextField*/}
-                        {/*        name="comments"*/}
-                        {/*        type="text"*/}
-                        {/*        placeholder="enter additonal comments..."*/}
-                        {/*        InputComponent={Textbox}*/}
-                        {/*        lines={5}*/}
-                        {/*        style={{marginBottom: "1rem", borderRadius: ".5rem"}}*/}
-                        {/*    />*/}
-                        {/*</div>*/}
-                        {/*}*/}
-
                         {editing &&
                             <div
                                 style={{
@@ -296,34 +322,6 @@ const NewButtonForm = (props) => {
                                 />
                             </div>
                         }
-
-                        {/*{editing &&*/}
-                        {/*<div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>*/}
-                        {/*    <styled.Label>Icon</styled.Label>*/}
-                        {/*    <styled.IconSelectorContainer>*/}
-                        {/*        {faClassNames.map((currClassName, index) => {*/}
-                        {/*            currClassName = "fas fa-" + currClassName*/}
-                        {/*            const selected = currClassName === values.iconClassName*/}
-
-                        {/*            return(*/}
-                        {/*                <WidgetButton*/}
-                        {/*                    key={currClassName}*/}
-                        {/*                    containerStyle={{*/}
-                        {/*                        margin: "1rem",*/}
-                        {/*                    }}*/}
-                        {/*                    color={color}*/}
-                        {/*                    iconClassName={currClassName}*/}
-                        {/*                    selected={selected}*/}
-                        {/*                    onClick={()=>{*/}
-                        {/*                        setFieldValue("iconClassName", currClassName)*/}
-                        {/*                    }}*/}
-                        {/*                />*/}
-                        {/*            )*/}
-                        {/*        })}*/}
-                        {/*    </styled.IconSelectorContainer>*/}
-                        {/*</div>*/}
-                        {/*}*/}
-
                         <styled.ButtonForm>
                             <Button
                                 secondary
@@ -358,11 +356,9 @@ const ReportModal = (props) => {
         dashboardButtonId
     } = props
 
-    // get current buttons, default to empty array
-    const report_buttons = dashboard?.report_buttons || []
 
     const dispatch = useDispatch()
-    const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
+    const dispatchPutDashboard = async (dashboardCopy, dashboardId) => await dispatch(putDashboard(dashboardCopy, dashboardId))
     const onPostReportEvent = (reportEvent) => dispatch(postReportEvent(reportEvent))
     const onPutReportEvent = (id, reportEvent) => dispatch(putReportEvent(id, reportEvent))
 
@@ -370,17 +366,72 @@ const ReportModal = (props) => {
     const [addingNew, setAddingNew] = useState(false) // edit button form
     const [editing, setEditing] = useState(false)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
+    const [report_buttons, setReport_buttons] = useState([]) // sending report
+    const [reportButtons, setReportButtons] = useState([]) // sending report
     const [reportButtonId, setReportButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
+    const [dragging, setDragging] = useState(null)
     const [didInitialCheckForButtons, setDidInitialCheckForButtons] = useState(false)
+    const [dashboardButton, setDashboardButton] = useState({})
+    const [dashboardButtonIndex, setDashboardButtonIndex] = useState(null)
+
+    const formRef = useRef(null)	// gets access to form state
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        touched = {},
+        errors = {},
+        status = {},
+        setValues = () => { },
+        setErrors = () => { },
+        resetForm = () => { },
+        setTouched = () => { },
+        setFieldValue = () => { },
+        setStatus = () => { },
+    } = current || {}
+
     useEffect(() => {
-        setNoButtons(report_buttons.filter(currButton => currButton.dashboardButtonId === dashboardButtonId).length === 0)
+        const matchingButtons = reportButtons.filter((currReportButtonId) => {
+            return report_buttons.findIndex((currReportButton) => currReportButton._id === currReportButtonId) !== -1
+        })
+        setNoButtons(!(matchingButtons.length > 0))
         setDidInitialCheckForButtons(true)
     }, [report_buttons])
 
     useEffect(() => {
+        setReport_buttons(dashboard?.report_buttons || [])
+
+        const {
+            buttons = []
+        } = dashboard || {}
+
+        const dashboardButtonIndex = buttons.findIndex((currButton) => {
+            const {
+                id
+            } = currButton || {}
+
+            return id === dashboardButtonId
+        })
+        setDashboardButtonIndex(dashboardButtonIndex)
+
+        const dashboardButton = buttons[dashboardButtonIndex]
+        setDashboardButton(dashboardButton)
+
+        const {
+            reportButtons = []
+        } = dashboardButton || {}
+
+        setReportButtons(reportButtons)
+
+    }, [dashboard])
+
+    useEffect(() => {
         if(noButtons && didInitialCheckForButtons) setEditing(true)
     }, [noButtons, didInitialCheckForButtons])
+
 
     const sendReport = async (button) => {
         setSubmitting(true)
@@ -418,6 +469,60 @@ const ReportModal = (props) => {
         setSubmitting(false)
         close()
     }
+
+    const onDragStart = ({isSource, payload, willAcceptDrop}) => {
+        console.log("onDragStart payload",payload)
+        setDragging(payload)
+    }
+    const handleDragEnd = (stuff) => {
+        setDragging(null)
+    }
+
+    const handleDrop = (dropResult) => {
+        const { removedIndex, addedIndex, payload, element } = dropResult || {}
+
+        setDragging(payload)
+
+        if (payload === null) { //  No new button, only reorder
+
+        } else {
+            if (addedIndex !== null && removedIndex !== null) {
+                const shiftedButtons = arrayMove(reportButtons, removedIndex, addedIndex)
+                setFieldValue("reportButtons",shiftedButtons)
+
+                const {
+                    buttons = []
+                } = dashboard || {}
+
+                const updatedDashboard = {
+                    ...dashboard,
+                   buttons: immutableReplace(buttons, {
+                       ...dashboardButton,
+                       reportButtons: shiftedButtons
+                   }, dashboardButtonIndex)
+                }
+
+                // update dashboard
+                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
+            }
+        }
+
+        setDragging(null)
+    }
+
+    const handleButtonClick = useCallback((button) => {
+        const {
+            _id
+        } = button
+
+        if (editing) {
+            setAddingNew(true)
+            setReportButtonId(_id)
+        }
+        else {
+            sendReport(button)
+        }
+    }, [editing])
 
     return (
         <styled.Container
@@ -465,8 +570,9 @@ const ReportModal = (props) => {
                                 <styled.AddNewButtonContainer
                                     showBorder={!noButtons}
                                 >
+                                    <styled.AddNewButtonsText>Add Report Button</styled.AddNewButtonsText>
                                     <Button
-                                        style={{ margin: "1rem 0rem" }}
+                                        style={{ margin: "1rem 0rem", width: "5rem" }}
                                         primary
                                         schema={"dashboards"}
                                         onClick={() => setAddingNew(true)}
@@ -478,182 +584,65 @@ const ReportModal = (props) => {
 
                             {!noButtons &&
                                 <styled.ReportButtonsContainer>
+                                    {editing ?
+                                        <Formik
+                                            innerRef={formRef}
+                                            enableReinitialize={true}
+                                            initialValues={{
+                                                reportButtons: reportButtons
+                                                    // .filter((currReportButtonId, ind) => {
+                                                    //         return report_buttons.findIndex((currReportButton) => currReportButton._id === currReportButtonId) !== -1
+                                                    // })
+                                                    // .map((currReportButtonId, ind) => {
+                                                    //     return report_buttons.find((currItem) => currItem._id === currReportButtonId)
+                                                    // })
+                                            }}
+                                        >
+                                        <Container
+                                            onDragStart={onDragStart}
+                                            onDragEnd={handleDragEnd}
+                                            // dragClass={"fick"}
+                                            // dropClass={"damn"}
+                                            // dropPlaceholder={{
+                                            //     className: "shit-fuck",
+                                            //     // animationDuration: 10000,
+                                            //     // showOnTop: true
+                                            // }}
+                                            // onDropReady={handleDropReady}
+                                            onDrop={handleDrop}
+                                            groupName="report-buttons"
+                                            getChildPayload={index => values.reportButtons[index]}
+                                            style={{
+                                                alignSelf: "stretch",
+                                                alignItems: "stretch",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                minHeight: "fit-content",
+                                                justifyContent: "flex-start"
+                                            }}
+                                            getGhostParent={()=>document.body}
+                                            lockAxis={"y"}
+                                        >
+                                            <ReportModalEditButtons
+                                                dragging={dragging}
+                                                report_buttons={report_buttons}
+                                                buttonsIds={values.reportButtons || []}
+                                                onClick={handleButtonClick}
+                                                editing={editing}
+                                            />
+                                        </Container>
 
-                                    {report_buttons
-                                        .filter((currReportButton) => {
-                                            const {
-                                                dashboardButtonId: reportButtonDashboardButtonId
-                                            } = currReportButton || {}
+                                        </Formik>
+                                        :
+                                        <ReportModalEditButtons
+                                            dragging={dragging}
+                                            report_buttons={report_buttons}
+                                            buttonsIds={reportButtons || []}
+                                            onClick={handleButtonClick}
+                                            editing={editing}
+                                        />
+                                    }
 
-                                            return dashboardButtonId === reportButtonDashboardButtonId
-                                        })
-                                        .map((currReportButton, ind) => {
-
-                                        const description = currReportButton?.description || ""
-                                        const label = currReportButton?.label
-                                        const iconClassName = currReportButton?.iconClassName || ""
-                                        const color = currReportButton?.color || "red"
-                                        const _id = currReportButton?._id
-                                        return (
-                                            <DashboardButton
-                                                title={label}
-                                                key={_id}
-                                                type={null}
-                                                iconClassName={iconClassName}
-                                                iconColor={color}
-                                                onClick={() => {
-                                                    if (editing) {
-                                                        setAddingNew(true)
-                                                        setReportButtonId(_id)
-                                                    }
-                                                    else {
-                                                        // setSending(true)
-                                                        // setButtonId(_id)
-                                                        sendReport(currReportButton)
-                                                    }
-                                                }}
-                                                containerStyle={{ height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem 0', width: '80%' }}
-                                                hoverable={false}
-                                                taskID={null}
-                                                color={color}
-                                                disabled={false}
-                                            >
-                                                {editing &&
-                                                    <div
-                                                        style={{ zIndex: 500 }}
-                                                        onClick={(event) => {
-                                                            // remove button
-                                                            event.preventDefault()
-                                                            event.stopPropagation()
-
-
-                                                            const updatedDashboard = {
-                                                                ...dashboard,
-                                                                // filter through buttons, keep all but one with matching id of current button
-                                                                report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
-                                                            }
-
-                                                            // update dashboard
-                                                            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
-                                                        }}
-                                                    >
-                                                        <i
-                                                            style={{ color: "red", position: "absolute", fontSize: "1.5rem", top: 5, right: 5 }}
-                                                            className="fas fa-times-circle"
-
-                                                        />
-                                                    </div>
-
-                                                }
-                                            </DashboardButton>
-                                        )
-
-                                        // uncomment for widget style instead of big rectangles
-                                        // return(
-                                        //     <styled.ButtonContainer
-                                        //         background={color}
-                                        //         onClick={()=>{
-                                        //             if(editing) {
-                                        //               setAddingNew(true)
-                                        //                 setButtonId(_id)
-                                        //             }
-                                        //             else {
-                                        //                 setSending(true)
-                                        //                 setButtonId(_id)
-                                        //             }
-                                        //
-                                        //         }}
-                                        //
-                                        //     >
-                                        //         <div style={{flex: 1}}></div>
-                                        //
-                                        //         <div style={{flex: 1, display: "flex", justifyContent: "center"}}>
-                                        //             <styled.ConditionText>{label}</styled.ConditionText>
-                                        //         </div>
-                                        //
-                                        //         <div style={{flex: 1, display: "flex", justifyContent: "flex-end", height: "100%"}}>
-                                        //             {iconClassName &&
-                                        //             <styled.RightContentContainer>
-                                        //
-                                        //                 <buttonFieldStyles.SchemaIcon className={iconClassName}
-                                        //                                               color={color}></buttonFieldStyles.SchemaIcon>
-                                        //             </styled.RightContentContainer>
-                                        //             }
-                                        //
-                                        //         </div>
-                                        //
-                                        //         {editing &&
-                                        //             <i
-                                        //                 style={{color: "red", position: "absolute", top: 5, right: 5}}
-                                        //                 className="fas fa-times-circle"
-                                        //                 onClick={(event)=>{
-                                        //                     // remove button
-                                        //                     event.preventDefault()
-                                        //                     event.stopPropagation()
-                                        //
-                                        //
-                                        //                     const updatedDashboard = {
-                                        //                         ...dashboard,
-                                        //                         // filter through buttons, keep all but one with matching id of current button
-                                        //                         report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
-                                        //                     }
-                                        //
-                                        //                     // update dashboard
-                                        //                     dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
-                                        //                 }}
-                                        //             />
-                                        //         }
-                                        //             {/*<WidgetButton*/}
-                                        //             {/*    key={iconClassName}*/}
-                                        //             {/*    containerStyle={{*/}
-                                        //             {/*        // margin: "1rem",*/}
-                                        //             {/*    }}*/}
-                                        //             {/*    color={color}*/}
-                                        //             {/*    iconClassName={iconClassName}*/}
-                                        //             {/*    label={label}*/}
-                                        //             {/*    onClick={()=>{*/}
-                                        //             {/*        if(editing) {*/}
-                                        //             {/*            setAddingNew(true)*/}
-                                        //             {/*            setButtonId(_id)*/}
-                                        //             {/*        }*/}
-                                        //             {/*        else {*/}
-                                        //             {/*            setSending(true)*/}
-                                        //             {/*            setButtonId(_id)*/}
-                                        //             {/*        }*/}
-                                        //
-                                        //             {/*    }}*/}
-                                        //             {/*>*/}
-                                        //             {/*    {editing &&*/}
-                                        //             {/*    <i*/}
-                                        //             {/*        style={{color: "red", position: "absolute", top: 5, right: 5}}*/}
-                                        //             {/*        className="fas fa-times-circle"*/}
-                                        //             {/*        onClick={(event)=>{*/}
-                                        //             {/*            // remove button*/}
-                                        //
-                                        //             {/*            event.preventDefault()*/}
-                                        //             {/*            event.stopPropagation()*/}
-                                        //
-                                        //
-                                        //             {/*            const updatedDashboard = {*/}
-                                        //             {/*                ...dashboard,*/}
-                                        //             {/*                // filter through buttons, keep all but one with matching id of current button*/}
-                                        //             {/*                report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)*/}
-                                        //             {/*            }*/}
-                                        //
-                                        //             {/*            // update dashboard*/}
-                                        //             {/*            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
-                                        //             {/*        }}*/}
-                                        //             {/*    />*/}
-                                        //             {/*    }*/}
-                                        //             {/*</WidgetButton>*/}
-                                        //
-                                        //         {/*</div>*/}
-                                        //
-                                        //
-                                        //     </styled.ButtonContainer>
-                                        //
-                                        // )
-                                    })}
                                 </styled.ReportButtonsContainer>
                             }
                         </styled.ContentContainer>

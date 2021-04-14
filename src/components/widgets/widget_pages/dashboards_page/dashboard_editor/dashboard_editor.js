@@ -78,6 +78,7 @@ const DashboardEditor = (props) => {
     * Returns initialValues object for Formik
     */
     const getInitialValues = () => {
+        console.log("get em son")
         let initialValues = {
             name: "",
             locked: false,
