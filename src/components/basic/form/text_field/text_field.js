@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 import { useSelector, useDispatch } from 'react-redux'
@@ -58,6 +58,12 @@ const TextField = ({
 
     const hasError = touched && error
     const hasWarning = touched && warning
+
+    useEffect(() => {
+        return ()=> {
+          dispatchPageDataChanged(false)
+        }
+    }, [])
 
     useChange(setFieldValue)
 

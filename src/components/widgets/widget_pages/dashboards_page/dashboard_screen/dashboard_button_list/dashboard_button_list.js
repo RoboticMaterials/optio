@@ -124,7 +124,7 @@ const DashboardButtonList = ((props) => {
                 disabled = addedTaskAlert || currentButton.deleted || broken
                 error = null
                 onClick = () => {
-                    onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
+                    onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.id)
                 }
                 break
 

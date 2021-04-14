@@ -9,10 +9,6 @@
  * 
  */
 
-import axios from "axios";
-
-import { apiIPAddress } from "../settings/settings";
-
 // logging for error in API
 import errorLog from './errorLogging'
 

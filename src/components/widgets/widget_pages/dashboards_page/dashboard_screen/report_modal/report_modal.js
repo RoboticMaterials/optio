@@ -37,7 +37,8 @@ const NewButtonForm = (props) => {
     const {
         cancel,
         dashboard,
-        buttonId,
+        dashboardButtonId,
+        reportButtonId,
         editing
     } = props
 
@@ -81,6 +82,7 @@ const NewButtonForm = (props) => {
                                 description,
                                 iconClassName,
                                 color,
+                                dashboardButtonId,
                                 label
                             }
                         }
@@ -106,6 +108,7 @@ const NewButtonForm = (props) => {
                             description,
                             iconClassName,
                             color,
+                            dashboardButtonId,
                             label
                         }
                     ]
@@ -351,7 +354,8 @@ const ReportModal = (props) => {
         title,
         close,
         dashboard,
-        onSubmit
+        onSubmit,
+        dashboardButtonId
     } = props
 
     // get current buttons, default to empty array
@@ -362,16 +366,21 @@ const ReportModal = (props) => {
     const onPostReportEvent = (reportEvent) => dispatch(postReportEvent(reportEvent))
     const onPutReportEvent = (id, reportEvent) => dispatch(putReportEvent(id, reportEvent))
 
-    // boolean - true if no buttons, false otherwise
-    const noButtons = report_buttons.length === 0
-
+    const [noButtons, setNoButtons] = useState(true)
     const [addingNew, setAddingNew] = useState(false) // edit button form
-    const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
+    const [editing, setEditing] = useState(false)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
-    const [buttonId, setButtonId] = useState(null) // button being edited
+    const [reportButtonId, setReportButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
+    const [didInitialCheckForButtons, setDidInitialCheckForButtons] = useState(false)
+    useEffect(() => {
+        setNoButtons(report_buttons.filter(currButton => currButton.dashboardButtonId === dashboardButtonId).length === 0)
+        setDidInitialCheckForButtons(true)
+    }, [report_buttons])
 
-    const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents })
+    useEffect(() => {
+        if(noButtons && didInitialCheckForButtons) setEditing(true)
+    }, [noButtons, didInitialCheckForButtons])
 
     const sendReport = async (button) => {
         setSubmitting(true)
@@ -442,10 +451,11 @@ const ReportModal = (props) => {
                         cancel={() => {
                             setAddingNew(false)
                             setSending(false)
-                            setButtonId(null)
+                            setReportButtonId(null)
                         }}
                         dashboard={dashboard}
-                        buttonId={buttonId}
+                        dashboardButtonId={dashboardButtonId}
+                        reportButtonId={reportButtonId}
                         editing={editing}
                     />
                     :
@@ -469,7 +479,15 @@ const ReportModal = (props) => {
                             {!noButtons &&
                                 <styled.ReportButtonsContainer>
 
-                                    {report_buttons.map((currReportButton, ind) => {
+                                    {report_buttons
+                                        .filter((currReportButton) => {
+                                            const {
+                                                dashboardButtonId: reportButtonDashboardButtonId
+                                            } = currReportButton || {}
+
+                                            return dashboardButtonId === reportButtonDashboardButtonId
+                                        })
+                                        .map((currReportButton, ind) => {
 
                                         const description = currReportButton?.description || ""
                                         const label = currReportButton?.label
@@ -486,7 +504,7 @@ const ReportModal = (props) => {
                                                 onClick={() => {
                                                     if (editing) {
                                                         setAddingNew(true)
-                                                        setButtonId(id)
+                                                        // setButtonId(id)
                                                     }
                                                     else {
                                                         // setSending(true)

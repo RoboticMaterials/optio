@@ -240,6 +240,8 @@ export const getDashboardContainsRouteButton = ({buttons: existingDashboardButto
 
 export const getDashboardContainsOperationButton = ({buttons: existingDashboardButtons}, {type: currButtonType}) => {
 
+    if(currButtonType === OPERATION_TYPES.REPORT.key) return false // multiple report buttons allowed
+
     for(const existingDashboardButton of existingDashboardButtons) {
         const {
             type: existingButtonType = ""

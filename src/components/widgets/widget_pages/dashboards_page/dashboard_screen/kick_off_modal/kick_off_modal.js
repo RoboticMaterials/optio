@@ -404,6 +404,7 @@ const KickOffModal = (props) => {
 
                 </styled.HeaderMainContentContainer>
                 <SortFilterContainer
+                    lotFilterValue={lotFilterValue}
                     sortMode={sortMode}
                     setSortMode={setSortMode}
                     sortDirection={sortDirection}

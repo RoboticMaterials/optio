@@ -268,7 +268,7 @@ CardZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
 	processId: PropTypes.string,
-	lotFilterValue: PropTypes.string,
+	lotFilterValue: PropTypes.any,
 	showCardEditor: PropTypes.bool,
 	maxHeight: PropTypes.string
 }

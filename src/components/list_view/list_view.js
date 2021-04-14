@@ -57,6 +57,7 @@ const ListView = (props) => {
     const widthBreakPoint = 1025
 
     const positions = useSelector(state => state.positionsReducer.positions)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
     const status = useSelector(state => state.statusReducer.status)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
@@ -102,17 +103,18 @@ const ListView = (props) => {
     }, [widgetPage])
 
     useEffect(() => {
-      Object.values(dashboards).forEach((dashboard) => {
-        if(dashboard.station===params.stationID){
-          setLocked(dashboard.locked)
-        }
-      })
+        Object.values(dashboards).forEach((dashboard) => {
+            if (dashboard.station === params.stationID) {
+                setLocked(dashboard.locked)
+            }
+        })
     }, [params.stationID, dashboards])
 
 
 
     const onLocationClick = (item) => {
-        history.push('/locations/' + item.id + '/' + "dashboards")
+        const dashboardID = stations[item._id].dashboards[0]
+        history.push('/locations/' + item._id + '/dashboards/' + dashboardID)
         setShowDashboards(true)
     }
 
@@ -166,73 +168,79 @@ const ListView = (props) => {
 
     return (
         <styled.Container>
-          <ClickNHold
-            time = {2}
-            onClickNHold = {()=>{
-            setShowDashboards(false)
-            history.push('/locations')
-          }}
-          >
-            <styled.Header>
+            <ClickNHold
+                time={2}
+                onClickNHold={() => {
+                    setShowDashboards(false)
+                    history.push('/locations')
+                }}
+            >
+                <styled.Header>
 
-            {!locked &&
-              <>
-                {(showDashboards) ?
+                    {!locked &&
+                        <>
+                            {(showDashboards) ?
 
-                    <BounceButton
-                        color={"black"}
-                        onClick = {()=>{
-                          setShowDashboards(false)
-                          history.push('/locations')
-                        }}
-                        containerStyle={{
-                            width: "3rem",
-                            height: "3rem",
-                            position: "relative"
-                        }}
-                    >
+                                <BounceButton
+                                    color={"black"}
+                                    onClick={() => {
+                                        setShowDashboards(false)
+                                        history.push('/locations')
+                                    }}
+                                    containerStyle={{
+                                        width: "3rem",
+                                        height: "3rem",
+                                        position: "relative"
+                                    }}
+                                >
 
-                        <styled.Icon
-                            className={"fa fa-times"}
-                        />
-                    </BounceButton>
+                                    <styled.Icon
+                                        className={"fa fa-times"}
+                                    />
+                                </BounceButton>
 
-                    :
-                      <BounceButton
-                          color={"black"}
-                          onClick={() => {
-                             setShowSettings(!showSettings)
-                          }}
-                          active={showSettings}
-                          containerStyle={{
-                              width: "3rem",
-                              height: "3rem",
-                              position: "relative"
-                          }}
-                      >
-                        <styled.Icon
-                            className={!showSettings ? "fa fa-cog" : "fa fa-times"}
-                        />
-                      </BounceButton>
-                }
-              </>
-            }
+                                :
+                                <BounceButton
+                                    color={"black"}
+                                    onClick={() => {
+                                        setShowSettings(!showSettings)
+                                        if (showSettings) {
+                                            history.push(`/`)
+                                        }
+                                        else {
+                                            history.push(`/settings`)
+                                        }
+                                    }}
+                                    active={showSettings}
+                                    containerStyle={{
+                                        width: "3rem",
+                                        height: "3rem",
+                                        position: "relative"
+                                    }}
+                                >
+                                    <styled.Icon
+                                        className={!showSettings ? "fa fa-cog" : "fa fa-times"}
+                                    />
+                                </BounceButton>
+                            }
+                        </>
+                    }
 
 
-                <styled.Title schema={CURRENT_SCREEN.schema} style = {{userSelect:"none"}}>{title}</styled.Title>
-                {handleTaskQueueStatus()}
+                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
+                    {handleTaskQueueStatus()}
 
-                {!!deviceEnabled &&
-                    <styled.PlayButton
-                        play={pause_status}
-                        windowWidth={windowWidth}
-                        widthBreakPoint={widthBreakPoint}
-                    >
-                        <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
-                    </styled.PlayButton>
-                }
+                    {!!deviceEnabled &&
+                        <styled.PlayButton
+                            play={pause_status}
+                            windowWidth={windowWidth}
+                            widthBreakPoint={widthBreakPoint}
+                        >
+                            <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
+                        </styled.PlayButton>
+                    }
 
-            </styled.Header>
+                </styled.Header>
             </ClickNHold>
 
             {(!showDashboards && !showSettings) &&

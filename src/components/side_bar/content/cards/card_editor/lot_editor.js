@@ -402,42 +402,42 @@ const FormComponent = (props) => {
 	/*
 	* renders calender for selected dates
 	* */
-	const renderCalendarContent = () => {
-
-		const {
-			fullFieldName,
-			fieldName
-		} = calendarFieldName || {}
-
-		// get templateValues
-		const {
-			[lotTemplateId]: templateValues
-		} = values || {}
-
-		// get field value
-		const {
-			[fieldName]: fieldValue
-		} = templateValues || {}
-
-		return(
-			<styled.BodyContainer>
-				<styled.ContentHeader style={{}}>
-					<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
-					<i className="fas fa-times" style={{cursor: 'pointer'}} onClick={() => setShowCalendarPopup(false)}/>
-				</styled.ContentHeader>
-
-				<styled.CalendarContainer>
-					<CalendarField
-						onChange={() => setShowCalendarPopup(false)}
-						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
-						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
-						selectRange={false}
-						name={fullFieldName}
-					/>
-				</styled.CalendarContainer>
-			</styled.BodyContainer>
-		)
-	}
+	// const renderCalendarContent = () => {
+	//
+	// 	const {
+	// 		fullFieldName,
+	// 		fieldName
+	// 	} = calendarFieldName || {}
+	//
+	// 	// get templateValues
+	// 	const {
+	// 		[lotTemplateId]: templateValues
+	// 	} = values || {}
+	//
+	// 	// get field value
+	// 	const {
+	// 		[fieldName]: fieldValue
+	// 	} = templateValues || {}
+	//
+	// 	return(
+	// 		<styled.BodyContainer>
+	// 			<styled.ContentHeader style={{}}>
+	// 				<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
+	// 				<i className="fas fa-times" style={{cursor: 'pointer'}} onClick={() => setShowCalendarPopup(false)}/>
+	// 			</styled.ContentHeader>
+	//
+	// 			<styled.CalendarContainer>
+	// 				<CalendarField
+	// 					onChange={() => setShowCalendarPopup(false)}
+	// 					minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
+	// 					maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
+	// 					selectRange={false}
+	// 					name={fullFieldName}
+	// 				/>
+	// 			</styled.CalendarContainer>
+	// 		</styled.BodyContainer>
+	// 	)
+	// }
 
 	// renders main content
 	const renderMainContent = () => {
@@ -648,9 +648,9 @@ const FormComponent = (props) => {
 											setCalendarFieldName({fullFieldName: newName, fieldName})
 											setCalendarFieldMode(mode)
 										}}
-										calendarContent={showCalendarPopup && renderCalendarContent}
-										showCalendarPopup={showCalendarPopup}
-										setShowCalendarPopup={setShowCalendarPopup}
+										// calendarContent={showCalendarPopup && renderCalendarContent}
+										// showCalendarPopup={showCalendarPopup}
+										// setShowCalendarPopup={setShowCalendarPopup}
 										displayName={fieldName}
 										preview={false}
 										component={component}

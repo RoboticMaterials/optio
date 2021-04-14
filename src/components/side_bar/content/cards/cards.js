@@ -40,7 +40,8 @@ const Cards = (props) => {
         id
     } = props
 
-    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
+    // theme
+    const themeContext = useContext(ThemeContext)
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
@@ -50,6 +51,7 @@ const Cards = (props) => {
     // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
@@ -348,8 +350,9 @@ const Cards = (props) => {
                 showBackButton={isProcessView}
                 title={title}
             />
-            <div style={{display: 'flex', flexDirection: 'row', margin: '1rem 1rem'}}>
+            <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
                 <ZoneHeader
+                    lotFilterValue={lotFilterValue}
                     sortDirection={sortDirection}
                     setSortDirection={setSortDirection}
                     sortMode={sortMode}
@@ -360,15 +363,12 @@ const Cards = (props) => {
                     selectedProcesses={selectedProcesses}
                     setSelectedProcesses={setSelectedProcesses}
                     zone={id}
-                />
-                {selectedCards.length > 0 &&
-                <MultiSelectOptions
                     selectedLots={selectedCards}
                     onDeleteClick={handleDeleteClick}
                     onMoveClick={handleMoveClick}
                     onClearClick={()=>setSelectedCards([])}
                 />
-                }
+
             </div>
 
             <styled.Body

@@ -69,8 +69,8 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const stations = useSelector(state => state.stationsReducer.stations)
     const {
         name: dashboardName
@@ -84,7 +84,14 @@ const DashboardScreen = (props) => {
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
-    const [reportModal, setReportModal] = useState(null);
+    const [reportModal, setReportModal] = useState({
+        type: null,
+        id: null
+    });
+    const {
+        type: modalType,
+        id: modalButtonId
+    } = reportModal
     const [displayName, setDisplayName] = useState(dashboardName);
     const [dashboardStation, setDashboardStation] = useState({});
     const {
@@ -159,9 +166,10 @@ const DashboardScreen = (props) => {
 
             if (type === OPERATION_TYPES.KICK_OFF.key) {
                 // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
-                if (!isNonEmptyArray(availableKickOffProcesses)) {
+                if ((availableKickOffProcesses !== undefined) && !isNonEmptyArray(availableKickOffProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                     if (index !== -1) {
+
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
@@ -169,7 +177,7 @@ const DashboardScreen = (props) => {
             }
             else if (type === OPERATION_TYPES.FINISH.key) {
                 // if button type is finish, but dashboard has no available finish processes, remove the finish button
-                if (!isNonEmptyArray(availableFinishProcesses)) {
+                if ((availableFinishProcesses !== undefined) && !isNonEmptyArray(availableFinishProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                     if (index !== -1) {
                         updatedButtons = immutableDelete(updatedButtons, index)
@@ -374,13 +382,16 @@ const DashboardScreen = (props) => {
                 handleOperationClick()
                 break
             case OPERATION_TYPES.REPORT.key:
-                setReportModal(OPERATION_TYPES.REPORT.key)
+                setReportModal({
+                    type: OPERATION_TYPES.REPORT.key,
+                    id: Id
+                })
                 break
             case OPERATION_TYPES.KICK_OFF.key:
-                setReportModal(OPERATION_TYPES.KICK_OFF.key)
+                setReportModal({type: OPERATION_TYPES.KICK_OFF.key, id: null})
                 break
             case OPERATION_TYPES.FINISH.key:
-                setReportModal(OPERATION_TYPES.FINISH.key)
+                setReportModal({type: OPERATION_TYPES.FINISH.key, id: null})
                 break
             default:
                 break
@@ -427,11 +438,12 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
-            {(reportModal === OPERATION_TYPES.REPORT.key) &&
+            {(modalType === OPERATION_TYPES.REPORT.key) &&
                 <ReportModal
-                    isOpen={!!reportModal}
+                    dashboardButtonId={modalButtonId}
+                    isOpen={!!true}
                     title={"Send Report"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success) => {
 
@@ -448,12 +460,12 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {(reportModal === OPERATION_TYPES.KICK_OFF.key) &&
+            {(modalType === OPERATION_TYPES.KICK_OFF.key) &&
                 <KickOffModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Kick Off"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -468,12 +480,12 @@ const DashboardScreen = (props) => {
                     }}
                 />
             }
-            {(reportModal === OPERATION_TYPES.FINISH.key) &&
+            {(modalType === OPERATION_TYPES.FINISH.key) &&
                 <FinishModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Finish"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert

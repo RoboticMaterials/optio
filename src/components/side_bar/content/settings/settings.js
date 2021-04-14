@@ -177,6 +177,9 @@ const Settings = () => {
         await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
+        if(!localSettingsState.mapViewEnabled) {
+            history.push(`/`)
+        }
 
     }
 

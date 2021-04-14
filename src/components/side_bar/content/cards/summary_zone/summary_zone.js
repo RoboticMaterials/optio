@@ -90,7 +90,7 @@ SummaryZone.propTypes = {
 	setShowCardEditor: PropTypes.func,
 	handleAddLotClick: PropTypes.func,
 	showCardEditor: PropTypes.bool,
-	lotFilterValue: PropTypes.string
+	lotFilterValue: PropTypes.any
 }
 
 // Specifies the default values for props:

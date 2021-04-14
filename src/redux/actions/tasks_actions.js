@@ -278,7 +278,7 @@ export const saveFormRoute = (formRoute) => {
 
         // create new route
         if(isNew) {
-            dispatch(postRouteClean(payload))
+            await dispatch(postRouteClean(payload))
         }
 
         // update existing route

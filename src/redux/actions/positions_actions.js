@@ -36,7 +36,7 @@ import * as api from '../../api/positions_api'
 import { positionsSchema } from '../../normalizr/schema'
 
 // Import External Actions
-import { putStation, putStationWithoutSavingChildren, setStationAttributes, setSelectedStation } from './stations_actions'
+import { putStation, putStationWithoutSavingChildren, setStationAttributes, setSelectedStation, updateStation } from './stations_actions'
 import { deleteTask } from './tasks_actions'
 import { putDevices } from './devices_actions'
 
@@ -257,11 +257,7 @@ const onDeletePosition = (id, stationDelete) => {
                     let children = deepCopy(selectedStation.children)
                     children.splice(positionIndex, 1)
                     dispatch(setStationAttributes(selectedStation.id, { children }))
-
-                }
-
-                // TODO: For tommorow, 1/27 it looks like its removing the wrong position from the children array...
-                else {
+                } else {
                     let children = deepCopy(selectedStation.children)
                     children.splice(positionIndex, 1)
                     dispatch(setStationAttributes(selectedStation.id, { children }))

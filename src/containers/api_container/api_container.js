@@ -58,11 +58,11 @@ const ApiContainer = (props) => {
     // Dispatches
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
-    const onGetStations = () => dispatch(getStations())
+    const onGetStations = async () => await dispatch(getStations())
     const onGetPositions = () => dispatch(getPositions())
-    const onGetDashboards = () => dispatch(getDashboards())
+    const onGetDashboards = async () => await dispatch(getDashboards())
     const onGetObjects = () => dispatch(getObjects())
-    const onGetTasks = () => dispatch(getTasks())
+    const onGetTasks = async () => await dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
@@ -158,18 +158,18 @@ const ApiContainer = (props) => {
             })
 
             // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
-            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)){
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) {
 
-              const updatedLocalSettings = {
-                ...localReducer.localSettings,
-                MiRMapEnabled: containsMirCart,
-              }
+                const updatedLocalSettings = {
+                    ...localReducer.localSettings,
+                    MiRMapEnabled: containsMirCart,
+                }
 
-              onPostLocalSettings(updatedLocalSettings)
+                onPostLocalSettings(updatedLocalSettings)
             }
         }
 
-    }, [devices,MiRMapEnabled])
+    }, [devices, MiRMapEnabled])
 
     useEffect(() => {
 
@@ -621,9 +621,9 @@ const ApiContainer = (props) => {
                         // Add new dashboard
                         device.dashboards.push(dashPromise.id)
 
-                        // Delete old dashboard
-                        const index = device.dashboards.indexOf(dashboard)
-                        device.dashboards.splice(index, 1)
+                            // Delete old dashboard
+                            const index = device.dashboards.indexOf(dashboard)
+                            device.dashboards.splice(index, 1)
                         }
 
                         await onPutDevice(device, device.id)

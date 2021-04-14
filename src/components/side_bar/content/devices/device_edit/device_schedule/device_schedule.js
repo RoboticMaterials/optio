@@ -38,6 +38,7 @@ const DeviceSchedule = (props) => {
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const currentMap = useSelector(state=>state.mapReducer.currentMap)
 
     const renderSchedules = () => {
 
@@ -102,7 +103,9 @@ const DeviceSchedule = (props) => {
                                             valueField={"id"}
                                             options={Object.values(positions)}
                                             mapInput={(val) => {
-                                                return [positions[val]]
+                                                if (!!positions[val]) {
+                                                    return [positions[val]]
+                                                }
                                             }}
                                             mapOutput={(val) => {
                                                 return val[0].id
@@ -130,8 +133,6 @@ const DeviceSchedule = (props) => {
                                             format={'hh:mm a'}
                                             autocomplete={"off"}
                                             allowEmpty={false}
-                                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                         />
 
                                     </styled.RowContainer>
@@ -142,7 +143,7 @@ const DeviceSchedule = (props) => {
                                         secondary
                                         onClick={() => {
                                             // onDeleteSchedule(schedule)
-                                            // Removes the values from formik. 
+                                            // Removes the values from formik.
                                             // Otherwise you would delete and schedule and then when re-adding a new one, it owuld use the old valus
                                             arrayHelpers.remove(ind)
                                         }}

@@ -31,6 +31,7 @@ import { compareExistingVsIncomingLocations } from '../../methods/utils/location
 import {createActionType} from "../actions/redux_utils";
 import * as prefixes from "../types/prefixes";
 import * as dataTypes from "../types/data_types";
+import {isEmpty} from "../../methods/utils/object_utils";
 
 const defaultState = {
     stations: {},
@@ -153,12 +154,24 @@ export default function stationsReducer(state = defaultState, action) {
             });
 
         case GET_STATIONS_SUCCESS:
-            const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
-            return {
-                ...state,
-                stations: parsedStations,
-                pending: false
+            if(isEmpty(state.d3)) {
+                return {
+                    ...state,
+                    stations: {...action.payload},
+                    pending: false
+                }
             }
+
+            else {
+                const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
+
+                return {
+                    ...state,
+                    stations: parsedStations,
+                    pending: false
+                }
+            }
+
 
         case GET_STATIONS_FAILURE:
             return Object.assign({}, state, {

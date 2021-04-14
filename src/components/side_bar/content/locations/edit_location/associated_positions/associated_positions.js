@@ -8,7 +8,7 @@ import { sortableElement, sortableHandle } from 'react-sortable-hoc';
 import MinusButton from '../../../../../basic/minus_button/minus_button'
 import Textbox from '../../../../../basic/textbox/textbox'
 import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-
+import AssociatedPositionCard from './associated_position_card/associated_position_card'
 
 import arrayMove from 'array-move';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
@@ -54,6 +54,7 @@ export default function Positions(props) {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [deletingIndex, setDeletingIndex] = useState()
     const [deletingPosition, setDeletingPosition] = useState()
+    const [mostRecentPositionId, setMostRecentPositionId] = useState(null)
 
     const positionTypes = !!MiRMapEnabled ? ['cart_position', 'shelf_position',] : []
 
@@ -149,43 +150,15 @@ export default function Positions(props) {
 
     const renderPositionCards = () => {
 
-        return positionTypes.map((positionType) => {
-
-            let positionName
-            // Sets of vairables based on position type
-            if (positionType === 'cart_position') {
-                positionName = 'Cart'
-            }
-            if (positionType === 'shelf_position') {
-                positionName = 'Shelf'
-            }
-
-            return (
-                <styled.Card>
-
-                    <styled.NewPositionCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
-                    <styled.NewPositionCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
-                    <styled.NewPositionCard draggable={false}
-                        onMouseDown={e => {
-                            onAddAssociatedPosition(positionType)
-                        }
-                        }
-                    >
-                        <styled.LocationTypeLabel>
-                            {positionName}
-                        </styled.LocationTypeLabel>
-
-                        <styled.LocationTypeGraphic fill={PositionTypes[positionType].color} stroke={PositionTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                            {PositionTypes[positionType].svgPath}
-                        </styled.LocationTypeGraphic>
-
-
-
-                    </styled.NewPositionCard>
-                </styled.Card>
-            )
-        })
-
+        return positionTypes.map((positionType) => 
+            <AssociatedPositionCard 
+                positionType={positionType} 
+                handleAddPosition={onAddAssociatedPosition} 
+                handleDeletePosition={() => {
+                    onDelete(selectedStationChildrenCopy[mostRecentPositionId])
+                }}
+            />
+        )
     }
 
     return (

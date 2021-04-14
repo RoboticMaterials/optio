@@ -60,7 +60,6 @@ const Widgets = (props) => {
     const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchSetSelectedStationChildrenCopy = (locationChildren) => dispatch(setSelectedStationChildrenCopy(locationChildren))
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
-
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
 
