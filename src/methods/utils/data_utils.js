@@ -50,6 +50,7 @@ const RESOURCE_JSON_KEYS = {
   [dataTypes.DASHBOARD]: ["data"],
   [dataTypes.LOT_TEMPLATE]: ["displayNames", "fields"],
   [dataTypes.SETTINGS]: ["loggers", "shiftDetails", "timezone"],
+  [dataTypes.STATION]: ["children", "dashboards"],
 }
 
 // parser for each resource
@@ -59,6 +60,7 @@ export const parseProcess = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTyp
 export const parseLotTemplate = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
 export const parseObject = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.OBJECT])
 export const parseSettings = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
+export const parseStation = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.STATION])
 export const parseDashboard = (dashboard) => {
   const {
     data,
@@ -102,6 +104,7 @@ export const DATA_PARSERS = {
   [dataTypes.DASHBOARD]: parseDashboard,
   [dataTypes.LOT_TEMPLATE]: parseLotTemplate,
   [dataTypes.SETTINGS]: parseSettings,
+  [dataTypes.STATION]: parseStation
 }
 
 export const DATA_STRINGIFIERS = {
