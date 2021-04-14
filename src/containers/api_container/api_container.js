@@ -436,6 +436,14 @@ const ApiContainer = (props) => {
         await onGetCards()
         await onGetProcesses()
 
+        /*
+        * For now, this MUST come last.
+        *
+        * If this is made first, the dashboards page will do updates without the other data updated first,
+        * which may include incorrectly removing buttons.
+        * */
+        await onGetDashboards()
+
     }
 
     /*
