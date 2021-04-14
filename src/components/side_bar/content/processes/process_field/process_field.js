@@ -71,7 +71,6 @@ export const ProcessField = (props) => {
     } = formikProps
 
     useChange() // adds changed key to values - true if the field has changed
-
     let errorCount = 0
     Object.values(errors).forEach((currError) => {
         if (!isEmpty(currError)) errorCount++

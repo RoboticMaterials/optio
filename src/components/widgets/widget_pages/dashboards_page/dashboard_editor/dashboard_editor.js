@@ -21,6 +21,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 import SmallButton from '../../../../basic/small_button/small_button'
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from '../../../../basic/textbox/textbox'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -65,15 +66,17 @@ const DashboardEditor = (props) => {
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const stations = useSelector(state => state.stationsReducer.stations)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
+
 
     useEffect(() => {
-      return () => {
-        dispatchPageDataChanged(false)
-      }
-    }, []);
-
+        return () => {
+          dispatchPageDataChanged(false)
+        }
+    }, [])
    /*
     * Returns initialValues object for Formik
     */
@@ -187,9 +190,6 @@ const DashboardEditor = (props) => {
             onPostDashboard(dashboardCopy)
         }
 
-        history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
-
-
     }
 
     return (
@@ -215,7 +215,13 @@ const DashboardEditor = (props) => {
             {(formikProps) => {
                 const { errors, values, touched, initialValues } = formikProps; // extract formik props
 
-                // disabled submission if there are any errors or not all fields have been touched
+                if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+                  dispatchPageDataChanged(true)
+                }
+                else{
+                  dispatchPageDataChanged(false)
+                  console.log('false')
+                }                // disabled submission if there are any errors or not all fields have been touched
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
 
@@ -285,6 +291,23 @@ const DashboardEditor = (props) => {
 
                 return (
                     <style.Container>
+
+                        <ConfirmDeleteModal
+                            isOpen={!!confirmExitModal}
+                            title={"Are you sure you want to Leave this page? Any progress will not be saved"}
+                            button_1_text={"Yes"}
+                            handleOnClick1={() => {
+                              history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
+                              setConfirmExitModal(null)
+
+                            }}
+                            button_2_text={"No"}
+                            handleOnClick2={() => {
+                              setConfirmExitModal(null)
+                            }}
+                            handleClose={() => setConfirmExitModal(null)}
+                        />
+
                         <DashboardsSidebar
                             existingButtons={values.buttons || []}
                             dashboardId={dashboardId}
@@ -310,7 +333,7 @@ const DashboardEditor = (props) => {
                             }}
                             locked = {values.locked}
                             saveDisabled={submitDisabled}
-                            onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                            onBack={() => !!pageInfoChanged ? setConfirmExitModal(true) : history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
                         >
                             <TextField
                                 name={"name"}

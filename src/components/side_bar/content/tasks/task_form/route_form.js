@@ -91,11 +91,16 @@ const TaskForm = (props) => {
 
 				const {
 					submitForm,
-					touched
+					touched,
+					initialValues,
+					values
 				} = formikProps
 
-				if(Object.keys(touched).length!==0 && !editing){
+				if(JSON.stringify(initialValues)!==JSON.stringify(values)){
 					dispatchPageDataChanged(true)
+				}
+				else{
+					dispatchPageDataChanged(false)
 				}
 
 				return(

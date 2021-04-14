@@ -245,11 +245,27 @@ const ProcessForm = (props) => {
 					setTouched,
 					resetForm,
 					setFieldValue,
-					touched
+					touched,
+					values,
+					initialValues,
 				} = formikProps
 
-				if(Object.keys(touched).length!==0 && !editing){
+				var {
+					newRoute,
+					...remainingInitialValues
+				} = initialValues
+
+				var {
+					newRoute,
+					changed,
+					...remainingValues
+				} = values
+
+				if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
 					dispatchPageDataChanged(true)
+				}
+				else{
+					dispatchPageDataChanged(false)
 				}
 
 				return(

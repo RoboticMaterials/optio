@@ -427,7 +427,16 @@ const EditLocation = (props) => {
                         const {
                             submitForm,
                             errors,
+                            initialValues,
+                            values
                         } = formikProps
+
+                        if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+                          dispatchPageDataChanged(true)
+                        }
+                        else{
+                          dispatchPageDataChanged(false)
+                        }
 
                         return (
                             <Form

@@ -54,16 +54,9 @@ const TextField = ({
     const themeContext = useContext(ThemeContext)
 
     const dispatch = useDispatch()
-    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const hasError = touched && error
     const hasWarning = touched && warning
-
-    useEffect(() => {
-        return ()=> {
-          dispatchPageDataChanged(false)
-        }
-    }, [])
 
     useChange(setFieldValue)
 
@@ -92,7 +85,6 @@ const TextField = ({
                             // update touched if necessary
                             if (!touched) {
                                 setFieldTouched(fieldName, true)
-                                dispatchPageDataChanged(true)
                             }
 
                             setFieldValue(fieldName, mapOutput(event.target.value)) // update field value
