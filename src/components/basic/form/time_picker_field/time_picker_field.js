@@ -45,8 +45,6 @@ const TimePickerField = (props) => {
 	const hasError = touched && error;
 	const errorMessage = getMessageFromError(error);
 
-    console.log('QQQQ default', defaultValue)
-
 	return (
 			<Container
 				style={containerStyle}
