@@ -22,12 +22,12 @@ export const LocationTypeButton = styled.div`
     margin: 0.5rem;
     position: relative;
     opacity: 0.999;
-    z-index: 10000;
+    z-index:  ${props => props.isSelected && 10};
 
     box-shadow: ${props => props.isSelected ? `none` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
 
-    ${props => !props.isSelected && 
-    `    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
+    ${props => !props.isSelected &&
+        `    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
 
         &:active {
             cursor: grabbing;
