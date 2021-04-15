@@ -162,7 +162,6 @@ const TaskField = (props) => {
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
         if (selectedTask && selectedTask.load) {
-
             setFieldValue(fieldParent ? `${fieldParent}.load.station` : "load.station", selectedTask.load.station, false)
             setFieldValue(fieldParent ? `${fieldParent}.load.position` : "load.position", selectedTask.load.position, false)
         }
@@ -291,6 +290,12 @@ const TaskField = (props) => {
             }
         }
     }, [obj?.description, obj?.name])
+
+    useEffect(() => {
+      if(contentType === "existing" && selectedTask.load.station!== null){
+        setContentType("new")
+      }
+    }, [selectedTask])
 
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {

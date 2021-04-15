@@ -162,18 +162,12 @@ const BarChart = (props) => {
                 // tickPadding: layout === "horizontal" ? 10 : -40,
                 // translateY: -25
                 legendOffset: 60,
-                tickRotation: 0,
+                tickRotation: 45,
                 legend: '',
                 fontSize: "8rem",
                 legendPosition: 'middle',
                 // legendOffset: 50,
                 ...axisBottom
-
-
-                // format: (value) => {
-                //     console.log('QQQQ val', value.split(' ')[1])
-                //     // value.split(' ')[1]
-                // },
             }}
             axisLeft={{
                 tickSize: 5,
