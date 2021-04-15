@@ -376,6 +376,7 @@ const TaskField = (props) => {
       setShowObjectSelector(false)
       dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+      setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
 
     const onObjectBackClick = () => {
