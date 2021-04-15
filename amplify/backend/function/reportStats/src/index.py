@@ -32,6 +32,7 @@ dynamodb = resource('dynamodb', region_name=os.environ['REGION'], verify=False)
 table = dynamodb.Table(os.environ['API_RMSTUDIOCLOUD_REPORTEVENTTABLE_NAME'])
 
 def handler(event, context):
+    print("os.environ['API_RMSTUDIOCLOUD_REPORTEVENTTABLE_NAME']",os.environ['API_RMSTUDIOCLOUD_REPORTEVENTTABLE_NAME'])
 
     # define varibles coming from putside this function
     env = os.environ

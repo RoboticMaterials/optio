@@ -17,6 +17,10 @@ const tableNames = {
 	map: process.env.API_RMSTUDIOCLOUD_MAPTABLE_NAME
 };
 
+const docClient = new AWS.DynamoDB.DocumentClient({
+    endpoint: process.env.DDB_ENDPOINT,
+});
+
 const mapData = require('./mapData')
 
 exports.handler = async (event) => {
@@ -36,17 +40,17 @@ exports.handler = async (event) => {
         }
 
         // put the taskQI in the taskQevents
-        // const mapParams = {
-        //     TableName: tableNames.map,
-        //     Item: blankMap
-        // };
+        const mapParams = {
+            TableName: tableNames.map,
+            Item: blankMap
+        };
 
-        await handlePostMap(blankMap, event)
+        // await handlePostMap(blankMap, event)
 
-        // let map = await docClient.put(mapParams, ((err, data) => {
-        //     console.log("docClient.put err", err)
-        //     console.log("docClient.put data", data)
-        // })).promise();
+        let map = await docClient.put(mapParams, ((err, data) => {
+            console.log("docClient.put err", err)
+            console.log("docClient.put data", data)
+        })).promise();
 
         return {
             posted: true

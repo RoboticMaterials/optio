@@ -36,6 +36,7 @@ const docClient = new AWS.DynamoDB.DocumentClient({
 
 exports.handler = async (event) => {
 	try {
+		console.log("handleTaskQueue tableNames",tableNames)
 		const taskQueueItem = event.arguments.taskQueueItem
 
 		const taskParams = {
@@ -114,6 +115,8 @@ exports.handler = async (event) => {
 
 		await docClient.put(taskQEventsParams).promise();
 
+		console.log("docClient",docClient)
+
 		// delete from the TQ
 		await handleDeleteTaskQueueItem(taskQueueItem.id, event)
 
@@ -179,6 +182,8 @@ const handleDeleteTaskQueueItem = async (id, event) => {
 		httpRequest.headers['Authorization'] = event.request.headers.authorization;
 		httpRequest.method = 'POST';
 		httpRequest.body = JSON.stringify(post_body);
+
+		console.log("uri",uri)
 
 		const graphqlData = await axios({
 			url: uri.href,

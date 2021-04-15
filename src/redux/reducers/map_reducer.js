@@ -14,9 +14,10 @@ import {
 } from '../types/map_types'
 
 import { deepCopy } from '../../methods/utils/utils'
+import {blankMap} from "../../assets/basicMap";
 
 const defaultState = {
-    maps: [],
+    maps: [blankMap],
     currentMap: {},
 
     error: {},
@@ -46,7 +47,7 @@ export default function mapReducer(state=defaultState, action) {
         case GET_MAPS_SUCCESS:
             return  {
                 ...state,
-                maps: action.payload,
+                maps: [...action.payload , blankMap],
                 pending: false
             }
 

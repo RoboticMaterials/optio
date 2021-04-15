@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "graphql-tag": "^2.11.0",
-    "node-fetch": "^2.6.1"
+    "axios": "^0.21.1",
+    "url": "^0.11.0"
   }
 }

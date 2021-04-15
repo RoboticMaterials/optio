@@ -4,8 +4,11 @@ verify_ssl = false
 name = "pypi"
 
 [packages]
+pandas = "*"
+boto3 = "*"
+src = {editable = true, path = "./src"}
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3"
