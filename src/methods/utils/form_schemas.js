@@ -688,7 +688,8 @@ export const throughputSchema = Yup.object().shape({
     startOfShift: Yup.string()
         .required('Required'),
     endOfShift: Yup.string()
-        .required('Required'),
+        .required('Required')
+        .lessThan("startOfShift", 'The end of the shift cannot be before the start of the shift'),
     startOfBreak1: Yup.string()
         // Only validate when true
         .when('switch1', {

@@ -83,10 +83,10 @@ const DashboardsPage = (props) => {
      * This information is used for determining whether or not to enable the KICK OFF button for a given dashboard
      */
     useEffect(() => {
-
         onUpdateKickoffFinishInfo()
 
     }, [processes])
+
 
     const onUpdateKickoffFinishInfo = async () => {
         // list of all processes that the station is the first station of the process
