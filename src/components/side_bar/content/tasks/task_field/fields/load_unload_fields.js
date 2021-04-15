@@ -193,8 +193,8 @@ const LoadUnloadFields = (props) => {
                 {isHumanTask(selectedTask) &&
                     <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
                         <styled.RowContainer>
-                            <styled.Label style={{ marginBottom: '0rem' }}>
-                                {"Confirm Unload?"}
+                            <styled.Label style={{ marginBottom: '0rem', flex: "1" }}>
+                                {"Enable Confirm Unload"}
                             </styled.Label>
 
                             <SwitchField
@@ -205,7 +205,7 @@ const LoadUnloadFields = (props) => {
                                 containerStyle={{ marginRight: '1rem' }}
                             />
                         </styled.RowContainer>
-                        <styled.HelpText>
+                        <styled.HelpText style = {{fontSize: "0.8rem", paddingTop: "1rem"}}>
                             Tracks transit time by requiring button to be pressed at Unload Location
                         </styled.HelpText>
 
@@ -267,9 +267,9 @@ const LoadUnloadFields = (props) => {
                     }
                 </styled.Card>
             }
-            
 
-            
+
+
 
 
             {/* {selectedTask.device_type === 'MiR_100' &&
