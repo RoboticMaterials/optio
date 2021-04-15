@@ -16,8 +16,6 @@ import DashboardsSidebar, { OPERATION_TYPES } from "./dashboards_sidebar/dashboa
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import disableBrowserBackButton from 'disable-browser-back-navigation';
-
 import {
     getDashboards,
     setDashboardKickOffProcesses,
@@ -85,14 +83,10 @@ const DashboardsPage = (props) => {
      * This information is used for determining whether or not to enable the KICK OFF button for a given dashboard
      */
     useEffect(() => {
-
         onUpdateKickoffFinishInfo()
 
     }, [processes])
 
-    useEffect(() => {
-        disableBrowserBackButton()
-    }, [])
 
     const onUpdateKickoffFinishInfo = async () => {
         // list of all processes that the station is the first station of the process

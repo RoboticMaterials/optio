@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Redirect,} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
 
-
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
@@ -12,6 +11,7 @@ import './App.css';
 import useWindowSize from './hooks/useWindowSize'
 
 import * as styled from './App.style'
+import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 // Import API
 import { deleteLocalSettings } from './api/local_api'
@@ -57,7 +57,6 @@ const App = () => {
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
-
 
     useEffect(() => {
       handleLoadLocalData();
