@@ -110,6 +110,15 @@ const SideBarSwitcher = (props) => {
                 currentMode={url}
             />
 
+            <SideBarButton
+                mode={'statistics'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    dispatchTaskEditing(false)
+                }}
+                currentMode={url}
+            />
+
             {!!deviceEnabled &&
                 <SideBarButton
                     mode={'devices'}

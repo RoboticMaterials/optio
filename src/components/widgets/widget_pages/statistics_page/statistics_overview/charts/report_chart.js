@@ -8,7 +8,7 @@ import { ThemeContext } from 'styled-components';
 
 // Import Charts
 import BarChart from '../../chart_types/bar_chart'
-import {TIME_SPANS} from "../statistics_overview";
+import { TIME_SPANS } from "../statistics_overview";
 
 const ReportChart = (props) => {
 
@@ -19,7 +19,7 @@ const ReportChart = (props) => {
         reportData,
         isThroughputLoading,
         timeSpan,
-        throughputData,
+        isWidget,
     } = props
 
     // get array of report buttons for current station
@@ -32,7 +32,7 @@ const ReportChart = (props) => {
     // therefore, must map through each item and replace the button's id with its name
     const filteredData = useRef([]);
     const filteredDataColors = useRef({});
-    
+
     useEffect(() => {
         filteredData.current = (reportData && reportData.reports && Array.isArray(reportData.reports)) ?
             reportData.reports.map((currReport) => {
@@ -75,9 +75,12 @@ const ReportChart = (props) => {
             // Margin bottom is used to be able to scroll to the bottom and see the report graph
             style={{ marginBottom: '7rem' }}
         >
-            <styled.PlotHeader>
-                <styled.PlotTitle>Reports</styled.PlotTitle>
-            </styled.PlotHeader>
+            {isWidget &&
+                <styled.PlotHeader>
+                    <styled.PlotTitle>Reports</styled.PlotTitle>
+                </styled.PlotHeader>
+            }
+
 
             {isThroughputLoading ?
                 <styled.PlotContainer>
@@ -89,7 +92,7 @@ const ReportChart = (props) => {
                 >
                     <BarChart
                         data={filteredData.current}
-                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.theme.schema.charts.solid}
+                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.theme.schema.statistics.solid}
                         keys={reportButtonNames}
                         indexBy={'lable'}
                         colorBy={"id"}

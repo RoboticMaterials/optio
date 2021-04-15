@@ -150,7 +150,7 @@ export const theme = {
                 solid: '#b385ff',
                 iconName: "fas fa-play"
             },
-            charts: {
+            statistics: {
                 solid: "#54AAFF",
             },
             kick_off: {
