@@ -70,11 +70,6 @@ const SignInUpPage = (props) => {
             if(data.data.UsersbyId.items.length){
                 return true
             }else{
-                // dispatchPostLocalSettings({
-                //     ...localReducer,
-                //     authenticated: true,
-                // });
-
                 history.push('/organization');
             }
         }catch(err){
@@ -108,8 +103,8 @@ const SignInUpPage = (props) => {
                 ;}
 
             } catch (error) {
-                console.log("error signing in", error);
                 setErrorText(error.message)
+                setLoading(false)
             }
         } else {
             if (password === confirmPassword) {
@@ -124,13 +119,14 @@ const SignInUpPage = (props) => {
                         }
                     });
 
-                    alert(
+                    setErrorText(
                         "You have sucessfully signed up. Please check your email for a verification link."
                     );
                     handleSignInChange(true);
+                    setLoading(false)
                 } catch (error) {
-                    console.log("error signing up:", error);
                     setErrorText(error.message);
+                    setLoading(false)
                 }
             } else {
                 setErrorText('Passwords must match!')

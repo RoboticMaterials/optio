@@ -76,9 +76,7 @@ const FirstSignIn = () => {
                         variables: { organizationId: userData.data.createUser.organizationId }
                     })
                 }
-
-                history.push('/');
-
+                
                 window.location.reload()
             }else{
                 setErrorText('There is no organization with that key')
