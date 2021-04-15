@@ -11,18 +11,13 @@ import ThroughputChart from './charts/throughput_chart/throughput_chart'
 import ReportChart from './charts/report_chart'
 
 // Import Components
-import TimeSpans from './timespans/timespans'
 import DataSelector from './data_selector/data_selector.js'
 import ApexGaugeChart from './apex_gauge_chart'
-
-// Import Utils
-import { convertEpochTo12h } from '../../../../../methods/utils/time_utils'
+import DaySelector from '../../../../basic/day_selector/day_selector'
+import TimeSpanSelector from '../../../../basic/timespan_selector/time_span_selector'
 
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
-
-
-import { ResponsiveBar } from '@nivo/bar';
 
 // Import Utils
 import { getDateName, getDateFromString, convertArrayToObject } from '../../../../../methods/utils/utils'
@@ -65,7 +60,7 @@ const StatisticsOverview = (props) => {
     let plotRef = useRef()
 
     const dispatch = useDispatch()
-    const onGetReportEvents = () => dispatch(getReportEvents());
+    const dispatchGetReportEvents = () => dispatch(getReportEvents());
 
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -79,13 +74,10 @@ const StatisticsOverview = (props) => {
 
     const [timeSpan, setTimeSpan] = useState('day')
     const [dateIndex, setDateIndex] = useState(0)
-    const [format, setFormat] = useState('%m-%d %H:%M')
     const [selector, setSelector] = useState('throughPut')
-    const [slice, setSlice] = useState(null)
-    const [defaultTicks, setDefaultTicks] = useState([])
-    const [isThroughputLoading, setIsThroughputLoading] = useState(false)
-    const [isReportsLoading, setIsReportsLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [timespanDisabled, setTimespanDisabled] = useState(false)
+    const [parentSortLevel, setParentSortLevel] = useState({ label: 'Object', value: 'object' })
 
     const [isDevice, setIsDevice] = useState(false)
     const [reportButtons, setReportButtons] = useState([])
@@ -114,7 +106,7 @@ const StatisticsOverview = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
-        onGetReportEvents() // load report events
+        dispatchGetReportEvents() // load report events
 
 
         if (stations[params.stationID].deviceId !== undefined) {
@@ -145,12 +137,13 @@ const StatisticsOverview = (props) => {
     }, [])
 
     const getReportData = async (body) => {
+        setLoading(true)
         const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 
         if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
             setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
         }
+        setLoading(false)
     }
 
     const handleDeviceStatistics = () => {
@@ -166,35 +159,6 @@ const StatisticsOverview = (props) => {
         )
     }
 
-    // TEMP
-    // useEffect(() => {
-    //     if (data !== null) {
-    //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
-    //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
-    //         setDefaultTicks(ticks)
-    //     }
-    // }, [data])
-
-    const findSlice = e => {
-        // console.log(e.clientX, plotRef.getBoundingClientRect())
-    }
-
-    const everyN = (array, N) => {
-        return array.filter(function (value, index) {
-            return index % N == 0 || index == array.length - 1;
-        });
-    }
-
-    const pickN = (array, N) => {
-        const linspace = Math.round(array.length / N)
-        return everyN(array, linspace)
-    }
-
-    const ToolTipCallback = (props) => {
-        setSlice(props.slice.points[0].data)
-        return null
-    }
-
     /**
      * Gets the new data based on the selected time span and dateIndex
      * 
@@ -207,15 +171,15 @@ const StatisticsOverview = (props) => {
      * @param {*} newTimeSpan 
      * @param {*} newDateIndex 
      */
-    const onTimeSpan = async (newTimeSpan, newDateIndex) => {
+    const onTimeSpan = async (newTimeSpan, newDateIndex, newSortLevel) => {
 
         setTimeSpan(newTimeSpan)
         setDateIndex(newDateIndex)
+        setParentSortLevel(newSortLevel)
 
-        setIsThroughputLoading(true)
-        setIsReportsLoading(true)
+        setLoading(true)
 
-        const body = { timespan: newTimeSpan, index: newDateIndex }
+        const body = { timespan: newTimeSpan, index: newDateIndex, sort_index: newSortLevel.value }
         const dataPromise = getStationAnalytics(stationID, body)
 
         // If the timespan changes to line, then dont change what the report chart is showing
@@ -223,13 +187,11 @@ const StatisticsOverview = (props) => {
             const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
             if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
                 setReportData(reportAnalyticsResponse)
-                setIsReportsLoading(false)
             }
         }
 
         dataPromise.then(response => {
-
-            if (response === undefined) return setIsThroughputLoading(false)
+            if (response === undefined) return setLoading(false)
             // Convert Throughput
             if (newTimeSpan === 'line') {
                 let convertedThroughput = []
@@ -247,37 +209,8 @@ const StatisticsOverview = (props) => {
             }
 
             setThroughputData(response)
-            setIsThroughputLoading(false)
+            setLoading(false)
         })
-
-        // Usses a regex to take all characters before a '['
-        // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
-        switch (newTimeSpan) {
-            case 'live':
-                setFormat('%I:%M:%S %p')
-                setTimeSpan('live')
-                break
-            case 'day':
-                setFormat('%I:%M %p')
-                setTimeSpan('day')
-                break
-            case 'week':
-                setFormat('%m-%d %I:%M %p')
-                setTimeSpan('week')
-                break
-            case 'month':
-                setFormat('%m-%d')
-                setTimeSpan('month')
-                break
-            case 'year':
-                setFormat('%Y-%m-%d')
-                setTimeSpan('year')
-                break
-            case 'all':
-                setFormat('%Y-%m-%d')
-                setTimeSpan('all')
-                break
-        }
     }
 
     const renderHeader = () => {
@@ -285,8 +218,11 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans timespanDisabled={timespanDisabled} color={themeContext.schema.charts.solid} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
-
+                        <TimeSpanSelector
+                            timespanDisabled={timespanDisabled}
+                            setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0, parentSortLevel)}
+                            timeSpan={timeSpan}
+                        />
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
                     </>
@@ -302,35 +238,14 @@ const StatisticsOverview = (props) => {
         if (throughputData === null) return null
 
         return (
-            <styled.RowContainer>
-                <styled.DateSelectorIcon
-                    className='fas fa-chevron-left'
-                    onClick={() => {
-                        const index = dateIndex + 1
-                        onTimeSpan(timeSpan, index)
-                    }}
-                />
-                {isThroughputLoading ?
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
-                    :
-                    <styled.DateSelectorTitle>{throughputData.date_title}</styled.DateSelectorTitle>
-
-                }
-
-                {/* If the current dateIndex is 0, then have a blank icon that does nothing. Can't go to the future now can we dummy */}
-                {dateIndex !== 0 ?
-                    <styled.DateSelectorIcon
-                        className='fas fa-chevron-right'
-                        onClick={() => {
-                            const index = dateIndex - 1
-                            onTimeSpan(timeSpan, index)
-                        }}
-                    />
-                    :
-                    <styled.DateSelectorIcon />
-
-                }
-            </styled.RowContainer>
+            <DaySelector
+                date={throughputData.date_title}
+                dateIndex={dateIndex}
+                loading={loading}
+                onChange={(newIndex) => {
+                    onTimeSpan(timeSpan, newIndex, parentSortLevel)
+                }}
+            />
         )
 
     }
@@ -374,31 +289,36 @@ const StatisticsOverview = (props) => {
 
             <styled.PlotsContainer
                 ref={pc => plotRef = pc}
-                // onMouseMove={findSlice}
-                onMouseLeave={() => { setSlice(null) }}
+            // onMouseMove={findSlice}
             >
                 {renderHeader()}
                 <ThroughputChart
                     data={throughputData}
-                    isThroughputLoading={isThroughputLoading}
+                    loading={loading}
                     timeSpan={timeSpan}
+                    isWidget={true}
                     loadLineChartData={() => {
-                        onTimeSpan('line', dateIndex)
+                        onTimeSpan('line', dateIndex, parentSortLevel)
                     }}
                     loadBarChartData={() => {
-                        onTimeSpan('day', dateIndex)
+                        onTimeSpan('day', dateIndex, parentSortLevel)
 
                     }}
                     disableTimeSpan={(bool) => {
                         setTimespanDisabled(bool)
                     }}
+                    setParentSortLevel={(val) => {
+                        onTimeSpan(timeSpan, dateIndex, val)
+                    }}
+                    sortLevel={parentSortLevel}
                 />
                 <ReportChart
                     reportButtons={reportButtons}
                     reportDate={reportData}
-                    isThroughputLoading={isThroughputLoading}
+                    isThroughputLoading={loading}
                     timeSpan={timeSpan}
                     reportData={reportData}
+                    isWidget={true}
                 />
             </styled.PlotsContainer>
 

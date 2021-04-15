@@ -27,7 +27,7 @@ export const LocationTypeButton = styled.div`
     box-shadow: ${props => props.isSelected ? `none` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
 
     ${props => !props.isSelected &&
-        `    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
+    `    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
 
         &:active {
             cursor: grabbing;
@@ -36,7 +36,7 @@ export const LocationTypeButton = styled.div`
         }
     `
     }
-    
+
 `
 
 export const LocationTypeLabel = styled.p`

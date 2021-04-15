@@ -103,21 +103,23 @@ const DeviceEdit = (props) => {
     const renderDeviceName = () => {
 
         return (
-            <styled.SectionsContainer>
+                <styled.Label schema={'devices'} >{selectedDevice.device_name}</styled.Label>
 
-                <styled.Label schema={'devices'} >Device Name</styled.Label>
+            // <styled.SectionsContainer>
 
-                <Textbox
-                    defaultValue={selectedDevice.device_name}
-                    placeholder={'Enter Device Name'}
-                    onChange={(event) => {
-                        onSetDeviceName(event.target.value)
-                    }}
-                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                    inputStyle={{ backgroundColor: 'white' }}
-                />
+            //     <styled.Label schema={'devices'} >Device Name</styled.Label>
 
-            </styled.SectionsContainer>
+            //     <Textbox
+            //         defaultValue={selectedDevice.device_name}
+            //         placeholder={'Enter Device Name'}
+            //         onChange={(event) => {
+            //             onSetDeviceName(event.target.value)
+            //         }}
+            //         style={{ fontWeight: '600', fontSize: '1.5rem' }}
+            //         inputStyle={{ backgroundColor: 'white' }}
+            //     />
+
+            // </styled.SectionsContainer>
         )
     }
 

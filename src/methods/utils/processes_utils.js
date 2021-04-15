@@ -159,8 +159,8 @@ export const getProcessStations = (process, routes) => {
         } = load
 
         // if unloadStationId and loadStationId exist, add to stationIds obj
-        if (unloadStationId) stationIds[unloadStationId] = true
         if (loadStationId) stationIds[loadStationId] = true
+        if (unloadStationId) stationIds[unloadStationId] = true
     })
 
     // return stationIds obj

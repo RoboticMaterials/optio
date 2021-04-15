@@ -270,7 +270,7 @@ CardZone.propTypes = {
 	processId: PropTypes.string,
 	lotFilterValue: PropTypes.any,
 	showCardEditor: PropTypes.bool,
-	maxHeight: PropTypes.string
+	maxHeight: PropTypes.any
 }
 
 // Specifies the default values for props:
@@ -279,7 +279,7 @@ CardZone.defaultProps = {
 	processId: null,
 	setShowCardEditor: () => {},
 	showCardEditor: false,
-	maxHeight: "30rem",
+	maxHeight: null,
 	lotFilterValue: "",
 	selectedFilterOption: LOT_FILTER_OPTIONS.name,
 	sortMode: LOT_FILTER_OPTIONS.name,
