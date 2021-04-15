@@ -34,7 +34,7 @@ export const Card = styled.div`
     // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
     padding: 0.5rem;
     border-radius: 0.4rem;
-    
+
     margin-bottom: 0.5rem;
     margin-top: 0.5rem
 `
@@ -48,7 +48,6 @@ export const ItemContainer = styled.div`
 
     padding: 0.8rem;
 
-    justify-content: space-between;
 
 `
 
@@ -74,7 +73,7 @@ export const ListItem = styled.div`
     border: 0.1rem solid;
 
     border-color: ${props => props.error ? props.theme.error : 'transparent'};
-    
+
 
 `
 export const ListItemTitle = styled.h1`
