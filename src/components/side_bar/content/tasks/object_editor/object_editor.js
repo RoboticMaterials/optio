@@ -59,7 +59,7 @@ const ObjectEditor = (props) => {
 
                 />
                 {!editingObject ?
-                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Pick Object</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%', textAlign: "start"}}>Pick Object</styled.ListItemTitle>
                   :
                   <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%', textAlign: "start"}}>Editing Object</styled.ListItemTitle>
 
