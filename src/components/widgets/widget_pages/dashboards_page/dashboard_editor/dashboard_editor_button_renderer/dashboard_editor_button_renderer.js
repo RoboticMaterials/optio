@@ -34,7 +34,6 @@ const DashboardEditorButtonRenderer = ((props) => {
             lockAxis={"y"}
         >
             {buttons.map((button, ind) => {
-                console.log("weeeee")
 
                     const {
                         color: buttonColor,
