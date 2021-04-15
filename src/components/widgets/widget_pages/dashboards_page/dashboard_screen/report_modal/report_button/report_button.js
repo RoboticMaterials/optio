@@ -56,9 +56,9 @@ ReportButton.propTypes = {
 	color: PropTypes.string,
 	onClick: PropTypes.func,
 	className: PropTypes.string,
-}
+};
 
-ReportButton.propTypes = {
+ReportButton.defaultProps = {
 	id: "",
 	label: "",
 	iconClassName: "",
