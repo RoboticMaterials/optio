@@ -20,7 +20,6 @@ import { updatePositions, postPosition, setPositionAttributes, setSelectedPositi
 import * as deviceActions from '../../redux/actions/devices_actions'
 
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
-import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
@@ -82,7 +81,6 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
-      disableBrowserBackButton()
 
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map

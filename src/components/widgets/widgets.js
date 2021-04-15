@@ -74,9 +74,6 @@ const Widgets = (props) => {
         }
     }, [])
 
-    useEffect(() => {
-    }, [widgetPage])
-
 
     /**
      * Closes the widget
