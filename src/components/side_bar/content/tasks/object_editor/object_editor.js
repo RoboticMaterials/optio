@@ -64,13 +64,17 @@ const ObjectEditor = (props) => {
                   <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%', textAlign: "start"}}>Editing Object</styled.ListItemTitle>
 
                 }
-                {!editingObject &&
+                {!editingObject ?
                   <PlusButton
                     style={{marginTop: '0.2rem', color: theme.main.schema['objects'].solid}}
                     onClick = {()=>{
                       dispatchSetEditingObject(true)
                       onAddObject()
                     }}
+                  />
+                  :
+                  <div
+                    style = {{width: "2.5rem"}}
                   />
                 }
 
