@@ -16,7 +16,6 @@ import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actio
 import { setOpen } from "../../redux/actions/sidebar_actions"
 
 import { deepCopy } from '../../methods/utils/utils'
-import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
@@ -68,7 +67,6 @@ const Widgets = (props) => {
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
 
-        disableBrowserBackButton()
         // setTimeout(() => dispatchWidgetLoaded(true), 100)
         dispatchWidgetLoaded(true)
         return () => {
@@ -77,7 +75,6 @@ const Widgets = (props) => {
     }, [])
 
     useEffect(() => {
-        disableBrowserBackButton()
     }, [widgetPage])
 
 
