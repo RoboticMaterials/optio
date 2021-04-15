@@ -11,7 +11,6 @@ import './App.css';
 import useWindowSize from './hooks/useWindowSize'
 
 import * as styled from './App.style'
-import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 // Import API
 import { deleteLocalSettings } from './api/local_api'
