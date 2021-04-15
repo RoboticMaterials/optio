@@ -404,7 +404,6 @@ const Cards = (props) => {
                             handleAddLotClick={handleAddLotClick}
                             setSelectedCards={setSelectedCards}
                             selectedCards={selectedCards}
-                            maxHeight={(zoneSize.height - 75) + "px"} // maxHeight is set equal to size of parent div with some value subtracted as padding. NOTE: setting height to 100% doesn't currently work for this
                             setShowCardEditor={onShowCardEditor}
                             showCardEditor={showCardEditor}
                             handleCardClick={handleCardClick}
