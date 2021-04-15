@@ -242,7 +242,7 @@ const CalendarPlaceholder = (props) => {
 // Specifies propTypes
 CalendarPlaceholder.propTypes = {
 	closeOnSelect: PropTypes.bool,
-	PlaceholderButton: PropTypes.elementType
+	PlaceholderButton: PropTypes.any
 }
 
 // Specifies the default values for props:
