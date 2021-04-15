@@ -223,7 +223,7 @@ const LoadUnloadFields = (props) => {
             {(!values.handoff || isMiRTask(selectedTask)) &&
 
                 <styled.Card dark={isProcess}>
-                    <styled.Header>Unload</styled.Header>
+                    <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Unload</styled.Header>
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
                         schema={'tasks'}
