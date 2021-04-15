@@ -38,10 +38,8 @@ const ColorField = (props) => {
 					color={ field.value }
 					onChangeComplete={(color)=>{
 						setFieldValue(field.name, color.hex);
-						console.log("ColorField: onChangeComplete: color",color)
 					}}
 					onChange={(color)=>{
-						console.log("ColorField: onChange: color",color)
 						// setFieldValue(field.name, color.hex);
 					}}
 					style={{zIndex: 10}}
