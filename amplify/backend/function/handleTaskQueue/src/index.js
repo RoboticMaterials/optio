@@ -28,7 +28,6 @@ const tableNames = {
 }
 
 const URL = require('url');
-const fetch = require('node-fetch');
 const axios = require('axios');
 
 const docClient = new AWS.DynamoDB.DocumentClient({

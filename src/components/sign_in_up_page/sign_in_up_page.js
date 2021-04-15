@@ -24,7 +24,10 @@ import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_
 
 // Get Auth from amplify
 import { Auth, API } from "aws-amplify";
-import { usersbyId } from "../../graphql/queries";
+import {mapsByOrgId, usersbyId} from "../../graphql/queries";
+import {createBlankMap, manageTaskQueue} from "../../graphql/mutations";
+import {getMaps} from "../../api/map_api";
+import {streamlinedGraphqlCall, TRANSFORMS} from "../../methods/utils/api_utils";
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -66,6 +69,32 @@ const SignInUpPage = (props) => {
                 query: usersbyId,
                 variables: { id: user.sub }
             })
+
+            console.log("checkForUserInDB data",data)
+            // data:
+            //     UsersbyId:
+            //         items: Array(1)
+            // 0:
+            // createdAt: "2021-04-14T22:32:52.221Z"
+            // id: "e28dc68b-858f-4ec7-89ff-64c3b9fd5408"
+            // organizationI
+
+            const organizationId = data?.UsersbyId?.items[0]?.organizationId
+
+            // get the maps for this org
+            // const maps = await streamlinedGraphqlCall(TRANSFORMS.QUERY, mapsByOrgId, { organizationId })
+            // console.log("checkForUserInDB maps",maps)
+
+            // if no map then create one
+            // if(!(maps.length)){
+
+            console.log("sign in up organizationId",organizationId)
+                await API.graphql({
+                    query: createBlankMap,
+                    variables: { organizationId: "baca" }
+                })
+
+            // }
 
             if(data.data.UsersbyId.items.length){
                 return true
