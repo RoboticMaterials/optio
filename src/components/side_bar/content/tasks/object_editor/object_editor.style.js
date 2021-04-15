@@ -96,6 +96,7 @@ export const ListItemTitle = styled.h1`
     text-align: center;
 
 `
+
 export const ListItemIcon = styled.i`
 
     font-size: 1.3rem;
