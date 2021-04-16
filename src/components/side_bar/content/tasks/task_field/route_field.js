@@ -159,7 +159,6 @@ const TaskField = (props) => {
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
         if (selectedTask && selectedTask.load) {
-
             setFieldValue(fieldParent ? `${fieldParent}.load.station` : "load.station", selectedTask.load.station, false)
             setFieldValue(fieldParent ? `${fieldParent}.load.position` : "load.position", selectedTask.load.position, false)
         }
@@ -289,6 +288,12 @@ const TaskField = (props) => {
         }
     }, [obj?.description, obj?.name])
 
+    useEffect(() => {
+      if(contentType === "existing" && selectedTask.load.station!== null){
+        setContentType("new")
+      }
+    }, [selectedTask])
+
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
@@ -368,6 +373,7 @@ const TaskField = (props) => {
       setShowObjectSelector(false)
       dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+      setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
 
     const onObjectBackClick = () => {
@@ -695,7 +701,7 @@ const TaskField = (props) => {
                                                             <styled.ListItemIcon
                                                                 className='fas fa-box'
                                                             />
-                                                            <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name : ""}</styled.ListItemTitle>
+                                                            <styled.ListItemTitle style = {{paddingLeft: "1rem", flex: "1"}}>{routeObject ? objects[routeObject._id].name : ""}</styled.ListItemTitle>
 
                                                             <styled.Icon
                                                                 className='fas fa-exchange-alt'
@@ -704,7 +710,7 @@ const TaskField = (props) => {
                                                             />
                                                             <styled.Icon
                                                                 className='far fa-minus-square'
-                                                                style={{ color: 'white', marginLeft: '0.5rem' }}
+                                                                style={{ color: 'white', marginLeft: '1rem' }}
                                                                 onClick={() => {
                                                                     dispatchSetRouteObject(null)
                                                                     dispatchSetSelectedObject(null)

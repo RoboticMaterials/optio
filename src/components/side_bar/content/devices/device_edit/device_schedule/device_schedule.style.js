@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 
 import * as style from '../device_edit.style'
 // import * as style from '../../devices_content.style'
+import { columnContainer } from '../../../../../../common_css/common_css'
 
 
 export const Container = styled(style.Container)`
@@ -21,7 +22,8 @@ export const RowContainer = styled(style.RowContainer)`
     justify-content: space-between;
 `
 
-export const ColumnContainer = styled(style.ColumnContainer)`
+export const ColumnContainer = styled.div`
+    ${columnContainer}
 `
 
 export const ScheduleContainer = styled(style.SectionsContainer)`

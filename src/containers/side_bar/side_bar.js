@@ -17,6 +17,7 @@ import ProcessesContent from '../../components/side_bar/content/processes/proces
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import Cards from "../../components/side_bar/content/cards/cards";
+import Statistics from '../../components/side_bar/content/statistics/statistics'
 
 // Import Actions
 import { setEditingStation, setSelectedStation } from '../../redux/actions/stations_actions'
@@ -28,6 +29,8 @@ import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
+
+import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 const SideBar = (props) => {
 
@@ -70,7 +73,8 @@ const SideBar = (props) => {
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
     const url = useLocation().pathname
-    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings',]
+
+    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings', 'statistics']
 
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
@@ -78,12 +82,17 @@ const SideBar = (props) => {
         dispatchSetWidth(newWidth)
     }
     useEffect(() => {
+        disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
             window.removeEventListener('resize', boundToWindowSize, { passive: true })
         }
     }, [])
+
+    useEffect(() => {
+        disableBrowserBackButton()
+    }, [url])
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
@@ -126,14 +135,14 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-        if ((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
+        if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
 
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 
         }
-        else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
+        else if ((((prevSubpage === "lots") || (prevSubpage === 'statistics') || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots" || prevPage === "statistics")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setPageWidth(prevWidth)
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
@@ -211,6 +220,9 @@ const SideBar = (props) => {
             if (subpage === "lots") {
                 content = <Cards id={id} />
             }
+            else if (subpage === 'statistics') {
+                content = <Statistics />
+            }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
             }
@@ -237,6 +249,10 @@ const SideBar = (props) => {
 
         case 'settings':
             content = <Settings />
+            break
+
+        case 'statistics':
+            content = <Statistics />
             break
 
         default:

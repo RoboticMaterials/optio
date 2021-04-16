@@ -14,6 +14,7 @@ export const SectionsContainer = styled(style.SettingsSectionsContainer)`
     border-radius: .5rem;
     margin-bottom: 1rem;
     box-shadow: ${props => props.theme.cardShadow};
+    min-width: 21rem;
 `
 
 export const Label = styled(style.SettingsLabel)`

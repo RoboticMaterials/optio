@@ -59,18 +59,22 @@ const ObjectEditor = (props) => {
 
                 />
                 {!editingObject ?
-                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Pick Object</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%', textAlign: "start"}}>Pick Object</styled.ListItemTitle>
                   :
-                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Editing Object</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%', textAlign: "start"}}>Editing Object</styled.ListItemTitle>
 
                 }
-                {!editingObject &&
+                {!editingObject ?
                   <PlusButton
                     style={{marginTop: '0.2rem', color: theme.main.schema['objects'].solid}}
                     onClick = {()=>{
                       dispatchSetEditingObject(true)
                       onAddObject()
                     }}
+                  />
+                  :
+                  <div
+                    style = {{width: "2.5rem"}}
                   />
                 }
 
@@ -105,7 +109,7 @@ const ObjectEditor = (props) => {
             </styled.ScrollableContainer>
             :
             <>
-                  <styled.ListItemTitle style = {{marginBottom: '0.2rem'}}>Name</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{marginBottom: '0.2rem', textAlign: "start", paddingLeft: "0.2rem"}}>Name</styled.ListItemTitle>
 
                   <styled.RowContainer style = {{paddingLeft:'0.5rem', paddingRight: '0.5rem'}}>
                     <TextField
@@ -119,7 +123,7 @@ const ObjectEditor = (props) => {
                     />
                   </styled.RowContainer>
 
-                  <styled.ListItemTitle style = {{marginBottom: '0.2rem', marginTop: '0.5rem'}}>Description</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{marginBottom: '0.2rem', marginTop: '0.5rem', textAlign: "start", paddingLeft: "0.2rem"}}>Description</styled.ListItemTitle>
 
                   <styled.RowContainer style = {{paddingLeft:'0.5rem', paddingRight: '0.5rem'}}>
                     <TextField

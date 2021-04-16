@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
-
 // import components
 import WidgetPages from './widget_pages/widget_pages'
 import WidgetButton from './widget_button/widget_button'
@@ -17,8 +16,6 @@ import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actio
 import { setOpen } from "../../redux/actions/sidebar_actions"
 
 import { deepCopy } from '../../methods/utils/utils'
-
-
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
@@ -411,45 +408,48 @@ const Widgets = (props) => {
 
                     />
                 }
-                <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
-                    {!widgetPage && !!selectedLocation &&
-                        <>
-                            {selectedLocation.schema == "temporary_position" ?
-                                <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
-                                :
-                                <>
-                                    {!!selectedLocation.parent ?
-                                        <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
-                                        :
-                                        <styled.RowContainer>
-                                            <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
-                                            <styled.EditIcon
-                                                className='fas fa-edit'
-                                                styled={{ color: '#ff1818' }}
-                                                onClick={() => onClickLocation()}
-                                            />
-                                        </styled.RowContainer>
+                {!!selectedLocation &&
+                  <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
+                      {!widgetPage && !!selectedLocation &&
+                          <>
+                              {selectedLocation.schema == "temporary_position" ?
+                                  <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
+                                  :
+                                  <>
+                                      {!!selectedLocation.parent ?
+                                          <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
+                                          :
+                                          <styled.RowContainer>
+                                              <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                              <styled.EditIcon
+                                                  className='fas fa-edit'
+                                                  styled={{ color: '#ff1818' }}
+                                                  onClick={() => onClickLocation()}
+                                              />
+                                          </styled.RowContainer>
 
-                                    }
-                                </>
-                            }
-                        </>
-                    }
-
-
-
-                    <styled.WidgetButtonContainer widgetPage={widgetPage}>
-                        {renderWidgetButtons}
-                    </styled.WidgetButtonContainer>
+                                      }
+                                  </>
+                              }
+                          </>
+                      }
 
 
-                    {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
-                    {/* {!widgetPage &&
-                        statistics
-                    } */}
 
-                    {onWidgetPageOpen()}
-                </styled.WidgetContainer>
+                      <styled.WidgetButtonContainer widgetPage={widgetPage}>
+                          {renderWidgetButtons}
+                      </styled.WidgetButtonContainer>
+
+
+                      {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
+                      {/* {!widgetPage &&
+                          statistics
+                      } */}
+
+                      {onWidgetPageOpen()}
+                  </styled.WidgetContainer>
+                }
+
 
 
 

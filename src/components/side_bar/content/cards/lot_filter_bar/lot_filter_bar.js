@@ -471,7 +471,7 @@ const LotFilterBar = (props) => {
 LotFilterBar.propTypes = {
     setLotFilterValue: PropTypes.func,
     lotFilterValue: PropTypes.any,
-    selectedFilterOption: PropTypes.func,
+    selectedFilterOption: PropTypes.object,
     setSelectedFilterOption: PropTypes.func,
     shouldFocusLotFilter: PropTypes.bool,
 }

@@ -495,26 +495,39 @@ export const ProcessField = (props) => {
             setEditingTask("newRoute")
         }
 
-        return (
-            <svg transform="rotate(180)" height="3.8rem" style={{ margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer' }} onClick={onAddToEndClick}>
-                <svg style={{ overflow: 'visible' }} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
-                    <defs>
-                        <linearGradient id="processGrad" x1="50%" y1="100%" x2="50%" y2="0%">
-                            <stop offset="0%" stopColor="rgba(255, 196, 0, 1)" />
-                            <stop offset="50%" stopColor="rgba(255, 204, 0, 1)" />
-                            <stop offset="100%" stopColor="rgba(255, 196, 0, 1)" />
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#processGrad)" d={AddRouteButtonPath} />
-                </svg>
-                <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="rotate(180) translate(-60, 0)">
-                    {/* <styled.SVGText x="50%" y="50%" width="20%" dominant-baseline="middle" text-anchor="middle">Add new route to End</styled.SVGText> */}
-                    <foreignObject x="50%" y="5%" height="8rem" width="8rem">
-                        <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new route to end</p>
-                    </foreignObject>
-                </g>
-            </svg>
-        )
+        if(values.routes.length>0){
+          return (
+              <svg transform="rotate(180)" height="3.8rem" style={{ margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer' }} onClick={onAddToEndClick}>
+                  <svg style={{ overflow: 'visible' }} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
+                      <defs>
+                          <linearGradient id="processGrad" x1="50%" y1="100%" x2="50%" y2="0%">
+                              <stop offset="0%" stopColor="rgba(255, 196, 0, 1)" />
+                              <stop offset="50%" stopColor="rgba(255, 204, 0, 1)" />
+                              <stop offset="100%" stopColor="rgba(255, 196, 0, 1)" />
+                          </linearGradient>
+                      </defs>
+                      <path fill="url(#processGrad)" d={AddRouteButtonPath} />
+                  </svg>
+                  <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="rotate(180) translate(-60, 0)">
+                      {/* <styled.SVGText x="50%" y="50%" width="20%" dominant-baseline="middle" text-anchor="middle">Add new route to End</styled.SVGText> */}
+                      <foreignObject x="50%" y="5%" height="8rem" width="8rem">
+                          <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new route to end</p>
+                      </foreignObject>
+                  </g>
+              </svg>
+          )
+        }
+        else {
+          return (
+            <Button
+                schema={'processes'}
+                onClick={onAddToEndClick}
+            >
+                Add Route
+            </Button>
+          )
+        }
+
 
     }
 
@@ -534,19 +547,22 @@ export const ProcessField = (props) => {
             setEditingTask("newRoute")
         }
 
-        return (
-            <svg height="3.8rem" style={{ margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer' }} onClick={onAddToBeginningClick}>
-                <svg style={{ overflow: 'visible' }} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
-                    <path fill="url(#processGrad)" d={AddRouteButtonPath} />
-                </svg>
-                <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="translate(-60, 10)">
-                    {/* <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add new route to Start</styled.SVGText> */}
-                    <foreignObject x="50%" y="5%" height="8rem" width="8rem">
-                        <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new <br/> route to start</p>
-                    </foreignObject>
-                </g>
-            </svg>
-        )
+        if(values.routes.length>0){
+          return (
+              <svg height="3.8rem" style={{ margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer' }} onClick={onAddToBeginningClick}>
+                  <svg style={{ overflow: 'visible' }} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
+                      <path fill="url(#processGrad)" d={AddRouteButtonPath} />
+                  </svg>
+                  <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="translate(-60, 10)">
+                      {/* <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add new route to Start</styled.SVGText> */}
+                      <foreignObject x="50%" y="5%" height="8rem" width="8rem">
+                          <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new <br/> route to start</p>
+                      </foreignObject>
+                  </g>
+              </svg>
+          )
+        }
+        else return null
     }
 
     const getChildren = () => {
