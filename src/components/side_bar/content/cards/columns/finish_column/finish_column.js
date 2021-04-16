@@ -36,6 +36,7 @@ const FinishColumn = ((props) => {
 						<styled.StationHeader>
 							<i className="fa fa-chevron-right" aria-hidden="true"
 							   onClick={() => setCollapsed(false)}
+								 style = {{cursor: "pointer"}}
 							/>
 						</styled.StationHeader>
 					)
@@ -48,6 +49,7 @@ const FinishColumn = ((props) => {
 							}}>
 								<i className="fa fa-chevron-down" aria-hidden="true"
 								   onClick={() => setCollapsed(true)}
+									 style = {{cursor: "pointer"}}
 								/>
 
 								<styled.LabelContainer>

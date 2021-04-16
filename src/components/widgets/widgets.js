@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
-
 // import components
 import WidgetPages from './widget_pages/widget_pages'
 import WidgetButton from './widget_button/widget_button'
@@ -17,8 +16,6 @@ import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actio
 import { setOpen } from "../../redux/actions/sidebar_actions"
 
 import { deepCopy } from '../../methods/utils/utils'
-
-
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'

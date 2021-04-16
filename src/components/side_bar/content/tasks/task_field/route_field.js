@@ -376,6 +376,7 @@ const TaskField = (props) => {
       setShowObjectSelector(false)
       dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+      setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
 
     const onObjectBackClick = () => {
@@ -408,7 +409,7 @@ const TaskField = (props) => {
             const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
             postDashboardPromise.then(async postedDashboard => {
                 alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                updatedStation.dashboards = [postedDashboard.id.$oid]
+                updatedStation.dashboards = [postedDashboard.id]
                 await dispatchPutStation(updatedStation, updatedStation.id)
 
             })
@@ -423,9 +424,7 @@ const TaskField = (props) => {
             taskId: selectedTask.id
         }
         updatedDashboard.buttons.push(newDashboardButton)
-        dispatchPutDashboard(updatedDashboard, updatedDashboard.id.$oid)
-
-        // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
+        dispatchPutDashboard(updatedDashboard, updatedDashboard.id)
     }
 
 
@@ -703,7 +702,7 @@ const TaskField = (props) => {
                                                             <styled.ListItemIcon
                                                                 className='fas fa-box'
                                                             />
-                                                            <styled.ListItemTitle>{routeObject ? objects[routeObject.id].name : ""}</styled.ListItemTitle>
+                                                            <styled.ListItemTitle style = {{paddingLeft: "1rem", flex: "1"}}>{routeObject ? objects[routeObject.id].name : ""}</styled.ListItemTitle>
 
                                                             <styled.Icon
                                                                 className='fas fa-exchange-alt'
@@ -712,7 +711,7 @@ const TaskField = (props) => {
                                                             />
                                                             <styled.Icon
                                                                 className='far fa-minus-square'
-                                                                style={{ color: 'white', marginLeft: '0.5rem' }}
+                                                                style={{ color: 'white', marginLeft: '1rem' }}
                                                                 onClick={() => {
                                                                     dispatchSetRouteObject(null)
                                                                     dispatchSetSelectedObject(null)
@@ -728,7 +727,6 @@ const TaskField = (props) => {
                                                     style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
                                                     schema={'objects'}
                                                     secondary
-                                                    // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                                     onClick={() => setShowObjectSelector(!showObjectSelector)}
                                                 >
                                                     Choose an Object...

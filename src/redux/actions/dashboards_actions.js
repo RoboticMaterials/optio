@@ -117,8 +117,8 @@ export const putDashboard = (dashboard, ID) => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
         }
-        function onSuccess(updatedDashboard) {
-            dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
+        async function onSuccess(updatedDashboard) {
+            await dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
             return updatedDashboard;
         }
         function onError(error) {
