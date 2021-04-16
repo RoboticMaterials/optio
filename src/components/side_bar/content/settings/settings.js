@@ -388,8 +388,6 @@ const Settings = () => {
     
           history.push('/')
 
-          window.location.reload()
-
         };
 
         return (

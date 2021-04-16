@@ -70,7 +70,7 @@ const FirstSignIn = () => {
                 })
 
                 // if no map then create one
-                if(maps.data.MapsByOrgId.items.length === 0){
+                if(maps.data?.MapsByOrgId?.items.length === 0){
                     await API.graphql({
                         query: createBlankMap,
                         variables: { organizationId: userData.data.createUser.organizationId }

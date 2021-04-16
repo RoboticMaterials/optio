@@ -15,6 +15,8 @@ import errorLog from './errorLogging'
 // import the API category from Amplify library
 import { API } from 'aws-amplify'
 
+import moment from 'moment-timezone'
+
 // import the GraphQL queries, mutations and subscriptions
 import { createReportEvent, reportStats } from '../graphql/mutations.ts'
 import { reportEventByOrgId } from '../graphql/queries.ts'
@@ -22,10 +24,7 @@ import { reportEventByOrgId } from '../graphql/queries.ts'
 // to get user org id
 import getUserOrgId from './user_api'
 
-import axios from 'axios';
-
-import { apiIPAddress } from '../settings/settings'
-const operator = 'report_events'
+import { getSettings } from './settings_api'
 
 export async function getReportEvents() {
     try {
@@ -81,11 +80,16 @@ export async function putReportEvent(reportEvent, ID) {
 export async function getReportAnalytics(stationId, timeSpan) {
     try {
 
+        const settings = await getSettings()
+
+        const timeZone = settings.timezone ? settings.timezone.label : await moment.tz.guess()
+
         const dataJson = await API.graphql({
             query: reportStats,
             variables: { 
                 stationId: stationId,
-                timeSpan: timeSpan.timespan, 
+                timeSpan: timeSpan.timespan,
+                timeZone: timeZone.label,
                 index: 0
              }
         })
@@ -94,8 +98,6 @@ export async function getReportAnalytics(stationId, timeSpan) {
             reports: JSON.parse(dataJson.data.reportStats.throughPut),
             date_title: dataJson.data.reportStats.date
           }
-
-        console.log(data);
 
         return data;
 

@@ -27,6 +27,7 @@
     "local-storage": "^2.0.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.7.0",
+    "moment-timezone": "^0.5.33",
     "nivo": "^0.31.0",
     "normalizr": "^3.6.1",
     "popper.js": "^1.16.0",

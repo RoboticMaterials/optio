@@ -14,6 +14,8 @@ import errorLog from './errorLogging'
 
 import getUserOrgId from './user_api'
 
+import moment from 'moment-timezone'
+
 // import the API category from Amplify library
 import { API } from 'aws-amplify'
 
@@ -23,6 +25,7 @@ import { createStation, updateStation, stationStats } from '../graphql/mutations
 import { deleteStation as deleteStationByID } from '../graphql/mutations'
 import {streamlinedGraphqlCall, TRANSFORMS} from "../methods/utils/api_utils";
 import {parseStation} from "../methods/utils/data_utils";
+import { getSettings } from './settings_api'
 
 export async function getStations() {
   try {
@@ -34,7 +37,6 @@ export async function getStations() {
         parseStation
     )
 
-    console.log("getStations stations",stations)
     // Success 🎉;
     return stations
   } catch (error) {
@@ -129,11 +131,16 @@ export async function putStation(station, ID) {
 export async function getStationAnalytics(id, timeSpan) {
   try {
 
+    const settings = await getSettings()
+
+    const timeZone = settings.timezone ? settings.timezone.label : await moment.tz.guess()
+
     const dataJ = await API.graphql({
       query: stationStats,
-      variables: { 
+      variables: {
           stationId: id,
-          timeSpan: timeSpan.timespan, 
+          timeSpan: timeSpan.timespan,
+          timeZone: timeZone,
           index: timeSpan.index
       }
     })
@@ -144,8 +151,8 @@ export async function getStationAnalytics(id, timeSpan) {
     }
 
     // Success 🎉
-
     return data;
+    
   } catch (error) {
     // Error 😨
     errorLog(error)

@@ -39,7 +39,6 @@ export async function getSettings() {
         let settings = res.data.SettingsByOrgId.items[0]
 
         if(settings !== undefined){
-
             let GQLdata = {
                 ...settings,
                 loggers: JSON.parse(settings.loggers),
@@ -75,7 +74,7 @@ export async function postSettings(settings) {
             variables: { input: input }
         })
 
-        return dataJson.data.createTask;
+        return dataJson.data.createSettings;
     } catch (error) {
         // Error 😨
         errorLog(error)
@@ -87,13 +86,28 @@ export async function putSettings(settings) {
 
         const userOrgId = await getUserOrgId()
 
-        if(settings.id){
+        const settingsStuff = await getSettings()
 
-            const input = {
-                ...settings,
-                loggers: JSON.stringify(settings.loggers),
-                shiftDetails: JSON.stringify(settings.shiftDetails),
-                timezone: JSON.stringify(settings.timezone)
+        if(settingsStuff !== null){
+
+            let input
+
+            if(settings.id){
+                input = {
+                    ...settings,
+                    organizationId: userOrgId,
+                    loggers: JSON.stringify(settings.loggers),
+                    shiftDetails: JSON.stringify(settings.shiftDetails),
+                    timezone: JSON.stringify(settings.timezone)
+                }    
+            }else{
+                input = {
+                    ...settingsStuff,
+                    organizationId: userOrgId,
+                    loggers: JSON.stringify(settingsStuff.loggers),
+                    shiftDetails: JSON.stringify(settingsStuff.shiftDetails),
+                    timezone: JSON.stringify(settingsStuff.timezone)
+                }    
             }
 
             delete input.createdAt
@@ -104,7 +118,7 @@ export async function putSettings(settings) {
                 variables: { input: input }
             })
 
-            return dataJson.data.createTask;
+            return dataJson.data.updateSettings;
 
         }else{
             postSettings({

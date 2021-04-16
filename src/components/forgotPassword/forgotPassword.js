@@ -59,7 +59,7 @@ const ForgotPassword = (props) => {
         // Collect confirmation code and new password, then
         Auth.forgotPasswordSubmit(email, verification, password)
             .then(() =>{
-                setErrorText('You hav sucessfully changed your pasword!')
+                setErrorText('You have sucessfully changed your pasword!')
                 history.push('/')
             })
             .catch(err => console.log(err));

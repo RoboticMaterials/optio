@@ -1831,6 +1831,7 @@ export type TaskStatsMutation = {
 export type StationStatsMutationVariables = {
   stationId?: string,
   timeSpan?: string,
+  timeZone?: string,
   index?: number,
   sortKey?: string | null,
 };
@@ -1848,6 +1849,7 @@ export type StationStatsMutation = {
 export type ReportStatsMutationVariables = {
   stationId?: string,
   timeSpan?: string,
+  timeZone?: string,
   index?: number,
 };
 

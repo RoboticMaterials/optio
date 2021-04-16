@@ -44,9 +44,6 @@ const SCREENS = {
 }
 
 const ListView = (props) => {
-    const {
-
-    } = props
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -80,9 +77,9 @@ const ListView = (props) => {
 
     // If there's no status available then set to blank object.
     try {
-        pause_status = status.pause_status;
+        pause_status = status?.pause_status;
     } catch (e) {
-        pause_status = status.pause_status;
+        pause_status = status?.pause_status;
     }
 
     // Handles the icon type being displayed based on the pause_status in status

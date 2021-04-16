@@ -54,12 +54,14 @@ export const stationStats = /* GraphQL */ `
   mutation StationStats(
     $stationId: ID!
     $timeSpan: String!
+    $timeZone: String!
     $index: Int!
     $sortKey: String
   ) {
     stationStats(
       stationId: $stationId
       timeSpan: $timeSpan
+      timeZone: $timeZone
       index: $index
       sortKey: $sortKey
     ) {
@@ -71,8 +73,18 @@ export const stationStats = /* GraphQL */ `
   }
 `;
 export const reportStats = /* GraphQL */ `
-  mutation ReportStats($stationId: ID!, $timeSpan: String!, $index: Int!) {
-    reportStats(stationId: $stationId, timeSpan: $timeSpan, index: $index) {
+  mutation ReportStats(
+    $stationId: ID!
+    $timeSpan: String!
+    $timeZone: String!
+    $index: Int!
+  ) {
+    reportStats(
+      stationId: $stationId
+      timeSpan: $timeSpan
+      timeZone: $timeZone
+      index: $index
+    ) {
       date
       throughPut
     }
