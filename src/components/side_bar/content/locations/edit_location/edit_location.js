@@ -36,6 +36,16 @@ const EditLocation = (props) => {
     const dispatch = useDispatch()
     let selectedLocationRef = useRef()
     let selectedStationChildrenCopyRef = useRef()
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {}
+    } = current || {}
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -105,6 +115,15 @@ const EditLocation = (props) => {
     useEffect(() => {
         selectedStationChildrenCopyRef.current = selectedStationChildrenCopy
     }, [selectedStationChildrenCopy])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+        dispatchPageDataChanged(true)
+      }
+      else{
+        dispatchPageDataChanged(false)
+      }
+    }, [values])
 
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
@@ -412,6 +431,7 @@ const EditLocation = (props) => {
                     validateOnChange={true}
                     validateOnMount={true}
                     validateOnBlur={true}
+                    innerRef = {formRef}
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
                     validationSchema={locationSchema(stations, selectedLocation)}
@@ -430,13 +450,6 @@ const EditLocation = (props) => {
                             initialValues,
                             values
                         } = formikProps
-
-                        if(JSON.stringify(initialValues)!==JSON.stringify(values)){
-                          dispatchPageDataChanged(true)
-                        }
-                        else{
-                          dispatchPageDataChanged(false)
-                        }
 
                         return (
                             <Form

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,6 +54,18 @@ const DashboardEditor = (props) => {
         dashboard,
         showSidebar,
     } = props
+
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {}
+    } = current || {}
+
     const history = useHistory()
     const dispatch = useDispatch()
     const params = useParams()
@@ -77,6 +89,15 @@ const DashboardEditor = (props) => {
           dispatchPageDataChanged(false)
         }
     }, [])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+        dispatchPageDataChanged(true)
+      }
+      else{
+        dispatchPageDataChanged(false)
+      }
+    }, [values])
    /*
     * Returns initialValues object for Formik
     */
@@ -195,6 +216,7 @@ const DashboardEditor = (props) => {
     return (
         <Formik
             initialValues={getInitialValues()}
+            innerRef = {formRef}
             initialTouched={{
                 name: false,
                 locked: false,

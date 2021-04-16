@@ -42,6 +42,7 @@ const SideBar = (props) => {
         subpage,
         id
     } = params
+
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))

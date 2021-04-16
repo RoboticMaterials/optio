@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
@@ -27,6 +27,17 @@ const ProcessForm = (props) => {
 	const {
 		toggleEditingProcess,
 	} = props
+
+	const formRef = useRef(null)	// gets access to form state
+
+	const {
+			current
+	} = formRef || {}
+
+	const {
+			values = {},
+			initialValues = {}
+	} = current || {}
 
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 
@@ -57,6 +68,26 @@ const ProcessForm = (props) => {
 			dispatchSetSelectedProcess(null)
 		}
 	}, []);
+
+	useEffect(() => {
+		var {
+			newRoute,
+			...remainingInitialValues
+		} = initialValues
+
+		var {
+			newRoute,
+			changed,
+			...remainingValues
+		} = values
+
+		if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
+			dispatchPageDataChanged(true)
+		}
+		else{
+			dispatchPageDataChanged(false)
+		}
+	}, [values])
 
 	const handleSave = async (values, close) => {
 
@@ -212,6 +243,7 @@ const ProcessForm = (props) => {
 
 			// validation control
 			validationSchema={processSchema}
+			innerRef = {formRef}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
@@ -250,23 +282,6 @@ const ProcessForm = (props) => {
 					initialValues,
 				} = formikProps
 
-				var {
-					newRoute,
-					...remainingInitialValues
-				} = initialValues
-
-				var {
-					newRoute,
-					changed,
-					...remainingValues
-				} = values
-
-				if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
-					dispatchPageDataChanged(true)
-				}
-				else{
-					dispatchPageDataChanged(false)
-				}
 
 				return(
 					<ProcessField
