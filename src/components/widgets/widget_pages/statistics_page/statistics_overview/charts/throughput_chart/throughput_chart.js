@@ -213,7 +213,7 @@ const ThroughputChart = (props) => {
             setLineData([])
 
         }
-        else if(!!data.throughPut) {
+        else if(!!data?.throughPut) {
             setLineData(data.throughPut)
             setThroughputData([])
         }
