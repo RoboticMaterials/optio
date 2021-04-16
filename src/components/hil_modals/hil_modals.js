@@ -427,7 +427,7 @@ const HILModals = (props) => {
         // If its a load, then add a quantity to the response
         if (hilLoadUnload === 'load') {
             // If track quantity then add quantity, or if noLotSelected then use quantity
-            if (!!selectedTask.track_quantity || !!noLotsSelected) {
+            if (!!selectedTask.track_quantity || !!noLotsSelected || trackQuantity) {
                 newItem.quantity = quantity
             }
 
