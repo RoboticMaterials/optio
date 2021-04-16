@@ -76,7 +76,7 @@ const LotContainer = (props) => {
             }}
             
             {...rest}
-            containerStyle={{width: '80%', maxWidth: "10rem", margin: '.5rem auto .5rem auto'}}
+            containerStyle={{width: '80%', margin: '.5rem auto .5rem auto'}}
         />
     );
 };

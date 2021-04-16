@@ -187,7 +187,7 @@ const LotFilterBar = (props) => {
                             {
                                 [VALUE_MODES.FLAGS]:
                                     <div
-                                        style={{flex: 3, background: "pink"}}
+                                        style={{flex: 3}}
                                     >
                                         <DropDownSearch
                                             multi={true}

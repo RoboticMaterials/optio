@@ -90,10 +90,6 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  // border-top: 1px solid ${props => props.theme.bg.tertiary};
-  // max-height: 2rem;
-  // overflow: auto;
-  
 `
 
 export const NameContainer = styled.div`
