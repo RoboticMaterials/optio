@@ -4,18 +4,21 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import * as styled from '../charts.style'
 import { ThemeContext } from 'styled-components';
 
+// Import Basic Components
+import SortDropdown from '../../../../../../basic/sort_dropdown/sort_dropdown'
+
 // Import components
-import LineThroughputChart from './line_throughput_chart'
+import LineThroughputChart from './line_throughput_chart/line_throughput_chart'
 
 // Import Actions
 import { getStationAnalytics } from '../../../../../../../redux/actions/stations_actions'
 
 // Import Charts
 import BarChart from '../../../chart_types/bar_chart'
-import {useSelector} from "react-redux";
-import {isObject} from "../../../../../../../methods/utils/object_utils";
-import {capitalizeFirstLetter} from "../../../../../../../methods/utils/string_utils";
-import {TIME_SPANS} from "../../statistics_overview";
+import { useSelector } from "react-redux";
+import { isObject } from "../../../../../../../methods/utils/object_utils";
+import { capitalizeFirstLetter } from "../../../../../../../methods/utils/string_utils";
+import { TIME_SPANS } from "../../statistics_overview";
 
 const minHeight = 0
 
@@ -25,39 +28,52 @@ const ThroughputChart = (props) => {
 
     const {
         data,
-        isThroughputLoading,
+        loading,
         timeSpan,
         loadLineChartData,
         loadBarChartData,
         disableTimeSpan,
+        isWidget,
+        sortLevel,
+        setParentSortLevel,
     } = props
 
     // redux state
     const objects = useSelector(state => state.objectsReducer.objects)
+    const cards = useSelector(state => state.cardsReducer.cards)
+    const lots = useSelector(state => state.lotsReducer.lots)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
 
     const [showBar, setShowBar] = useState(true)
     const [throughputData, setThroughputData] = useState([])
     const [lineData, setLineData] = useState([])
     const [isData, setIsData] = useState(false)
     const [chartKeys, setChartKeys] = useState(false)
-    // const [chartColors, setChartColors] = useState(false)
 
+    const dropDownOptions = [
+        { label: 'Object', value: 'object' },
+        { label: 'Lot', value: 'lot_id' },
+        { label: 'Route', value: 'route_id' }
+
+    ]
+
+    // Useeffect for sorting bar chart data
     useEffect(() => {
         let tempChartKeys = []  // keys for chart = object names
         // let tempChartColors = {}
         let tempFilteredData = []
-        let deletedObjKeys = []
+        let deletedChartKeys = []
 
-        if(showBar) {
-            data?.throughPut.forEach((currItem) => {
+        if (showBar) {
+            data?.throughPut?.forEach((currItem) => {
                 const {
                     lable,
-                    ...objectIds
+                    ...sortedIds
                 } = currItem || {}
 
-                let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
+                let updatedItem = { lable }   // used for changing keys from object ids to object names, keep label the same
 
-                Object.entries(objectIds)
+                Object.entries(sortedIds)
                     .filter((currEntry) => {
                         const [currKey, currVal] = currEntry
 
@@ -65,13 +81,14 @@ const ThroughputChart = (props) => {
                         return currVal > 0
                     })
                     .forEach((currEntry, currIndex) => {
+
                         const [currKey, currVal] = currEntry
 
                         // for null key, set default name and use value. This is for objectless routes
-                        if(currKey === null || currKey === "null") {
+                        if (currKey === null || currKey === "null") {
 
                             // default name
-                            const currObjectName = "No Object"
+                            const currObjectName = `No ${sortLevel.label}`
 
                             // if name isn't in chart keys, add it, or else it won't show up on the chart
                             if (!tempChartKeys.includes(currObjectName)) {
@@ -83,49 +100,105 @@ const ThroughputChart = (props) => {
 
                         // route does have object id
                         else {
-                            const currObject = objects[currKey]
 
-                            // object with id was found
-                            if(isObject(currObject)) {
-
-                                // get object name
-                                const {
-                                    name: currObjectName = `Unnamed`
-                                } = currObject || {}
-
-                                // format
-                                const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
-
-                                // add curr object to chartKeys if it isn't already in there
-                                if (!tempChartKeys.includes(currObjectNameCapitalized)) {
-                                    tempChartKeys.push(currObjectNameCapitalized)
-                                }
-
-                                // set updateItems value to current value for this object name
-                                updatedItem[currObjectNameCapitalized] = currVal
-                            }
-
-                            // object with id was NOT found
-                            else {
-                                // if this id isn't already in deletedObjs array, add it
-                                if(!deletedObjKeys.includes(currKey)) {
-                                    deletedObjKeys.push(currKey)
-                                }
-
-                                // get index of id in deletedObjs arr
-                                const deletedObjKeyIndex = deletedObjKeys.indexOf(currKey)
-
-                                // create name using index
-                                const currObjectName = `Deleted Object ${deletedObjKeyIndex + 1}`
-
-                                // if name isn't in keys, add it, or else it won't show up on the chart
-                                if (!tempChartKeys.includes(currObjectName)) {
-                                    tempChartKeys.push(currObjectName)
+                            const onChartKeys = (name) => {
+                                // if name isn't in chart keys, add it, or else it won't show up on the chart
+                                if (!tempChartKeys.includes(name)) {
+                                    tempChartKeys.push(name)
                                 }
 
                                 // add key,value pair to data item
-                                updatedItem[currObjectName] = currVal
+                                updatedItem[name] = currVal
                             }
+
+                            const onDeletedKeys = (key) => {
+                                // if this id isn't already in deletedObjs array, add it
+                                if (!deletedChartKeys.includes(key)) {
+                                    deletedChartKeys.push(key)
+                                }
+
+                                // get index of id in deletedObjs arr
+                                const deletedObjKeyIndex = deletedChartKeys.indexOf(key)
+
+                                // create name using index
+                                const currObjectName = `Deleted ${sortLevel.label} ${deletedObjKeyIndex + 1}`
+
+                                onChartKeys(currObjectName)
+
+                            }
+                            switch (sortLevel.value) {
+
+                                case 'object':
+                                    const currObject = objects[currKey]
+
+                                    // object with id was found
+                                    if (isObject(currObject)) {
+
+                                        // get object name
+                                        const {
+                                            name: currObjectName = `Unnamed`
+                                        } = currObject || {}
+
+                                        // format
+                                        const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
+
+                                        onChartKeys(currObjectNameCapitalized)
+                                    }
+
+                                    // object with id was NOT found
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+                                    break;
+
+                                case 'lot_id':
+                                    const lot = cards[currKey]
+                                    if (!!lot) {
+                                        onChartKeys(lot.name)
+                                    }
+
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+                                    break;
+
+                                case 'route_id':
+                                    const route = tasks[currKey]
+                                    if (!!route) {
+                                        onChartKeys(route.name)
+                                    }
+
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+                                    break;
+
+                                default:
+                                    const currObjectDef = objects[currKey]
+
+                                    // object with id was found
+                                    if (isObject(currObjectDef)) {
+
+                                        // get object name
+                                        const {
+                                            name: currObjectName = `Unnamed`
+                                        } = currObjectDef || {}
+
+                                        // format
+                                        const currObjectNameCapitalized = capitalizeFirstLetter(currObjectName)
+
+                                        onChartKeys(currObjectNameCapitalized)
+                                    }
+
+                                    // object with id was NOT found
+                                    else {
+                                        onDeletedKeys(currKey)
+                                    }
+                                    break;
+                            }
+
+
+
                         }
                     })
 
@@ -144,53 +217,76 @@ const ThroughputChart = (props) => {
             setLineData(data.throughPut)
             setThroughputData([])
         }
-    }, [data])
+    }, [data, showBar, sortLevel])
 
     useEffect(() => {
-        if (showBar) {
+        if (showBar || isWidget) {
             disableTimeSpan(false)
         } else {
             disableTimeSpan(true)
         }
     }, [showBar])
 
+    // UseEffect for when to show a line chart or a bar chart
+    useEffect(() => {
+        if (timeSpan === 'line') {
+            setShowBar(false)
+        } else {
+            setShowBar(true)
+        }
+    }, [timeSpan])
+
     return (
         <styled.SinglePlotContainer
             minHeight={minHeight}
         >
-            <styled.PlotHeader>
-                <styled.PlotTitle>Throughput</styled.PlotTitle>
-                {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
+            {isWidget &&
+                // If its a widget then have some elements here that control the data
+                // These elements all have callbacks to their parent component, which is statistics overveiw
+                <styled.PlotHeader>
+                    <styled.PlotTitle>Throughput</styled.PlotTitle>
+                    {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
 
-                {(timeSpan === 'day' || timeSpan === 'line') &&
-                    <>
-                        <styled.ChartTypeButton
-                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                            onClick={() => {
-                                setShowBar(true)
-                                loadBarChartData()
-                            }}
-                            selected={showBar}
-                        >
-                            Bar
+                    {(timeSpan === 'day' || timeSpan === 'line') &&
+                        <styled.RowContainer style={{ marginBottom: '.5rem' }}>
+                            <styled.ChartTypeButton
+                                style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                onClick={() => {
+                                    loadBarChartData()
+                                }}
+                                selected={showBar}
+                            >
+                                Bar
                         </styled.ChartTypeButton>
-                        <styled.ChartTypeButton
-                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                            onClick={() => {
-                                setShowBar(false)
-                                loadLineChartData()
+                            <styled.ChartTypeButton
+                                style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                onClick={() => {
+                                    loadLineChartData()
+                                }}
+                                selected={!showBar}
+                            >
+                                Line
+                        </styled.ChartTypeButton>
+                        </styled.RowContainer>
+                    }
+                    {timeSpan !== 'line' &&
+                        <SortDropdown
+                            options={dropDownOptions}
+                            labelField={'label'}
+                            valueField={'label'}
+                            dropDownSearchStyle={{ minWidth: '10rem' }}
+                            onChange={(val) => {
+                                setParentSortLevel(val)
                             }}
-                            selected={!showBar}
-                        >
-                            Line
-                </styled.ChartTypeButton>
-                    </>
-                }
-            </styled.PlotHeader>
+                            values={[sortLevel]}
+                        />
+                    }
+                </styled.PlotHeader>
+            }
 
-            {isThroughputLoading ?
+            {!!loading ?
                 <styled.PlotContainer>
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
+                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem' }} />
                 </styled.PlotContainer>
                 :
 
@@ -204,6 +300,7 @@ const ThroughputChart = (props) => {
                             data={lineData ? lineData : []}
                             isData={isData}
                             date={data.date_title}
+                            isWidget={isWidget}
                         />
                         :
                         <BarChart
@@ -214,7 +311,7 @@ const ThroughputChart = (props) => {
 
                             axisBottom={{
                                 legend: TIME_SPANS[timeSpan]?.displayName || TIME_SPANS.day.displayName,
-                                tickRotation: 0,
+                                tickRotation: 45,
                             }}
                             axisLeft={{
                                 enable: true,
@@ -234,5 +331,11 @@ const ThroughputChart = (props) => {
         </styled.SinglePlotContainer>
     )
 }
+
+// Specifies the default values for props:
+ThroughputChart.defaultProps = {
+    sortLevel: { label: 'Object', value: 'object' }
+};
+
 
 export default ThroughputChart

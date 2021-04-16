@@ -289,21 +289,7 @@ const FormComponent = (props) => {
 			<Button
 				style={{...buttonStyle}}
 				onClick={async () => {
-
-					// set touched to true for all fields to show errors
-					values.fields.forEach((currRow, currRowIndex) => {
-						currRow.forEach((currField, currFieldIndex) => {
-							setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
-						})
-					})
-					setFieldTouched("name", true)
-
-					const promise = submitForm()
-					promise.then(result => {
-						if(!(result instanceof Error) && result !== undefined) {
-							close()
-						}
-					})
+					submitForm()
 				}}
 				schema={"ok"}
 				disabled={submitDisabled}
@@ -537,7 +523,7 @@ const LotCreatorForm = (props) => {
 				validateOnBlur={true}
 
 				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={(values, { setSubmitting, setTouched, resetForm }) => {
+				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
 					const {
@@ -545,8 +531,14 @@ const LotCreatorForm = (props) => {
 					} = values
 
 					setSubmitting(true)
-					const submitPromise = handleSubmit(values, formMode)
-					// setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+
+					const submitPromise = await handleSubmit(values, formMode)
+					setSubmitting(false)
+
+					if(!(submitPromise instanceof Error) && submitPromise !== undefined) {
+						close()
+					}
+
 					return submitPromise;
 				}}
 			>
