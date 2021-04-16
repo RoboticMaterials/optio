@@ -75,7 +75,12 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer
+            open={open}
+            style={{
+                padding: open ? ".25rem 1rem 0 1rem" : "1rem"
+            }}
+        >
             <styled.Description
                 css={props.descriptionCss}
                 onClick={() => setOpen(!open)}
@@ -108,7 +113,7 @@ const LotSortBar = (props) => {
                                 style={{
                                     borderTopRightRadius: 0,
                                     borderBottomRightRadius: 0,
-                                    minWidth: "10rem",
+                                    minWidth: "7rem",
                                     background: themeContext.bg.tertiary
                                 }}
                             />

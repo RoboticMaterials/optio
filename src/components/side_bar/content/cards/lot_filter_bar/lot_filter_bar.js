@@ -114,7 +114,14 @@ const LotFilterBar = (props) => {
 
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer
+            open={open}
+            style={{
+                flex: (open && valueMode === VALUE_MODES.TEXT_BOX) && 1,
+                padding: open ? ".25rem 1rem 0 1rem" : "1rem",
+                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem"
+            }}
+        >
             <styled.Description
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
@@ -164,7 +171,7 @@ const LotFilterBar = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "10rem",
+                                minWidth: "7rem",
                                 overflow: 'visible',
                                 background: themeContext.bg.tertiary,
                             }}
@@ -174,12 +181,13 @@ const LotFilterBar = (props) => {
                         />
                     </styled.OptionContainer>
 
-                    <styled.OptionContainer>
+                    <styled.OptionContainer
+                    style={{flex:1}}>
                         { // render different component for entering value depending on value type
                             {
                                 [VALUE_MODES.FLAGS]:
                                     <div
-                                        style={{flex: 3}}
+                                        style={{flex: 3, background: "pink"}}
                                     >
                                         <DropDownSearch
                                             multi={true}
@@ -259,9 +267,9 @@ const LotFilterBar = (props) => {
                                                     />
                                                 )
                                             }}
-
                                             style={{
-                                                width: "10rem",
+                                                minWidth: "10rem",
+                                                flex: 1,
                                                 background: themeContext.bg.tertiary,
                                                 alignSelf: "stretch",
                                             }}
@@ -281,6 +289,9 @@ const LotFilterBar = (props) => {
                                         }}
                                         style={{
                                             alignSelf: "stretch",
+                                            flex: 1,
+                                            minWidth: "5rem"
+                                            // width: "5rem"
                                         }}
                                         schema={"lots"}
                                     />,

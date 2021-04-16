@@ -49,6 +49,8 @@ export const Container = styled.div`
   // ${props => props.isFocused && focusedCss};
   // ${props => props.isSelected && selectedCss};
   // ${props => props.containerStyle};
+  
+  max-width: 30rem;
 `
 
 const selectedCss = css`
@@ -88,6 +90,9 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  // border-top: 1px solid ${props => props.theme.bg.tertiary};
+  // max-height: 2rem;
+  // overflow: auto;
   
 `
 

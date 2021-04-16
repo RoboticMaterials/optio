@@ -22,11 +22,12 @@ export const valueCss = css`
 
 export const BarsContainer = styled.div`
   display: flex;
-  justify-content: space-around;
+  //justify-content: space-around;
   flex-direction: row;
   margin-bottom: -1rem;
   max-width: 100%;
   flex-wrap: wrap;
+  align-items: center;
   
   width: 100%;
 `

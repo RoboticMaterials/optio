@@ -1,5 +1,6 @@
 import styled, {css} from 'styled-components'
 import Modal from 'react-modal';
+import { isMobile } from "react-device-detect"
 
 export const Container = styled(Modal)`
 	outline: none !important;
@@ -14,6 +15,7 @@ export const Container = styled(Modal)`
 	
 	min-width: 30rem;
     max-width: 95%;
+    width: ${isMobile && "95%"};
 
 	height: 95%;
 	color: ${props => props.theme.bg.octonary};
