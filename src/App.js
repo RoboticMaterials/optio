@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 
 import { ThemeProvider } from "styled-components";
@@ -26,7 +26,6 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import FirstSignIn from './components/firstSignIn/firstSignIn'
-import Redirector from './components/redirector/redirector'
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
@@ -68,7 +67,6 @@ const App = (props) => {
 
     const size = useWindowSize()
     const windowWidth = size.width
-
     const mobileMode = windowWidth < widthBreakPoint;
 
     useEffect(() => {

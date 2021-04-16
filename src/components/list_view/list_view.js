@@ -26,6 +26,8 @@ import * as styled from "./list_view.style"
 // import logger
 import log from '../../logger.js';
 
+import disableBrowserBackButton from 'disable-browser-back-navigation';
+
 const logger = log.getLogger("ListView")
 
 const SCREENS = {
@@ -87,6 +89,8 @@ const ListView = (props) => {
     pause_status ? playButtonClassName += 'play' : playButtonClassName += 'pause';
 
     useEffect(() => {
+          disableBrowserBackButton()
+
         // displays dashboards page if url is on widget page
         if (widgetPage) {
             setShowDashboards(true)

@@ -12,6 +12,18 @@ body {
   overscroll-behavior: contain;
 
 }
+.dragging-ghost-hidden{
+  visibility: hidden;
+}
+
+.smooth-dnd-draggable-wrapper {
+  cursor: grab;
+
+}
+
+.smooth-dnd-ghost {
+  cursor: grabbing;
+}
 
 .signin-page {
   background: url('./graphics/images/RM_Signin.jpg') no-repeat center center fixed;

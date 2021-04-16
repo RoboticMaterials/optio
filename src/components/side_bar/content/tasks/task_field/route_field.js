@@ -376,6 +376,7 @@ const TaskField = (props) => {
       setShowObjectSelector(false)
       dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+      setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
 
     const onObjectBackClick = () => {
@@ -703,7 +704,7 @@ const TaskField = (props) => {
                                                             <styled.ListItemIcon
                                                                 className='fas fa-box'
                                                             />
-                                                            <styled.ListItemTitle>{routeObject ? objects[routeObject.id].name : ""}</styled.ListItemTitle>
+                                                            <styled.ListItemTitle style = {{paddingLeft: "1rem", flex: "1"}}>{routeObject ? objects[routeObject.id].name : ""}</styled.ListItemTitle>
 
                                                             <styled.Icon
                                                                 className='fas fa-exchange-alt'
@@ -712,7 +713,7 @@ const TaskField = (props) => {
                                                             />
                                                             <styled.Icon
                                                                 className='far fa-minus-square'
-                                                                style={{ color: 'white', marginLeft: '0.5rem' }}
+                                                                style={{ color: 'white', marginLeft: '1rem' }}
                                                                 onClick={() => {
                                                                     dispatchSetRouteObject(null)
                                                                     dispatchSetSelectedObject(null)

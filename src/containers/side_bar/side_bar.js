@@ -30,6 +30,8 @@ import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
 
+import disableBrowserBackButton from 'disable-browser-back-navigation';
+
 const SideBar = (props) => {
 
     const {
@@ -79,12 +81,17 @@ const SideBar = (props) => {
         dispatchSetWidth(newWidth)
     }
     useEffect(() => {
+        disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
             window.removeEventListener('resize', boundToWindowSize, { passive: true })
         }
     }, [])
+
+    useEffect(() => {
+        disableBrowserBackButton()
+    }, [url])
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
