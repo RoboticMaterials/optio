@@ -16,7 +16,7 @@ export const generateDefaultRoute = (obj) => {
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: true,
+        handoff: false,
         map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},

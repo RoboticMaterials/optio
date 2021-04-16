@@ -91,9 +91,7 @@ const TaskField = (props) => {
     } = fieldMeta || {}
     // sets values.changed to true when a change occurs
     useChange(fieldParent)
-
     const themeContext = useContext(ThemeContext)
-
     const {
         name,
         obj,
@@ -102,7 +100,6 @@ const TaskField = (props) => {
         changed,
         temp
     } = values || {}
-
 
     const {
         insertIndex
