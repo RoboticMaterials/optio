@@ -102,7 +102,11 @@ const LineThroughputChart = (props) => {
         convertedData.unshift({ x: startEpoch, y: 0 })
 
         // Add the last value in converted data to the end of the shift
-        if (!isDateToday(date)) {
+        // Only do this though if 2 things
+        // 1) its not today
+        // 2) it is today but the end of the shift is before the current time
+        // This allows for the line chart to be a bit more readable when your shift hasnt finished yet
+        if (!isDateToday(date) || (!!isDateToday(date) && Date.now() > endEpoch)) {
             convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
         }
 

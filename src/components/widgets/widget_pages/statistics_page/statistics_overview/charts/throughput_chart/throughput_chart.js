@@ -213,9 +213,13 @@ const ThroughputChart = (props) => {
             setLineData([])
 
         }
-        else {
+        else if(!!data.throughPut) {
             setLineData(data.throughPut)
             setThroughputData([])
+        }
+        else {
+            setLineData([])
+            setThroughputData([])  
         }
     }, [data, showBar, sortLevel])
 
