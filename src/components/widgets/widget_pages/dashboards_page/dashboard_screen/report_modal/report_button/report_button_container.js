@@ -50,7 +50,7 @@ ReportButtonContainer.propTypes = {
 	onClick: PropTypes.func
 }
 
-ReportButtonContainer.defaultTypes = {
+ReportButtonContainer.defaultProps = {
 	reportButtons: [],
 	id: "",
 	onClick: () => {}
