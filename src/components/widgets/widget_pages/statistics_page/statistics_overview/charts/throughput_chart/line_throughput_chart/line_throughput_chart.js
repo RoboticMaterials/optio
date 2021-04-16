@@ -44,7 +44,6 @@ const LineThroughputChart = (props) => {
     * Uses usememo for performance reasons
     */
     const lineDataConverter = useMemo(() => {
-        console.log('QQQQ date', isDateToday(date))
         // The array of converted incoming data
         let convertedData = []
 
@@ -62,8 +61,6 @@ const LineThroughputChart = (props) => {
                 break
             }
         }
-
-        // !!isDateToday(date) ? Date.now() :
 
         // Convert end of shift to epoch
         const endEpoch = convert24htoEpoch(shiftDetails.endOfShift, date)
@@ -244,8 +241,6 @@ const LineThroughputChart = (props) => {
         })
 
         if (expectedOutput.length > 0) {
-
-
 
             // Do the same to converted
             expectedOutput.map((output, ind) => {
