@@ -11,7 +11,7 @@ import LineThroughputForm from './line_throughput_form'
 import { ResponsiveLine } from '@nivo/line'
 
 // Import utils
-import { convert24htoEpoch, convertDateto12h } from '../../../../../../../../methods/utils/time_utils'
+import { convert24htoEpoch, convertDateto12h, isDateToday } from '../../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../../methods/utils/utils';
 
 const LineThroughputChart = (props) => {
@@ -99,7 +99,13 @@ const LineThroughputChart = (props) => {
         convertedData.unshift({ x: startEpoch, y: 0 })
 
         // Add the last value in converted data to the end of the shift
-        convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
+        // Only do this though if 2 things
+        // 1) its not today
+        // 2) it is today but the end of the shift is before the current time
+        // This allows for the line chart to be a bit more readable when your shift hasnt finished yet
+        if (!isDateToday(date) || (!!isDateToday(date) && Date.now() > endEpoch)) {
+            convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
+        }
 
         // This is the array of data that is passed to the line chart
         let expectedOutput = []
@@ -256,6 +262,10 @@ const LineThroughputChart = (props) => {
                     for (let i = 0; i < convertedData.length; i++) {
                         const expOutput = convertedData[i]
                         const nextExpOutput = convertedData[i + 1]
+
+                        if(!nextExpOutput){
+                            break
+                        }
 
                         // If the output is greater then the expoutput and less then the next exp output, it belongs hur
                         if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
