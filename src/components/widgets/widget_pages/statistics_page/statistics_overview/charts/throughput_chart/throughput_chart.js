@@ -244,7 +244,7 @@ const ThroughputChart = (props) => {
                 // If its a widget then have some elements here that control the data
                 // These elements all have callbacks to their parent component, which is statistics overveiw
                 <styled.PlotHeader>
-                    <styled.PlotTitle>Throughput</styled.PlotTitle>
+                    <styled.PlotTitle>Output</styled.PlotTitle>
                     {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
 
                     {(timeSpan === 'day' || timeSpan === 'line') &&

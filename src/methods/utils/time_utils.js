@@ -171,5 +171,18 @@ export const convertDateto12h = (date) => {
     }
 
     return convert24hto12h(`${date.getHours()}:${date.getMinutes()}`)
-    
+
+}
+
+
+export const isDateToday = (date) => {
+    const today = new Date()
+    const incomingDate = new Date(date)
+    // call setHours to take the time out of the comparison
+    if (incomingDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
+        return true
+    }
+    else {
+        return false
+    }
 }

@@ -134,7 +134,7 @@ const StationColumn = (props) => {
                         className="fa fa-chevron-down"
                         aria-hidden="true"
                         onClick={() => setCollapsed(true)} />
-                    <styled.StationTitle>{currentStation.name}</styled.StationTitle>
+                    <styled.StationTitle>{currentStation.name}  {!showReport && ' - Output'}</styled.StationTitle> 
                 </styled.StationColumnHeader >
 
                 {showReport ?
