@@ -36,7 +36,8 @@ const DashboardsHeader = (props) => {
         saveDisabled,
         onBack,
         onLockClick,
-        locked
+        locked,
+        onSave
     } = props
 
     const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
@@ -168,6 +169,7 @@ const DashboardsHeader = (props) => {
                             type='submit'
                             disabled={saveDisabled}
                             schema="dashboards"
+                            onClick = {onSave}
                     >
                         Save
                     </Button>
