@@ -1,5 +1,7 @@
 export const SCHEDULES = 'SCHEDULES';
 export const SCHEDULE = 'SCHEDULE';
+export const CARD_EVENT = 'CARD_EVENT';
+export const MAP = 'MAP';
 export const TASK = 'TASK';
 export const TASKS = 'TASKS';
 export const OBJECT = 'OBJECT';

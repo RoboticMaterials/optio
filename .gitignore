@@ -17,6 +17,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# amplify added by us
+amplify/backend/api/rmstudiocloud/resolvers
+
+# config
+src/settings/config.js
+
+# VSCode
+.vscode
+
 #amplify
 amplify/\#current-cloud-backend
 amplify/.config/local-*
@@ -35,12 +44,3 @@ amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
-
-# amplify added by us
-amplify/backend/api/rmstudiocloud/resolvers
-
-# config
-src/settings/config.js
-
-# VSCode
-.vscode

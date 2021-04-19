@@ -26,7 +26,7 @@ import getUserOrgId, {getUser} from './user_api'
 import { uuidv4 } from '../methods/utils/utils'
 
 import * as _ from 'lodash'
-import {parseLot, stringifyLot} from "../methods/utils/data_utils";
+import {parseLot, stringifyLot, stringifyLotEvent} from "../methods/utils/data_utils";
 import {
     getMutationData,
     getTransformName,
@@ -53,25 +53,13 @@ export async function getCard(cardId) {
 
         const userOrgId = await getUserOrgId()
 
-        const res = await API.graphql({
-            query: cardsByOrgId,
-            variables:{
-                organizationId: userOrgId,
-                filter: {id: {eq: cardId}}
-            }
-        })
+        const lots = await streamlinedGraphqlCall(TRANSFORMS.QUERY, cardsByOrgId, {
+            organizationId: userOrgId,
+            filter: {id: {eq: cardId}}
+        }, parseLot)
 
-        if(res.data.CardsByOrgId.items[0]){
-            return parseLot(res.data.CardsByOrgId.items[0])
-        }else{
-            return null
-        }
+        return lots[0] ? lots[0] : null
 
-        // This query doesnt want to work for some reason
-        // const dataJson = await API.graphql({
-        //     query: getCardById,
-        //     variables: { id: cardId }
-        // })
     } catch (error) {
         // Error 😨
         errorLog(error)
@@ -101,12 +89,9 @@ export async function getCardsCount() {
     try {
         const userOrgId = await getUserOrgId()
 
-        const res = await API.graphql({
-            query: cardsByOrgId,
-            variables: { organizationId: userOrgId }
-          })
+        const lots = await streamlinedGraphqlCall(TRANSFORMS.QUERY, cardsByOrgId, { organizationId: userOrgId })
 
-        return res.data.CardsByOrgId.items.length
+        return lots.length
 
     } catch (error) {
         // Error 😨
@@ -121,22 +106,12 @@ export async function getProcessCards(processId) {
 
         const userOrgId = await getUserOrgId()
 
-        const res = await API.graphql({
-            query: cardsByOrgId,
-            variables: { 
-                organizationId: userOrgId,
-                filter: {processId: {eq: processId}}
-             }
-          })
+        const lots = await streamlinedGraphqlCall(TRANSFORMS.QUERY, cardsByOrgId, {
+            organizationId: userOrgId,
+            filter: {processId: {eq: processId}}
+        }, parseLot)
 
-        let GQLdata = []
-
-        res.data.CardsByOrgId.items.forEach(card => {
-
-            GQLdata.push(parseLot(card))
-        });
-
-        return GQLdata;
+        return lots
 
     } catch (error) {
         // Error 😨
@@ -148,10 +123,7 @@ export async function deleteCard(ID) {
     try {
         const id = {id: ID}
 
-        const dataJson = await API.graphql({
-            query: deleteCardByID,
-            variables: { input: id }
-        })
+        const dataJson = await streamlinedGraphqlCall(TRANSFORMS.MUTATION, deleteCardByID, { input: id }, parseLot)
 
         return dataJson;
 
@@ -178,22 +150,21 @@ export async function putCard(card, ID) {
 
         const user = await getUser()
 
-        const eventInput = {
-            delta: JSON.stringify(difference),
+        const eventInput = stringifyLotEvent({
+            delta: difference,
             cardId: ID,
             organizationId: oldCard.organizationId,
             userId: user.id,
             username: user.username
-        }
+        })
 
         const input = stringifyLot({...card, id: ID})
 
         const updatedLot = await streamlinedGraphqlCall(TRANSFORMS.MUTATION, updateCard, { input: input }, parseLot)
 
-        await API.graphql({
-            query: createCardEvent,
-            variables: { input: eventInput }
-        })
+        // create event
+        await streamlinedGraphqlCall(TRANSFORMS.MUTATION, createCardEvent, { input: eventInput })
+
 
         return updatedLot
 

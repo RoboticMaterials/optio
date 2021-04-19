@@ -51,6 +51,8 @@ const RESOURCE_JSON_KEYS = {
   [dataTypes.LOT_TEMPLATE]: ["displayNames", "fields"],
   [dataTypes.SETTINGS]: ["loggers", "shiftDetails", "timezone"],
   [dataTypes.STATION]: ["children", "dashboards"],
+  [dataTypes.MAP]: [ "allowed_methods"],
+  [dataTypes.CARD_EVENT]: [ "delta"],
 }
 
 // parser for each resource
@@ -61,6 +63,9 @@ export const parseLotTemplate = (data) => parseItem(data, RESOURCE_JSON_KEYS[dat
 export const parseObject = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.OBJECT])
 export const parseSettings = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
 export const parseStation = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.STATION])
+export const parseMap = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.MAP])
+export const parseLotEvent = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD_EVENT])
+
 export const parseDashboard = (dashboard) => {
   const {
     data,
@@ -75,6 +80,7 @@ export const parseDashboard = (dashboard) => {
 
 // stringifier for each resource
 export const stringifyLot = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD])
+export const stringifyLotEvent = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD_EVENT])
 export const stringifyTask = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.TASK])
 export const stringifyProcess = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
 export const stringifyLotTemplate = (data) => stringifyItem(data, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
@@ -104,12 +110,15 @@ export const DATA_PARSERS = {
   [dataTypes.DASHBOARD]: parseDashboard,
   [dataTypes.LOT_TEMPLATE]: parseLotTemplate,
   [dataTypes.SETTINGS]: parseSettings,
-  [dataTypes.STATION]: parseStation
+  [dataTypes.STATION]: parseStation,
+  [dataTypes.MAP]: parseMap,
+  [dataTypes.CARD_EVENT]: parseLotEvent,
 }
 
 export const DATA_STRINGIFIERS = {
   [dataTypes.PROCESS]: stringifyProcess,
   [dataTypes.CARD]: stringifyLot,
+  [dataTypes.CARD_EVENT]: stringifyLotEvent,
   [dataTypes.TASK]: stringifyTask,
   [dataTypes.OBJECT]: stringifyObject,
   [dataTypes.DASHBOARD]: stringifyDashboard,
