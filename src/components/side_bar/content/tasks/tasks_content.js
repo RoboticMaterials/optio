@@ -170,7 +170,7 @@ export default function TaskContent(props) {
         return (
             <TaskForm
                 isNew={isNew}
-                initialValues={{
+                initialVals={{
                     ...selectedTask,
                     obj: !!selectedTask.route_object ? selectedTask.route_object : null,
                 }}

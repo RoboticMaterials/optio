@@ -18,9 +18,7 @@ export const SinglePlotContainer = styled.div`
 	background: ${props => props.theme.bg.primary};
   box-shadow: ${props => props.theme.cardShadow};
 	border-radius: 1rem;
-	/* padding: 1rem; */
 	min-width: 60rem;
-	overflow: hidden;
 	
 
     width: 100%;
