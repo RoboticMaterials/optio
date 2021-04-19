@@ -350,6 +350,10 @@ const DashboardEditor = (props) => {
                             locked = {values.locked}
                             saveDisabled={submitDisabled}
                             onBack={() => !!pageInfoChanged ? setConfirmExitModal(true) : history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                            onSave = {()=>{
+                              handleSubmit(values)
+                              history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
+                            }}
                         >
                             <TextField
                                 name={"name"}
