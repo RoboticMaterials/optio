@@ -1,5 +1,6 @@
 export const SCHEDULES = 'SCHEDULES';
 export const SCHEDULE = 'SCHEDULE';
+export const TASK_QUEUE = 'TASK_QUEUE';
 export const TASK = 'TASK';
 export const TASKS = 'TASKS';
 export const OBJECT = 'OBJECT';

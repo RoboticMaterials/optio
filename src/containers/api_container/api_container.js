@@ -370,7 +370,7 @@ const ApiContainer = (props) => {
         const task = taskQueueItem ? tasks[taskQueueItem.taskId] : null
 
         // Unload?
-        if(task && task.handoff && taskQueueItem.quantity){
+        if(task && task.handoff){
 
             // set end time
             taskQueueItem.end_time = Math.round(Date.now() / 1000)
@@ -378,11 +378,11 @@ const ApiContainer = (props) => {
             // tell GQL to run the lambda function
             await API.graphql({
                 query: manageTaskQueue,
-                variables: { 
+                variables: {
                     taskQueueItem: JSON.stringify(taskQueueItem)
                 }
               });
-        }else if(taskQueueItem && taskQueueItem.start_time === null && !task.handoff){  
+        }else if(taskQueueItem && taskQueueItem.start_time === null && !task.handoff){
             taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
             taskQueueItem.hil_station_id = task.unload.station
@@ -418,38 +418,26 @@ const ApiContainer = (props) => {
 
         // Subscribe to taskQueue
         // Only need this one for now
-        API.graphql(
-            graphqlOperation(subscriptions.onDeleteTaskQueue)
-        ).subscribe({
-            next: async ({ provider, value }) => {
-                const taskQ = await onGetTaskQueue()
-            },
-            error: error => console.warn(error)
-        });
 
-        API.graphql(
-            graphqlOperation(subscriptions.onDeltaTaskQueue)
-        ).subscribe({
-            next: async ({ provider, value }) => {  
-                // run get queue
-                const taskQ = await onGetTaskQueue()
+        getResourceSubscription(dataTypes.TASK_QUEUE, null, async (value) => {
+            // run get queue
+            const taskQ = await onGetTaskQueue()
+            console.log("taskQ",taskQ)
 
-                Object.values(taskQ).map((item) => {
-                    if (
-                            // when do we update the task???
-                            item.taskId === value.data.onDeltaTaskQueue.taskId
-                            &&
-                            value.data.onDeltaTaskQueue.hil_response === true
-                            &&
-                            value.data.onDeltaTaskQueue.updatedAt
-                        )
-                        {
-                            handleTaskUpdate(value.data.onDeltaTaskQueue)
-                        }
-                })
-        },
-            error: error => console.warn(error)
-        });
+            Object.values(taskQ).map((item) => {
+                if (
+                    // when do we update the task???
+                    item.taskId === value.taskId
+                    &&
+                    value.hil_response === true
+                    &&
+                    value.updatedAt
+                )
+                {
+                    handleTaskUpdate(value)
+                }
+            })
+        })
 
         // Subscribe to Devices
         // Taking this out for now because sevices will be added later
@@ -472,16 +460,23 @@ const ApiContainer = (props) => {
     /*
     * creates delta and delete subs for resource corresponding to resourceName
     * */
-    const getResourceSubscription = async (resourceName) => {
+    const getResourceSubscription = async (resourceName, deleteCB, deltaCB) => {
         let subs = []
         const convertedName = toPascalCase(resourceName)
 
         // NOTE: need to subscribe to delete events separately in order to know to remove item from redux instead of insert / replace
         console.debug("Subscribing to resource delta: ",convertedName)
-        subs.push(await streamlinedSubscription(subscriptions[`onDelta${convertedName}`], (data) => dispatch({ type: createActionType([SET, resourceName]), payload: data }), DATA_PARSERS[resourceName]))
+        subs.push(await streamlinedSubscription(subscriptions[`onDelta${convertedName}`], (data) => {
+            dispatch({type: createActionType([SET, resourceName]), payload: data})
+            deltaCB && deltaCB(data)
+
+        }, DATA_PARSERS[resourceName]))
 
         console.debug("Subscribing to resource delete: ",convertedName)
-        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => dispatch({ type: createActionType([REMOVE, resourceName]), payload: data }), null))
+        subs.push(await streamlinedSubscription(subscriptions[`onDelete${convertedName}`], (data) => {
+            dispatch({type: createActionType([REMOVE, resourceName]), payload: data})
+            deleteCB && deleteCB(data)
+        }, null))
 
         return subs
     }
