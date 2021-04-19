@@ -28,7 +28,7 @@ const SortFilterContainer = (props) => {
 
 	return (
 		<BarsContainer>
-			<styled.OptionContainer>
+			{/*<styled.OptionContainer>*/}
 			<LotSortBar
 				columnCss={columnCss}
 				containerCss={containerCss}
@@ -41,9 +41,9 @@ const SortFilterContainer = (props) => {
 				sortDirection={sortDirection}
 				setSortDirection={setSortDirection}
 			/>
-			</styled.OptionContainer>
+			{/*</styled.OptionContainer>*/}
 
-			<styled.OptionContainer>
+			{/*<styled.OptionContainer>*/}
 			<LotFilterBar
 				lotFilterValue={lotFilterValue}
 				columnCss={columnCss}
@@ -57,7 +57,7 @@ const SortFilterContainer = (props) => {
 				selectedFilterOption={selectedFilterOption}
 				setSelectedFilterOption={setSelectedFilterOption}
 			/>
-			</styled.OptionContainer>
+			{/*</styled.OptionContainer>*/}
 		</BarsContainer>
 	);
 };
