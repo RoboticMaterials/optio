@@ -21,11 +21,26 @@ export const locationsSortedAlphabetically = (locations) => {
     locationsCopy.sort((a, b) => {
         const aName = a.name
         const bName = b.name
-
-        if (aName < bName) return -1
-        if (aName > bName) return 1
-        return 0
-    })
+        const length = Math.max(a.name.length, b.name.length)
+        console.log(a.name[2])
+        for(let i = 0; i<length; i=i+1){
+          if(a.name[i] == undefined) {
+            return -1
+            break
+          }
+          if(b.name[i] == undefined) {
+            return 1
+            break
+          }
+          if(a.name[i]<b.name[i]){
+            return -1
+            break
+          }
+          if(a.name[i]>b.name[i]){
+            return 1
+            break
+          }
+    }})
 
     return locationsCopy
 }
@@ -41,15 +56,15 @@ export const editing = () => {
 
 /**
  * This function compares existing vs incoming locations
- * 
+ *
  * If the incoming location exists in existing locations then use the incoming location info but update the x and y from existing
  * Using x and y from existing because those values correlate with the local map's d3 state
- * 
+ *
  * If an incoming location is not in existing locations that means it was added by another client
  * Make sure to update the new locations x and y values to match the local map's d3
- * 
- * @param {object} existingStations 
- * @param {object} incomingStations 
+ *
+ * @param {object} existingStations
+ * @param {object} incomingStations
  */
 export const compareExistingVsIncomingLocations = (incomingLocations, existingLocations, d3) => {
 
