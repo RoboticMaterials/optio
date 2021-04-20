@@ -32,7 +32,7 @@ export const defaultTask = {
         position: null,
         station: null,
         sound: null,
-        instructions: 'Load',
+        instructions: 'Move',
         timeout: '09:00'
     },
     unload: {
