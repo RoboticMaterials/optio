@@ -403,19 +403,21 @@ const ApiContainer = (props) => {
             // run get queue
             const taskQ = await onGetTaskQueue()
 
-            Object.values(taskQ).map((item) => {
-                if (
-                    // when do we update the task???
-                    item.taskId === value.taskId
-                    &&
-                    value.hil_response === true
-                    &&
-                    value.updatedAt
-                )
-                {
-                    handleTaskUpdate(value)
-                }
-            })
+            if(!!taskQ){
+                Object.values(taskQ).map((item) => {
+                    if (
+                        // when do we update the task???
+                        item.taskId === value.taskId
+                        &&
+                        value.hil_response === true
+                        &&
+                        value.updatedAt
+                    )
+                    {
+                        handleTaskUpdate(value)
+                    }
+                })
+            }
         })
     }
 
