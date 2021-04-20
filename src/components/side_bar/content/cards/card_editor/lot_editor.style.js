@@ -483,6 +483,7 @@ export const LotNumber = styled.div`
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
   font-weight: bold;
+  white-space: nowrap;
   
   flex-grow: 1;
   color: ${props => props.theme.textColor};

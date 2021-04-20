@@ -225,7 +225,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 
 export const formatLotNumber = (lotNumber) => {
 	return (isString(lotNumber) || Number.isInteger(lotNumber)) ?
-		`#${parseInt(lotNumber).toLocaleString('en-US', {minimumIntegerDigits: 6, useGrouping:false})}`
+		`RM-${parseInt(lotNumber).toLocaleString('en-US', {minimumIntegerDigits: 6, useGrouping:false})}`
 		:
 		``
 }
