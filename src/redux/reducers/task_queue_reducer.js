@@ -27,6 +27,9 @@ import {
 } from '../types/api_types';
 
 import { clone_object, deepCopy } from '../../methods/utils/utils';
+import {createActionType} from "../actions/redux_utils";
+import {REMOVE, SET} from "../types/prefixes";
+import {CARD, TASK_QUEUE} from "../types/data_types";
 
 const defaultState = {
     taskQueue: {},
@@ -45,6 +48,26 @@ const defaultState = {
 export default function taskQueueReducer(state = defaultState, action) {
     let taskQueue = {}
     switch (action.type) {
+
+        case createActionType([SET, TASK_QUEUE]): {
+            return {
+                ...state,
+                taskQueue: {...state.taskQueue, [action.payload.id]: action.payload}
+            }
+        }
+
+        case createActionType([REMOVE, TASK_QUEUE]): {
+
+            const {
+                [action.payload.id]: value,
+                ...rest
+            } = state.taskQueue
+
+            return {
+                ...state,
+                taskQueue: {...rest},
+            }
+        }
 
         /**
          * HILs?
