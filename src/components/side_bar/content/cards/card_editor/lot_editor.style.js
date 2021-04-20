@@ -91,7 +91,7 @@ export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   // font-weight: ${props => props.theme.fontWeight.bold};
   font-family: ${props => props.theme.font.primary};
-  color: ${props => props.highlight ? props.theme.schema[props.schema].solid : "white"};
+  color: ${props => props.highlight ? props.theme.schema[props.schema].solid : props.textColor};
 `
 
 export const SectionContainer = styled.div`
@@ -468,7 +468,7 @@ export const ContentValue = styled.span`
 //   font-weight: ${props => props.theme.fontWeight.no};
 // `
 
-export const LotName = styled.span`
+export const FieldLabel = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 	font-family: ${props => props.theme.font.primary};
@@ -477,8 +477,8 @@ export const LotName = styled.span`
 	margin-bottom: .5rem;
 `
 
-export const LotNumber = styled.div`
-  /* background-color: ${props => props.theme.bg.secondary}; */
+const fieldValueCss = css`
+ /* background-color: ${props => props.theme.bg.secondary}; */
   border: none;
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
@@ -494,8 +494,17 @@ export const LotNumber = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  padding: 0 2rem;
+`
+
+export const LotName = styled.span`
+  ${fieldValueCss};
+  padding: 0 .5rem;
+`
+
+export const LotNumber = styled.div`
+	${fieldValueCss};
+	
+	padding: 0 2rem;
 `
 
 export const TemplateButton = styled.button`

@@ -34,7 +34,7 @@ export const TextboxInput = styled.input`
     flex-grow: 1;
     color: ${props => props.theme.bg.octonary};
 
-    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
+    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
