@@ -399,30 +399,9 @@ const ApiContainer = (props) => {
         // run get queue
         onGetTaskQueue()
 
-        // took this out so the loop doesnt run anymore
-        // dispatchGetDataStream()
-
-        // Start subscription to status, taskQueue, devices
-        // Dont need to clean this one up because we always need it
-
-        // Subscribe to status
-        // API.graphql(
-        //     graphqlOperation(subscriptions.onDeltaStatus)
-        // ).subscribe({
-        //     next: () => { 
-        //         // run get stations
-        //         onGetStatus()
-        // },
-        //     error: error => console.warn(error)
-        // });
-
-        // Subscribe to taskQueue
-        // Only need this one for now
-
         getResourceSubscription(dataTypes.TASK_QUEUE, null, async (value) => {
             // run get queue
             const taskQ = await onGetTaskQueue()
-            console.log("taskQ",taskQ)
 
             Object.values(taskQ).map((item) => {
                 if (
@@ -438,19 +417,6 @@ const ApiContainer = (props) => {
                 }
             })
         })
-
-        // Subscribe to Devices
-        // Taking this out for now because sevices will be added later
-        // API.graphql(
-        //     graphqlOperation(subscriptions.onDeltaDevice)
-        // ).subscribe({
-        //     next: () => { 
-        //         // run get stations
-        //         onGetProcesses()
-        // },
-        //     error: error => console.warn(error)
-        // });
-
     }
 
     /*

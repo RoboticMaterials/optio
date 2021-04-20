@@ -71,7 +71,6 @@ export async function getTaskQueueItem(id) {
 
 export async function postTaskQueue(taskQueueItem) {
     try {
-        console.log("taskQueueItem",taskQueueItem)
         const orgId = await getUserOrgId()
 
         const input = {
