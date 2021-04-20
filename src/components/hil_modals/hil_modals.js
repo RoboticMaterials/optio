@@ -421,7 +421,7 @@ const HILModals = (props) => {
     }, [tasks])
 
     // Posts HIL Success to API
-    const onHilSuccess = async (fraction) => {
+    const onHilSuccess = async (fraction, shouldDelete) => {
 
         dispatchTaskQueueItemClicked('')
 
@@ -431,37 +431,38 @@ const HILModals = (props) => {
             lotId: selectedLotId,
         }
 
-        // If its a load, then add a quantity to the response
-        if (hilLoadUnload === 'load') {
-            // If track quantity then add quantity, or if noLotSelected then use quantity
-            if (!!selectedTask.track_quantity || !!noLotsSelected) {
-                newItem.quantity = quantity
+        if(shouldDelete){
+            dispatchDeleteTaskQueueItem(newItem.id)
+        }else{
+            // If its a load, then add a quantity to the response
+            if (hilLoadUnload === 'load') {
+                // If track quantity then add quantity, or if noLotSelected then use quantity
+                if (!!selectedTask.track_quantity || !!noLotsSelected) {
+                    newItem.quantity = quantity
+                }
+
+                // Else it's a fraction so tell the fraction amount
+                else {
+                    newItem.fraction = fraction
+                }
             }
 
-            // Else it's a fraction so tell the fraction amount
-            else {
-                newItem.fraction = fraction
-            }
+            // Deletes the dashboard id from active list for the hil that has been responded too
+            const activeHilCopy = deepCopy(activeHilDashboards)
+            delete activeHilCopy[dashboardID]
+            dispatchSetActiveHilDashboards(activeHilCopy)
+
+            // delete newItem._id
+            delete newItem.dashboard
+
+            // This is used to make the tap of the HIL button respond quickly
+            disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
+            setTimeout(() => disptachHILResponse(''), 2000)
+
+            await dispatchPostTaskQueue({...newItem})
+
+            await postStationEvent(newItem)
         }
-
-        // Deletes the dashboard id from active list for the hil that has been responded too
-        const activeHilCopy = deepCopy(activeHilDashboards)
-        delete activeHilCopy[dashboardID]
-        dispatchSetActiveHilDashboards(activeHilCopy)
-
-        const ID = deepCopy(taskQueueID)
-
-        // delete newItem._id
-        delete newItem.dashboard
-
-        // This is used to make the tap of the HIL button respond quickly
-        disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
-        setTimeout(() => disptachHILResponse(''), 2000)
-
-        await dispatchPostTaskQueue({...newItem})
-        // await dispatchPutTaskQueue({...newItem}, ID)
-
-        await postStationEvent(newItem)
     }
 
     // Posts HIL Postpone to API
@@ -469,7 +470,6 @@ const HILModals = (props) => {
     const onHilPostpone = () => {
         dispatchTaskQueueItemClicked('')
     }
-
 
     const onBlurQuantityInput = () => {
         if (quantity > count) {
@@ -600,10 +600,9 @@ const HILModals = (props) => {
 
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
-                                onHilSuccess()
+                                onHilSuccess(null, 'delete')
                                 dispatchSetShowModalId(null)
                                 setModalClosed(true)
-
                             }}
                         >
                             <styled.HilIcon

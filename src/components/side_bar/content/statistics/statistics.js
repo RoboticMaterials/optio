@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, useContext, memo } from 'react';
-import { useLocation, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useContext } from 'react';
+import { useParams } from 'react-router-dom'
+import { useSelector } from "react-redux";
 
 // Import Styles
 import * as styled from './statistics.style'
@@ -19,6 +19,7 @@ const Statistics = () => {
         subpage,
         id
     } = params
+
     const themeContext = useContext(ThemeContext);
 
     const processes = useSelector(state => state.processesReducer.processes)
@@ -67,9 +68,9 @@ const Statistics = () => {
         // Else push all processes
         else {
             Object.values(processes)
-            .filter((currProcess) => currProcess.map_id === currentMap._id)
+            .filter((currProcess) => currProcess.mapId === currentMap.id)
             .forEach(process => {
-                processesToRender.push(process._id)
+                processesToRender.push(process.id)
             });
 
         }

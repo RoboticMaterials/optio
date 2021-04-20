@@ -71,25 +71,25 @@ const ApiContainer = (props) => {
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
-    const dispatchSetCard = (card) => dispatch(setCard(card))
-    const onPutCard = (card) => dispatch(putCard(card))
+    // const dispatchSetCard = (card) => dispatch(setCard(card))
+    // const onPutCard = (card) => dispatch(putCard(card))
 
 
-    const dispatchSetTask = async (task) => await dispatch(setTask(task))
-    const dispatchRemoveTask = async (id) => await dispatch(removeTask(id))
+    // const dispatchSetTask = async (task) => await dispatch(setTask(task))
+    // const dispatchRemoveTask = async (id) => await dispatch(removeTask(id))
 
-    const dispatchSetProcess = (process) => dispatch(setProcess(process))
-    const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
+    // const dispatchSetProcess = (process) => dispatch(setProcess(process))
+    // const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
 
-    const dispatchSetObject = (process) => dispatch(setObject(process))
-    const dispatchRemoveObject = (id) => dispatch(removeObject(id))
+    // const dispatchSetObject = (process) => dispatch(setObject(process))
+    // const dispatchRemoveObject = (id) => dispatch(removeObject(id))
 
 
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const onGetProcesses = () => dispatch(getProcesses());
 
-    const onGetSchedules = () => dispatch(getSchedules())
+    // const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
     const onGetStatus = () => dispatch(getStatus())
 
@@ -399,58 +399,26 @@ const ApiContainer = (props) => {
         // run get queue
         onGetTaskQueue()
 
-        // took this out so the loop doesnt run anymore
-        // dispatchGetDataStream()
-
-        // Start subscription to status, taskQueue, devices
-        // Dont need to clean this one up because we always need it
-
-        // Subscribe to status
-        // API.graphql(
-        //     graphqlOperation(subscriptions.onDeltaStatus)
-        // ).subscribe({
-        //     next: () => { 
-        //         // run get stations
-        //         onGetStatus()
-        // },
-        //     error: error => console.warn(error)
-        // });
-
-        // Subscribe to taskQueue
-        // Only need this one for now
-
         getResourceSubscription(dataTypes.TASK_QUEUE, null, async (value) => {
             // run get queue
             const taskQ = await onGetTaskQueue()
-            console.log("taskQ",taskQ)
 
-            Object.values(taskQ).map((item) => {
-                if (
-                    // when do we update the task???
-                    item.taskId === value.taskId
-                    &&
-                    value.hil_response === true
-                    &&
-                    value.updatedAt
-                )
-                {
-                    handleTaskUpdate(value)
-                }
-            })
+            if(!!taskQ){
+                Object.values(taskQ).map((item) => {
+                    if (
+                        // when do we update the task???
+                        item.taskId === value.taskId
+                        &&
+                        value.hil_response === true
+                        &&
+                        value.updatedAt
+                    )
+                    {
+                        handleTaskUpdate(value)
+                    }
+                })
+            }
         })
-
-        // Subscribe to Devices
-        // Taking this out for now because sevices will be added later
-        // API.graphql(
-        //     graphqlOperation(subscriptions.onDeltaDevice)
-        // ).subscribe({
-        //     next: () => { 
-        //         // run get stations
-        //         onGetProcesses()
-        // },
-        //     error: error => console.warn(error)
-        // });
-
     }
 
     /*

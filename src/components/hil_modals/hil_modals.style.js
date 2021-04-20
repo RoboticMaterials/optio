@@ -326,20 +326,21 @@ const HilButtonCss = css`
     }
 `
 export const ColumnContainer = styled.div`
-  display: flex;
+    display: flex;
     flex-direction: column;
 `
 
 export const RowContainer = styled.div`
-  display: flex;
+    display: flex;
     flex-direction: row;
 `
 
 export const Header = styled.div`
-    display:flex;
+    display: flex;
     flex-direction: row;
     width: 100%;
-    background: ${props => props.theme.bg.septenary};
+    background: ${props => props.theme.bg.secondary};
+    color: ${props => props.theme.bg.quinary};
     border-bottom: 1px solid ${props => props.theme.bg.secondary};
     align-items: center;
     justify-content: space-around;

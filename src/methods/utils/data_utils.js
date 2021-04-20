@@ -51,10 +51,12 @@ const RESOURCE_JSON_KEYS = {
   [dataTypes.LOT_TEMPLATE]: ["displayNames", "fields"],
   [dataTypes.SETTINGS]: ["loggers", "shiftDetails", "timezone"],
   [dataTypes.STATION]: ["children", "dashboards"],
+  [dataTypes.TASK_QUEUE]: [],
 }
 
 // parser for each resource
 export const parseLot = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.CARD])
+export const parseTaskQueue = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.TASK_QUEUE])
 export const parseTask = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.TASK])
 export const parseProcess = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
 export const parseLotTemplate = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
