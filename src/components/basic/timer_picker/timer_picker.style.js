@@ -6,13 +6,13 @@ export const Container = styled.div`
 	display: flex;
 	// flex: 1;
 	overflow: hidden;
-	
+
 	background: green;
 `;
 
 export const ColumnsContainer = styled.div`
 	display: flex;
-	width: 100%;
+	width: 50%;
 
 `
 

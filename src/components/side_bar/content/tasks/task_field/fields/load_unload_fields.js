@@ -119,7 +119,7 @@ const LoadUnloadFields = (props) => {
             {!humanLocation &&
 
             <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                <styled.Label>Timeout: </styled.Label>
+                <styled.Label style = {{width: "70%"}}>Timeout (mm:ss): </styled.Label>
 
                 <TimePickerField
                     mapInput={(value) => {
