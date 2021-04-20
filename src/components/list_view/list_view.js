@@ -106,6 +106,7 @@ const ListView = (props) => {
 
     }, [widgetPage])
 
+
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
             if (dashboard.station === params.stationID) {

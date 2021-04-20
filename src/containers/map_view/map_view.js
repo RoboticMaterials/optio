@@ -113,7 +113,6 @@ export class MapView extends Component {
         } else if (this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
-
             // default to first map found
             this.props.dispatchSetCurrentMap(this.props.maps[0])
         }

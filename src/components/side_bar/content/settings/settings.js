@@ -57,7 +57,6 @@ const Settings = () => {
         currentMap,
         maps
     } = mapReducer
-
     const [serverSettingsState, setServerSettingsState] = useState({})
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
@@ -185,9 +184,7 @@ const Settings = () => {
 
     }
 
-    // Handles Time zone (NOT WORKING)
     const TimeZone = () => {
-      const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
 
         return (
           <styled.SettingContainer>
@@ -338,7 +335,11 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+        let selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+        if(!selectedMap){
+          dispatchSetCurrentMap(maps[0])
+          selectedMap = maps[0]
+        }
         return (
             <styled.SettingContainer>
 
