@@ -12,7 +12,7 @@ export const Container = styled.div`
 
 export const ColumnsContainer = styled.div`
 	display: flex;
-	width: 50%;
+	width: 100%;
 
 `
 
