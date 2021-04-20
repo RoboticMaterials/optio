@@ -18,6 +18,7 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 
 // actions
 import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 // constants
 import {FORM_MODES} from "../../../../../constants/scheduler_constants";
@@ -93,7 +94,6 @@ const FormComponent = (props) => {
 	const themeContext = useContext(ThemeContext)
 
 	useChange()
-
 	// component state
 	const [preview, setPreview] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
@@ -102,7 +102,6 @@ const FormComponent = (props) => {
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
-
 	/*
 	* handles when enter key is pressed
 	*
@@ -289,21 +288,7 @@ const FormComponent = (props) => {
 			<Button
 				style={{...buttonStyle}}
 				onClick={async () => {
-
-					// set touched to true for all fields to show errors
-					values.fields.forEach((currRow, currRowIndex) => {
-						currRow.forEach((currField, currFieldIndex) => {
-							setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
-						})
-					})
-					setFieldTouched("name", true)
-
-					const promise = submitForm()
-					promise.then(result => {
-						if(!(result instanceof Error) && result !== undefined) {
-							close()
-						}
-					})
+					submitForm()
 				}}
 				schema={"ok"}
 				disabled={submitDisabled}
@@ -364,6 +349,7 @@ const LotCreatorForm = (props) => {
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
@@ -537,7 +523,7 @@ const LotCreatorForm = (props) => {
 				validateOnBlur={true}
 
 				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={(values, { setSubmitting, setTouched, resetForm }) => {
+				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
 					const {
@@ -545,12 +531,23 @@ const LotCreatorForm = (props) => {
 					} = values
 
 					setSubmitting(true)
-					const submitPromise = handleSubmit(values, formMode)
-					// setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+
+					const submitPromise = await handleSubmit(values, formMode)
+					setSubmitting(false)
+
+					if(!(submitPromise instanceof Error) && submitPromise !== undefined) {
+						close()
+					}
+
 					return submitPromise;
 				}}
 			>
 				{formikProps => {
+
+					const {
+						values
+					} = formikProps
+
 
 					return (
 						<FormComponent

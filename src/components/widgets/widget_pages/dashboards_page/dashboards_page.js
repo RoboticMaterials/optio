@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom'
 
 // external functions
 import { useSelector, useDispatch } from 'react-redux'
@@ -11,7 +12,7 @@ import { withRouter } from "react-router-dom";
 import DashboardsList from './dashboard_list/DashboardsList'
 import DashboardScreen from './dashboard_screen/dashboard_screen'
 import DashboardEditor from './dashboard_editor/dashboard_editor'
-import DashboardsSidebar, {OPERATION_TYPES} from "./dashboards_sidebar/dashboards_sidebar.jsx"
+import DashboardsSidebar, { OPERATION_TYPES } from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
@@ -61,6 +62,14 @@ const DashboardsPage = (props) => {
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
 
+    const history = useHistory()
+    const dashboard = dashboards[dashboardID]
+    if (dashboard === undefined) {
+        history.push('/locations')
+        window.location.reload()
+    }
+
+
     /**
      * This useEffect checks whether the current dashboard is kick off enabled
      *
@@ -74,10 +83,10 @@ const DashboardsPage = (props) => {
      * This information is used for determining whether or not to enable the KICK OFF button for a given dashboard
      */
     useEffect(() => {
-
         onUpdateKickoffFinishInfo()
 
     }, [processes])
+
 
     const onUpdateKickoffFinishInfo = async () => {
         // list of all processes that the station is the first station of the process
@@ -86,7 +95,7 @@ const DashboardsPage = (props) => {
 
         // loop through processes and check if the load station of the first route of any process matches the current dashboards station
         Object.values(processes).forEach((currProcess) => {
-            if(currProcess && currProcess.routes && Array.isArray(currProcess.routes)) {
+            if (currProcess && currProcess.routes && Array.isArray(currProcess.routes)) {
                 // get first routes id, default to null
                 const firstRouteId = currProcess.routes[0]
 
@@ -97,7 +106,7 @@ const DashboardsPage = (props) => {
                 const loadStationId = currRoute?.load?.station
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
-                if(loadStationId === stationID && stationID !== undefined) firstStationProcesses.push(currProcess._id)
+                if (loadStationId === stationID && stationID !== undefined) firstStationProcesses.push(currProcess._id)
 
                 // now check if station is last route of any process
                 // get last routes id
@@ -110,7 +119,7 @@ const DashboardsPage = (props) => {
                 const unloadStationId = lastRoute?.unload?.station
 
                 // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
-                if(unloadStationId === stationID && stationID !== undefined) lastStationProcesses.push(currProcess._id)
+                if (unloadStationId === stationID && stationID !== undefined) lastStationProcesses.push(currProcess._id)
 
 
             }
@@ -122,13 +131,13 @@ const DashboardsPage = (props) => {
         } = dashboard || {}
 
         await dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
-        if(firstStationProcesses.length > 0 ) {
+        if (firstStationProcesses.length > 0) {
 
             // check if kickoff button needs to be added
-            const containsKickoffButton = getContainsKickoffButton({buttons})
+            const containsKickoffButton = getContainsKickoffButton({ buttons })
 
             // if dashboard doesn't already contain kickoff button, add it
-            if(!containsKickoffButton) {
+            if (!containsKickoffButton) {
                 const kickOffButton = {
                     ...getOperationButton(OPERATION_TYPES.KICK_OFF.key),
                     name: ""
@@ -141,14 +150,14 @@ const DashboardsPage = (props) => {
         }
 
         await dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
-        if(lastStationProcesses.length > 0) {
+        if (lastStationProcesses.length > 0) {
 
 
             // check if finish button needs to be added
-            const containsFinishButton = getContainsFinishButton({buttons})
+            const containsFinishButton = getContainsFinishButton({ buttons })
 
             // add finish button
-            if(!containsFinishButton) {
+            if (!containsFinishButton) {
                 const finishButton = {
                     ...getOperationButton(OPERATION_TYPES.FINISH.key),
                     name: ""
@@ -160,22 +169,6 @@ const DashboardsPage = (props) => {
             }
         }
     }
-
-    // On page load, load the first and only dashboard with this station
-    // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future
-    useEffect(() => {
-        try {
-            const dashboardType = !!stations[stationID] ? stations[stationID] : devices[stationID]
-            const dashID = dashboardType.dashboards[0]
-            props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
-        } catch (error) {
-            
-        }
-
-        return () => {
-
-        }
-    }, [])
 
     // checks url params and updates editingDashboard / selectedDashboard accordingly
     useEffect(() => {
@@ -253,7 +246,7 @@ const DashboardsPage = (props) => {
     // sets showSidebar to false if on dashboard page, effectively hiding the sidebar
     // sidebar is never used in a dashboard
     useEffect(() => {
-        if(page === PAGES.EDITING) {
+        if (page === PAGES.EDITING) {
             setShowSidebar(true)
         }
         else {
@@ -263,7 +256,7 @@ const DashboardsPage = (props) => {
 
 
     return (
-        <style.PageContainer>
+        <style.PageContainer >
             <DndProvider backend={HTML5Backend}>
                 <style.Container style={{ flexGrow: '1' }}>
                     {/* If the length of ID is not 0, then a dashboard must have been clicked */}
@@ -299,7 +292,8 @@ const DashboardsPage = (props) => {
                     }
                 </style.Container>
             </DndProvider>
-        </style.PageContainer>
+        </style.PageContainer >
+
     )
 }
 

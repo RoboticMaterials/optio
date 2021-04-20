@@ -67,10 +67,15 @@ export const ColumnContainer = styled.div`
   justify-content: space-between;
   flex-direction: column;
   background: ${props => props.theme.bg.secondary};
-  padding: 1rem;
+  padding: .25rem 1rem 0 1rem;
   border-radius: .4rem;
   
-  ${props => props.css && props.css};
+  height: fit-content;
+  
+  
+  
+  margin-bottom: 1rem;
+  
 `
 
 export const ExpandContractIcon = styled.button`
@@ -83,6 +88,8 @@ export const Description = styled.span`
   color: ${props => props.theme.textColor};
   white-space: nowrap;
   ${props => props.css && props.css};
+  font-size: ${props => props.theme.fontSize.sz4};
+  //margin-bottom: .25rem;
 `
 
 export const ContentContainer = styled.div`
@@ -91,7 +98,9 @@ export const ContentContainer = styled.div`
   height: fit-content;
   align-items: center;
   flex: 1;
-  margin-top: .5rem;
+  align-self: stretch;
+  margin-top: .25rem;
+  margin-bottom: -1rem;
 `
 
 
@@ -108,6 +117,7 @@ export const ItemContainer = styled.div`
 	${flexItemCss};	// this element is used in flex-wrap containers - don't remove unless you adjust everything else accordingly...
 	display: flex;
 	align-items: center;
+  flex: 1;
 	
 	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
 		flex-wrap: wrap;

@@ -36,6 +36,16 @@ const EditLocation = (props) => {
     const dispatch = useDispatch()
     let selectedLocationRef = useRef()
     let selectedStationChildrenCopyRef = useRef()
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {}
+    } = current || {}
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -105,6 +115,15 @@ const EditLocation = (props) => {
     useEffect(() => {
         selectedStationChildrenCopyRef.current = selectedStationChildrenCopy
     }, [selectedStationChildrenCopy])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+        dispatchPageDataChanged(true)
+      }
+      else{
+        dispatchPageDataChanged(false)
+      }
+    }, [values])
 
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
@@ -255,16 +274,16 @@ const EditLocation = (props) => {
         console.log("deleteLoc")
 
         // Station
-        if(!!selectedLocation && selectedLocation.temp){
-          if (selectedLocation.schema === 'station') {
-              await dispatchRemoveStation(selectedStation._id)
-          }
+        if (!!selectedLocation && selectedLocation.temp) {
+            if (selectedLocation.schema === 'station') {
+                await dispatchRemoveStation(selectedStation._id)
+            }
 
-          // Position
-          else {
-              await dispatchRemovePosition(selectedPosition._id)
-          }
-          
+            // Position
+            else {
+                await dispatchRemovePosition(selectedPosition._id)
+            }
+
             dispatchSetSelectedStationChildrenCopy(null)
             dispatchSetSelectedPosition(null)
             dispatchSetSelectedStation(null)
@@ -351,7 +370,7 @@ const EditLocation = (props) => {
         return types.map((type, i) => {
             const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
-                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation}/>
+                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
         })
 
@@ -412,6 +431,7 @@ const EditLocation = (props) => {
                     validateOnChange={true}
                     validateOnMount={true}
                     validateOnBlur={true}
+                    innerRef = {formRef}
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
                     validationSchema={locationSchema(stations, selectedLocation)}
@@ -427,6 +447,8 @@ const EditLocation = (props) => {
                         const {
                             submitForm,
                             errors,
+                            initialValues,
+                            values
                         } = formikProps
 
                         return (
@@ -469,30 +491,24 @@ const EditLocation = (props) => {
                                         }}
                                     />
 
-                                {/* Location Type */}
-                                <styled.DefaultTypesContainer>
+                                    {/* Location Type */}
+                                    <styled.DefaultTypesContainer>
 
-                                {!selectedLocation || selectedLocation.temp ?
-                                    <>
-                                        <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
-                                            <styled.Label schema={'locations'}>Stations</styled.Label>
-                                            <styled.LocationButtonConatiner>
-                                                {renderStationButtons()}
-                                            </styled.LocationButtonConatiner>
-
-                                            {/* <styled.LocationButtonSubtitleContainer>
-                                                <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
-                                                <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
-                                            </styled.LocationButtonSubtitleContainer> */}
-
+                                        {!selectedLocation || selectedLocation.temp ?
+                                            <>
+                                                <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
+                                                    <styled.Label schema={'locations'}>Stations</styled.Label>
+                                                    <styled.LocationButtonConatiner>
+                                                        {renderStationButtons()}
+                                                    </styled.LocationButtonConatiner>
                                                 </styled.LocationTypeContainer>
 
-                                        {deviceEnabled &&
-                                            <styled.LocationTypeContainer  onMouseUp={onRemoveTempLocation}>
-                                                <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
-                                                <styled.LocationButtonConatiner>
-                                                    {renderPositionButtons()}
-                                                </styled.LocationButtonConatiner>
+                                                {deviceEnabled &&
+                                                    <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
+                                                        <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
+                                                        <styled.LocationButtonConatiner>
+                                                            {renderPositionButtons()}
+                                                        </styled.LocationButtonConatiner>
 
                                                         {/* <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
                                                     <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
@@ -507,6 +523,7 @@ const EditLocation = (props) => {
                                             <LocationButton
                                                 type={selectedLocation['type']}
                                                 isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
+                                                locationAdded={true}
                                                 handleAddLocation={() => null}
                                             />
 
@@ -514,27 +531,26 @@ const EditLocation = (props) => {
 
                                     </styled.DefaultTypesContainer>
 
-                                    {(!!selectedLocation && selectedLocation.schema === 'station') ?
+                                    {(!!selectedLocation && selectedLocation.schema === 'station' && !selectedLocation.temp) &&
 
                                         <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                                        :
-                                        <>
-                                            {!!deviceEnabled && !!selectedLocation &&
-                                                <Button
-                                                    schema={'locations'}
-                                                    secondary
-                                                    onClick={() => {
-                                                        handleSetPositionToCartCoords()
-                                                        dispatchPageDataChanged(true)
-                                                    }}
-                                                    style={{ marginBottom: '1rem' }}
-                                                >
-                                                    Use Cart Location
-                                    </Button>
-                                            }
-                                        </>
-
                                     }
+
+                                    {(!!selectedLocation && selectedLocation.schema === 'position' && !selectedLocation.temp) &&
+
+                                        <Button
+                                            schema={'locations'}
+                                            secondary
+                                            onClick={() => {
+                                                handleSetPositionToCartCoords()
+                                                dispatchPageDataChanged(true)
+                                            }}
+                                            style={{ marginBottom: '1rem' }}
+                                        >
+                                            Use Cart Location
+                                        </Button>
+                                    }
+
                                     <div style={{ height: "100%" }}></div>
 
 

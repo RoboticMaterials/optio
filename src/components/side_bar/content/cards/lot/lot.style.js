@@ -49,6 +49,8 @@ export const Container = styled.div`
   // ${props => props.isFocused && focusedCss};
   // ${props => props.isSelected && selectedCss};
   // ${props => props.containerStyle};
+  
+  max-width: 30rem;
 `
 
 const selectedCss = css`
@@ -88,7 +90,6 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  
 `
 
 export const NameContainer = styled.div`

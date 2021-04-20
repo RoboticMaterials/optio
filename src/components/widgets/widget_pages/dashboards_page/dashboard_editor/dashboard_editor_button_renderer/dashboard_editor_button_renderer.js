@@ -16,7 +16,7 @@ import {getCanDeleteDashboardButton} from "../../../../../../methods/utils/dashb
 
 const logger = log.getLogger("Dashboards")
 
-const DashboardEditorButtonRenderer = SortableContainer((props) => {
+const DashboardEditorButtonRenderer = ((props) => {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
@@ -31,6 +31,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
             groupName="dashboard-buttons"
             getChildPayload={() => null}
             style={{ width: '100%', height: '100%' }}
+            lockAxis={"y"}
         >
             {buttons.map((button, ind) => {
 
