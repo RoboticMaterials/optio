@@ -50,7 +50,11 @@ export const getTaskQueue = () => {
             const taskQueue = await api.getTaskQueue();
             const normalizedData = normalize(taskQueue, taskQueueSchema);
 
-            return onSuccess(normalizedData.entities.taskQueue);
+            if(!!normalizedData.entities.taskQueue){
+                return onSuccess(normalizedData.entities.taskQueue);
+            }else{
+                return onSuccess(normalizedData.entities);
+            }
         } catch (error) {
             return onError(error);
         }

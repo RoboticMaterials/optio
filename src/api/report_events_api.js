@@ -89,7 +89,7 @@ export async function getReportAnalytics(stationId, timeSpan) {
             variables: { 
                 stationId: stationId,
                 timeSpan: timeSpan.timespan,
-                timeZone: timeZone.label,
+                timeZone: timeZone.label ? timeZone.label : timeZone,
                 index: 0
              }
         })

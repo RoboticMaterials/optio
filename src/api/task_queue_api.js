@@ -20,7 +20,7 @@ import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
 import { taskQueueByOrgId } from '../graphql/queries'
-import { createTaskQueue, deleteTaskQueue, updateTaskQueue, manageTaskQueue } from '../graphql/mutations'
+import { createTaskQueue, updateTaskQueue, manageTaskQueue } from '../graphql/mutations'
 
 // import {putCard, getCard} from './cards_api'
 
@@ -30,22 +30,29 @@ import getUserOrgId from './user_api'
 
 import store from '../redux/store/index'
 
-import { getObjects } from '../redux/actions/objects_actions'
+import { parseTaskQueue } from "../methods/utils/data_utils";
+
+import {
+    streamlinedGraphqlCall,
+    TRANSFORMS
+} from "../methods/utils/api_utils";
 
 export async function getTaskQueue() {
     try {
-        
         const userOrgId = await getUserOrgId()
 
-        const res = await API.graphql({
-            query: taskQueueByOrgId,
-            variables: { organizationId: userOrgId }
-          })
+        const taskQueue = await streamlinedGraphqlCall(
+                            TRANSFORMS.QUERY,
+                            taskQueueByOrgId, 
+                            { organizationId: userOrgId }, 
+                            parseTaskQueue
+                        )
 
-        return res.data.TaskQueueByOrgId.items;
+        return taskQueue;
     } catch (error) {
         // Error 😨
         errorLog(error)
+        return []
     }
 }
 

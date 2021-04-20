@@ -71,25 +71,25 @@ const ApiContainer = (props) => {
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
-    const dispatchSetCard = (card) => dispatch(setCard(card))
-    const onPutCard = (card) => dispatch(putCard(card))
+    // const dispatchSetCard = (card) => dispatch(setCard(card))
+    // const onPutCard = (card) => dispatch(putCard(card))
 
 
-    const dispatchSetTask = async (task) => await dispatch(setTask(task))
-    const dispatchRemoveTask = async (id) => await dispatch(removeTask(id))
+    // const dispatchSetTask = async (task) => await dispatch(setTask(task))
+    // const dispatchRemoveTask = async (id) => await dispatch(removeTask(id))
 
-    const dispatchSetProcess = (process) => dispatch(setProcess(process))
-    const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
+    // const dispatchSetProcess = (process) => dispatch(setProcess(process))
+    // const dispatchRemoveProcess = (id) => dispatch(removeProcess(id))
 
-    const dispatchSetObject = (process) => dispatch(setObject(process))
-    const dispatchRemoveObject = (id) => dispatch(removeObject(id))
+    // const dispatchSetObject = (process) => dispatch(setObject(process))
+    // const dispatchRemoveObject = (id) => dispatch(removeObject(id))
 
 
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const onGetProcesses = () => dispatch(getProcesses());
 
-    const onGetSchedules = () => dispatch(getSchedules())
+    // const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
     const onGetStatus = () => dispatch(getStatus())
 
