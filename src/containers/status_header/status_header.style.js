@@ -1,4 +1,6 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+import * as commonCss from "../../common_css/common_css"
 
 import { globStyle } from '../../global_style';
 import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../methods/utils/color_utils';
@@ -65,33 +67,23 @@ export const LogoSubtitle = styled.h2`
 
 // ************************************
 // ************************************
+export const buttonCss = css`
+${commonCss.commonIcon};   
+${commonCss.iconButtonCss}
+font-size: 2rem;
+margin: 0 1rem;
+`
 
 // play button
 // ************************************
 // ************************************
+export const AccountButton = styled.button`
+    ${buttonCss};
+
+`
+
 export const PlayButton = styled.button`
-    //color:  ${props => props.play ? props.theme.good : props.theme.bad};
-    background: transparent;
-    // border: 0.2rem solid ${props => props.play ? props.theme.good : props.theme.bad};
-    border: none;
-    border-radius: 0.3rem;
-    height: 4rem;
-    padding: .25rem;
-    outline: none !important;
-    outlineOffset: none !important;
-    &:hover {
-        color: ${props => props.play ? RGB_Linear_Shade(.3, props.theme.good) : RGB_Linear_Shade(.3, props.theme.bad)};
-        border-color: ${props => props.play ? RGB_Linear_Shade(.3, props.theme.good) : RGB_Linear_Shade(.3, props.theme.bad)};
-    }
-
-    margin-right: 1.5rem;
-    margin-left: 0;
-
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        margin-right: 1rem;
-    }
-
-
+    ${buttonCss};
 `;
 
 export const PlayButtonIcon = styled.i`
@@ -114,12 +106,7 @@ export const PlayButtonIcon = styled.i`
 // ************************************
 
 export const NotificationIcon = styled.i`
-    font-size: 2.2rem;
-    /* font-size: ${props => props.theme.fontSize.sz3}; */
-    color: ${props => props.theme.fg.red};
-    margin-left: .2rem;
-    margin-right: .2rem;
-    margin-bottom: 0.4rem;
+    ${buttonCss};
 `
 
 export const RightMenuContainer = styled.div`

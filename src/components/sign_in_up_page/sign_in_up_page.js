@@ -120,7 +120,7 @@ const SignInUpPage = (props) => {
                     });
 
                     setErrorText(
-                        "You have sucessfully signed up. Please check your email for a verification link."
+                        "You have successfully signed up. Please check your email for a verification link."
                     );
                     handleSignInChange(true);
                     setLoading(false)

@@ -137,9 +137,6 @@ export const HilButtonContainer = styled.div`
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         padding: 0rem 2rem;
     }
-
-
-
 `
 
 export const LotSelectorContainer = styled.div`
@@ -189,7 +186,7 @@ export const SubtitleContainer = styled.div`
 `
 
 export const FooterContainer = styled.div`
-    background: ${props => props.theme.bg.septenary};
+    background: ${props => props.theme.bg.tertiary};
     border-top: 1px solid ${props => props.theme.bg.secondary};
     width: 100%;
     display: flex;
@@ -198,7 +195,6 @@ export const FooterContainer = styled.div`
     padding: .5rem;
     flex-direction: row;
 `
-
 
 export const HilMessage = styled.h3`
     display: flex;

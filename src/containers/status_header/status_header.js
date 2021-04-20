@@ -16,7 +16,7 @@ import { setWidth, setOpen} from "../../redux/actions/sidebar_actions";
 
 // import components
 import RightMenu from '../right_menu/right_menu'
-
+import AccountModal from '../../components/account_page/account_modal'
 // import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
@@ -29,10 +29,13 @@ import { render } from '@testing-library/react';
 import { ThemeContext } from 'styled-components'
 
 
+
+
 const StatusHeader = (props) => {
 
     // this.logger = log.getLogger(this.constructor.name);
 
+    const themeContext = useContext(ThemeContext);
     //const [showRightMenu, setShowRightMenu] = useState(false)
     const [newNotification, setNewNotification] = useState(false)
 
@@ -55,7 +58,6 @@ const StatusHeader = (props) => {
 
     const prevNotificationRef = useRef()
 
-
     let params = useParams()
     const widgetPage = params.widgetPage
 
@@ -66,11 +68,8 @@ const StatusHeader = (props) => {
     const dispatch = useDispatch()
     const onHideNotifications = (displayType) => dispatch({ type: 'HIDDEN_NOTIFICATIONS', payload: displayType })
     const onTaskQueueOpen = (props) => dispatch(taskQueueActions.taskQueueOpen(props))
-    const onSetWidth = (props) => dispatch (setWidth(props))
-    const onSetOpen = (props) => dispatch (setOpen(props))
 
-
-
+    const [showAccountInfo, setShowAccountInfo] = useState(false)
 
     // Used for determining break point of header
     const size = useWindowSize()
@@ -232,10 +231,19 @@ const StatusHeader = (props) => {
         return (
             <styled.RightContentContainer>
 
+                <styled.AccountButton
+                    color={themeContext.schema.account.solid}
+                    className='far fa-user-circle'
+                    onClick={() => {
+                        setShowAccountInfo(!showAccountInfo)
+                    }}
+                    />
+
                 {/* Hide play pause button if it's not MirMapEnabled */}
                 {deviceEnabled &&
                     <styled.PlayButton
                         play={pause_status}
+                        color={themeContext.schema.account.solid}
                         windowWidth={windowWidth}
                         widthBreakPoint={widthBreakPoint}
                     >
@@ -253,10 +261,16 @@ const StatusHeader = (props) => {
                             {toggle === 'notifications' ?
                                 <>
                                     <styled.NotificationText>2</styled.NotificationText>
-                                    <styled.NotificationIcon className='far fa-bell' />
+                                    <styled.NotificationIcon
+                                        className='far fa-bell'
+                                        color={themeContext.schema.account.solid}
+                                    />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <styled.NotificationIcon
+                                    className='fa fa-tasks'
+                                    color={themeContext.schema.account.solid}
+                                />
 
                             }
 
@@ -282,10 +296,16 @@ const StatusHeader = (props) => {
                             {toggle === 'notifications' ?
                                 <>
                                     <styled.NotificationText>2</styled.NotificationText>
-                                    <styled.NotificationIcon className='far fa-bell' />
+                                    <styled.NotificationIcon
+                                        className='far fa-bell'
+                                        color={themeContext.schema.account.solid}
+                                    />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <styled.NotificationIcon
+                                    className='fa fa-tasks'
+                                    color={themeContext.schema.account.solid}
+                                />
 
                             }
 
@@ -372,6 +392,13 @@ const StatusHeader = (props) => {
             </styled.LeftContentContainer>
 
             {renderRightContent()}
+
+            <AccountModal
+                isOpen={showAccountInfo}
+                onClose={()=> setShowAccountInfo(false)}
+            />
+
+            
         </styled.StatusHeader>
 
 

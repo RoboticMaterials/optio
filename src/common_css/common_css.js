@@ -54,12 +54,12 @@ export const commonIcon = css`
     
     &: hover {
         cursor: pointer;
-        filter: brightness(110 %);
+        filter: brightness(110%);
     }
 
     &: active{
         //box-shadow: none;
-        filter: brightness(85 %);
+        filter: brightness(85%);
     }
 `
 export const whiteGlow = css`
