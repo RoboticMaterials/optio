@@ -308,7 +308,7 @@ const TaskField = (props) => {
                   <styled.DirectionText style = {{color: "#FF4B4B"}}>Click the start position on the map</styled.DirectionText>
                   <styled.ListItemIcon
                       className='fas fa-exclamation-triangle'
-                      style = {{color: "#FF4B4B", cursor: "auto", paddingBottom: "0.4rem"}}
+                      style = {{color: "#FF4B4B", cursor: "auto", paddingBottom: "0.4rem", fontSize: "1.1rem"}}
                   />
                 </styled.ListItem>
               </>
@@ -337,7 +337,7 @@ const TaskField = (props) => {
                       <styled.DirectionText style = {{color: "#ffbf1f"}}>Click the end position on the map</styled.DirectionText>
                       <styled.ListItemIcon
                           className='fas fa-exclamation-triangle'
-                          style = {{color: "#ffbf1f", cursor: "auto", paddingBottom: "0.4rem"}}
+                          style = {{color: "#ffbf1f", cursor: "auto", paddingBottom: "0.4rem", fontSize: "1.1rem"}}
                       />
                     </styled.ListItem>
                   </>

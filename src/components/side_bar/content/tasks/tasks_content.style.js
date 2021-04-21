@@ -3,8 +3,7 @@ import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
 
 export const ContentContainer = styled.div`
     flex-grow: 1;
-    padding: 1rem;
-
+    padding: 1rem 1rem 0rem 1rem;
     display: flex;
     flex-direction: column;
 
