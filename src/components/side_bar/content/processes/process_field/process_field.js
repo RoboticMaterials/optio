@@ -100,7 +100,7 @@ export const ProcessField = (props) => {
     // State definitions
     const [shift,] = useState(false) // Is shift key pressed ?
     const [isTransportTask,] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-    const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
+    const [editingTask, setEditingTask] = useState(true) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -710,25 +710,6 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                {editingTask && selectedTask ?
-                    <styled.TaskContainer schema={'processes'}>
-                        <TaskField
-                            {...formikProps}
-                            isNew={editingTask === "newRoute"}
-                            onRemove={handleRemoveRoute}
-                            onDelete={handleDeleteRoute}
-                            onBackClick={handleTaskBack}
-                            onSave={handleAddTask}
-                            fieldParent={editingTask}
-                            shift={shift}
-                            isTransportTask={isTransportTask}
-                            isProcessTask={true}
-                            toggleEditing={(props) => {
-                                setEditingTask(props)
-                            }}
-                        />
-                    </styled.TaskContainer>
-                    :
                     <>
                     <styled.Title style = {{marginTop: ".5rem"}}>Process Type</styled.Title>
 
@@ -741,7 +722,7 @@ export const ProcessField = (props) => {
                             }}
                             selected={processType === 'simple'}
                         >
-                            Simple
+                            Single-Route
                         </styled.DualSelectionButton>
 
                         <styled.DualSelectionButton
@@ -751,29 +732,35 @@ export const ProcessField = (props) => {
                             }}
                             selected={processType === 'complex'}
                         >
-                            Multi-step
+                            Multi-Route
                         </styled.DualSelectionButton>
 
                     </styled.RowContainer>
 
                     {processType === "simple" ?
-                    <styled.TaskContainer schema={'processes'}>
-                        <TaskField
-                            {...formikProps}
-                            isNew={editingTask === "newRoute"}
-                            onRemove={handleRemoveRoute}
-                            onDelete={handleDeleteRoute}
-                            onBackClick={handleTaskBack}
-                            onSave={handleAddTask}
-                            fieldParent={editingTask}
-                            shift={shift}
-                            isTransportTask={isTransportTask}
-                            isProcessTask={true}
-                            toggleEditing={(props) => {
-                                setEditingTask(props)
-                            }}
-                        />
-                    </styled.TaskContainer>
+                    <>
+                      <styled.Title style = {{marginTop: "1rem"}}>Route Details</styled.Title>
+                      <styled.Container style = {{width: "100%", padding: "0rem 0rem 0rem 0rem", height: "100%"}}>
+                        <styled.TaskContainer schema={'processes'}>
+                            <TaskField
+                                {...formikProps}
+                                isNew={editingTask === "newRoute"}
+                                onRemove={handleRemoveRoute}
+                                onDelete={handleDeleteRoute}
+                                onBackClick={handleTaskBack}
+                                onSave={handleAddTask}
+                                fieldParent={editingTask}
+                                shift={shift}
+                                processType = {processType}
+                                isTransportTask={isTransportTask}
+                                isProcessTask={true}
+                                toggleEditing={(props) => {
+                                    setEditingTask(props)
+                                }}
+                            />
+                        </styled.TaskContainer>
+                      </styled.Container>
+                    </>
                     :
                     <styled.SectionContainer></styled.SectionContainer>
                   }
@@ -801,7 +788,7 @@ export const ProcessField = (props) => {
                             Delete Process
                         </Button>
                     </>
-                }
+
 
 
 

@@ -28,6 +28,13 @@ export const ListItemIcon = styled.i`
     }
 
 `
+export const Title = styled.h1`
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: ${props => props.theme.bg.septenary};
+    user-select: none;
+`
 
 export const Card = styled.div`
     background: ${props => props.dark ? props.theme.bg.tertiary : props.theme.bg.secondary};
@@ -66,7 +73,7 @@ export const ListItem = styled.div`
     height: 2.5rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: ${props => props.theme.schema['objects'].solid};
+    background: ${props => props.theme.schema['processes'].solid};
 
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
@@ -147,19 +154,19 @@ export const ObjectEditorText = styled.h3`
 export const DirectionText = styled.h3`
     font-size: 1rem;
     font-family: ${props => props.theme.font.primary};
-    color: ${props => props.theme.schema.tasks.solid};
+    color: ${props => props.theme.bg.septenary};
     text-align: center;
 `
 
 export const DualSelectionButton = styled.button`
     font-size: 1rem;
-    width: 8rem;
+    width: 50%;
     border: none;
     font-family: ${props => props.theme.font.primary};
 
     color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.tertiary};
+    background-color: ${props => props.selected ? props.theme.schema.processes.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 

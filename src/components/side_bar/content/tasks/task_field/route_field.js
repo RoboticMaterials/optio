@@ -80,6 +80,7 @@ const TaskField = (props) => {
         validateForm,
         onDelete,
         isNew,
+        processType
     } = props
 
     const fieldMeta = getFieldMeta(fieldParent)
@@ -294,10 +295,24 @@ const TaskField = (props) => {
       }
     }, [selectedTask])
 
-    const renderLoadUnloadParameters = () => {
+    const renderLoadUnloadText = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
-            return <styled.DirectionText>Click a position on the map to be the load (or start) position.</styled.DirectionText>
+            return (
+              <>
+                <styled.Title>Instructions</styled.Title>
+
+                <styled.ListItem
+                  style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #FF4B4B", marginBottom: "1.5rem"}}
+                >
+                  <styled.DirectionText style = {{color: "#FF4B4B"}}>Click the start position on the map</styled.DirectionText>
+                  <styled.ListItemIcon
+                      className='fas fa-exclamation-triangle'
+                      style = {{color: "#FF4B4B", cursor: "auto", paddingBottom: "0.4rem"}}
+                  />
+                </styled.ListItem>
+              </>
+            )
         } else if (selectedTask.load.station === null) {
             // Load position is not tied to a station - task is no longer a transport task
             return (
@@ -312,23 +327,46 @@ const TaskField = (props) => {
             // Load position has been defined and is a station - now handle unload position
             if (selectedTask.unload.position === null) {
                 // No unload position has been defined - ask user to define load (end) position
-                return <styled.DirectionText>Click on a position on the map to be the unload (or end) position.</styled.DirectionText>
-            } else if (selectedTask.unload.station === null) {
+                return (
+                  <>
+                    <styled.Title>Instructions</styled.Title>
+
+                    <styled.ListItem
+                      style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #ffbf1f"}}
+                    >
+                      <styled.DirectionText style = {{color: "#ffbf1f"}}>Click the end position on the map</styled.DirectionText>
+                      <styled.ListItemIcon
+                          className='fas fa-exclamation-triangle'
+                          style = {{color: "#ffbf1f", cursor: "auto", paddingBottom: "0.4rem"}}
+                      />
+                    </styled.ListItem>
+                  </>
+                )
+              } else if (selectedTask.unload.station === null) {
                 // Unload position is not a station - task is no longer a transport task
                 return <styled.HelpText>Since the end position is not tied to a station, this task is no longer a transport task</styled.HelpText>
-            } else {
-                // Load AND Unload positions have been defined. Display load/unload parameter fields
-                return <LoadUnloadFields
-                    fieldParent={fieldParent}
-                    values={values}
-                    setFieldValue={setFieldValue}
-                    isProcess={isProcessTask}
-                />
-
             }
         }
 
     }
+
+    const renderLoadUnloadFields = () => {
+
+      if(selectedTask.unload.position!==null){
+        // Load AND Unload positions have been defined. Display load/unload parameter fields
+        return <LoadUnloadFields
+            fieldParent={fieldParent}
+            values={values}
+            setFieldValue={setFieldValue}
+            isProcess={isProcessTask}
+        />
+      }
+    }
+
+
+
+
+
 
     const onSaveObject = async () => {
         const object = {
@@ -508,7 +546,9 @@ const TaskField = (props) => {
                 Some filtering is done based on certain conditions, see 'options' key
             */}
                     {!!selectedTask && isProcessTask && !!selectedTask.new &&
-                        <>
+                      <>
+                        {processType === "complex" &&
+                          <>
                             <div style={{ marginBottom: '1rem' }}>
                                 <ContentHeader
                                     content={'tasks'}
@@ -524,6 +564,7 @@ const TaskField = (props) => {
                                       }
                                     }}
                                 />
+
                             </div>
                             <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
                                 <styled.DualSelectionButton
@@ -548,6 +589,8 @@ const TaskField = (props) => {
                                 </styled.DualSelectionButton>
 
                             </styled.RowContainer>
+                            </>
+                          }
 
                             {contentType === 'existing' &&
                                 <div style={{ marginBottom: '1rem', paddingBottom: '2rem', borderBottom: `2px solid ${themeContext.bg.tertiary}` }}>
@@ -649,48 +692,58 @@ const TaskField = (props) => {
 
                     {contentType === 'new' &&
                         <div>
-                            {!!selectedTask && isProcessTask && !!selectedTask.new ?
+                        <>
+                          {processType === "complex" &&
+                            <>
+                                {!!selectedTask && isProcessTask && !!selectedTask.new ?
+                                    <styled.Label style={{ marginTop: '1rem' }}>
+                                        Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
+                                </styled.Label>
+                                    :
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <ContentHeader
+                                            content={'tasks'}
+                                            mode={'create'}
+                                            onClickBack={() => {
+                                              if(!!pageInfoChanged){
+                                                setConfirmExitModal(true)
+                                              }
+                                              else{
+                                                onBackClick(routeId)
+                                                dispatchSetEditingObject(false)
+                                                dispatchPageDataChanged(false)
+                                              }
+                                            }}
+                                        />
+                                    </div>
+                                }
+                            </>
+                          }
+                        </>
 
-                                <styled.Label style={{ marginTop: '1rem' }}>
-                                    Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
-                            </styled.Label>
-                                :
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <ContentHeader
-                                        content={'tasks'}
-                                        mode={'create'}
-                                        onClickBack={() => {
-                                          if(!!pageInfoChanged){
-                                            setConfirmExitModal(true)
-                                          }
-                                          else{
-                                            onBackClick(routeId)
-                                            dispatchSetEditingObject(false)
-                                            dispatchPageDataChanged(false)
-                                          }
-                                        }}
-                                    />
-                                </div>
-
-                            }
 
                             {/* Task Title */}
                             {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
 
+                            <div style={{ height: "100%"}}>
+                                {renderLoadUnloadText()}
+                            </div>
+
+                            <styled.Title>Route Name</styled.Title>
+
                             <TextField
                                 InputComponent={Textbox}
+                                placeholder = {"Route Name"}
                                 name={fieldParent ? `${fieldParent}.name` : "name"}
-                                placeholder={"New Route Name"}
-                                label={"Route Name"}
-                                schema={'tasks'}
-                                focus={params.page === "tasks" ? !name : name}
+                                schema={'processes'}
+                                focus={params.page === "processes" ? !name : name}
                                 inputStyle={{ background: isProcessTask ? themeContext.bg.primary : themeContext.bg.secondary }}
                                 style={{ fontSize: '1.2rem', fontWeight: '600' }}
                             />
 
                             {isTransportTask &&
                                 <>
-                                    <styled.Header style={{ marginTop: '1.5rem', marginRight: ".5rem", fontSize: '1.2rem' }}>Object</styled.Header>
+                                    <styled.Title style={{ marginTop: '1.5rem', marginRight: ".5rem"}}>Object</styled.Title>
 
                                     {!showObjectSelector &&
                                         <>
@@ -724,7 +777,7 @@ const TaskField = (props) => {
                                                 :
                                                 <Button
                                                     style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
-                                                    schema={'objects'}
+                                                    schema={'processes'}
                                                     secondary
                                                     // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                                     onClick={() => setShowObjectSelector(!showObjectSelector)}
@@ -760,7 +813,7 @@ const TaskField = (props) => {
 
                                     {isProcessRoute &&
                                         <>
-                                            <styled.Label style={{ fontSize: '1.2rem', alignSelf: 'center' }}>Tracking Type</styled.Label>
+                                            <styled.Title style={{alignSelf: 'center' }}>Tracking Type</styled.Title>
                                             <styled.RowContainer style={{ justifyContent: 'center' }}>
                                                 <styled.DualSelectionButton
                                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
@@ -790,14 +843,13 @@ const TaskField = (props) => {
                             }
 
                             {/* Load and Unload Parameters */}
-                            <div style={{ height: "100%", paddingTop: "1rem" }}>
-                                {renderLoadUnloadParameters()}
+                            <div style={{ height: "100%"}}>
+                                {renderLoadUnloadFields()}
                             </div>
-
                             <hr />
                         </div>
                     }
-                    {contentType === 'new' &&
+                    {contentType === 'new' && processType === "complex" &&
                         <>
                             <Button
                                 schema={'tasks'}
@@ -809,30 +861,35 @@ const TaskField = (props) => {
 
 
                             {/* Remove Task From Process Button */}
-                            {!!isProcessTask && selectedProcess ?
-                                <Button
-                                    schema={'error'}
-                                    disabled={!!selectedTask && !!selectedTask._id && isNew}
-                                    secondary
-                                    onClick={() => {
-                                        onRemove(routeId)
-                                    }}
-                                >
-                                    Remove Route
-                            </Button>
-                                :
-                                <Button
-                                    schema={'error'}
-                                    secondary
-                                    disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                                    onClick={() => {
-                                        setConfirmDeleteModal(true)
-                                    }}
+                            {processType === "complex" &&
+                              <>
+                                {!!isProcessTask && selectedProcess ?
+                                    <Button
+                                        schema={'error'}
+                                        disabled={!!selectedTask && !!selectedTask._id && isNew}
+                                        secondary
+                                        onClick={() => {
+                                            onRemove(routeId)
+                                        }}
+                                    >
+                                        Remove Route
+                                </Button>
+                                    :
+                                    <Button
+                                        schema={'error'}
+                                        secondary
+                                        disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                        onClick={() => {
+                                            setConfirmDeleteModal(true)
+                                        }}
 
-                                >
-                                    Delete Route
-                            </Button>
+                                    >
+                                        Delete Route
+                                </Button>
+                                }
+                              </>
                             }
+
                         </>
                     }
 

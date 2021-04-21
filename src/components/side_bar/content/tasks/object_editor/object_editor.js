@@ -52,9 +52,9 @@ const ObjectEditor = (props) => {
           <styled.ObjectContainer>
             <styled.RowContainer>
                 <BackButton
-                  style = {{ color: theme.main.schema['objects'].solid, marginBottom:'2rem'}}
-                  containerStyle={{borderColor: theme.main.schema['objects'].solid }}
-                  schema = {'objects'}
+                  style = {{ color: theme.main.schema['processes'].solid, marginBottom:'2rem'}}
+                  containerStyle={{borderColor: theme.main.schema['processes'].solid }}
+                  schema = {'processes'}
                   onClick = {onBackClick}
 
                 />
@@ -66,7 +66,7 @@ const ObjectEditor = (props) => {
                 }
                 {!editingObject ?
                   <PlusButton
-                    style={{marginTop: '0.2rem', color: theme.main.schema['objects'].solid}}
+                    style={{marginTop: '0.2rem', color: theme.main.schema['processes'].solid}}
                     onClick = {()=>{
                       dispatchSetEditingObject(true)
                       onAddObject()
@@ -141,7 +141,7 @@ const ObjectEditor = (props) => {
                     <Button
                         schema={'objects'}
                         style = {{width: '50%'}}
-                        tertiary
+                        secondary
                         disabled = {saveDisabled}
                         onClick= {()=>{
                           onSaveObject()
@@ -154,7 +154,7 @@ const ObjectEditor = (props) => {
                     <Button
                         schema={'error'}
                         style = {{width: '50%'}}
-                        tertiary
+                        secondary
                         disabled = {deleteDisabled}
                         onClick={() => {
                           onDeleteObject()

@@ -23,6 +23,11 @@ export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
 
 `
 
+export const ColumnContainer = styled.div`
+	display: flex;
+	width: 100%;
+`
+
 export const Title = styled.h1`
     font-family: ${props => props.theme.font.primary};
     font-size: 1.2rem;
@@ -66,7 +71,6 @@ export const TaskContainer = styled.div`
     // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
     scrollbar-color: light;
     scrollbar-width: thin;
-    min-height: 80%;
 `
 
 export const SVGText = styled.text`
