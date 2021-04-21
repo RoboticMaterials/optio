@@ -3,12 +3,12 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 
 export const Header = styled.div`
-    flex-grow: 1;
     display: flex;
+    padding: 1rem;
 
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    /* justify-content: space-around; */
     position: relative;
 
     /* width: calc(90% - 1rem); */
@@ -16,9 +16,6 @@ export const Header = styled.div`
     /* margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem); */
 
     height: 6rem;
-    max-height: 6rem;
-    min-height: 6rem;
-    line-height: 6rem;
 
     background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%);
     
@@ -32,24 +29,47 @@ export const Title = styled.h2`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz1};
 
-    flex-grow: 1;
 
-    text-align: center;
-    line-height: 6rem;
 
-    // tablet style
-    @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
-        font-size: ${props => props.theme.fontSize.sz2};
-    }
     user-select: none;
 
-    position: absolute;
 
     pointer-events: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: absolute;
+    text-align: center;
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto; 
+
+    // tablet style
+    @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
+        font-size: ${props => props.theme.fontSize.sz2};
+    }
+
 `
+
+
+export const PaceText = styled.p`
+    color: ${props => props.color};
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+    margin: 0;
+
+`
+
+export const PaceContainer = styled.div`
+    position: absolute;
+    right: 1rem;
+    border: .2rem solid;
+    border-color: ${props => props.color};
+    border-radius: .5rem;
+    padding: .5rem;
+`
+
 
 export const LotsTitle = styled.h2`
     color: ${props => props.theme.bg.octonary};
@@ -134,19 +154,5 @@ export const ColumnContainer = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-
-`
-export const Dots = styled.div`
-    align-items: center;
-    justify-content: flex-start;
-    height: 1.7rem;
-    color: white;
-    width:15rem;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    padding-top: .2rem;
-
 
 `

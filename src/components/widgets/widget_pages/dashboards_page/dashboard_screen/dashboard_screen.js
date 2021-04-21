@@ -94,12 +94,12 @@ const DashboardScreen = (props) => {
         type: modalType,
         id: modalButtonId
     } = reportModal
-    const [displayName, setDisplayName] = useState(dashboardName);
     const [dashboardStation, setDashboardStation] = useState({});
     const {
         name: stationName
     } = dashboardStation || {}
     const [showLotsList, setShowLotsList] = useState(true)
+    const [selectedOperation, setSelectedOperation] = useState(null)
 
     // actions
     const dispatch = useDispatch()
@@ -124,16 +124,10 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
-    const showTaskQueueButton = !mapViewEnabled ? true : mobileMode ? true : false
 
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
     }, [stations, stationID])
-
-    useEffect(() => {
-        setDisplayName(dashboardName ? dashboardName : `${stationName} Dashboard`)
-
-    }, [dashboardName, stationName])
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -227,198 +221,28 @@ const DashboardScreen = (props) => {
     }
 
 
-    // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
-    if (currentDashboard === undefined) {
-        history.push(`/locations`)
-        return (
-            <>
-            </>
-        )
-    }
+    // // if the task q contains a human task that is unloading, show an unload button
+    // if (Object.values(taskQueue).length > 0) {
 
-
-
-    /**
-     * Handles buttons associated with selected dashboard
-     *
-     * If there's a human task in the human task Q (see human_task_queue_actions for more details)
-     * and if the the tasks unload location is the dashboards station, then show a unload button
-     */
-    const handleDashboardButtons = () => {
-        const { buttons } = currentDashboard	// extract buttons from dashboard
-        let taskIds = []    // array of task ids
-        // filter out buttons with missing task
-        let filteredButtons = buttons.filter(async (currButton) => {
-            const {
-                task_id,
-                type
-            } = currButton
-
-            // Dont add duplicate buttons, delete if they're are any
-            if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
-                logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
-                return false // don't add duplicate tasks
-            }
-
-            // If the button is a custom task, then the task wont exist, so dont remove button
-            if (!!currButton.custom_task) return true
-
-            // If task does not exist, delete task
-            else if (task_id && !(tasks[task_id])) {
-                logger.error('Task does not exist! Hiding button from dashboard')
-                return false
-            }
-
-            taskIds.push(task_id)
-            return true
-        })
-
-        // if the task q contains a human task that is unloading, show an unload button
-        if (Object.values(taskQueue).length > 0) {
-
-            // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
-            Object.values(taskQueue).forEach((item, ind) => {
-                // If it is matching, add a button the the dashboard for unloading
-                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
-                    filteredButtons = [
-                        ...filteredButtons,
-                        {
-                            'name': item.hil_message,
-                            'color': '#90eaa8',
-                            'task_id': 'hil_success',
-                            'custom_task': {
-                                ...item
-                            },
-                            'id': `custom_task_charge_${ind}`
-                        }
-                    ]
-                }
-            })
-        }
-
-        return filteredButtons
-    }
-
-    const handleRouteClick = async (Id, name, custom, deviceType) => {
-
-        // If a custom task then add custom task key to task q
-        if (Id === 'custom_task') {
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-                label: "Task Added to Queue",
-                message: name
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-
-        // Else if its a hil success, execute the HIL success function
-        else if (Id === 'hil_success') {
-            return handleHilSuccess(custom)
-        }
-
-        const connectedDeviceExists = isDeviceConnected()
-
-        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
-            // display alert notifying user that task is already in queue
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                label: "Alert! No device is currently connected to run this route",
-                message: `'${name}' not added`,
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-
-        let inQueue = isRouteInQueue(Id, deviceType)
-
-        // add alert to notify task has been added
-        if (inQueue) {
-            // display alert notifying user that task is already in queue
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                label: "Alert! Task Already in Queue",
-                message: `'${name}' not added`,
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-        else {
-            if (deviceType !== 'human') {
-                setAddTaskAlert({
-                    type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-                    label: "Task Added to Queue",
-                    message: name
-                })
-
-                // clear alert after timeout
-                return setTimeout(() => setAddTaskAlert(null), 1800)
-            }
-        }
-    }
-
-    /**
-     * Handles event of task click
-     *
-     * Currently there are 3 types of tasks that can be clicked on a dashboard
-     *
-     * 1) Custom task
-     * This task is used to send the cart to a position that does not belong to a station (You cant make a route to a non-station position)
-     * It takes in the custom value, which is the position info, and sends the cart to that position from it's current location
-     *
-     * 2) HIL Success
-     * This is a button that shows up on dashboard when a human tasks unload location is the current dashboard
-     * Instead of showing a HIL modal, it shows an unload button
-     * The reason why is that humans locations are not known so a HIL modal would have to be on the screen the whole time instead of when a autonomous cart arives
-     *
-     * 3) Basic Routes
-     * This is the standard button for a dashboard that just executes the route
-     * If the task is already in the q, then show a warning label and dont add it
-     *
-     *
-     * @param {*} Id
-     * @param {*} name
-     * @param {*} custom
-     */
-    const handleTaskClick = async (type, Id, name, custom, deviceType) => {
-        switch (type.toUpperCase()) {
-            case TYPES.ROUTES.key:
-                if (!(Id === 'hil_success')) {
-                    onHandlePostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
-                }
-                handleRouteClick(Id, name, custom, deviceType)
-                break
-            case TYPES.OPERATIONS.key:
-                handleOperationClick()
-                break
-            case OPERATION_TYPES.REPORT.key:
-                setReportModal({
-                    type: OPERATION_TYPES.REPORT.key,
-                    id: Id
-                })
-                break
-            case OPERATION_TYPES.KICK_OFF.key:
-                setReportModal({ type: OPERATION_TYPES.KICK_OFF.key, id: null })
-                break
-            case OPERATION_TYPES.FINISH.key:
-                setReportModal({ type: OPERATION_TYPES.FINISH.key, id: null })
-                break
-            default:
-                break
-        }
-
-
-    }
-
-    const handleOperationClick = () => {
-        // setReportModal()
-    }
-
-    const handleReportClick = () => {
-    }
+    //     // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
+    //     Object.values(taskQueue).forEach((item, ind) => {
+    //         // If it is matching, add a button the the dashboard for unloading
+    //         if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
+    //             filteredButtons = [
+    //                 ...filteredButtons,
+    //                 {
+    //                     'name': item.hil_message,
+    //                     'color': '#90eaa8',
+    //                     'task_id': 'hil_success',
+    //                     'custom_task': {
+    //                         ...item
+    //                     },
+    //                     'id': `custom_task_charge_${ind}`
+    //                 }
+    //             ]
+    //         }
+    //     })
+    // }
 
 
     // Posts HIL Success to API
@@ -444,74 +268,90 @@ const DashboardScreen = (props) => {
 
     }
 
+    const renderModal = () => {
+        switch (selectedOperation) {
+            case 'report':
+                return (
+                    <ReportModal
+                        dashboardButtonId={modalButtonId}
+                        isOpen={!!true}
+                        title={"Send Report"}
+                        close={() => setSelectedOperation(null)}
+                        dashboard={currentDashboard}
+                        onSubmit={(name, success) => {
+
+                            // set alert
+                            setAddTaskAlert({
+                                type: success ? ADD_TASK_ALERT_TYPE.REPORT_SEND_SUCCESS : ADD_TASK_ALERT_TYPE.REPORT_SEND_FAILURE,
+                                label: success ? "Report Sent" : "Failed to Send Report",
+                                message: name ? `"` + name + `"` : null
+                            })
+
+                            // clear alert
+                            setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
+                )
+            case 'kickOff':
+                return (
+                    <KickOffModal
+                        isOpen={true}
+                        stationId={stationID}
+                        title={"Kick Off"}
+                        close={() => setSelectedOperation(null)}
+                        dashboard={currentDashboard}
+                        onSubmit={(name, success, quantity, message) => {
+                            // set alert
+                            setAddTaskAlert({
+                                type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
+                                label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
+                                message: message
+                            })
+
+                            // clear alert
+                            setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
+                )
+
+            case 'finish':
+                return (
+                    <FinishModal
+                        isOpen={true}
+                        stationId={stationID}
+                        title={"Finish"}
+                        close={() => setSelectedOperation(null)}
+                        dashboard={currentDashboard}
+                        onSubmit={(name, success, quantity, message) => {
+                            // set alert
+                            setAddTaskAlert({
+                                type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+                                label: success ? "Finish Successful" : "Finish Failed",
+                                message: message
+                            })
+
+                            // clear alert
+                            setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
+                )
+
+
+            default:
+                return (
+                    <>
+                    </>
+                )
+        }
+    }
+
     return (
-        <style.Container
-        // clear alert
-        // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
-        // onClick={() => setAddTaskAlert(null)}
-        >
-            {(modalType === OPERATION_TYPES.REPORT.key) &&
-                <ReportModal
-                    dashboardButtonId={modalButtonId}
-                    isOpen={!!true}
-                    title={"Send Report"}
-                    close={() => setReportModal({ type: null, id: null })}
-                    dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+        <style.Container>
 
-                        // set alert
-                        setAddTaskAlert({
-                            type: success ? ADD_TASK_ALERT_TYPE.REPORT_SEND_SUCCESS : ADD_TASK_ALERT_TYPE.REPORT_SEND_FAILURE,
-                            label: success ? "Report Sent" : "Failed to Send Report",
-                            message: name ? `"` + name + `"` : null
-                        })
-
-                        // clear alert
-                        setTimeout(() => setAddTaskAlert(null), 1800)
-                    }}
-                />
+            {
+                !!selectedOperation && renderModal()
             }
 
-            {(modalType === OPERATION_TYPES.KICK_OFF.key) &&
-                <KickOffModal
-                    isOpen={true}
-                    stationId={stationID}
-                    title={"Kick Off"}
-                    close={() => setReportModal({ type: null, id: null })}
-                    dashboard={currentDashboard}
-                    onSubmit={(name, success, quantity, message) => {
-                        // set alert
-                        setAddTaskAlert({
-                            type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
-                            label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
-                            message: message
-                        })
-
-                        // clear alert
-                        setTimeout(() => setAddTaskAlert(null), 1800)
-                    }}
-                />
-            }
-            {(modalType === OPERATION_TYPES.FINISH.key) &&
-                <FinishModal
-                    isOpen={true}
-                    stationId={stationID}
-                    title={"Finish"}
-                    close={() => setReportModal({ type: null, id: null })}
-                    dashboard={currentDashboard}
-                    onSubmit={(name, success, quantity, message) => {
-                        // set alert
-                        setAddTaskAlert({
-                            type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-                            label: success ? "Finish Successful" : "Finish Failed",
-                            message: message
-                        })
-
-                        // clear alert
-                        setTimeout(() => setAddTaskAlert(null), 1800)
-                    }}
-                />
-            }
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
@@ -520,18 +360,16 @@ const DashboardScreen = (props) => {
                 setEditingDashboard={() => setEditingDashboard(dashboardId)}
 
                 onBack={() => { setEditingDashboard(false) }}
-            >
-                {/* <pageStyle.Title>{displayName}</pageStyle.Title> */}
-            </DashboardsHeader>
+                handleOperationSelected={(op) => {
+                    setSelectedOperation(op)
+                }}
+            />
 
-            {/* <DashboardButtonList
-                buttons={handleDashboardButtons()}
-                onTaskClick={handleTaskClick}
-            /> */}
-            {showLotsList ?
-                <DashboardLotList />
-                :
-                <DashboardLotPage />
+            {
+                showLotsList ?
+                    <DashboardLotList />
+                    :
+                    <DashboardLotPage />
             }
 
             <TaskAddedAlert
@@ -547,7 +385,7 @@ const DashboardScreen = (props) => {
 
 
 
-        </style.Container>
+        </style.Container >
     )
 }
 

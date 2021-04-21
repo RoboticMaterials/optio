@@ -47,7 +47,6 @@ const DashboardsPage = (props) => {
     const dispatchGetTasks = () => dispatch(getTasks())
 
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
-    const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })

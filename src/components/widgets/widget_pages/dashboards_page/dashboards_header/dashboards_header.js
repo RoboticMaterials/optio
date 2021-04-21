@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -10,6 +10,9 @@ import Button from '../../../../basic/button/button';
 import SimpleLot from "../dashboard_screen/simple_lot/simple_lot";
 import ReactTooltip from "react-tooltip";
 
+// Import Components
+import DashboardOperationsMenu from '../dashboard_operations_menu/dashboard_operations_menu'
+
 import uuid from 'uuid'
 
 // hooks internal
@@ -19,7 +22,7 @@ import useWindowSize from '../../../../../hooks/useWindowSize';
 import { getBinQuantity, getIsCardAtBin } from "../../../../../methods/utils/lot_utils";
 
 // styles
-import * as style from './dashboards_header.style';
+import * as styled from './dashboards_header.style';
 
 const widthBreakPoint = 1000;
 
@@ -27,33 +30,43 @@ const DashboardsHeader = (props) => {
 
     const {
         showBackButton,
-        showEditButton,
         showSaveButton,
-        setEditingDashboard,
         currentDashboard,
         onBack,
         onLockClick,
         locked,
-        onSave
+        onSave,
+        handleOperationSelected,
     } = props
+
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
     const [editDashboard, setEditDashboard] = useState(false)
+    const [showOperationsMenu, setShowOperationsMenu] = useState(false)
 
-    console.log('QQQQ current dashboard', currentDashboard)
+    const [color, setColor] = useState('#5294ff')
+
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
 
-    const name = currentDashboard.name
+    const name = currentDashboard.name.length > 0 ? currentDashboard.name : stations[currentDashboard.station].name
+
+    useEffect(() => {
+        console.log('QQQQ current dashboard', currentDashboard)
+        return () => {
+
+        }
+    }, [])
 
     return (
-        <style.ColumnContainer>
+        <styled.ColumnContainer>
 
-            <style.Header>
+            <styled.Header>
                 {showBackButton &&
-                    <style.LockIcon
-                        style={{ marginRight: locked ? '1rem' : '.68rem', }}
+                    <styled.LockIcon
+                        styled={{ marginRight: locked ? '1rem' : '.68rem', }}
                         className={!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
                         onClick={onLockClick}
                         locked={locked}
@@ -61,21 +74,43 @@ const DashboardsHeader = (props) => {
                         data-for={toolTipId}
                     >
                         <ReactTooltip id={toolTipId}>
-                            <style.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</style.LockContainer>
+                            <styled.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</styled.LockContainer>
                         </ReactTooltip>
-                    </style.LockIcon>
+                    </styled.LockIcon>
                 }
 
                 {showBackButton &&
-                    <BackButton style={{ order: '1' }} containerStyle={{}}
+                    <BackButton styled={{ order: '1' }} containerStyle={{}}
                         onClick={onBack}
                     />
                 }
 
-                <style.Title style={{ order: '2' }}>{name}</style.Title>
+                <Button
+                    schema="dashboards"
+                    onClick={() => {
+                        setShowOperationsMenu(!showOperationsMenu)
+                    }}
+                >
+                    Operations
+                </Button>
+                <styled.Title>{name}</styled.Title>
+                <styled.PaceContainer
+                    color={color}
+                >
+                    <styled.PaceText color={color}>89/100</styled.PaceText>
+                </styled.PaceContainer>
+
+                {showOperationsMenu &&
+                    <DashboardOperationsMenu
+                        handleCloseMenu={() => { setShowOperationsMenu(false) }}
+                        handleOperationSelected={(op) => {
+                            handleOperationSelected(op)
+                        }}
+                    />
+                }
 
                 {/* {showEditButton && !mobileMode &&
-                    <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
+                    <Button styled={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
                         secondary
                     >
@@ -85,20 +120,20 @@ const DashboardsHeader = (props) => {
 
                 {showSaveButton &&
                     <>
-                        <Button style={{ order: '3', minWidth: '10rem' }}
+                        <Button styled={{ order: '3', minWidth: '10rem' }}
                             type='submit'
                             // disabled={saveDisabled}
                             schema="dashboards"
                             onClick={onSave}
                         >
                             Save
-                    </Button>
+                        </Button>
 
                     </>
                 }
 
-            </style.Header>
-        </style.ColumnContainer>
+            </styled.Header>
+        </styled.ColumnContainer>
 
     )
 }
