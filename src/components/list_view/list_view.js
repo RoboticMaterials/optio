@@ -117,7 +117,6 @@ const ListView = (props) => {
 
 
     const onLocationClick = (item) => {
-
         // If the id is in station that its a station, else its the Mir Dashboard
         const dashboardID = !!stations[item._id] ? stations[item._id].dashboards[0] : devices[item._id].dashboards[0]
         history.push('/locations/' + item._id + '/' + "dashboards/" + dashboardID)
