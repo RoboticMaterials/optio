@@ -105,7 +105,7 @@ export const ProcessField = (props) => {
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
-    const [processType, setProcessType] = useState('simple')
+    const [processType, setProcessType] = useState('complex')
 
     const valuesRef = useRef(values);
 
@@ -531,6 +531,19 @@ export const ProcessField = (props) => {
 
     }
 
+    const handleAddSimpleProcess = () => {
+
+        let prevObj
+        if (values.routes.length > 0) {
+            prevObj = values.routes[values.routes.length - 1].obj
+        }
+
+        const newTask = { ...generateDefaultRoute(prevObj), temp: { insertIndex: values.routes.length } }
+        setFieldValue("newRoute", newTask)
+        dispatchSetSelectedTask(newTask)
+        setEditingTask("newRoute")
+    }
+
     const handleAddBeginningRoute = () => {
 
         const onAddToBeginningClick = () => {
@@ -723,6 +736,7 @@ export const ProcessField = (props) => {
                         <styled.DualSelectionButton
                             style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                             onClick={() => {
+                                handleAddSimpleProcess()
                                 setProcessType('simple')
                             }}
                             selected={processType === 'simple'}
@@ -743,25 +757,23 @@ export const ProcessField = (props) => {
                     </styled.RowContainer>
 
                     {processType === "simple" ?
-                    <>
-                    <styled.Title>Associated Routes</styled.Title>
-
-                        <styled.SectionContainer>
-                            <>
-                                {handleAddBeginningRoute()}
-
-                                {values.routes.length > 0 ?
-                                    renderRoutes(values.routes)
-                                    :
-                                    <styled.InfoText></styled.InfoText>
-
-                                }
-
-                                {handleAddRoute()}
-
-                            </>
-                        </styled.SectionContainer>
-                    </>
+                    <styled.TaskContainer schema={'processes'}>
+                        <TaskField
+                            {...formikProps}
+                            isNew={editingTask === "newRoute"}
+                            onRemove={handleRemoveRoute}
+                            onDelete={handleDeleteRoute}
+                            onBackClick={handleTaskBack}
+                            onSave={handleAddTask}
+                            fieldParent={editingTask}
+                            shift={shift}
+                            isTransportTask={isTransportTask}
+                            isProcessTask={true}
+                            toggleEditing={(props) => {
+                                setEditingTask(props)
+                            }}
+                        />
+                    </styled.TaskContainer>
                     :
                     <styled.SectionContainer></styled.SectionContainer>
                   }

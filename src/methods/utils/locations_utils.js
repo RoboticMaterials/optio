@@ -22,7 +22,6 @@ export const locationsSortedAlphabetically = (locations) => {
         const aName = a.name
         const bName = b.name
         const length = Math.max(a.name.length, b.name.length)
-        console.log(a.name[2])
         for(let i = 0; i<length; i=i+1){
           if(a.name[i] == undefined) {
             return -1
