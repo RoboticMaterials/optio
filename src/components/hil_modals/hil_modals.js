@@ -75,7 +75,7 @@ const HILModals = (props) => {
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const dispatchSetShowModalId = (id) =>  dispatch(setShowModalId(id))
+    const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
     const dispatchDeleteTaskQueueItem = (id) => dispatch(deleteTaskQueueItem(id))
     const dispatchPutTaskQueue = (item, id) => dispatch(putTaskQueue(item, id))
     const dispatchGetTaskQueue = () => dispatch(getTaskQueue())
@@ -939,13 +939,13 @@ const HILModals = (props) => {
 
                                     </styled.HilInputContainer>
                                     {disabledQty &&
-                                      <>
-                                      {quantity < 1 ?
-                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity greater than 0</styled.HilSubText>
-                                        :
-                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity less than the number of available lot items</styled.HilSubText>
-                                      }
-                                      </>
+                                        <>
+                                            {quantity < 1 ?
+                                                <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity greater than 0</styled.HilSubText>
+                                                :
+                                                <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity less than the number of available lot items</styled.HilSubText>
+                                            }
+                                        </>
                                     }
                                     {renderSelectedLot()}
                                 </>
@@ -954,7 +954,7 @@ const HILModals = (props) => {
 
 
                             {count &&
-                                <styled.HilSubText style={{ marginBottom: "1rem"}}>Available Lot Items: {count}</styled.HilSubText>
+                                <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
                             }
                         </div>
 
@@ -1220,17 +1220,17 @@ const HILModals = (props) => {
                 {/*<styled.HilBorderContainer >*/}
 
                 {
-                    showLotSelector ?
-                        renderLotSelector()
-                        :
-                        !!selectedTask && hilLoadUnload === 'load' ?
-                            trackQuantity !== true && lotsAtStation === true && noLotsSelected !== true ?
-                                renderFractionOptions()
-                                :
-                                renderQuantityOptions()
-
+                    // showLotSelector ?
+                    //     renderLotSelector()
+                    //     :
+                    !!selectedTask && hilLoadUnload === 'load' ?
+                        trackQuantity !== true && lotsAtStation === true && noLotsSelected !== true ?
+                            renderFractionOptions()
                             :
-                            renderUnloadOptions()
+                            renderQuantityOptions()
+
+                        :
+                        renderUnloadOptions()
                 }
 
 
