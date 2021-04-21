@@ -105,7 +105,7 @@ export const ProcessField = (props) => {
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
-
+    const [processType, setProcessType] = useState('simple')
 
     const valuesRef = useRef(values);
 
@@ -684,15 +684,15 @@ export const ProcessField = (props) => {
                 </div>
 
                 <div style={{ marginBottom: "1rem" }}>
+                    <styled.Title schema={'default'}>Process Name</styled.Title>
                     <TextField
                         focus={!values.name}
                         placeholder='Process Name'
                         defaultValue={values.name}
-                        label='Process Name'
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}
-                        style={{ fontSize: '1.2rem', fontWeight: '600' }}
+                        style={{ fontSize: '1.2rem', fontWeight: '100' }}
                         textboxContainerStyle={{ border: "none" }}
                     />
                 </div>
@@ -717,7 +717,34 @@ export const ProcessField = (props) => {
                     </styled.TaskContainer>
                     :
                     <>
-                        <styled.Title schema={'processes'}>Associated Routes</styled.Title>
+                    <styled.Title style = {{marginTop: ".5rem"}}>Process Type</styled.Title>
+
+                    <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                            onClick={() => {
+                                setProcessType('simple')
+                            }}
+                            selected={processType === 'simple'}
+                        >
+                            Simple
+                        </styled.DualSelectionButton>
+
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                            onClick={() => {
+                                setProcessType('complex')
+                            }}
+                            selected={processType === 'complex'}
+                        >
+                            Multi-step
+                        </styled.DualSelectionButton>
+
+                    </styled.RowContainer>
+
+                    {processType === "simple" ?
+                    <>
+                    <styled.Title>Associated Routes</styled.Title>
 
                         <styled.SectionContainer>
                             <>
@@ -734,7 +761,10 @@ export const ProcessField = (props) => {
 
                             </>
                         </styled.SectionContainer>
-
+                    </>
+                    :
+                    <styled.SectionContainer></styled.SectionContainer>
+                  }
 
                         {/* Delete Task Button */}
                         <Button

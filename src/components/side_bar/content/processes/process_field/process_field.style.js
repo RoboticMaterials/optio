@@ -25,9 +25,9 @@ export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
 
 export const Title = styled.h1`
     font-family: ${props => props.theme.font.primary};
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    color: ${props => props.theme.schema[props.schema].solid};
+    color: ${props => props.theme.bg.senary};
     user-select: none;
 `
 
@@ -75,4 +75,35 @@ export const SVGText = styled.text`
   width: 4rem;
   font-weight: 500;
   transform-origin: center;
+`
+
+export const DualSelectionButton = styled.button`
+    font-size: 1rem;
+    width: 100%;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.processes.solid : props.theme.bg.tertiary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
+`
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 `

@@ -182,10 +182,9 @@ const ListView = (props) => {
             >
                 <styled.Header>
 
-                    {!locked &&
-                        <>
                             {(showDashboards) ?
-
+                              <>
+                              {!locked &&
                                 <BounceButton
                                     color={"black"}
                                     onClick={() => {
@@ -203,7 +202,8 @@ const ListView = (props) => {
                                         className={"fa fa-times"}
                                     />
                                 </BounceButton>
-
+                              }
+                              </>
                                 :
                                 <BounceButton
                                     color={"black"}
@@ -228,8 +228,6 @@ const ListView = (props) => {
                                     />
                                 </BounceButton>
                             }
-                        </>
-                    }
 
 
                     <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
