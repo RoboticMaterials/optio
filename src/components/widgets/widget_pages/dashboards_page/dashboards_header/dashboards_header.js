@@ -16,7 +16,7 @@ import uuid from 'uuid'
 import useWindowSize from '../../../../../hooks/useWindowSize';
 
 // utils
-import {getBinQuantity, getIsCardAtBin} from "../../../../../methods/utils/lot_utils";
+import { getBinQuantity, getIsCardAtBin } from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as style from './dashboards_header.style';
@@ -26,166 +26,77 @@ const widthBreakPoint = 1000;
 const DashboardsHeader = (props) => {
 
     const {
-        children,
-        showTitle,
         showBackButton,
         showEditButton,
         showSaveButton,
         setEditingDashboard,
-        page,
-        saveDisabled,
+        currentDashboard,
         onBack,
         onLockClick,
         locked,
         onSave
     } = props
 
-    const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
+    const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
+    const [editDashboard, setEditDashboard] = useState(false)
 
-    // extract url params
-    const { stationID } = props.match.params
-
-    const cards = useSelector(state => state.cardsReducer.cards)
-    const stations = useSelector(state => state.stationsReducer.stations)
-    const positions = useSelector(state => state.positionsReducer.positions)
-
-    const [moreLots, setMoreLots] = useState(false);
-
-    const locations = {
-        ...positions,
-        ...stations
-    }
-
-    const location = locations[stationID]
+    console.log('QQQQ current dashboard', currentDashboard)
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
 
-    /**
-     * Renders Lots that are are the station
-     */
-    const renderLotsTitle = useMemo(() => {
-
-        //  If there is a location then see if it has lots. There wouldnt be a location because its a Mir dashboard
-        if (location === undefined) return
-
-        let hasLot = false
-
-        for (let i = 0; i < Object.values(cards).length; i++) {
-            if (!!Object.values(cards)[i].bins[location._id]) {
-                hasLot = true
-                break
-            }
-        }
-
-        if (!!hasLot) {
-            return (
-                <style.LotsContainer moreLots={moreLots}>
-                    <style.RowContainer windowWidth={windowWidth} style={{height: moreLots ? '' : '3.8rem'}}>
-                        <style.LotsTitle>Lots:</style.LotsTitle>
-                        {Object.values(cards)
-                            .filter((card, ind) => {
-                                return getIsCardAtBin(card, location?._id)
-                            })
-                            .map((card) => {
-                                const {
-                                    name,
-                                    lotNumber,
-                                    bins,
-                                    _id
-                                } = card || {}
-
-                                const quantity = getBinQuantity({bins}, location?._id)
-
-                                return(
-                                    <SimpleLot
-                                        key={_id}
-                                        name={name}
-                                        lotNumber={lotNumber}
-                                        quantity={quantity}
-                                    />
-                                )
-                            })}
-
-                    </style.RowContainer>
-                    <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
-                </style.LotsContainer>
-            )
-        }
-
-        else {
-            return (
-                <style.RowContainer>
-                    <style.LotsTitle>No Lots</style.LotsTitle>
-                </style.RowContainer>
-            )
-        }
-    }, [cards])
+    const name = currentDashboard.name
 
     return (
         <style.ColumnContainer>
 
-            {renderLotsTitle}
-
-
             <style.Header>
                 {showBackButton &&
-                      <style.LockIcon
-                          style = {{marginRight: locked ? '1rem' : '.68rem',}}
-                          className= {!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
-                          onClick={onLockClick}
-                          locked = {locked}
-                          data-tip
-                          data-for={toolTipId}
-                        >
-                          <ReactTooltip id={toolTipId}>
+                    <style.LockIcon
+                        style={{ marginRight: locked ? '1rem' : '.68rem', }}
+                        className={!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                        onClick={onLockClick}
+                        locked={locked}
+                        data-tip
+                        data-for={toolTipId}
+                    >
+                        <ReactTooltip id={toolTipId}>
                             <style.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</style.LockContainer>
-                          </ReactTooltip>
-                        </style.LockIcon>
+                        </ReactTooltip>
+                    </style.LockIcon>
                 }
 
                 {showBackButton &&
-                <BackButton style={{ order: '1' }} containerStyle={{  }}
-                            onClick={onBack}
-                />
+                    <BackButton style={{ order: '1' }} containerStyle={{}}
+                        onClick={onBack}
+                    />
                 }
 
-                {showTitle &&
-                <style.Title style={{ order: '2' }}>{page}</style.Title>
-                }
+                <style.Title style={{ order: '2' }}>{name}</style.Title>
 
-                {showEditButton && !mobileMode &&
-                <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
+                {/* {showEditButton && !mobileMode &&
+                    <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
                         secondary
-                >
-                    Edit Dashboard
+                    >
+                        Edit Dashboard
                 </Button>
-                }
+                } */}
 
                 {showSaveButton &&
-                <>
-                    <Button style={{ order: '3', minWidth: '10rem' }}
+                    <>
+                        <Button style={{ order: '3', minWidth: '10rem' }}
                             type='submit'
-                            disabled={saveDisabled}
+                            // disabled={saveDisabled}
                             schema="dashboards"
-                            onClick = {onSave}
-                    >
-                        Save
+                            onClick={onSave}
+                        >
+                            Save
                     </Button>
 
-                    {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
-                    {/* <Button
-                          schema={'delete'}
-                          style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
-                          onClick={onDelete}
-                      >
-                          Delete
-                      </Button> */}
-                </>
+                    </>
                 }
 
-                {children}
             </style.Header>
         </style.ColumnContainer>
 

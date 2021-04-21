@@ -200,8 +200,13 @@ const DashboardsPage = (props) => {
             if (!editing) {
                 setSelectedDashboard(dashboardID)   // set selected
                 setEditingDashboard(null)   // only selected OR editing should be set
-                logger.log("useEffect dashboards[dashboardID]", dashboards[dashboardID])
             }
+
+            else if (editing === 'lots'){
+                setSelectedDashboard(dashboardID)   // set selected
+                setEditingDashboard(null)   // only selected OR editing should be set
+            }
+
             // url contains editing param, so set dashboard to editing
             else {
                 setEditingDashboard(dashboard)  // set editing

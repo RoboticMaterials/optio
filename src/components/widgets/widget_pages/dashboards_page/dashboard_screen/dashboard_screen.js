@@ -14,6 +14,8 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
+import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
+import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
@@ -97,6 +99,7 @@ const DashboardScreen = (props) => {
     const {
         name: stationName
     } = dashboardStation || {}
+    const [showLotsList, setShowLotsList] = useState(true)
 
     // actions
     const dispatch = useDispatch()
@@ -110,9 +113,13 @@ const DashboardScreen = (props) => {
     const history = useHistory()
     const params = useParams()
 
-    const stationID = params.stationID
-    const dashboardID = params.dashboardID
-    const widgetPage = params.widgetPage
+    const {
+        stationID,
+        dashboardID,
+        editing,
+        lotID
+    } = params || {}
+
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -141,6 +148,15 @@ const DashboardScreen = (props) => {
             onDashboardOpen(false)
         }
     }, [])
+
+    useEffect(() => {
+        if (editing === 'lots') {
+            setShowLotsList(false)
+        }
+        else {
+            setShowLotsList(true)
+        }
+    }, [editing])
 
 
     useEffect(() => {
@@ -385,10 +401,10 @@ const DashboardScreen = (props) => {
                 })
                 break
             case OPERATION_TYPES.KICK_OFF.key:
-                setReportModal({type: OPERATION_TYPES.KICK_OFF.key, id: null})
+                setReportModal({ type: OPERATION_TYPES.KICK_OFF.key, id: null })
                 break
             case OPERATION_TYPES.FINISH.key:
-                setReportModal({type: OPERATION_TYPES.FINISH.key, id: null})
+                setReportModal({ type: OPERATION_TYPES.FINISH.key, id: null })
                 break
             default:
                 break
@@ -439,7 +455,7 @@ const DashboardScreen = (props) => {
                     dashboardButtonId={modalButtonId}
                     isOpen={!!true}
                     title={"Send Report"}
-                    close={() => setReportModal({type: null, id: null})}
+                    close={() => setReportModal({ type: null, id: null })}
                     dashboard={currentDashboard}
                     onSubmit={(name, success) => {
 
@@ -461,7 +477,7 @@ const DashboardScreen = (props) => {
                     isOpen={true}
                     stationId={stationID}
                     title={"Kick Off"}
-                    close={() => setReportModal({type: null, id: null})}
+                    close={() => setReportModal({ type: null, id: null })}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -481,7 +497,7 @@ const DashboardScreen = (props) => {
                     isOpen={true}
                     stationId={stationID}
                     title={"Finish"}
-                    close={() => setReportModal({type: null, id: null})}
+                    close={() => setReportModal({ type: null, id: null })}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -500,28 +516,32 @@ const DashboardScreen = (props) => {
                 showTitle={false}
                 showBackButton={false}
                 showEditButton={true}
-                showSidebar={showSidebar}
-                page={PAGES.DASHBOARD}
+                currentDashboard={currentDashboard}
                 setEditingDashboard={() => setEditingDashboard(dashboardId)}
 
                 onBack={() => { setEditingDashboard(false) }}
             >
-                <pageStyle.Title>{displayName}</pageStyle.Title>
+                {/* <pageStyle.Title>{displayName}</pageStyle.Title> */}
             </DashboardsHeader>
 
-            <DashboardButtonList
+            {/* <DashboardButtonList
                 buttons={handleDashboardButtons()}
                 onTaskClick={handleTaskClick}
-            />
+            /> */}
+            {showLotsList ?
+                <DashboardLotList />
+                :
+                <DashboardLotPage />
+            }
 
             <TaskAddedAlert
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
 
-            {showTaskQueueButton &&
+            {/* {showTaskQueueButton &&
                 <DashboardTaskQueue />
-            }
+            } */}
 
 
 

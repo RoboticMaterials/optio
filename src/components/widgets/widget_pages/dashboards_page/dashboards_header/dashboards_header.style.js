@@ -11,14 +11,21 @@ export const Header = styled.div`
     justify-content: center;
     position: relative;
 
-    width: calc(90% - 1rem);
-    margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem);
+    /* width: calc(90% - 1rem); */
+    width: 100%;
+    /* margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem); */
 
     height: 6rem;
     max-height: 6rem;
     min-height: 6rem;
     line-height: 6rem;
+
+    background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%);
+    
 `
+
+
+
 
 export const Title = styled.h2`
     color: ${props => props.theme.bg.octonary};
