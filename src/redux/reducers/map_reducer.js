@@ -106,7 +106,6 @@ export default function mapReducer(state=defaultState, action) {
             }
 
         case SET_CURRENT_MAP:
-            console.log(action.payload)
             return {
                 ...state,
                 currentMap: action.payload
