@@ -100,22 +100,10 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-        var defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
+      console.log(this.props.currentMap)
+      if(!!this.props.currentMap)
 
-        if (this.props.currentMapId && this.props.currentMap && this.props.currentMap._id && defaultMap) {
-            if (this.props.currentMapId !== this.props.currentMap._id) {
-                this.props.dispatchSetCurrentMap(defaultMap)
-            }
 
-        } else if (this.props.currentMapId && defaultMap) {
-            this.props.dispatchSetCurrentMap(defaultMap)
-
-        } else if (this.props.currentMap && this.props.currentMap._id) {
-            // do nothing
-        } else {
-            // default to first map found
-            this.props.dispatchSetCurrentMap(this.props.maps[0])
-        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -794,8 +782,8 @@ const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
-        currentMap: state.mapReducer.currentMap,
         deviceEnabled: state.settingsReducer.settings.deviceEnabled,
+        currentMap: state.settingsReducer.settings.currentMap,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
