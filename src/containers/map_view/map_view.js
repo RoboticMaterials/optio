@@ -15,6 +15,7 @@ import { isEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
+import { postSettings } from '../../redux/actions/settings_actions'
 import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
@@ -100,10 +101,35 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-      console.log(this.props.currentMap)
-      if(!!this.props.currentMap)
+      var defaultMap = this.props.maps.find((map) => map.name === this.props.currentMap.name)
+      console.log(defaultMap)
+      if(!defaultMap){
+        const updatedSettings = {
+          ...this.props.settings,
+          ["currentMap"]: this.props.maps[0]
+        }
+        this.props.dispatchPostSettings(updatedSettings)
+      }
+    }
 
+    checkForMapLoadd = () => {
+        var defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
 
+        if (this.props.currentMapId && this.props.currentMap && this.props.currentMap._id && defaultMap) {
+            if (this.props.currentMapId !== this.props.currentMap._id) {
+                this.props.dispatchSetCurrentMap(defaultMap)
+            }
+
+        } else if (this.props.currentMapId && defaultMap) {
+            this.props.dispatchSetCurrentMap(defaultMap)
+
+        } else if (this.props.currentMap && this.props.currentMap._id) {
+            // do nothing
+        } else {
+
+            // default to first map found
+            this.props.dispatchSetCurrentMap(this.props.maps[0])
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -784,6 +810,7 @@ const mapStateToProps = function (state) {
         currentMapId: state.localReducer.localSettings.currentMapId,
         deviceEnabled: state.settingsReducer.settings.deviceEnabled,
         currentMap: state.settingsReducer.settings.currentMap,
+        settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
@@ -813,6 +840,7 @@ const mapDispatchToProps = dispatch => {
     return {
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
+        dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
