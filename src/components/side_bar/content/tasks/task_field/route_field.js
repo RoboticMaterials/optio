@@ -300,8 +300,6 @@ const TaskField = (props) => {
             // No load position has been defined - ask user to define load (start) position
             return (
               <>
-                <styled.Title>Instructions</styled.Title>
-
                 <styled.ListItem
                   style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #FF4B4B", marginBottom: "1.5rem"}}
                 >
@@ -329,8 +327,6 @@ const TaskField = (props) => {
                 // No unload position has been defined - ask user to define load (end) position
                 return (
                   <>
-                    <styled.Title>Instructions</styled.Title>
-
                     <styled.ListItem
                       style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #ffbf1f"}}
                     >
@@ -469,7 +465,11 @@ const TaskField = (props) => {
     return (
         <>
             {!!selectedTask &&
-
+            <>
+              <div>
+                  {renderLoadUnloadText()}
+              </div>
+              <styled.TaskContainer schema = {"processes"}>
                 <styled.ContentContainer>
                     <ConfirmDeleteModal
                         isOpen={!!confirmDeleteObjectModal}
@@ -725,10 +725,6 @@ const TaskField = (props) => {
                             {/* Task Title */}
                             {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
 
-                            <div style={{ height: "100%"}}>
-                                {renderLoadUnloadText()}
-                            </div>
-
                             <styled.Title>Route Name</styled.Title>
 
                             <TextField
@@ -849,7 +845,7 @@ const TaskField = (props) => {
                             <hr />
                         </div>
                     }
-                    {contentType === 'new' && processType === "complex" &&
+                    {contentType === 'new' && processType === "simple" &&
                         <>
                             <Button
                                 schema={'tasks'}
@@ -861,7 +857,7 @@ const TaskField = (props) => {
 
 
                             {/* Remove Task From Process Button */}
-                            {processType === "complex" &&
+                            {processType === "simple" &&
                               <>
                                 {!!isProcessTask && selectedProcess ?
                                     <Button
@@ -894,6 +890,8 @@ const TaskField = (props) => {
                     }
 
                 </styled.ContentContainer>
+              </styled.TaskContainer>
+            </>
             }
         </>
 

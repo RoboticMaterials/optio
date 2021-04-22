@@ -35,6 +35,14 @@ export const Title = styled.h1`
     user-select: none;
 `
 
+export const TaskContainer = styled.div`
+    background-color: ${props => props.theme.bg.secondary};
+    border-radius: 0.4rem;
+    overflow: auto;
+    // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    scrollbar-width: thin;
+`
+
 export const Card = styled.div`
     background: ${props => props.dark ? props.theme.bg.tertiary : props.theme.bg.secondary};
     // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);

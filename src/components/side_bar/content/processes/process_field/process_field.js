@@ -161,6 +161,7 @@ export const ProcessField = (props) => {
     }, [values.routes])
 
     const handleAddTask = async () => {
+        console.log(values)
         // contains new route
         if (values.newRoute) {
             // extract newRoute values
@@ -390,7 +391,7 @@ export const ProcessField = (props) => {
 
     // Maps through the list of existing routes
     const renderRoutes = (routes) => {
-
+      console.log(routes)
         return routes.filter((currRoute, currIndex) => {
 
             if (currRoute === undefined) {
@@ -744,9 +745,9 @@ export const ProcessField = (props) => {
 
                     {processType === "simple" ?
                     <>
-                      <styled.Title style = {{marginTop: "1rem"}}>Route Details</styled.Title>
+                      <styled.Title style = {{marginTop: "1rem"}}>Process Routes</styled.Title>
+
                       <styled.Container style = {{width: "100%", padding: "0rem 0rem 0rem 0rem", height: "100%"}}>
-                        <styled.TaskContainer schema={'processes'}>
                             <TaskField
                                 {...formikProps}
                                 isNew={editingTask === "newRoute"}
@@ -763,7 +764,6 @@ export const ProcessField = (props) => {
                                     setEditingTask(props)
                                 }}
                             />
-                        </styled.TaskContainer>
                       </styled.Container>
                     </>
                     :
