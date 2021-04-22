@@ -162,7 +162,6 @@ const Settings = () => {
         if (!serverChange) {
             delete serverSettingsState._id
             await dispatchPostSettings(serverSettingsState)
-            console.log(mapSettingsState)
         }
 
         if (!deviceChange) {
