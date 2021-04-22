@@ -8,9 +8,19 @@ import * as styled from './dashboard_lot_list.style'
 // Import Componenets
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
 import SortFilterContainer from '../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container'
+import LotSortBar from '../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar'
+import {
+    columnCss, columnCss3,
+    containerCss,
+    descriptionCss,
+    dropdownCss,
+    reactDropdownSelectCss,
+    valueCss
+} from '../../../../../side_bar/content/cards/lot_bars.style'
 
 // Import Utils
-import { getIsCardAtBin } from '../../../../../../methods/utils/lot_utils'
+import { getIsCardAtBin, getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from '../../../../../../methods/utils/lot_utils'
+import { sortBy } from '../../../../../../methods/utils/card_utils'
 
 // Import Constants
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from '../../../../../../constants/lot_contants'
@@ -35,7 +45,7 @@ const DashboardLotList = () => {
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+    const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
 
     const station = stations[stationID]
 
@@ -44,9 +54,28 @@ const DashboardLotList = () => {
     }
 
     const renderLotCards = useMemo(() => {
-        return Object.values(cards)
+
+        let sortedCards = Object.values(cards)
+
+        if (sortMode) {
+            sortBy(sortedCards, sortMode, sortDirection)
+        }
+
+        return sortedCards
             .filter((card, ind) => {
                 return getIsCardAtBin(card, station?._id)
+            })
+            .filter((currLot) => {
+                const {
+                    name: currLotName,
+                    bins = {},
+                } = currLot || {}
+
+                const count = bins[stationID]?.count
+                return getMatchesFilter({
+                    ...currLot,
+                    quantity: count
+                }, lotFilterValue, selectedFilterOption)
             })
             .map((card, ind) => {
 
@@ -71,7 +100,7 @@ const DashboardLotList = () => {
                 )
             })
 
-    }, [cards])
+    }, [cards, lotFilterValue, selectedFilterOption, sortMode, sortDirection])
 
     return (
         <styled.LotListContainer>
@@ -85,7 +114,7 @@ const DashboardLotList = () => {
                 setLotFilterValue={setLotFilterValue}
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
-                containerStyle={{justifyContent: 'center'}}
+                containerStyle={{ justifyContent: 'center' }}
             />
             {renderLotCards}
         </styled.LotListContainer>
