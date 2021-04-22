@@ -735,6 +735,11 @@ export const ProcessField = (props) => {
                             Multi-Route
                         </styled.DualSelectionButton>
 
+                        <styled.ListItemIcon
+                          classname = "fas fa-question-circle"
+                          style = {{color: "red", fontSize: "1rem"}}
+                        />
+
                     </styled.RowContainer>
 
                     {processType === "simple" ?
