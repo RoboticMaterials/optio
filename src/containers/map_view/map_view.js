@@ -101,8 +101,7 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-      var defaultMap = this.props.maps.find((map) => map.name === this.props.currentMap.name)
-      console.log(defaultMap)
+      var defaultMap = this.props.maps.find((map) => map._id === this.props.currentMap._id && map.name === this.props.currentMap.name)
       if(!defaultMap){
         const updatedSettings = {
           ...this.props.settings,
