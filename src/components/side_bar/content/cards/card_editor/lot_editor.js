@@ -15,6 +15,7 @@ import {
 import FadeLoader from "react-spinners/FadeLoader"
 import Popup from 'reactjs-popup';
 
+
 // internal components
 import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
@@ -25,10 +26,10 @@ import BackButton from '../../../../basic/back_button/back_button'
 import ButtonGroup from "../../../../basic/button_group/button_group";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import FieldComponentMapper from "./field_component_mapper/field_component_mapper";
+import FieldComponentMapper from "../lot_template_editor/field_component_mapper/field_component_mapper";
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
-import LotCreatorForm from "./template_form";
+import LotCreatorForm from "../lot_template_editor/template_form";
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 
@@ -45,16 +46,22 @@ import {
 	CONTENT,
 	DEFAULT_COUNT_DISPLAY_NAME,
 	DEFAULT_NAME_DISPLAY_NAME, defaultBins,
-	FORM_BUTTON_TYPES,
+	FORM_BUTTON_TYPES, IGNORE_LOT_SYNC_WARNING,
 	SIDE_BAR_MODES
 } from "../../../../../constants/lot_contants";
 
 // utils
 import {
-	getInitialValues,
+	getCustomFieldValues,
 	parseMessageFromEvent
 } from "../../../../../methods/utils/card_utils";
-import {CARD_SCHEMA_MODES, uniqueNameSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
+import {
+	CARD_SCHEMA_MODES,
+	uniqueNameSchema,
+	editLotSchema,
+	getCardSchema,
+	LotFormSchema
+} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
@@ -62,7 +69,7 @@ import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_
 
 // import styles
 import * as styled from "./lot_editor.style"
-import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
+import * as FormStyle from "../lot_template_editor/lot_form_creator/lot_form_creator.style"
 
 // hooks
 import useWarn from "../../../../basic/form/useWarn";
@@ -70,6 +77,12 @@ import useWarn from "../../../../basic/form/useWarn";
 // logger
 import log from '../../../../../logger'
 import { ThemeContext } from "styled-components";
+import {getIsEquivalent} from "../../../../../methods/utils/utils";
+import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+import set from "lodash/set";
+import usePrevious from "../../../../../hooks/usePrevious";
+import WobbleButton from "../../../../basic/wobble_button/wobble_button";
+import {postLocalSettings} from "../../../../../redux/actions/local_actions";
 
 
 const logger = log.getLogger("CardEditor")
@@ -109,12 +122,22 @@ const FormComponent = (props) => {
 		setContent,
 		onAddClick,
 		loaded,
-		cardNames
+		cardNames,
+		useCardFields,
+		setUseCardFields
 	} = props
 
 	const {
 		_id: cardId
 	} = values || {}
+
+	const {
+		fields: cardFields = []
+	} = card || {}
+
+	const {
+		fields: templateFields = []
+	} = lotTemplate || {}
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
@@ -127,6 +150,7 @@ const FormComponent = (props) => {
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+	const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
@@ -134,6 +158,7 @@ const FormComponent = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
+	const localReducer = useSelector(state => state.localReducer) || {}
 	const processesArray = Object.values(processes)
 
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
@@ -143,6 +168,12 @@ const FormComponent = (props) => {
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 	const [showCalendarPopup, setShowCalendarPopup] = useState(false);
+	const [templateFieldsChanged, setTemplateFieldsChanged] = useState(false);
+	const [loadingTemplateValues, setLoadingTemplateValues] = useState(false);
+
+
+	const [showFieldModal, setShowFieldModal] = useState(false)
+	const [checkedCardAndTemplateFields, setCheckedCardAndTemplateFields] = useState(false)
 
 	const [warningValues, setWarningValues] = useState()
 
@@ -258,6 +289,40 @@ const FormComponent = (props) => {
 		close()
 	}
 
+
+
+	useEffect(() => {
+		if(!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE)) {
+			const cardFieldsWithoutValue = values.fields.map((currRow) => {
+
+				return currRow.map((currField) => {
+					const {
+						value,
+						...rest
+					} = currField || {}
+
+					return {
+						...rest
+					}
+				})
+			})
+
+			const isEquivalent = getIsEquivalent(templateFields, cardFieldsWithoutValue)
+
+			const ignoreSyncWarning = localReducer?.localSettings?.[IGNORE_LOT_SYNC_WARNING]?.[cardId]
+
+			if(!ignoreSyncWarning) {
+				setShowFieldModal(!isEquivalent)
+			}
+
+			setTemplateFieldsChanged(!isEquivalent)
+			setCheckedCardAndTemplateFields(true)
+		}
+	}, [templateFields, cardFields])
+
+	const previousTemplateId = usePrevious(lotTemplateId)
+
+
 	/*
 	* This effect sets default values when the lotTemplate changes.
 	*
@@ -269,13 +334,30 @@ const FormComponent = (props) => {
 	useEffect( () => {
 		// extract sub object for current lotTemplateId
 		const {
-			[lotTemplateId]: templateValues
+			[lotTemplateId]: templateValues = [],
+			fields = []
 		} = values || {}
 
-		// if doesn't contain values for current object, set initialValues
-		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, templateValues))
+		// switch templates
+		if(previousTemplateId !== lotTemplateId && (previousTemplateId !== null) && (previousTemplateId !== undefined)) {
+			setFieldValue(previousTemplateId, fields)
 
-	}, [lotTemplateId, lotTemplate])
+			setUseCardFields(false)
+
+			// if doesn't contain values for current object, set initialValues
+			setFieldValue("fields", getCustomFieldValues(templateFields,
+				[...cardFields, ...templateValues]))
+		}
+
+		// update in current template
+		else {
+			setFieldValue("fields", getCustomFieldValues(useCardFields ? cardFields : templateFields,
+				[...cardFields, ...fields]))
+		}
+
+	}, [lotTemplateId, lotTemplate, useCardFields])
+
+
 
 	useEffect( () => {
 		if(isArray(processOptions)) {
@@ -393,46 +475,6 @@ const FormComponent = (props) => {
 			</styled.BodyContainer>
 		)
 	}
-
-	/*
-	* renders calender for selected dates
-	* */
-	// const renderCalendarContent = () => {
-	//
-	// 	const {
-	// 		fullFieldName,
-	// 		fieldName
-	// 	} = calendarFieldName || {}
-	//
-	// 	// get templateValues
-	// 	const {
-	// 		[lotTemplateId]: templateValues
-	// 	} = values || {}
-	//
-	// 	// get field value
-	// 	const {
-	// 		[fieldName]: fieldValue
-	// 	} = templateValues || {}
-	//
-	// 	return(
-	// 		<styled.BodyContainer>
-	// 			<styled.ContentHeader style={{}}>
-	// 				<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
-	// 				<i className="fas fa-times" style={{cursor: 'pointer'}} onClick={() => setShowCalendarPopup(false)}/>
-	// 			</styled.ContentHeader>
-	//
-	// 			<styled.CalendarContainer>
-	// 				<CalendarField
-	// 					onChange={() => setShowCalendarPopup(false)}
-	// 					minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
-	// 					maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
-	// 					selectRange={false}
-	// 					name={fullFieldName}
-	// 				/>
-	// 			</styled.CalendarContainer>
-	// 		</styled.BodyContainer>
-	// 	)
-	// }
 
 	// renders main content
 	const renderMainContent = () => {
@@ -571,12 +613,14 @@ const FormComponent = (props) => {
 	* */
 	const renderFields = () => {
 
-		const fields = isArray(lotTemplate?.fields) ? lotTemplate.fields : []
+		const fields =  useCardFields ? isArray(cardFields) ? cardFields : isArray(lotTemplate?.fields) ? lotTemplate.fields : []
+			: isArray(lotTemplate?.fields) ? lotTemplate.fields : []
 
 		return (
 			<FormStyle.ColumnContainer>
 
 				{fields.map((currRow, currRowIndex) => {
+
 
 					const isLastRow = currRowIndex === fields.length - 1
 					return <div
@@ -589,20 +633,15 @@ const FormComponent = (props) => {
 								const {
 									_id: dropContainerId,
 									component,
-									fieldName
+									fieldName,
+									dataType,
+									key,
+									required,
+									showInPreview,
 								} = currItem || {}
 
 								// get full field name
-								const fullFieldName = `${lotTemplateId}.${fieldName}`
-
-								// get templateValues
-								const {
-									[lotTemplateId]: templateValues
-								} = values || {}
-								// get field value
-								const {
-									[fieldName]: fieldValue
-								} = templateValues || {}
+								const fullFieldName = `fields[${currRowIndex}][${currItemIndex}].value`
 
 								// get template error
 								const {
@@ -617,33 +656,8 @@ const FormComponent = (props) => {
 									key={dropContainerId}
 								>
 									<FieldComponentMapper
-										value={fieldValue}
-										onCalendarClick={(mode) => {
-											let newName
-											switch(mode) {
-												case CALENDAR_FIELD_MODES.START: {
-													newName = `${fullFieldName}[0]`
-													break
-												}
-												case CALENDAR_FIELD_MODES.END: {
-													newName = `${fullFieldName}[1]`
-													break
-												}
-												case CALENDAR_FIELD_MODES.SINGLE: {
-													newName = fullFieldName
-													break
-												}
-												default: {
-													newName = fullFieldName
-												}
-											}
-											setShowCalendarPopup(true)
-											setCalendarFieldName({fullFieldName: newName, fieldName})
-											setCalendarFieldMode(mode)
-										}}
-										// calendarContent={showCalendarPopup && renderCalendarContent}
-										// showCalendarPopup={showCalendarPopup}
-										// setShowCalendarPopup={setShowCalendarPopup}
+										required={required}
+										fieldId={dropContainerId}
 										displayName={fieldName}
 										preview={false}
 										component={component}
@@ -693,7 +707,9 @@ const FormComponent = (props) => {
 
 	const renderForm = () => {
 		return(
-			<styled.StyledForm>
+			<styled.StyledForm
+				loading={loadingTemplateValues}
+			>
 
 				<ConfirmDeleteModal
 						isOpen={!!confirmDeleteModal}
@@ -809,7 +825,18 @@ const FormComponent = (props) => {
 									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
 								</div>
 
-								
+								{templateFieldsChanged &&
+								<WobbleButton
+									containerStyle={{marginLeft: "1rem"}}
+								>
+									<styled.SyncProblem
+										style={{fontSize: 40, color: "#fc9003"}}
+										onClick={()=> {
+											setShowFieldModal(true)
+										}}
+									/>
+								</WobbleButton>
+								}
 							</styled.SubHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
@@ -836,9 +863,6 @@ const FormComponent = (props) => {
 						{(content === null) &&
 							renderMainContent()
 						}
-						{/* {(content === CONTENT.CALENDAR) &&
-							renderCalendarContent()
-						} */}
 						{(content === CONTENT.HISTORY) &&
 							renderHistory()
 						}
@@ -1055,6 +1079,60 @@ const FormComponent = (props) => {
 
 		return(
 			<>
+				{showFieldModal &&
+				<SimpleModal
+					content={"The template used by this lot has changed. Would you like to sync the lot to match the template?"}
+					isOpen={showFieldModal}
+					title={"Lot Template has Changed"}
+					onRequestClose={()=>setShowFieldModal(false)}
+					onCloseButtonClick={()=>setShowFieldModal(false)}
+					handleOnClick1={()=> {
+						setUseCardFields(false)
+						setShowFieldModal(false)
+						setTemplateFieldsChanged(false)
+						setCheckedCardAndTemplateFields(false)
+
+						const {
+							localSettings
+						} = localReducer || {}
+
+						const {
+							[IGNORE_LOT_SYNC_WARNING]: ignoreSyncWarning,
+						} = localSettings || {}
+
+						const {
+							[cardId]: ignoreThisLot,
+							...rest
+						} = ignoreSyncWarning || {}
+
+
+						dispatchPostLocalSettings({
+							...localSettings,
+							[IGNORE_LOT_SYNC_WARNING]: {
+								...rest,
+							}
+						})
+					}}
+					handleOnClick2={()=> {
+						setShowFieldModal(false)
+
+						const {
+							localSettings
+						} = localReducer || {}
+
+						dispatchPostLocalSettings({
+							...localSettings,
+							[IGNORE_LOT_SYNC_WARNING]: {
+								[cardId] : true
+							}
+						})
+					}}
+					button_1_text={"Yes"}
+					button_2_text={"no"}
+					contentLabel={"Update Lot"}
+				/>
+				}
+
 				{renderForm()}
 				<SubmitErrorHandler
 					submitCount={submitCount}
@@ -1119,6 +1197,7 @@ const LotEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
+	const [useCardFields, setUseCardFields] = useState(props.cardId ? true : false)
 
 
 	// get card object from redux by cardId
@@ -1252,15 +1331,12 @@ const LotEditor = (props) => {
 								card.bins
 								:
 								defaultBins,
-							[lotTemplateId]: {
-								...getInitialValues(lotTemplate, card)
-							}
-						}}
+							fields: getCustomFieldValues(useCardFields ? ( card?.fields || []) : lotTemplate.fields, card?.fields ? card?.fields : null)
 
-						// validation control
+						}}
 						validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
-						validateOnChange={true}
 						validate={onValidate}
+						validateOnChange={true}
 						// validateOnMount={true} // leave false, if set to true it will generate a form error when new data is fetched
 						validateOnBlur={true}
 						onSubmit={()=>{}} // this is necessary
@@ -1303,6 +1379,7 @@ const LotEditor = (props) => {
 									moveLocation,
 									processId: selectedProcessId,
 									[lotTemplateId]: templateValues,
+									fields,
 								} = values || {}
 
 
@@ -1317,7 +1394,7 @@ const LotEditor = (props) => {
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											lotTemplateId,
-											...templateValues
+											fields
 										}
 
 										/*
@@ -1379,7 +1456,9 @@ const LotEditor = (props) => {
 										// update submit items bins
 										submitItem = {
 											...submitItem,
-											bins: updatedBins
+											bins: updatedBins,
+											fields
+											// fields
 										}
 
 										// update card
@@ -1398,8 +1477,8 @@ const LotEditor = (props) => {
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: isObject(card) ? (card.process_id || processId) : (processId),
 											lotTemplateId,
-											...templateValues,
-											lotNumber
+											lotNumber,
+											fields
 										}
 
 										requestResult = onPutCard(submitItem, values._id)
@@ -1414,8 +1493,8 @@ const LotEditor = (props) => {
 											flags: [],
 											process_id: processId ? processId : selectedProcessId,
 											lotTemplateId,
-											...templateValues,
-											lotNumber
+											lotNumber,
+											fields
 										}
 
 										requestResult = await onPostCard(submitItem)
@@ -1466,6 +1545,8 @@ const LotEditor = (props) => {
 							if(hidden || showLotTemplateEditor) return null
 							return (
 								<FormComponent
+									useCardFields={useCardFields}
+									setUseCardFields={setUseCardFields}
 									cardNames={cardNames}
 									onAddClick={onAddClick}
 									footerContent={footerContent}

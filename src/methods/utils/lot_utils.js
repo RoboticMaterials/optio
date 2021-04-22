@@ -63,15 +63,16 @@ export const testFilterOption = (filterOptions, filterValue, testValue) => {
 
 export const getMatchesFilter = (lot, filterValue, filterMode) => {
 	const {
-		dataType,							// eg. "STRING"
+		dataType: filterDataType,							// eg. "STRING"
 		label,								// eg. "Dates (start)"
-		fieldName,							// eg. "dates"
-		lotTemplateId:  filterTemplateId 	// eg. 123
+		_id: fieldId,
+		fieldName: filterFieldName,							// eg. "dates"
+		lotTemplateId:  filterTemplateId, 	// eg. 123
 	} = filterMode || {}
 
 	const {
 		lotTemplateId,
-		[fieldName]: fieldValue
+		[filterFieldName]: fieldValue
 	} = lot || {}
 
 	// first filter known/required fields
@@ -119,10 +120,19 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 		default: {
 			if(isObject(filterMode)) {
 
-				if(fieldName in lot || lotTemplateId === filterTemplateId) {
+				let fieldInLot = false
+				let fieldValue = null
+
+				const lotField = getLotField("fieldName", filterFieldName, lot)
+				if(lotField) {
+					fieldInLot = true
+					fieldValue = lotField.value
+				}
+
+				if(fieldInLot || lotTemplateId === filterTemplateId) {
 					if(!filterValue) return true
 
-					switch(dataType) {
+					switch(filterDataType) {
 						case FIELD_DATA_TYPES.URL: {
 							// not implemented yet
 							return true
@@ -176,7 +186,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 
 									// check second filter
 									if(filterValue2) {
-										matchesFilter = (testFilterOption(filterOptions2, filterValue2, new Date(lot[fieldName][1]))) && matchesFilter // && since both filters must match
+										matchesFilter = (testFilterOption(filterOptions2, filterValue2, new Date(fieldValue[1]))) && matchesFilter // && since both filters must match
 									}
 									else {
 										matchesFilter = true && matchesFilter // && since both filters must match
@@ -198,12 +208,12 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 
 						case FIELD_DATA_TYPES.STRING: {
 							// simple string compare, make lowercase for case insensitive
-							return lot[fieldName].toLowerCase().includes((filterValue || "").toLowerCase())
+							return fieldValue.toLowerCase().includes((filterValue || "").toLowerCase())
 						}
 
 						case FIELD_DATA_TYPES.INTEGER: {
 							// simple ===, but also make sure they're ints
-							return toIntegerOrZero(lot[fieldName]) === toIntegerOrZero(filterValue)
+							return toIntegerOrZero(fieldValue) === toIntegerOrZero(filterValue)
 						}
 						default: {
 							// unknown dateType, return true
@@ -221,6 +231,20 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 			}
 		}
 	}
+}
+
+export const getLotField = (searchKey, searchValue, lot) => {
+	for(const field of lot.fields.flat()) {
+		const {
+			[searchKey]: currValue
+		} = field || {}
+
+		if(currValue === searchValue) {
+			return field
+		}
+	}
+
+	return null
 }
 
 export const formatLotNumber = (lotNumber) => {
@@ -293,7 +317,8 @@ export const getAllTemplateFields = () => {
 					dataType,
 					component,
 					fieldName,
-					lotTemplateId
+					lotTemplateId,
+					_id
 				}
 
 				let alreadyExists = false
@@ -319,61 +344,36 @@ export const getAllTemplateFields = () => {
 	return templateFields
 }
 
-export const getLotTemplateData = (lotTemplateId, lot) => {
-	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-	const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+export const getLotTemplateData = (lotTemplateId, lot, includeNonPreview) => {
+	let customFieldValues = []
 
-	let templateValues = []
-
-	if(isArray(lotTemplate.fields)) {
-		lotTemplate.fields.forEach((currRow) => {
+	if(isArray(lot.fields)) {
+		lot.fields.forEach((currRow) => {
 
 			if(isArray(currRow)) {
 				currRow.forEach((currItem) => {
 					const {
 						dataType,
-						fieldName
+						fieldName,
+						value,
+						showInPreview,
 					} = currItem
 
-					const lotValue = lot[fieldName]
-					templateValues.push({
-						dataType,
-						fieldName,
-						value: lotValue
-					})
+					// if includeNonPreview, add all.
+					// otherwise, only add if lot has showInPreview set to true
+					if(includeNonPreview || (!includeNonPreview && showInPreview)) {
+						customFieldValues.push({
+							dataType,
+							fieldName,
+							value
+						})
+					}
 				})
 			}
-
 		})
 	}
 
-	return templateValues
-}
-
-export const convertDataTypeContantToDisplay = (dataTypeContant) => {
-	switch(dataTypeContant) {
-		case FIELD_DATA_TYPES.INTEGER: {
-			return "Number"
-		}
-		case FIELD_DATA_TYPES.STRING: {
-			return "String"
-		}
-		case FIELD_DATA_TYPES.DATE_RANGE: {
-			return "Date range"
-		}
-		case FIELD_DATA_TYPES.DATE: {
-			return "Date"
-		}
-		case FIELD_DATA_TYPES.EMAIL: {
-			return "Email"
-		}
-		case FIELD_DATA_TYPES.URL: {
-			return "Url"
-		}
-		default: {
-			return null
-		}
-	}
+	return customFieldValues
 }
 
 export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) => {

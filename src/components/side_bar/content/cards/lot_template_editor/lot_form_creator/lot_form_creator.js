@@ -8,7 +8,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
-import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
+import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
 
@@ -63,11 +63,6 @@ const LotFormCreator = (props) => {
 
 		return [indices, found]
 	}
-
-
-
-
-
 
 	const handleVerticalDrop = (dropResult, currRowIndex) => {
 		const {

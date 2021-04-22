@@ -1,17 +1,21 @@
+import {FIELD_DATA_TYPES} from "./lot_contants";
+
 export const LOT_TEMPLATES_RESERVED_FIELD_NAMES = {
-	CHANGED: "changed",
-	NEW: "new",
-	NEEDS_RESET: "needsReset",
-	PROCESS_ID: "processId",
-	MOVE_COUNT: "moveCount",
-	MOVE_LOCATION: "moveLocation",
-	NAME: "name",
-	BINS: "bins",
 }
+
 
 export const BASIC_FIELD_DEFAULTS = {
 	TEXT_FIELD: "",
 	NUMBER_FIELD: 0,
 	CALENDAR_FIELD: null,
 	CALENDAR_FIELD_RANGE: [null, null]
+}
+
+export const DATA_TYPE_DEFAULTS = {
+	[FIELD_DATA_TYPES.STRING]: "",
+	[FIELD_DATA_TYPES.INTEGER]: 0,
+	[FIELD_DATA_TYPES.DATE_RANGE]: [null, null],
+	[FIELD_DATA_TYPES.DATE]: null,
+	[FIELD_DATA_TYPES.EMAIL] : null,
+	[FIELD_DATA_TYPES.URL] : null,
 }

@@ -7,6 +7,7 @@ import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 import {convertCardDate} from "./card_utils";
 import {isEqualCI, isString} from "./string_utils";
+import {FIELD_DATA_TYPES} from "../../constants/lot_contants";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -285,6 +286,48 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
 });
 
 // returns error if any item in nested array is duplicate
+Yup.addMethod(Yup.object, "lotFieldRequired", function (message) {
+    return this.test("lotFieldRequired", message, function (item) {
+        const { path, createError, parent, options } = this
+
+        const {
+            required,
+            value,
+            dataType
+        } = item || {}
+
+        if(required) {
+            switch (dataType) {
+                case FIELD_DATA_TYPES.DATE_RANGE: {
+                    if(!value || !isArray(value) || !(value[0] instanceof Date) || !(value[1]  instanceof Date)) {
+                        return createError({ path: `${path}.value`, message })
+                    }
+                    break
+                }
+                case FIELD_DATA_TYPES.DATE: {
+                    if(!(value  instanceof Date)) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                case FIELD_DATA_TYPES.INTEGER: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                case FIELD_DATA_TYPES.STRING: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                default: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+            }
+        }
+
+        return true
+    });
+});
+
+// returns error if any item in nested array is duplicate
 Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
     const mapper = x => get(x, path);
     return this.test("nestedUnique", message, function (list) {
@@ -446,6 +489,13 @@ export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         // .min(1, '1 character minimum.')
         .max(50, '50 character maximum.'),
+    fields: Yup.array().of(
+        Yup.array().of(
+            Yup.object().shape({
+                // value: Yup.
+            }).lotFieldRequired("This field is required.")
+        )
+    ),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(250, '250 character maximum.'),

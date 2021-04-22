@@ -11,7 +11,7 @@ import * as d3 from 'd3'
 
 // Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import { isEquivalent, } from '../../methods/utils/utils.js'
+import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
@@ -131,7 +131,7 @@ export class MapView extends Component {
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
-        if (!isEquivalent(prevProps.currentMap, this.props.currentMap)) {
+        if (!getIsEquivalent(prevProps.currentMap, this.props.currentMap)) {
             //this.calculateD3Geometry(this.mapContainer)
             this.bindZoomListener()
         }

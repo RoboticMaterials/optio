@@ -2,6 +2,8 @@ import styled, {css} from "styled-components";
 import {Form} from "formik";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 import {containerLayout} from "../../../../../common_css/layout";
+import SyncProblemIcon from '@material-ui/icons/SyncProblem';
+import SyncIcon from '@material-ui/icons/Sync';
 
 export const rowCss = css`
 	// margin-bottom: 1rem;
@@ -254,6 +256,9 @@ const mainCss = css`
 
 export const StyledForm = styled(Form)`
     ${mainCss};
+  
+	transition: all .5s ease;
+	filter: ${props => props.loading && "blur(5px)"};
 `;
 
 export const SubContainer = styled.div`
@@ -502,6 +507,17 @@ export const TemplateButton = styled.button`
   ${iconButtonCss};
   ${commonClickableIcon};
   font-size: 2rem;
+  
+`
+
+export const SyncProblem = styled(SyncProblemIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+`
+
+export const Sync = styled(SyncIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
 `
 
 export const PasteIcon = styled.button`
@@ -511,6 +527,7 @@ export const PasteIcon = styled.button`
 	font-size: 2rem;
 
     animation: blinker 1s linear infinite;
+  margin-right: 1rem;
 
   @keyframes blinker {
 	0% {

@@ -21,3 +21,9 @@ export const Label = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	//margin-right: 1rem;
 `
+
+export const RequiredText = styled.span`
+  font-size: ${props => props.theme.fontSize.sz5};
+  align-self: flex-start;
+  margin-top: .25rem;
+`

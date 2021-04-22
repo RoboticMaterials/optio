@@ -50,6 +50,7 @@ const CalendarField = ({
 	}, [fieldValue, index])
 
 	const errorMessage = getMessageFromError(meta.error)
+	console.log("calender fieldValue",fieldValue)
 
 	return (
 		<Container>
@@ -72,11 +73,6 @@ const CalendarField = ({
 						onChange && onChange(value)
 					}}
 
-				/>
-				<ErrorTooltip
-					visible={hasError}
-					text={errorMessage}
-					ContainerComponent={styled.IconContainerComponent}
 				/>
 		</Container>
 	)

@@ -24,6 +24,7 @@ const SimpleModal = (props) => {
         contentLabel,
         FooterContent,
         PreBodyContent,
+        content,
     } = props
 
     return (
@@ -52,6 +53,10 @@ const SimpleModal = (props) => {
                 {PreBodyContent}
                         <styled.ContentContainer>
                             {children}
+
+                            {content &&
+                            <span>{content}</span>
+                            }
                         </styled.ContentContainer>
 
                         <styled.ButtonForm>

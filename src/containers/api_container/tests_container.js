@@ -35,7 +35,7 @@ import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
 import { getPageNameFromPath } from "../../methods/utils/router_utils";
-import {isEquivalent, deepCopy, uuidv4} from '../../methods/utils/utils'
+import {getIsEquivalent, deepCopy, uuidv4} from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
