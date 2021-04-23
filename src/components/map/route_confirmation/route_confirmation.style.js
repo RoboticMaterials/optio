@@ -12,7 +12,7 @@ export const TaskStatisticsContainer = styled.div`
     left: ${props => props.xPosition};
 
     min-width: 5rem;
-    max-width: 20rem;
+    max-width: 24rem;
     padding: .1rem;
 
     background: red;
@@ -21,10 +21,6 @@ export const TaskStatisticsContainer = styled.div`
     background-color: rgba(255, 255, 255, 0.9);
 
     overflow: hidden;
-
-    &:hover{
-      background-color: ${props =>props.theme.bg.secondary}
-    }
 
 `
 export const TaskNameText = styled.span`
@@ -72,5 +68,10 @@ export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center
+    justify-content: center;
+
+
+    &:hover{
+      background-color: ${props =>props.theme.bg.secondary};
+    }
 `

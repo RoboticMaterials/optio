@@ -40,24 +40,40 @@ const RouteConfirmation = (props) => {
             const x = loc.x
             const y = loc.y
 
-            const xPosition = x -40 + 'px'
-            const yPosition = y -50 + 'px'
+            const xPosition = x -90 + 'px'
+            const yPosition = y -80 + 'px'
 
             return (
                 <styled.TaskStatisticsContainer
                     xPosition={xPosition}
                     yPosition={yPosition}
-                    onClick = {()=>{
-                      dispatchSetShowRouteConfirmation(false)
-                      dispatchAutoAddRoute(true)
-                      dispatchSetRouteConfirmationLocation(null)
-                    }}
+
                     >
-                    <styled.RowContainer style={{ padding: '0rem .2rem 0rem .2rem', width: '100%' }}>
-                        <styled.TaskText style={{ paddingRight: '.3rem' }}>Add</styled.TaskText>
+                    <styled.RowContainer
+                       style={{borderBottom: '1px solid #7e7e7e', padding: '.1rem .2rem .1rem .2rem', width: '100%' }}
+                       onClick = {()=>{
+                         dispatchSetShowRouteConfirmation(false)
+                         dispatchAutoAddRoute("finish")
+                       }}
+                     >
+                        <styled.TaskText style={{ paddingRight: '.3rem' }}>Add and finish</styled.TaskText>
 
                         <IconButton style={{paddingRight: '.2rem' }}>
                                 <i className="fas fa-check-circle" style = {{color: "#2ed182"}}></i>
+                        </IconButton>
+                    </styled.RowContainer>
+
+                    <styled.RowContainer
+                      style={{ padding: '0.1rem .2rem 0.1rem .2rem', width: '100%' }}
+                      onClick = {()=> {
+                        dispatchSetShowRouteConfirmation(false)
+                        dispatchAutoAddRoute("continue")
+                      }}
+                      >
+                        <styled.TaskText style={{ paddingRight: '.3rem' }}>Add and continue</styled.TaskText>
+
+                        <IconButton style={{paddingRight: '.2rem' }}>
+                                <i className="fas fa-arrow-alt-circle-right" style = {{color: "#ffbf1f"}}></i>
                         </IconButton>
                     </styled.RowContainer>
 

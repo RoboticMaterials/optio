@@ -29,7 +29,7 @@ import { autoAddRoute} from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
 import {
-    generateDefaultRoute, getLoadStationDashboard,
+    generateDefaultRoute, getLoadStationDashboard, autoGenerateRoute,
     getRouteProcesses,
     isHumanTask,
     isMiRTask
@@ -98,7 +98,7 @@ export const ProcessField = (props) => {
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const autoAddRoutes = useSelector(state => state.tasksReducer.autoAddRoute)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-
+    const routeConfirmationLocation = useSelector(state=>state.tasksReducer.routeConfirmationLocation)
     // State definitions
     const [shift,] = useState(false) // Is shift key pressed ?
     const [isTransportTask,] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
@@ -125,7 +125,7 @@ export const ProcessField = (props) => {
       handleAutoAddRoute()
 
       return () => {
-        
+
       }
     }, [autoAddRoutes])
 
@@ -542,7 +542,7 @@ export const ProcessField = (props) => {
 
 
     const handleAutoAddRoute = () => {
-      if(!!autoAddRoutes){
+      if(autoAddRoutes === "continue"){
         handleAddTask()
 
         let prevObj
@@ -552,10 +552,15 @@ export const ProcessField = (props) => {
 
         var ind = values.routes.length +1
 
-        const newTask = { ...generateDefaultRoute(prevObj), temp: { insertIndex: ind } }
+        const newTask = { ...autoGenerateRoute(prevObj), temp: { insertIndex: ind } }
         setFieldValue("newRoute", newTask)
         dispatchSetSelectedTask(newTask)
         setEditingTask("newRoute")
+        dispatchAutoAddRoute(false)
+      }
+      else if (autoAddRoutes === "finish"){
+        handleAddTask()
+        setEditingTask(false)
         dispatchAutoAddRoute(false)
       }
     }

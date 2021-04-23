@@ -25,6 +25,27 @@ export const generateDefaultRoute = (obj) => {
     }
 }
 
+export const autoGenerateRoute = (obj) => {
+    const storeState = store.getState()
+    const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
+    const currentMap = storeState.mapReducer.currentMap
+    const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
+
+    return {
+        ...defaultTask,
+        device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
+        handoff: false,
+        map_id: currentMap._id,
+        load: {...defaultTask.load,
+               station: routeConfirmationLocation,
+               position: routeConfirmationLocation,
+              },
+        unload: {...defaultTask.unload},
+        obj: obj ? currentMap._id : currentMap._id,
+        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+    }
+}
+
 export const isHumanTask = (task) => {
     return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }

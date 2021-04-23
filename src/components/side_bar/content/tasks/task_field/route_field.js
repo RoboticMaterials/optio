@@ -130,7 +130,6 @@ const TaskField = (props) => {
     const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
     const dispatchSetShowRouteConfirmation = (bool) => dispatch(showRouteConfirmation(bool))
     const dispatchSetRouteConfirmationLocation = (id) => dispatch(setRouteConfirmationLocation(id))
-
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
