@@ -52,9 +52,9 @@ const ObjectEditor = (props) => {
           <styled.ObjectContainer>
             <styled.RowContainer>
                 <BackButton
-                  style = {{ color: theme.main.schema['processes'].solid, marginBottom:'2rem'}}
-                  containerStyle={{borderColor: theme.main.schema['processes'].solid }}
-                  schema = {'processes'}
+                  style = {{ color: theme.main.schema['objects'].solid, marginBottom:'2rem'}}
+                  containerStyle={{borderColor: theme.main.schema['objects'].solid }}
+                  schema = {'objects'}
                   onClick = {onBackClick}
 
                 />
@@ -66,7 +66,7 @@ const ObjectEditor = (props) => {
                 }
                 {!editingObject ?
                   <PlusButton
-                    style={{marginTop: '0.2rem', color: theme.main.schema['processes'].solid}}
+                    style={{marginTop: '0.2rem', color: theme.main.schema['objects'].solid}}
                     onClick = {()=>{
                       dispatchSetEditingObject(true)
                       onAddObject()

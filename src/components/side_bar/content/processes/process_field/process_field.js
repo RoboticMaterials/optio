@@ -24,6 +24,7 @@ import {
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { handlePostTaskQueue, postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+import { autoAddRoute} from '../../../../../redux/actions/tasks_actions'
 
 
 // Import Utils
@@ -86,6 +87,7 @@ export const ProcessField = (props) => {
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchAutoAddRoute = (bool) => dispatch(autoAddRoute(bool))
 
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -94,19 +96,17 @@ export const ProcessField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-
+    const autoAddRoutes = useSelector(state => state.tasksReducer.autoAddRoute)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     // State definitions
     const [shift,] = useState(false) // Is shift key pressed ?
     const [isTransportTask,] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-    const [editingTask, setEditingTask] = useState(true) // Used to tell if a task is being edited
+    const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
-    const [processType, setProcessType] = useState('complex')
-
     const valuesRef = useRef(values);
 
     // throttled func
@@ -120,6 +120,14 @@ export const ProcessField = (props) => {
     useEffect(() => {
         valuesRef.current = values;
     }, [values]);
+
+    useEffect(() => {
+      handleAutoAddRoute()
+
+      return () => {
+        
+      }
+    }, [autoAddRoutes])
 
     useEffect(() => {
 
@@ -148,7 +156,7 @@ export const ProcessField = (props) => {
     })
 
 
-    useEffect(() => {
+  /*  useEffect(() => {
         // When there are no routes, automatically add the first one
         if (values.routes.length === 0) {
             let prevObj
@@ -158,10 +166,9 @@ export const ProcessField = (props) => {
             dispatchSetSelectedTask(newTask)
             setEditingTask("newRoute")
         }
-    }, [values.routes])
+    }, [values.routes])*/
 
     const handleAddTask = async () => {
-        console.log(values)
         // contains new route
         if (values.newRoute) {
             // extract newRoute values
@@ -286,6 +293,8 @@ export const ProcessField = (props) => {
         dispatchSetSelectedTask(null)
     }
 
+
+
     /**
      * Removes the route from the array of routes for a process
      */
@@ -391,7 +400,6 @@ export const ProcessField = (props) => {
 
     // Maps through the list of existing routes
     const renderRoutes = (routes) => {
-      console.log(routes)
         return routes.filter((currRoute, currIndex) => {
 
             if (currRoute === undefined) {
@@ -482,7 +490,6 @@ export const ProcessField = (props) => {
     }
 
     const handleAddRoute = () => {
-
         const onAddToEndClick = () => {
 
             let prevObj
@@ -520,29 +527,37 @@ export const ProcessField = (props) => {
         }
         else {
           return (
-            <Button
-                schema={'processes'}
-                onClick={onAddToEndClick}
-            >
-                Add Route
-            </Button>
+              <Button
+                  schema={'processes'}
+                  onClick={onAddToEndClick}
+              >
+                  Add Routes
+              </Button>
+
           )
         }
 
 
     }
 
-    const handleAddSimpleProcess = () => {
+
+    const handleAutoAddRoute = () => {
+      if(!!autoAddRoutes){
+        handleAddTask()
 
         let prevObj
         if (values.routes.length > 0) {
             prevObj = values.routes[values.routes.length - 1].obj
         }
 
-        const newTask = { ...generateDefaultRoute(prevObj), temp: { insertIndex: values.routes.length } }
+        var ind = values.routes.length +1
+
+        const newTask = { ...generateDefaultRoute(prevObj), temp: { insertIndex: ind } }
         setFieldValue("newRoute", newTask)
         dispatchSetSelectedTask(newTask)
         setEditingTask("newRoute")
+        dispatchAutoAddRoute(false)
+      }
     }
 
     const handleAddBeginningRoute = () => {
@@ -659,7 +674,6 @@ export const ProcessField = (props) => {
 
             }
 
-
             {showExistingTaskWarning &&
                 <ConfirmDeleteModal
                     isOpen={!!showExistingTaskWarning}
@@ -681,6 +695,7 @@ export const ProcessField = (props) => {
             }
 
             <styled.Container>
+
                 <div style={{ marginBottom: '1rem' }}>
                     <ContentHeader
                         content={'processes'}
@@ -711,68 +726,48 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                    <>
-                    <styled.Title style = {{marginTop: ".5rem"}}>Process Type</styled.Title>
+                <styled.Title schema={'processes'} style = {{marginTop: "1rem"}}>Associated Routes</styled.Title>
 
-                    <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
-                        <styled.DualSelectionButton
-                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                            onClick={() => {
-                                handleAddSimpleProcess()
-                                setProcessType('simple')
+                {editingTask && selectedTask ?
+                        <TaskField
+                            {...formikProps}
+                            isNew={editingTask === "newRoute"}
+                            onRemove={handleRemoveRoute}
+                            onDelete={handleDeleteRoute}
+                            onBackClick={handleTaskBack}
+                            onSave={handleAddTask}
+                            fieldParent={editingTask}
+                            shift={shift}
+                            isTransportTask={isTransportTask}
+                            isProcessTask={true}
+                            toggleEditing={(props) => {
+                                setEditingTask(props)
                             }}
-                            selected={processType === 'simple'}
-                        >
-                            Single-Route
-                        </styled.DualSelectionButton>
-
-                        <styled.DualSelectionButton
-                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                            onClick={() => {
-                                setProcessType('complex')
-                            }}
-                            selected={processType === 'complex'}
-                        >
-                            Multi-Route
-                        </styled.DualSelectionButton>
-
-                        <styled.ListItemIcon
-                          classname = "fas fa-question-circle"
-                          style = {{color: "red", fontSize: "1rem"}}
                         />
-
-                    </styled.RowContainer>
-
-                    {processType === "simple" ?
-                    <>
-                      <styled.Title style = {{marginTop: "1rem"}}>Process Routes</styled.Title>
-
-                      <styled.Container style = {{width: "100%", padding: "0rem 0rem 0rem 0rem", height: "100%"}}>
-                            <TaskField
-                                {...formikProps}
-                                isNew={editingTask === "newRoute"}
-                                onRemove={handleRemoveRoute}
-                                onDelete={handleDeleteRoute}
-                                onBackClick={handleTaskBack}
-                                onSave={handleAddTask}
-                                fieldParent={editingTask}
-                                shift={shift}
-                                processType = {processType}
-                                isTransportTask={isTransportTask}
-                                isProcessTask={true}
-                                toggleEditing={(props) => {
-                                    setEditingTask(props)
-                                }}
-                            />
-                      </styled.Container>
-                    </>
                     :
-                    <styled.SectionContainer></styled.SectionContainer>
-                  }
+                    <>
+
+                        <styled.AddRoutesContainer style = {{height: "auto"}}>
+                            <>
+                                {handleAddBeginningRoute()}
+
+                                {values.routes.length > 0 ?
+                                    renderRoutes(values.routes)
+                                    :
+                                    <styled.InfoText></styled.InfoText>
+
+                                }
+
+                                {handleAddRoute()}
+
+                            </>
+                        </styled.AddRoutesContainer>
+
 
                         {/* Delete Task Button */}
                         <Button
                             schema={'processes'}
+                            style = {{position: "absolute", bottom: "4rem", width: "90%"}}
                             disabled={!!selectedTask && !!editingTask || submitDisabled}
                             onClick={() => {
                                 onSave(values, true)
@@ -784,6 +779,7 @@ export const ProcessField = (props) => {
                         {/* Delete Task Button */}
                         <Button
                             schema={'error'}
+                            style = {{position: "absolute", bottom: "1rem", width: "90%"}}
                             disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                             secondary
                             onClick={() => {
@@ -793,6 +789,7 @@ export const ProcessField = (props) => {
                             Delete Process
                         </Button>
                     </>
+                }
 
 
 

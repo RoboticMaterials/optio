@@ -8,10 +8,10 @@ export const ListItem = styled.div`
     height: 2.5rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: ${props => props.theme.schema['processes'].solid};
+    background: ${props => props.theme.schema['objects'].solid};
 
     &:hover {
-        background: ${props => LightenDarkenColor(props.theme.schema['processes'].solid, 10)};
+        background: ${props => LightenDarkenColor(props.theme.schema['objects'].solid, 10)};
     }
 
     margin-left: .5rem;

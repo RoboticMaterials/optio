@@ -80,7 +80,7 @@ export const ListItem = styled.div`
     height: 2.5rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: ${props => props.theme.schema['processes'].solid};
+    background: ${props => props.theme.schema['tasks'].solid};
 
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
@@ -173,7 +173,7 @@ export const DualSelectionButton = styled.button`
 
     color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.schema.processes.solid : props.theme.bg.tertiary};
+    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 

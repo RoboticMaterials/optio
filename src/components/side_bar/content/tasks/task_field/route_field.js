@@ -41,7 +41,7 @@ import { setFixingProcess } from '../../../../../redux/actions/processes_actions
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedHoveringTask, editingTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedHoveringTask, editingTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
 import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
@@ -128,6 +128,8 @@ const TaskField = (props) => {
     const dispatchDeleteObject = (id) => dispatch(deleteObject(id))
     const dispatchSetRouteObject = (object) => dispatch(setRouteObject(object))
     const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
+    const dispatchSetShowRouteConfirmation = (bool) => dispatch(showRouteConfirmation(bool))
+    const dispatchSetRouteConfirmationLocation = (id) => dispatch(setRouteConfirmationLocation(id))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -142,6 +144,8 @@ const TaskField = (props) => {
     const routeObject = useSelector(state=>state.objectsReducer.routeObject)
     const editingObject = useSelector(state=> state.objectsReducer.editingObject)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
+    const showRouteConfirm = useSelector(state=> state.tasksReducer.showRouteConfirmation)
+
     const [showEditor, setShowEditor] = useState(false);
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
@@ -154,6 +158,7 @@ const TaskField = (props) => {
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
+
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -215,7 +220,6 @@ const TaskField = (props) => {
 
 
         setNeedsValidate(true)
-
         // set touched if changes
         return () => {
 
@@ -243,9 +247,18 @@ const TaskField = (props) => {
             dispatchSetSelectedPosition(null)
             dispatchSetSelectedStation(null)
             dispatchSetEditing(false)
+            dispatchSetShowRouteConfirmation(false)
 
         }
     }, [])
+
+
+    useEffect(() => {
+      if(!!selectedTask && selectedTask.unload.station!==null){
+        dispatchSetShowRouteConfirmation(true)
+        dispatchSetRouteConfirmationLocation(selectedTask.unload.station)
+      }
+    }, [selectedTask])
 
     useEffect(() => {
       if(!!showObjectSelector){
@@ -359,11 +372,6 @@ const TaskField = (props) => {
       }
     }
 
-
-
-
-
-
     const onSaveObject = async () => {
         const object = {
             name: obj.name,
@@ -401,6 +409,7 @@ const TaskField = (props) => {
 
         dispatchSetSelectedObject(object)
     }
+
 
     const onSelectObject = () => {
       dispatchSetRouteObject(selectedObject)
@@ -469,7 +478,7 @@ const TaskField = (props) => {
               <div>
                   {renderLoadUnloadText()}
               </div>
-              <styled.TaskContainer schema = {"processes"}>
+              <styled.TaskContainer schema = {"tasks"}>
                 <styled.ContentContainer>
                     <ConfirmDeleteModal
                         isOpen={!!confirmDeleteObjectModal}
@@ -547,8 +556,6 @@ const TaskField = (props) => {
             */}
                     {!!selectedTask && isProcessTask && !!selectedTask.new &&
                       <>
-                        {processType === "complex" &&
-                          <>
                             <div style={{ marginBottom: '1rem' }}>
                                 <ContentHeader
                                     content={'tasks'}
@@ -589,8 +596,7 @@ const TaskField = (props) => {
                                 </styled.DualSelectionButton>
 
                             </styled.RowContainer>
-                            </>
-                          }
+
 
                             {contentType === 'existing' &&
                                 <div style={{ marginBottom: '1rem', paddingBottom: '2rem', borderBottom: `2px solid ${themeContext.bg.tertiary}` }}>
@@ -693,8 +699,6 @@ const TaskField = (props) => {
                     {contentType === 'new' &&
                         <div>
                         <>
-                          {processType === "complex" &&
-                            <>
                                 {!!selectedTask && isProcessTask && !!selectedTask.new ?
                                     <styled.Label style={{ marginTop: '1rem' }}>
                                         Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
@@ -718,8 +722,6 @@ const TaskField = (props) => {
                                     </div>
                                 }
                             </>
-                          }
-                        </>
 
 
                             {/* Task Title */}
@@ -731,7 +733,7 @@ const TaskField = (props) => {
                                 InputComponent={Textbox}
                                 placeholder = {"Route Name"}
                                 name={fieldParent ? `${fieldParent}.name` : "name"}
-                                schema={'processes'}
+                                schema={'tasks'}
                                 focus={params.page === "processes" ? !name : name}
                                 inputStyle={{ background: isProcessTask ? themeContext.bg.primary : themeContext.bg.secondary }}
                                 style={{ fontSize: '1.2rem', fontWeight: '600' }}
@@ -773,7 +775,7 @@ const TaskField = (props) => {
                                                 :
                                                 <Button
                                                     style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
-                                                    schema={'processes'}
+                                                    schema={'tasks'}
                                                     secondary
                                                     // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                                     onClick={() => setShowObjectSelector(!showObjectSelector)}
@@ -845,7 +847,7 @@ const TaskField = (props) => {
                             <hr />
                         </div>
                     }
-                    {contentType === 'new' && processType === "simple" &&
+                    {contentType === 'new' &&
                         <>
                             <Button
                                 schema={'tasks'}
@@ -857,8 +859,7 @@ const TaskField = (props) => {
 
 
                             {/* Remove Task From Process Button */}
-                            {processType === "simple" &&
-                              <>
+
                                 {!!isProcessTask && selectedProcess ?
                                     <Button
                                         schema={'error'}
@@ -883,8 +884,7 @@ const TaskField = (props) => {
                                         Delete Route
                                 </Button>
                                 }
-                              </>
-                            }
+
 
                         </>
                     }

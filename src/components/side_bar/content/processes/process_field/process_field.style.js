@@ -63,6 +63,15 @@ export const SectionContainer = styled.div`
   background: ${props => props.theme.bg.secondary};
   border-radius: 0.4rem;
 `
+export const AddRoutesContainer = styled.div`
+	margin-bottom: 1rem;
+	margin-top: 0.5rem;
+	width: 100%;
+
+	display: flex;
+  flex-direction: column;
+
+`
 
 export const TaskContainer = styled.div`
     background-color: ${props => props.theme.bg.secondary};
