@@ -52,7 +52,7 @@ import {
 
 // utils
 import {
-	getCustomFieldValues,
+	getFormCustomFields,
 	parseMessageFromEvent
 } from "../../../../../methods/utils/card_utils";
 import {
@@ -128,7 +128,8 @@ const FormComponent = (props) => {
 	} = props
 
 	const {
-		_id: cardId
+		_id: cardId,
+		syncWithTemplate
 	} = values || {}
 
 	const {
@@ -292,7 +293,7 @@ const FormComponent = (props) => {
 
 
 	useEffect(() => {
-		if(!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE)) {
+		if(!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
 			const cardFieldsWithoutValue = values.fields.map((currRow) => {
 
 				return currRow.map((currField) => {
@@ -335,7 +336,8 @@ const FormComponent = (props) => {
 		// extract sub object for current lotTemplateId
 		const {
 			[lotTemplateId]: templateValues = [],
-			fields = []
+			fields = [],
+			syncWithTemplate
 		} = values || {}
 
 		// switch templates
@@ -345,17 +347,17 @@ const FormComponent = (props) => {
 			setUseCardFields(false)
 
 			// if doesn't contain values for current object, set initialValues
-			setFieldValue("fields", getCustomFieldValues(templateFields,
+			setFieldValue("fields", getFormCustomFields(templateFields,
 				[...cardFields, ...templateValues]))
 		}
 
 		// update in current template
 		else {
-			setFieldValue("fields", getCustomFieldValues(useCardFields ? cardFields : templateFields,
+			setFieldValue("fields", getFormCustomFields((useCardFields && !syncWithTemplate) ? cardFields : templateFields,
 				[...cardFields, ...fields]))
 		}
 
-	}, [lotTemplateId, lotTemplate, useCardFields])
+	}, [lotTemplateId, lotTemplate, useCardFields, syncWithTemplate])
 
 
 
@@ -607,13 +609,12 @@ const FormComponent = (props) => {
 		)
 	}
 
-
 	/*
 	* Renders fields
 	* */
 	const renderFields = () => {
 
-		const fields =  useCardFields ? isArray(cardFields) ? cardFields : isArray(lotTemplate?.fields) ? lotTemplate.fields : []
+		const fields =  (useCardFields && !values.syncWithTemplate) ? isArray(cardFields) ? cardFields : isArray(lotTemplate?.fields) ? lotTemplate.fields : []
 			: isArray(lotTemplate?.fields) ? lotTemplate.fields : []
 
 		return (
@@ -825,7 +826,7 @@ const FormComponent = (props) => {
 									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
 								</div>
 
-								{templateFieldsChanged &&
+								{templateFieldsChanged ?
 								<WobbleButton
 									containerStyle={{marginLeft: "1rem"}}
 								>
@@ -836,6 +837,15 @@ const FormComponent = (props) => {
 										}}
 									/>
 								</WobbleButton>
+
+									:
+									<styled.Sync
+										sync={values.syncWithTemplate}
+										style={{fontSize: 40}}
+										onClick={() => {
+											setFieldValue("syncWithTemplate", !values.syncWithTemplate)
+										}}
+									/>
 								}
 							</styled.SubHeader>
 
@@ -1087,7 +1097,8 @@ const FormComponent = (props) => {
 					onRequestClose={()=>setShowFieldModal(false)}
 					onCloseButtonClick={()=>setShowFieldModal(false)}
 					handleOnClick1={()=> {
-						setUseCardFields(false)
+						// setUseCardFields(false)
+						setFieldValue("syncWithTemplate", true)
 						setShowFieldModal(false)
 						setTemplateFieldsChanged(false)
 						setCheckedCardAndTemplateFields(false)
@@ -1180,7 +1191,6 @@ const LotEditor = (props) => {
 	// redux state
 	const cards = useSelector(state => { return state.cardsReducer.cards })
 	const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
-	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
 	// actions
 	const dispatch = useDispatch()
@@ -1195,7 +1205,7 @@ const LotEditor = (props) => {
 	const [binId, setBinId] = useState(props.binId || "QUEUE")
 	const [content, setContent] = useState(null)
 	const [loaded, setLoaded] = useState(false)
-	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
+	const [formMode, ] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
 	const [useCardFields, setUseCardFields] = useState(props.cardId ? true : false)
 
@@ -1203,19 +1213,6 @@ const LotEditor = (props) => {
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
 	const [lotNumber, setLotNumber] = useState((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
-	// let lotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
-	//
-	// // if a template isn't provided by redux, check if card has template id
-	// if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
-	// 	lotTemplateId = card?.lotTemplateId
-	// }
-	//
-	// if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE_ID
-	// let lotTemplate = lotTemplates[lotTemplateId]  || BASIC_LOT_TEMPLATE
-	// if(!lotTemplates[lotTemplateId]) {
-	// 	lotTemplateId = BASIC_LOT_TEMPLATE_ID
-	// 	lotTemplate = BASIC_LOT_TEMPLATE
-	// }
 
 	// extract card attributes
 	const {
@@ -1324,6 +1321,7 @@ const LotEditor = (props) => {
 						initialValues={{
 							_id: card ? card._id : null,
 							processId: processId,
+							syncWithTemplate: card ? (card.syncWithTemplate || false) : false,
 							moveCount: 0,
 							moveLocation: [],
 							name: card ? card.name : ``,
@@ -1331,7 +1329,7 @@ const LotEditor = (props) => {
 								card.bins
 								:
 								defaultBins,
-							fields: getCustomFieldValues(useCardFields ? ( card?.fields || []) : lotTemplate.fields, card?.fields ? card?.fields : null)
+							fields: getFormCustomFields((useCardFields && !card?.syncWithTemplate) ? ( card?.fields || []) : lotTemplate.fields, card?.fields ? card?.fields : null)
 
 						}}
 						validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
@@ -1380,6 +1378,7 @@ const LotEditor = (props) => {
 									processId: selectedProcessId,
 									[lotTemplateId]: templateValues,
 									fields,
+									syncWithTemplate
 								} = values || {}
 
 
@@ -1394,7 +1393,8 @@ const LotEditor = (props) => {
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											lotTemplateId,
-											fields
+											fields,
+											syncWithTemplate
 										}
 
 										/*
@@ -1457,7 +1457,8 @@ const LotEditor = (props) => {
 										submitItem = {
 											...submitItem,
 											bins: updatedBins,
-											fields
+											fields,
+											syncWithTemplate
 											// fields
 										}
 
@@ -1478,7 +1479,8 @@ const LotEditor = (props) => {
 											process_id: isObject(card) ? (card.process_id || processId) : (processId),
 											lotTemplateId,
 											lotNumber,
-											fields
+											fields,
+											syncWithTemplate
 										}
 
 										requestResult = onPutCard(submitItem, values._id)
@@ -1494,7 +1496,8 @@ const LotEditor = (props) => {
 											process_id: processId ? processId : selectedProcessId,
 											lotTemplateId,
 											lotNumber,
-											fields
+											fields,
+											syncWithTemplate
 										}
 
 										requestResult = await onPostCard(submitItem)

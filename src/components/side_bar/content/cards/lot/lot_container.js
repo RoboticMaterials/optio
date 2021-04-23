@@ -1,10 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
-import Lot from "./lot";
-import {useSelector} from "react-redux";
-import {getBinQuantity, getLotTemplateData, getLotTotalQuantity} from "../../../../../methods/utils/lot_utils";
-import {getProcessName} from "../../../../../methods/utils/processes_utils";
-import {getStationName} from "../../../../../methods/utils/stations_utils";
+import React, {useEffect, useState} from 'react'
+
+// components internal
+import Lot from "./lot"
+
+// functions external
+import PropTypes from 'prop-types'
+
+import {useSelector} from "react-redux"
+
+// utils
+import {getBinQuantity, getCustomFields, getLotTotalQuantity} from "../../../../../methods/utils/lot_utils"
 
 const LotContainer = (props) => {
 
@@ -15,14 +20,8 @@ const LotContainer = (props) => {
         ...rest
     } = props
 
-    const cards = useSelector(state => { return state.cardsReducer.cards }) || {}
 
-    const [totalQuantity, setTotalQuantity] = useState(0)
-    const [count, setCount] = useState(0)
-    const [templateValues, setTemplateValues] = useState([])
-    const [processName, setProcessName] = useState("")
-    const [stationName, setStationName] = useState("")
-    const [lot, setLot] = useState(cards[lotId])
+    const lot = useSelector(state => { return state.cardsReducer.cards[lotId] }) || {}
     const {
         bins,
         lotNumber,
@@ -31,21 +30,25 @@ const LotContainer = (props) => {
         flags,
         process_id: processId
     } = lot || {}
+    const process = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
+    const station = useSelector(state => { return state.stationsReducer.stations[binId] }) || {}
+
+    const [totalQuantity, setTotalQuantity] = useState(0)
+    const [count, setCount] = useState(0)
+    const [templateValues, setTemplateValues] = useState([])
+    const [processName, setProcessName] = useState("")
+    const [stationName, setStationName] = useState("")
 
     useEffect(() => {
-        setLot(cards[lotId] || {})
-    }, [cards, lotId])
+        setProcessName(process.name)
+    }, [process])
 
     useEffect(() => {
-        setProcessName(getProcessName(processId))
-    }, [processId])
+        setStationName(station.name)
+    }, [station])
 
     useEffect(() => {
-        setStationName(getStationName(binId))
-    }, [binId])
-
-    useEffect(() => {
-        setTemplateValues(getLotTemplateData(lotTemplateId, lot))
+        setTemplateValues(getCustomFields(lotTemplateId, lot))
     }, [lotTemplateId, lot])
 
     useEffect(() => {
@@ -78,18 +81,18 @@ const LotContainer = (props) => {
             {...rest}
             containerStyle={{width: '80%', margin: '.5rem auto .5rem auto'}}
         />
-    );
-};
+    )
+}
 
 LotContainer.propTypes = {
     lotId: PropTypes.string,
     binId: PropTypes.string
-};
+}
 
 LotContainer.defaultProps = {
     lotId: "",
     binId: "",
     enableFlagSelector: false,
-};
+}
 
-export default LotContainer;
+export default LotContainer

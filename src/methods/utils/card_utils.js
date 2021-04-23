@@ -92,11 +92,10 @@ export const convertCardDate = (cardDate) => {
 /*
 	* extracts initial values from the current lot and maps them to the template parameter
 	* */
-export const getCustomFieldValues = (fields, card) => {
+export const getFormCustomFields = (fields, card) => {
 	let initialValues = [] // initialize to empty object
 
-	// make sure lotTemplate is object to avoid errors
-	// make sure lotTemplate.fields is array
+	// make sure fields is array
 	if(isArray(fields)) {
 
 		// loop through rows in column
@@ -117,18 +116,16 @@ export const getCustomFieldValues = (fields, card) => {
 
 				let value
 				if(isArray(card)) {
-					card.find((currRow) => {
-						for(const field of currRow) {
-							const {
-								_id,
-								value: currVal
-							} = field || {}
+					for(const field of card.flat()) {
+						const {
+							_id,
+							value: currVal
+						} = field || {}
 
-							if(_id === fieldId) {
-								value = currVal
-							}
+						if(_id === fieldId) {
+							value = currVal
 						}
-					})
+					}
 				}
 
 				newRow.push({
@@ -147,6 +144,9 @@ export const getCustomFieldValues = (fields, card) => {
 	return initialValues
 }
 
+/*
+* Takes value and desired dataType, and converts value to dataType if necessary
+* */
 export const convertValue = (value, dataType) => {
 	if(!value) return DATA_TYPE_DEFAULTS[dataType]
 
@@ -162,6 +162,20 @@ export const convertValue = (value, dataType) => {
 			break
 		}
 		case FIELD_DATA_TYPES.DATE_RANGE: {
+			let updatedValues = [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE]	// SPREAD SO YOU DON'T CHANGE THE VALUE OF THE CONSTANT DEFAULT
+
+			// convert first item to date
+			if( isArray(value) && value.length > 0 && value[0] !== null) {
+				updatedValues[0] = new Date(value[0])
+			}
+
+			// convert second item to date
+			if(value.length > 1 && value[1] !== null) {
+				updatedValues[1] = new Date(value[1])
+			}
+
+			return updatedValues
+
 			break
 		}
 		case FIELD_DATA_TYPES.URL: {
@@ -237,7 +251,7 @@ export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 		}
 	}
 
-	lot.fields = getCustomFieldValues(lotTemplate.fields, [Object.values(remainingExcel)])
+	lot.fields = getFormCustomFields(lotTemplate.fields, [Object.values(remainingExcel)])
 	lot.processId = processId
 
 	return lot

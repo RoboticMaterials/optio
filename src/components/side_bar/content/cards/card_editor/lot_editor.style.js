@@ -513,11 +513,16 @@ export const TemplateButton = styled.button`
 export const SyncProblem = styled(SyncProblemIcon)`
   ${iconButtonCss};
   ${commonClickableIcon};
+  margin-left: 1rem;
 `
 
 export const Sync = styled(SyncIcon)`
   ${iconButtonCss};
   ${commonClickableIcon};
+  margin-left: 1rem;
+  
+  color: ${props => props.sync ? "#00d6d0" : "#a9a9a9"};
+  transition: all 2s ease;
 `
 
 export const PasteIcon = styled.button`

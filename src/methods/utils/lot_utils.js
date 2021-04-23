@@ -344,30 +344,38 @@ export const getAllTemplateFields = () => {
 	return templateFields
 }
 
-export const getLotTemplateData = (lotTemplateId, lot, includeNonPreview) => {
+/*
+* Returns array of lots custom fields
+* Each field field includes dataType, fieldName, and value
+* */
+export const getCustomFields = (lotTemplateId, lot, includeNonPreview) => {
+	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
+	const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+
 	let customFieldValues = []
 
-	if(isArray(lot.fields)) {
-		lot.fields.forEach((currRow) => {
+	const { syncWithTemplate } = lot || {}
 
-			if(isArray(currRow)) {
-				currRow.forEach((currItem) => {
-					const {
-						dataType,
-						fieldName,
-						value,
-						showInPreview,
-					} = currItem
+	// if sync with template, use fields from template. Otherwise use fields from lot
+	const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
 
-					// if includeNonPreview, add all.
-					// otherwise, only add if lot has showInPreview set to true
-					if(includeNonPreview || (!includeNonPreview && showInPreview)) {
-						customFieldValues.push({
-							dataType,
-							fieldName,
-							value
-						})
-					}
+	// loop through fields and get relevant data
+	if(isArray(fields)) {
+		fields.flat().forEach((currField) => {
+			const {
+				dataType,
+				fieldName,
+				showInPreview,
+				_id
+			} = currField
+
+			// if includeNonPreview, add all.
+			// otherwise, only add if lot has showInPreview set to true
+			if(includeNonPreview || (!includeNonPreview && showInPreview)) {
+				customFieldValues.push({
+					dataType,
+					fieldName,
+					value: syncWithTemplate ? getLotField("_id", _id, lot)?.value : currField?.value,
 				})
 			}
 		})
