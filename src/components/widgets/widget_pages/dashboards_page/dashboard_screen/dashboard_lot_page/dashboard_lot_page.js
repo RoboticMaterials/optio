@@ -18,7 +18,7 @@ import LotDateRow from '../../../../../side_bar/content/cards/lot/lot_date_row/l
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_contants";
 import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
-import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../../constants/lot_contants"
+import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
 import { getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
@@ -131,7 +131,7 @@ const DashboardLotPage = () => {
         }
 
     }
-    
+
     // /**
     //  * Handles event of task click
     //  *
@@ -200,19 +200,21 @@ const DashboardLotPage = () => {
             const isLast = currIndex === arr.length - 1
 
 
-            switch(dataType) {
+            switch (dataType) {
                 case FIELD_DATA_TYPES.STRING: {
-                    return(
+                    return (
                         <LotSimpleRow
                             key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
+                            labelStyle={{fontSize:'1.25rem'}}
+                            countStyle={{fontSize: '1.25rem'}}
                         />
                     )
                 }
                 case FIELD_DATA_TYPES.EMAIL: {
-                    return(
+                    return (
                         <LotSimpleRow
                             key={key}
                             label={fieldName}
@@ -222,7 +224,7 @@ const DashboardLotPage = () => {
                     )
                 }
                 case FIELD_DATA_TYPES.DATE: {
-                    return(
+                    return (
                         <LotDateRow
                             key={key}
                             label={fieldName}
@@ -233,17 +235,19 @@ const DashboardLotPage = () => {
                     )
                 }
                 case FIELD_DATA_TYPES.DATE_RANGE: {
-                    return(
+                    return (
                         <LotDateRangeRow
                             key={key}
                             label={fieldName}
                             isLast={isLast}
                             dateRange={value}
+                            labelStyle={{fontSize:'1.25rem'}}
+                            dateStyle={{fontSize: '1.25rem'}}
                         />
                     )
                 }
                 case FIELD_DATA_TYPES.URL: {
-                    return(
+                    return (
                         <LotSimpleRow
                             key={key}
                             label={fieldName}
@@ -253,7 +257,7 @@ const DashboardLotPage = () => {
                     )
                 }
                 case FIELD_DATA_TYPES.INTEGER: {
-                    return(
+                    return (
                         <LotSimpleRow
                             key={key}
                             label={fieldName}
@@ -273,7 +277,9 @@ const DashboardLotPage = () => {
                 <BackButton onClick={onBack} />
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
             </styled.LotHeader>
-            {renderLotFields}
+            <styled.LotFieldsContainer>
+                {renderLotFields}
+            </styled.LotFieldsContainer>
             <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove('human')} />
         </styled.LotContainer>
     )

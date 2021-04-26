@@ -27,3 +27,11 @@ export const LotContainer = styled.div`
 
 `
 
+export const LotFieldsContainer = styled.div`
+    height: fit-content;
+    width: 30rem;
+    background: orange;
+    padding: 1rem;
+    border-radius: .5rem;
+    align-self: center;
+`
