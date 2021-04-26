@@ -33,9 +33,13 @@ const DashboardLotPage = () => {
         }
     }, [])
 
-    const handleBack = () => {
+    const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
 
+    }
+
+    const onMove = () => {
+        onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
     }
 
 
@@ -155,10 +159,10 @@ const DashboardLotPage = () => {
     return (
         <styled.LotContainer>
             <styled.LotHeader>
-                <BackButton onClick={handleBack} />
+                <BackButton onClick={onBack} />
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
             </styled.LotHeader>
-            <Button label={'Move'} style={{ marginTop: 'auto' }} />
+            <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove()}/>
         </styled.LotContainer>
     )
 
