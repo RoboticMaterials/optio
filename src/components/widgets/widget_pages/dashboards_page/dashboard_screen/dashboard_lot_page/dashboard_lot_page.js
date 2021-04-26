@@ -9,13 +9,19 @@ import * as styled from './dashboard_lot_page.style'
 import Button from '../../../../../basic/button/button'
 import BackButton from '../../../../../basic/back_button/back_button'
 
+// Import Components
+import LotDateRangeRow from '../../../../../side_bar/content/cards/lot/lot_date_range_row/lot_date_range_row'
+import LotSimpleRow from '../../../../../side_bar/content/cards/lot/lot_simple_row/lot_simple_row'
+import LotDateRow from '../../../../../side_bar/content/cards/lot/lot_date_row/lot_date_row'
+
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_contants";
 import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
+import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getCurrentRouteForLot } from '../../../../../../methods/utils/lot_utils'
+import { getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 
@@ -47,7 +53,6 @@ const DashboardLotPage = () => {
 
     useEffect(() => {
         console.log('QQQQ current lot', currentLot)
-        console.log('QQQQ current route', getCurrentRouteForLot(currentLot, stationID))
         setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
         return () => {
 
@@ -186,12 +191,96 @@ const DashboardLotPage = () => {
 
     // }
 
+    const renderLotFields = useMemo(() => {
+        console.log('QQQQ lot fields', getLotTemplateData(currentLot.lotTemplateId, currentLot))
+
+        const fields = getLotTemplateData(currentLot.lotTemplateId, currentLot)
+
+        return fields.map((field, currIndex, arr) => {
+            const {
+                dataType,
+                fieldName,
+                value,
+            } = field
+
+            const key = `${fieldName}+dataType`
+            const isLast = currIndex === arr.length - 1
+
+
+            switch(dataType) {
+                case FIELD_DATA_TYPES.STRING: {
+                    return(
+                        <LotSimpleRow
+                            key={key}
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.EMAIL: {
+                    return(
+                        <LotSimpleRow
+                            key={key}
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE: {
+                    return(
+                        <LotDateRow
+                            key={key}
+                            label={fieldName}
+                            isLast={isLast}
+                            date={value}
+                        />
+
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE_RANGE: {
+                    return(
+                        <LotDateRangeRow
+                            key={key}
+                            label={fieldName}
+                            isLast={isLast}
+                            dateRange={value}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.URL: {
+                    return(
+                        <LotSimpleRow
+                            key={key}
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.INTEGER: {
+                    return(
+                        <LotSimpleRow
+                            key={key}
+                            label={fieldName}
+                            isLast={isLast}
+                            value={value}
+                        />
+                    )
+                }
+            }
+        })
+
+    }, [currentLot])
+
     return (
         <styled.LotContainer>
             <styled.LotHeader>
                 <BackButton onClick={onBack} />
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
             </styled.LotHeader>
+            {renderLotFields}
             <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove('human')} />
         </styled.LotContainer>
     )
