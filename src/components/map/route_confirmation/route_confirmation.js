@@ -70,7 +70,7 @@ const RouteConfirmation = (props) => {
                         dispatchAutoAddRoute("continue")
                       }}
                       >
-                        <styled.TaskText style={{ paddingRight: '.3rem' }}>Add and continue</styled.TaskText>
+                        <styled.TaskText style={{ paddingRight: '.3rem', color: "#ffbf1f" }}>Add and continue</styled.TaskText>
 
                         <IconButton style={{paddingRight: '.2rem' }}>
                                 <i className="fas fa-arrow-alt-circle-right" style = {{color: "#ffbf1f"}}></i>

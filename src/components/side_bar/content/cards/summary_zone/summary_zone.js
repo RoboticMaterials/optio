@@ -41,6 +41,7 @@ const SummaryZone = ((props) => {
 		return (
 			// map through {selectedProcesses}
 			selectedProcesses.map((currProcess, processIndex) => {
+				console.log(currProcess.showSummary)
 
 				// extract process attributes
 				const {
@@ -49,27 +50,33 @@ const SummaryZone = ((props) => {
 				} = currProcess
 
 				// return a CardZone wrapped with a styled container and any additional elements
-				return	(
-					<styled.ZoneContainer
-						key={processId}
-					>
-						<styled.ProcessName>{processName}</styled.ProcessName>
 
-						<CardZone
-							handleAddLotClick={handleAddLotClick}
-							setSelectedCards={setSelectedCards}
-							selectedCards={selectedCards}
-							sortMode={sortMode}
-							sortDirection={sortDirection}
-							lotFilterValue={lotFilterValue}
-							selectedFilterOption={selectedFilterOption}
-							setShowCardEditor={setShowCardEditor}
-							showCardEditor={showCardEditor}
-							maxHeight={"30rem"}
-							processId={processId}
-							handleCardClick={handleCardClick}
-						/>
-					</styled.ZoneContainer>
+				return	(
+					<>
+						{!!currProcess.showSummary &&
+							<styled.ZoneContainer
+								key={processId}
+							>
+								<styled.ProcessName>{processName}</styled.ProcessName>
+
+								<CardZone
+									handleAddLotClick={handleAddLotClick}
+									setSelectedCards={setSelectedCards}
+									selectedCards={selectedCards}
+									sortMode={sortMode}
+									sortDirection={sortDirection}
+									lotFilterValue={lotFilterValue}
+									selectedFilterOption={selectedFilterOption}
+									setShowCardEditor={setShowCardEditor}
+									showCardEditor={showCardEditor}
+									maxHeight={"30rem"}
+									processId={processId}
+									handleCardClick={handleCardClick}
+								/>
+							</styled.ZoneContainer>
+						}
+					</>
+
 				)
 			})
 		)
@@ -104,4 +111,3 @@ SummaryZone.defaultProps = {
 }
 
 export default memo(SummaryZone)
-

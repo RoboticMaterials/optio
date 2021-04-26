@@ -28,7 +28,6 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import LoadUnloadFields from './fields/load_unload_fields'
 import ObjectEditor from '../object_editor/object_editor'
 
-
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -253,7 +252,7 @@ const TaskField = (props) => {
 
 
     useEffect(() => {
-      if(!!selectedTask && selectedTask.unload.station!==null){
+      if(!!selectedTask && selectedTask.unload.station!==null && selectedTask.new === true){
         dispatchSetShowRouteConfirmation(true)
         dispatchSetRouteConfirmationLocation(selectedTask.unload.station)
       }
@@ -699,9 +698,7 @@ const TaskField = (props) => {
                         <div>
                         <>
                                 {!!selectedTask && isProcessTask && !!selectedTask.new ?
-                                    <styled.Label style={{ marginTop: '1rem' }}>
-                                        Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
-                                </styled.Label>
+                                    <></>
                                     :
                                     <div style={{ marginBottom: '1rem' }}>
                                         <ContentHeader
@@ -726,7 +723,7 @@ const TaskField = (props) => {
                             {/* Task Title */}
                             {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
 
-                            <styled.Title>Route Name</styled.Title>
+                            <styled.Title style = {{marginTop: '1rem'}}>Route Name</styled.Title>
 
                             <TextField
                                 InputComponent={Textbox}
@@ -740,7 +737,7 @@ const TaskField = (props) => {
 
                             {isTransportTask &&
                                 <>
-                                    <styled.Title style={{ marginTop: '1.5rem', marginRight: ".5rem"}}>Object</styled.Title>
+                                    <styled.Title style={{ marginTop: '2rem', marginRight: ".5rem"}}>Object</styled.Title>
 
                                     {!showObjectSelector &&
                                         <>
@@ -807,6 +804,7 @@ const TaskField = (props) => {
                                             Select or create an object to be transported
                                 </styled.HelpText>
                                     }
+
 
                                     {isProcessRoute &&
                                         <>

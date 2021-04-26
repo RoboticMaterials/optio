@@ -12,6 +12,8 @@ import ContentHeader from '../../content_header/content_header'
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
+import Switch from 'react-ios-switch'
+
 
 // Import actions
 import {
@@ -731,7 +733,20 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <styled.Title schema={'processes'} style = {{marginTop: "1rem"}}>Associated Routes</styled.Title>
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2rem", marginBottom: "2rem"}}>
+                  <styled.Title style = {{fontSize: "1.1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
+
+                  <Switch
+                      onColor='red'
+                      checked={values.showSummary}
+                      onChange={() => {
+                        setFieldValue("showSummary", !values.showSummary )
+                      }}
+                  />
+
+                </styled.RowContainer>
+
+                <styled.Title schema={'processes'} style = {{marginTop: "1rem", marginBottom: "1rem"}}>Associated Routes</styled.Title>
 
                 {editingTask && selectedTask ?
                         <TaskField
