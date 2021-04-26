@@ -106,6 +106,7 @@ const ListView = (props) => {
 
     }, [widgetPage])
 
+
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
             if (dashboard.station === params.stationID) {
@@ -182,28 +183,28 @@ const ListView = (props) => {
             >
                 <styled.Header>
 
-                    {!locked &&
-                        <>
                             {(showDashboards) ?
+                              <>
+                                {!locked &&
+                                  <BounceButton
+                                      color={"black"}
+                                      onClick={() => {
+                                          setShowDashboards(false)
+                                          history.push('/locations')
+                                      }}
+                                      containerStyle={{
+                                          width: "3rem",
+                                          height: "3rem",
+                                          position: "relative"
+                                      }}
+                                  >
 
-                                <BounceButton
-                                    color={"black"}
-                                    onClick={() => {
-                                        setShowDashboards(false)
-                                        history.push('/locations')
-                                    }}
-                                    containerStyle={{
-                                        width: "3rem",
-                                        height: "3rem",
-                                        position: "relative"
-                                    }}
-                                >
-
-                                    <styled.Icon
-                                        className={"fa fa-times"}
-                                    />
-                                </BounceButton>
-
+                                      <styled.Icon
+                                          className={"fa fa-times"}
+                                      />
+                                  </BounceButton>
+                                }
+                              </>
                                 :
                                 <BounceButton
                                     color={"black"}
@@ -228,8 +229,6 @@ const ListView = (props) => {
                                     />
                                 </BounceButton>
                             }
-                        </>
-                    }
 
 
                     <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
