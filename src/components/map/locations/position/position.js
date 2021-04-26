@@ -63,6 +63,7 @@ function Position(props) {
     const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
@@ -86,180 +87,135 @@ function Position(props) {
     // Used to disable the ability to add position as a task
     let disabled = false
 
-    // Disable if the selectedPosition is not this position
-    if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
+    if(selectedTask && selectedProcess) {
 
-    // Disable if making a task and this position does not have a parent
-    else if (!!selectedTask && !position.parent) disabled = true
 
-    // Disable if the position does not belong to the children copy
-    else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
-
-    // Disbale if the selected stations children does not include this station
-    else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
-
-    // Disables while making task (IE no unload station) and not fixing a process
-    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
-        // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
-        if (position?.parent === selectedTask?.load?.station) disabled = true
-
-        // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
-        else if (!!stations[selectedTask?.load?.position]) disabled = true
-        // Disable position if its the load position. Cant make a task to itself
-        else if (selectedTask.load.position === position._id) disabled = true
-
-        // Disables when adding a task to the beginning of a process. 
-        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0 and the process contains more then 1 route
-        else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
-            // Find the station at the beginning of process
-            const firstStation = selectedProcess.routes[0].load.station
-            if (position.parent !== firstStation && selectedTask.load.position !== null) disabled = true
-        }
-
-        // Disable making a task to this position if it or its siblings are already used in the process and its not adding to the beginnig of the process
-        else if (!!selectedProcess) {
-            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
-            if (processesStations.includes(position?.parent) && selectedTask?.temp?.insertIndex !== 0) disabled = true
-        }
-    }
-
-    // Disables for when adding to the beginning of the process
-    else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
-        const firstStation = selectedProcess.routes[0].load.station
-        const hasChildren = stations[firstStation].children.length > 0
-        const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
-
-        // If adding to the beginning of a process and the first station in the process doesnt have a position, then you cant select a position
-        // Also if this positions parent is the first station, then you can start at the first station
-        if(!hasChildren || position?.parent === firstStation) disabled = true
-
-        // If adding to the beginning of a process and the first location hasnt been selected, disable the ability to use a positon whos sibling is already used
-        else if(processesStations.includes(position?.parent) && selectedTask?.load?.station === null) disabled = true
-    }
-
-    // This filters out positions when fixing a process
-    // If the process is broken, then you can only start the task at the route before break's unload location
-    else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
         if (!position.parent) {
             disabled = true
         }
-        else {
-            // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
-            if ((!routeStart) || (routeStart && routeEnd)) {
-                // disable all positions except those at unload station of the route before the break
-                const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-                disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
+
+        // This filters out positions when fixing a process
+        // If the process is broken, then you can only start the task at the route before break's unload location
+        if (!!fixingProcess) {
+            if (!position.parent) {
+                disabled = true
             }
-
-            // setting unload
-            else if (!routeEnd) {
-
-                // don't allow selecting positions at stations already in process
-                disabled = isPositionInRoutes(selectedProcess.routes, positionId)
-
-                // if position is at station load station after the break, it should be enabled
-                const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
-                if (isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
-            }
-        }
-    }
-    // This filters positions when making a process
-    // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
-    // This eliminates process with gaps between stations
-    else if (!!selectedProcess && !!selectedTask) {
-        if (!position.parent) {
-            disabled = true
-        }
-        else {
-            // extract insertIndex for adding new routes to beginning of a process
-            const {
-                temp
-            } = selectedTask || {}
-            const {
-                insertIndex
-            } = temp || {}
-
-            // not first route
-            if (selectedProcess.routes.length > 0) {
-                const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
-
-                // setting load (or both have been set)
-                if (!routeStart || (routeStart && routeEnd)) {
-
-                    // adding to beginning of process
-                    if (insertIndex === 0) {
-                        // disable all positions already in the process
-                        disabled = isPositionInRoutes(selectedProcess.routes, positionId)
-                    }
-
-                    else if (routeIndex === 0) {
-                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = false
-                    }
-
-                    else {
-                        // must start at position at unload station of previous route
-                        const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                        disabled = !isPositionAtUnloadStation(previousRoute, positionId)
-                    }
-                }
-
-                // setting unload
-                else if (!routeEnd) {
-
-                    // adding new to beginning of process
-                    if (insertIndex === 0) {
-                        // disable positions already used
-                        disabled = isPositionInRoutes(selectedProcess.routes, positionId)
-
-                        // enable positions at first route since inserting at beginning
-                        const firstRoute = selectedProcess.routes[0]
-                        if (isPositionAtLoadStation(firstRoute, positionId)) disabled = false
-
-                        // disable positions at load station of current route, as unload and load shouldn't be at same route
-                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
-                    }
-
-                    else if (routeIndex === 0) {
-                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-
-                        const nextRoute = selectedProcess.routes[1]
-                        if (isPositionAtLoadStation(nextRoute, positionId)) disabled = false
-                    }
-
-                    else {
-                        // disable positions already used
-                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-
-                        // disable positions at load station of current route, as unload and load shouldn't be at same route
-                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
-
-                        const nextRoute = selectedProcess.routes[routeIndex + 1]
-                        if (isPositionAtLoadStation(nextRoute, positionId)) disabled = false
-                    }
-                }
-            }
-
-            // first route
             else {
-                // setting load
-                if (!routeStart || (routeStart && routeEnd)) {
-                    // all positions are available for load position of first route
+                // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
+                if ((!routeStart) || (routeStart && routeEnd)) {
+                    // disable all positions except those at unload station of the route before the break
+                    const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+                    disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
                 }
 
                 // setting unload
                 else if (!routeEnd) {
-                    // disable positions at load station of current route, as unload and load shouldn't be at same route
-                    if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                    if (!positions[selectedTask?.load?.position]) disabled = true
+
+                    // don't allow selecting positions at stations already in process
+                    const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
+
+                    if(isPositionInRoutes(selectedProcess.routes, positionId) && !isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = true
+                }
+            }
+        }
+            // This filters positions when making a process
+            // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
+        // This eliminates process with gaps between stations
+        else {
+
+             {
+                // extract insertIndex for adding new routes to beginning of a process
+                const {
+                    temp
+                } = selectedTask || {}
+                const {
+                    insertIndex
+                } = temp || {}
+
+                // not first route
+                if (selectedProcess.routes.length > 0) {
+                    const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
+
+                    // setting load (or both have been set)
+                    if (!routeStart || (routeStart && routeEnd)) {
+
+                        // adding to beginning of process
+                        if (insertIndex === 0) {
+                            // disable all positions already in the process
+                            if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+                        }
+
+                        else if (routeIndex === 0) {
+                            if (isPositionInRoutes(selectedProcess.routes, positionId) && !isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                        }
+
+                        else {
+                            // must start at position at unload station of previous route
+                            const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                            disabled = !isPositionAtUnloadStation(previousRoute, positionId)
+                        }
+                    }
+
+                    // setting unload
+                    else if (!routeEnd) {
+
+                        if (!positions[selectedTask?.load?.position]) disabled = true
+
+                        // adding new to beginning of process
+                        if (insertIndex === 0) {
+                            // disable positions already used
+                            const firstRoute = selectedProcess.routes[0]
+                            if(isPositionInRoutes(selectedProcess.routes, positionId) && !isPositionAtLoadStation(firstRoute, positionId)) disabled = true
+
+                            // disable positions at load station of current route, as unload and load shouldn't be at same route
+                            if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                        }
+
+                        else if (routeIndex === 0) {
+                            const nextRoute = selectedProcess.routes[1]
+                            if (isPositionInRoutes(selectedProcess.routes, positionId) && !isPositionAtLoadStation(nextRoute, positionId)) disabled = true
+                        }
+
+                        else {
+                            const nextRoute = selectedProcess.routes[routeIndex + 1]
+                            // disable positions already used
+                            if (isPositionInRoutes(selectedProcess.routes, positionId) && (!isPositionAtLoadStation(nextRoute, positionId) || routeIndex === -1)) disabled = true
+
+                            // disable positions at load station of current route, as unload and load shouldn't be at same route
+                            if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                        }
+                    }
+                }
+
+                // first route
+                else {
+                    // setting load
+                    if (!routeStart || (routeStart && routeEnd)) {
+                        // all positions are available for load position of first route
+                    }
+
+                    // setting unload
+                    else if (!routeEnd) {
+                        // disable positions at load station of current route, as unload and load shouldn't be at same route
+                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                    }
                 }
             }
         }
     }
+    else {
+        // Disable if the selectedPosition is not this position
+        if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
 
-    // This filters out positions that aren't apart of a station when making a task
-    // Should not be able to make a task for a random position
-    else if (!!selectedTask && !position.parent) {
-        disabled = true
+        // Disable if making a task and this position does not have a parent
+        else if (!!selectedTask && !position.parent) disabled = true
+
+        // Disable if the position does not belong to the children copy
+        else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
+
+        // Disbale if the selected stations children does not include this station
+        else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
     }
 
     // Tells the position to glow
