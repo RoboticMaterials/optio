@@ -9,12 +9,27 @@ import * as styled from './dashboard_lot_page.style'
 import Button from '../../../../../basic/button/button'
 import BackButton from '../../../../../basic/back_button/back_button'
 
+// constants
+import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_contants";
+import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
+import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
+
+// Import Utils
+import { getCurrentRouteForLot } from '../../../../../../methods/utils/lot_utils'
+import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
+import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
+
+// Import Actions
+import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
+
 const DashboardLotPage = () => {
 
+    const tasks = useSelector(state => state.tasksReducer.tasks)
     const cards = useSelector(state => state.cardsReducer.cards)
 
     const params = useParams()
     const history = useHistory()
+    const dispatch = useDispatch()
 
     const {
         stationID,
@@ -24,10 +39,14 @@ const DashboardLotPage = () => {
     } = params || {}
 
     const [currentLot, setCurrentLot] = useState(cards[lotID])
+    const [currentTask, setCurrentTask] = useState(null)
+    const [addTaskAlert, setAddTaskAlert] = useState(null)
+
+    const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
 
     useEffect(() => {
         console.log('QQQQ current lot', currentLot)
-        setCurrentLot(cards[lotID])
+        getCurrentRouteForLot(currentLot, stationID)
         return () => {
 
         }
@@ -38,71 +57,77 @@ const DashboardLotPage = () => {
 
     }
 
-    const onMove = () => {
-        onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
+    const onMove = (deviceType) => {
+        // onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
+
+        // dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
+
+        const {
+            taskID,
+            name,
+        } = currentTask
+
+        // If a custom task then add custom task key to task q
+        if (taskID === 'custom_task') {
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "Task Added to Queue",
+                message: name
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
+        const connectedDeviceExists = isDeviceConnected()
+
+        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
+        let inQueue = isRouteInQueue(taskID, deviceType)
+
+        // add alert to notify task has been added
+        if (inQueue) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! Task Already in Queue",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+        else {
+            if (deviceType !== 'human') {
+                setAddTaskAlert({
+                    type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                    label: "Task Added to Queue",
+                    message: name
+                })
+
+                // clear alert after timeout
+                return setTimeout(() => setAddTaskAlert(null), 1800)
+            }
+        }
+
     }
 
 
-    // const handleRouteClick = async (Id, name, custom, deviceType) => {
 
-    //     // If a custom task then add custom task key to task q
-    //     if (Id === 'custom_task') {
-    //         setAddTaskAlert({
-    //             type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-    //             label: "Task Added to Queue",
-    //             message: name
-    //         })
 
-    //         // clear alert after timeout
-    //         return setTimeout(() => setAddTaskAlert(null), 1800)
-    //     }
+    const handleRouteClick = async (Id, name, custom, deviceType) => {
 
-    //     // Else if its a hil success, execute the HIL success function
-    //     else if (Id === 'hil_success') {
-    //         return handleHilSuccess(custom)
-    //     }
-
-    //     const connectedDeviceExists = isDeviceConnected()
-
-    //     if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
-    //         // display alert notifying user that task is already in queue
-    //         setAddTaskAlert({
-    //             type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-    //             label: "Alert! No device is currently connected to run this route",
-    //             message: `'${name}' not added`,
-    //         })
-
-    //         // clear alert after timeout
-    //         return setTimeout(() => setAddTaskAlert(null), 1800)
-    //     }
-
-    //     let inQueue = isRouteInQueue(Id, deviceType)
-
-    //     // add alert to notify task has been added
-    //     if (inQueue) {
-    //         // display alert notifying user that task is already in queue
-    //         setAddTaskAlert({
-    //             type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-    //             label: "Alert! Task Already in Queue",
-    //             message: `'${name}' not added`,
-    //         })
-
-    //         // clear alert after timeout
-    //         return setTimeout(() => setAddTaskAlert(null), 1800)
-    //     }
-    //     else {
-    //         if (deviceType !== 'human') {
-    //             setAddTaskAlert({
-    //                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-    //                 label: "Task Added to Queue",
-    //                 message: name
-    //             })
-
-    //             // clear alert after timeout
-    //             return setTimeout(() => setAddTaskAlert(null), 1800)
-    //         }
-    //     }
-    // }
+    }
 
     // /**
     //  * Handles event of task click
@@ -162,7 +187,7 @@ const DashboardLotPage = () => {
                 <BackButton onClick={onBack} />
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
             </styled.LotHeader>
-            <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove()}/>
+            <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove()} />
         </styled.LotContainer>
     )
 

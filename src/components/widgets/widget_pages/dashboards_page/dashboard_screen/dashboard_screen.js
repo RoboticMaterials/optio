@@ -46,9 +46,7 @@ import * as style from './dashboard_screen.style'
 // import logging
 import log from "../../../../../logger";
 import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
-import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
 import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
-import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
 import { immutableDelete, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 
 
