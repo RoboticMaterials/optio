@@ -22,7 +22,7 @@ const Statistics = () => {
     const themeContext = useContext(ThemeContext);
 
     const processes = useSelector(state => state.processesReducer.processes)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     const [dateIndex, setDateIndex] = useState(0)
     const [timeSpan, setTimeSpan] = useState('day')

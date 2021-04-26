@@ -181,7 +181,6 @@ export class MapView extends Component {
      * @param {*} e
      */
     dragNewEntity = e => {
-
         if (!this.mouseDown) return
 
         // Handle Stations

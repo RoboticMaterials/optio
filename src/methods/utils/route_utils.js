@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.mapReducer.currentMap
+    const currentMap = storeState.settingsReducer.settings.currentMap
 
     return {
         ...defaultTask,

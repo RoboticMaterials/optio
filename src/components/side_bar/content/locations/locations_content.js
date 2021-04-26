@@ -39,7 +39,7 @@ export default function LocationContent() {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const processes = useSelector(state => state.processesReducer.processes)
 
@@ -52,6 +52,9 @@ export default function LocationContent() {
         ...stations,
         ...positions
     }
+
+    console.log(locations)
+    console.log(currentMap._id)
 
     useEffect(() => {
         return () => {
