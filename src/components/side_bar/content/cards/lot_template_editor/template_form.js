@@ -74,8 +74,6 @@ const FormComponent = (props) => {
 		loaded
 	} = props
 
-	console.log("values",values)
-
 	const themeContext = useContext(ThemeContext)
 
 	useChange()

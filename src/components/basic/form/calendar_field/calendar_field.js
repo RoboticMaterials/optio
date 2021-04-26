@@ -50,7 +50,6 @@ const CalendarField = ({
 	}, [fieldValue, index])
 
 	const errorMessage = getMessageFromError(meta.error)
-	console.log("calender fieldValue",fieldValue)
 
 	return (
 		<Container>
