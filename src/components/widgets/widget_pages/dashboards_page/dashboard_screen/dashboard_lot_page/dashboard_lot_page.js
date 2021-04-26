@@ -131,14 +131,7 @@ const DashboardLotPage = () => {
         }
 
     }
-
-
-
-
-    const handleRouteClick = async (Id, name, custom, deviceType) => {
-
-    }
-
+    
     // /**
     //  * Handles event of task click
     //  *
