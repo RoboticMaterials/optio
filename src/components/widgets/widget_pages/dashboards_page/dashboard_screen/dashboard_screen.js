@@ -65,7 +65,6 @@ const DashboardScreen = (props) => {
 
     // redux state
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)

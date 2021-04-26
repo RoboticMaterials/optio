@@ -444,5 +444,4 @@ export const getCurrentRouteForLot = (lot, stationID) => {
         }
     }
     return currentRoute
-
 }

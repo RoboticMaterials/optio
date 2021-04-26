@@ -26,6 +26,7 @@ const DashboardLotPage = () => {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     const params = useParams()
     const history = useHistory()
@@ -46,7 +47,8 @@ const DashboardLotPage = () => {
 
     useEffect(() => {
         console.log('QQQQ current lot', currentLot)
-        getCurrentRouteForLot(currentLot, stationID)
+        console.log('QQQQ current route', getCurrentRouteForLot(currentLot, stationID))
+        setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
         return () => {
 
         }
@@ -60,15 +62,16 @@ const DashboardLotPage = () => {
     const onMove = (deviceType) => {
         // onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
 
-        // dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
 
         const {
-            taskID,
             name,
+            custom,
         } = currentTask
 
+        const Id = currentTask._id
+
         // If a custom task then add custom task key to task q
-        if (taskID === 'custom_task') {
+        if (Id === 'custom_task') {
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
                 label: "Task Added to Queue",
@@ -93,7 +96,7 @@ const DashboardLotPage = () => {
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
-        let inQueue = isRouteInQueue(taskID, deviceType)
+        let inQueue = isRouteInQueue(Id, deviceType)
 
         // add alert to notify task has been added
         if (inQueue) {
@@ -108,6 +111,8 @@ const DashboardLotPage = () => {
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
         else {
+            dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
+
             if (deviceType !== 'human') {
                 setAddTaskAlert({
                     type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
@@ -187,7 +192,7 @@ const DashboardLotPage = () => {
                 <BackButton onClick={onBack} />
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
             </styled.LotHeader>
-            <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove()} />
+            <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove('human')} />
         </styled.LotContainer>
     )
 
