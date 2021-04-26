@@ -41,7 +41,6 @@ const SummaryZone = ((props) => {
 		return (
 			// map through {selectedProcesses}
 			selectedProcesses.map((currProcess, processIndex) => {
-				console.log(currProcess.showSummary)
 
 				// extract process attributes
 				const {

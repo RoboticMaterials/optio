@@ -109,6 +109,7 @@ export const ProcessField = (props) => {
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
+    const [processRoutes, setProcessRoutes] = useState(null);
     const valuesRef = useRef(values);
 
     // throttled func
@@ -136,9 +137,17 @@ export const ProcessField = (props) => {
         // update selectedProcess (throttled to reduce lag from updating constantly
         dispatchSetSelectedProcess_Throttled()
 
+
         return () => { }
 
     }, [values]);
+
+    useEffect(() => {
+
+      setProcessRoutes(values.routes)
+
+    }, [values.routes]);
+
 
     useEffect(() => {
 

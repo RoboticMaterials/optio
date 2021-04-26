@@ -129,6 +129,7 @@ const TaskField = (props) => {
     const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
     const dispatchSetShowRouteConfirmation = (bool) => dispatch(showRouteConfirmation(bool))
     const dispatchSetRouteConfirmationLocation = (id) => dispatch(setRouteConfirmationLocation(id))
+
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
@@ -253,8 +254,19 @@ const TaskField = (props) => {
 
     useEffect(() => {
       if(!!selectedTask && selectedTask.unload.station!==null && selectedTask.new === true){
-        dispatchSetShowRouteConfirmation(true)
-        dispatchSetRouteConfirmationLocation(selectedTask.unload.station)
+
+        var showModal = true;
+
+        Object.values(selectedProcess.routes).map((route) => {
+          if(route._id===selectedTask._id){
+            showModal = false;
+          }
+        })
+        if(showModal){
+          dispatchSetShowRouteConfirmation(true)
+          dispatchSetRouteConfirmationLocation(selectedTask.unload.station)
+          showModal = true;
+        }
       }
     }, [selectedTask])
 

@@ -47,6 +47,8 @@ const TaskForm = (props) => {
 	}, []);
 
 	useEffect(() => {
+		console.log(initialValues)
+		console.log(values)
 		if(JSON.stringify(initialValues)!==JSON.stringify(values)){
 			dispatchPageDataChanged(true)
 		}
