@@ -53,8 +53,6 @@ export default function LocationContent() {
         ...positions
     }
 
-    console.log(locations)
-    console.log(currentMap._id)
 
     useEffect(() => {
         return () => {
