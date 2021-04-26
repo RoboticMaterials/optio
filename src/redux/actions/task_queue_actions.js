@@ -188,6 +188,7 @@ export const handlePostTaskQueue = (props) => {
         Id,
         // name,
         custom,
+        quantity,
         fromSideBar,
         deviceType
     } = props
@@ -196,12 +197,15 @@ export const handlePostTaskQueue = (props) => {
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
 
-            await dispatch(postTaskQueue(
+            return await dispatch(postTaskQueue(
                 {
-                    _id: uuid.v4(), dashboardID,
+                    _id: uuid.v4(), dashboardID: "",
                     "task_id": Id,
                     'custom_task': custom,
-                    "device_type": deviceType
+                    quantity,
+                    hil_response: false,
+                    "device_type": deviceType,
+                    handoff: true,
                 }
             ))
         }
