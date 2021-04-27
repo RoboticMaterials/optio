@@ -59,7 +59,7 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMap = useSelector(state => state.mapReducer.currentMap)
+	const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 
 	useEffect(() => {
