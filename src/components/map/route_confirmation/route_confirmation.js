@@ -50,7 +50,7 @@ const RouteConfirmation = (props) => {
 
                     >
                     <styled.RowContainer
-                       style={{borderBottom: '1px solid #7e7e7e', padding: '.1rem .2rem .1rem .2rem', width: '100%' }}
+                       style={{borderBottom: '1px solid #7e7e7e', borderTopLeftRadius: "0.5rem", borderTopRightRadius: "0.5rem", padding: '0rem', width: '100%' }}
                        onClick = {()=>{
                          dispatchSetShowRouteConfirmation(false)
                          dispatchAutoAddRoute("finish")
@@ -64,7 +64,7 @@ const RouteConfirmation = (props) => {
                     </styled.RowContainer>
 
                     <styled.RowContainer
-                      style={{ padding: '0.1rem .2rem 0.1rem .2rem', width: '100%' }}
+                      style={{ borderBottomLeftRadius: "0.5rem", borderBottomRightRadius: "0.5rem", padding: '0.1rem .2rem 0.1rem .2rem', width: '100%' }}
                       onClick = {()=> {
                         dispatchSetShowRouteConfirmation(false)
                         dispatchAutoAddRoute("continue")

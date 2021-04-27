@@ -101,6 +101,7 @@ const TaskField = (props) => {
         temp
     } = values || {}
 
+
     const {
         insertIndex
     } = temp || {}
@@ -157,7 +158,6 @@ const TaskField = (props) => {
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
-
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -282,9 +282,6 @@ const TaskField = (props) => {
       }
 
     },[editingObject])
-
-
-
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
@@ -424,7 +421,6 @@ const TaskField = (props) => {
     const onSelectObject = () => {
       dispatchSetRouteObject(selectedObject)
       setShowObjectSelector(false)
-      dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
       setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
@@ -515,7 +511,6 @@ const TaskField = (props) => {
                         handleOnClick1={() => {
                           onBackClick(routeId)
                           dispatchSetEditingObject(false)
-                          dispatchPageDataChanged(false)
                         }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
@@ -571,13 +566,12 @@ const TaskField = (props) => {
                                     content={'tasks'}
                                     mode={'create'}
                                     onClickBack={() => {
-                                      if(!!pageInfoChanged){
+                                      if(JSON.stringify(selectedTask)!== JSON.stringify(values)){
                                         setConfirmExitModal(true)
                                       }
                                       else{
                                         onBackClick(routeId)
                                         dispatchSetEditingObject(false)
-                                        dispatchPageDataChanged(false)
                                       }
                                     }}
                                 />
@@ -723,7 +717,6 @@ const TaskField = (props) => {
                                               else{
                                                 onBackClick(routeId)
                                                 dispatchSetEditingObject(false)
-                                                dispatchPageDataChanged(false)
                                               }
                                             }}
                                         />
@@ -813,7 +806,7 @@ const TaskField = (props) => {
 
                                     {!showObjectSelector &&
                                         <styled.HelpText style={{ fontSize: '.8rem', marginBottom: '1rem' }}>
-                                            Select or create an object to be transported
+                                            Select an object to be transported
                                 </styled.HelpText>
                                     }
 

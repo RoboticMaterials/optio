@@ -41,6 +41,7 @@ export const TaskContainer = styled.div`
     overflow: auto;
     // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
     scrollbar-width: thin;
+    height: 100%;
 `
 
 export const Card = styled.div`

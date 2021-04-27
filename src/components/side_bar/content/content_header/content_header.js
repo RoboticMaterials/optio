@@ -39,7 +39,7 @@ const ContentHeader = (props) => {
         }
 
         else if (content === 'tasks') {
-            return 'Route Editor'
+            return 'Routes'
         }
 
         else {

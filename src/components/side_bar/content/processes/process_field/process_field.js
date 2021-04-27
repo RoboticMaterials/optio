@@ -88,7 +88,6 @@ export const ProcessField = (props) => {
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
-    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
     const dispatchAutoAddRoute = (bool) => dispatch(autoAddRoute(bool))
 
 
@@ -648,7 +647,6 @@ export const ProcessField = (props) => {
                 handleClose={() => setConfirmExitModal(null)}
                 handleOnClick1={() => {
                   onBack()
-                  dispatchPageDataChanged(false)
                 }}
                 handleOnClick2={() => {
                     setConfirmExitModal(null)

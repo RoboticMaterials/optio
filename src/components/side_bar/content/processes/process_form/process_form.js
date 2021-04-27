@@ -61,6 +61,7 @@ const ProcessForm = (props) => {
 	const objects = useSelector(state => state.objectsReducer.objects)
 	const currentMap = useSelector(state => state.mapReducer.currentMap)
 	const editing = useSelector(state => state.processesReducer.editingProcess)
+	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
 	useEffect(() => {
 		return () => {
@@ -81,12 +82,15 @@ const ProcessForm = (props) => {
 			...remainingValues
 		} = values
 
+
 		if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
 			dispatchPageDataChanged(true)
 		}
-		else{
+
+		return () => {
 			dispatchPageDataChanged(false)
 		}
+
 	}, [values])
 
 	const handleSave = async (values, close) => {
