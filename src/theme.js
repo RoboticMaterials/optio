@@ -178,8 +178,8 @@ export const theme = {
             },
             report: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
-                solid: '#e81a69',
-                iconName: "fas fa-sticky-note"
+                solid: '#e8321a',
+                iconName: "fas fa-exclamation-triangle"
             },
             devices: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
