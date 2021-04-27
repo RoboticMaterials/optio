@@ -18,7 +18,7 @@ class Item extends Component {
 
   render() {
     // console.log('Item render this.props',this.props)
-    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent, onMouseEnter, onMouseLeave, deleteClick } = this.props;
+    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent, onMouseEnter, onMouseLeave } = this.props;
 
     if (props.itemRenderer) {
       return props.itemRenderer({ item, itemIndex, props, state, methods });
@@ -47,6 +47,7 @@ class Item extends Component {
           item.disabled ? `${LIB_NAME}-item-disabled` : ''
         }`}
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
+        onClick={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
         schema={props.schema}
         onMouseEnter = {() => {
@@ -61,23 +62,9 @@ class Item extends Component {
         }}        >
 
             <TextComponent
-            onClick={item.disabled ? undefined : () => methods.addItem(item)}
             >
               {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
             </TextComponent>
-
-            {!!props.onDeleteClick &&
-              <ButtonComponent
-                className = 'fas fa-trash'
-                style = {{color: "#FF4B4B"}}
-                onClick = {() => {
-                  if(!!props.onDeleteClick){
-                    props.onDeleteClick(item)
-                  }
-                }}
-
-              />
-            }
 
             {props.showButton && !!props.onDetailsClick &&
               <ButtonComponent className='fas fa-ellipsis-h'

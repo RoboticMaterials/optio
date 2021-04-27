@@ -24,7 +24,7 @@ const dropdownPosition = (props, methods) => {
     return 'bottom';
 };
 
-const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state, methods, onMouseEnter, onMouseLeave, onClick, TextComponent, onDeleteClick }) => {
+const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state, methods, onMouseEnter, onMouseLeave, onClick, TextComponent }) => {
     // console.log('Dropdown props', props)
     // console.log('Dropdown ItemComponent', ItemComponent)
     return (
@@ -83,7 +83,6 @@ const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state,
                                             methods={methods}
                                             onMouseEnter = {(item) => onMouseEnter(item)}
                                             onMouseLeave = {(item) => onMouseLeave(item)}
-                                            onDeleteClick = {(item) => onDeleteClick(item)}
                                         />
                                     ))
                             )}

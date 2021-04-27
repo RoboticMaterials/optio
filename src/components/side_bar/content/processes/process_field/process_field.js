@@ -654,23 +654,6 @@ export const ProcessField = (props) => {
                 }}
             />
 
-          {selectedProcess.routes.length !==0 ?
-            <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal}
-                title={"Are you sure you want to delete this process?"}
-                button_1_text={"Delete process and KEEP associated routes"}
-                button_2_text={"Delete process and DELETE associated routes"}
-                handleClose={() => setConfirmDeleteModal(null)}
-                handleOnClick1={() => {
-                    onDelete(false)
-                    setConfirmDeleteModal(null)
-                }}
-                handleOnClick2={() => {
-                    onDelete(true)
-                    setConfirmDeleteModal(null)
-                }}
-            />
-            :
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to delete this process?"}
@@ -678,16 +661,13 @@ export const ProcessField = (props) => {
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                  onDelete(true)
-                  setConfirmDeleteModal(null)
+                    onDelete(true)
+                    setConfirmDeleteModal(null)
                 }}
                 handleOnClick2={() => {
-                  setConfirmDeleteModal(null)
-
+                    setConfirmDeleteModal(null)
                 }}
             />
-
-            }
 
             {showExistingTaskWarning &&
                 <ConfirmDeleteModal
@@ -746,7 +726,7 @@ export const ProcessField = (props) => {
                   <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
 
                   <Switch
-                      onColor='red'
+                      onColor='#FF4B4B'
                       checked={values.showSummary}
                       onChange={() => {
                         setFieldValue("showSummary", !values.showSummary )
@@ -759,7 +739,7 @@ export const ProcessField = (props) => {
                   <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Statistics</styled.Title>
 
                   <Switch
-                      onColor='red'
+                      onColor='#FF4B4B'
                       checked={values.showStatistics}
                       onChange={() => {
                         setFieldValue("showStatistics", !values.showStatistics )

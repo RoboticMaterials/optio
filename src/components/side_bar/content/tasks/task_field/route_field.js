@@ -626,12 +626,6 @@ const TaskField = (props) => {
                                                 dispatchSetSelectedHoveringTask(item)
                                             }}
                                             onMouseLeave={(item) => dispatchSetSelectedHoveringTask(null)}
-                                            onDeleteClick={(item) => {
-                                              setDeleteID(item._id)
-                                              setConfirmDeleteModal(true)
-
-
-                                            }}
                                             onCreateNew={() => setShowEditor(true)}
                                             options={
                                                 Object.values(routes)
