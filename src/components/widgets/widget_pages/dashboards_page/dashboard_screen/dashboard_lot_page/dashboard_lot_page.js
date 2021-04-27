@@ -44,6 +44,8 @@ const DashboardLotPage = () => {
         lotID
     } = params || {}
 
+    // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
+    // but dashboard lot page is still mounted
     const [currentLot, setCurrentLot] = useState(cards[lotID])
     const [currentTask, setCurrentTask] = useState(null)
     const [addTaskAlert, setAddTaskAlert] = useState(null)
@@ -54,6 +56,7 @@ const DashboardLotPage = () => {
         console.log('QQQQ current lot', currentLot)
         setCurrentLot(cards[lotID])
         setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
+        console.log('QQQQ current task', getCurrentRouteForLot(currentLot, stationID))
         return () => {
 
         }
@@ -195,6 +198,7 @@ const DashboardLotPage = () => {
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}
                 handleCancel={() => onBack()}
+                isDeviceRoute={currentTask?.device_types?.length > 1}
             />
         </styled.LotContainer>
     )

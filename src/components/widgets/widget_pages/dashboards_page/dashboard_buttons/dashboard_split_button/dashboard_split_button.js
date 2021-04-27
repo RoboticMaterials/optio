@@ -20,7 +20,6 @@ const logger = log.getLogger("Dashboards", "EditDashboard");
 const widthBreakPoint = 1000;
 
 const DashboardSplitButton = (props => {
-
     const {
         color,
         title,

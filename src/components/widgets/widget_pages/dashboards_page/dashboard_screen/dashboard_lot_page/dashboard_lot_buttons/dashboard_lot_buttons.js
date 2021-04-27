@@ -6,6 +6,7 @@ import * as styled from './dashboard_lot_buttons.style'
 
 // Import Components
 import DashboardButton from '../../../dashboard_buttons/dashboard_button/dashboard_button'
+import DashboardSplitButton from '../../../dashboard_buttons/dashboard_split_button/dashboard_split_button'
 
 import { theme } from "../../../../../../../theme";
 
@@ -22,6 +23,7 @@ const DashboardLotButtons = (props) => {
         handleMove,
         handleCancel,
         handleScrap,
+        isDeviceRoute,
     } = props
 
     const renderMoveButton = () => {
@@ -32,27 +34,46 @@ const DashboardLotButtons = (props) => {
         const error = null
         const taskID = ''
         const buttonId = ''
+        if (isDeviceRoute) {
+            return (
+                <DashboardSplitButton
+                    color={color}
+                    containerStyle={{ background: color }}
+                    titleStyle={{ color: textColor }}
+                    iconColor={textColor}
 
-        return (
-            <DashboardButton
-                color={color}
-                containerStyle={{ background: color }}
-                titleStyle={{ color: textColor }}
-                iconColor={textColor}
+                    title={'Move'}
+                    iconClassName={iconClassName}
+                    onClick={() => handleMove('human')}
+                    hoverable={false}
+                    taskID={taskID}
+                    // disabled={disabled}
+                    // containerCss={style.ButtonContainerCss}
+                    error={error}
+                />
+            )
+        }
+        else {
+            return (
+                <DashboardButton
+                    color={color}
+                    containerStyle={{ background: color }}
+                    titleStyle={{ color: textColor }}
+                    iconColor={textColor}
 
-                title={'Move'}
-                iconColor={"black"}
-                iconClassName={iconClassName}
-                key={`${taskID}-${buttonId}`}
-                onClick={() => handleMove('human')}
+                    title={'Move'}
+                    iconColor={"black"}
+                    iconClassName={iconClassName}
+                    onClick={() => handleMove('human')}
 
-                hoverable={false}
-                taskID={taskID}
-                disabled={false}
-                // containerCss={style.ButtonContainerCss}
-                error={error}
-            />
-        )
+                    hoverable={false}
+                    taskID={taskID}
+                    disabled={false}
+                    // containerCss={style.ButtonContainerCss}
+                    error={error}
+                />
+            )
+        }
     }
 
     const renderCancelButton = () => {
