@@ -26,7 +26,7 @@ export const DefaultContainerComponent = styled.div`
   height: 100%;
   background: ${props => props.theme.bg.secondary};
 
-  >div:not(:last-child) {
+  >div {
     margin-bottom: .5rem;
   }
   

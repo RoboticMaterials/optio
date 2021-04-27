@@ -159,8 +159,7 @@ const FieldComponentMapper = (props) => {
 						<NumberField
 							usable={usable}
 							name={fieldName}
-							minValue={1}
-							// maxValue={100000000}
+							minValue={required ? 1 : 0}
 						/>
 					}
 

@@ -13,13 +13,14 @@ const WobbleButton = (props) => {
 		onDuration,		// how long should it wobble
 		offDuration,	// how long should it pause between wobbles
 		children,		// children to render
+		repeat,
 	} = props
 
 	const [wobble, setWobble] = useState(true)
 
 	useEffect(() => {
 		let timeout = setTimeout(() => {
-			setWobble(!wobble)
+			if((repeat && !wobble) || wobble) setWobble(!wobble)
 		}, wobble ? onDuration : offDuration)
 
 		return () => {
@@ -41,10 +42,12 @@ const WobbleButton = (props) => {
 WobbleButton.propTypes = {
 	onDuration: PropTypes.number,
 	offDuration: PropTypes.number,
+	repeat: PropTypes.bool
 };
 
 WobbleButton.defaultProps = {
 	onDuration: 1000,
 	offDuration: 5000,
+	repeat: true,
 };
 export default WobbleButton;

@@ -392,7 +392,6 @@ Yup.addMethod(Yup.string, "uniqueByPath", function (message, arrPath) {
         if (value) {
             const parentValues = parent[arrPath]
 
-
             if (isArray(parentValues)) {
                 for (const currParentValue of parentValues) {
 

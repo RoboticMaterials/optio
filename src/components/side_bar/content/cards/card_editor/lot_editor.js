@@ -58,9 +58,7 @@ import {
 import {
 	CARD_SCHEMA_MODES,
 	uniqueNameSchema,
-	editLotSchema,
 	getCardSchema,
-	LotFormSchema
 } from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
@@ -79,10 +77,10 @@ import log from '../../../../../logger'
 import { ThemeContext } from "styled-components";
 import {getIsEquivalent} from "../../../../../methods/utils/utils";
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
-import set from "lodash/set";
 import usePrevious from "../../../../../hooks/usePrevious";
 import WobbleButton from "../../../../basic/wobble_button/wobble_button";
 import {postLocalSettings} from "../../../../../redux/actions/local_actions";
+import LabeledButton from "./labeled_button/labeled_button";
 
 
 const logger = log.getLogger("CardEditor")
@@ -146,7 +144,6 @@ const FormComponent = (props) => {
 
 	// actions
 	const dispatch = useDispatch()
-	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
@@ -162,16 +159,12 @@ const FormComponent = (props) => {
 	const localReducer = useSelector(state => state.localReducer) || {}
 	const processesArray = Object.values(processes)
 
-	const [calendarFieldName, setCalendarFieldName] = useState(null)
-	const [calendarFieldMode, setCalendarFieldMode] = useState(null)
 	const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-	const [showCalendarPopup, setShowCalendarPopup] = useState(false);
 	const [templateFieldsChanged, setTemplateFieldsChanged] = useState(false);
 	const [loadingTemplateValues, setLoadingTemplateValues] = useState(false);
-
 
 	const [showFieldModal, setShowFieldModal] = useState(false)
 	const [checkedCardAndTemplateFields, setCheckedCardAndTemplateFields] = useState(false)
@@ -181,7 +174,8 @@ const FormComponent = (props) => {
 	useEffect(() => {
 		setWarningValues({
 			name: values.name,
-			cardNames
+			cardNames,
+			_id: cardId
 		})
 	}, [values.name, cardNames])
 
@@ -415,7 +409,7 @@ const FormComponent = (props) => {
 	}, [isOpen])
 
 	useEffect(() => {
-		
+
 		return() => {
 			dispatchPageDataChanged(false)
 		}
@@ -729,31 +723,16 @@ const FormComponent = (props) => {
 				/>
 				<styled.Header>
 					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
+						<div
+							style={{position: "absolute"}}
+						>
 						<BackButton
 							onClick={()=>setContent(null)}
 							schema={'error'}
 							secondary
 						>
 						</BackButton>
-					}
-
-					{formMode === FORM_MODES.UPDATE && ((content !== CONTENT.CALENDAR) && (content !== CONTENT.HISTORY) && (content !== CONTENT.MOVE)) &&
-						<styled.WidgetContainer onClick={()=> {
-							if(content !== CONTENT.HISTORY) {
-								onGetCardHistory(cardId)
-								setContent(CONTENT.HISTORY)
-							}
-							else {
-								setContent(null)
-							}
-						}}>
-							<i
-								className="fas fa-history"
-								color={themeContext.schema.lots.solid}
-								style={{fontSize: '2rem', marginRight: '0.5rem', zIndex: 20, color: themeContext.schema.lots.solid, cursor: 'pointer'}}
-							/>
-							Lot History
-						</styled.WidgetContainer>
+						</div>
 					}
 
 					{content === CONTENT.HISTORY &&
@@ -775,7 +754,7 @@ const FormComponent = (props) => {
 							}
 						</styled.Title>
 					}
-					
+
 
 					<styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
 				</styled.Header>
@@ -801,51 +780,59 @@ const FormComponent = (props) => {
 
 							<styled.SubHeader>
 								<styled.IconRow>
-									{showPasteIcon &&
-										<styled.PasteIcon
+									<LabeledButton
+										label={"Select Template"}
+									>
+										<styled.TemplateButton
 											type={"button"}
-											className="fas fa-paste"
-											color={"#ffc20a"}
-											onClick={onPasteIconClick}
+											className={showTemplateSelector ? "fas fa-times" : SIDE_BAR_MODES.TEMPLATES.iconName}
+											color={themeContext.schema.lots.solid}
+											onClick={() => {
+												setShowTemplateSelector(!showTemplateSelector)
+												dispatchSetSelectedLotTemplate(lotTemplateId)
+											}}
 										/>
-									}
+									</LabeledButton>
 
-									<styled.TemplateButton
-										type={"button"}
-										className={showTemplateSelector ? "fas fa-times" : SIDE_BAR_MODES.TEMPLATES.iconName}
-										color={themeContext.schema.lots.solid}
-										onClick={() => {
-											setShowTemplateSelector(!showTemplateSelector)
-											dispatchSetSelectedLotTemplate(lotTemplateId)
-										}}
-									/>
+									<div>
+										<styled.ContentTitle>Selected Template: </styled.ContentTitle>
+										<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
+									</div>
+
+									<LabeledButton
+										label={"Sync with Template"}
+									>
+										{templateFieldsChanged ?
+											<WobbleButton
+												repeat={false}
+											>
+												<styled.SyncProblem
+													style={{fontSize: 40, color: "#fc9003"}}
+													onClick={() => setShowFieldModal(true)}
+												/>
+											</WobbleButton>
+											:
+											<styled.Sync
+												sync={values.syncWithTemplate}
+												style={{fontSize: 40}}
+												onClick={() => setFieldValue("syncWithTemplate", !values.syncWithTemplate)}
+											/>
+										}
+									</LabeledButton>
 								</styled.IconRow>
 
-								<div>
-									<styled.ContentTitle>Selected Template: </styled.ContentTitle>
-									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
-								</div>
 
-								{templateFieldsChanged ?
-								<WobbleButton
-									containerStyle={{marginLeft: "1rem"}}
+								{showPasteIcon &&
+								<LabeledButton
+									label={"Pasted Data"}
 								>
-									<styled.SyncProblem
-										style={{fontSize: 40, color: "#fc9003"}}
-										onClick={()=> {
-											setShowFieldModal(true)
-										}}
+									<styled.PasteIcon
+										type={"button"}
+										className="fas fa-paste"
+										color={"#ffc20a"}
+										onClick={onPasteIconClick}
 									/>
-								</WobbleButton>
-
-									:
-									<styled.Sync
-										sync={values.syncWithTemplate}
-										style={{fontSize: 40}}
-										onClick={() => {
-											setFieldValue("syncWithTemplate", !values.syncWithTemplate)
-										}}
-									/>
+								</LabeledButton>
 								}
 							</styled.SubHeader>
 
@@ -901,39 +888,6 @@ const FormComponent = (props) => {
 					<styled.ButtonContainer>
 						{
 							{
-								[CONTENT.CALENDAR]:
-									<>
-
-										<Button
-											type={"button"}
-											style={{...buttonStyle, width: "8rem"}}
-											onClick={() => setContent(null)}
-											schema={"ok"}
-											secondary
-										>
-											Ok
-										</Button>
-										<Button
-											type={"button"}
-											style={{...buttonStyle}}
-											onClick={() => {
-												setFieldValue(calendarFieldName.fullFieldName, null)
-											}}
-											// secondary={"error"}
-											schema={"error"}
-										>
-											Clear Date
-										</Button>
-										<Button
-											type={"button"}
-											style={buttonStyle}
-											onClick={() => setContent(null)}
-											schema={"error"}
-										>
-											Cancel
-										</Button>
-									</>,
-
 								[CONTENT.HISTORY]:
 									<>
 										<Button
@@ -1014,20 +968,7 @@ const FormComponent = (props) => {
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											onClick={async () => {
-												// if (isArray(mappedValues) && mappedValues.length > 0) {
-												// 	const submitWasSuccessful = await onSubmit(values)
-												//
-												// 	// go to next lot
-												// 	if (mappedValuesIndex < mappedValues.length - 1) {
-												// 		if(submitWasSuccessful) setMappedValuesIndex(mappedValuesIndex + 1)
-												// 	}
-												//
-												// } else {
-												// function order matters
 												onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_NEXT)
-												// }
-
-
 											}}
 										>
 											Add & Next
@@ -1036,7 +977,7 @@ const FormComponent = (props) => {
 									</>
 									:
 									<>
-										
+
 										<Button
 											schema={'lots'}
 											type={"button"}
@@ -1364,7 +1305,7 @@ const LotEditor = (props) => {
 									setSubmitting(false)
 									return false
 								}
-                                
+
 								let requestResult
 
 								const {
