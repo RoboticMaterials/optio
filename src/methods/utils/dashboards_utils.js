@@ -43,6 +43,34 @@ export const getIdleButton = ({idle_location: idleLocationId}) => {
     }
 }
 
+export const getLocationDashboard = (dashboards, location) => {
+    const {
+        dashboards: dashboardIds = []
+    } = location || {}
+
+    const firstDashboardId = dashboardIds.length > 0 ? dashboardIds[0] : null
+
+    return dashboards[firstDashboardId] || {}
+}
+
+export const getDashboardNameFromLocation = (location,dashboards) => {
+    const dashboard = getLocationDashboard(dashboards, location)
+    const displayName = getDashboardDisplayName(dashboard, location)
+    return displayName
+}
+
+export const getDashboardDisplayName = (dashboard, location) => {
+        const {
+            name: locationName = ""
+        } = location || {}
+
+        const {
+            name: dashboardName = ""
+        } = dashboard || {}
+
+        return dashboardName || `${locationName} Dashboard`
+}
+
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
     const newDashboard = {

@@ -816,19 +816,31 @@ const FormComponent = (props) => {
 
 							<styled.RowContainer >
 								<styled.NameContainer style={{flex: 0}}>
-									<styled.LotName>Lot Number</styled.LotName>
+									<styled.FieldLabel>Lot Number</styled.FieldLabel>
 									<styled.LotNumber>{formatLotNumber(lotNumber)}</styled.LotNumber>
 								</styled.NameContainer>
 
 								<styled.NameContainer>
-									<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
-									<TextField
-										name={"name"}
-										type={"text"}
-										placeholder={"Enter name..."}
-										InputComponent={Textbox}
-										schema={"lots"}
-									/>
+									<styled.FieldLabel>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.FieldLabel>
+										<TextField
+											disabled={content !== null}
+											inputStyle={content !== null ? {
+												background: "transparent",
+												border: "none",
+												boxShadow: "none",
+
+											} : {}}
+											style={content !== null ? {
+												background: "transparent",
+												border: "none",
+												boxShadow: "none",
+											} : {}}
+											name={"name"}
+											type={"text"}
+											placeholder={"Enter name..."}
+											InputComponent={Textbox}
+											schema={"lots"}
+										/>
 								</styled.NameContainer>
 							</styled.RowContainer>
 						</styled.FieldsHeader>
