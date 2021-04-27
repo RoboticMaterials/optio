@@ -186,11 +186,10 @@ export const handlePostTaskQueue = (props) => {
         tasks,
         taskQueue,
         Id,
-        // name,
         custom,
-        quantity,
         fromSideBar,
-        deviceType
+        deviceType,
+        hil_response
     } = props
 
     return async dispatch => {
@@ -199,13 +198,11 @@ export const handlePostTaskQueue = (props) => {
 
             return await dispatch(postTaskQueue(
                 {
-                    _id: uuid.v4(), dashboardID: "",
+                    _id: uuid.v4(), dashboardID,
                     "task_id": Id,
                     'custom_task': custom,
-                    quantity,
-                    hil_response: false,
                     "device_type": deviceType,
-                    handoff: true,
+                    hil_response,
                 }
             ))
         }

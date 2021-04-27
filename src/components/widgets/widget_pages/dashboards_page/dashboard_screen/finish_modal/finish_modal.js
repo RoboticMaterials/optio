@@ -118,50 +118,13 @@ const FinishModal = (props) => {
 
         // extract lot attributes
         const {
-            bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            _id: lotId,
         } = card
 
         if(quantity && quantity > 0) {
-            // extract first station's bin and queue bin from bins
-            const {
-                [stationId]: currentStationBin,
-                ["FINISH"]: finishBin,
-                ...unalteredBins
-            } = bins || {}
 
-            const queueBinCount = finishBin?.count ? finishBin.count : 0
-            const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
-
-            // udpated card will maintain all of the cards previous attributes with the station_id and route_id updated
-            let updatedCard = {
-                ...card,                                // spread unaltered attributes
-                bins: {
-                    ...unalteredBins,                   // spread unaltered bins
-                    ["FINISH"]: {
-                        ...finishBin,              // spread unaltered attributes of station bin if it exists
-                        count: parseInt(queueBinCount) + parseInt(quantity)    // increment first station's count by the count of the queue
-                    }
-                },
-            }
-
-            if(quantity < currentStationBinCount) {
-                updatedCard = {
-                    ...updatedCard,
-                    bins: {
-                        ...updatedCard.bins,
-                        [stationId]:  {
-                            ...currentStationBin,
-                            count: parseInt(currentStationBinCount) - parseInt(quantity)
-                        }
-                    }
-                }
-            }
-
-            // send update action
-            // const result = await onPutCard(updatedCard, cardId)
+            // moving lot is handled through custom task
             const custom = {
                 load: {
                     station: stationId,
@@ -176,28 +139,36 @@ const FinishModal = (props) => {
                     sound: null,
                 },
                 handoff: true,
-                hil_response: false,
+                hil_response: null,
                 quantity: 1
             }
 
-            const result = await dispatchHandlePostTaskQueue({ tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
-
-
+            // first, post task queue
+            const result = await dispatchHandlePostTaskQueue({ hil_response: null, tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
 
             // check if request was successful
             if(!(result instanceof Error)) {
-                console.log("result",result)
 
-                delete result._id
-                delete result.dashboard
+                const {
+                    _id,
+                    dashboardID,
+                    dashboard,
+                    ...rest
+                } = result || {}
 
-                // setTimeout(() =>  disptachPutTaskQueue({
-                //     ...result,
-                //     hil_response: true,
-                //     lot_id: cardId,
-                //     quantity
-                // }, result._id), 2000)
+                // now must update task queue item to move the lot
+                setTimeout(async () =>  {
 
+                    await disptachPutTaskQueue(
+                        {
+                            ...rest,
+                            hil_response: true,
+                            lot_id: lotId,
+                            quantity
+                        }
+                        , result._id)
+                    await dispatchGetCards()
+                }, 1000)
 
                 requestSuccessStatus = true
                 message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
