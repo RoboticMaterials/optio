@@ -5,6 +5,9 @@ import * as commonCss from '../../../../../../common_css/common_css'
 export const LotHeader = styled.div`
     ${commonCss.rowContainer}
     align-items: center;
+    text-align: center;
+    justify-content: center;
+    
 `
 
 export const LotTitle = styled.p`
@@ -12,7 +15,14 @@ export const LotTitle = styled.p`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz1};
 
-    margin-bottom: 0;
+    /* margin-bottom: 0;
+    position: absolute;
+    text-align: center;
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto;  */
+
 `
 
 export const LotContainer = styled.div`
@@ -27,11 +37,3 @@ export const LotContainer = styled.div`
 
 `
 
-export const LotFieldsContainer = styled.div`
-    height: fit-content;
-    width: 30rem;
-    background: orange;
-    padding: 1rem;
-    border-radius: .5rem;
-    align-self: center;
-`
