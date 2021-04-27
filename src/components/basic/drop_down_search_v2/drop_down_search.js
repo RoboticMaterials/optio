@@ -482,12 +482,14 @@ export class DropDownSearch extends Component {
     this.props.portal ? (
       ReactDOM.createPortal(
         <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
-        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)} />,
+        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)}
+        onDeleteClick = {(item) => this.props.onDeleteClick} />,
         this.dropdownRoot
       )
     ) : (
         <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent}
-         props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter} onMouseLeave = {(item) => this.props.onMouseLeave} />
+         props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter}
+         onMouseLeave = {(item) => this.props.onMouseLeave} onDeleteClick = {(item) => this.props.onDeleteClick} />
       );
 
   createNew = (item) => {
@@ -661,6 +663,7 @@ DropDownSearch.defaultProps = {
   schema: null,
   onMouseEnter: () => {},
   onMouseLeave: () => {},
+  onDeleteClick:() => {},
 };
 
 

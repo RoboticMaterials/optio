@@ -244,6 +244,8 @@ const ProcessForm = (props) => {
 				newRoute: null,
 				map_id: currentMap._id,
 				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
+				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
+
 			}}
 
 			// validation control

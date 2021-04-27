@@ -24,7 +24,7 @@ const dropdownPosition = (props, methods) => {
     return 'bottom';
 };
 
-const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state, methods, onMouseEnter, onMouseLeave, onClick, TextComponent }) => {
+const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state, methods, onMouseEnter, onMouseLeave, onClick, TextComponent, onDeleteClick }) => {
     // console.log('Dropdown props', props)
     // console.log('Dropdown ItemComponent', ItemComponent)
     return (
@@ -83,6 +83,7 @@ const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state,
                                             methods={methods}
                                             onMouseEnter = {(item) => onMouseEnter(item)}
                                             onMouseLeave = {(item) => onMouseLeave(item)}
+                                            onDeleteClick = {(item) => onDeleteClick(item)}
                                         />
                                     ))
                             )}
@@ -116,7 +117,7 @@ export const DefaultDropDownComponent = styled.div`
   max-height: ${({ dropdownHeight }) => dropdownHeight};
   overflow: auto;
   z-index: 100;
-    
+
     ${props => props.css && props.css};
 
   border-radius: 0.2rem;
@@ -145,7 +146,7 @@ export const DefaultDropDownComponent = styled.div`
   ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(255,255,255,0.2);
   }
-    
+
     max-width: ${props => props.maxWidth && props.maxWidth};
 
 }

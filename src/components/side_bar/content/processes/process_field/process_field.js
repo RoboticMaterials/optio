@@ -12,6 +12,7 @@ import ContentHeader from '../../content_header/content_header'
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
+
 import Switch from 'react-ios-switch'
 
 
@@ -711,6 +712,7 @@ export const ProcessField = (props) => {
             <styled.Container>
 
                 <div style={{ marginBottom: '1rem' }}>
+
                     <ContentHeader
                         content={'processes'}
                         mode={'create'}
@@ -726,7 +728,7 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <div style={{ marginBottom: "1rem" }}>
+                <div >
                     <styled.Title schema={'default'}>Process Name</styled.Title>
                     <TextField
                         focus={!values.name}
@@ -740,8 +742,8 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2rem", marginBottom: "2rem"}}>
-                  <styled.Title style = {{fontSize: "1.1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2rem", marginBottom: ".7rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
 
                   <Switch
                       onColor='red'
@@ -753,7 +755,19 @@ export const ProcessField = (props) => {
 
                 </styled.RowContainer>
 
-                <styled.Title schema={'processes'} style = {{marginTop: "1rem", marginBottom: "1rem"}}>Associated Routes</styled.Title>
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Statistics</styled.Title>
+
+                  <Switch
+                      onColor='red'
+                      checked={values.showStatistics}
+                      onChange={() => {
+                        setFieldValue("showStatistics", !values.showStatistics )
+                      }}
+                  />
+
+                </styled.RowContainer>
+                  <styled.Title schema={'processes'} style = {{marginTop: "1rem", marginBottom: "1rem"}}>Associated Routes</styled.Title>
 
                 {editingTask && selectedTask ?
                         <TaskField

@@ -40,7 +40,7 @@ import { setFixingProcess } from '../../../../../redux/actions/processes_actions
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedHoveringTask, editingTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedHoveringTask, editingTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
 import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
@@ -106,8 +106,6 @@ const TaskField = (props) => {
         insertIndex
     } = temp || {}
 
-    const routeProcesses = getRouteProcesses(routeId) || []
-    const isProcessRoute = routeProcesses.length > 0 || fieldParent
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
@@ -130,6 +128,8 @@ const TaskField = (props) => {
     const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
     const dispatchSetShowRouteConfirmation = (bool) => dispatch(showRouteConfirmation(bool))
     const dispatchSetRouteConfirmationLocation = (id) => dispatch(setRouteConfirmationLocation(id))
+    const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
+
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -155,9 +155,15 @@ const TaskField = (props) => {
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objectSaveDisabled, setObjectSaveDisabled] = useState(true);
     const [contentType, setContentType] = useState('new')
+    const [deleteID, setDeleteID] = useState(null)
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
+
     const url = useLocation().pathname
+    const routeProcesses = getRouteProcesses(deleteID) || []
+    const isProcessRoute = routeProcesses.length > 0 || fieldParent
+
+
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -546,8 +552,9 @@ const TaskField = (props) => {
                             }
                             button_1_text={"Yes"}
                             handleOnClick1={() => {
-                                onDelete(routeId)
-                                setConfirmDeleteModal(null)
+                              dispatchDeleteRouteClean(deleteID)
+                              dispatchSetSelectedHoveringTask(null)
+                              setConfirmDeleteModal(null)
                             }}
                             button_2_text={"No"}
                             handleOnClick2={() => setConfirmDeleteModal(null)}
@@ -577,7 +584,8 @@ const TaskField = (props) => {
                                 />
 
                             </div>
-                            <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
+
+                            {/*<styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                     onClick={() => {
@@ -599,7 +607,7 @@ const TaskField = (props) => {
                                     New Route
                                 </styled.DualSelectionButton>
 
-                            </styled.RowContainer>
+                            </styled.RowContainer>*/}
 
 
                             {contentType === 'existing' &&
@@ -618,6 +626,12 @@ const TaskField = (props) => {
                                                 dispatchSetSelectedHoveringTask(item)
                                             }}
                                             onMouseLeave={(item) => dispatchSetSelectedHoveringTask(null)}
+                                            onDeleteClick={(item) => {
+                                              setDeleteID(item._id)
+                                              setConfirmDeleteModal(true)
+
+
+                                            }}
                                             onCreateNew={() => setShowEditor(true)}
                                             options={
                                                 Object.values(routes)
@@ -728,7 +742,7 @@ const TaskField = (props) => {
                             {/* Task Title */}
                             {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
 
-                            <styled.Title style = {{marginTop: '1rem'}}>Route Name</styled.Title>
+                            <styled.Title>Route Name</styled.Title>
 
                             <TextField
                                 InputComponent={Textbox}

@@ -90,6 +90,16 @@ export const SVGText = styled.text`
   transform-origin: center;
 `
 
+export const BackIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.primary};
+
+    &:hover {
+        cursor: pointer;
+    }
+
+`
+
 export const DualSelectionButton = styled.button`
     font-size: 1rem;
     width: 100%;
