@@ -229,7 +229,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 
 export const formatLotNumber = (lotNumber) => {
     return (isString(lotNumber) || Number.isInteger(lotNumber)) ?
-        `#${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
+        `RM-${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
         :
         ``
 }
@@ -438,7 +438,7 @@ export const getCurrentRouteForLot = (lot, stationID) => {
 
     for (let i = 0; i < lotProcess.routes.length; i++) {
         const loadStation = routes[lotProcess.routes[i]].load.station
-        if(loadStation === stationID){
+        if (loadStation === stationID) {
             currentRoute = routes[lotProcess.routes[i]]
             break
         }
