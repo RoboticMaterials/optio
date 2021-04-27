@@ -270,7 +270,7 @@ const TaskField = (props) => {
         })
         if(showModal){
           dispatchSetShowRouteConfirmation(true)
-          dispatchSetRouteConfirmationLocation(selectedTask.unload.station)
+          dispatchSetRouteConfirmationLocation(selectedTask.unload.position)
           showModal = true;
         }
       }

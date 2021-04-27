@@ -722,7 +722,7 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2rem", marginBottom: ".7rem"}}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem"}}>
                   <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
 
                   <Switch

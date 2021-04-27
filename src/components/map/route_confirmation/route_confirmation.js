@@ -35,7 +35,7 @@ const RouteConfirmation = (props) => {
     const handleSingleTask = (task) => {
           if (!!task && !!showRouteConfirm) {
 
-            const loc = stations[routeConfirmLocation]
+            const loc = !!stations[routeConfirmLocation] ? stations[routeConfirmLocation] : positions[routeConfirmLocation]
 
             const x = loc.x
             const y = loc.y

@@ -31,13 +31,15 @@ export const autoGenerateRoute = (obj) => {
     const currentMap = storeState.mapReducer.currentMap
     const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
 
+    const positions = storeState.positionsReducer.positions
+
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
         handoff: false,
         map_id: currentMap._id,
         load: {...defaultTask.load,
-               station: routeConfirmationLocation,
+               station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
                position: routeConfirmationLocation,
               },
         unload: {...defaultTask.unload},
