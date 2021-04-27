@@ -784,7 +784,7 @@ const TaskField = (props) => {
                                                 :
                                                 <Button
                                                     style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
-                                                    schema={'tasks'}
+                                                    schema={'objects'}
                                                     secondary
                                                     // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                                     onClick={() => setShowObjectSelector(!showObjectSelector)}

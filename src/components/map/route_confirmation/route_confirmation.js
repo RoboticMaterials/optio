@@ -1,20 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useLocation } from "react-router-dom";
 
 // Import Styles
 import * as styled from './route_confirmation.style'
-import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
-import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
-import {getRouteProcesses} from "../../../methods/utils/route_utils";
 import { showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute } from '../../../redux/actions/tasks_actions'
 
 const RouteConfirmation = (props) => {
 
     const {
-        // selectedTask,
-        // positions,
         d3,
     } = props
 
@@ -28,9 +22,7 @@ const RouteConfirmation = (props) => {
     const showRouteConfirm = useSelector(state=> state.tasksReducer.showRouteConfirmation)
     const routeConfirmLocation = useSelector(state=> state.tasksReducer.routeConfirmationLocation)
     const positions = useSelector(state => state.positionsReducer.positions)
-    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const stations = useSelector(state => state.stationsReducer.stations)
-    const location = useLocation()
 
     const handleSingleTask = (task) => {
           if (!!task && !!showRouteConfirm) {

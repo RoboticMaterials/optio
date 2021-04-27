@@ -23,19 +23,6 @@ export const TaskStatisticsContainer = styled.div`
     overflow: hidden;
 
 `
-export const TaskNameText = styled.span`
-    margin-bottom: 0rem;
-    font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
-    font-weight: bold;
-
-    overflow-wrap: break-word;
-    align-items: center;
-    box-align: center;
-    width: 100%;
-    height: 100%;
-    word-break: break-word;
-`
 
 export const TaskNameContainer = styled.div`
   	flex: 1;
@@ -60,9 +47,6 @@ export const TaskText = styled.p`
     white-space: break-spaces;
 `
 
-export const TaskIcon = styled.i`
-    margin-bottom: .2rem;
-`
 
 export const RowContainer = styled.div`
     display: flex;
