@@ -49,7 +49,6 @@ export const getTaskQueue = () => {
 
             const taskQueue = await api.getTaskQueue();
             const normalizedData = normalize(taskQueue, taskQueueSchema);
-
             return onSuccess(normalizedData.entities.taskQueue);
         } catch (error) {
             return onError(error);
@@ -95,7 +94,7 @@ export const putTaskQueue = (item, ID) => {
     return async dispatch => {
 
         function onStart() {
-            dispatch({ type: PUT_ + TASK_QUEUE + _STARTED, payload: {item, ID} });
+            dispatch({ type: PUT_ + TASK_QUEUE + _STARTED, payload: { item, ID } });
         }
         function onSuccess(item, ID) {
             const payload = { item, ID };
@@ -184,6 +183,7 @@ export const handlePostTaskQueue = (props) => {
         dashboardID,
         tasks,
         taskQueue,
+        lotID,
         Id,
         // name,
         custom,
@@ -230,6 +230,7 @@ export const handlePostTaskQueue = (props) => {
                         dashboard: dashboardID,
                         hil_response: null,
                         showModal: null,
+                        lot_id: lotID,
                     }
                     await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
                     const postToQueue = dispatch(postTaskQueue(postTask))
@@ -248,6 +249,7 @@ export const handlePostTaskQueue = (props) => {
                             _id: uuid.v4(),
                             "device_type": deviceType,
                             "task_id": Id,
+                            lot_id: lotID,
                         })
                     )
                 }
@@ -262,7 +264,7 @@ export const taskQueueOpen = (bool) => {
 };
 
 export const setShowModalId = (id) => {
-    return { type: SET_SHOW_MODAL_ID, payload: id}
+    return { type: SET_SHOW_MODAL_ID, payload: id }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
