@@ -67,6 +67,7 @@ const TaskField = (props) => {
     const {
         isTransportTask,
         isProcessTask,
+        isTaskInProcess,
         fieldParent,
         setFieldValue,
         setValues,
@@ -865,7 +866,7 @@ const TaskField = (props) => {
                                 onClick={async () => {
                                     await onSave()
                                 }}
-                            >{(!isProcessTask ? 'Add' : 'Save')} Route</Button>
+                            >{(!isTaskInProcess ? 'Add' : 'Save')} Route</Button>
 
 
                             {/* Remove Task From Process Button */}

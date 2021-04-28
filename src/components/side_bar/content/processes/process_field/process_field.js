@@ -791,7 +791,8 @@ export const ProcessField = (props) => {
                             fieldParent={editingTask}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            isProcessTask={handleIsRouteInProcess()}
+                            isProcessTask={true}
+                            isTaskInProcess = {handleIsRouteInProcess()}
                             toggleEditing={(props) => {
                                 setEditingTask(props)
                             }}
