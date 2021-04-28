@@ -7,9 +7,8 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
-import DashboardButtonList from "./dashboard_button_list/dashboard_button_list";
-import TaskAddedAlert from "./task_added_alert/task_added_alert";
 import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
+import TaskAddedAlert from './task_added_alert/task_added_alert'
 import DashboardsHeader from "../dashboards_header/dashboards_header";
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
@@ -77,8 +76,7 @@ const DashboardScreen = (props) => {
 
 
     const currentDashboard = dashboards[dashboardID]
-    console.log('QQQQ dashboards', dashboards)
-    console.log('QQQQ dashboard ID', dashboardID)
+
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
@@ -147,70 +145,6 @@ const DashboardScreen = (props) => {
             setShowLotsList(true)
         }
     }, [editing])
-
-    const checkButtons = async () => {
-        const { buttons } = currentDashboard	// extract buttons from dashboard
-        let updatedButtons = [...buttons]
-
-        let madeUpdate = false // used to track if any changes were made. Dashboard only needs to be updated if a change was made
-
-        let taskIds = []
-
-        buttons.forEach(async (currButton) => {
-            const {
-                task_id,
-                type
-            } = currButton
-
-            if (type === OPERATION_TYPES.KICK_OFF.key) {
-                // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
-                if ((availableKickOffProcesses !== undefined) && !isNonEmptyArray(availableKickOffProcesses)) {
-                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if (index !== -1) {
-
-                        updatedButtons = immutableDelete(updatedButtons, index)
-                    }
-                    madeUpdate = true
-                }
-            }
-            else if (type === OPERATION_TYPES.FINISH.key) {
-                // if button type is finish, but dashboard has no available finish processes, remove the finish button
-                if ((availableFinishProcesses !== undefined) && !isNonEmptyArray(availableFinishProcesses)) {
-                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if (index !== -1) {
-                        updatedButtons = immutableDelete(updatedButtons, index)
-                    }
-                    madeUpdate = true
-                }
-            }
-            // Dont add duplicate buttons, delete if they're are any
-            else if (task_id && task_id !== 'custom_task' && taskIds.includes(task_id)) {
-                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                if (index !== -1) {
-                    updatedButtons = immutableDelete(updatedButtons, index)
-                }
-                madeUpdate = true
-            }
-
-            // If task does not exist, delete task
-            else if (task_id && task_id !== 'custom_task' && !(isObject(tasks[task_id]))) {
-                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                if (index !== -1) {
-                    updatedButtons = immutableDelete(updatedButtons, index)
-                }
-                madeUpdate = true
-            }
-
-            taskIds.push(task_id)
-        })
-
-        if (madeUpdate) {
-            await dispatchPutDashboardAttributes({
-                buttons: updatedButtons
-            }, dashboardID)
-        }
-    }
-
 
     // // if the task q contains a human task that is unloading, show an unload button
     // if (Object.values(taskQueue).length > 0) {
@@ -327,6 +261,12 @@ const DashboardScreen = (props) => {
                     />
                 )
 
+            case 'taskQueue':
+                return (
+                    <>
+                    </>
+                )
+
 
             default:
                 return (
@@ -360,16 +300,14 @@ const DashboardScreen = (props) => {
                     <DashboardLotPage />
             }
 
-            <TaskAddedAlert
-                {...addTaskAlert}
-                visible={!!addTaskAlert}
-            />
-
             {/* {showTaskQueueButton &&
                 <DashboardTaskQueue />
             } */}
 
-
+            <TaskAddedAlert
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
 
 
 

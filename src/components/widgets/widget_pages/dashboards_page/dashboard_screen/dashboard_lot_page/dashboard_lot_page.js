@@ -6,12 +6,11 @@ import { useParams, useHistory } from 'react-router-dom'
 import * as styled from './dashboard_lot_page.style'
 
 // Import Basic Components
-import Button from '../../../../../basic/button/button'
-import BackButton from '../../../../../basic/back_button/back_button'
 
 // Import Components
 import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
 import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
+import TaskAddedAlert from '../task_added_alert/task_added_alert'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
@@ -120,7 +119,7 @@ const DashboardLotPage = () => {
         else {
             dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
 
-            if (deviceType !== 'human') {
+            if (deviceType !== DEVICE_CONSTANTS.HUMAN) {
                 setAddTaskAlert({
                     type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
                     label: "Task Added to Queue",
@@ -198,6 +197,12 @@ const DashboardLotPage = () => {
                 handleMove={(type) => onMove(type)}
                 handleCancel={() => onBack()}
                 isDeviceRoute={currentTask?.device_types?.length > 1}
+                route={currentTask}
+            />
+
+            <TaskAddedAlert
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
             />
         </styled.LotContainer>
     )
