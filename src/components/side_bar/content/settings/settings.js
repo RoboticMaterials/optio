@@ -10,6 +10,9 @@ import Button from "../../../basic/button/button";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ContentHeader from '../content_header/content_header'
 import {Timezones} from '../../../../constants/timezone_constants'
+import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import TaskAddedAlert from "../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import {ADD_TASK_ALERT_TYPE} from "../../../../constants/dashboard_contants";
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'
@@ -17,6 +20,8 @@ import * as styled from './settings.style'
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
+import { putDashboard } from '../../../../redux/actions/dashboards_actions'
+
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
@@ -25,15 +30,18 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
+import {useHistory} from "react-router-dom";
 
 const Settings = () => {
+
+    const history = useHistory()
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
@@ -44,6 +52,7 @@ const Settings = () => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const localReducer = useSelector(state => state.localReducer.localSettings)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const {
         currentMap,
         maps
@@ -55,6 +64,11 @@ const Settings = () => {
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
     const [selectedTimezone, setSelectedTimezone] = useState({})
+
+    const [confirmUnlock, setConfirmUnlock] = useState(false)
+    const [confirmLock, setConfirmLock] = useState(false)
+    const [addTaskAlert, setAddTaskAlert] = useState(null);
+
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
@@ -87,6 +101,36 @@ const Settings = () => {
         }
 
         setServerSettingsState(updatedSettings)
+
+    }
+
+    const handleLockUnlockDashboards = (locked) => {
+
+      Object.values(dashboards).forEach((dashboard) => {
+        if(dashboard.name!=="MiR_SIM_2 Dashboard"){
+          const newDashboard = {
+            ...dashboard,
+            locked: locked
+          }
+          dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+        }
+      })
+
+      if(!locked){
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "All Dashboards have been successfully unlocked!",
+        })
+      }
+      else{
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "All Dashboards have been successfully locked!",
+        })
+      }
+
+
+      return setTimeout(() => setAddTaskAlert(null), 2500)
 
     }
 
@@ -135,6 +179,9 @@ const Settings = () => {
         await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
+        if(!localSettingsState.mapViewEnabled) {
+            history.push(`/`)
+        }
 
     }
 
@@ -266,6 +313,30 @@ const Settings = () => {
         )
     }
 
+    const LockUnlockAllDashboards = () => {
+        return (
+            <styled.SettingContainer>
+            <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
+            <styled.RowContainer>
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmUnlock(true)}
+                  >Unlock All Dashboards
+                </Button>
+
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmLock(true)}
+                  >Lock All Dashboards
+                </Button>
+              </styled.RowContainer>
+
+            </styled.SettingContainer>
+        )
+    }
+
     const CurrentMap = () => {
         const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
         return (
@@ -331,9 +402,9 @@ const Settings = () => {
 
         }
         return (
-            <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
+            <styled.SettingContainer style={{display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end'}}>
 
-                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button style={{height: '2rem', flex: 1}} onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
@@ -341,12 +412,46 @@ const Settings = () => {
 
     return (
         <styled.SettingsContainer>
+            <ConfirmDeleteModal
+                isOpen={!!confirmLock || !!confirmUnlock}
+                title={!!confirmLock ? "Are you sure you want to lock all dashboards?" : "Are you sure you want to unlock all dashboards?"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={()=>{
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+                }}
+                handleOnClick1={() => {
+                  if(!!confirmLock){
+                    handleLockUnlockDashboards(true)
+                  }
+                  else{
+                    handleLockUnlockDashboards(false)
+                  }
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+
+                }}
+                handleOnClick2={()=>{
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+                }}
+            />
+
+            <TaskAddedAlert
+                containerStyle={{
+                    'position': 'absolute'
+                }}
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MapViewEnabled()}
             {CurrentMap()}
             {TimeZone()}
-            {SignOut()}
             {APIAddress()}
+            {LockUnlockAllDashboards()}
+            {SignOut()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

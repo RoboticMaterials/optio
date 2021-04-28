@@ -2,8 +2,11 @@ import styled from 'styled-components'
 import * as buttonCss from '../../../../../../common_css/button_css'
 import * as commonCss from '../../../../../../common_css/common_css'
 import * as styles from '../../statistics_page.style'
+import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
 
 export const PlotHeader = styled.div`
+    ${commonCss.columnContainer};
+    align-items: center;
 	//height: 30rem;
 	//min-height: 30rem;
 `
@@ -14,10 +17,8 @@ export const SinglePlotContainer = styled.div`
 	flex-direction: column;
 	background: ${props => props.theme.bg.primary};
   box-shadow: ${props => props.theme.cardShadow};
-	border-radius: 1.5rem;
-	padding: 1rem;
+	border-radius: 1rem;
 	min-width: 60rem;
-	overflow: hidden;
 	
 
     width: 100%;
@@ -66,6 +67,10 @@ export const PlotContainer = styled.div`
 
 export const LoadingIcon = styled.i`
     font-size: 1.5rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 `
 
 export const NoDataText = styled.span`
@@ -89,17 +94,21 @@ export const PlotTitle = styled.h2`
 
 export const ChartButton = styled.button`
     ${buttonCss.button};
-    background-color:${props => props.theme.schema.charts.solid};
+    background-color:${props => props.theme.schema.statistics.solid};
     color: ${props => props.theme.bg.primary};
     margin-top: .5rem;
     margin-bottom: 0.1rem;
     font-size: 1.25rem;
+
+    &:hover {
+      background-color:${props => LightenDarkenColor(props.theme.schema.statistics.solid, -5)};
+    }
 `
 
 export const RowContainer = styled.div`
     ${commonCss.rowContainer};
     justify-content: space-around;
-    
+    position: relative;
 `
 
 export const ColumnContainer = styled.div`
@@ -153,7 +162,7 @@ export const ChartTypeButton = styled.button`
 
     color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.schema.charts.solid : props.theme.bg.tertiary};
+    background-color: ${props => props.selected ? props.theme.schema.statistics.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
@@ -174,4 +183,11 @@ export const BreakLabel = styled.label`
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
   color: ${props => props.theme.bg.senary};
+`
+
+export const FormIcon = styled.i`
+    position: absolute;
+    right: .5rem;
+    top: .5rem;
+    font-size: 1.25rem;
 `

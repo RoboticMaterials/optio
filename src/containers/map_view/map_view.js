@@ -66,6 +66,7 @@ export class MapView extends Component {
 
         this.d3 = {
             translate: [0, 0],
+            naturalDims: { height: 500, width: 500 },
             scale: 1,
             naturalScale: 1,
             boundingClientHeight: 0
@@ -80,6 +81,7 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
+
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
@@ -118,6 +120,7 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
@@ -513,7 +516,7 @@ export class MapView extends Component {
                 }
                 stations[station._id] = station
             })
-            this.props.dispatchUpdateStations(stations) // Bulk Update
+            this.props.dispatchUpdateStations(stations, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
@@ -527,7 +530,7 @@ export class MapView extends Component {
                 // Object.assign(position, { x, y })
                 positions[position._id] = position
             })
-            this.props.dispatchUpdatePositions(positions) // Bulk Update
+            this.props.dispatchUpdatePositions(positions, null, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
@@ -748,22 +751,22 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
-                        <TaskStatistics d3={this.d3}/>
+                        <TaskStatistics d3={this.d3} />
                     }
 
                     {!!this.props.devices &&
-                      Object.values(this.props.devices).map((device) => {
-                        if(!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate){
-                        const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
+                        Object.values(this.props.devices).map((device) => {
+                            if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
+                                const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
 
-                          return (
-                            <CartWaypoint
-                              x = {x}
-                              y = {y}
-                            />
-                          )
-                        }
-                      })
+                                return (
+                                    <CartWaypoint
+                                        x={x}
+                                        y={y}
+                                    />
+                                )
+                            }
+                        })
                     }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.

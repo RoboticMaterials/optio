@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 import SmallButton from '../../../../basic/small_button/small_button'
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from '../../../../basic/textbox/textbox'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -31,6 +32,7 @@ import { randomHash } from "../../../../../methods/utils/utils";
 import { putDashboard, deleteDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
 
 import { dashboardSchema } from "../../../../../methods/utils/form_schemas";
 
@@ -43,7 +45,7 @@ import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
 import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
-import DashboardsSidebar, {TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import DashboardsSidebar, { TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -52,6 +54,17 @@ const DashboardEditor = (props) => {
         dashboard,
         showSidebar,
     } = props
+
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {}
+    } = current || {}
 
     const history = useHistory()
     const dispatch = useDispatch()
@@ -62,19 +75,38 @@ const DashboardEditor = (props) => {
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
     const onPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
-
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const stations = useSelector(state => state.stationsReducer.stations)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
 
-    /*
+
+    useEffect(() => {
+        return () => {
+          dispatchPageDataChanged(false)
+        }
+    }, [])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+        dispatchPageDataChanged(true)
+      }
+      else{
+        dispatchPageDataChanged(false)
+      }
+    }, [values])
+   /*
     * Returns initialValues object for Formik
     */
     const getInitialValues = () => {
         let initialValues = {
             name: "",
+            locked: false,
             buttons: []
+
         }
         let taskIds = []
 
@@ -83,26 +115,27 @@ const DashboardEditor = (props) => {
 
             let initialButtons = [];
             buttons
-            .filter((currButton) => {
-                const {
-                    task_id,
-                    type
-                } = currButton
+                .filter((currButton) => {
+                    const {
+                        task_id,
+                        type
+                    } = currButton
 
-                if(task_id && taskIds.includes(task_id)) {
-                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
-                    return false // don't add duplicate tasks
-                }
+                    if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
+                        logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                        return false // don't add duplicate tasks
+                    }
 
-                taskIds.push(task_id)
-                return true
-            })
-            .map((value, index) => {
-                initialButtons.push(value)
-            })
+                    taskIds.push(task_id)
+                    return true
+                })
+                .map((value, index) => {
+                    initialButtons.push(value)
+                })
 
             initialValues = {
                 name: dashboard.name,
+                locked: dashboard.locked,
                 buttons: initialButtons
             }
         } catch (e) {
@@ -147,8 +180,7 @@ const DashboardEditor = (props) => {
     * */
     const handleSubmit = async (values) => {
         // destructure values
-        const { name, buttons } = values
-
+        const { name, locked, buttons } = values
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
 
@@ -165,6 +197,7 @@ const DashboardEditor = (props) => {
 
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
+        dashboardCopy.locked = locked
         dashboardCopy.name = name
 
         // if dashboard has id, it must already exist, so update with put
@@ -178,16 +211,15 @@ const DashboardEditor = (props) => {
             onPostDashboard(dashboardCopy)
         }
 
-        history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
-
-
     }
 
     return (
         <Formik
             initialValues={getInitialValues()}
+            innerRef = {formRef}
             initialTouched={{
                 name: false,
+                locked: false,
                 buttons: [false]
             }}
             initialErrors={getInitialErrors()}
@@ -205,9 +237,10 @@ const DashboardEditor = (props) => {
             {(formikProps) => {
                 const { errors, values, touched, initialValues } = formikProps; // extract formik props
 
-                // disabled submission if there are any errors or not all fields have been touched
+               // disabled submission if there are any errors or not all fields have been touched
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
+
 
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
@@ -219,7 +252,7 @@ const DashboardEditor = (props) => {
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
                         if (addedIndex !== null) {
-                            payload.id = randomHash()
+                            // payload.id = randomHash()
                             buttonsCopy.splice(addedIndex, 0, payload)
                             formikProps.setFieldValue("buttons", buttonsCopy)
                         }
@@ -261,6 +294,7 @@ const DashboardEditor = (props) => {
                 const {
                     buttons: dashboardButtons,
                     name: dashboardName,
+                    locked: dashboardLocked,
                     station: dashboardStationId,
                     device: dashboardDeviceId,
                     _id: dashboardIdObject
@@ -273,6 +307,23 @@ const DashboardEditor = (props) => {
 
                 return (
                     <style.Container>
+
+                        <ConfirmDeleteModal
+                            isOpen={!!confirmExitModal}
+                            title={"Are you sure you want to Leave this page? Any progress will not be saved"}
+                            button_1_text={"Yes"}
+                            handleOnClick1={() => {
+                              history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
+                              setConfirmExitModal(null)
+
+                            }}
+                            button_2_text={"No"}
+                            handleOnClick2={() => {
+                              setConfirmExitModal(null)
+                            }}
+                            handleClose={() => setConfirmExitModal(null)}
+                        />
+
                         <DashboardsSidebar
                             existingButtons={values.buttons || []}
                             dashboardId={dashboardId}
@@ -283,6 +334,7 @@ const DashboardEditor = (props) => {
                             clickable={true}
                         />
                     <style.StyledForm>
+
                         <DashboardsHeader
                             showTitle={false}
                             showSidebar={showSidebar}
@@ -292,8 +344,16 @@ const DashboardEditor = (props) => {
                             onDelete={() => {
                                 handleDeleteDashboard()
                             }}
+                            onLockClick={() => {
+                              formikProps.setFieldValue("locked", !values.locked)
+                            }}
+                            locked = {values.locked}
                             saveDisabled={submitDisabled}
-                            onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                            onBack={() => !!pageInfoChanged ? setConfirmExitModal(true) : history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                            onSave = {()=>{
+                              handleSubmit(values)
+                              history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)
+                            }}
                         >
                             <TextField
                                 name={"name"}
@@ -312,6 +372,8 @@ const DashboardEditor = (props) => {
                                     }
                                 }}
                             />
+
+
                         </DashboardsHeader>
                         <style.BodyContainer>
                             <DashboardRenderer

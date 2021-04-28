@@ -1,3 +1,6 @@
+// Import Store
+import store from '../../redux/store/index'
+
 export const getMinutesFromMoment = (m) => {
     return m.minutes() + m.hours() * 60;
 }
@@ -37,8 +40,14 @@ export const convert24hto12h = (time24h) => {
     hours = parseInt(hours)
 
     if (hours >= 12) {
-        hours = hours - 12
+        if (hours > 12) {
+            hours = hours - 12
+        }
         modifier = 'pm'
+    }
+
+    if (minutes.length === 1) {
+        minutes = `${minutes}0`
     }
 
     return `${hours}:${minutes} ${modifier}`
@@ -146,6 +155,34 @@ export const convertIntto24h = (int) => {
  */
 export const convert24htoEpoch = (time24h, date) => {
     const epochTime = Date.parse(`${date} ${time24h}`)
-    
+
     return epochTime
-}  
+}
+
+export const convertDateToLocaleTimeZone = (date, timezone) => {
+    return new Date(date.toLocaleString("en-US", { timeZone: timezone }))
+}
+
+export const convertDateto12h = (date) => {
+    const settingState = store.getState().settingsReducer
+
+    if (!!settingState?.settings?.timezone?.label) {
+        date = convertDateToLocaleTimeZone(date, settingState?.settings?.timezone?.label)
+    }
+
+    return convert24hto12h(`${date.getHours()}:${date.getMinutes()}`)
+
+}
+
+
+export const isDateToday = (date) => {
+    const today = new Date()
+    const incomingDate = new Date(date)
+    // call setHours to take the time out of the comparison
+    if (incomingDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)) {
+        return true
+    }
+    else {
+        return false
+    }
+}

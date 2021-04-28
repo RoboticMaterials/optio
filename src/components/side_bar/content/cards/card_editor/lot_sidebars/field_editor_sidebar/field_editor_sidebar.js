@@ -69,6 +69,7 @@ const LotEditorSidebar = (props) => {
 
 
     const getFieldTemplates = () => {
+
         return (
             <style.ListContainer>
                 <Container
@@ -136,6 +137,11 @@ const LotEditorSidebar = (props) => {
                         flex: 1,
                         overflowY: "auto",
                         overflowX: "hidden",
+                        // justifyContent: 'center',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}
                 >
                 {
@@ -149,11 +155,21 @@ const LotEditorSidebar = (props) => {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
+
+                                width: 'fit-content',
+
+                                background: themeContext.bg.secondary,
+                                boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.3)',
+                                padding: '1rem',
+                                borderRadius: '0.5rem',
+                                zIndex: 12,
+                                cursor: 'move'
                             }}
                         >
                             <div style={{width: "fit-content"}}>
                                 <FieldComponentMapper
                                     component={value.component}
+                                    usable={false}
                                 />
                             </div>
                         </Draggable>
@@ -268,12 +284,14 @@ const LotEditorSidebar = (props) => {
                 key="sidebar-content"
                 style={{ width: width, minWidth: minWidth }}
             >
+
                 <style.Container>
+                    <style.TitleText>Draggable Input Elements</style.TitleText>
                     {renderButtons()}
 
-                    <style.FooterContainer>
+                    {/* <style.FooterContainer>
                         {renderNavButtons()}
-                    </style.FooterContainer>
+                    </style.FooterContainer> */}
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >

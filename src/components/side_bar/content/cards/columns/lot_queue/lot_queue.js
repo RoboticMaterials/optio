@@ -36,31 +36,62 @@ const LotQueue = ((props) => {
 			sortMode={sortMode}
 			maxHeight={maxHeight}
 			maxWidth={"20rem"}
-			HeaderContent={
-				!isCollapsed ?
-					<styled.StationHeader>
-						<i className="fa fa-chevron-down" aria-hidden="true"
-						   onClick={() => setCollapsed(true)}
-						/>
+			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
+				if(isCollapsed) {
+					return(
+						<styled.StationHeader>
+							<i className="fa fa-chevron-right" aria-hidden="true"
+							   onClick={() => setCollapsed(false)}
+								 style = {{cursor: "pointer"}}
+							/>
+						</styled.StationHeader>
+					)
+				}
+				else{
+					return(
+						<styled.StationHeader>
+							<styled.HeaderRow
+								style={{
+									marginBottom: "1rem"
+								}}
+							>
+								<i className="fa fa-chevron-down" aria-hidden="true"
+								   onClick={() => setCollapsed(true)}
+									 style = {{cursor: "pointer"}}
 
-						<styled.LabelContainer>
-							<styled.StationTitle>{stationName}</styled.StationTitle>
-						</styled.LabelContainer>
+								/>
 
-						<Button
-							onClick={onAddLotClick}
-							schema={'lots'}
-						>
-							+ Lot
-						</Button>
-					</styled.StationHeader>
-					:
-					<styled.StationHeader>
-						<i className="fa fa-chevron-right" aria-hidden="true"
-						   onClick={() => setCollapsed(false)}
-						/>
-					</styled.StationHeader>
-			}
+
+								<styled.LabelContainer>
+									<styled.StationTitle>{stationName}</styled.StationTitle>
+								</styled.LabelContainer>
+
+								<Button
+									onClick={onAddLotClick}
+									schema={'lots'}
+								>
+									+ Lot
+								</Button>
+							</styled.HeaderRow>
+							<styled.HeaderRow
+								style={{justifyContent: "space-between"}}
+							>
+								<div>
+									<styled.QuantityText>Lots: </styled.QuantityText>
+									<styled.QuantityText>{numberOfLots}</styled.QuantityText>
+								</div>
+
+
+								<div>
+									<styled.QuantityText>Total Quantity: </styled.QuantityText>
+									<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
+								</div>
+							</styled.HeaderRow>
+
+						</styled.StationHeader>
+					)
+				}
+			}}
 			station_id={station_id}
 			stationName = {stationName}
 			onCardClick={onCardClick}

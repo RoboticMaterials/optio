@@ -23,18 +23,51 @@ export const Body = styled.div`
 	
 	
 	background: ${props => props.theme.bg.secondary};
+  box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 
 export const CardZoneContainer = styled.div`
-	//overflow: hidden;
-  overflow: auto;
-  flex: 1;
-  //height: 40rem;
-  //height: 100%;
-  position: relative;
-  //padding: 1rem;
-	//width: 100%;
-	//height: 100%;
+  //flex: 1;
+  //position: relative;
+  
+  display: flex;
+  align-items: stretch;
+  
+
+  background: ${props => props.theme.bg.primary};
+  box-shadow: ${props => props.theme.cardShadow};
+  
+  margin: 1.5rem;
+  border-radius: 0.5rem;
+
+  overflow-x: scroll;
+  
+  //background: red;
+
+  /* Let's get this party started */
+  ::-webkit-scrollbar {
+    height: 8px;
+  }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    -webkit-background: rgba(0,0,0,0.1);
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    &:hover {
+      background: rgba(0,0,0,0.1);
+    }
+  }
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  ::-webkit-scrollbar-thumb:window-inactive {
+    // background: rgba(255,255,255,0.2);
+  }
+
+  // border: 1px solid green;
 `
 
 

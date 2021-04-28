@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 
 import moment from 'moment';
@@ -18,13 +18,14 @@ import { ResponsiveLine, Line } from '@nivo/line'
 
 // Import utils
 import { throughputSchema } from '../../../../../../../methods/utils/form_schemas'
-import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h, convert24htoEpoch } from '../../../../../../../methods/utils/time_utils'
+import { convert12hto24h, convert24htoEpoch, convertDateto12h } from '../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 // Import actions
 import { postSettings } from '../../../../../../../redux/actions/settings_actions'
 import { convertData } from '../../../../../../../redux/actions/report_event_actions';
 import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
+import { pageDataChanged } from '../../../../../../../redux/actions/sidebar_actions'
 
 const LineThroughputChart = (props) => {
 
@@ -35,13 +36,25 @@ const LineThroughputChart = (props) => {
         date,
     } = props
 
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {},
+        touched = {}
+    } = current || {}
+
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settings = useSelector(state => state.settingsReducer.settings)
 
     const [breaksEnabled, setBreaksEnabled] = useState({})
-
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
@@ -68,13 +81,20 @@ const LineThroughputChart = (props) => {
         }
     }, [settings])
 
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values) && Object.keys(touched).length>0){
+        dispatchPageDataChanged(true)
+      }
+    }, [values])
+
+
     /**
     * This converts the incoming data for a line graph
     * IT does a few things
-    * 1) Converts incoming data to have the start and end of the shift 
+    * 1) Converts incoming data to have the start and end of the shift
     * 2) If theres an expected output, it adds thatline
     * 3) if they're breaks, It adds those as well (pretty complex so see comments below)
-    * 
+    *
     * Uses usememo for performance reasons
     */
     const lineDataConverter = useMemo(() => {
@@ -233,7 +253,7 @@ const LineThroughputChart = (props) => {
         convertedData.map((output, ind) => {
             let inExpected = false
 
-            // Go through expected and see if the value is in it 
+            // Go through expected and see if the value is in it
             for (let i = 0; i < expectedOutput.length; i++) {
                 const expOutput = expectedOutput[i]
                 // If the x's are the same, then its in it
@@ -274,7 +294,7 @@ const LineThroughputChart = (props) => {
             expectedOutput.map((output, ind) => {
                 let inExpected = false
 
-                // Go through expected and see if the value is in it 
+                // Go through expected and see if the value is in it
                 for (let i = 0; i < convertedData.length; i++) {
                     const expOutput = convertedData[i]
                     // If the x's are the same, then its in it
@@ -330,7 +350,6 @@ const LineThroughputChart = (props) => {
 
         },
         ]
-
         return lineData
     }, [shiftDetails])
 
@@ -351,8 +370,6 @@ const LineThroughputChart = (props) => {
             endOfBreak3,
             switch3,
         } = values
-
-
 
         const shiftSettings = {
             startOfShift: startOfShift,
@@ -415,19 +432,19 @@ const LineThroughputChart = (props) => {
             {
                 numberOfBreaks.map((bk, ind) => {
                     const adjustedInd = ind + 1
-        
+
                     // This uses useState
                     // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
                     // This also allows to enable a break, but not effect the graph until submitted
                     const breakEnabled = breaksEnabled[ind]
-        
+
                     const breakName = `Break ${adjustedInd}`
                     const switchName = `switch${adjustedInd}`
                     const breakStart = `startOfBreak${adjustedInd}`
                     const breakEnd = `endOfBreak${adjustedInd}`
                     return (
                         <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
-        
+
                             <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                                 <styled.Label>{breakName}</styled.Label>
                                 <Switch
@@ -543,11 +560,15 @@ const LineThroughputChart = (props) => {
                     validateOnChange={true}
                     validateOnMount={false}
                     validateOnBlur={false}
+                    innerRef = {formRef}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm}) => {
+
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
+                        setTouched({})
+                        dispatchPageDataChanged(false)
                     }}
                 >
                     {formikProps => {
@@ -557,6 +578,8 @@ const LineThroughputChart = (props) => {
                             setValidationSchema,
                             values,
                             errors,
+                            touched,
+                            initialValues
                         } = formikProps
 
                         return (
@@ -624,7 +647,8 @@ const LineThroughputChart = (props) => {
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                             showHour={true}
                                             showSecond={false}
-                                            className="xxx"
+                                            className="xxx"                                            focus = {true}
+
                                             use12Hours
                                             format={'hh:mm a'}
                                             autocomplete={"off"}
@@ -661,7 +685,7 @@ const LineThroughputChart = (props) => {
                                 {/* <styled.RowContainer>
 
                     </styled.RowContainer> */}
-                                <styled.ChartButton type={'submit'}>Calculate</styled.ChartButton>
+                                <styled.ChartButton type={'submit'}>Calculate and Save</styled.ChartButton>
 
 
                             </Form>
@@ -682,13 +706,14 @@ const LineThroughputChart = (props) => {
                     colors={line => colors[line.id]}
 
                     xScale={{ type: "time" }}
-                    xFormat="time:%H:%M"
+                    xFormat={(value) => convertDateto12h(value)}
                     yFormat={value => Math.round(value)}
                     yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
 
                     axisTop={null}
                     axisRight={null}
-                    axisBottom={{ format: "%H:%M", tickRotation: 45 }}
+                    axisBottom={{ format: (value) => convertDateto12h(value)}}
+
                     axisLeft={{
                         orient: 'left',
                         tickSize: 5,
@@ -704,10 +729,10 @@ const LineThroughputChart = (props) => {
                     useMesh={true}
 
                     enablePoints={true}
+                    // pointLabel={(value) => `${convertDateto12h(value.x)}:${value.y}`}
                     pointSize={5}
                     pointBorderWidth={1}
                     pointBorderColor={{ from: 'white' }}
-                    pointLabel="y"
                     pointLabelYOffset={-12}
 
                     margin={{ top: 22, left: 70, right: 70, bottom: 32 }}
@@ -741,6 +766,7 @@ const LineThroughputChart = (props) => {
                             ]
                         }]}
                     theme={{
+
                         textColor: themeContext.bg.octonary,
                         axis: {
                             ticks: {

@@ -4,6 +4,7 @@ export const SettingsContainer = styled.div`
     flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
+    padding-bottom: 0;
 
     display: flex;
     flex-direction: column;
@@ -71,7 +72,7 @@ export const ConnectionButton = styled.button`
     margin-bottom: 1rem;
     border: none;
     border-radius: .5rem;
-    background-color: ${props => props.theme.bg.octonary};
+    background-color: ${props => props.theme.bg.secondary};
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -101,4 +102,29 @@ export const SwitchContainerLabel = styled.span`
     font-family: ${props => props.theme.font.primary};
     font-size: 1rem;
     color: ${props => props.theme.bg.octonary};
+`
+
+export const DualSelectionButton = styled.button`
+    font-size: 1rem;
+    width: 8rem;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.tertiary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
 `

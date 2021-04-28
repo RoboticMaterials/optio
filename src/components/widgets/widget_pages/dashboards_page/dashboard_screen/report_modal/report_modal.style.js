@@ -203,22 +203,32 @@ export const ContentContainer = styled.div`
 	margin-bottom: 1rem;
 	align-items: center;
 `
+
 export const ReportButtonsContainer = styled.div`
 	display: flex;
-	
 	flex-direction: column;
-	align-items: center;
-	// justify-content: center;
+	align-items: stretch;
 	flex-wrap: nowrap;
 	overflow: auto;
 	min-height: 5rem;
+  	flex: 1;
 	width: 100%;
+	padding: 0 1rem;
+`
+
+export const ButtonWidthContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+  height: fit-content;
+  min-height: fit-content;
+  	
 `
 
 export const ConditionText = styled.span`
 	font: ${props => props.theme.font.primary};
 	font-size: ${props => props.theme.fontSize.sz3};
-	max-width: 100 %;
+	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 `
@@ -321,8 +331,14 @@ ${props => props.css};
 export const AddNewButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
+  align-items: center;
 	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
+	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.quaternary};
+`
+export const AddNewButtonsText = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	color: ${props => props.theme.textColor};
+	margin-right: 1rem;
 `
 
 export const ColorFieldContainer = styled.div`

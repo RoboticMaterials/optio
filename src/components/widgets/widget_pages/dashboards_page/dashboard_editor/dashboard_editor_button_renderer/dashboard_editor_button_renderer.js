@@ -16,7 +16,7 @@ import {getCanDeleteDashboardButton} from "../../../../../../methods/utils/dashb
 
 const logger = log.getLogger("Dashboards")
 
-const DashboardEditorButtonRenderer = SortableContainer((props) => {
+const DashboardEditorButtonRenderer = ((props) => {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
@@ -31,6 +31,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
             groupName="dashboard-buttons"
             getChildPayload={() => null}
             style={{ width: '100%', height: '100%' }}
+            lockAxis={"y"}
         >
             {buttons.map((button, ind) => {
 
@@ -39,13 +40,14 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                         id: buttonId,
                         name: buttonName,
                         task_id: buttonTaskId,
-                        type: buttonType
+                        type: buttonType,
+                        custom_task: customTask
                     } = button || {}
 
                     const isButtonDeletable = getCanDeleteDashboardButton({type: buttonType})
 
                     return(
-                        <Draggable key={button.id} index={ind} style={{ overflow: 'visible' }}>
+                        <Draggable key={buttonId} index={ind} style={{ overflow: 'visible' }}>
                             {/*{(button.type === OPERATION_TYPES.REPORT.key || button.type === OPERATION_TYPES.KICK_OFF.key) ?*/}
                             {(button.type === OPERATION_TYPES.REPORT.key) ?
                                 <DashboardReportField
@@ -53,14 +55,17 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                     type={buttonType}
                                     deletable={isButtonDeletable}
                                     ind={ind}
+                                    buttonId={buttonId}
                                 />
                                 :
                                 ((button.type === TYPES.ROUTES.key) || (!button.type)) &&
                                 <DashboardRouteField
+                                    customTask={customTask}
                                     taskId={buttonTaskId}
                                     color={buttonColor}
                                     deletable={isButtonDeletable}
                                     ind={ind}
+                                    buttonId={buttonId}
                                 />
                             }
                             { (button.type === OPERATION_TYPES.KICK_OFF.key) &&
@@ -69,6 +74,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                 type={buttonType}
                                 deletable={isButtonDeletable}
                                 ind={ind}
+                                buttonId={buttonId}
                             />
                             }
                             { (button.type === OPERATION_TYPES.FINISH.key) &&
@@ -77,6 +83,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                 deletable={isButtonDeletable}
                                 type={buttonType}
                                 ind={ind}
+                                buttonId={buttonId}
                             />
                             }
                         </Draggable>

@@ -154,7 +154,6 @@ const BarChart = (props) => {
             // padding={{ top: 5, left: 5, right: 5, bottom: 5 }}
             layout={layout}
             labelTextColor={themeContext.bg.primary}
-            isInteractive={false}
 
             axisTop={null}
             axisRight={null}
@@ -162,19 +161,13 @@ const BarChart = (props) => {
                 tickSize: 5,
                 // tickPadding: layout === "horizontal" ? 10 : -40,
                 // translateY: -25
-                legendOffset: 50,
-                tickRotation: 0,
+                legendOffset: 60,
+                tickRotation: 45,
                 legend: '',
                 fontSize: "8rem",
                 legendPosition: 'middle',
                 // legendOffset: 50,
                 ...axisBottom
-
-
-                // format: (value) => {
-                //     console.log('QQQQ val', value.split(' ')[1])
-                //     // value.split(' ')[1]
-                // },
             }}
             axisLeft={{
                 tickSize: 5,

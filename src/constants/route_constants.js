@@ -1,6 +1,13 @@
 import {DEVICE_CONSTANTS} from "./device_constants";
 import uuid from 'uuid'
 
+export const CUSTOM_TASK_ID = "custom_task"
+export const CUSTOM_CHARGE_TASK_ID = "custom_task_charge"
+export const CUSTOM_IDLE_TASK_ID = "custom_task_idle"
+export const CUSTOM_IDLE_TASK_NAME = "Send to Idle Location"
+
+
+
 export const ROUTE_TYPES = {
     PUSH: "push",
     PULL: "pull"
@@ -25,7 +32,7 @@ export const defaultTask = {
         position: null,
         station: null,
         sound: null,
-        instructions: 'Load',
+        instructions: 'Move',
         timeout: '09:00'
     },
     unload: {

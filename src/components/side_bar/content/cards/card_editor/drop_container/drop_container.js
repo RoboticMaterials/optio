@@ -1,6 +1,7 @@
 import {Container, Draggable} from "react-smooth-dnd";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import * as styled from "./drop_container.style"
+import { ThemeContext } from 'styled-components'
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
@@ -53,6 +54,8 @@ const DropContainer = (props) => {
 	const [hoveringLeft, setHoveringLeft] = useState(false)
 	const [hoveringRight, setHoveringRight] = useState(false)
 
+	const themeContext = useContext(ThemeContext);
+
 	useEffect(() => {
 		const topRowIndex = currRowIndex-1
 		const bottomRowIndex = currRowIndex
@@ -94,7 +97,7 @@ const DropContainer = (props) => {
 			if(!isThisFieldDragging) setIsThisFieldDragging(true)
 		}
 		else if(isThisFieldDragging) {
-			 setIsThisFieldDragging(false)
+			setIsThisFieldDragging(false)
 		}
 
 	}, [draggingFieldId]);
@@ -192,17 +195,31 @@ const DropContainer = (props) => {
 					dragClass={"dragging-field"}
 					style={{flex: 1, display: "flex"}}
 				>
-						<Draggable
-							key={id}
-							style={{flex: 1}}
-						>
-							<div style={{position: "relative", display: "flex", justifyContent: "center" }}>
-								{(draggingFieldId !== null) &&
-								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
+					<Draggable
+						key={id}
+						style={{flex: 1}}
+					>
+						<div style={{position: "relative", display: "flex", justifyContent: "center" }}>
+							{(draggingFieldId !== null) &&
+							<div style={{border: `2px solid ${themeContext.bg.secondary}`, position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
+								<ContainerWrapper
+									onHoverChange={(hoverState) => setHoveringTop(hoverState)}
+									showHighlight={false}
+									onDrop={(dropResult)=>onTopDrop(dropResult)}
+									shouldAcceptDrop={()=>{return true}}
+									getGhostParent={()=>document.body}
+									groupName="lot_field_buttons"
+									getChildPayload={index =>
+										index
+									}
+									isRow={false}
+									style={{flex: 0.1, zIndex: 10}}
+								/>
+								<div style={{display: "flex", flex: 5}}>
 									<ContainerWrapper
-										onHoverChange={(hoverState) => setHoveringTop(hoverState)}
 										showHighlight={false}
-										onDrop={(dropResult)=>onTopDrop(dropResult)}
+										onHoverChange={(hoverState) => setHoveringLeft(hoverState)}
+										onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
 										groupName="lot_field_buttons"
@@ -210,42 +227,12 @@ const DropContainer = (props) => {
 											index
 										}
 										isRow={false}
-										style={{flex: 0.1, zIndex: 10}}
+										style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
 									/>
-									<div style={{display: "flex", flex: 5}}>
-										<ContainerWrapper
-											showHighlight={false}
-											onHoverChange={(hoverState) => setHoveringLeft(hoverState)}
-											onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
-											shouldAcceptDrop={()=>{return true}}
-											getGhostParent={()=>document.body}
-											groupName="lot_field_buttons"
-											getChildPayload={index =>
-												index
-											}
-											isRow={false}
-											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
-										/>
-										<ContainerWrapper
-											showHighlight={false}
-											onHoverChange={(hoverState) => setHoveringRight(hoverState)}
-											onDrop={(dropResult)=>onRightDrop(id, dropResult)}
-											shouldAcceptDrop={()=>{return true}}
-											getGhostParent={()=>document.body}
-											groupName="lot_field_buttons"
-											getChildPayload={index =>
-												index
-											}
-											isRow={false}
-											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
-
-										/>
-									</div>
-
 									<ContainerWrapper
 										showHighlight={false}
-										onHoverChange={(hoverState) => setHoveringBottom(hoverState)}
-										onDrop={(dropResult)=>onBottomDrop(dropResult)}
+										onHoverChange={(hoverState) => setHoveringRight(hoverState)}
+										onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
 										groupName="lot_field_buttons"
@@ -253,30 +240,49 @@ const DropContainer = (props) => {
 											index
 										}
 										isRow={false}
-										style={{flex: 0.15, zIndex: 10}}
+										style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
+
 									/>
 								</div>
-								}
-						{preview ?
-							<FieldComponentMapper
-								component={component}
-								fieldName={fieldName}
-								containerStyle={{width: "100%",}}
-							/>
-							:
-							<FieldWrapper
-								containerStyle={{flex: (component === FIELD_COMPONENT_NAMES.TEXT_BOX || component === FIELD_COMPONENT_NAMES.TEXT_BOX_BIG) && 1}}
-								name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
-								onDeleteClick={() => setDeleted(true)}
-							>
-								<FieldComponentMapper
-									// fieldName={fieldName}
-									component={component}
+
+								<ContainerWrapper
+									showHighlight={false}
+									onHoverChange={(hoverState) => setHoveringBottom(hoverState)}
+									onDrop={(dropResult)=>onBottomDrop(dropResult)}
+									shouldAcceptDrop={()=>{return true}}
+									getGhostParent={()=>document.body}
+									groupName="lot_field_buttons"
+									getChildPayload={index =>
+										index
+									}
+									isRow={false}
+									style={{flex: 0.15, zIndex: 10}}
 								/>
-							</FieldWrapper>
-						}
 							</div>
-						</Draggable>
+							}
+							{preview ?
+								<FieldComponentMapper
+									usable={false}
+									component={component}
+									fieldName={fieldName}
+									containerStyle={{width: "100%", height: '100%'}}
+								/>
+								:
+								<FieldWrapper
+									containerStyle={{flex: (component === FIELD_COMPONENT_NAMES.TEXT_BOX || component === FIELD_COMPONENT_NAMES.TEXT_BOX_BIG) && 1}}
+									name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
+									onDeleteClick={() => setDeleted(true)}
+								>
+									<FieldComponentMapper
+										usable={false}
+										style={{flex: 1}}
+										// fieldName={fieldName}
+										component={component}
+									/>
+								</FieldWrapper>
+							}
+						</div>
+					</Draggable>
 				</Container>
 
 				{/* Insert Into New Row Below*/}

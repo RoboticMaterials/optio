@@ -40,7 +40,8 @@ const Cards = (props) => {
         id
     } = props
 
-    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
+    // theme
+    const themeContext = useContext(ThemeContext)
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
@@ -50,6 +51,7 @@ const Cards = (props) => {
     // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
@@ -344,26 +346,26 @@ const Cards = (props) => {
                 showBackButton={isProcessView}
                 title={title}
             />
-            <ZoneHeader
-                sortDirection={sortDirection}
-                setSortDirection={setSortDirection}
-                sortMode={sortMode}
-                setSortMode={setSortMode}
-                setLotFilterValue={setLotFilterValue}
-                selectedFilterOption={selectedFilterOption}
-                setSelectedFilterOption={setSelectedFilterOption}
-                selectedProcesses={selectedProcesses}
-                setSelectedProcesses={setSelectedProcesses}
-                zone={id}
-            />
-            {selectedCards.length > 0 &&
-            <MultiSelectOptions
-                selectedLots={selectedCards}
-                onDeleteClick={handleDeleteClick}
-                onMoveClick={handleMoveClick}
-                onClearClick={()=>setSelectedCards([])}
-            />
-            }
+            <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
+                <ZoneHeader
+                    lotFilterValue={lotFilterValue}
+                    sortDirection={sortDirection}
+                    setSortDirection={setSortDirection}
+                    sortMode={sortMode}
+                    setSortMode={setSortMode}
+                    setLotFilterValue={setLotFilterValue}
+                    selectedFilterOption={selectedFilterOption}
+                    setSelectedFilterOption={setSelectedFilterOption}
+                    selectedProcesses={selectedProcesses}
+                    setSelectedProcesses={setSelectedProcesses}
+                    zone={id}
+                    selectedLots={selectedCards}
+                    onDeleteClick={handleDeleteClick}
+                    onMoveClick={handleMoveClick}
+                    onClearClick={()=>setSelectedCards([])}
+                />
+
+            </div>
 
             <styled.Body
                 id={"cards-body"}
@@ -402,7 +404,6 @@ const Cards = (props) => {
                             handleAddLotClick={handleAddLotClick}
                             setSelectedCards={setSelectedCards}
                             selectedCards={selectedCards}
-                            maxHeight={(zoneSize.height - 75) + "px"} // maxHeight is set equal to size of parent div with some value subtracted as padding. NOTE: setting height to 100% doesn't currently work for this
                             setShowCardEditor={onShowCardEditor}
                             showCardEditor={showCardEditor}
                             handleCardClick={handleCardClick}

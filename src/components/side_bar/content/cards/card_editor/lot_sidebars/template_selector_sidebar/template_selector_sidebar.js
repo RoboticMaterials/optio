@@ -64,21 +64,28 @@ const TemplateSelectorSidebar = (props) => {
 
             <style.ListContainer>
                 {!isMobile &&
-                <style.LotTemplateButton
-                    isSelected={!selectedLotTemplatesId}
-                    onClick={() => {
-                        dispatchSetSelectedLotTemplate(null)
-                        onTemplateEditClick(null)
-                    }}
-                >
-                    <style.TemplateName
-                        isSelected={!selectedLotTemplatesId}
-                        style={{margin: 0}}>New</style.TemplateName>
-                </style.LotTemplateButton>
+                    <Button 
+                        schema={'lots'}
+                        secondary
+                        onClick={() => {
+                            dispatchSetSelectedLotTemplate(null)
+                            onTemplateEditClick(null)
+                        }}
+                        style={{
+                            marginBottom: '1rem',
+                            height: '3rem',
+                        }}
+                    >
+                        <i style={{marginRight: '1rem'}} className="fa fa-plus" aria-hidden="true"/>
+                        Create New Template
+                    </Button>
                 }
                 <style.LotTemplateButton
                     isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    onClick={() => dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)}
+                    onClick={() => {
+                        dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
+                        isMobile && onCloseClick()
+                    }}
                 >
                     <style.TemplateIcon
                         isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
@@ -105,6 +112,7 @@ const TemplateSelectorSidebar = (props) => {
                             isSelected={isSelected}
                             onClick={() => {
                                 dispatchSetSelectedLotTemplate(currTemplateId)
+                                isMobile && onCloseClick()
                             }}
                         >
                             <style.TemplateIcon
@@ -112,22 +120,23 @@ const TemplateSelectorSidebar = (props) => {
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
-                            {!isMobile &&
-                            <style.EditTemplateIcon
-                                isSelected={isSelected}
-                                onClick={()=>{
-                                    dispatchSetSelectedLotTemplate(currTemplateId)
-                                    onTemplateEditClick(null)
-                                }}
-                                type={"button"}
-                                className={"fas fa-edit"}
-                            />
-                            }
-
+                            
 
                            <style.TemplateName
                                isSelected={isSelected}
                            >{name}</style.TemplateName>
+
+                            {!isMobile &&
+                                <style.EditTemplateIcon
+                                    isSelected={isSelected}
+                                    onClick={()=>{
+                                        dispatchSetSelectedLotTemplate(currTemplateId)
+                                        onTemplateEditClick(null)
+                                    }}
+                                    type={"button"}
+                                    className={"fas fa-edit"}
+                                />
+                            }
                         </style.LotTemplateButton>
                     })
                 }
@@ -147,7 +156,7 @@ const TemplateSelectorSidebar = (props) => {
             >
                 <style.Container>
                     {getTemplateButtons()}
-                    <style.FooterContainer
+                    {/* <style.FooterContainer
                         style={{justifyContent: "center"}}
                     >
                         <Button
@@ -156,7 +165,7 @@ const TemplateSelectorSidebar = (props) => {
                             type={"button"}
                             label={"Close"}
                         />
-                    </style.FooterContainer>
+                    </style.FooterContainer> */}
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >

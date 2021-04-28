@@ -22,22 +22,14 @@ export const valueCss = css`
 
 export const BarsContainer = styled.div`
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-around;
+  //justify-content: space-around;
   flex-direction: row;
-  //padding: 0 1rem;
+  margin-bottom: -1rem;
   max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
   
   width: 100%;
-  //background: hotpink;
-
-  
-  
-  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-    flex-direction: column;
-	align-items: center;
-    max-width: 30rem;
-  }
 `
 
 export const columnCss = css`

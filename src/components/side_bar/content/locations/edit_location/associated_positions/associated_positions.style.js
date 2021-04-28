@@ -4,10 +4,11 @@ export const PositionsContainer = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100%;
 
     user-select: none;
-
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-grow: 1;
 `
 
 export const Label = styled.h1`
@@ -65,7 +66,7 @@ export const NewPositionCard = styled.div`
 
     max-height: 4.5rem;
     max-width: 6rem;
-    
+
     height: 100%;
     width: 100%;
 
@@ -86,6 +87,7 @@ export const NewPositionCard = styled.div`
     cursor: grab;
     &:active {
         cursor: grabbing;
+        background: transparent;
     }
 
     cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
@@ -149,5 +151,9 @@ export const CartIcon = styled.i`
     border: none;
     text-align: center;
     box-sizing: border-box;
+
+    &:hover{
+        cursor: pointer;
+    }
 
 `

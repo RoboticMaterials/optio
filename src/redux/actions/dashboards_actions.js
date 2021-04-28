@@ -118,8 +118,8 @@ export const putDashboard = (dashboard, ID) => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
         }
-        function onSuccess(updatedDashboard) {
-            dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
+        async function onSuccess(updatedDashboard) {
+            await dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
             return updatedDashboard;
         }
         function onError(error) {
@@ -250,18 +250,16 @@ export const addRouteToDashboards = (route) => {
         if (dashboard === undefined) {
             const defaultDashboard = {
                 name: "",
+                locked: false,
                 buttons: [newDashboardButton],
                 station: station._id
             }
-            const postDashboardPromise = dispatch(postDashboard(defaultDashboard))
-            postDashboardPromise.then(async postedDashboard => {
-                alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                await dispatch(stationActions.putStation({
-                    ...station,
-                    dashboards: [postedDashboard._id.$oid]
-                }, station._id))
-
-            })
+            const postedDashboard = await dispatch(postDashboard(defaultDashboard))
+            alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+            await dispatch(stationActions.putStation({
+                ...station,
+                dashboards: [postedDashboard._id.$oid]
+            }, station._id))
         }
 
         else {
@@ -272,7 +270,7 @@ export const addRouteToDashboards = (route) => {
 
             // only add button if it isn't already in the dashboard
             if(buttonIndex === -1) {
-                dispatch(putDashboard({
+                await dispatch(putDashboard({
                     ...dashboard,
                     buttons: [...dashboard.buttons, newDashboardButton]
                 }, dashboard._id.$oid))

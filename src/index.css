@@ -12,6 +12,31 @@ body {
   overscroll-behavior: contain;
 
 }
+.dragging-ghost-hidden{
+  visibility: hidden;
+}
+
+.smooth-dnd-draggable-wrapper {
+  cursor: grab;
+
+}
+
+.smooth-dnd-ghost {
+  cursor: grabbing;
+}
+
+.signin-page {
+  background: url('./graphics/images/RM_Signin.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/* MAKE ALL TEXT THE SAME FONT */
+* {
+  font-family: 'Montserrat';
+}
 
 .dragging-field {
   opacity: .5;
@@ -773,3 +798,15 @@ html, body, #root, #reactapp, .App {
 .App, #root {
   display: flex;
 }
+
+#popup-root {
+  z-index: 5000;
+}
+
+.popup-content {
+    z-index: 5000;
+  }
+
+.popup-overlay {
+    z-index: 1001;
+  }

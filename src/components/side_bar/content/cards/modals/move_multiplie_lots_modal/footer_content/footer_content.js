@@ -61,12 +61,7 @@ const FooterContent = (props) => {
 										greyed={greyed}
 
 									>
-										<svg
-											width={"100%"}
-											height={"100%"}
-											style={{ fill: color, stroke:color }}
-											viewBox={"50 50 300 300"}
-										>
+										<svg height="100%" width="100%" viewBox="0 0 400 400" style={{ fill: color, stroke:color }}>
 											{locationTypes[currStation.type].svgPath}
 										</svg>
 									</styled.StationSvgContainer>

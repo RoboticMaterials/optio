@@ -1,44 +1,39 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import * as styled from './authentication.style'
+import { useDispatch } from 'react-redux'
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
+import { Link } from 'react-router-dom'
+import * as styled from './authentication.style'
 
+// Authentication
 import configData from '../../settings/config'
-
-// import 'cross-fetch/polyfill';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
 
+
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
- * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session.
- * If the refresh token is expired, you have to sign in again
- * If there is no token, the user either has to sign in or sign up
- * Authenticated props is used for telling APP.js the user is authenticated
- *
- * TODO: Should show loading when there is a refresh token and its being used to get new JWT credntials
- * TODO: Styling updates
- * TODO: Forgot password
- * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot
- * @param {authenticated} props
+ * @param {mobileMode} props
  */
 const Authentication = (props) => {
 
-
     const {
-        authenticated
+        mobileMode
     } = props
 
+    const history = useHistory()
+    const params = useParams()
 
     const dispatch = useDispatch()
 
     const [signIn, setSignIn] = useState(true)
+    const [forgotPassword, setForgotPassword] = useState(false)
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
@@ -46,6 +41,18 @@ const Authentication = (props) => {
     useEffect(() => {
         handleInitialLoad()
     }, [])
+
+    useEffect(() => {
+        if(history.location.pathname === '/'){
+            setSignIn(true)
+            setForgotPassword(false)
+        }else if(history.location.pathname === '/forgot-password'){
+            setForgotPassword(true)
+        }else if(history.location.pathname === '/create-account'){
+            setSignIn(false)
+            setForgotPassword(false)
+        }
+    }, [params])
 
     const handleSignInChange = (value) => {
         setSignIn(value)
@@ -60,9 +67,7 @@ const Authentication = (props) => {
 
                 dispatchPostLocalSettings({
                     ...response,
-                    authenticated: 'no',
-                    //non_local_api_ip: window.location.hostname,
-                    //non_local_api: true,
+                    authenticated: 'no'
                 })
 
             } else {
@@ -85,8 +90,6 @@ const Authentication = (props) => {
                             dispatchPostLocalSettings({
                                 ...response,
                                 authenticated:true,
-                                non_local_api_ip: window.location.hostname,
-                                non_local_api: true,
                             })
                         }
                     });
@@ -96,41 +99,61 @@ const Authentication = (props) => {
     }
 
     return (
-        <styled.Container>
+        <styled.Page className={mobileMode ? '' : 'signin-page'}>
+            <styled.Container mobileMode={mobileMode}>
 
-            <styled.LogoContainer>
-                <styled.LogoIcon className='icon-rmLogo' />
-                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-            </styled.LogoContainer>
+                <styled.LogoContainer>
+                    <styled.LogoIcon className='icon-rmLogo' />
+                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+                </styled.LogoContainer>
+            
+                { !forgotPassword &&
+                <styled.SignInUpContainer>
 
-            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+                    <SignInUpPage
+                        signIn={signIn}
+                        onChange={handleSignInChange} />
 
-            <styled.CheckBoxWrapper>
-                <styled.Button
-                    onClick={() => setSignIn(true)}
-                    selected={signIn}
-                    style={{borderRadius: '.5rem 0  0 .5rem'}}
-                >
-                    Sign In
-                </styled.Button>
+                </styled.SignInUpContainer>
+                }
 
-                <styled.Button
-                    onClick={() => setSignIn(false)}
-                    selected={!signIn}
-                    style={{borderRadius: '0 .5rem .5rem 0'}}
-                >
-                    Sign Up
-                </styled.Button>
-            </styled.CheckBoxWrapper>
+                { forgotPassword &&
+                <styled.SignInUpContainer>
 
-            <styled.SignInUpContainer>
+                    <ForgotPassword />
 
-                <SignInUpPage
-                    signIn={signIn}
-                    onChange={handleSignInChange} />
+                </styled.SignInUpContainer>
+                }
 
-            </styled.SignInUpContainer>
-        </styled.Container>
+                <styled.LogoContainer>
+                
+                {!forgotPassword && 
+                <div>
+
+                    <Link to="/forgot-password">Forgot Password? </Link>
+                    
+                    <Link to="/login" style={{
+                        marginLeft: '.5rem', 
+                        marginRight: '.5rem',
+                        textDecoration: 'none',
+                        cursor: 'default'
+                        }}> • </Link>
+
+                    {signIn &&
+                        <Link to="/create-account"> Create an account </Link>
+                    }
+
+                    {!signIn &&
+                        <Link to="/"> Sign in </Link>
+                    }
+
+                </div>
+                }
+
+                </styled.LogoContainer>
+                
+            </styled.Container>
+        </styled.Page>
     )
 
 }

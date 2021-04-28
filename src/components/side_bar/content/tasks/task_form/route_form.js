@@ -1,27 +1,43 @@
 import {Formik} from "formik";
 import {routeSchema} from "../../../../../methods/utils/form_schemas";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import TaskField from "../task_field/route_field";
 import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
 import {useDispatch, useSelector} from "react-redux";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskForm = (props) => {
 
 	const {
-		initialValues,
+		initialVals,
 		toggleEditing,
 		isNew,
 		...remainingProps
 	} = props
+
+	const formRef = useRef(null)	// gets access to form state
+
+	const {
+			current
+	} = formRef || {}
+
+	const {
+			values = {},
+			initialValues = {}
+	} = current || {}
+
 	const dispatch = useDispatch()
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 	const dispatchRemoveTask = async (taskId) => await dispatch(taskActions.removeTask(taskId))
 	const dispatchDeleteRouteClean = async (routeId) => await dispatch(taskActions.deleteRouteClean(routeId))
 	const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
+	const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
 
 	useEffect(() => {
 		return () => {
@@ -29,6 +45,15 @@ const TaskForm = (props) => {
 		}
 
 	}, []);
+
+	useEffect(() => {
+		if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+			dispatchPageDataChanged(true)
+		}
+		else{
+			dispatchPageDataChanged(false)
+		}
+	}, [values])
 
 	const handleSubmit = async (values) => {
 
@@ -54,7 +79,8 @@ const TaskForm = (props) => {
 
 	return (
 		<Formik
-			initialValues={initialValues}
+			initialValues={initialVals}
+			innerRef = {formRef}
 
 			// validation control
 			validationSchema={routeSchema}
@@ -85,7 +111,10 @@ const TaskForm = (props) => {
 			{formikProps => {
 
 				const {
-					submitForm
+					submitForm,
+					touched,
+					initialValues,
+					values
 				} = formikProps
 
 				return(

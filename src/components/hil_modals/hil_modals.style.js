@@ -15,7 +15,7 @@ export const HilContainer = styled.div`
     left: 50%;
     transform: translate(-50%,-50%);
 
-    z-index: 1000;
+    z-index: 998;
     border-radius: 1rem;
     box-shadow: 0 0.2rem 0.4rem 0rem #303030;
     display: flex;
@@ -61,9 +61,7 @@ export const HilInputIconContainer = styled.div`
     margin-top:1rem;
 
     border-radius: 0.5rem;
-    border: 0.2rem solid;
-    border-color: ${props => props.theme.bg.quinary};
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.tertiary};
 
 
     &:hover {
@@ -221,7 +219,7 @@ export const SubtitleContainer = styled.div`
 `
 
 export const FooterContainer = styled.div`
-    background: ${props => props.theme.bg.septenary};
+    background: ${props => props.theme.bg.secondary};
     border-top: 1px solid ${props => props.theme.bg.secondary};
     width: 100%;
     display: flex;
@@ -350,8 +348,8 @@ export const Header = styled.div`
     display:flex;
     flex-direction: row;
     width: 100%;
-    background: ${props => props.theme.bg.septenary};
-    border-bottom: 1px solid ${props => props.theme.bg.secondary};
+    background: ${props => props.theme.bg.secondary};
+    box-shadow: ${props => props.theme.cardShadow};
     align-items: center;
     justify-content: space-around;
     align-items: center;
@@ -485,7 +483,7 @@ export const SelectedLotContainer = styled.div`
 export const SelectedLotName = styled.div`
     display: flex;
     align-items: center;
-    background: ${props => props.theme.bg.quinary};
+    background: ${props => props.theme.bg.tertiary};
     padding: .5rem;
     border-radius: 1rem;
     padding: .25rem 2.5rem;

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 import { useSelector, useDispatch } from 'react-redux'
@@ -54,7 +54,6 @@ const TextField = ({
     const themeContext = useContext(ThemeContext)
 
     const dispatch = useDispatch()
-    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const hasError = touched && error
     const hasWarning = touched && warning
@@ -76,8 +75,6 @@ const TextField = ({
                 <InputContainer>
                     <InputComponent
 
-                        // inputStyle={{...inputStyle, ...style}}
-                        // inputStyle={inputStyle}
                         className='form-control'
                         {...field}
                         {...inputProps}
@@ -88,7 +85,6 @@ const TextField = ({
                             // update touched if necessary
                             if (!touched) {
                                 setFieldTouched(fieldName, true)
-                                dispatchPageDataChanged(true)
                             }
 
                             setFieldValue(fieldName, mapOutput(event.target.value)) // update field value
@@ -140,13 +136,12 @@ const defaultInputStyleFunc = (hasError, showErrorStyle) => {
         // border: hasError && '1px solid red',
         transition: "box-shadow .5s ease-in-out, border .5s ease-in-out",
         // boxShadow:  && `0 0 1px red !important`,
-        boxShadow: (hasError && showErrorStyle) && `0 0 5px red`,
+        // boxShadow: (hasError && showErrorStyle) && `0 0 5px 2px red`,
 
-        borderLeft: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
-        borderTop: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
-        borderRight: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
-        borderBottom: (hasError && showErrorStyle) && '1px solid red',
-
+        borderLeft: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
+        borderTop: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
+        borderRight: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
+        borderBottom: (hasError && showErrorStyle) && 'none',
 
         overflow: "hidden",
         textOverflow: "ellipsis",

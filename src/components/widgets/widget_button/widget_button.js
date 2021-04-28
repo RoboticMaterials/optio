@@ -51,7 +51,6 @@ const WidgetButton = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const stations = useSelector(state => state.stationsReducer.stations)
-
     const dashboardID = params.dashboardID
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -158,6 +157,7 @@ const WidgetButton = (props) => {
             // dashboardInfo
             let defaultDashboard = {
                 name: selectedLocation.name + ' Dashboard',
+                locked: false,
                 buttons: [],
                 station: selectedLocation._id
             }

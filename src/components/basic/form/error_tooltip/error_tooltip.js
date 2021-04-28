@@ -51,6 +51,8 @@ const ErrorTooltip = (props) => {
         //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
     )
 
+    // useEffect(() => {console.log('rebuild'); ReactTooltip.rebuild()}, [tooltip])
+
 
     // useEffect(() => {
     //     if (autoFocus) {
@@ -77,18 +79,27 @@ const ErrorTooltip = (props) => {
             }
 
             {/* only show on hover after initial display */}
-            {!autoFocus && visible &&
+            {!autoFocus && visible && tooltip &&
+                // NOTE: portal does not allow dynamic content
+                <div>
+                    <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
+                        {text &&
+                            <span>{text}</span>
+                        }
+                        {tooltip && tooltip}
+                    </ReactTooltip>
+                </div>
+            }
+
+            {!autoFocus && visible && !tooltip &&
                 //wrap in portal to avoid clipping issues
                 <Portal>
                     <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
                         {text &&
-                        <span>{text}</span>
-                        }
-                        {tooltip &&
-                        tooltip
+                            <span>{text}</span>
                         }
                     </ReactTooltip>
-                </Portal>
+                </Portal> 
             }
 
             {autoFocus &&

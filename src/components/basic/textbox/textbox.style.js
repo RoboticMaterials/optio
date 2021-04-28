@@ -34,6 +34,32 @@ export const TextboxInput = styled.input`
     flex-grow: 1;
     color: ${props => props.theme.bg.octonary};
 
+    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
+
+    &:focus {
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
+        color: ${props => props.theme.bg.octonary};
+        outline: none !important;
+    }
+
+    &::placeholder {
+        font-family: ${props => props.theme.font.secondary};
+        color: ${props => props.theme.bg.senary};
+    }
+`;
+
+export const FakeTextboxInput = styled.div`
+    background-color: ${props => props.theme.bg.secondary};
+    border: none;
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
+    display: flex;
+    flex-grow: 1;
+    color: ${props => props.theme.bg.octonary};
+
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
@@ -63,8 +89,8 @@ export const TextboxArea = styled.textarea`
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.secondary, 3)};
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
     }

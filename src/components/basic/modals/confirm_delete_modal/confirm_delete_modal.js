@@ -34,7 +34,8 @@ const ConfirmDeleteModal = (props) => {
             onRequestClose={close}
             style={{
                 overlay: {
-                    zIndex: 500
+                    zIndex: 500,
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
@@ -44,35 +45,35 @@ const ConfirmDeleteModal = (props) => {
             <styled.Header>
                 <styled.Title>{title}</styled.Title>
 
-                <Button
-                    onClick={handleClose}
-                    schema={'error'}
-                >
-                    <i className="fa fa-times" aria-hidden="true"/>
-                </Button>
+                <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={handleClose}/>
             </styled.Header>
             <styled.BodyContainer>
-                        <styled.ContentContainer>
-                            {children}
-                        </styled.ContentContainer>
+                <styled.ContentContainer>
+                    {children}
+                </styled.ContentContainer>
 
-                        <styled.ButtonForm>
-                            <Button
-                                tertiary
-                                schema={"delete"}
-                                onClick={handleOnClick1}
-                                label={button_1_text}
-                                type="button"
-                            />
-                            <Button
-                                tertiary
-                                schema={"delete"}
-                                onClick={handleOnClick2}
-                                label={button_2_text}
-                                type="button"
-                            />
+                This action cannot be undone
 
-                        </styled.ButtonForm>
+                <styled.ButtonForm>
+
+                    <Button
+                        tertiary
+                        style={{minWidth: '10rem'}}
+                        schema={"delete"}
+                        onClick={handleOnClick2}
+                        label={button_2_text}
+                        type="button"
+                    />
+                    <Button
+                        secondary
+                        style={{minWidth: '10rem'}}
+                        schema={"delete"}
+                        onClick={handleOnClick1}
+                        label={button_1_text}
+                        type="button"
+                    />
+
+                </styled.ButtonForm>
 
             </styled.BodyContainer>
         </styled.Container>

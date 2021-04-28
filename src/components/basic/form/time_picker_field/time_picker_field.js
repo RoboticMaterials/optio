@@ -56,7 +56,8 @@ const TimePickerField = (props) => {
 					css={TimePickerCss}
 					hasError={hasError}
 					// showSecond={false}
-					value={mapInput(fieldValue)}
+                    // defaultValue={moment().format()}
+					value={!!fieldValue ? mapInput(fieldValue) : mapInput(defaultValue)}
 					onChange={(val) => {
 
 						if(!touched) setFieldTouched(fieldName, true)

@@ -43,11 +43,11 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
+import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
 import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
 import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
-import {immutableDelete, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
+import { immutableDelete, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 
 
 
@@ -69,8 +69,8 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const stations = useSelector(state => state.stationsReducer.stations)
     const {
         name: dashboardName
@@ -84,7 +84,14 @@ const DashboardScreen = (props) => {
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
-    const [reportModal, setReportModal] = useState(null);
+    const [reportModal, setReportModal] = useState({
+        type: null,
+        id: null
+    });
+    const {
+        type: modalType,
+        id: modalButtonId
+    } = reportModal
     const [displayName, setDisplayName] = useState(dashboardName);
     const [dashboardStation, setDashboardStation] = useState({});
     const {
@@ -110,7 +117,7 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
-    const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
+    const showTaskQueueButton = !mapViewEnabled ? true : mobileMode ? true : false
 
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
@@ -138,7 +145,7 @@ const DashboardScreen = (props) => {
 
     useEffect(() => {
         checkButtons()
-    },[currentDashboard.buttons])
+    }, [currentDashboard.buttons])
 
     const checkButtons = async () => {
         const { buttons } = currentDashboard	// extract buttons from dashboard
@@ -154,48 +161,49 @@ const DashboardScreen = (props) => {
                 type
             } = currButton
 
-            if(type === OPERATION_TYPES.KICK_OFF.key) {
+            if (type === OPERATION_TYPES.KICK_OFF.key) {
                 // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
-                if(!isNonEmptyArray(availableKickOffProcesses)) {
+                if ((availableKickOffProcesses !== undefined) && !isNonEmptyArray(availableKickOffProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
+                    if (index !== -1) {
+
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
                 }
             }
-            else if(type === OPERATION_TYPES.FINISH.key) {
+            else if (type === OPERATION_TYPES.FINISH.key) {
                 // if button type is finish, but dashboard has no available finish processes, remove the finish button
-                if(!isNonEmptyArray(availableFinishProcesses)) {
+                if ((availableFinishProcesses !== undefined) && !isNonEmptyArray(availableFinishProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
+                    if (index !== -1) {
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
                 }
             }
             // Dont add duplicate buttons, delete if they're are any
-            else if (task_id && taskIds.includes(task_id)) {
+            else if (task_id && task_id !== 'custom_task' && taskIds.includes(task_id)) {
                 const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                if(index !== -1) {
+                if (index !== -1) {
                     updatedButtons = immutableDelete(updatedButtons, index)
                 }
                 madeUpdate = true
             }
 
             // If task does not exist, delete task
-            else if (task_id && !(isObject(tasks[task_id]))) {
-                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
-                        updatedButtons = immutableDelete(updatedButtons, index)
-                    }
-                    madeUpdate = true
+            else if (task_id && task_id !== 'custom_task' && !(isObject(tasks[task_id]))) {
+                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                if (index !== -1) {
+                    updatedButtons = immutableDelete(updatedButtons, index)
+                }
+                madeUpdate = true
             }
 
             taskIds.push(task_id)
         })
 
-        if(madeUpdate) {
+        if (madeUpdate) {
             await dispatchPutDashboardAttributes({
                 buttons: updatedButtons
             }, dashboardId)
@@ -217,11 +225,6 @@ const DashboardScreen = (props) => {
     /**
      * Handles buttons associated with selected dashboard
      *
-     * If it's a AMR device dashboard, add a extra buttons
-     * The extra buttons are:
-     * 'Send to charge location'
-     * 'Send to Idle Location'
-     *
      * If there's a human task in the human task Q (see human_task_queue_actions for more details)
      * and if the the tasks unload location is the dashboards station, then show a unload button
      */
@@ -236,7 +239,7 @@ const DashboardScreen = (props) => {
             } = currButton
 
             // Dont add duplicate buttons, delete if they're are any
-            if (task_id && taskIds.includes(task_id)) {
+            if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
                 logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
                 return false // don't add duplicate tasks
             }
@@ -376,13 +379,16 @@ const DashboardScreen = (props) => {
                 handleOperationClick()
                 break
             case OPERATION_TYPES.REPORT.key:
-                setReportModal(OPERATION_TYPES.REPORT.key)
+                setReportModal({
+                    type: OPERATION_TYPES.REPORT.key,
+                    id: Id
+                })
                 break
             case OPERATION_TYPES.KICK_OFF.key:
-                setReportModal(OPERATION_TYPES.KICK_OFF.key)
+                setReportModal({type: OPERATION_TYPES.KICK_OFF.key, id: null})
                 break
             case OPERATION_TYPES.FINISH.key:
-                setReportModal(OPERATION_TYPES.FINISH.key)
+                setReportModal({type: OPERATION_TYPES.FINISH.key, id: null})
                 break
             default:
                 break
@@ -428,11 +434,12 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
-            {(reportModal === OPERATION_TYPES.REPORT.key) &&
+            {(modalType === OPERATION_TYPES.REPORT.key) &&
                 <ReportModal
-                    isOpen={!!reportModal}
+                    dashboardButtonId={modalButtonId}
+                    isOpen={!!true}
                     title={"Send Report"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success) => {
 
@@ -449,12 +456,12 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {(reportModal === OPERATION_TYPES.KICK_OFF.key) &&
+            {(modalType === OPERATION_TYPES.KICK_OFF.key) &&
                 <KickOffModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Kick Off"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -469,12 +476,12 @@ const DashboardScreen = (props) => {
                     }}
                 />
             }
-            {(reportModal === OPERATION_TYPES.FINISH.key) &&
+            {(modalType === OPERATION_TYPES.FINISH.key) &&
                 <FinishModal
                     isOpen={true}
                     stationId={stationID}
                     title={"Finish"}
-                    close={() => setReportModal(null)}
+                    close={() => setReportModal({type: null, id: null})}
                     dashboard={currentDashboard}
                     onSubmit={(name, success, quantity, message) => {
                         // set alert
@@ -504,7 +511,6 @@ const DashboardScreen = (props) => {
 
             <DashboardButtonList
                 buttons={handleDashboardButtons()}
-                addedTaskAlert={addTaskAlert}
                 onTaskClick={handleTaskClick}
             />
 

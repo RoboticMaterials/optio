@@ -53,11 +53,28 @@ export const LotsTitle = styled.h2`
 
 `
 
+export const LockContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.2rem;
+
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz5};
+    font-weight: 100;
+
+`
+
 export const MoreIcon = styled.i`
     font-size: 1.3rem;
     color: ${props => props.theme.bg.quinary};
     cursor: pointer;
     margin-top: 1.8rem;
+`
+export const LockIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.quinary};
+    cursor: pointer;
+    margin-top: 0.4rem;
 `
 
 export const SidebarButton = styled(AssignmentOutlinedIcon)`
@@ -73,7 +90,7 @@ export const SidebarButton = styled(AssignmentOutlinedIcon)`
 
 export const LotsContainer = styled.div`
     margin-right: calc(5% + 0.5rem);
-    display: flex; 
+    display: flex;
     align-items: flex-start;
     justify-content: space-between;
     height: ${props => props.moreLots ? '' : '3.8rem'};
@@ -126,5 +143,3 @@ export const Dots = styled.div`
 
 
 `
-
-
