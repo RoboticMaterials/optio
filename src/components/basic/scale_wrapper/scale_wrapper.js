@@ -54,11 +54,6 @@ const ScaleWrapper = (props) => {
 
     }, [sizeRef, refOffsetWidth, refOffsetHeight])
 
-    console.log("offsetHeight",offsetHeight)
-    console.log("size",size)
-    console.log("Math.round(offsetHeight * scaleFactor)",Math.round(offsetHeight * scaleFactor))
-    console.log("Math.round(offsetWidth * scaleFactor)",Math.round(offsetWidth * scaleFactor))
-
     return (
         <styled.Container
             width={`${Math.round(offsetWidth * scaleFactor)}px`}
