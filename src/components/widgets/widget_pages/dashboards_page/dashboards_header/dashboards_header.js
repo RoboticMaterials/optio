@@ -41,7 +41,6 @@ const DashboardsHeader = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
-    const [editDashboard, setEditDashboard] = useState(false)
     const [showOperationsMenu, setShowOperationsMenu] = useState(false)
 
     const [color, setColor] = useState('#5294ff')
