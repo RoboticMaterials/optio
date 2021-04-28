@@ -1,20 +1,20 @@
 import React, { Component, useState, useEffect } from 'react';
 
-
-
 // import external functions
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
-import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
 import TaskAddedAlert from './task_added_alert/task_added_alert'
 import DashboardsHeader from "../dashboards_header/dashboards_header";
+import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
+import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
+
+// Import Modals
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
-import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
-import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
+import TaskQueueModal from './task_queue_modal/task_queue_modal'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES, OPERATION_TYPES } from "../../../../../constants/dashboard_constants";
@@ -263,8 +263,11 @@ const DashboardScreen = (props) => {
 
             case 'taskQueue':
                 return (
-                    <>
-                    </>
+                    <TaskQueueModal
+                        isOpen={true}
+                        close={() => setSelectedOperation(null)}
+
+                    />
                 )
 
 
@@ -299,10 +302,6 @@ const DashboardScreen = (props) => {
                     :
                     <DashboardLotPage />
             }
-
-            {/* {showTaskQueueButton &&
-                <DashboardTaskQueue />
-            } */}
 
             <TaskAddedAlert
                 {...addTaskAlert}

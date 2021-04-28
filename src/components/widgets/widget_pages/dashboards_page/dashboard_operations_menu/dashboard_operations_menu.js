@@ -73,6 +73,24 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+    const renderTaskQueueButton = () => {
+        const schema = theme.main.schema.report
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Task Queue'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('taskQueue')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderKickOffButton = () => {
         const schema = theme.main.schema.kick_off
         const iconClassName = schema?.iconName
@@ -113,6 +131,7 @@ const DashboardOperationsMenu = (props) => {
     return (
         <styled.MenuContainer ref={ref}>
             {renderReportButton()}
+            {renderTaskQueueButton()}
             {renderKickOffButton()}
             {renderFinishButton()}
         </styled.MenuContainer>
