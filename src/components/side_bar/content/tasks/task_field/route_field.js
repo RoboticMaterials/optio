@@ -719,7 +719,7 @@ const TaskField = (props) => {
                                             content={'tasks'}
                                             mode={'create'}
                                             onClickBack={() => {
-                                              if(!!pageInfoChanged){
+                                              if(JSON.stringify(selectedTask)!== JSON.stringify(values)){
                                                 setConfirmExitModal(true)
                                               }
                                               else{

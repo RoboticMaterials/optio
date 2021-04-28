@@ -111,7 +111,6 @@ export const ProcessField = (props) => {
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [processRoutes, setProcessRoutes] = useState(null);
     const valuesRef = useRef(values);
-
     // throttled func
     const [dispatchSetSelectedProcess_Throttled,] = useState(() => throttle(
         () => {
@@ -330,8 +329,27 @@ export const ProcessField = (props) => {
     }
 
     const handleTaskBack = async () => {
+
+      var newRoute = true;
+
+      Object.values(selectedProcess.routes).map((route) => {
+        if(route._id===selectedTask._id){
+          newRoute = false;
+        }
+      })
+
+      if(newRoute === false){
+        const index = values.routes.findIndex((currRoute) => currRoute._id === selectedTask._id)
+        let updatedRoutes = [...values.routes]
+        updatedRoutes.splice(index , 1)
+        updatedRoutes.splice(index, 0, selectedTask)
+
+        setFieldValue("routes", updatedRoutes)
+      }
+
         // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
+
         await dispatchSetSelectedTask(null)
         setEditingTask(false)
 
