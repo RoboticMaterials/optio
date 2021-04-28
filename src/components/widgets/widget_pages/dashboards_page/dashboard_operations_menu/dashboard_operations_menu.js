@@ -38,22 +38,6 @@ const DashboardOperationsMenu = (props) => {
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
 
-
-    const renderButtons = () => {
-        return (
-            <>
-                <Button onClick={() => handleOperationSelected('report')}>Report</Button>
-                {availableKickOffProcesses &&
-                    <Button onClick={() => handleOperationSelected('kickOff')}>Kick Off</Button>
-                }
-                {availableFinishProcesses &&
-                    <Button onClick={() => handleOperationSelected('finish')}>Finish</Button>
-                }
-            </>
-
-        )
-    }
-
     const renderReportButton = () => {
 
         const schema = theme.main.schema.report
@@ -74,7 +58,7 @@ const DashboardOperationsMenu = (props) => {
     }
 
     const renderTaskQueueButton = () => {
-        const schema = theme.main.schema.report
+        const schema = theme.main.schema.taskQueue
         const iconClassName = schema?.iconName
         const iconColor = schema?.solid
         return (
@@ -127,13 +111,28 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+    const renderButtons = () => {
+        return (
+            <>
+                {renderReportButton()}
+                {renderTaskQueueButton()}
+
+                {availableKickOffProcesses.length > 0 &&
+                    renderKickOffButton()
+                }
+                {availableFinishProcesses.length > 0 &&
+                    renderFinishButton()
+                }
+            </>
+
+        )
+    }
+
+
 
     return (
         <styled.MenuContainer ref={ref}>
-            {renderReportButton()}
-            {renderTaskQueueButton()}
-            {renderKickOffButton()}
-            {renderFinishButton()}
+            {renderButtons()}
         </styled.MenuContainer>
     )
 

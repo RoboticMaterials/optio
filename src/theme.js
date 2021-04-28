@@ -155,7 +155,7 @@ export const theme = {
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#c59bff',
+                solid: '#a3ff9b',
                 iconName: "fas fa-play"
             },
             finish: {
@@ -191,7 +191,8 @@ export const theme = {
             },
             taskQueue: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#c59bff'
+                solid: '#c59bff',
+                iconName: 'fa fa-tasks',
             },
             settings: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
