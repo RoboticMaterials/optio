@@ -9,9 +9,7 @@ import { Container } from 'react-smooth-dnd'
 import { withRouter } from "react-router-dom";
 
 // Import Components
-import DashboardsList from './dashboard_list/DashboardsList'
 import DashboardScreen from './dashboard_screen/dashboard_screen'
-import DashboardEditor from './dashboard_editor/dashboard_editor'
 import DashboardsSidebar, { OPERATION_TYPES } from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
@@ -201,7 +199,7 @@ const DashboardsPage = (props) => {
                 setEditingDashboard(null)   // only selected OR editing should be set
             }
 
-            else if (editing === 'lots'){
+            else if (editing === 'lots') {
                 setSelectedDashboard(dashboardID)   // set selected
                 setEditingDashboard(null)   // only selected OR editing should be set
             }
@@ -263,37 +261,15 @@ const DashboardsPage = (props) => {
         <style.PageContainer >
             <DndProvider backend={HTML5Backend}>
                 <style.Container style={{ flexGrow: '1' }}>
-                    {/* If the length of ID is not 0, then a dashboard must have been clicked */}
-                    {page === PAGES.DASHBOARDS ?
-                        <DashboardsList
-                            stationID={stationID}
-                            setSelectedDashboard={(dashID) => {
-                                props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
-                            }}
-                            setEditingDashboard={(dashID) => {
-                                props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)
-                            }}
-                            showSidebar={showSidebar}
-                        />
-                        :
-                        (page === PAGES.EDITING) ?
-                            <DashboardEditor
-                                dashboard={editingDashboard}
-                                onCancelClicked={goToMainPage}
-                                setShowSidebar={setShowSidebar}
-                                showSidebar={showSidebar}
-                            />
-                            :
-                            <DashboardScreen
-                                dashboardId={selectedDashboard}
-                                setSelectedDashboard={setSelectedDashboard}
-                                goBack={() => setSelectedDashboard(null)}
-                                showSidebar={showSidebar}
-                                setEditingDashboard={(dashID) => {
-                                    props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)
-                                }}
-                            />
-                    }
+                    <DashboardScreen
+                        dashboardId={selectedDashboard}
+                        setSelectedDashboard={setSelectedDashboard}
+                        goBack={() => setSelectedDashboard(null)}
+                        showSidebar={showSidebar}
+                        setEditingDashboard={(dashID) => {
+                            props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)
+                        }}
+                    />
                 </style.Container>
             </DndProvider>
         </style.PageContainer >
