@@ -18,8 +18,7 @@ import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
 import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
 
 // constants
-import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
-import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
+import { ADD_TASK_ALERT_TYPE, PAGES, OPERATION_TYPES } from "../../../../../constants/dashboard_constants";
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -57,24 +56,29 @@ const widthBreakPoint = 1026;
 
 const DashboardScreen = (props) => {
 
+    const params = useParams()
+
     const {
-        dashboardId,
-        showSidebar,
-        setEditingDashboard,
-    } = props
+        stationID,
+        dashboardID,
+        editing,
+        lotID
+    } = params || {}
 
     // redux state
-    const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
+    // const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardID] })
+    const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const stations = useSelector(state => state.stationsReducer.stations)
-    const {
-        name: dashboardName
-    } = currentDashboard || {}
 
+
+    const currentDashboard = dashboards[dashboardID]
+    console.log('QQQQ dashboards', dashboards)
+    console.log('QQQQ dashboard ID', dashboardID)
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
@@ -108,14 +112,9 @@ const DashboardScreen = (props) => {
     const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
     const history = useHistory()
-    const params = useParams()
-
     const {
-        stationID,
-        dashboardID,
-        editing,
-        lotID
-    } = params || {}
+        name: dashboardName
+    } = currentDashboard || {}
 
     const size = useWindowSize()
     const windowWidth = size.width
@@ -148,11 +147,6 @@ const DashboardScreen = (props) => {
             setShowLotsList(true)
         }
     }, [editing])
-
-
-    useEffect(() => {
-        checkButtons()
-    }, [currentDashboard.buttons])
 
     const checkButtons = async () => {
         const { buttons } = currentDashboard	// extract buttons from dashboard
@@ -213,7 +207,7 @@ const DashboardScreen = (props) => {
         if (madeUpdate) {
             await dispatchPutDashboardAttributes({
                 buttons: updatedButtons
-            }, dashboardId)
+            }, dashboardID)
         }
     }
 
@@ -354,9 +348,6 @@ const DashboardScreen = (props) => {
                 showBackButton={false}
                 showEditButton={true}
                 currentDashboard={currentDashboard}
-                setEditingDashboard={() => setEditingDashboard(dashboardId)}
-
-                onBack={() => { setEditingDashboard(false) }}
                 handleOperationSelected={(op) => {
                     setSelectedOperation(op)
                 }}

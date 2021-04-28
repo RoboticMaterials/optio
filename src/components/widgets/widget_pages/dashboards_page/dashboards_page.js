@@ -10,9 +10,11 @@ import { withRouter } from "react-router-dom";
 
 // Import Components
 import DashboardScreen from './dashboard_screen/dashboard_screen'
-import DashboardsSidebar, { OPERATION_TYPES } from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
-import { PAGES } from "../../../../constants/dashboard_contants";
+// Import Constants 
+import { OPERATION_TYPES } from '../../../../constants/dashboard_constants'
+
+import { PAGES } from "../../../../constants/dashboard_constants";
 
 import {
     getDashboards,
@@ -36,6 +38,14 @@ const logger = log.getLogger("DashboardsPage");
 
 const DashboardsPage = (props) => {
 
+    const params = useParams()
+    const {
+        stationID,
+        dashboardID,
+        editing,
+        lotID
+    } = params || {}
+
     // redux state
     const dispatch = useDispatch()
     const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
@@ -55,10 +65,7 @@ const DashboardsPage = (props) => {
 
     const [showSidebar, setShowSidebar] = useState(true);
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
-    // extract url params
-    const { stationID, dashboardID, editing } = props.match.params
-
+    console.log('QQQQ herre', dashboardID)
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
     if (dashboard === undefined) {

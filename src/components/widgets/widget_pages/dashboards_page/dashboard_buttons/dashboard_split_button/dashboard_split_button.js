@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 // import components
 import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
-import { SchemaIcon } from "../../dashboard_editor/button_fields/button_fields.style";
+import { SchemaIcon } from "../dashboard_button/dashboard_button.style";
 
 // Import Styles
 import * as style from './dashboard_split_button.style'

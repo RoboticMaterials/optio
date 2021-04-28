@@ -7,7 +7,6 @@ import { withRouter } from 'react-router-dom';
 // components internal
 import BackButton from '../../../../basic/back_button/back_button';
 import Button from '../../../../basic/button/button';
-import SimpleLot from "../dashboard_screen/simple_lot/simple_lot";
 import ReactTooltip from "react-tooltip";
 
 // Import Components

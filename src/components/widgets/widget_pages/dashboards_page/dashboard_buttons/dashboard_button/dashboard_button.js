@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 // import components
 import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
-import { SchemaIcon } from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_button.style';
@@ -67,7 +66,7 @@ const DashboardButton = (props => {
                         <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z" />
                     </svg>
                     <style.IconContainer>
-                        <SchemaIcon className={iconClassName} color={color ? color : iconColor}></SchemaIcon>
+                        <style.SchemaIcon className={iconClassName} color={color ? color : iconColor}/>
                     </style.IconContainer>
                 </>
             }

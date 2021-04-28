@@ -14,8 +14,7 @@ import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
 import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
 
 // constants
-import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_contants";
-import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
+import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
