@@ -369,6 +369,19 @@ export const ProcessField = (props) => {
         setFieldValue("routes", values.routes.filter(((currRoute) => currRoute._id !== routeId)))
     }
 
+    const handleIsRouteInProcess = () => {
+      var inProcess = false;
+
+      Object.values(selectedProcess?.routes).map((route) => {
+        if(route._id===selectedTask?._id){
+          inProcess = true;
+        }
+      })
+
+      return inProcess
+
+    }
+
     const handleExecuteProcessTask = async (routeId) => {
         const task = tasks[routeId] || null
         if (!isObject(task)) return
@@ -778,7 +791,7 @@ export const ProcessField = (props) => {
                             fieldParent={editingTask}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            isProcessTask={true}
+                            isProcessTask={handleIsRouteInProcess()}
                             toggleEditing={(props) => {
                                 setEditingTask(props)
                             }}
