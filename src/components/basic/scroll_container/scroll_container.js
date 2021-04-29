@@ -1,13 +1,14 @@
-import React, { useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react'
 
 // functions extenral
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 // hooks
-import useSize from "../../../hooks/useSize";
+import useScrollInfo from "../../../hooks/useScrollInfo"
 
 // styles
 import * as styled from "./scroll_container.style"
+
 
 const ScrollContainer = (props) => {
 
@@ -15,37 +16,40 @@ const ScrollContainer = (props) => {
 		children
 	} = props
 
-	const containerRef = useRef(null);
-	const scrollContainerRef = useRef(null);
+	const [scrollInfo, setRef] = useScrollInfo()
 
-	const containerSize = useSize(containerRef)
-	const scrollContainerSize = useSize(scrollContainerRef)
+	const [showDivider, setShowDivider] = useState(false)
+
+	useEffect(() => {
+		setShowDivider(scrollInfo?.y?.value > 1)
+
+
+		return () => {
+
+		}
+	}, [scrollInfo])
 
 	return (
-		<styled.Container
-			ref={containerRef}
-		>
-			{(scrollContainerSize.offsetHeight > containerSize.offsetHeight) &&
-				<styled.Divider></styled.Divider>
-			}
+		<styled.Container>
+			<styled.Divider visible={showDivider}/>
 
-			<styled.ScrollContainer>
-				<styled.ContentContainer
-					ref={scrollContainerRef}
-				>
+			<styled.ScrollContainer
+				ref={setRef}
+			>
+				<styled.ContentContainer>
 					{children}
 				</styled.ContentContainer>
 			</styled.ScrollContainer>
 		</styled.Container>
-	);
-};
+	)
+}
 
 ScrollContainer.propTypes = {
 	children: PropTypes.any
-};
+}
 
 ScrollContainer.defaultProps = {
 
-};
+}
 
-export default ScrollContainer;
+export default ScrollContainer

@@ -25,8 +25,10 @@ import * as styled from './hil_modals.style';
 // utils
 import { deepCopy } from '../../methods/utils/utils'
 import {getBinQuantity } from "../../methods/utils/lot_utils";
-import useFormikAsyncSubmit from "../../hooks/useFormikAsyncSubmit";
 import FlexibleContainer from "../basic/flexible_container/flexible_container";
+import ScaleWrapper from "../basic/scale_wrapper/scale_wrapper";
+import {getStationName} from "../../methods/utils/stations_utils";
+import {getStations} from "../../redux/actions/stations_actions";
 
 
 export const QUANTITY_MODES = {
@@ -38,7 +40,8 @@ const CONTENT = {
     QUANTITY_SELECTOR: "QUANTITY_SELECTOR",
     FRACTION_SELECTOR: "FRACTION_SELECTOR",
     REVIEW: "REVIEW",
-    LOT_SELECTOR: "LOT_SELECTOR"
+    LOT_SELECTOR: "LOT_SELECTOR",
+    UNLOAD: "UNLOAD",
 }
 
 const fractionOptions = ['1', '3/4', '1/2', '1/4']
@@ -67,17 +70,20 @@ const HILModals = (props) => {
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchSetShowModalId = (id) =>  dispatch(setShowModalId(id))
     const dispatchGetTaskQueue = () => dispatch(getTaskQueue())
+    const dispatchGetStations = async () => await dispatch(getStations())
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const cards = useSelector(state => { return state.cardsReducer.cards })
-    const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
+    const stations = useSelector(state => state.stationsReducer.stations) || {}
 
     const [task, setTask] = useState(null)
     const {
-        type: hilType
+        type: hilType,
+        load,
+        unload
     } = task || {}
 
     const [trackQuantity, setTrackQuantity] = useState(null)
@@ -88,39 +94,21 @@ const HILModals = (props) => {
     const [lot, setLot] = useState({})
     const [modalClosed, setModalClosed] = useState(false)
     const [maxQuantity, setMaxQuantity] = useState(0)
-
-
+    const [loadStationName, setLoadStationName] = useState("")
+    const [unloadStationName, setUnloadStationName] = useState("")
 
     const formRef = useRef(null)
     const {
         current: formikProps
     } = formRef || {}
-
     const {
         values = {},
-        touched = {},
-        errors = {},
-        status = {},
-        setValues = () => { },
-        setErrors = () => { },
-        resetForm = () => { },
-        setTouched = () => { },
-        setFieldValue = () => { },
-        setStatus = () => { },
     } = formikProps || {}
 
     const {
-        name: dashboardName,
-        station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
+        station: stationId
     } = selectedDashboard || {}
 
-    const currentTask = tasks[taskId]
-
-    const {
-        type,
-        load,
-        unload
-    } = currentTask || {}
 
     const {
         station: unloadStationId
@@ -131,36 +119,35 @@ const HILModals = (props) => {
     } = load || {}
 
     useEffect(() => {
-
-        console.log("itemitemitem",item)
-        console.log("task",task)
-        console.log("lotId",lotId)
         setLot(cards[lotId] || {})
-
-
         return () => {
 
         };
     }, [lotId, cards])
-
-
 
     useEffect(() => {
         const {
             track_quantity
         } = task || {}
 
-        if(track_quantity && content !== CONTENT.QUANTITY_SELECTOR) {
-            setContent(CONTENT.QUANTITY_SELECTOR)
+        console.log("hilLoadUnload",hilLoadUnload)
+        if(hilLoadUnload === 'load') {
+            if(track_quantity && content !== CONTENT.QUANTITY_SELECTOR) {
+                setContent(CONTENT.QUANTITY_SELECTOR)
+            }
+            else if(!track_quantity && content !== CONTENT.FRACTION_SELECTOR) {
+                setContent(CONTENT.FRACTION_SELECTOR)
+            }
         }
-        else if(!track_quantity && content !== CONTENT.FRACTION_SELECTOR) {
-            setContent(CONTENT.FRACTION_SELECTOR)
+        else {
+            setContent(CONTENT.UNLOAD)
         }
+
 
         return () => {
 
         };
-    }, [task]);
+    }, [task, hilLoadUnload]);
 
 
 
@@ -173,18 +160,13 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
+        dispatchGetStations()
 
         const currentTask = tasks[item.task_id]
         setTask(currentTask)
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
-            // load
-            setHilLoadUnload('load')
-        } else {
-            // unload
-            setHilLoadUnload('unload')
-        }
+
 
 
         setDataLoaded(true)
@@ -200,16 +182,25 @@ const HILModals = (props) => {
 
     }, [])
 
+    useEffect(() => {
+        if (task?.load?.station === item.hil_station_id || !!item.dashboard) {
+            // load
+            setHilLoadUnload('load')
+        } else {
+            // unload
+            setHilLoadUnload('unload')
+        }
+
+        return () => {};
+    }, [item, task]);
+
+
     // Posts HIL Success to API
     const onHilSuccess = async (fraction) => {
 
         const {
             quantity,
-            // fraction
         } = values || {}
-
-        console.log("onHilSuccess quantity",quantity)
-        console.log("onHilSuccess fraction",fraction)
 
         dispatchTaskQueueItemClicked('')
 
@@ -219,8 +210,6 @@ const HILModals = (props) => {
             ...rest,
             hil_response: true,
         }
-
-        console.log("newItem",newItem)
 
         // If its a load, then add a quantity to the response
         if (hilLoadUnload === 'load') {
@@ -240,13 +229,11 @@ const HILModals = (props) => {
         delete activeHilCopy[dashboardID]
         dispatchSetActiveHilDashboards(activeHilCopy)
 
-        const ID = deepCopy(taskQueueID)
-
         // This is used to make the tap of the HIL button respond quickly
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        await disptachPutTaskQueue(newItem, ID)
+        await disptachPutTaskQueue(newItem, taskQueueID)
         await dispatchSetShowModalId(null)
     }
 
@@ -270,10 +257,41 @@ const HILModals = (props) => {
         };
     }, [lot, stationId, loadStationId]);
 
+    useEffect(() => {
+        setUnloadStationName(getStationName(unloadStationId))
+    }, [unloadStationId, stations])
 
-    // useMemo(() => function, input);
+    useEffect(() => {
+        setLoadStationName(getStationName(loadStationId))
+    }, [loadStationId, stations])
+
+
+
+    const renderUnloadContent = useCallback(() => {
+        const {
+            quantity,
+            fraction
+        } = item || {}
+
+        const {
+            track_quantity: trackQuantity
+        } = task || {}
+
+        const unloadQuantity = trackQuantity ? quantity : Math.ceil(maxQuantity * fraction)
+
+        return(
+            <div style={{alignSelf: "center", display: "flex", flexDirection: "row",  minHeight: "15rem",  alignItems: "center"}}>
+                <styled.InfoText>{`Unload `}</styled.InfoText>
+                <styled.InfoText emphasize={true}>{` ${unloadQuantity} `}</styled.InfoText>
+                <styled.InfoText>{` item${unloadQuantity > 1 ? 's' : ''} from `}</styled.InfoText>
+                <styled.InfoText emphasize={true}>{` ${loadStationName} `}</styled.InfoText>
+                <styled.InfoText>{` to `}</styled.InfoText>
+                <styled.InfoText emphasize={true}>{` ${unloadStationName}`}</styled.InfoText>
+            </div>
+        )
+    }, [item, loadStationName, unloadStationName, task])
+
     const renderFractionOptions = useCallback(() => {
-
         return (
             <div style={{alignSelf: "stretch", display: "flex", flexDirection: "column", overflow: "hidden", minHeight: "15rem"}}>
                 <styled.SubtitleContainer>
@@ -284,18 +302,16 @@ const HILModals = (props) => {
                     {fractionOptions.map((value, ind) => {
                         const decimal = fractionDecimals[ind]
                         return (
-                            <FlexibleContainer>
-                                <HilButton
-                                    containerCss={styled.fractionButtonCss}
-                                    key={value}
-                                    color={'#90eaa8'}
-                                    label={`${value} (Quantity ${Math.ceil(maxQuantity * decimal)})`}
-                                    filter={Math.cbrt(eval(value))}
-                                    onClick={() => {
-                                        onHilSuccess(decimal)
-                                    }}
-                                />
-                            </FlexibleContainer>
+                            <HilButton
+                                containerCss={styled.fractionButtonCss}
+                                key={value}
+                                color={'#90eaa8'}
+                                label={`${value} (Quantity ${Math.ceil(maxQuantity * decimal)})`}
+                                filter={Math.cbrt(eval(value))}
+                                onClick={() => {
+                                    onHilSuccess(decimal)
+                                }}
+                            />
                         )
                     })}
                 </ScrollContainer>
@@ -303,8 +319,7 @@ const HILModals = (props) => {
         )
     }, [maxQuantity]);
 
-    const renderQuantitySelector = () => {
-        const maxValue = getBinQuantity(lot, stationId || loadStationId)
+    const renderQuantitySelector = useCallback(() => {
 
         return (
             <div
@@ -320,18 +335,16 @@ const HILModals = (props) => {
 
                 <NumberField
                     minValue={0}
-                    maxValue={maxValue}
+                    maxValue={maxQuantity}
                     name={`quantity`}
                 />
 
-                {/*<styled.RowContainer style={{*/}
-                {/*    marginTop: "1rem"*/}
-                {/*}}>*/}
-                    <styled.InfoText>{`There are ${maxValue} items available in the current lot.`}</styled.InfoText>
-                {/*</styled.RowContainer>*/}
+                <FlexibleContainer>
+                <styled.InfoText style={{marginBottom: "1rem"}}>{`There are ${maxQuantity} items available in the current lot.`}</styled.InfoText>
+                </FlexibleContainer>
             </div>
         )
-    }
+    }, [maxQuantity])
 
     if (dataLoaded && modalClosed !== true) {
         const {
@@ -340,7 +353,6 @@ const HILModals = (props) => {
         } = lot || {}
 
         return (
-
             <Formik
                 innerRef={formRef}
                 initialValues={{
@@ -349,18 +361,19 @@ const HILModals = (props) => {
                 }}
                 validateOnChange={true}
                 validateOnBlur={true}
-                // onSubmit={() => setFieldValue("needsSubmit", true)} // this is necessary
             >
                 <styled.HilContainer
                     isOpen={true}
                     style={{
                         overlay: {
                             zIndex: 5000,
-                            backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                            backdropFilter: 'blur(5px)',
+                            transition: 'backdrop-filter 3s ease',
                         },
                         content: {
                             zIndex: 5000,
-                        }
+                        },
                     }}
                 >
 
@@ -369,19 +382,12 @@ const HILModals = (props) => {
                             <styled.HilMessage>{hilMessage}</styled.HilMessage>
                             <styled.HilTimer
                                 visible={!!hilTimers[item._id] && hilLoadUnload === 'load'}
-                            >{!!hilTimers[item._id] && hilLoadUnload === 'load' ? hilTimers[item._id] : "Time"}</styled.HilTimer>
+                            >{!!hilTimers[item._id] && hilLoadUnload === 'load' ? hilTimers[item._id] : ""}</styled.HilTimer>
                         </styled.ColumnContainer>
                     </styled.Header>
 
 
                     <styled.Body>
-                        {/*<styled.InnerHeader>*/}
-                        {/*    <styled.ColumnContainer style={{flex: 1}}>*/}
-
-
-                        {/*    </styled.ColumnContainer>*/}
-                        {/*</styled.InnerHeader>*/}
-
                         <styled.InnerContentContainer>
                             <div
                                 style={{
@@ -393,79 +399,102 @@ const HILModals = (props) => {
                                     paddingTop: "1rem",
                                     justifyContent: "space-between",
                                     flex: 1
-
-                                    // marginBottom: "4rem",
-                                    // marginTop: "2rem"
                                 }}
                             >
 
-                            {!isMobile &&
+                            {/*{!falske &&*/}
                             <styled.LotInfoContainer>
-
-
                                 <styled.SubtitleContainer>
                                     <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
                                 </styled.SubtitleContainer>
 
-                                {/*<ScaleWrapper*/}
-                                {/*    scaleFactor={.8}*/}
-                                {/*>*/}
+                                <ScaleWrapper
+                                    scaleFactor={isMobile ? 0.75 : 1}
+                                >
                                 <LotContainer
+                                    showCustomFields={false}
                                     lotId={lotId}
-                                    binId={stationId || loadStationId}
+                                    binId={hilLoadUnload === 'load' ? stationId || loadStationId : unloadStationId}
                                     processId={processId}
                                     containerStyle={{ margin: 0, padding: 0, width: "30rem" }}
                                 />
-                                {/*</ScaleWrapper>*/}
+                                </ScaleWrapper>
                             </styled.LotInfoContainer>
-                            }
-
+                            {/*}*/}
 
                             {
                                 {
-                                    [CONTENT.QUANTITY_SELECTOR]:
-                                        renderQuantitySelector(),
-                                    [CONTENT.FRACTION_SELECTOR]:
-                                        renderFractionOptions(),
+                                    [CONTENT.QUANTITY_SELECTOR]: renderQuantitySelector(),
+                                    [CONTENT.FRACTION_SELECTOR]: renderFractionOptions(),
+                                    [CONTENT.UNLOAD]: renderUnloadContent(),
                                 }[content] ||
-                                <div>DEFAULT HTML</div>
+                                null
                             }
                                 </div>
                         </styled.InnerContentContainer>
 
-                        {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
                         <styled.HilButtonContainer>
-
-                            {content === CONTENT.QUANTITY_SELECTOR &&
-                            <HilButton
-                                label={"Continue"}
-                                color={'#90eaa8'}
-                                iconName={'fas fa-check'}
-                                iconColor={'#1c933c'}
-                                textColor={'#1c933c'}
-                                onClick={() => {
-                                    onHilSuccess()
-                                }}
-                            />
+                            {
+                                {
+                                    [CONTENT.QUANTITY_SELECTOR]:
+                                    <>
+                                        <HilButton
+                                            label={"Continue"}
+                                            color={'#90eaa8'}
+                                            iconName={'fas fa-check'}
+                                            iconColor={'#1c933c'}
+                                            textColor={'#1c933c'}
+                                            onClick={() => {
+                                                onHilSuccess()
+                                            }}
+                                        />
+                                        <HilButton
+                                            label={"Cancel"}
+                                            onClick={() => {
+                                                onHilFailure()
+                                                dispatchSetShowModalId(null)
+                                                setModalClosed(true)
+                                            }}
+                                            iconName={'fas fa-times'}
+                                            color={'#ff9898'}
+                                            textColor={'#1c933c'}
+                                        />
+                                    </>,
+                                    [CONTENT.FRACTION_SELECTOR]:
+                                        <>
+                                            <HilButton
+                                                label={"Cancel"}
+                                                onClick={() => {
+                                                    onHilFailure()
+                                                    dispatchSetShowModalId(null)
+                                                    setModalClosed(true)
+                                                }}
+                                                iconName={'fas fa-times'}
+                                                color={'#ff9898'}
+                                                textColor={'#1c933c'}
+                                            />
+                                        </>,
+                                    [CONTENT.UNLOAD]:
+                                        <>
+                                        <FlexibleContainer>
+                                            <HilButton
+                                                containerCss={styled.unloadButtonCss}
+                                                iconName='fas fa-check'
+                                                color={'#90eaa8'}
+                                                onClick={() => {
+                                                    onHilSuccess()
+                                                    dispatchSetShowModalId(null)
+                                                }}
+                                            />
+                                        </FlexibleContainer>
+                                        </>,
+                                }[content] ||
+                                null
                             }
-
-                            <HilButton
-                                label={"Cancel"}
-                                onClick={() => {
-                                    onHilFailure()
-                                    dispatchSetShowModalId(null)
-                                    setModalClosed(true)
-                                }}
-                                iconName={'fas fa-times'}
-                                color={'#ff9898'}
-                                textColor={'#1c933c'}
-                            />
                         </styled.HilButtonContainer>
-                        }
                     </styled.Body>
                 </styled.HilContainer>
             </Formik>
-
         )
     }
     else {

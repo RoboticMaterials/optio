@@ -2,15 +2,23 @@ import styled, { css } from 'styled-components'
 import * as commonCss from "../../common_css/common_css";
 import {iconButtonCss} from "../../common_css/common_css";
 import Modal from 'react-modal';
+import { isMobile } from "react-device-detect"
 
+// Modal.setAppElement('document');
 
 export const HilContainer = styled(Modal)`
     position: absolute;
-    width: 98%;
-    height: 98%;
+  transition: backdrop-filter 3s ease;
+    //width: 98%;
+  	width: ${isMobile ? '98%' : 'auto'};
+    height: ${isMobile ? '98%' : 'auto'};
+    max-height: 98%;
+    max-width: 98%;
+    //min-height: 50rem;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+  outline: none !important;
 
     z-index: 5000;
     border-radius: 1rem;
@@ -26,7 +34,7 @@ export const HilContainer = styled(Modal)`
     ::-webkit-scrollbar {
         display: none;  /* Safari and Chrome */
     }
-
+  
 `
 
 
@@ -37,17 +45,21 @@ export const HilButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    //width: 100%;
-    //max-width: 50rem;
-  @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-    flex-direction: column;
-  }
-
-        padding: 1rem 2rem;
-
-
-
+    padding: 1rem 2rem;
+  
+    div:not(:first-child) {
+        margin: 0 0rem 0 2rem;
+    }
+  
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+        flex-direction: column;
+        div:not(:first-child) {
+          margin-top: .5rem;
+          margin: .5rem 0rem 0 0rem;
+        }
+    }
 `
 
 export const InnerHeader = styled.div`
@@ -79,7 +91,7 @@ export const LotInfoContainer = styled.div`
   flex-direction: column;
   align-items: center;
   align-self: stretch;
-  margin-bottom: 4rem;
+  margin: 0 2rem 1rem 2rem;
   
 `
 
@@ -91,8 +103,8 @@ export const InnerContentContainer = styled.div`
     flex: 1;
     overflow: hidden;
     align-items: center;
-    margin: 0 1rem 1rem 1rem;
-    border: 3px solid #cacaca;
+    margin: 0 1rem 0rem 1rem;
+    border: 1px solid #cacaca;
     justify-content: space-between;
     border-radius: 2rem;
     background: ${props => props.theme.bg.primary};
@@ -105,6 +117,7 @@ export const SubtitleContainer = styled.div`
     display: flex;
     width: 100%;
     justify-content: center;
+  	margin-bottom: 1rem;
     //padding-bottom: 1rem;
     
 `
@@ -129,6 +142,16 @@ export const fractionButtonCss = css`
     max-width: 50rem;
 `
 
+export const unloadButtonCss = css`
+	height: 5rem;
+	max-width: 25rem;
+  align-self: center;
+	width: 25rem;
+  //align-self: stretch;
+  //flex: 1;
+	justify-content: center;
+`
+
 export const HilSubtitleMessage = styled.h4`
     display: flex;
     font-family: ${props => props.theme.font.primary};
@@ -140,15 +163,27 @@ export const HilSubtitleMessage = styled.h4`
     font-size: 1.6rem;
     text-align: center;
 `
+
+const emphasisCss = css`
+	font-weight: bold;
+  font-style: oblique;
+  
+`
+
 export const InfoText = styled.span`
+  white-space: pre-wrap;
     display: flex;
     font-family: ${props => props.theme.font.primary};
     justify-content: center;
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.textColor};
     text-align: center;
-  	max-width: 50%;
-  margin-top: 1rem;
+  
+  ${props => props.emphasize && emphasisCss};
+  
+  
+  	//max-width: 80%;
+  //margin-top: 1rem;
 `
 
 export const HilTimer = styled.p`
@@ -167,11 +202,6 @@ export const HilTimer = styled.p`
 export const ColumnContainer = styled.div`
   display: flex;
     flex-direction: column;
-`
-
-export const RowContainer = styled.div`
-  display: flex;
-    flex-direction: row;
 `
 
 export const Header = styled.div`

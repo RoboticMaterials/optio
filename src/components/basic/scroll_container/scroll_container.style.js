@@ -44,5 +44,8 @@ export const Divider = styled.div`
     width: 100%;
     padding-bottom: 12px;
     z-index: 10000;
+  
+  opacity: ${props => props.visible ? 1 : 0};
+  //transition: opacity .5s ease-out;
 `
 

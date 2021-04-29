@@ -45,7 +45,8 @@ const Lot = (props) => {
         selectable,
         isSelected,
         flags,
-        processName
+        processName,
+        showCustomFields,
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -300,12 +301,12 @@ const Lot = (props) => {
 
                 {stationName &&
                     <LotSimpleRow
-                        label={"Bin"}
+                        label={"Station"}
                         value={stationName}
                     />
                 }
 
-                {renderTemplateValues()}
+                {showCustomFields && renderTemplateValues()}
             </styled.ContentContainer>
 
         </styled.Container>
@@ -317,6 +318,7 @@ Lot.propTypes = {
     isSelected: PropTypes.bool,
     selectable: PropTypes.bool,
     isFocused: PropTypes.bool,
+    showCustomFields: PropTypes.bool,
 }
 
 // Specifies the default values for props:
@@ -330,7 +332,8 @@ Lot.defaultProps = {
     templateValues: [],
     count: 0,
     glow: false,
-    stationName: ""
+    stationName: "",
+    showCustomFields: true,
 }
 
 export default Lot
