@@ -160,6 +160,7 @@ export const HilTimer = styled.p`
     font-weight: bold;
     font-size: ${props => props.theme.fontSize.sz2};
     color: ${props => props.theme.fg.primary};
+  opacity: ${props => props.visible ? 1 : 0};
 `
 
 
