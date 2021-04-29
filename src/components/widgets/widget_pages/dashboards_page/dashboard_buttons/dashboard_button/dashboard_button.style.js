@@ -36,3 +36,14 @@ export const IconContainer = styled.div`
     bottom: 0;
     width: 10.75rem;
 `
+
+export const SchemaIcon = styled.i`
+    color: ${props => props.color};
+    padding: 0;
+    font-size: 2rem;
+    margin: 0;
+    height: fit-content;
+    width: fit-content;
+    // background: blue;
+
+`

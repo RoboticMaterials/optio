@@ -38,8 +38,11 @@ export const HilButtonContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    max-width: 50rem;
+    //width: 100%;
+    //max-width: 50rem;
+  @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+    flex-direction: column;
+  }
 
         padding: 1rem 2rem;
 
@@ -77,7 +80,7 @@ export const LotInfoContainer = styled.div`
   align-items: center;
   align-self: stretch;
   margin-bottom: 4rem;
-  margin-top: 2rem;
+  
 `
 
 export const InnerContentContainer = styled.div`
@@ -93,6 +96,7 @@ export const InnerContentContainer = styled.div`
     justify-content: space-between;
     border-radius: 2rem;
     background: ${props => props.theme.bg.primary};
+  //padding-top: 1rem;
 `
 
 
@@ -101,7 +105,7 @@ export const SubtitleContainer = styled.div`
     display: flex;
     width: 100%;
     justify-content: center;
-    padding-bottom:1rem;
+    //padding-bottom: 1rem;
     
 `
 
@@ -143,6 +147,8 @@ export const InfoText = styled.span`
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.textColor};
     text-align: center;
+  	max-width: 50%;
+  margin-top: 1rem;
 `
 
 export const HilTimer = styled.p`

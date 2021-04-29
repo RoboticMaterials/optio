@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
 // functions external
 import PropTypes from 'prop-types'
@@ -7,41 +7,43 @@ import PropTypes from 'prop-types'
 import * as styled from "./lot_date_row.style"
 
 // utils
-import {jsDateToString} from "../../../../../../methods/utils/card_utils"
+import { jsDateToString } from "../../../../../../methods/utils/card_utils"
 import { capitalizeFirstLetter } from '../../../../../../methods/utils/string_utils'
 
 const LotDateRow = (props) => {
 
-	const {
-		date,
-		label,
-		isLast,
-		defaultDateText,
-	} = props
+    const {
+        date,
+        label,
+        isLast,
+        defaultDateText,
+        labelStyle,
+        dateStyle,
+    } = props
 
-	const [dateText, setDateText] = useState("Date")
+    const [dateText, setDateText] = useState("Date")
 
-	useEffect(() => {
-		setDateText(jsDateToString(date))
-	}, [date])
+    useEffect(() => {
+        setDateText(jsDateToString(date))
+    }, [date])
 
-	return (
-		<styled.Row isLast={isLast}>
-			<styled.Label>{capitalizeFirstLetter(label)}</styled.Label>
+    return (
+        <styled.Row isLast={isLast}>
+            <styled.Label style={labelStyle}>{capitalizeFirstLetter(label)}</styled.Label>
 
-				<styled.DateItem>
-					<styled.DateText>{dateText ? dateText : defaultDateText}</styled.DateText>
-				</styled.DateItem>
-		</styled.Row>
-	)
+            <styled.DateItem>
+                <styled.DateText style={dateStyle}>{dateText ? dateText : defaultDateText}</styled.DateText>
+            </styled.DateItem>
+        </styled.Row>
+    )
 }
 
 LotDateRow.propTypes = {
-	defaultDateText: PropTypes.string
+    defaultDateText: PropTypes.string
 }
 
 LotDateRow.defaultProps = {
-	defaultDateText: "Date",
+    defaultDateText: "Date",
 }
 
 export default LotDateRow

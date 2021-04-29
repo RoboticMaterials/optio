@@ -1,8 +1,13 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useRef } from 'react';
+
+// functions extenral
 import PropTypes from 'prop-types';
 
-import * as styled from "./scroll_container.style"
+// hooks
 import useSize from "../../../hooks/useSize";
+
+// styles
+import * as styled from "./scroll_container.style"
 
 const ScrollContainer = (props) => {
 
@@ -15,10 +20,6 @@ const ScrollContainer = (props) => {
 
 	const containerSize = useSize(containerRef)
 	const scrollContainerSize = useSize(scrollContainerRef)
-
-	console.log("containerSize",containerSize)
-	console.log("scrollContainerSize",scrollContainerSize)
-
 
 	return (
 		<styled.Container
@@ -40,7 +41,7 @@ const ScrollContainer = (props) => {
 };
 
 ScrollContainer.propTypes = {
-
+	children: PropTypes.any
 };
 
 ScrollContainer.defaultProps = {

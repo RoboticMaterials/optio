@@ -3,16 +3,15 @@ import PropTypes from 'prop-types';
 
 // import components
 import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
-import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_button.style';
 import * as dashboard_buttons_style from '../dashboard_buttons.style';
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 
 // import logging
 import log from '../../../../../../logger'
-import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
+import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -36,7 +35,8 @@ const DashboardButton = (props => {
         error,
         type = "",
         iconColor,
-        iconClassName
+        iconClassName,
+        svgColor,
     } = props
 
     const theme = useContext(ThemeContext);
@@ -48,7 +48,7 @@ const DashboardButton = (props => {
             width={width}
             height={height}
             background={color}
-            onClick={clickable ? ()=>onClick(taskID, deviceType) : null}
+            onClick={clickable ? () => onClick(taskID, deviceType) : null}
             borderGlow={taskID === 'hil_success'}
             clickable={clickable}
             hoverable={hoverable}
@@ -58,20 +58,20 @@ const DashboardButton = (props => {
             {/* <div style={{display: "flex", alignItems: "center", border: '1px solid red'}}> */}
             <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
 
-            
+
 
             {(iconColor && iconClassName) &&
                 <>
-                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none">
-                        <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z"/>
+                    <svg viewBox="0 0 300 67" fill={!!svgColor ? svgColor : theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none">
+                        <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z" />
                     </svg>
                     <style.IconContainer>
-                        <SchemaIcon className={iconClassName} color={color ? color : iconColor}></SchemaIcon>
+                        <style.SchemaIcon className={iconClassName} color={color ? color : iconColor}/>
                     </style.IconContainer>
                 </>
             }
 
-                {/* {children && children}
+            {/* {children && children}
                 <ErrorTooltip
                     visible={error}
                     text={error}

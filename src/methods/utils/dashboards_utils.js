@@ -1,10 +1,7 @@
 import store from '../../redux/store/index'
-import {
-    OPERATION_TYPES,
-    TYPES
-} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import {isArray, isNonEmptyArray} from "./array_utils";
-import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
+import { OPERATION_TYPES, TYPES } from '../../constants/dashboard_constants'
+import { isArray, isNonEmptyArray } from "./array_utils";
+import { DASHBOARD_BUTTON_COLORS } from "../../constants/dashboard_constants";
 import uuid from 'uuid'
 import {
     CUSTOM_CHARGE_TASK_ID,
@@ -13,7 +10,7 @@ import {
     CUSTOM_TASK_ID
 } from "../../constants/route_constants";
 
-export const getChargeButton = ({name: positionName, _id: positionId}) => {
+export const getChargeButton = ({ name: positionName, _id: positionId }) => {
     return {
         name: positionName,
         color: '#FFFF4B',
@@ -28,7 +25,7 @@ export const getChargeButton = ({name: positionName, _id: positionId}) => {
     }
 }
 
-export const getIdleButton = ({idle_location: idleLocationId}) => {
+export const getIdleButton = ({ idle_location: idleLocationId }) => {
     return {
         name: CUSTOM_IDLE_TASK_NAME,
         color: '#FF4B4B',
@@ -53,22 +50,22 @@ export const getLocationDashboard = (dashboards, location) => {
     return dashboards[firstDashboardId] || {}
 }
 
-export const getDashboardNameFromLocation = (location,dashboards) => {
+export const getDashboardNameFromLocation = (location, dashboards) => {
     const dashboard = getLocationDashboard(dashboards, location)
     const displayName = getDashboardDisplayName(dashboard, location)
     return displayName
 }
 
 export const getDashboardDisplayName = (dashboard, location) => {
-        const {
-            name: locationName = ""
-        } = location || {}
+    const {
+        name: locationName = ""
+    } = location || {}
 
-        const {
-            name: dashboardName = ""
-        } = dashboard || {}
+    const {
+        name: dashboardName = ""
+    } = dashboard || {}
 
-        return dashboardName || `${locationName} Dashboard`
+    return dashboardName || `${locationName} Dashboard`
 }
 
 export const postToDashboards = (dashboardName) => {
@@ -89,25 +86,25 @@ export const findDashboardByID = (availableDashboards, ID) => {
     return dashboardNameIndex
 }
 
-export const getContainsKickoffButton = ({buttons}) => {
-    for(const currButton of buttons) {
+export const getContainsKickoffButton = ({ buttons }) => {
+    for (const currButton of buttons) {
         const {
             type
         } = currButton
 
-        if(type === OPERATION_TYPES.KICK_OFF.key) return true
+        if (type === OPERATION_TYPES.KICK_OFF.key) return true
     }
 
     return false
 }
 
-export const getContainsFinishButton = ({buttons}) => {
-    for(const currButton of buttons) {
+export const getContainsFinishButton = ({ buttons }) => {
+    for (const currButton of buttons) {
         const {
             type
         } = currButton
 
-        if(type === OPERATION_TYPES.FINISH.key) return true
+        if (type === OPERATION_TYPES.FINISH.key) return true
     }
 
     return false
@@ -116,11 +113,11 @@ export const getContainsFinishButton = ({buttons}) => {
 export const getOperationButton = (key) => {
 
     let index = 0
-    for(const entry of Object.entries(OPERATION_TYPES)) {
+    for (const entry of Object.entries(OPERATION_TYPES)) {
         const currValue = entry[1]
         const currKey = entry[0]
 
-        if(currKey === key) {
+        if (currKey === key) {
             return {
                 name: currValue.name,
                 color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
@@ -211,7 +208,7 @@ export const handleCurrentDashboard = (dashboards, dashboardID) => {
 *
 * args: needs button type passed in as object key, this way you can pass the entire button or just a simple object containing this key
 * */
-export const getCanDeleteDashboardButton = ({type: buttonType}) => {
+export const getCanDeleteDashboardButton = ({ type: buttonType }) => {
     switch (buttonType) {
         case TYPES.ROUTES.key:
         case OPERATION_TYPES.FINISH.key:
@@ -234,8 +231,8 @@ export const getIsFinishEnabled = (availableProcessIds) => {
     return isNonEmptyArray(availableProcessIds)
 }
 
-export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId, id: buttonId, positionId}) => {
-    for(const existingDashboardButton of existingDashboardButtons) {
+export const getDashboardContainsRouteButton = ({ buttons: existingDashboardButtons }, { task_id: currButtonTaskId, id: buttonId, positionId }) => {
+    for (const existingDashboardButton of existingDashboardButtons) {
         const {
             task_id: existingButtonTaskId = "",
             id: existingButtonId,
@@ -246,19 +243,19 @@ export const getDashboardContainsRouteButton = ({buttons: existingDashboardButto
             position: existingPositionId
         } = custom_task || {}
 
-        if(currButtonTaskId === CUSTOM_TASK_ID) {
-            if(buttonId === CUSTOM_IDLE_TASK_ID) {
-                if(existingButtonId === buttonId) {
+        if (currButtonTaskId === CUSTOM_TASK_ID) {
+            if (buttonId === CUSTOM_IDLE_TASK_ID) {
+                if (existingButtonId === buttonId) {
                     return true
                 }
             }
-            else if(buttonId === CUSTOM_CHARGE_TASK_ID) {
-                if(existingButtonId === buttonId && positionId === existingPositionId) {
+            else if (buttonId === CUSTOM_CHARGE_TASK_ID) {
+                if (existingButtonId === buttonId && positionId === existingPositionId) {
                     return true
                 }
             }
         }
-        else if(existingButtonTaskId === currButtonTaskId) {
+        else if (existingButtonTaskId === currButtonTaskId) {
             return true // quit looping
         }
     }
@@ -266,16 +263,16 @@ export const getDashboardContainsRouteButton = ({buttons: existingDashboardButto
     return false
 }
 
-export const getDashboardContainsOperationButton = ({buttons: existingDashboardButtons}, {type: currButtonType}) => {
+export const getDashboardContainsOperationButton = ({ buttons: existingDashboardButtons }, { type: currButtonType }) => {
 
-    if(currButtonType === OPERATION_TYPES.REPORT.key) return false // multiple report buttons allowed
+    if (currButtonType === OPERATION_TYPES.REPORT.key) return false // multiple report buttons allowed
 
-    for(const existingDashboardButton of existingDashboardButtons) {
+    for (const existingDashboardButton of existingDashboardButtons) {
         const {
             type: existingButtonType = ""
         } = existingDashboardButton || {}
 
-        if(existingButtonType === currButtonType) {
+        if (existingButtonType === currButtonType) {
             return true // quit looping
         }
     }

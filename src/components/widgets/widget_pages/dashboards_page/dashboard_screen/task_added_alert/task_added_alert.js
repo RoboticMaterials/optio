@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 // import utils
-import { ADD_TASK_ALERT_TYPE } from "../../../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../../../constants/dashboard_constants";
 
 // Import styles
 import * as style from './task_added_alert.style'

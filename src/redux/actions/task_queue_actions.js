@@ -180,7 +180,6 @@ export const deleteTaskQueueItem = (id) => {
  */
 
 export const handlePostTaskQueue = (props) => {
-
     const {
         dashboardID,
         tasks,

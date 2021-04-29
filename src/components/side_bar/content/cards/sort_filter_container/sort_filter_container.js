@@ -23,11 +23,12 @@ const SortFilterContainer = (props) => {
 		setLotFilterValue,
 		selectedFilterOption,
 		setSelectedFilterOption,
-		lotFilterValue
+		lotFilterValue,
+        containerStyle,
 	} = props
 
 	return (
-		<BarsContainer>
+		<BarsContainer style={containerStyle}>
 			{/*<styled.OptionContainer>*/}
 			<LotSortBar
 				columnCss={columnCss}

@@ -8,7 +8,7 @@ const HilButtonCss = css`
     height: 100%;
     min-height: 4rem;
     max-height: 7rem;
-    width: 100%;
+    //width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -48,17 +48,13 @@ export const HilButtonText = styled.p`
 export const Container = styled.button`
     ${HilButtonCss};
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    //align-self: stretch;
 
-    //min-height: 5rem;
-    //height: 5rem;
-    //max-height: 5rem;
-    //width: fit-content;
     display: flex;
     flex-direction: row;
     padding: 0rem 3rem;
     align-items: center;
-    justify-content: center;
     ${props => props.disabled && "filter: grayscale(80%)"};
     
     ${props => props.css && props.css};
@@ -73,7 +69,8 @@ export const HilIcon = styled.i`
     fill: green;
     font-size: 2.5rem;
     filter: brightness(50%);
-    margin-right: 1rem;
+    margin-right: 2rem;
+    width: 2rem;
     // &:hover {
     //     cursor: pointer;
     // }
