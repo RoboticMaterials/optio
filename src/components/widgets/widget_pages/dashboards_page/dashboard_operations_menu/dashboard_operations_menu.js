@@ -34,6 +34,11 @@ const DashboardOperationsMenu = (props) => {
 
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
+    const devices = useSelector(state => state.devicesReducer.devices)
+
+    const isDevice = !!devices[stationID]
+
+    console.log('QQQQ is devices', isDevice)
 
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
@@ -111,6 +116,43 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+
+    const renderSendToIdleButton = () => {
+        const schema = theme.main.schema.finish
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Send to Idle'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('finish')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
+    const renderSendToChargerButton = () => {
+        const schema = theme.main.schema.finish
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Send to Charger'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('finish')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderButtons = () => {
         return (
             <>
@@ -122,6 +164,14 @@ const DashboardOperationsMenu = (props) => {
                 }
                 {availableFinishProcesses.length > 0 &&
                     renderFinishButton()
+                }
+
+                {isDevice &&
+                    <>
+                        {renderSendToIdleButton()}
+                        {renderSendToChargerButton()}
+                    </>
+
                 }
             </>
 
