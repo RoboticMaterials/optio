@@ -117,7 +117,7 @@ const DashboardLotPage = () => {
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
         else {
-            dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
+            dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, lotID, Id, name, custom })
 
             if (deviceType !== DEVICE_CONSTANTS.HUMAN) {
                 setAddTaskAlert({

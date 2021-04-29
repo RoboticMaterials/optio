@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 
 // actions
 import { putTaskQueue, getTaskQueue } from '../../redux/actions/task_queue_actions'
@@ -221,7 +221,6 @@ const HILModals = (props) => {
         dispatchSetActiveHilDashboards(activeHilCopy)
 
         const ID = deepCopy(taskQueueID)
-        console.log("taskQueueID",taskQueueID)
 
         // This is used to make the tap of the HIL button respond quickly
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
@@ -245,7 +244,10 @@ const HILModals = (props) => {
         dispatchTaskQueueItemClicked('')
     }
 
-    const renderFractionOptions = () => {
+    // useMemo(() => function, input);
+    const renderFractionOptions = useCallback(() => {
+        console.log("memoooo renderFractionOptions")
+
         const maxValue = getBinQuantity(lot, stationId || loadStationId)
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
         const fractionDecimals = ['1', '0.75', '0.5', '0.25']
@@ -277,7 +279,7 @@ const HILModals = (props) => {
                 </ScrollContainer>
             </div>
         )
-    }
+    }, []);
 
     const renderQuantitySelector = () => {
         const maxValue = getBinQuantity(lot, stationId || loadStationId)
