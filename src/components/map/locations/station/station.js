@@ -25,6 +25,7 @@ import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import { getPreviousRoute } from "../../../../methods/utils/processes_utils";
 import {
+    getHasStartAndEnd, getLoadStationId,
     getRouteEnd,
     getRouteIndexInRoutes, getRouteStart,
     getUnloadStationId,
@@ -32,6 +33,7 @@ import {
     isStationInRoutes,
     isStationLoadStation, isStationUnloadStation
 } from "../../../../methods/utils/route_utils";
+import {immutableDelete} from "../../../../methods/utils/array_utils";
 
 function Station(props) {
     const {
@@ -120,6 +122,7 @@ function Station(props) {
                 insertIndex
             } = temp || {}
 
+
             if (selectedProcess.routes.length > 0) {
                 const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
 
@@ -134,14 +137,18 @@ function Station(props) {
 
 
                     else if (routeIndex === 0) {
-                        const firstRoute = selectedProcess.routes[0]
-                        if (isStationInRoutes(selectedProcess.routes, station._id)  && selectedProcess.routes.length > 1 && !isStationLoadStation(selectedTask, station._id)) disabled = true
+                        if (isStationInRoutes(immutableDelete(selectedProcess.routes, 0), station._id)) disabled = true
                     }
 
                     else {
                         // must select unload station of previous route
                         const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                        if (!isStationUnloadStation(previousRoute, station._id)) disabled = true
+                        const previousRouteEnd = getRouteEnd(previousRoute)
+
+                        if (!isStationUnloadStation(previousRoute, station._id) && previousRouteEnd) disabled = true
+
+                        const loadStationId = getLoadStationId(selectedTask)
+                        if (isStationInRoutes(selectedProcess.routes, station._id) && station._id !== loadStationId && previousRouteEnd !== station._id) disabled = true
                     }
                 }
 

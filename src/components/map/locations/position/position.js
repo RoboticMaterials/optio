@@ -23,11 +23,13 @@ import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import { getPreviousRoute } from "../../../../methods/utils/processes_utils";
 import {
+    getLoadPositionId,
     getLoadStationId, getRouteEnd, getRouteIndexInRoutes, getRouteStart,
     isPositionAtLoadStation, isPositionAtUnloadStation,
     isPositionInRoutes,
-    isStationInRoutes, isStationLoadStation
+    isStationInRoutes, isStationLoadStation, isStationUnloadStation
 } from "../../../../methods/utils/route_utils";
+import {immutableDelete} from "../../../../methods/utils/array_utils";
 
 function Position(props) {
 
@@ -147,13 +149,21 @@ function Position(props) {
                         }
 
                         else if (routeIndex === 0) {
-                            if (isPositionInRoutes(selectedProcess.routes, positionId) && !isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                            if (isPositionInRoutes(immutableDelete(selectedProcess.routes, 0), positionId)) disabled = true
                         }
 
                         else {
                             // must start at position at unload station of previous route
                             const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                            disabled = !isPositionAtUnloadStation(previousRoute, positionId)
+                            const previousRouteEnd = getRouteEnd(previousRoute)
+                            if(!isPositionAtUnloadStation(previousRoute, positionId) && previousRouteEnd) disabled = true
+
+
+
+                            const loadPositionId = getLoadPositionId(selectedTask)
+                            const loadStationId = getLoadStationId(selectedTask)
+
+                            if (isPositionInRoutes(selectedProcess.routes, positionId) && (previousRouteEnd !== position.parent) && positionId !== loadPositionId && loadStationId !== position.parent) disabled = true
                         }
                     }
 
