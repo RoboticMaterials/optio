@@ -2,7 +2,10 @@ import styled from "styled-components";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 
+import * as layoutCss from '../../../../../common_css/layout'
+
 export const Header = styled.div`
+    ${layoutCss.headerStyle};
     display: flex;
     padding: 1rem;
 
