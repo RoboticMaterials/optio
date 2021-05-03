@@ -30,6 +30,7 @@ const DashboardOperationsMenu = (props) => {
     const {
         handleCloseMenu,
         handleOperationSelected,
+        handleTaskAlert,
     } = props
 
     const history = useHistory()
@@ -57,7 +58,7 @@ const DashboardOperationsMenu = (props) => {
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
 
     // Custom task for Send to idle and charging operators
-    const onCustomTask = (props) => {
+    const onCustomTask = async (props) => {
 
         const {
             deviceType,
@@ -68,7 +69,9 @@ const DashboardOperationsMenu = (props) => {
         const name = ''
         const custom = props.custom_task
 
-        dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, lotID, Id, name, custom })
+        await dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, lotID, Id, name, custom })
+        handleTaskAlert()
+        handleCloseMenu()
 
     }
 

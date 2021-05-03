@@ -294,6 +294,18 @@ const DashboardScreen = (props) => {
                 handleOperationSelected={(op) => {
                     setSelectedOperation(op)
                 }}
+                handleTaskAlert={() => {
+                    // If a custom task then add custom task key to task q
+                    setAddTaskAlert({
+                        type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                        label: "Task Added to Queue",
+                        message: '',
+                    })
+
+                    // clear alert after timeout
+                    return setTimeout(() => setAddTaskAlert(null), 1800)
+                }}
+
             />
 
             {
