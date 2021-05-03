@@ -1,32 +1,36 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import PropTypes from "prop-types";
-import * as styled from './paste_mapper.style'
-import Button from "../button/button";
-import ButtonGroup from "../button_group/button_group";
-import {immutableDelete, isArray} from "../../../methods/utils/array_utils";
-import Textbox from "../textbox/textbox";
-import {ThemeContext} from "styled-components";
-import {
-	CARD_SCHEMA_MODES,
-	getCardSchema,
-	getTemplateMapperSchema, LotFormSchema,
-	templateMapperSchema
-} from "../../../methods/utils/form_schemas";
-import {
-	CONTENT,
-	COUNT_FIELD,
-	FIELD_COMPONENT_NAMES,
-	FIELD_DATA_TYPES,
-	FORM_BUTTON_TYPES
-} from "../../../constants/lot_contants";
-import {Formik} from "formik";
-import TextField from "../form/text_field/text_field";
+
+// components external
 import {Container, Draggable} from "react-smooth-dnd";
+
+// components internal
+import Button from "../button/button";
+import Textbox from "../textbox/textbox";
+import TextField from "../form/text_field/text_field";
 import ContainerWrapper from "../container_wrapper/container_wrapper";
+
+// constants
+import { FIELD_DATA_TYPES } from "../../../constants/lot_contants";
+import {
+	BASIC_FIELD_DEFAULTS,
+	LOT_PRIMARY_FIELD_IDS,
+	LOT_TEMPLATES_RESERVED_FIELD_NAMES
+} from "../../../constants/form_constants";
+
+// functions external
+import PropTypes from "prop-types";
+import set from "lodash/set";
+import {ThemeContext} from "styled-components";
+import {Formik} from "formik";
+
+// utils
+import {immutableDelete, isArray} from "../../../methods/utils/array_utils";
+import { templateMapperSchema } from "../../../methods/utils/form_schemas";
 import {isObject} from "../../../methods/utils/object_utils";
 import {isEqualCI} from "../../../methods/utils/string_utils";
-import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";
-import set from "lodash/set";
+
+// style
+import * as styled from './paste_mapper.style'
 
 const PasteMapper = (props) => {
 
@@ -175,6 +179,7 @@ const PasteMapper = (props) => {
 
 	const createPayload = () => {
 		let data = []
+		let templateValues = {}
 
 		table.forEach((currCol, currColIndex) => {
 			currCol
@@ -184,8 +189,8 @@ const PasteMapper = (props) => {
 					return true
 				})
 				.forEach((currItem, currItemIndex) => {
-					let label = selectedFieldNames[currColIndex]
-					let tempDisplayName = label?.displayName || ""
+					let destinationField = selectedFieldNames[currColIndex]
+					let tempDisplayName = destinationField?.displayName || ""
 
 					for(const availableField of availableFieldNames) {
 						const {
@@ -193,9 +198,10 @@ const PasteMapper = (props) => {
 							dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
 							index: currAvailableIndex,
 							displayName: currAvailableDisplayName = "",
+							field
 						} = availableField || {}
 
-						if(isEqualCI(tempDisplayName.trim(), currAvailableDisplayName)) label = {...availableField}
+						if(isEqualCI(tempDisplayName.trim(), currAvailableDisplayName)) destinationField = {...availableField}
 					}
 
 					let finalValue = currItem
@@ -204,13 +210,21 @@ const PasteMapper = (props) => {
 						dataType = FIELD_DATA_TYPES.STRING,
 						index,
 						fieldPath,
-					} = label || {}
-					let fieldName = label?.fieldName
-					if(!fieldName) fieldName = `undefined field ${currColIndex}`
+						fieldName = `undefined field ${currColIndex}`,
+						_id: fieldId
+					} = destinationField || {}
+
+					// check if field is from primary or secondary values
+					// let isPrimaryValue = false
+					// for(const primaryName in LOT_PRIMARY_FIELD_IDS) {
+					// 	if(isEqualCI(fieldName, primaryName)) {
+					// 		isPrimaryValue = true
+					// 	}
+					// }
 
 					const existingData = data[currItemIndex]
 					const {
-						[fieldName]: currentFieldData
+						[fieldId]: currentFieldData
 					} = existingData || {}
 
 
@@ -218,6 +232,7 @@ const PasteMapper = (props) => {
 					* parse data
 					* */
 					if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+						console.log("date range field destinationField",destinationField)
 						let parsedDate = new Date(currItem)
 						if(isArray(currentFieldData)) {
 							finalValue = [...currentFieldData]
@@ -233,34 +248,45 @@ const PasteMapper = (props) => {
 					}
 
 					let constructedPath = {}
-					if(isArray(fieldPath) && fieldPath.length > 0) {
+					// if(isArray(fieldPath) && fieldPath.length > 0) {
+					//
+					// 	// finalValue = {
+					// 	// 	[fieldPath[fieldPath.length - 1]]: {
+					// 	// 		[fieldName]: finalValue
+					// 	// 	}
+					// 	// }
+					//
+					// 	fieldPath.forEach((currentPath, currPathIndex) => {
+					// 		// if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
+					//
+					// 		finalValue = {[currentPath]: finalValue}
+					// 	})
+					// }
+					// else {
+					//
+					// }
+					// else{
+						finalValue = {[fieldId]: {
+							...destinationField,
+							value: finalValue
+						}}
+					// }
 
-						finalValue = {
-							[fieldPath[fieldPath.length - 1]]: {
-								[fieldName]: finalValue
+
+					// if(isPrimaryValue) {
+						if(existingData) {
+							data[currItemIndex] =  {
+								...existingData,
+								...finalValue
 							}
 						}
-
-						fieldPath.forEach((currentPath, currPathIndex) => {
-							if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
-
-							finalValue = {[currentPath]: finalValue}
-						})
-					}
-					else{
-						finalValue = {[fieldName]: finalValue}
-					}
-
-
-					if(existingData) {
-						data[currItemIndex] =  {
-							...existingData,
-							...finalValue
+						else {
+							data.push({...finalValue})
 						}
-					}
-					else {
-						data.push({...finalValue})
-					}
+					// }
+					// else {
+					//
+					// }
 				})
 		})
 

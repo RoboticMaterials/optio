@@ -30,7 +30,7 @@ import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
-import { getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from "../../methods/utils/lot_utils";
+import { getCustomFields, getLotTotalQuantity, getMatchesFilter } from "../../methods/utils/lot_utils";
 import { getLotTemplates } from "../../redux/actions/lot_template_actions";
 import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
@@ -1096,7 +1096,7 @@ const HILModals = (props) => {
                                     const count = bins[stationId || loadStationId]?.count || 0
 
                                     const isSelected = selectedLotId === lotId
-                                    const templateValues = getLotTemplateData(lotTemplateId, currLot)
+                                    const templateValues = getCustomFields(lotTemplateId, currLot)
 
                                     // const lotName = lots[lot_id] ? lots[lot_id].name : null
                                     const objectName = objects[object_id] ? objects[object_id].name : null

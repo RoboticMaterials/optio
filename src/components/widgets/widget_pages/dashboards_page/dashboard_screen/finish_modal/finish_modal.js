@@ -19,7 +19,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
+import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
@@ -209,7 +209,7 @@ const FinishModal = (props) => {
 
                 const count = bins[stationId]?.count
                 const totalQuantity = getLotTotalQuantity({bins})
-                const templateValues = getLotTemplateData(lotTemplateId, currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard)
 
                 return(
                     <Lot
