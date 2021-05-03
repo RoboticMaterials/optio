@@ -15,8 +15,9 @@ import DashboardButton from '../dashboard_buttons/dashboard_button/dashboard_but
 // Import Hooks
 import useOnClickOutside from '../../../../../hooks/useOnClickOutside'
 
-// Import utils
+// Import Constants
 import { OPERATION_TYPES, TYPES } from '../../../../../constants/dashboard_constants'
+import { CUSTOM_CHARGE_TASK_ID, CUSTOM_IDLE_TASK_ID } from '../../../../../constants/route_constants'
 
 // Import Actions
 import { handlePostTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -54,12 +55,29 @@ const DashboardOperationsMenu = (props) => {
 
     // Custom task for Send to idle and charging operators
     const onCustomTask = (type) => {
+        let position
+        console.log('QQQQ device', devices[stationID])
+        return
 
-        const deviceType = ''
+        const device = devices[stationID]
+        if (type === CUSTOM_CHARGE_TASK_ID) {
+            // NOT CORRECT
+            position = device?.idle_location
+        }
+
+        else if (type === CUSTOM_IDLE_TASK_ID) {
+            position = device?.idle_location
+        }
+
+        const deviceType = 'MiR_100'
         const lotID = ''
         const Id = 'custom_task'
         const name = ''
-        const custom = ''
+        const custom = {
+            type: 'position_move',
+            position: '',
+            deviceType: 'MiR_100'
+        }
 
         dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, lotID, Id, name, custom })
 
@@ -148,7 +166,7 @@ const DashboardOperationsMenu = (props) => {
                 title={'Send to Idle'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                onClick={() => onCustomTask('finish')}
+                onClick={() => onCustomTask(CUSTOM_IDLE_TASK_ID)}
                 containerStyle={{}}
                 hoverable={true}
                 color={iconColor}
@@ -166,7 +184,7 @@ const DashboardOperationsMenu = (props) => {
                 title={'Send to Charger'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                onClick={() => onCustomTask('finish')}
+                onClick={() => onCustomTask(CUSTOM_CHARGE_TASK_ID)}
                 containerStyle={{}}
                 hoverable={true}
                 color={iconColor}
