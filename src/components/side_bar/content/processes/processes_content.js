@@ -27,7 +27,7 @@ const ProcessesContent = () => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const processes = useSelector(state => state.processesReducer.processes)
     const editing = useSelector(state => state.processesReducer.editingProcess)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     // State definitions
     const [shift, setShift] = useState(false) // Is shift key pressed ?

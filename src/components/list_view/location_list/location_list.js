@@ -37,7 +37,7 @@ const LocationList = (props) => {
     // redux state
     const locations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const {
         _id: mapId
     } = currentMap || {}

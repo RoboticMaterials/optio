@@ -42,7 +42,6 @@ const Settings = () => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
-    const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
 
@@ -57,7 +56,6 @@ const Settings = () => {
         currentMap,
         maps
     } = mapReducer
-
     const [serverSettingsState, setServerSettingsState] = useState({})
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
@@ -166,10 +164,6 @@ const Settings = () => {
             await dispatchPostSettings(serverSettingsState)
         }
 
-        if (mapChange) {
-            await dispatchSetCurrentMap(mapSettingsState)
-        }
-
         if (!deviceChange) {
             await dispatchDeviceEnabled(devicesEnabled)
             await dispatchPostSettings(serverSettingsState)
@@ -185,9 +179,7 @@ const Settings = () => {
 
     }
 
-    // Handles Time zone (NOT WORKING)
     const TimeZone = () => {
-      const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
 
         return (
           <styled.SettingContainer>
@@ -338,7 +330,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+
         return (
             <styled.SettingContainer>
 
@@ -353,15 +345,13 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={selectedMap ? [selectedMap] : []}
+                        values={!!serverSettingsState.currentMap ? [serverSettingsState.currentMap] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            setMapSettingsState(values[0])
-                            // update current map in local storage
-                            handleUpdateLocalSettings({ currentMap: values[0]._id })
+                            handleUpdateServerSettings({currentMap: values[0]})
                         }}
                         className="w-100"
                     />
