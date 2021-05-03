@@ -11,29 +11,43 @@ import {DRAGGING_GHOST_HIDDEN} from "../../../../../../../constants/class_name_c
 
 // functions external
 import PropTypes from 'prop-types'
+import ReportButton from "../report_button/report_button";
 
-const ReportModalEditButtons = ((props) => {
+const ReportModalButtons = ((props) => {
 	const {
 		buttonsIds,
 		dragging,
 		onClick,
-		report_buttons,
+		reportButtons,
 		editing
 	} = props
 
 	const renderButtons = useCallback(
 		() => {
-			return buttonsIds.map((button, index) => {
+			console.log("renderButtons reportButtons",reportButtons)
+			return reportButtons.map((button, index) => {
+				const {
+					_id: buttonId,
+					description = "",
+					label = "",
+					iconClassName = "",
+					color = "",
+				} = button || {}
+
+
 				const isDragging = dragging === button
 
 				if(editing) {
 					return (
-						<Draggable key={button} className={isDragging ? DRAGGING_GHOST_HIDDEN : null} index={index}>
-							<ReportButtonContainer
-								id={button}
-								reportButtons={report_buttons}
-								className={isDragging ? DRAGGING_GHOST_HIDDEN : null}
-								onClick={onClick}
+						<Draggable key={buttonId} className={isDragging ? DRAGGING_GHOST_HIDDEN : null} index={index}>
+							<ReportButton
+								editing={true}
+								id={buttonId}
+								label={label}
+								iconClassName={iconClassName}
+								color={color}
+								description={description}
+								onClick={() => onClick(button)}
 							/>
 						</Draggable>
 					)
@@ -41,27 +55,26 @@ const ReportModalEditButtons = ((props) => {
 
 				else {
 					return (
-						<ReportButtonContainer
-							id={button}
-							reportButtons={report_buttons}
-							className={isDragging ? DRAGGING_GHOST_HIDDEN : null}
-							onClick={onClick}
+						<ReportButton
+							id={buttonId}
+							label={label}
+							iconClassName={iconClassName}
+							color={color}
+							description={description}
+							onClick={() => onClick(button)}
 						/>
 					)
 				}
-
-
-
 			})
 		},
-		[buttonsIds, dragging, onClick, report_buttons],
+		[reportButtons, dragging, onClick],
 	);
 
 	return renderButtons()
 
 })
 
-ReportModalEditButtons.propTypes = {
+ReportModalButtons.propTypes = {
 	buttonsIds: PropTypes.array,
 	dragging: PropTypes.string,
 	onClick: PropTypes.func,
@@ -69,7 +82,7 @@ ReportModalEditButtons.propTypes = {
 	editing: PropTypes.bool,
 }
 
-ReportModalEditButtons.defaultProps = {
+ReportModalButtons.defaultProps = {
 	buttonsIds: [],
 	dragging: "",
 	onClick: () => {},
@@ -77,4 +90,4 @@ ReportModalEditButtons.defaultProps = {
 	editing: false
 }
 
-export default React.memo(ReportModalEditButtons)
+export default React.memo(ReportModalButtons)

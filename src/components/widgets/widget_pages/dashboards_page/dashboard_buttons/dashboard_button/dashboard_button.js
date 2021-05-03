@@ -37,12 +37,14 @@ const DashboardButton = (props => {
         iconColor,
         iconClassName,
         svgColor,
+        invert,
     } = props
 
     const theme = useContext(ThemeContext);
 
     return (
         <style.Container
+            invert={invert}
             type={"button"}
             disabled={disabled}
             width={width}
@@ -94,7 +96,8 @@ DashboardButton.propTypes = {
     title: PropTypes.string,
     taskID: PropTypes.string,
     onClick: PropTypes.func,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    invert: PropTypes.bool,
 };
 
 // Specifies the default values for props:
@@ -104,7 +107,8 @@ DashboardButton.defaultProps = {
     title: "",
     taskID: "",
     onClick: () => { },
-    disabled: false
+    disabled: false,
+    invert: false,
 
 };
 
