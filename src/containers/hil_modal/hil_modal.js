@@ -36,7 +36,6 @@ const HILModal = () => {
     const stationID = params.stationID
     const deviceDashboard = !!devices ? !!devices[stationID] : false
 
-    console.log("HIL MODAL dashboardID",dashboardID)
     /**
      * Handles any task that should be displaying a HIL
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
