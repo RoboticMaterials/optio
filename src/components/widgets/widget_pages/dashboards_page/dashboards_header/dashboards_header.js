@@ -36,6 +36,7 @@ const DashboardsHeader = (props) => {
         locked,
         onSave,
         handleOperationSelected,
+        handleTaskAlert,
     } = props
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -86,8 +87,9 @@ const DashboardsHeader = (props) => {
                 <Button
                     schema="dashboards"
                     onClick={() => {
-                        setShowOperationsMenu(!showOperationsMenu)
+                        setShowOperationsMenu(true)
                     }}
+                    disabled={showOperationsMenu}
                 >
                     Operations
                 </Button>
@@ -103,7 +105,9 @@ const DashboardsHeader = (props) => {
                         handleCloseMenu={() => { setShowOperationsMenu(false) }}
                         handleOperationSelected={(op) => {
                             handleOperationSelected(op)
+                            setShowOperationsMenu(false)
                         }}
+                        handleTaskAlert={handleTaskAlert}
                     />
                 }
 

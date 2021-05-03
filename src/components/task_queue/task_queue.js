@@ -39,7 +39,6 @@ const TaskQueueMenu = (props) => {
     const taskQueue = useSelector(state => {
 
         const taskQueue = state.taskQueueReducer.taskQueue
-        console.log('QQQQ task q', taskQueue)
         var taskQueueClone = [];
         if (taskQueue) {
             Object.values(taskQueue).forEach((queueItem, index) => {

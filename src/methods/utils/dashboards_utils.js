@@ -130,6 +130,9 @@ export const getOperationButton = (key) => {
     }
 }
 
+
+// Old Function
+// Schedule for deletion
 export const handleAvailableTasks = (tasks, station) => {
     let availableTasks = []
 
@@ -185,6 +188,48 @@ export const handleAvailableTasks = (tasks, station) => {
 
 
     return availableTasks
+}
+
+export const handleDeviceDashboardRoutes = (device) => {
+    let availableRoutes = []
+
+    // If the device has an idle location, add a button for it
+    if (!!device.idle_location) {
+        const idleButton = {
+            'name': CUSTOM_IDLE_TASK_NAME,
+            'color': '#FF4B4B',
+            'task_id': 'custom_task',
+            'custom_task': {
+                'type': 'position_move',
+                'position': device.idle_location,
+                'device_type': 'MiR_100',
+            },
+            'deviceType': 'MiR_100',
+            'id': 'custom_task_idle'
+        }
+
+        availableRoutes.push(idleButton)
+    }
+    const positions = store.getState().positionsReducer.positions
+    // Map through positions and add a button if it's a charge position
+    Object.values(positions).map((position, ind) => {
+        if (position.type === 'charger_position') {
+            const chargeButton = {
+                'name': position.name,
+                'color': '#FFFF4B',
+                'task_id': 'custom_task',
+                'custom_task': {
+                    'type': 'position_move',
+                    'position': position._id,
+                    'device_type': 'MiR_100',
+                },
+                'deviceType': 'MiR_100',
+                'id': `custom_task_charge`
+            }
+            availableRoutes.push(chargeButton)
+        }
+    })
+    return availableRoutes
 }
 
 export const handleCurrentDashboard = (dashboards, dashboardID) => {

@@ -18,7 +18,7 @@ export const CloseButton = styled.i`
     position: absolute;
     top: 0rem;
     right: 1rem;
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     margin: 1rem;
-    color: ${props => props.theme.fg.red};
+    color: ${props => props.theme.bg.senary};
 `
