@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.mapReducer.currentMap
+    const currentMap = storeState.settingsReducer.settings.currentMap
 
     return {
         ...defaultTask,
@@ -106,6 +106,10 @@ export const getRouteEnd = (route) => {
     if(!hasEnd) hasEnd = getUnloadPositionId(route)
 
     return hasEnd
+}
+
+export const getHasStartAndEnd = (route) => {
+    return getRouteEnd(route) && getRouteStart(route)
 }
 
 export const isStationLoadStation = (route, stationId) => {

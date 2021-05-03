@@ -78,7 +78,7 @@ const EditLocation = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
 
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = serverSettings.deviceEnabled
 

@@ -75,7 +75,7 @@ const DeviceEdit = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const status = useSelector(state => state.statusReducer.status)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.

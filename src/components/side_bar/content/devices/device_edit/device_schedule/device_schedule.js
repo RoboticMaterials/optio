@@ -38,7 +38,7 @@ const DeviceSchedule = (props) => {
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     const renderSchedules = () => {
 

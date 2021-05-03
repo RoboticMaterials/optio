@@ -44,7 +44,7 @@ export default function Positions(props) {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
