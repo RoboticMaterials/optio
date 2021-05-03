@@ -107,6 +107,7 @@ export const InsideTooltipContainer = styled.div`
 	// display: flex;
   // flex-direction: column;
   // align-items: stretch;
+  max-width: 20rem
 `
 
 export const ItemContainer = styled.li`

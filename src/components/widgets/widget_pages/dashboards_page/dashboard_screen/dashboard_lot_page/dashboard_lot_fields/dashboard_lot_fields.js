@@ -12,7 +12,7 @@ import LotDateRow from '../../../../../../side_bar/content/cards/lot/lot_date_ro
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getLotTemplateData } from '../../../../../../../methods/utils/lot_utils'
+import { getCustomFields } from '../../../../../../../methods/utils/lot_utils'
 
 
 const DashboardLotFields = (props) => {
@@ -22,7 +22,7 @@ const DashboardLotFields = (props) => {
     } = props || {}
 
     const renderLotFields = useMemo(() => {
-        const fields = getLotTemplateData(currentLot.lotTemplateId, currentLot)
+        const fields = getCustomFields(currentLot.lotTemplateId, currentLot)
 
         return fields.map((field, currIndex, arr) => {
             const {

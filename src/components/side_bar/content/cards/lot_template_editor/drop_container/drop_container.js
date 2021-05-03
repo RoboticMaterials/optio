@@ -1,15 +1,24 @@
 import {Container, Draggable} from "react-smooth-dnd";
-import React, {useEffect, useState, useContext} from "react";
-import * as styled from "./drop_container.style"
-import { ThemeContext } from 'styled-components'
+
+// components internal
+import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
-import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
+
+// functions external
+import React, {useEffect, useState, useContext} from "react";
+import { ThemeContext } from 'styled-components'
 import {useDispatch, useSelector} from "react-redux";
-import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
+
+// actions
 import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
+
+// constants
 import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
+
+// styles
+import * as styled from "./drop_container.style"
 
 const DropContainer = (props) => {
 	const {
@@ -270,7 +279,8 @@ const DropContainer = (props) => {
 								:
 								<FieldWrapper
 									containerStyle={{flex: (component === FIELD_COMPONENT_NAMES.TEXT_BOX || component === FIELD_COMPONENT_NAMES.TEXT_BOX_BIG) && 1}}
-									name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
+									// name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
+									fieldPath={`fields[${indexPattern[0]}][${indexPattern[1]}]`}
 									onDeleteClick={() => setDeleted(true)}
 								>
 									<FieldComponentMapper

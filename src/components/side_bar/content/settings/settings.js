@@ -28,7 +28,7 @@ import { getStatus } from '../../../../redux/actions/status_actions'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
-import { isEquivalent } from '../../../../methods/utils/utils'
+import { getIsEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
 import {useHistory} from "react-router-dom";
 
@@ -157,9 +157,9 @@ const Settings = () => {
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
         await dispatchPostLocalSettings(localSettingsState)
-        const serverChange = isEquivalent(serverSettingsState, serverSettings)
-        const mapChange = !isEquivalent(mapSettingsState, currentMap)
-        const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
+        const serverChange = getIsEquivalent(serverSettingsState, serverSettings)
+        const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+        const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
             delete serverSettingsState._id

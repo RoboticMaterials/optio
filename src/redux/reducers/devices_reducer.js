@@ -20,7 +20,7 @@ import {
     DELETE_DEVICES_FAILURE,
 } from '../types/devices_types'
 
-import { deepCopy, isEquivalent } from '../../methods/utils/utils';
+import { deepCopy, getIsEquivalent } from '../../methods/utils/utils';
 import { convertRealToD3 } from '../../methods/utils/map_utils'
 
 const defaultState = {
@@ -46,7 +46,7 @@ const devicesReducer = (state = defaultState, action) => {
         // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
         // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we dont want.
         // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
-        if (!isEquivalent(devices, state.devices)) {
+        if (!getIsEquivalent(devices, state.devices)) {
             devicesClone = deepCopy(devices)
             // devicesClone = devices
 

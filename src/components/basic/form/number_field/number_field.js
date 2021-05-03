@@ -138,9 +138,7 @@ const NumberField = (props) => {
 			setPreviousValue(parseInt(fieldValue))
 			setFieldValue(fieldName, "")
 		}
-
 	}
-
 
 	const handleBlur = () => {
 		if(isMobile) {
@@ -170,7 +168,7 @@ const NumberField = (props) => {
 		}
 
 		// fieldValue cannot be negative
-		if (fieldValue > minValue) setFieldValue(fieldName,parseInt(fieldValue - 1))
+		if (fieldValue > minValue) setFieldValue(fieldName,parseInt(parseInt(fieldValue) - 1))
 		// setFieldValue(fieldName,fieldValue - 1)
 	}
 
@@ -181,8 +179,8 @@ const NumberField = (props) => {
 
 		// if there is a maxValue, fieldValue cannot exceed maxValue
 		if (maxValue) {
-			if (fieldValue < maxValue) {
-				setFieldValue(fieldName,parseInt(fieldValue + 1))
+			if (parseInt(fieldValue) < maxValue) {
+				setFieldValue(fieldName,parseInt(parseInt(fieldValue) + 1))
 			}
 
 			// fieldValue is greater than count (probably was set before lot was selected), reduce to count
@@ -193,7 +191,7 @@ const NumberField = (props) => {
 		}
 		// otherwise fieldValue can be anything
 		else {
-			setFieldValue(fieldName,parseInt(fieldValue + 1))
+			setFieldValue(fieldName,parseInt(parseInt(fieldValue) + 1))
 		}
 	}
 

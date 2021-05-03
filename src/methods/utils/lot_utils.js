@@ -66,165 +66,189 @@ export const testFilterOption = (filterOptions, filterValue, testValue) => {
 }
 
 export const getMatchesFilter = (lot, filterValue, filterMode) => {
-    const {
-        dataType,							// eg. "STRING"
-        label,								// eg. "Dates (start)"
-        fieldName,							// eg. "dates"
-        lotTemplateId: filterTemplateId 	// eg. 123
-    } = filterMode || {}
+	const {
+		dataType: filterDataType,							// eg. "STRING"
+		label,								// eg. "Dates (start)"
+		_id: fieldId,
+		fieldName: filterFieldName,							// eg. "dates"
+		lotTemplateId:  filterTemplateId, 	// eg. 123
+	} = filterMode || {}
 
-    const {
-        lotTemplateId,
-        [fieldName]: fieldValue
-    } = lot || {}
+	const {
+		lotTemplateId,
+		[filterFieldName]: fieldValue
+	} = lot || {}
 
-    // first filter known/required fields
-    switch (filterMode.label) {
+	// first filter known/required fields
+	switch(filterMode.label) {
 
-        // name (string)
-        case LOT_FILTER_OPTIONS.name.label: {
-            if (filterValue) {
-                return lot.name.toLowerCase().includes((filterValue || "").toLowerCase())
-            }
-            return true
-            break
-        }
+		// name (string)
+		case LOT_FILTER_OPTIONS.name.label: {
+			if(filterValue) {
+				return lot.name.toLowerCase().includes((filterValue || "").toLowerCase())
+			}
+			return true
+			break
+		}
 
-        //  lot number (treated as string when formatted)
-        case LOT_FILTER_OPTIONS.lotNumber.label: {
-            if (filterValue) {
-                const formattedLotNumber = formatLotNumber(lot.lotNumber)
-                return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
-            }
-            return true
-            break
-        }
+		//  lot number (treated as string when formatted)
+		case LOT_FILTER_OPTIONS.lotNumber.label: {
+			if(filterValue) {
+				const formattedLotNumber = formatLotNumber(lot.lotNumber)
+				return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
+			}
+			return true
+			break
+		}
 
-        // flags (array of ints)
-        case LOT_FILTER_OPTIONS.flags.label: {
-            if (isArray(filterValue) && filterValue.length > 0) {
-                if (isArray(lot.flags)) {
-                    for (const filterFlag of filterValue) {
-                        const {
-                            id: currFilterId
-                        } = filterFlag
+		// flags (array of ints)
+		case LOT_FILTER_OPTIONS.flags.label: {
+			if(isArray(filterValue) && filterValue.length > 0) {
+				if(isArray(lot.flags)) {
+					for(const filterFlag of filterValue) {
+						const {
+							id: currFilterId
+						} = filterFlag
 
-                        if (!lot.flags.includes(currFilterId)) return false
-                    }
-                    return true
-                }
-                return false
-            }
-            return true
-            break
-        }
+						if(!lot.flags.includes(currFilterId)) return false
+					}
+					return true
+				}
+				return false
+			}
+			return true
+			break
+		}
 
-        // now must filter by data type
-        default: {
-            if (isObject(filterMode)) {
+		// now must filter by data type
+		default: {
+			if(isObject(filterMode)) {
 
-                if (fieldName in lot || lotTemplateId === filterTemplateId) {
-                    if (!filterValue) return true
+				let fieldInLot = false
+				let fieldValue = null
 
-                    switch (dataType) {
-                        case FIELD_DATA_TYPES.URL: {
-                            // not implemented yet
-                            return true
-                        }
-                        case FIELD_DATA_TYPES.EMAIL: {
-                            // not implemented yet
-                            return true
-                        }
-                        case FIELD_DATA_TYPES.DATE: {
-                            const {
-                                value,
-                                options: filterOptions
-                            } = filterValue || {}
+				const lotField = getLotField("fieldName", filterFieldName, lot)
+				if(lotField) {
+					fieldInLot = true
+					fieldValue = lotField.value
+				}
 
-                            if (value) {
-                                return testFilterOption(filterOptions, value, fieldValue ? new Date(fieldValue) : null)
-                            }
+				if(fieldInLot || lotTemplateId === filterTemplateId) {
+					if(!filterValue) return true
 
-                            // if no filter value, default true
-                            else {
-                                return true
-                            }
-                        }
-                        case FIELD_DATA_TYPES.DATE_RANGE: {
-                            let matchesFilter = false
+					switch(filterDataType) {
+						case FIELD_DATA_TYPES.URL: {
+							// not implemented yet
+							return true
+						}
+						case FIELD_DATA_TYPES.EMAIL: {
+							// not implemented yet
+							return true
+						}
+						case FIELD_DATA_TYPES.DATE: {
+							const {
+								value,
+								options: filterOptions
+							} = filterValue || {}
 
-                            if ((isNonEmptyArray(filterValue) && filterValue.length > 0)) {
-                                // extract first filter properties
-                                const {
-                                    value: filterValue1,
-                                    options: filterOptions1
-                                } = filterValue[0] || {}
+							if(value) {
+								return testFilterOption(filterOptions, value, fieldValue ? new Date(fieldValue) : null)
+							}
 
-                                // extract second filter properties
-                                const {
-                                    value: filterValue2,
-                                    options: filterOptions2
-                                } = filterValue[1] || {}
+							// if no filter value, default true
+							else {
+								return true
+							}
+						}
+						case FIELD_DATA_TYPES.DATE_RANGE: {
+							let matchesFilter = false
 
-                                if (isNonEmptyArray(fieldValue) && fieldValue.length > 0) {
+							if((isNonEmptyArray(filterValue) && filterValue.length > 0)) {
+								// extract first filter properties
+								const {
+									value: filterValue1,
+									options: filterOptions1
+								} = filterValue[0] || {}
 
-                                    // check first filter
-                                    if (filterValue1) {
-                                        // check if fieldValue matches filter value
-                                        matchesFilter = testFilterOption(filterOptions1, filterValue1, new Date(fieldValue[0]))
-                                    }
-                                    else {
-                                        // no filter value, so default to match
-                                        matchesFilter = true
-                                    }
+								// extract second filter properties
+								const {
+									value: filterValue2,
+									options: filterOptions2
+								} = filterValue[1] || {}
 
-                                    // check second filter
-                                    if (filterValue2) {
-                                        matchesFilter = (testFilterOption(filterOptions2, filterValue2, new Date(lot[fieldName][1]))) && matchesFilter // && since both filters must match
-                                    }
-                                    else {
-                                        matchesFilter = true && matchesFilter // && since both filters must match
-                                    }
+								if(isNonEmptyArray(fieldValue) && fieldValue.length > 0) {
 
-                                    // matches?
-                                    return matchesFilter
-                                }
+									// check first filter
+									if(filterValue1) {
+										// check if fieldValue matches filter value
+										matchesFilter = testFilterOption(filterOptions1, filterValue1, new Date(fieldValue[0]))
+									}
+									else {
+										// no filter value, so default to match
+										matchesFilter = true
+									}
 
-                                // there is filter value, but no field value.
-                                else {
-                                    return false
-                                }
-                            }
+									// check second filter
+									if(filterValue2) {
+										matchesFilter = (testFilterOption(filterOptions2, filterValue2, new Date(fieldValue[1]))) && matchesFilter // && since both filters must match
+									}
+									else {
+										matchesFilter = true && matchesFilter // && since both filters must match
+									}
 
-                            // no filter value, default matches to true
-                            return true
-                        }
+									// matches?
+									return matchesFilter
+								}
 
-                        case FIELD_DATA_TYPES.STRING: {
-                            // simple string compare, make lowercase for case insensitive
-                            return lot[fieldName].toLowerCase().includes((filterValue || "").toLowerCase())
-                        }
+								// there is filter value, but no field value.
+								else {
+									return false
+								}
+							}
 
-                        case FIELD_DATA_TYPES.INTEGER: {
-                            // simple ===, but also make sure they're ints
-                            return toIntegerOrZero(lot[fieldName]) === toIntegerOrZero(filterValue)
-                        }
-                        default: {
-                            // unknown dateType, return true
-                            return true
-                        }
-                    }
-                }
-                else {
-                    return false
-                }
-            }
-            else {
-                // no filter mode selected, return true
-                return true
-            }
-        }
-    }
+							// no filter value, default matches to true
+							return true
+						}
+
+						case FIELD_DATA_TYPES.STRING: {
+							// simple string compare, make lowercase for case insensitive
+							return fieldValue.toLowerCase().includes((filterValue || "").toLowerCase())
+						}
+
+						case FIELD_DATA_TYPES.INTEGER: {
+							// simple ===, but also make sure they're ints
+							return toIntegerOrZero(fieldValue) === toIntegerOrZero(filterValue)
+						}
+						default: {
+							// unknown dateType, return true
+							return true
+						}
+					}
+				}
+				else {
+					return false
+				}
+			}
+			else {
+				// no filter mode selected, return true
+				return true
+			}
+		}
+	}
+}
+
+export const getLotField = (searchKey, searchValue, lot) => {
+	for(const field of lot.fields.flat()) {
+		const {
+			[searchKey]: currValue
+		} = field || {}
+
+		if(currValue === searchValue) {
+			return field
+		}
+	}
+
+	return null
 }
 
 export const formatLotNumber = (lotNumber) => {
@@ -267,117 +291,101 @@ export const getIsCardAtBin = ({ bins }, binId) => {
 }
 
 export const getAllTemplateFields = () => {
-    const lotTemplates = {
-        [BASIC_LOT_TEMPLATE_ID]: { ...BASIC_LOT_TEMPLATE },
-        ...(store.getState().lotTemplatesReducer.lotTemplates || {})
-    }
+	const lotTemplates = {
+		[BASIC_LOT_TEMPLATE_ID]: {...BASIC_LOT_TEMPLATE},
+		...(store.getState().lotTemplatesReducer.lotTemplates || {})
+	}
 
-    let templateFields = []
+	let templateFields = []
 
-    Object.values(lotTemplates).forEach((currLotTemplate) => {
-        const {
-            fields,
-            _id: lotTemplateId
-        } = currLotTemplate || {}
+	Object.values(lotTemplates).forEach((currLotTemplate) => {
+		const {
+			fields,
+			_id: lotTemplateId
+		} = currLotTemplate || {}
 
-        fields.forEach((currRow) => {
-            currRow.forEach((currField) => {
+		fields.forEach((currRow) => {
+			currRow.forEach((currField) => {
 
-                const {
-                    component,		//"CALENDAR_START_END"
-                    dataType,		//"DATE_RANGE"
-                    fieldName,		//"dates"
-                    key,			//1
-                    _id,			//1
-                } = currField || {}
+				const {
+					component,		//"CALENDAR_START_END"
+					dataType,		//"DATE_RANGE"
+					fieldName,		//"dates"
+					key,			//1
+					_id,			//1
+				} = currField || {}
 
-                const item = {
-                    // label: `${capitalizeFirstLetter(fieldName)} (${convertDataTypeContantToDisplay(dataType)})`,
-                    label: fieldName,
-                    dataType,
-                    component,
-                    fieldName,
-                    lotTemplateId
-                }
+				const item = {
+					// label: `${capitalizeFirstLetter(fieldName)} (${convertDataTypeContantToDisplay(dataType)})`,
+					label: fieldName,
+					dataType,
+					component,
+					fieldName,
+					lotTemplateId,
+					_id
+				}
 
-                let alreadyExists = false
-                templateFields.forEach((currTemplateField) => {
-                    const {
-                        label: currExistingLabel,
-                        dataType: currExistingDataType,
-                        component: currExistingComponent
-                    } = currTemplateField || {}
+				let alreadyExists = false
+				templateFields.forEach((currTemplateField) => {
+					const {
+						label: currExistingLabel,
+						dataType: currExistingDataType,
+						component: currExistingComponent
+					} = currTemplateField || {}
 
-                    if ((isEqualCI(item.label, currExistingLabel)) && (item.dataType === currExistingDataType)) {
-                        alreadyExists = true
-                    }
-                })
+					if((isEqualCI(item.label, currExistingLabel)) && (item.dataType === currExistingDataType)) {
+						alreadyExists = true
+					}
+				})
 
-                if (!alreadyExists) {
-                    templateFields.push(item)
-                }
-            })
-        })
-    })
+				if(!alreadyExists) {
+					templateFields.push(item)
+				}
+			})
+		})
+	})
 
-    return templateFields
+	return templateFields
 }
 
-export const getLotTemplateData = (lotTemplateId, lot) => {
-    const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-    const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+/*
+* Returns array of lots custom fields
+* Each field field includes dataType, fieldName, and value
+* */
+export const getCustomFields = (lotTemplateId, lot, includeNonPreview) => {
+	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
+	const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
 
-    let templateValues = []
+	let customFieldValues = []
 
-    if (isArray(lotTemplate.fields)) {
-        lotTemplate.fields.forEach((currRow) => {
+	const { syncWithTemplate } = lot || {}
 
-            if (isArray(currRow)) {
-                currRow.forEach((currItem) => {
-                    const {
-                        dataType,
-                        fieldName
-                    } = currItem
+	// if sync with template, use fields from template. Otherwise use fields from lot
+	const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
 
-                    const lotValue = lot[fieldName]
-                    templateValues.push({
-                        dataType,
-                        fieldName,
-                        value: lotValue
-                    })
-                })
-            }
+	// loop through fields and get relevant data
+	if(isArray(fields)) {
+		fields.flat().forEach((currField) => {
+			const {
+				dataType,
+				fieldName,
+				showInPreview,
+				_id
+			} = currField
 
-        })
-    }
+			// if includeNonPreview, add all.
+			// otherwise, only add if lot has showInPreview set to true
+			if(includeNonPreview || (!includeNonPreview && showInPreview)) {
+				customFieldValues.push({
+					dataType,
+					fieldName,
+					value: syncWithTemplate ? getLotField("_id", _id, lot)?.value : currField?.value,
+				})
+			}
+		})
+	}
 
-    return templateValues
-}
-
-export const convertDataTypeContantToDisplay = (dataTypeContant) => {
-    switch (dataTypeContant) {
-        case FIELD_DATA_TYPES.INTEGER: {
-            return "Number"
-        }
-        case FIELD_DATA_TYPES.STRING: {
-            return "String"
-        }
-        case FIELD_DATA_TYPES.DATE_RANGE: {
-            return "Date range"
-        }
-        case FIELD_DATA_TYPES.DATE: {
-            return "Date"
-        }
-        case FIELD_DATA_TYPES.EMAIL: {
-            return "Email"
-        }
-        case FIELD_DATA_TYPES.URL: {
-            return "Url"
-        }
-        default: {
-            return null
-        }
-    }
+	return customFieldValues
 }
 
 export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) => {

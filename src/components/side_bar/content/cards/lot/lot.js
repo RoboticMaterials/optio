@@ -39,8 +39,6 @@ const Lot = (props) => {
         enableFlagSelector,
         onClick,
         count,
-        start_date,
-        end_date,
         containerStyle,
         selectable,
         isSelected,

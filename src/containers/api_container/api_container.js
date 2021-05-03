@@ -34,7 +34,7 @@ import * as localActions from '../../redux/actions/local_actions'
 import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
-import { isEquivalent, deepCopy } from '../../methods/utils/utils'
+import { getIsEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
@@ -189,7 +189,7 @@ const ApiContainer = (props) => {
 
 
         // If the current page state and actual current page are different, then the page has changed so the data interval should change
-        if (!isEquivalent(currentPageRouter, currentPage)) {
+        if (!getIsEquivalent(currentPageRouter, currentPage)) {
             // page changed
 
             // update state

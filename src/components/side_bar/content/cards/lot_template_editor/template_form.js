@@ -2,47 +2,34 @@ import React, {useState, useEffect, useContext} from "react";
 
 // external functions
 import PropTypes from "prop-types";
-import {Formik, setNestedObjectValues} from "formik";
+import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
 // internal components
-import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
-import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import Button from "../../../../basic/button/button";
 import BackButton from '../../../../basic/back_button/back_button';
-import ButtonGroup from "../../../../basic/button_group/button_group";
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // actions
-import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 // constants
 import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 
 // utils
-import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
-import {CARD_SCHEMA_MODES, cardSchema, getCardSchema, LotFormSchema} from "../../../../../methods/utils/form_schemas";
-import {getProcessStations} from "../../../../../methods/utils/processes_utils";
-import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
+import {LotFormSchema} from "../../../../../methods/utils/form_schemas";
+import {isObject} from "../../../../../methods/utils/object_utils";
 import set from "lodash/set";
+
 // import styles
-import * as styled from "./lot_editor.style"
+import * as styled from "../card_editor/lot_editor.style"
 
 // logger
 import log from '../../../../../logger'
-import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
-import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
-import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar from "./lot_sidebars/field_editor_sidebar/field_editor_sidebar";
-import {Container} from "react-smooth-dnd";
-import DropContainer from "./drop_container/drop_container";
-import {isArray} from "../../../../../methods/utils/array_utils";
-import {uuidv4} from "../../../../../methods/utils/utils";
-import {cloneWithRef} from "react-dnd/lib/utils/cloneWithRef";
+import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
 import LotFormCreator from "./lot_form_creator/lot_form_creator";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import {
@@ -51,14 +38,13 @@ import {
 	postLotTemplate,
 	putLotTemplate, setSelectedLotTemplate
 } from "../../../../../redux/actions/lot_template_actions";
-import lotTemplatesReducer from "../../../../../redux/reducers/lot_templates_reducer";
 import NumberInput from "../../../../basic/number_input/number_input";
 import useChange from "../../../../basic/form/useChange";
 import {
 	DEFAULT_COUNT_DISPLAY_NAME,
 	DEFAULT_DISPLAY_NAMES,
 	DEFAULT_NAME_DISPLAY_NAME,
-	EMPTY_DEFAULT_FIELDS
+	EMPTY_DEFAULT_FIELDS, getDefaultFields
 } from "../../../../../constants/lot_contants";
 import {ThemeContext} from "styled-components";
 
@@ -77,15 +63,12 @@ const FormComponent = (props) => {
 		formMode,
 		lotTemplateId,
 		close,
-		isOpen,
 		onDeleteClick,
 		errors,
 		values,
 		touched,
-		setFieldTouched,
 		isSubmitting,
 		submitCount,
-		setFieldValue,
 		submitForm,
 		formikProps,
 		loaded
@@ -95,7 +78,7 @@ const FormComponent = (props) => {
 
 	useChange()
 	// component state
-	const [preview, setPreview] = useState(false)
+	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
 
 
@@ -189,7 +172,7 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
-				<LotEditorSidebar/>
+				<LotTemplateEditorSidebar/>
 
 				<styled.ScrollContainer>
 					<styled.SectionContainer>
@@ -335,7 +318,6 @@ const LotCreatorForm = (props) => {
 	const {
 		isOpen,
 		close,
-		processId,
 		processOptions,
 		showProcessSelector,
 		lotTemplateId
@@ -349,7 +331,6 @@ const LotCreatorForm = (props) => {
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
-	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
@@ -483,7 +464,7 @@ const LotCreatorForm = (props) => {
 					fields: lotTemplate ?
 						lotTemplate.fields
 						:
-						EMPTY_DEFAULT_FIELDS,
+						getDefaultFields(),
 
 					name: lotTemplate ? lotTemplate.name : "",
 					changed: false,

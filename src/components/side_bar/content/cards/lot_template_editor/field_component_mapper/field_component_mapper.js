@@ -1,19 +1,28 @@
 import React, {useEffect, useState, useContext} from "react";
-import PropTypes from "prop-types";
-import * as styled from "./field_component_mapper.style"
-import { ThemeContext } from 'styled-components'
+
+// components internal
 import Textbox from "../../../../../basic/textbox/textbox";
 import NumberInput from "../../../../../basic/number_input/number_input";
 import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calendar_placeholder";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
-import {isArray} from "../../../../../../methods/utils/array_utils";
-import {jsDateToObjDate, jsDateToString} from "../../../../../../methods/utils/card_utils";
-import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
-import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
-import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
-import Calendar from "../../../../../basic/calendar/calendar";
 import CalendarButtonField from "../../../../../basic/form/calendar_button_field/calendar_button_field";
+
+// constants
+import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
+
+// functions external
+import PropTypes from "prop-types";
+import { ThemeContext } from 'styled-components'
+
+// utils
+import {jsDateToString} from "../../../../../../methods/utils/card_utils";
+import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
+
+// styles
+import * as styled from "./field_component_mapper.style"
+
+const REQUIRED_TEXT = "This field is required."
 
 const FieldComponentMapper = (props) => {
 	const {
@@ -21,15 +30,13 @@ const FieldComponentMapper = (props) => {
 		fieldName,
 		containerStyle,
 		preview,
-		onCalendarClick,
 		style,
-		value,
 		displayName,
-		usable
+		usable,
+		required
 	} = props
 
 	const themeContext = useContext(ThemeContext);
-
 
 	switch(component) {
 		case FIELD_COMPONENT_NAMES.TEXT_BOX: {
@@ -66,7 +73,12 @@ const FieldComponentMapper = (props) => {
 							schema={"lots"}
 							// style={{...style}}
 							inputStyle={{}}
+							showErrorStyle={true}
 						/>
+					}
+
+					{required &&
+						<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
 					}
 
 				</styled.Container>
@@ -110,8 +122,14 @@ const FieldComponentMapper = (props) => {
 							InputComponent={Textbox}
 							lines={5}
 							schema={"lots"}
+							showErrorStyle={true}
 						/>
 					}
+
+					{required &&
+					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+					}
+
 				</styled.Container>
 			)
 		}
@@ -141,16 +159,21 @@ const FieldComponentMapper = (props) => {
 						<NumberField
 							usable={usable}
 							name={fieldName}
-							minValue={1}
-							// maxValue={100000000}
+							minValue={required ? 1 : 0}
 						/>
+					}
+
+					{required &&
+					<styled.RequiredText
+						style={{alignSelf: "center"}}
+					>
+						{REQUIRED_TEXT}
+					</styled.RequiredText>
 					}
 				</styled.Container>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
-			const dateText = jsDateToString(value)
-
 			return(
 				<styled.Container
 					style={{
@@ -179,6 +202,9 @@ const FieldComponentMapper = (props) => {
 					}
 
 
+					{required &&
+					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+					}
 				</styled.Container>
 			)
 		}
@@ -210,6 +236,9 @@ const FieldComponentMapper = (props) => {
 						/>
 					}
 
+					{required &&
+					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+					}
 
 				</styled.Container>
 			)
