@@ -73,7 +73,7 @@ const DashboardDevicePage = (props) => {
                     containerStyle={{}}
                     hoverable={true}
                     color={color}
-                    svgColor={theme.main.bg.secondary}
+                    svgColor={theme.main.bg.primary}
                     clickable={true}
                 />
             )

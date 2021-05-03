@@ -48,6 +48,8 @@ export const Title = styled.h2`
     // tablet style
     @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
         font-size: ${props => props.theme.fontSize.sz2};
+        max-width: 15rem;
+        text-overflow: ellipsis;
     }
 
 `

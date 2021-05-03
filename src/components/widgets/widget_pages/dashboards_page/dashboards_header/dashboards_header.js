@@ -90,6 +90,7 @@ const DashboardsHeader = (props) => {
                         setShowOperationsMenu(true)
                     }}
                     disabled={showOperationsMenu}
+                    style={{height: '3rem'}}
                 >
                     Operations
                 </Button>

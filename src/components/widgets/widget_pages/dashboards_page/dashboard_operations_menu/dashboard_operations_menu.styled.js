@@ -4,7 +4,7 @@ import * as commonCss from '../../../../../common_css/common_css'
 export const MenuContainer = styled.div`
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 90%;
     max-width: 50rem;
     height: fit-content;
     padding: .5rem;
