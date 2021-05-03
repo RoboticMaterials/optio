@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import { ReactDOM, Route } from 'react-dom'
-import { connect } from 'react-redux';
+import {connect, useSelector} from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
 
@@ -40,6 +40,7 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
+import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
 const logger = log.getLogger("MapView")
 
 export class MapView extends Component {
@@ -51,6 +52,7 @@ export class MapView extends Component {
 
         this.state = {
             showRightClickMenu: {},
+            hasStartAndEnd: false
         }
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
@@ -120,6 +122,9 @@ export class MapView extends Component {
         // }
         this.checkForMapLoad() //test
 
+        if(prevProps.selectedTask !== this.props.selectedTask) {
+            this.setState({hasStartAndEnd: getHasStartAndEnd(this.props.selectedTask)})
+        }
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
@@ -557,8 +562,10 @@ export class MapView extends Component {
 
     render() {
         let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
+        const { hasStartAndEnd } = this.state
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
+
 
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
@@ -643,7 +650,7 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask &&
+                        {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
                             <TaskPaths d3={this.d3} />
                         }
 
@@ -805,6 +812,7 @@ const mapStateToProps = function (state) {
 
         selectedTask: state.tasksReducer.selectedTask,
         selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
+        editingTask: state.tasksReducer.editingTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 

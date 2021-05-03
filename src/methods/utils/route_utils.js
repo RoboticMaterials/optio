@@ -108,6 +108,10 @@ export const getRouteEnd = (route) => {
     return hasEnd
 }
 
+export const getHasStartAndEnd = (route) => {
+    return getRouteEnd(route) && getRouteStart(route)
+}
+
 export const isStationLoadStation = (route, stationId) => {
     return stationId === getLoadStationId(route)
 }
