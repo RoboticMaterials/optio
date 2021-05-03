@@ -6,9 +6,9 @@ import { isMobile } from "react-device-detect"
 
 // Modal.setAppElement('document');
 
-export const HilContainer = styled(Modal)`
-    position: absolute;
-  transition: backdrop-filter 3s ease;
+export const containerCss = `
+  position: absolute;
+    transition: backdrop-filter 3s ease;
     //width: 98%;
   	width: ${isMobile ? '98%' : 'auto'};
     height: ${isMobile ? '98%' : 'auto'};
@@ -34,7 +34,9 @@ export const HilContainer = styled(Modal)`
     ::-webkit-scrollbar {
         display: none;  /* Safari and Chrome */
     }
-  
+`
+export const ModalContainer = styled(Modal)`
+    ${containerCss};
 `
 
 
@@ -134,6 +136,8 @@ export const HilMessage = styled.h3`
     margin: 0;
     font-size: ${props => props.theme.fontSize.sz1};
     text-align: center;
+    // white-space: nowrap;
+    // width: 80rem;
 `
 
 export const fractionButtonCss = css`

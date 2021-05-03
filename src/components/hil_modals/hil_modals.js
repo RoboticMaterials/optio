@@ -362,7 +362,7 @@ const HILModals = (props) => {
                 validateOnChange={true}
                 validateOnBlur={true}
             >
-                <styled.HilContainer
+                <styled.ModalContainer
                     isOpen={true}
                     style={{
                         overlay: {
@@ -493,7 +493,7 @@ const HILModals = (props) => {
                             }
                         </styled.HilButtonContainer>
                     </styled.Body>
-                </styled.HilContainer>
+                </styled.ModalContainer>
             </Formik>
         )
     }
