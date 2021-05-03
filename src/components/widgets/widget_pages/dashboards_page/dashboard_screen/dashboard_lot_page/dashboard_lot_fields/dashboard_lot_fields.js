@@ -22,8 +22,6 @@ const DashboardLotFields = (props) => {
     } = props || {}
 
     const renderLotFields = useMemo(() => {
-        console.log('QQQQ lot fields', getLotTemplateData(currentLot.lotTemplateId, currentLot))
-
         const fields = getLotTemplateData(currentLot.lotTemplateId, currentLot)
 
         return fields.map((field, currIndex, arr) => {

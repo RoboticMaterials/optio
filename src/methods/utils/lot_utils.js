@@ -443,5 +443,6 @@ export const getCurrentRouteForLot = (lot, stationID) => {
             break
         }
     }
+    console.log('QQQQ current route', currentRoute)
     return currentRoute
 }

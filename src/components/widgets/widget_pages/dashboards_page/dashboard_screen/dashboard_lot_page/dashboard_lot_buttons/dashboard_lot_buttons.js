@@ -24,6 +24,8 @@ const DashboardLotButtons = (props) => {
         handleCancel,
         handleScrap,
         isDeviceRoute,
+        isFinish,
+        handleFinish,
     } = props
 
     const renderMoveButton = () => {
@@ -79,6 +81,25 @@ const DashboardLotButtons = (props) => {
         }
     }
 
+    const renderFinishButton = () => {
+        const iconClassName = "fas fa-flag-checkered"
+        const color = '#90eaa8'
+        const textColor = '#1c933c'
+
+        return (
+            <DashboardButton
+                title={'Finish'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={handleFinish}
+                containerStyle={{ background: color }}
+                hoverable={false}
+                color={color}
+                titleStyle={{ color: textColor }}
+            />
+        )
+    }
+
     const renderCancelButton = () => {
         const iconClassName = "fas fa-times"
 
@@ -102,7 +123,11 @@ const DashboardLotButtons = (props) => {
 
     return (
         <styled.ButtonContainer>
-            {renderMoveButton()}
+            {isFinish ?
+                renderFinishButton()
+                :
+                renderMoveButton()
+            }
             {renderCancelButton()}
         </styled.ButtonContainer>
     )

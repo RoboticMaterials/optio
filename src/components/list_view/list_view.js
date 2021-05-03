@@ -256,7 +256,7 @@ const ListView = (props) => {
             {(showDashboards && !showSettings) &&
                 // must be wrapped in route to give dashboards page the match params
                 <Route
-                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?"
+                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/"
                     component={DashboardsPage}
                 />
             }

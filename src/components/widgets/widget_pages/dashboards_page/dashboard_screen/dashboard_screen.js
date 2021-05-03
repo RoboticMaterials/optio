@@ -312,7 +312,18 @@ const DashboardScreen = (props) => {
                 showLotsList ?
                     <DashboardLotList />
                     :
-                    <DashboardLotPage />
+                    <DashboardLotPage
+                        handleTaskAlert={(type, label, message) => {
+                            setAddTaskAlert({
+                                type: type,
+                                label: label,
+                                message: message,
+                            })
+
+                            // clear alert after timeout
+                            return setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
             }
 
             <TaskAddedAlert

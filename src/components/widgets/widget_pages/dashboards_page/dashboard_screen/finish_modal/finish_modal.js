@@ -3,10 +3,8 @@ import React, { useEffect, useState } from "react";
 // external components
 import Modal from 'react-modal';
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from 'react-router-dom'
 
-// internal components
-import Button from "../../../../../basic/button/button";
-import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
 import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
@@ -38,13 +36,24 @@ const FinishModal = (props) => {
         title,
         close,
         dashboard,
-        onSubmit
+        onSubmit,
+
+        // If there is already a lot selected, then dont show selection screen
+        lotSelected,
     } = props
 
     // get current buttons, default to empty array
     const dashboardId = dashboard?._id?.$oid
 
+    const params = useParams()
     const theme = useTheme()
+
+    const {
+        stationID,
+        dashboardID,
+        subPage,
+        lotID
+    } = params || {}
 
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
@@ -59,10 +68,10 @@ const FinishModal = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
 
-    const [selectedLot, setSelectedLot] = useState(null)
+    const [selectedLot, setSelectedLot] = useState(lotSelected ? processCards[lotID] : null)
     const [lotCount, setLotCount] = useState(null)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(lotSelected)
     const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
 
@@ -370,5 +379,9 @@ const FinishModal = (props) => {
         </styled.Container>
     );
 };
+
+FinishModal.defaultProps = {
+    lotSelected: false,
+}
 
 export default FinishModal
