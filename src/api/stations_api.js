@@ -208,7 +208,6 @@ export async function getStationAnalytics(id, timeSpan) {
         const data = response.data;
         const dataJson = JSON.parse(data)
 
-        console.log("getStationAnalytics dataJson",dataJson)
         return dataJson;
 
 
