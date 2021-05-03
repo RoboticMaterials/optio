@@ -51,10 +51,8 @@ const DashboardLotPage = () => {
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
 
     useEffect(() => {
-        console.log('QQQQ current lot', currentLot)
         setCurrentLot(cards[lotID])
         setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
-        console.log('QQQQ current task', getCurrentRouteForLot(currentLot, stationID))
         return () => {
 
         }
