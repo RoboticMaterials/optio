@@ -1,7 +1,7 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // import external functions
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
@@ -9,6 +9,7 @@ import TaskAddedAlert from './task_added_alert/task_added_alert'
 import DashboardsHeader from "../dashboards_header/dashboards_header";
 import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
 import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
+import DashboardDevicePage from './dashboard_device_page/dashboard_device_page'
 
 // Import Modals
 import ReportModal from "./report_modal/report_modal";
@@ -43,9 +44,6 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
-import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
-import { immutableDelete, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 
 
 
@@ -73,11 +71,17 @@ const DashboardScreen = (props) => {
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const stations = useSelector(state => state.stationsReducer.stations)
-
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const currentDashboard = dashboards[dashboardID]
-
-    //actions
+    // actions
+    const dispatch = useDispatch()
+    const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
+    const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
+    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
     const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
@@ -94,25 +98,9 @@ const DashboardScreen = (props) => {
         id: modalButtonId
     } = reportModal
     const [dashboardStation, setDashboardStation] = useState({});
-    const {
-        name: stationName
-    } = dashboardStation || {}
     const [showLotsList, setShowLotsList] = useState(true)
     const [selectedOperation, setSelectedOperation] = useState(null)
-
-    // actions
-    const dispatch = useDispatch()
-    const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
-    const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
-    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
-    const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
-    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
-
-    const history = useHistory()
-    const {
-        name: dashboardName
-    } = currentDashboard || {}
+    const [isDevice, setIsDevice] = useState(false)
 
     const size = useWindowSize()
     const windowWidth = size.width
@@ -131,6 +119,11 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
+
+        if (!!devices[stationID]) {
+            setIsDevice(true)
+        }
+
         dispatchGetProcesses()
         return () => {
             onDashboardOpen(false)
@@ -145,30 +138,6 @@ const DashboardScreen = (props) => {
             setShowLotsList(true)
         }
     }, [editing])
-
-    // // if the task q contains a human task that is unloading, show an unload button
-    // if (Object.values(taskQueue).length > 0) {
-
-    //     // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
-    //     Object.values(taskQueue).forEach((item, ind) => {
-    //         // If it is matching, add a button the the dashboard for unloading
-    //         if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
-    //             filteredButtons = [
-    //                 ...filteredButtons,
-    //                 {
-    //                     'name': item.hil_message,
-    //                     'color': '#90eaa8',
-    //                     'task_id': 'hil_success',
-    //                     'custom_task': {
-    //                         ...item
-    //                     },
-    //                     'id': `custom_task_charge_${ind}`
-    //                 }
-    //             ]
-    //         }
-    //     })
-    // }
-
 
     // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
@@ -308,7 +277,13 @@ const DashboardScreen = (props) => {
 
             />
 
-            {
+            {isDevice ?
+                <DashboardDevicePage 
+                    handleTaskAlert={() => {
+                        
+                    }}
+                />
+                :
                 showLotsList ?
                     <DashboardLotList />
                     :
