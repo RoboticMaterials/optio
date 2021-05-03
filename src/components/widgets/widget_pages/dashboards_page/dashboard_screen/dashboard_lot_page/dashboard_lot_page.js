@@ -18,12 +18,13 @@ import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
+import {getBinQuantity, getCurrentRouteForLot, getLotTemplateData} from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 
 // Import Actions
 import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
+import {isObject} from "../../../../../../methods/utils/object_utils";
 
 const DashboardLotPage = () => {
 
@@ -51,12 +52,26 @@ const DashboardLotPage = () => {
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
 
     useEffect(() => {
-        setCurrentLot(cards[lotID])
-        setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
+        if(lotID) {
+            const lot = cards[lotID]
+            setCurrentLot(lot)
+            setCurrentTask(getCurrentRouteForLot(currentLot, stationID))
+
+            // go back if lot has no items at this station (ex. just moved them all. Doesn't make sense to stay on this screen
+            if(isObject(lot) && isObject(lot?.bins)) {
+                const quantity = getBinQuantity(lot, stationID)
+                if(!quantity || (quantity <= 0)) {
+                    onBack()
+                }
+            }
+        }
+
         return () => {
 
         }
-    }, [])
+    }, [lotID ,cards])
+
+
 
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
@@ -70,7 +85,7 @@ const DashboardLotPage = () => {
         const {
             name,
             custom,
-        } = currentTask
+        } = currentTask || {}
 
         const Id = currentTask._id
 
@@ -188,6 +203,7 @@ const DashboardLotPage = () => {
         <styled.LotContainer>
             <styled.LotHeader>
                 <styled.LotTitle>{currentLot.name}</styled.LotTitle>
+                <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
             <DashboardLotFields currentLot={currentLot} />
             {/* <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove('human')} /> */}
