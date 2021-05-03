@@ -86,8 +86,9 @@ const DashboardsHeader = (props) => {
                 <Button
                     schema="dashboards"
                     onClick={() => {
-                        setShowOperationsMenu(!showOperationsMenu)
+                        setShowOperationsMenu(true)
                     }}
+                    disabled={showOperationsMenu}
                 >
                     Operations
                 </Button>

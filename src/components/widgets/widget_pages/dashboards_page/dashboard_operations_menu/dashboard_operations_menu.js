@@ -15,6 +15,12 @@ import DashboardButton from '../dashboard_buttons/dashboard_button/dashboard_but
 // Import Hooks
 import useOnClickOutside from '../../../../../hooks/useOnClickOutside'
 
+// Import utils
+import { OPERATION_TYPES, TYPES } from '../../../../../constants/dashboard_constants'
+
+// Import Actions
+import { handlePostTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+
 const DashboardOperationsMenu = (props) => {
 
     const {
@@ -24,6 +30,7 @@ const DashboardOperationsMenu = (props) => {
 
     const history = useHistory()
     const params = useParams()
+    const dispatch = useDispatch()
 
     const {
         stationID,
@@ -35,13 +42,28 @@ const DashboardOperationsMenu = (props) => {
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const devices = useSelector(state => state.devicesReducer.devices)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+
+    const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
 
     const isDevice = !!devices[stationID]
 
-    console.log('QQQQ is devices', isDevice)
-
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
+
+    // Custom task for Send to idle and charging operators
+    const onCustomTask = (type) => {
+
+        const deviceType = ''
+        const lotID = ''
+        const Id = 'custom_task'
+        const name = ''
+        const custom = ''
+
+        dispatchPostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, lotID, Id, name, custom })
+
+    }
 
     const renderReportButton = () => {
 
@@ -126,7 +148,7 @@ const DashboardOperationsMenu = (props) => {
                 title={'Send to Idle'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                onClick={() => handleOperationSelected('finish')}
+                onClick={() => onCustomTask('finish')}
                 containerStyle={{}}
                 hoverable={true}
                 color={iconColor}
@@ -144,7 +166,7 @@ const DashboardOperationsMenu = (props) => {
                 title={'Send to Charger'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                onClick={() => handleOperationSelected('finish')}
+                onClick={() => onCustomTask('finish')}
                 containerStyle={{}}
                 hoverable={true}
                 color={iconColor}
