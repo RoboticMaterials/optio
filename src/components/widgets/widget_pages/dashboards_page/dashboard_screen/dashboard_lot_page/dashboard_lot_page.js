@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -11,6 +11,7 @@ import * as styled from './dashboard_lot_page.style'
 import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
 import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
 import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_modal'
+import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
@@ -263,6 +264,7 @@ const DashboardLotPage = (props) => {
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
+            <LotFlags currentLot={currentLot} containerStyle={{alignSelf:'center'}}/>
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}
