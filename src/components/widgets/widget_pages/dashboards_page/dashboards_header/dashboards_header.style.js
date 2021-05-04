@@ -20,7 +20,7 @@ export const Header = styled.div`
 
     height: 6rem;
 
-    background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%);
+    /* background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%); */
     
 `
 
