@@ -11,6 +11,7 @@ const LotFlags = (props) => {
     const {
         currentLot,
         containerStyle,
+        handlePopUp
     } = props
 
     const flags = currentLot?.flags
@@ -26,6 +27,7 @@ const LotFlags = (props) => {
                 justifyContent: 'flex-start',
                 ...containerStyle
             }}
+            onClick={handlePopUp}
         >
             {flags.length > 0 ?
                 <>

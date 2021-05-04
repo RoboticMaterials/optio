@@ -58,6 +58,7 @@ const Lot = (props) => {
 
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
+    const [popupOpen, setPopupOpen] = useState(false)
 
     useEffect(() => {
         setFormattedLotNumber(formatLotNumber(lotNumber))
@@ -149,6 +150,20 @@ const Lot = (props) => {
                 }
             })
     }
+
+    const renderFlags = () => {
+        return (
+            <LotFlags
+                currentLot={currentLot}
+                handlePopUp={() => { 
+                    console.log('QQQQ OPEN!!!')
+                    setPopupOpen(true) 
+                    
+                }}
+            />
+        )
+    }
+
     return (
         <styled.Container
             glow={glow}
@@ -156,7 +171,7 @@ const Lot = (props) => {
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
-            onClick={onClick}
+            // onClick={onClick}
             style={containerStyle}
         >
 
@@ -173,8 +188,9 @@ const Lot = (props) => {
                         }}
 
                         trigger={open => (
-                            <LotFlags currentLot={currentLot} />
+                            renderFlags()
                         )}
+                        open={popupOpen}
                         position="left center"
                         closeOnDocumentClick
                     >
@@ -217,7 +233,8 @@ const Lot = (props) => {
                         </styled.FlagsContainer>
                     </Popup>
                     :
-                    <LotFlags currentLot={currentLot} />
+                    renderFlags()
+
                 }
 
                 <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
