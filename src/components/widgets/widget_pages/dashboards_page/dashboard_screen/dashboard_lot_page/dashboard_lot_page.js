@@ -95,13 +95,10 @@ const DashboardLotPage = (props) => {
 
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
-
     }
 
+    // Handles moving lot to next station
     const onMove = (deviceType) => {
-        // onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
-
-
         const {
             name,
             custom,
@@ -260,67 +257,16 @@ const DashboardLotPage = (props) => {
 
     }
 
-    // /**
-    //  * Handles event of task click
-    //  *
-    //  * Currently there are 3 types of tasks that can be clicked on a dashboard
-    //  *
-    //  * 1) Custom task
-    //  * This task is used to send the cart to a position that does not belong to a station (You cant make a route to a non-station position)
-    //  * It takes in the custom value, which is the position info, and sends the cart to that position from it's current location
-    //  *
-    //  * 2) HIL Success
-    //  * This is a button that shows up on dashboard when a human tasks unload location is the current dashboard
-    //  * Instead of showing a HIL modal, it shows an unload button
-    //  * The reason why is that humans locations are not known so a HIL modal would have to be on the screen the whole time instead of when a autonomous cart arives
-    //  *
-    //  * 3) Basic Routes
-    //  * This is the standard button for a dashboard that just executes the route
-    //  * If the task is already in the q, then show a warning label and dont add it
-    //  *
-    //  *
-    //  * @param {*} Id
-    //  * @param {*} name
-    //  * @param {*} custom
-    //  */
-    // const handleTaskClick = async (type, Id, name, custom, deviceType) => {
-    //     switch (type.toUpperCase()) {
-    //         case TYPES.ROUTES.key:
-    //             if (!(Id === 'hil_success')) {
-    //                 onHandlePostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
-    //             }
-    //             handleRouteClick(Id, name, custom, deviceType)
-    //             break
-    //         case TYPES.OPERATIONS.key:
-    //             break
-    //         case OPERATION_TYPES.REPORT.key:
-    //             setReportModal({
-    //                 type: OPERATION_TYPES.REPORT.key,
-    //                 id: Id
-    //             })
-    //             break
-    //         case OPERATION_TYPES.KICK_OFF.key:
-    //             setReportModal({ type: OPERATION_TYPES.KICK_OFF.key, id: null })
-    //             break
-    //         case OPERATION_TYPES.FINISH.key:
-    //             setReportModal({ type: OPERATION_TYPES.FINISH.key, id: null })
-    //             break
-    //         default:
-    //             break
-    //     }
-
-
-    // }
-
-
     return (
         <styled.LotContainer>
             <styled.LotHeader>
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
-            <DashboardLotFields currentLot={currentLot} />
-            {/* <Button label={'Move'} style={{ marginTop: 'auto' }} onClick={() => onMove('human')} /> */}
+            <DashboardLotFields
+                currentLot={currentLot}
+                stationID={stationID}
+            />
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}
                 handleCancel={() => onBack()}

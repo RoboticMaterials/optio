@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import React, { useMemo } from 'react'
+import { useSelector } from 'react-redux'
 
 // Import Styles
 import * as styled from './dashboard_lot_fields.style'
@@ -12,14 +13,21 @@ import LotDateRow from '../../../../../../side_bar/content/cards/lot/lot_date_ro
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getCustomFields } from '../../../../../../../methods/utils/lot_utils'
+import { getCustomFields, getLotTotalQuantity, getBinQuantity } from '../../../../../../../methods/utils/lot_utils'
 
 
 const DashboardLotFields = (props) => {
 
     const {
-        currentLot
+        currentLot,
+        stationID,
     } = props || {}
+
+    const processes = useSelector(state => state.processesReducer.processes)
+
+    const count = getBinQuantity(currentLot, stationID)
+    const totalQuantity = getLotTotalQuantity(currentLot)
+    const processName = processes[currentLot.process_id]?.name
 
     const renderLotFields = useMemo(() => {
         const fields = getCustomFields(currentLot.lotTemplateId, currentLot)
@@ -109,6 +117,17 @@ const DashboardLotFields = (props) => {
 
     return (
         <styled.LotFieldsContainer>
+            <LotSimpleRow
+                label={"Quantity"}
+                value={`${count}/${totalQuantity}`}
+            />
+
+            {processName &&
+                <LotSimpleRow
+                    label={"Process"}
+                    value={processName}
+                />
+            }
             {renderLotFields}
         </styled.LotFieldsContainer>
     )

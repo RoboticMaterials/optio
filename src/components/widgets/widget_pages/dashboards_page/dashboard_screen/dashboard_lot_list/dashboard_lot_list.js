@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -8,18 +8,9 @@ import * as styled from './dashboard_lot_list.style'
 // Import Componenets
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
 import SortFilterContainer from '../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container'
-import LotSortBar from '../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar'
-import {
-    columnCss, columnCss3,
-    containerCss,
-    descriptionCss,
-    dropdownCss,
-    reactDropdownSelectCss,
-    valueCss
-} from '../../../../../side_bar/content/cards/lot_bars.style'
 
 // Import Utils
-import { getIsCardAtBin, getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from '../../../../../../methods/utils/lot_utils'
+import { getIsCardAtBin, getMatchesFilter } from '../../../../../../methods/utils/lot_utils'
 import { sortBy } from '../../../../../../methods/utils/card_utils'
 
 // Import Constants
