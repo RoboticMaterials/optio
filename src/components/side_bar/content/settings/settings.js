@@ -41,7 +41,7 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
@@ -356,7 +356,7 @@ const Settings = () => {
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateServerSettings({ currentMap: values[0] })
+                            handleUpdateServerSettings({currentMap: values[0]})
                         }}
                         className="w-100"
                     />
