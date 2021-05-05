@@ -1,3 +1,4 @@
+import {uuidv4} from "../methods/utils/utils";
 
 export const QUEUE_BIN_ID = "QUEUE"
 export const FINISH_BIN_ID = "FINISH"
@@ -110,10 +111,50 @@ export const SIDE_BAR_MODES = {
 	}
 }
 
+export const TEMPLATE_FIELD_KEYS = {
+	FIELD_NAME: "fieldName",
+	REQUIRED: "required",
+	SHOW_IN_PREVIEW: "showInPreview"
+}
+
+export const DEFAULT_DESCRIPTION_FIELD_ID = "DEFAULT_DESCRIPTION_FIELD_ID"
+export const DEFAULT_DATES_FIELD_ID = "DEFAULT_DATES_FIELD_ID"
+
+
+export const BASIC_DEFAULT_DESCIPTION_FIELD = {
+	_id: DEFAULT_DESCRIPTION_FIELD_ID,
+	...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG,
+	[TEMPLATE_FIELD_KEYS.FIELD_NAME]: "description",
+	[TEMPLATE_FIELD_KEYS.REQUIRED]: false,
+	[TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,
+	key: 0,
+	showInPreview: true
+}
+
+export const IGNORE_LOT_SYNC_WARNING = "ignoreLotSyncWarning"
+
+export const BASIC_DEFAULT_DATES_FIELD = {
+	_id: DEFAULT_DATES_FIELD_ID,
+	...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END,
+	[TEMPLATE_FIELD_KEYS.FIELD_NAME]: "dates",
+	[TEMPLATE_FIELD_KEYS.REQUIRED]: false,
+	[TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,
+	key: 1,
+	showInPreview: true
+}
+
 export const EMPTY_DEFAULT_FIELDS =  [
-	[{_id: 0, ...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG, fieldName: "description", key: 0}],
-	[{_id: 1, ...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END, fieldName: "dates", key: 1}]
+	[BASIC_DEFAULT_DESCIPTION_FIELD],
+	[BASIC_DEFAULT_DATES_FIELD]
 ]
+
+// same as EMPTY_DEFAULT_FIELDS, but creates new id for each field. Necessary for new templates to distinguish from basic template
+export const getDefaultFields = () => {
+	return [
+		[{...BASIC_DEFAULT_DESCIPTION_FIELD, _id: uuidv4()}],
+		[{...BASIC_DEFAULT_DATES_FIELD, _id: uuidv4()}]
+	]
+}
 
 export const BASIC_LOT_TEMPLATE = {
 	fields: EMPTY_DEFAULT_FIELDS,
@@ -129,8 +170,13 @@ export const DEFAULT_DISPLAY_NAMES = {
 	count: DEFAULT_COUNT_DISPLAY_NAME
 }
 
-export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
-export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
+export const NAME_FIELD_ID = "NAME_FIELD_ID"
+export const COUNT_FIELD_ID = "COUNT_FIELD_ID"
+export const LOT_PRIMARY_FIELD_IDS = [NAME_FIELD_ID, COUNT_FIELD_ID]
+
+
+export const NAME_FIELD = {fieldName: "name", _id: NAME_FIELD_ID, dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
+export const COUNT_FIELD = {fieldName: "bins", _id: COUNT_FIELD_ID, fieldPath: ["QUEUE", "count"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
 export const LOT_NUMBER_FIELD = {fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number"}
 
 
@@ -198,15 +244,15 @@ export const SORT_DIRECTIONS = {
 
 
 export const LOT_FILTER_OPTIONS = {
-	name: {...NAME_FIELD},
+	name: {...NAME_FIELD, primary: true},
 	flags: {
-		label: "Flags"
+		label: "Flags", primary: true
 	},
-	lotNumber: {...LOT_NUMBER_FIELD}
+	lotNumber: {...LOT_NUMBER_FIELD, primary: true}
 }
 
 export const LOT_SORT_OPTIONS = {
-	name: {...NAME_FIELD},
-	quantity: {...COUNT_FIELD},
-	lotNumber: {...LOT_NUMBER_FIELD}
+	name: {...NAME_FIELD, primary: true},
+	quantity: {...COUNT_FIELD, primary: true, fieldName: "count"},
+	lotNumber: {...LOT_NUMBER_FIELD, primary: true}
 }

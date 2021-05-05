@@ -2,6 +2,8 @@ import styled, {css} from "styled-components";
 import {Form} from "formik";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 import {containerLayout} from "../../../../../common_css/layout";
+import SyncProblemIcon from "@material-ui/icons/SyncProblem";
+import SyncIcon from "@material-ui/icons/Sync";
 
 export const rowCss = css`
 	// margin-bottom: 1rem;
@@ -16,7 +18,7 @@ export const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0.5rem;
+	padding: 1rem 0.5rem;
 	margin: 0;
 	background: ${props => props.theme.bg.secondary};
 	z-index: 10;
@@ -25,7 +27,9 @@ export const Header = styled.div`
 
 export const CloseIcon = styled.i`
     font-size: 1.4rem;
-    margin: 2rem;
+    //margin: 2rem;
+  	right: 2rem;
+  	position: absolute;
     color: ${props => props.theme.bg.quaternary};
     cursor: pointer;
 	
@@ -254,6 +258,9 @@ const mainCss = css`
 
 export const StyledForm = styled(Form)`
     ${mainCss};
+  
+	transition: all .5s ease;
+	filter: ${props => props.loading && "blur(5px)"};
 `;
 
 export const SubContainer = styled.div`
@@ -511,14 +518,15 @@ export const LotNumber = styled.div`
 export const TemplateButton = styled.button`
   ${iconButtonCss};
   ${commonClickableIcon};
-  font-size: 2rem;
+  font-size: 2.5rem;
+  
 `
 
 export const PasteIcon = styled.button`
 
 	${iconButtonCss};
   	${commonClickableIcon};
-	font-size: 2rem;
+	font-size: 2.5rem;
 
     animation: blinker 1s linear infinite;
 
@@ -567,14 +575,18 @@ export const SubHeader = styled.div`
 	display: flex;
   align-self: stretch;
   align-items: center;
+  justify-content: space-between;
   background: ${props => props.theme.bg.primary};
   padding: 0.5rem;
   border-bottom: 3px solid ${props => props.theme.bg.secondary};
+  
 `
 export const IconRow = styled.div`
   ${rowCss2};
   align-items: center;
-  padding: .25rem;
+  >div {
+    margin: 0 .5rem;
+  }
 `
 
 export const ColumnContainer = styled.div`
@@ -746,5 +758,16 @@ export const TemplateLabel = styled.span`
   font-family: ${props => props.theme.font.primary};
 `
 
+export const SyncProblem = styled(SyncProblemIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+`
+
+export const Sync = styled(SyncIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+  color: ${props => props.sync ? "#00d6d0" : "#a9a9a9"};
+  transition: all 2s ease;
+`
 
 

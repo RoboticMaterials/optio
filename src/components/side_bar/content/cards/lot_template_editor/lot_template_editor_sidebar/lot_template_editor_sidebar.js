@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 
 // actions
-import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions"
-import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions"
+import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions"
+import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions"
 
 // components external
 import { DraggableCore } from "react-draggable"
 import { Container, Draggable } from 'react-smooth-dnd'
 
 // components internal
-import FieldComponentMapper from "../../field_component_mapper/field_component_mapper"
-import WidgetButton from "../../../../../../basic/widget_button/widget_button"
+import FieldComponentMapper from "../field_component_mapper/field_component_mapper"
+import WidgetButton from "../../../../../basic/widget_button/widget_button"
 
 // functions external
 import PropTypes from 'prop-types'
@@ -18,21 +18,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ThemeContext } from "styled-components"
 
 // logging
-import log from '../../../../../../../logger'
+import log from '../../../../../../logger'
 
 // utils
-import {uuidv4} from "../../../../../../../methods/utils/utils"
+import {uuidv4} from "../../../../../../methods/utils/utils"
 
 // constants
-import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants"
+import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES, TEMPLATE_FIELD_KEYS} from "../../../../../../constants/lot_contants"
 
 // styles
-import * as style from "../lot_sidebars.style"
+import * as style from "../../card_editor/lot_sidebars/lot_sidebars.style"
 
 // logger
 const logger = log.getLogger("LotEditorSidebar")
 
-const LotEditorSidebar = (props) => {
+const LotTemplateEditorSidebar = (props) => {
 
     const {
         showFields,
@@ -121,10 +121,11 @@ const LotEditorSidebar = (props) => {
                     getChildPayload={index => {
                         const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         const payload = {
-                            key: selected[0],
                             ...selected[1],
                             _id: uuidv4(),
-                            fieldName: ""
+                            [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "",
+                            [TEMPLATE_FIELD_KEYS.REQUIRED]: false,              // set to true to default checked when added
+                            [TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,       // set to true to default checked when added
                         }
                         return payload
                     }}
@@ -304,18 +305,18 @@ const LotEditorSidebar = (props) => {
 }
 
 // Specifies propTypes
-LotEditorSidebar.propTypes = {
+LotTemplateEditorSidebar.propTypes = {
     showFields: PropTypes.bool,
     showTemplates: PropTypes.bool,
     showNew: PropTypes.bool,
 }
 
 // Specifies the default values for props:
-LotEditorSidebar.defaultProps = {
+LotTemplateEditorSidebar.defaultProps = {
     showFields: true,
     showTemplates: true,
     showNew: true,
 
 }
 
-export default LotEditorSidebar
+export default LotTemplateEditorSidebar

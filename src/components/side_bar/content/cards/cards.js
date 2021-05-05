@@ -19,7 +19,7 @@ import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./card_editor/template_form";
+import LotCreatorForm from "./lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 import LotEditorContainer from "./card_editor/lot_editor_container";
@@ -46,7 +46,7 @@ const Cards = (props) => {
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     // actions
     const dispatch = useDispatch()

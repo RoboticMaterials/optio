@@ -91,7 +91,7 @@ const ListView = (props) => {
     pause_status ? playButtonClassName += 'play' : playButtonClassName += 'pause';
 
     useEffect(() => {
-          disableBrowserBackButton()
+        disableBrowserBackButton()
 
         // displays dashboards page if url is on widget page
         if (widgetPage) {
@@ -117,7 +117,8 @@ const ListView = (props) => {
 
 
     const onLocationClick = (item) => {
-        const dashboardID = stations[item._id].dashboards[0]
+        // If the id is in station that its a station, else its the Mir Dashboard
+        const dashboardID = !!stations[item._id] ? stations[item._id].dashboards[0] : devices[item._id].dashboards[0]
         history.push('/locations/' + item._id + '/' + "dashboards/" + dashboardID)
         setShowDashboards(true)
     }
@@ -183,25 +184,25 @@ const ListView = (props) => {
 
                             {(showDashboards) ?
                               <>
-                              {!locked &&
-                                <BounceButton
-                                    color={"black"}
-                                    onClick={() => {
-                                        setShowDashboards(false)
-                                        history.push('/locations')
-                                    }}
-                                    containerStyle={{
-                                        width: "3rem",
-                                        height: "3rem",
-                                        position: "relative"
-                                    }}
-                                >
+                                {!locked &&
+                                  <BounceButton
+                                      color={"black"}
+                                      onClick={() => {
+                                          setShowDashboards(false)
+                                          history.push('/locations')
+                                      }}
+                                      containerStyle={{
+                                          width: "3rem",
+                                          height: "3rem",
+                                          position: "relative"
+                                      }}
+                                  >
 
-                                    <styled.Icon
-                                        className={"fa fa-times"}
-                                    />
-                                </BounceButton>
-                              }
+                                      <styled.Icon
+                                          className={"fa fa-times"}
+                                      />
+                                  </BounceButton>
+                                }
                               </>
                                 :
                                 <BounceButton

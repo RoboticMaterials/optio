@@ -167,7 +167,7 @@ export function LightenDarkenColor(col, amt) {
     return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 }
 
-export function isEquivalent(a, b) {
+export function getIsEquivalent(a, b) {
     // Create arrays of property names
     if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
         return a === b;
@@ -187,7 +187,7 @@ export function isEquivalent(a, b) {
 
         // If values of same property are not equal,
         // objects are not equivalent
-        if (!isEquivalent(a[propName], b[propName])) {
+        if (!getIsEquivalent(a[propName], b[propName])) {
             return false;
         }
     }
@@ -196,6 +196,18 @@ export function isEquivalent(a, b) {
     // are considered equivalent
     return true;
 }
+
+// export const doubleArrObjEquiv = (a,b) => {
+//     let isEquiv = true
+//
+//     for(const row of a) {
+//         for(const item of row) {
+//
+//             for()
+//
+//         }
+//     }
+// }
 
 export function randomHash() {
     var hash = '';

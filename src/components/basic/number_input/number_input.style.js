@@ -6,6 +6,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  
 `
 
 const inputCss = css`
@@ -18,7 +19,6 @@ const inputCss = css`
   transition: all 0.30s ease-in-out;
   height: 3.5rem;
 
-  margin: 1rem 0rem;
   border-radius: 0rem;
   text-align: center;
   width: 10rem;
