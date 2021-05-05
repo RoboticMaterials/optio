@@ -13,6 +13,9 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
 
+import Switch from 'react-ios-switch'
+
+
 // Import actions
 import {
     deleteRouteClean,
@@ -24,11 +27,12 @@ import {
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { handlePostTaskQueue, postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+import { autoAddRoute} from '../../../../../redux/actions/tasks_actions'
 
 
 // Import Utils
 import {
-    generateDefaultRoute, getLoadStationDashboard,
+    generateDefaultRoute, getLoadStationDashboard, autoGenerateRoute,
     getRouteProcesses,
     isHumanTask,
     isMiRTask
@@ -85,7 +89,7 @@ export const ProcessField = (props) => {
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
-    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchAutoAddRoute = (bool) => dispatch(autoAddRoute(bool))
 
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -94,9 +98,9 @@ export const ProcessField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-
+    const autoAddRoutes = useSelector(state => state.tasksReducer.autoAddRoute)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-
+    const routeConfirmationLocation = useSelector(state=>state.tasksReducer.routeConfirmationLocation)
     // State definitions
     const [shift,] = useState(false) // Is shift key pressed ?
     const [isTransportTask,] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
@@ -105,10 +109,8 @@ export const ProcessField = (props) => {
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
-
-
+    const [processRoutes, setProcessRoutes] = useState(null);
     const valuesRef = useRef(values);
-
     // throttled func
     const [dispatchSetSelectedProcess_Throttled,] = useState(() => throttle(
         () => {
@@ -122,13 +124,29 @@ export const ProcessField = (props) => {
     }, [values]);
 
     useEffect(() => {
+      handleAutoAddRoute()
+
+      return () => {
+
+      }
+    }, [autoAddRoutes])
+
+    useEffect(() => {
 
         // update selectedProcess (throttled to reduce lag from updating constantly
         dispatchSetSelectedProcess_Throttled()
 
+
         return () => { }
 
     }, [values]);
+
+    useEffect(() => {
+
+      setProcessRoutes(values.routes)
+
+    }, [values.routes]);
+
 
     useEffect(() => {
 
@@ -148,7 +166,7 @@ export const ProcessField = (props) => {
     })
 
 
-    useEffect(() => {
+  /*  useEffect(() => {
         // When there are no routes, automatically add the first one
         if (values.routes.length === 0) {
             let prevObj
@@ -158,7 +176,7 @@ export const ProcessField = (props) => {
             dispatchSetSelectedTask(newTask)
             setEditingTask("newRoute")
         }
-    }, [values.routes])
+    }, [values.routes])*/
 
     const handleAddTask = async () => {
         // contains new route
@@ -285,6 +303,8 @@ export const ProcessField = (props) => {
         dispatchSetSelectedTask(null)
     }
 
+
+
     /**
      * Removes the route from the array of routes for a process
      */
@@ -309,8 +329,27 @@ export const ProcessField = (props) => {
     }
 
     const handleTaskBack = async () => {
+
+      var newRoute = true;
+
+      Object.values(selectedProcess.routes).map((route) => {
+        if(route._id===selectedTask._id){
+          newRoute = false;
+        }
+      })
+
+      if(newRoute === false){
+        const index = values.routes.findIndex((currRoute) => currRoute._id === selectedTask._id)
+        let updatedRoutes = [...values.routes]
+        updatedRoutes.splice(index , 1)
+        updatedRoutes.splice(index, 0, selectedTask)
+
+        setFieldValue("routes", updatedRoutes)
+      }
+
         // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
+
         await dispatchSetSelectedTask(null)
         setEditingTask(false)
 
@@ -328,6 +367,19 @@ export const ProcessField = (props) => {
         await dispatchDeleteRouteClean(routeId)
 
         setFieldValue("routes", values.routes.filter(((currRoute) => currRoute._id !== routeId)))
+    }
+
+    const handleIsRouteInProcess = () => {
+      var inProcess = false;
+
+      Object.values(selectedProcess?.routes).map((route) => {
+        if(route._id===selectedTask?._id){
+          inProcess = true;
+        }
+      })
+
+      return inProcess
+
     }
 
     const handleExecuteProcessTask = async (routeId) => {
@@ -390,7 +442,6 @@ export const ProcessField = (props) => {
 
     // Maps through the list of existing routes
     const renderRoutes = (routes) => {
-
         return routes.filter((currRoute, currIndex) => {
 
             if (currRoute === undefined) {
@@ -481,7 +532,6 @@ export const ProcessField = (props) => {
     }
 
     const handleAddRoute = () => {
-
         const onAddToEndClick = () => {
 
             let prevObj
@@ -519,16 +569,42 @@ export const ProcessField = (props) => {
         }
         else {
           return (
-            <Button
-                schema={'processes'}
-                onClick={onAddToEndClick}
-            >
-                Add Route
-            </Button>
+              <Button
+                  schema={'processes'}
+                  onClick={onAddToEndClick}
+              >
+                  Add Routes
+              </Button>
+
           )
         }
 
 
+    }
+
+
+    const handleAutoAddRoute = () => {
+      if(autoAddRoutes === "continue"){
+        handleAddTask()
+
+        let prevObj
+        if (values.routes.length > 0) {
+            prevObj = values.routes[values.routes.length - 1].obj
+        }
+
+        var ind = values.routes.length +1
+
+        const newTask = { ...autoGenerateRoute(prevObj), temp: { insertIndex: ind } }
+        setFieldValue("newRoute", newTask)
+        dispatchSetSelectedTask(newTask)
+        setEditingTask("newRoute")
+        dispatchAutoAddRoute(false)
+      }
+      else if (autoAddRoutes === "finish"){
+        handleAddTask()
+        setEditingTask(false)
+        dispatchAutoAddRoute(false)
+      }
     }
 
     const handleAddBeginningRoute = () => {
@@ -603,30 +679,12 @@ export const ProcessField = (props) => {
                 handleClose={() => setConfirmExitModal(null)}
                 handleOnClick1={() => {
                   onBack()
-                  dispatchPageDataChanged(false)
                 }}
                 handleOnClick2={() => {
                     setConfirmExitModal(null)
                 }}
             />
 
-          {selectedProcess.routes.length !==0 ?
-            <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal}
-                title={"Are you sure you want to delete this process?"}
-                button_1_text={"Delete process and KEEP associated routes"}
-                button_2_text={"Delete process and DELETE associated routes"}
-                handleClose={() => setConfirmDeleteModal(null)}
-                handleOnClick1={() => {
-                    onDelete(false)
-                    setConfirmDeleteModal(null)
-                }}
-                handleOnClick2={() => {
-                    onDelete(true)
-                    setConfirmDeleteModal(null)
-                }}
-            />
-            :
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to delete this process?"}
@@ -634,17 +692,13 @@ export const ProcessField = (props) => {
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                  onDelete(true)
-                  setConfirmDeleteModal(null)
+                    onDelete(true)
+                    setConfirmDeleteModal(null)
                 }}
                 handleOnClick2={() => {
-                  setConfirmDeleteModal(null)
-
+                    setConfirmDeleteModal(null)
                 }}
             />
-
-            }
-
 
             {showExistingTaskWarning &&
                 <ConfirmDeleteModal
@@ -667,7 +721,9 @@ export const ProcessField = (props) => {
             }
 
             <styled.Container>
+
                 <div style={{ marginBottom: '1rem' }}>
+
                     <ContentHeader
                         content={'processes'}
                         mode={'create'}
@@ -683,22 +739,48 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <div style={{ marginBottom: "1rem" }}>
+                <div >
+                    <styled.Title schema={'default'}>Process Name</styled.Title>
                     <TextField
                         focus={!values.name}
                         placeholder='Process Name'
                         defaultValue={values.name}
-                        label='Process Name'
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}
-                        style={{ fontSize: '1.2rem', fontWeight: '600' }}
+                        style={{ fontSize: '1.2rem', fontWeight: '100' }}
                         textboxContainerStyle={{ border: "none" }}
                     />
                 </div>
 
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show in Summary View</styled.Title>
+
+                  <Switch
+                      onColor='#FF4B4B'
+                      checked={values.showSummary}
+                      onChange={() => {
+                        setFieldValue("showSummary", !values.showSummary )
+                      }}
+                  />
+
+                </styled.RowContainer>
+
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Statistics</styled.Title>
+
+                  <Switch
+                      onColor='#FF4B4B'
+                      checked={values.showStatistics}
+                      onChange={() => {
+                        setFieldValue("showStatistics", !values.showStatistics )
+                      }}
+                  />
+
+                </styled.RowContainer>
+                  <styled.Title schema={'processes'} style = {{marginTop: "1rem", marginBottom: "1rem"}}>Associated Routes</styled.Title>
+
                 {editingTask && selectedTask ?
-                    <styled.TaskContainer schema={'processes'}>
                         <TaskField
                             {...formikProps}
                             isNew={editingTask === "newRoute"}
@@ -710,16 +792,15 @@ export const ProcessField = (props) => {
                             shift={shift}
                             isTransportTask={isTransportTask}
                             isProcessTask={true}
+                            isTaskInProcess = {handleIsRouteInProcess()}
                             toggleEditing={(props) => {
                                 setEditingTask(props)
                             }}
                         />
-                    </styled.TaskContainer>
                     :
                     <>
-                        <styled.Title schema={'processes'}>Associated Routes</styled.Title>
 
-                        <styled.SectionContainer>
+                        <styled.AddRoutesContainer style = {{height: "auto"}}>
                             <>
                                 {handleAddBeginningRoute()}
 
@@ -733,12 +814,13 @@ export const ProcessField = (props) => {
                                 {handleAddRoute()}
 
                             </>
-                        </styled.SectionContainer>
+                        </styled.AddRoutesContainer>
 
 
                         {/* Delete Task Button */}
                         <Button
                             schema={'processes'}
+                            style = {{position: "absolute", bottom: "4rem", width: "90%"}}
                             disabled={!!selectedTask && !!editingTask || submitDisabled}
                             onClick={() => {
                                 onSave(values, true)
@@ -750,6 +832,7 @@ export const ProcessField = (props) => {
                         {/* Delete Task Button */}
                         <Button
                             schema={'error'}
+                            style = {{position: "absolute", bottom: "1rem", width: "90%"}}
                             disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                             secondary
                             onClick={() => {
@@ -760,6 +843,7 @@ export const ProcessField = (props) => {
                         </Button>
                     </>
                 }
+
 
 
 

@@ -28,7 +28,6 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import LoadUnloadFields from './fields/load_unload_fields'
 import ObjectEditor from '../object_editor/object_editor'
 
-
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -41,7 +40,7 @@ import { setFixingProcess } from '../../../../../redux/actions/processes_actions
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedHoveringTask, editingTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedHoveringTask, editingTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
 import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
@@ -68,6 +67,7 @@ const TaskField = (props) => {
     const {
         isTransportTask,
         isProcessTask,
+        isTaskInProcess,
         fieldParent,
         setFieldValue,
         setValues,
@@ -80,6 +80,7 @@ const TaskField = (props) => {
         validateForm,
         onDelete,
         isNew,
+        processType
     } = props
 
     const fieldMeta = getFieldMeta(fieldParent)
@@ -101,12 +102,11 @@ const TaskField = (props) => {
         temp
     } = values || {}
 
+
     const {
         insertIndex
     } = temp || {}
 
-    const routeProcesses = getRouteProcesses(routeId) || []
-    const isProcessRoute = routeProcesses.length > 0 || fieldParent
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
@@ -127,6 +127,10 @@ const TaskField = (props) => {
     const dispatchDeleteObject = (id) => dispatch(deleteObject(id))
     const dispatchSetRouteObject = (object) => dispatch(setRouteObject(object))
     const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
+    const dispatchSetShowRouteConfirmation = (bool) => dispatch(showRouteConfirmation(bool))
+    const dispatchSetRouteConfirmationLocation = (id) => dispatch(setRouteConfirmationLocation(id))
+    const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
+
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -134,13 +138,15 @@ const TaskField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const stations = useSelector(state => state.stationsReducer.stations)
     const routeObject = useSelector(state=>state.objectsReducer.routeObject)
     const editingObject = useSelector(state=> state.objectsReducer.editingObject)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
+    const showRouteConfirm = useSelector(state=> state.tasksReducer.showRouteConfirmation)
+
     const [showEditor, setShowEditor] = useState(false);
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
@@ -150,9 +156,15 @@ const TaskField = (props) => {
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objectSaveDisabled, setObjectSaveDisabled] = useState(true);
     const [contentType, setContentType] = useState('new')
+    const [deleteID, setDeleteID] = useState(null)
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
+
     const url = useLocation().pathname
+    const routeProcesses = getRouteProcesses(deleteID) || []
+    const isProcessRoute = routeProcesses.length > 0 || fieldParent
+
+
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -214,7 +226,6 @@ const TaskField = (props) => {
 
 
         setNeedsValidate(true)
-
         // set touched if changes
         return () => {
 
@@ -242,9 +253,29 @@ const TaskField = (props) => {
             dispatchSetSelectedPosition(null)
             dispatchSetSelectedStation(null)
             dispatchSetEditing(false)
+            dispatchSetShowRouteConfirmation(false)
 
         }
     }, [])
+
+
+    useEffect(() => {
+      if(!!selectedTask && selectedTask.unload.station!==null && selectedTask.new === true){
+
+        var showModal = true;
+
+        Object.values(selectedProcess.routes).map((route) => {
+          if(route._id===selectedTask._id){
+            showModal = false;
+          }
+        })
+        if(showModal){
+          dispatchSetShowRouteConfirmation(true)
+          dispatchSetRouteConfirmationLocation(selectedTask.unload.position)
+          showModal = true;
+        }
+      }
+    }, [selectedTask])
 
     useEffect(() => {
       if(!!showObjectSelector){
@@ -258,9 +289,6 @@ const TaskField = (props) => {
       }
 
     },[editingObject])
-
-
-
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
@@ -294,10 +322,22 @@ const TaskField = (props) => {
       }
     }, [selectedTask])
 
-    const renderLoadUnloadParameters = () => {
+    const renderLoadUnloadText = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
-            return <styled.DirectionText>Click a position on the map to be the load (or start) position.</styled.DirectionText>
+            return (
+              <>
+                <styled.ListItem
+                  style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #FF4B4B", marginBottom: "1.5rem"}}
+                >
+                  <styled.DirectionText style = {{color: "#FF4B4B"}}>Click the start position on the map</styled.DirectionText>
+                  <styled.ListItemIcon
+                      className='fas fa-exclamation-triangle'
+                      style = {{color: "#FF4B4B", cursor: "auto", paddingBottom: "0.4rem", fontSize: "1.1rem"}}
+                  />
+                </styled.ListItem>
+              </>
+            )
         } else if (selectedTask.load.station === null) {
             // Load position is not tied to a station - task is no longer a transport task
             return (
@@ -312,22 +352,38 @@ const TaskField = (props) => {
             // Load position has been defined and is a station - now handle unload position
             if (selectedTask.unload.position === null) {
                 // No unload position has been defined - ask user to define load (end) position
-                return <styled.DirectionText>Click on a position on the map to be the unload (or end) position.</styled.DirectionText>
-            } else if (selectedTask.unload.station === null) {
+                return (
+                  <>
+                    <styled.ListItem
+                      style = {{height: "auto", padding: ".4rem 1rem 0rem 1rem", background: "#FFFFFF", border: "solid 0.1rem #ffbf1f"}}
+                    >
+                      <styled.DirectionText style = {{color: "#ffbf1f"}}>Click the end position on the map</styled.DirectionText>
+                      <styled.ListItemIcon
+                          className='fas fa-exclamation-triangle'
+                          style = {{color: "#ffbf1f", cursor: "auto", paddingBottom: "0.4rem", fontSize: "1.1rem"}}
+                      />
+                    </styled.ListItem>
+                  </>
+                )
+              } else if (selectedTask.unload.station === null) {
                 // Unload position is not a station - task is no longer a transport task
                 return <styled.HelpText>Since the end position is not tied to a station, this task is no longer a transport task</styled.HelpText>
-            } else {
-                // Load AND Unload positions have been defined. Display load/unload parameter fields
-                return <LoadUnloadFields
-                    fieldParent={fieldParent}
-                    values={values}
-                    setFieldValue={setFieldValue}
-                    isProcess={isProcessTask}
-                />
-
             }
         }
 
+    }
+
+    const renderLoadUnloadFields = () => {
+
+      if(selectedTask.unload.position!==null){
+        // Load AND Unload positions have been defined. Display load/unload parameter fields
+        return <LoadUnloadFields
+            fieldParent={fieldParent}
+            values={values}
+            setFieldValue={setFieldValue}
+            isProcess={isProcessTask}
+        />
+      }
     }
 
     const onSaveObject = async () => {
@@ -368,10 +424,10 @@ const TaskField = (props) => {
         dispatchSetSelectedObject(object)
     }
 
+
     const onSelectObject = () => {
       dispatchSetRouteObject(selectedObject)
       setShowObjectSelector(false)
-      dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
       setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
     }
@@ -431,7 +487,11 @@ const TaskField = (props) => {
     return (
         <>
             {!!selectedTask &&
-
+            <>
+              <div>
+                  {renderLoadUnloadText()}
+              </div>
+              <styled.TaskContainer schema = {"tasks"}>
                 <styled.ContentContainer>
                     <ConfirmDeleteModal
                         isOpen={!!confirmDeleteObjectModal}
@@ -458,7 +518,6 @@ const TaskField = (props) => {
                         handleOnClick1={() => {
                           onBackClick(routeId)
                           dispatchSetEditingObject(false)
-                          dispatchPageDataChanged(false)
                         }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
@@ -494,8 +553,9 @@ const TaskField = (props) => {
                             }
                             button_1_text={"Yes"}
                             handleOnClick1={() => {
-                                onDelete(routeId)
-                                setConfirmDeleteModal(null)
+                              dispatchDeleteRouteClean(deleteID)
+                              dispatchSetSelectedHoveringTask(null)
+                              setConfirmDeleteModal(null)
                             }}
                             button_2_text={"No"}
                             handleOnClick2={() => setConfirmDeleteModal(null)}
@@ -508,24 +568,25 @@ const TaskField = (props) => {
                 Some filtering is done based on certain conditions, see 'options' key
             */}
                     {!!selectedTask && isProcessTask && !!selectedTask.new &&
-                        <>
+                      <>
                             <div style={{ marginBottom: '1rem' }}>
                                 <ContentHeader
                                     content={'tasks'}
                                     mode={'create'}
                                     onClickBack={() => {
-                                      if(!!pageInfoChanged){
+                                      if(JSON.stringify(selectedTask)!== JSON.stringify(values)){
                                         setConfirmExitModal(true)
                                       }
                                       else{
                                         onBackClick(routeId)
                                         dispatchSetEditingObject(false)
-                                        dispatchPageDataChanged(false)
                                       }
                                     }}
                                 />
+
                             </div>
-                            <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
+
+                            {/*<styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                     onClick={() => {
@@ -547,7 +608,8 @@ const TaskField = (props) => {
                                     New Route
                                 </styled.DualSelectionButton>
 
-                            </styled.RowContainer>
+                            </styled.RowContainer>*/}
+
 
                             {contentType === 'existing' &&
                                 <div style={{ marginBottom: '1rem', paddingBottom: '2rem', borderBottom: `2px solid ${themeContext.bg.tertiary}` }}>
@@ -649,48 +711,47 @@ const TaskField = (props) => {
 
                     {contentType === 'new' &&
                         <div>
-                            {!!selectedTask && isProcessTask && !!selectedTask.new ?
+                        <>
+                                {!!selectedTask && isProcessTask && !!selectedTask.new ?
+                                    <></>
+                                    :
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <ContentHeader
+                                            content={'tasks'}
+                                            mode={'create'}
+                                            onClickBack={() => {
+                                              if(JSON.stringify(selectedTask)!== JSON.stringify(values)){
+                                                setConfirmExitModal(true)
+                                              }
+                                              else{
+                                                onBackClick(routeId)
+                                                dispatchSetEditingObject(false)
+                                              }
+                                            }}
+                                        />
+                                    </div>
+                                }
+                            </>
 
-                                <styled.Label style={{ marginTop: '1rem' }}>
-                                    Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
-                            </styled.Label>
-                                :
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <ContentHeader
-                                        content={'tasks'}
-                                        mode={'create'}
-                                        onClickBack={() => {
-                                          if(!!pageInfoChanged){
-                                            setConfirmExitModal(true)
-                                          }
-                                          else{
-                                            onBackClick(routeId)
-                                            dispatchSetEditingObject(false)
-                                            dispatchPageDataChanged(false)
-                                          }
-                                        }}
-                                    />
-                                </div>
-
-                            }
 
                             {/* Task Title */}
                             {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
 
+                            <styled.Title>Route Name</styled.Title>
+
                             <TextField
                                 InputComponent={Textbox}
+                                placeholder = {"Route Name"}
                                 name={fieldParent ? `${fieldParent}.name` : "name"}
-                                placeholder={"New Route Name"}
-                                label={"Route Name"}
                                 schema={'tasks'}
-                                focus={params.page === "tasks" ? !name : name}
+                                focus={params.page === "processes" ? !name : name}
                                 inputStyle={{ background: isProcessTask ? themeContext.bg.primary : themeContext.bg.secondary }}
                                 style={{ fontSize: '1.2rem', fontWeight: '600' }}
                             />
 
                             {isTransportTask &&
                                 <>
-                                    <styled.Header style={{ marginTop: '1.5rem', marginRight: ".5rem", fontSize: '1.2rem' }}>Object</styled.Header>
+                                    <styled.Title style={{ marginTop: '2rem', marginRight: ".5rem"}}>Object</styled.Title>
 
                                     {!showObjectSelector &&
                                         <>
@@ -754,13 +815,14 @@ const TaskField = (props) => {
 
                                     {!showObjectSelector &&
                                         <styled.HelpText style={{ fontSize: '.8rem', marginBottom: '1rem' }}>
-                                            Select or create an object to be transported
+                                            Select an object to be transported
                                 </styled.HelpText>
                                     }
 
+
                                     {isProcessRoute &&
                                         <>
-                                            <styled.Label style={{ fontSize: '1.2rem', alignSelf: 'center' }}>Tracking Type</styled.Label>
+                                            <styled.Title style={{alignSelf: 'center' }}>Tracking Type</styled.Title>
                                             <styled.RowContainer style={{ justifyContent: 'center' }}>
                                                 <styled.DualSelectionButton
                                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
@@ -790,10 +852,9 @@ const TaskField = (props) => {
                             }
 
                             {/* Load and Unload Parameters */}
-                            <div style={{ height: "100%", paddingTop: "1rem" }}>
-                                {renderLoadUnloadParameters()}
+                            <div style={{ height: "100%"}}>
+                                {renderLoadUnloadFields()}
                             </div>
-
                             <hr />
                         </div>
                     }
@@ -805,38 +866,43 @@ const TaskField = (props) => {
                                 onClick={async () => {
                                     await onSave()
                                 }}
-                            >{(!!isProcessTask ? 'Add' : (selectedTask.new ? 'Create' : 'Save'))} Route</Button>
+                            >{(!isTaskInProcess ? 'Add' : 'Save')} Route</Button>
 
 
                             {/* Remove Task From Process Button */}
-                            {!!isProcessTask && selectedProcess ?
-                                <Button
-                                    schema={'error'}
-                                    disabled={!!selectedTask && !!selectedTask._id && isNew}
-                                    secondary
-                                    onClick={() => {
-                                        onRemove(routeId)
-                                    }}
-                                >
-                                    Remove Route
-                            </Button>
-                                :
-                                <Button
-                                    schema={'error'}
-                                    secondary
-                                    disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                                    onClick={() => {
-                                        setConfirmDeleteModal(true)
-                                    }}
 
-                                >
-                                    Delete Route
-                            </Button>
-                            }
+                                {!!isProcessTask && selectedProcess ?
+                                    <Button
+                                        schema={'error'}
+                                        disabled={!!selectedTask && !!selectedTask._id && isNew}
+                                        secondary
+                                        onClick={() => {
+                                            onRemove(routeId)
+                                        }}
+                                    >
+                                        Remove Route
+                                </Button>
+                                    :
+                                    <Button
+                                        schema={'error'}
+                                        secondary
+                                        disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                        onClick={() => {
+                                            setConfirmDeleteModal(true)
+                                        }}
+
+                                    >
+                                        Delete Route
+                                </Button>
+                                }
+
+
                         </>
                     }
 
                 </styled.ContentContainer>
+              </styled.TaskContainer>
+            </>
             }
         </>
 

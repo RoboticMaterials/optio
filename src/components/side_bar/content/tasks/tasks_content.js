@@ -50,7 +50,7 @@ export default function TaskContent(props) {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const stations = useSelector(state => state.stationsReducer.stations)

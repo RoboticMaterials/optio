@@ -61,7 +61,7 @@ const CreateScheduleForm = (props) => {
     const dispatch = useDispatch()
 
     const width = useSelector(state => state.sidebarReducer.width)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const isSmall = width < widthBreakPoint
 
     const tasksArr = Object.values(tasks).filter((task) => task.map_id === currentMap._id) // get copy of tasks as arr here instead of calling Object.values() multiple times

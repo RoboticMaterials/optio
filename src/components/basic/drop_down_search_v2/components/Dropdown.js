@@ -116,7 +116,7 @@ export const DefaultDropDownComponent = styled.div`
   max-height: ${({ dropdownHeight }) => dropdownHeight};
   overflow: auto;
   z-index: 100;
-    
+
     ${props => props.css && props.css};
 
   border-radius: 0.2rem;
@@ -145,7 +145,7 @@ export const DefaultDropDownComponent = styled.div`
   ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(255,255,255,0.2);
   }
-    
+
     max-width: ${props => props.maxWidth && props.maxWidth};
 
 }

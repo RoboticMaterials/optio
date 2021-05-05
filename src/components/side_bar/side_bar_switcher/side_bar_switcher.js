@@ -47,7 +47,7 @@ const SideBarSwitcher = (props) => {
                 currentMode={url}
             />
 
-            <SideBarButton
+          {/*  <SideBarButton
                 mode={'tasks'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
@@ -59,7 +59,7 @@ const SideBarSwitcher = (props) => {
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
-            />
+            /> */}
 
             <SideBarButton
                 mode={'processes'}

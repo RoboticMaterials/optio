@@ -23,11 +23,16 @@ export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
 
 `
 
+export const ColumnContainer = styled.div`
+	display: flex;
+	width: 100%;
+`
+
 export const Title = styled.h1`
     font-family: ${props => props.theme.font.primary};
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    color: ${props => props.theme.schema[props.schema].solid};
+    color: ${props => props.theme.bg.senary};
     user-select: none;
 `
 
@@ -58,6 +63,15 @@ export const SectionContainer = styled.div`
   background: ${props => props.theme.bg.secondary};
   border-radius: 0.4rem;
 `
+export const AddRoutesContainer = styled.div`
+	margin-bottom: 1rem;
+	margin-top: 0.5rem;
+	width: 100%;
+
+	display: flex;
+  flex-direction: column;
+
+`
 
 export const TaskContainer = styled.div`
     background-color: ${props => props.theme.bg.secondary};
@@ -66,7 +80,6 @@ export const TaskContainer = styled.div`
     // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
     scrollbar-color: light;
     scrollbar-width: thin;
-    min-height: 80%;
 `
 
 export const SVGText = styled.text`
@@ -75,4 +88,45 @@ export const SVGText = styled.text`
   width: 4rem;
   font-weight: 500;
   transform-origin: center;
+`
+
+export const BackIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.primary};
+
+    &:hover {
+        cursor: pointer;
+    }
+
+`
+
+export const DualSelectionButton = styled.button`
+    font-size: 1rem;
+    width: 100%;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.processes.solid : props.theme.bg.tertiary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
+`
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 `
