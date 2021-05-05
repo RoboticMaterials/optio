@@ -5,7 +5,7 @@ import * as commonCss from "../../../../common_css/common_css";
 
 // ========== Content ========== //
 export const DefaultContainer = styled.div`
-	postion: relative;
+	position: relative;
 `;
 
 

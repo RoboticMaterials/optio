@@ -11,7 +11,9 @@ const LotSimpleRow = (props) => {
 		label,
 		value,
 		containerStyle,
-		isLast
+		isLast,
+        labelStyle,
+        countStyle,
 	} = props
 
 
@@ -20,8 +22,8 @@ const LotSimpleRow = (props) => {
 			isLast={isLast}
 			style={containerStyle}
 		>
-			<styled.Label>{capitalizeFirstLetter(label)}</styled.Label>
-			<styled.Count>{value}</styled.Count>
+			<styled.Label style={labelStyle} >{capitalizeFirstLetter(label)}</styled.Label>
+			<styled.Count style={countStyle} >{value}</styled.Count>
 		</styled.Row>
 	);
 };

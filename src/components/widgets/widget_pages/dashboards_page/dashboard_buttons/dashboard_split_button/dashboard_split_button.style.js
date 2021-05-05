@@ -27,16 +27,16 @@ const ButtonStyle = css`
                 ${LightenDarkenColor(props.background, -20)} 0%, 
                 ${props.background} 50%, 
                 ${LightenDarkenColor(props.background, 20)} 100%)`
-            }
+        }
         }`
     }
     
     ${props => props.disabled &&
-        {
-            color: props.theme.bg.quaternary,
-            background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
-            pointerEvents: "none",
-        }
+    {
+        color: props.theme.bg.quaternary,
+        background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
+        pointerEvents: "none",
+    }
     }
     
 `
@@ -85,7 +85,7 @@ export const Container = styled.button`
     // flex layout
     flex-direction: row;
     
-    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary,  -50)}; 
+    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary, -50)}; 
     height: 4rem; 
     // line-height: 4rem; 
     margin-bottom: 1rem; 
@@ -93,6 +93,11 @@ export const Container = styled.button`
 
     padding: 0;
     padding-left: 0.5rem;
+
+    &:active{
+        box-shadow: none;
+        filter: brightness(85%);
+    }
   
 
 `

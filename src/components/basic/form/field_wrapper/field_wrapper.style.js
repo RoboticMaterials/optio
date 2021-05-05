@@ -19,15 +19,23 @@ export const DefaultContainerComponent = styled.div`
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  padding: 1rem;
 
+  border-radius: .5rem;
   width: 100%;
   height: 100%;
+  background: ${props => props.theme.bg.secondary};
+
+  >div {
+    margin-bottom: .5rem;
+  }
+  
 `
 
 export const FieldComponentContainer = styled.div`
   display: flex;
   align-self: stretch;
-  padding: 0 1rem 1rem 1rem;
+  //padding: 0 1rem 0 1rem;
   
   border-radius: 0rem 0rem 0.5rem 0.5rem;
   z-index: 5;
@@ -38,8 +46,9 @@ export const FieldComponentContainer = styled.div`
   align-items: center;
   justify-content: center;
   
-  background: ${props => props.updateColor ? props.theme.bg.secondary : "transparent"};
+  // background: ${props => props.updateColor ? props.theme.bg.secondary : "transparent"};
 
+  
 `
 
 export const DeleteContainer = styled.div`
@@ -68,22 +77,38 @@ export const StyleContainer = styled.div`
   
 `
 
+export const CheckItems = styled.div`
+  display: flex;
+`
+
+export const checkboxCss = css`
+  margin-right: .5rem;
+`
+
+export const CheckItemLabel = styled.span`
+  font-size: ${props => props.theme.fontSize.sz4};
+  color: ${props => props.theme.textColor};
+  white-space: nowrap;
+`
+
+export const Row = styled.div`
+  display: flex;
+  align-items: center;
+  &:not(:first-child) {
+    margin-left: 1rem;
+  }
+`
+
 export const LabelContainer = styled.div`
-  padding: 1rem 1rem 0.5rem 1rem;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
   position: relative;
   transition: all 1s ease;
   width: 100%;
-  background: ${props => props.updateColor ? props.theme.bg.secondary : "transparent"};
-
   display: flex;
   justify-content: center;
   align-items: center;
 `
 
 export const GapFiller = styled.div`
-	//background: white;
   position: absolute;
   left: 0;
   top: 0;

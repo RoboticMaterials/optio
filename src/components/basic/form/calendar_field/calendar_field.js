@@ -73,11 +73,6 @@ const CalendarField = ({
 					}}
 
 				/>
-				<ErrorTooltip
-					visible={hasError}
-					text={errorMessage}
-					ContainerComponent={styled.IconContainerComponent}
-				/>
 		</Container>
 	)
 }

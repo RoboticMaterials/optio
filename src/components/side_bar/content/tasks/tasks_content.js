@@ -32,7 +32,7 @@ import { willRouteDeleteBreakProcess } from "../../../../methods/utils/processes
 import { deleteRouteClean } from "../../../../redux/actions/tasks_actions";
 import { isObject } from "../../../../methods/utils/object_utils";
 import { DEVICE_CONSTANTS } from "../../../../constants/device_constants";
-import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_contants'
+import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_constants'
 import {getSidebarDeviceType, isRouteInQueue} from "../../../../methods/utils/task_queue_utils";
 import {isDeviceConnected} from "../../../../methods/utils/device_utils";
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { isEquivalent } from "../../../methods/utils/utils";
+import { getIsEquivalent } from "../../../methods/utils/utils";
 import {useField, useFormikContext} from "formik";
 
 // Updates fields in parent form
@@ -28,7 +28,7 @@ const useChange = (fieldName) => {
 
 		if(!changed) {
 
-			const issEquivalent = isEquivalent(initialValue, value)
+			const issEquivalent = getIsEquivalent(initialValue, value)
 
 
 			if(!issEquivalent) {

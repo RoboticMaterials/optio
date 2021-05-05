@@ -1,32 +1,30 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 // external components
 import Modal from 'react-modal';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from 'react-router-dom'
 
-// internal components
-import Button from "../../../../../basic/button/button";
-import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
-import {getCards, getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
+import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './finish_modal.style'
-import {useTheme} from "styled-components";
-import {getProcesses} from "../../../../../../redux/actions/processes_actions";
+import { useTheme } from "styled-components";
+import { getProcesses } from "../../../../../../redux/actions/processes_actions";
 import Textbox from "../../../../../basic/textbox/textbox";
-import {SORT_MODES} from "../../../../../../constants/common_contants";
-import {sortBy} from "../../../../../../methods/utils/card_utils";
+import { SORT_MODES } from "../../../../../../constants/common_contants";
+import { sortBy } from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
+import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
-import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
-import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
+import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
+import { getLotTemplates } from "../../../../../../redux/actions/lot_template_actions";
 import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
+import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 Modal.setAppElement('body');
@@ -38,13 +36,24 @@ const FinishModal = (props) => {
         title,
         close,
         dashboard,
-        onSubmit
+        onSubmit,
+
+        // If there is already a lot selected, then dont show selection screen
+        lotSelected,
     } = props
 
     // get current buttons, default to empty array
     const dashboardId = dashboard?._id?.$oid
 
+    const params = useParams()
     const theme = useTheme()
+
+    const {
+        stationID,
+        dashboardID,
+        subPage,
+        lotID
+    } = params || {}
 
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
@@ -59,17 +68,17 @@ const FinishModal = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
 
-    const [selectedLot, setSelectedLot] = useState(null)
+    const [selectedLot, setSelectedLot] = useState(lotSelected ? processCards[lotID] : null)
     const [lotCount, setLotCount] = useState(null)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(lotSelected)
     const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     const [lotFilterValue, setLotFilterValue] = useState('')
-    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+    const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
 
     const isButtons = availableKickOffCards.length > 0
 
@@ -115,7 +124,7 @@ const FinishModal = (props) => {
             _id: cardId,
         } = card
 
-        if(quantity && quantity > 0) {
+        if (quantity && quantity > 0) {
             // extract first station's bin and queue bin from bins
             const {
                 [stationId]: currentStationBin,
@@ -138,12 +147,12 @@ const FinishModal = (props) => {
                 },
             }
 
-            if(quantity < currentStationBinCount) {
+            if (quantity < currentStationBinCount) {
                 updatedCard = {
                     ...updatedCard,
                     bins: {
                         ...updatedCard.bins,
-                        [stationId]:  {
+                        [stationId]: {
                             ...currentStationBin,
                             count: parseInt(currentStationBinCount) - parseInt(quantity)
                         }
@@ -155,7 +164,7 @@ const FinishModal = (props) => {
             const result = await onPutCard(updatedCard, cardId)
 
             // check if request was successful
-            if(!(result instanceof Error)) {
+            if (!(result instanceof Error)) {
                 requestSuccessStatus = true
                 message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
             }
@@ -209,9 +218,9 @@ const FinishModal = (props) => {
 
                 const count = bins[stationId]?.count
                 const totalQuantity = getLotTotalQuantity({bins})
-                const templateValues = getLotTemplateData(lotTemplateId, currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard)
 
-                return(
+                return (
                     <Lot
                         totalQuantity={totalQuantity}
                         templateValues={templateValues}
@@ -226,13 +235,13 @@ const FinishModal = (props) => {
                         count={count}
                         id={lotId}
                         index={cardIndex}
-                        onClick={()=>{
+                        onClick={() => {
                             onButtonClick(currCard)
                         }}
-                        containerStyle={{marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto'}}
+                        containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
                     />
                 )
-        })
+            })
     }
 
     /**
@@ -264,23 +273,23 @@ const FinishModal = (props) => {
     useEffect(() => {
         var tempAvailableCards = []
 
-        if(finishEnabledDashboard && Array.isArray(finishEnabledDashboard)) finishEnabledDashboard.forEach((currProcessId) => {
+        if (finishEnabledDashboard && Array.isArray(finishEnabledDashboard)) finishEnabledDashboard.forEach((currProcessId) => {
             const currProcessCards = processCards[currProcessId]
 
             var filteredCards = []
-            if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
-                if(currCard.bins && currCard.bins[stationId]) return true
+            if (currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
+                if (currCard.bins && currCard.bins[stationId]) return true
             })
-            .map((currCard) => {
-                return{
-                    ...currCard,
-                    count: currCard.bins[stationId].count
-                }
-            })
+                .map((currCard) => {
+                    return {
+                        ...currCard,
+                        count: currCard.bins[stationId].count
+                    }
+                })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 
-        if(sortMode) {
+        if (sortMode) {
             sortBy(tempAvailableCards, sortMode, sortDirection)
         }
 
@@ -290,13 +299,13 @@ const FinishModal = (props) => {
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
-        if(availableKickOffCards.length >= 5 ) {
+        if (availableKickOffCards.length >= 5) {
             setShouldFocusLotFilter(true)
         }
     }, [availableKickOffCards.length])
 
-    if(showQuantitySelector) {
-        return(
+    if (showQuantitySelector) {
+        return (
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 maxValue={lotCount}
@@ -327,7 +336,7 @@ const FinishModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
@@ -337,7 +346,7 @@ const FinishModal = (props) => {
             <styled.Header>
                 <styled.HeaderMainContentContainer>
                     <styled.Title>{title}</styled.Title>
-                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
+                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close} />
                 </styled.HeaderMainContentContainer>
 
                 <SortFilterContainer
@@ -354,21 +363,25 @@ const FinishModal = (props) => {
             </styled.Header>
 
             <styled.BodyContainer>
-                    <div style={{display: "flex", flexDirection: "column", overflow: "hidden"}}>
-                        <styled.ContentContainer>
-                            <styled.ReportButtonsContainer isButtons={isButtons}>
-                                {isButtons ?
-                                    renderKickOffButtons()
-                                    :
-                                    <styled.NoButtonsText>No available lots.</styled.NoButtonsText>
-                                }
+                <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                    <styled.ContentContainer>
+                        <styled.ReportButtonsContainer isButtons={isButtons}>
+                            {isButtons ?
+                                renderKickOffButtons()
+                                :
+                                <styled.NoButtonsText>No available lots.</styled.NoButtonsText>
+                            }
 
-                            </styled.ReportButtonsContainer>
-                        </styled.ContentContainer>
-                    </div>
+                        </styled.ReportButtonsContainer>
+                    </styled.ContentContainer>
+                </div>
             </styled.BodyContainer>
         </styled.Container>
     );
 };
+
+FinishModal.defaultProps = {
+    lotSelected: false,
+}
 
 export default FinishModal
