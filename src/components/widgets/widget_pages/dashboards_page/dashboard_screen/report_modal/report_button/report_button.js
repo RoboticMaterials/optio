@@ -18,17 +18,25 @@ const ReportButton = (props) => {
 		color,
 		onClick,
 		className,
+		invert,
+		editing
 	} = props
 
 	return (
-		<styled.ButtonWidthContainer key={id} className={className}>
+		<styled.ButtonWidthContainer key={id} className={className}
+									 onClick={onClick}
+		>
+			{editing &&
+				<styled.EditIcon className="fas fa-edit"></styled.EditIcon>
+			}
 			<DashboardButton
+				invert={invert}
 				title={label}
 				key={id}
 				type={null}
 				iconClassName={iconClassName}
 				iconColor={color}
-				onClick={onClick}
+
 				containerStyle={{
 					height: '4rem',
 					minHeight: "4rem",
@@ -56,6 +64,8 @@ ReportButton.propTypes = {
 	color: PropTypes.string,
 	onClick: PropTypes.func,
 	className: PropTypes.string,
+	invert: PropTypes.bool,
+	editing: PropTypes.bool,
 };
 
 ReportButton.defaultProps = {
@@ -65,6 +75,8 @@ ReportButton.defaultProps = {
 	color: "",
 	onClick: () => {},
 	className: "",
+	invert: false,
+	editing: false,
 }
 
 export default React.memo(ReportButton)
