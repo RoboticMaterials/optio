@@ -15,6 +15,10 @@ const LotFlags = (props) => {
 
     const flags = currentLot?.flags
 
+    if(!flags){
+        return
+    }
+
     return (
         <styled.FlagsContainer
             style={{
