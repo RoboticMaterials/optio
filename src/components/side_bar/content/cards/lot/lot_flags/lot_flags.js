@@ -5,19 +5,14 @@ import * as styled from './lot_flags.style'
 
 // constants
 import { FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
+import PropTypes from "prop-types";
 
 const LotFlags = (props) => {
 
     const {
-        currentLot,
+        flags,
         containerStyle,
     } = props
-
-    const flags = currentLot?.flags
-
-    if(!flags){
-        return
-    }
 
     return (
         <styled.FlagsContainer
@@ -75,6 +70,16 @@ const LotFlags = (props) => {
             }
         </styled.FlagsContainer>
     )
+}
+
+// Specifies propTypes
+LotFlags.propTypes = {
+    flags: PropTypes.array
+}
+
+// Specifies the default values for props:
+LotFlags.defaultProps = {
+    flags: [],
 }
 
 export default LotFlags
