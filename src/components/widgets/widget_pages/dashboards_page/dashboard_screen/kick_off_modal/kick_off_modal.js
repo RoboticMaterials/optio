@@ -377,9 +377,6 @@ const KickOffModal = (props) => {
                     zIndex: 500,
                     backgroundColor: 'rgba(0, 0, 0, 0.4)' 
                 },
-                content: {
-
-                }
             }}
         >
             {showLotEditor &&

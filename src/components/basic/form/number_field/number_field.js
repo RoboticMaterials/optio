@@ -27,10 +27,13 @@ const longPressOptions = {
 	delay: 500,
 }
 
-const NumberField = ({
-						maxValue,
-						minValue,
-					   ...props }) => {
+const NumberField = (props) => {
+
+	const {
+		maxValue,
+		minValue,
+		...rest
+	} = props
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext()
 	const [field, meta] = useField(props)

@@ -46,7 +46,7 @@ import * as styled from './process_field.style'
 import theme from '../../../../../theme'
 import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
 import { throttle } from "../../../../../methods/utils/function_utils";
-import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_constants";
 import TaskAddedAlert
     from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 import { getSidebarDeviceType, isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";

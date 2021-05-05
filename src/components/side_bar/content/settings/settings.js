@@ -12,7 +12,7 @@ import ContentHeader from '../content_header/content_header'
 import { Timezones } from '../../../../constants/timezone_constants'
 import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TaskAddedAlert from "../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-import { ADD_TASK_ALERT_TYPE } from "../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../constants/dashboard_constants";
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'

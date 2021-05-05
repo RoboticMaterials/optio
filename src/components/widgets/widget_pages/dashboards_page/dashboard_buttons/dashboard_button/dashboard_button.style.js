@@ -10,7 +10,7 @@ export const Container = styled.button`
     // flex layout
     flex-direction: row;
     
-    box-shadow: ${props => props.disbaled && `0 9px 2px -4px ${LightenDarkenColor(props.theme.bg.secondary,  -50)}`}; 
+    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary, -50)}; 
     height: 4rem; 
     // line-height: 4rem; 
     margin-bottom: 1rem; 
@@ -18,6 +18,11 @@ export const Container = styled.button`
 
     padding: 0;
     padding-left: 0.5rem;
+
+    &:active{
+        box-shadow: none;
+        filter: brightness(85%);
+    }
 `
 
 export const ConditionText = styled.span`
@@ -35,4 +40,15 @@ export const IconContainer = styled.div`
     top: 0;
     bottom: 0;
     width: 10.75rem;
+`
+
+export const SchemaIcon = styled.i`
+    color: ${props => props.color};
+    padding: 0;
+    font-size: 2rem;
+    margin: 0;
+    height: fit-content;
+    width: fit-content;
+    // background: blue;
+
 `
