@@ -155,10 +155,10 @@ const Lot = (props) => {
         return (
             <LotFlags
                 currentLot={currentLot}
-                handlePopUp={() => { 
+                handlePopUp={() => {
                     console.log('QQQQ OPEN!!!')
-                    setPopupOpen(true) 
-                    
+                    setPopupOpen(true)
+
                 }}
             />
         )
@@ -171,7 +171,7 @@ const Lot = (props) => {
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
-            // onClick={onClick}
+            onClick={onClick}
             style={containerStyle}
         >
 
@@ -188,7 +188,9 @@ const Lot = (props) => {
                         }}
 
                         trigger={open => (
-                            renderFlags()
+                            <div>
+                                {renderFlags()}
+                            </div>
                         )}
                         open={popupOpen}
                         position="left center"
