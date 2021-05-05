@@ -9,10 +9,10 @@ import TimezonePicker, { timezones } from 'react-timezone';
 import Button from "../../../basic/button/button";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ContentHeader from '../content_header/content_header'
-import {Timezones} from '../../../../constants/timezone_constants'
+import { Timezones } from '../../../../constants/timezone_constants'
 import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TaskAddedAlert from "../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-import {ADD_TASK_ALERT_TYPE} from "../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../constants/dashboard_contants";
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'
@@ -30,7 +30,7 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { getIsEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Settings = () => {
 
@@ -41,9 +41,10 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
+    const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -77,12 +78,12 @@ const Settings = () => {
     }, [])
 
     useEffect(() => {
-      setLocalSettingsState(localSettings)
+        setLocalSettingsState(localSettings)
     }, [localSettings])
 
     const handleLoadLocalData = async () => {
-      await dispatchGetLocalSettings()
-      setLocalSettingsState(localSettings)
+        await dispatchGetLocalSettings()
+        setLocalSettingsState(localSettings)
     }
     /**
      * Handles updating settings on the server
@@ -104,31 +105,31 @@ const Settings = () => {
 
     const handleLockUnlockDashboards = (locked) => {
 
-      Object.values(dashboards).forEach((dashboard) => {
-        if(dashboard.name!=="MiR_SIM_2 Dashboard"){
-          const newDashboard = {
-            ...dashboard,
-            locked: locked
-          }
-          dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+        Object.values(dashboards).forEach((dashboard) => {
+            if (dashboard.name !== "MiR_SIM_2 Dashboard") {
+                const newDashboard = {
+                    ...dashboard,
+                    locked: locked
+                }
+                dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+            }
+        })
+
+        if (!locked) {
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "All Dashboards have been successfully unlocked!",
+            })
         }
-      })
-
-      if(!locked){
-        setAddTaskAlert({
-            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-            label: "All Dashboards have been successfully unlocked!",
-        })
-      }
-      else{
-        setAddTaskAlert({
-            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-            label: "All Dashboards have been successfully locked!",
-        })
-      }
+        else {
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "All Dashboards have been successfully locked!",
+            })
+        }
 
 
-      return setTimeout(() => setAddTaskAlert(null), 2500)
+        return setTimeout(() => setAddTaskAlert(null), 2500)
 
     }
 
@@ -173,7 +174,7 @@ const Settings = () => {
         await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
-        if(!localSettingsState.mapViewEnabled) {
+        if (!localSettingsState.mapViewEnabled) {
             history.push(`/`)
         }
 
@@ -182,32 +183,32 @@ const Settings = () => {
     const TimeZone = () => {
 
         return (
-          <styled.SettingContainer>
+            <styled.SettingContainer>
 
 
-              <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
+                <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
 
 
-              <styled.RowContainer style = {{borderColor: 'transparent'}}>
-                  <DropDownSearch
-                      placeholder="Select Timezone"
-                      label="Select your timezone"
-                      labelField="name"
-                      valueField="label"
-                      options={Timezones}
-                      values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
-                      dropdownGap={5}
-                      noDataLabel="No matches found"
-                      closeOnSelect="true"
-                      onChange={values => {
-                        handleUpdateServerSettings({timezone: values[0]})
-                      }}
+                <styled.RowContainer style={{ borderColor: 'transparent' }}>
+                    <DropDownSearch
+                        placeholder="Select Timezone"
+                        label="Select your timezone"
+                        labelField="name"
+                        valueField="label"
+                        options={Timezones}
+                        values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
+                        dropdownGap={5}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        onChange={values => {
+                            handleUpdateServerSettings({ timezone: values[0] })
+                        }}
 
-                      className="w-100"
-                  />
-              </styled.RowContainer>
+                        className="w-100"
+                    />
+                </styled.RowContainer>
 
-          </styled.SettingContainer>
+            </styled.SettingContainer>
         )
     }
 
@@ -216,14 +217,14 @@ const Settings = () => {
         return (
             <styled.SettingContainer >
 
-                <styled.RowContainer style = {{justifyContent: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white"}}>
+                <styled.RowContainer style={{ justifyContent: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
                     <styled.SwitchContainerLabel>Show Developer Settings</styled.SwitchContainerLabel>
 
                     <styled.ChevronIcon
-                        className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up':'fas fa-chevron-down'}
+                        className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
                         onClick={() => {
-                          handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                            handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
                     />
 
@@ -231,9 +232,9 @@ const Settings = () => {
 
                 {!!localSettingsState.toggleDevOptions ?
                     <>
-                        <styled.RowContainer style = {{borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
 
-                          <styled.SwitchContainerLabel>Enable Non Local API</styled.SwitchContainerLabel>
+                            <styled.SwitchContainerLabel>Enable Non Local API</styled.SwitchContainerLabel>
 
                             <Switch
                                 checked={localSettingsState.non_local_api}
@@ -247,17 +248,17 @@ const Settings = () => {
                         </styled.RowContainer>
 
                         {!!localSettingsState.non_local_api &&
-                          <styled.RowContainer style = {{marginTop: '0rem'}}>
+                            <styled.RowContainer style={{ marginTop: '0rem' }}>
                                 <Textbox
                                     placeholder="Enter a Non Local IP..."
-                                    value={!!localSettingsState.non_local_api_ip? localSettingsState.non_local_api_ip: ""}
+                                    value={!!localSettingsState.non_local_api_ip ? localSettingsState.non_local_api_ip : ""}
                                     onChange={(event) => {
                                         handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
                                     }}
                                     style={{ width: '100%' }}
                                 />
-                          </styled.RowContainer>
-                      }
+                            </styled.RowContainer>
+                        }
 
 
                         <styled.RowContainer>
@@ -290,7 +291,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer>
 
-                <styled.RowContainer style = {{marginTop: '2rem'}}>
+                <styled.RowContainer style={{ marginTop: '2rem' }}>
                     <styled.SwitchContainerLabel>Enable Map View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
@@ -308,29 +309,33 @@ const Settings = () => {
     const LockUnlockAllDashboards = () => {
         return (
             <styled.SettingContainer>
-            <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
-            <styled.RowContainer>
-                <Button
-                  style = {{width: '100%', minHeight: '3rem'}}
-                  schema = {"settings"}
-                  onClick = {()=>setConfirmUnlock(true)}
-                  >Unlock All Dashboards
+                <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
+                <styled.RowContainer>
+                    <Button
+                        style={{ width: '100%', minHeight: '3rem' }}
+                        schema={"settings"}
+                        onClick={() => setConfirmUnlock(true)}
+                    >Unlock All Dashboards
                 </Button>
 
-                <Button
-                  style = {{width: '100%', minHeight: '3rem'}}
-                  schema = {"settings"}
-                  onClick = {()=>setConfirmLock(true)}
-                  >Lock All Dashboards
+                    <Button
+                        style={{ width: '100%', minHeight: '3rem' }}
+                        schema={"settings"}
+                        onClick={() => setConfirmLock(true)}
+                    >Lock All Dashboards
                 </Button>
-              </styled.RowContainer>
+                </styled.RowContainer>
 
             </styled.SettingContainer>
         )
     }
 
     const CurrentMap = () => {
-
+        let selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+        if (!selectedMap) {
+            dispatchSetCurrentMap(maps[0])
+            selectedMap = maps[0]
+        }
         return (
             <styled.SettingContainer>
 
@@ -338,7 +343,7 @@ const Settings = () => {
                 <styled.SwitchContainerLabel>Select a Map</styled.SwitchContainerLabel>
 
 
-                <styled.RowContainer style = {{borderColor: 'transparent'}}>
+                <styled.RowContainer style={{ borderColor: 'transparent' }}>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
@@ -351,7 +356,7 @@ const Settings = () => {
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateServerSettings({currentMap: values[0]})
+                            handleUpdateServerSettings({ currentMap: values[0] })
                         }}
                         className="w-100"
                     />
@@ -381,9 +386,9 @@ const Settings = () => {
             cognitoUser.signOut();
 
             const updatedLocalSettings = {
-              ...localReducer,
-              authenticated: null,
-              refreshToken: null
+                ...localReducer,
+                authenticated: null,
+                refreshToken: null
             }
 
             dispatchPostLocalSettings(updatedLocalSettings)
@@ -392,9 +397,9 @@ const Settings = () => {
 
         }
         return (
-            <styled.SettingContainer style={{display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end'}}>
+            <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button style={{height: '2rem', flex: 1}} onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
@@ -407,24 +412,24 @@ const Settings = () => {
                 title={!!confirmLock ? "Are you sure you want to lock all dashboards?" : "Are you sure you want to unlock all dashboards?"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
-                handleClose={()=>{
-                  setConfirmLock(false)
-                  setConfirmUnlock(false)
+                handleClose={() => {
+                    setConfirmLock(false)
+                    setConfirmUnlock(false)
                 }}
                 handleOnClick1={() => {
-                  if(!!confirmLock){
-                    handleLockUnlockDashboards(true)
-                  }
-                  else{
-                    handleLockUnlockDashboards(false)
-                  }
-                  setConfirmLock(false)
-                  setConfirmUnlock(false)
+                    if (!!confirmLock) {
+                        handleLockUnlockDashboards(true)
+                    }
+                    else {
+                        handleLockUnlockDashboards(false)
+                    }
+                    setConfirmLock(false)
+                    setConfirmUnlock(false)
 
                 }}
-                handleOnClick2={()=>{
-                  setConfirmLock(false)
-                  setConfirmUnlock(false)
+                handleOnClick2={() => {
+                    setConfirmLock(false)
+                    setConfirmUnlock(false)
                 }}
             />
 

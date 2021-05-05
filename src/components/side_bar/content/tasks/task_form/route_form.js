@@ -46,14 +46,6 @@ const TaskForm = (props) => {
 
 	}, []);
 
-	useEffect(() => {
-		if(JSON.stringify(initialValues)!==JSON.stringify(values)){
-			dispatchPageDataChanged(true)
-		}
-		else{
-			dispatchPageDataChanged(false)
-		}
-	}, [values])
 
 	const handleSubmit = async (values) => {
 

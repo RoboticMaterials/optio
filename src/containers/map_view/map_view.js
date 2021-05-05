@@ -29,6 +29,7 @@ import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
 import Widgets from '../../components/widgets/widgets'
 import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
@@ -752,6 +753,10 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
+                    {!!this.props.showRouteConfirmation &&
+                        <RouteConfirmation d3={this.d3} />
+                    }
+
                     {!!this.props.devices &&
                         Object.values(this.props.devices).map((device) => {
                             if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
@@ -802,7 +807,7 @@ const mapStateToProps = function (state) {
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
         taskQueue: state.taskQueueReducer.taskQueue,
-
+        showRouteConfirmation: state.tasksReducer.showRouteConfirmation,
 
         selectedStation: state.stationsReducer.selectedStation,
         selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,

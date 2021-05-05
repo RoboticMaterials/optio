@@ -72,7 +72,6 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
-
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 

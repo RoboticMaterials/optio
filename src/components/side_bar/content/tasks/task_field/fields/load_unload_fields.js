@@ -33,7 +33,6 @@ const LoadUnloadFields = (props) => {
         values,
         isProcess
     } = props
-
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchSetTaskAttributes = (id, attr) => dispatch(setTaskAttributes(id, attr))
@@ -191,10 +190,10 @@ const LoadUnloadFields = (props) => {
                     A handoff does not require unload confirmation.
                 */}
                 {isHumanTask(selectedTask) &&
-                    <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
-                        <styled.RowContainer>
-                            <styled.Label style={{ marginBottom: '0rem', flex: "1" }}>
-                                {"Enable Confirm Unload"}
+                    <styled.ContentContainer style={{ padding: '0rem 0.3rem 0rem 0.3rem' }}>
+                        <styled.RowContainer style = {{justifyContent: "space-between"}}>
+                            <styled.Label style={{ marginBottom: '0rem'}}>
+                                {"Confirm Unload"}
                             </styled.Label>
 
                             <SwitchField
@@ -202,11 +201,11 @@ const LoadUnloadFields = (props) => {
                                 mapOutput={(val)=>!val}
                                 name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
                                 onColor='red'
-                                containerStyle={{ marginRight: '1rem' }}
+                                containerStyle={{ marginRight: '0rem'}}
                             />
                         </styled.RowContainer>
                         <styled.HelpText style = {{fontSize: "0.8rem", paddingTop: "1rem"}}>
-                            Tracks transit time by requiring button to be pressed at Unload Location
+                            Tracks transit time by requiring button to be pressed at unload location
                         </styled.HelpText>
 
                         {isMiRTask(selectedTask) &&

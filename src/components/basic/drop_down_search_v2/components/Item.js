@@ -46,8 +46,8 @@ class Item extends Component {
         } ${state.cursor === itemIndex ? `${LIB_NAME}-item-active` : ''} ${
           item.disabled ? `${LIB_NAME}-item-disabled` : ''
         }`}
-        onClick={item.disabled ? undefined : () => methods.addItem(item)}
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
+        onClick={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
         schema={props.schema}
         onMouseEnter = {() => {
@@ -61,7 +61,8 @@ class Item extends Component {
         }
         }}        >
 
-            <TextComponent>
+            <TextComponent
+            >
               {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
             </TextComponent>
 
