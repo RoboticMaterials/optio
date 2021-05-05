@@ -34,6 +34,8 @@ export const LotContainer = styled.div`
     flex: 1;
     
     padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 
 `
 

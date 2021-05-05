@@ -63,6 +63,8 @@ const DashboardLotFields = (props) => {
                             label={fieldName}
                             value={value}
                             isLast={isLast}
+                            labelStyle={{ fontSize: '1.25rem' }}
+                            countStyle={{ fontSize: '1.25rem' }}
                         />
                     )
                 }
@@ -73,6 +75,8 @@ const DashboardLotFields = (props) => {
                             label={fieldName}
                             isLast={isLast}
                             date={value}
+                            labelStyle={{ fontSize: '1.25rem' }}
+                            dateStyle={{ fontSize: '1.25rem' }}
                         />
 
                     )
@@ -96,6 +100,8 @@ const DashboardLotFields = (props) => {
                             label={fieldName}
                             value={value}
                             isLast={isLast}
+                            labelStyle={{ fontSize: '1.25rem' }}
+                            countStyle={{ fontSize: '1.25rem' }}
                         />
                     )
                 }
@@ -106,6 +112,8 @@ const DashboardLotFields = (props) => {
                             label={fieldName}
                             isLast={isLast}
                             value={value}
+                            labelStyle={{ fontSize: '1.25rem' }}
+                            countStyle={{ fontSize: '1.25rem' }}
                         />
                     )
                 }
@@ -120,12 +128,16 @@ const DashboardLotFields = (props) => {
             <LotSimpleRow
                 label={"Quantity"}
                 value={`${count}/${totalQuantity}`}
+                labelStyle={{ fontSize: '1.25rem' }}
+                countStyle={{ fontSize: '1.25rem' }}
             />
 
             {processName &&
                 <LotSimpleRow
                     label={"Process"}
                     value={processName}
+                    labelStyle={{ fontSize: '1.25rem' }}
+                    countStyle={{ fontSize: '1.25rem' }}
                 />
             }
             {renderLotFields}

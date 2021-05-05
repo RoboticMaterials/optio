@@ -155,11 +155,6 @@ const Lot = (props) => {
         return (
             <LotFlags
                 currentLot={currentLot}
-                handlePopUp={() => {
-                    console.log('QQQQ OPEN!!!')
-                    setPopupOpen(true)
-
-                }}
             />
         )
     }

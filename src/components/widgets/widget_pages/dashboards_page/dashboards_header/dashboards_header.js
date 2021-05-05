@@ -53,7 +53,6 @@ const DashboardsHeader = (props) => {
     const name = currentDashboard.name.length > 0 ? currentDashboard.name : stations[currentDashboard.station].name
 
     useEffect(() => {
-        console.log('QQQQ current dashboard', currentDashboard)
         return () => {
 
         }
