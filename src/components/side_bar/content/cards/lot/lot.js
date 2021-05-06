@@ -54,8 +54,6 @@ const Lot = (props) => {
     const dispatch = useDispatch()
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
 
-    const currentLot = useSelector(state => { return state.cardsReducer.cards[id] }) || {}
-
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
     const [popupOpen, setPopupOpen] = useState(false)
@@ -154,7 +152,7 @@ const Lot = (props) => {
     const renderFlags = () => {
         return (
             <LotFlags
-                currentLot={currentLot}
+                flags={flags}
             />
         )
     }

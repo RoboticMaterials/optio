@@ -264,7 +264,7 @@ const DashboardLotPage = (props) => {
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
-            <LotFlags currentLot={currentLot} containerStyle={{alignSelf:'center'}}/>
+            <LotFlags flags={currentLot?.flags} containerStyle={{alignSelf:'center'}}/>
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}
