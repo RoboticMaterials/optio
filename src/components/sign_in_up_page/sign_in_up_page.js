@@ -24,8 +24,6 @@ import PropagateLoader from "react-spinners/PropagateLoader";
 // Import actions
 import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
-import configData from '../../settings/config'
-
 /**
  * This page handles both sign in and sign up for RMStudio
  * @param {signIn} props
@@ -41,20 +39,6 @@ const SignInUpPage = (props) => {
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
     const localReducer = useSelector(state => state.localReducer.localSettings)
-
-    // Check to see if we want authentication *** Dev ONLY ***
-    if (!configData.authenticationNeeded) {
-        const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response => {
-            dispatchPostLocalSettings({
-                ...response,
-                authenticated: 'no',
-                //non_local_api_ip: window.location.hostname,
-                //non_local_api: true,
-            })
-        })
-
-    }
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
@@ -84,8 +68,8 @@ const SignInUpPage = (props) => {
 
         // User pool data for AWS Cognito
         const poolData = {
-            UserPoolId: configData.UserPoolId,
-            ClientId: configData.ClientId,
+            UserPoolId: process.env.REACT_APP_POOL_ID,
+            ClientId: process.env.REACT_APP_POOL_CLIENT,
         }
 
         const userPool = new CognitoUserPool(poolData)

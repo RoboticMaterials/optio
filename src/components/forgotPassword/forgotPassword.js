@@ -5,8 +5,6 @@ import * as styled from './forgotPassword.style'
 
 import { Formik, Form } from 'formik'
 
-import configData from '../../settings/config'
-
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
@@ -41,10 +39,10 @@ const ForgotPassword = (props) => {
     const [errorText, setErrorText] = useState('')
 
 
-    var poolData = {
-        UserPoolId: configData.UserPoolId,
-        ClientId: configData.ClientId,
-    };
+    const poolData = {
+        UserPoolId: process.env.REACT_APP_POOL_ID,
+        ClientId: process.env.REACT_APP_POOL_CLIENT,
+    }
 
     function resetPassword(email) {
 

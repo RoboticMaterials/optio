@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom'
 import * as styled from './authentication.style'
 
 // Authentication
-import configData from '../../settings/config'
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import actions
@@ -26,6 +25,9 @@ const Authentication = (props) => {
     const {
         mobileMode
     } = props
+
+    console.log("process.env",process.env)
+    // console.log("userPool.getCurrentUser()",userPool.getCurrentUser())
 
     const history = useHistory()
     const params = useParams()
@@ -63,21 +65,16 @@ const Authentication = (props) => {
         const localSettingsPromise = dispatchGetLocalSettings()
         localSettingsPromise.then(response =>{
 
-            if (!configData.authenticationNeeded) {
-
-                dispatchPostLocalSettings({
-                    ...response,
-                    authenticated: 'no'
-                })
-
-            } else {
-                var poolData = {
-                    UserPoolId: configData.UserPoolId,
-                    ClientId: configData.ClientId,
-                };
+            const poolData = {
+                UserPoolId: process.env.REACT_APP_POOL_ID,
+                ClientId: process.env.REACT_APP_POOL_CLIENT,
+            }
 
                 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
                 var cognitoUser = userPool.getCurrentUser();
+                console.log("cognitoUser",cognitoUser)
+                console.log("cognitoUser",cognitoUser)
+
 
                 if (cognitoUser != null) {
                     cognitoUser.getSession(function (err, session) {
@@ -87,6 +84,7 @@ const Authentication = (props) => {
                         }
 
                         if (session.isValid()) {
+                            console.log('sessionsession',session)
                             dispatchPostLocalSettings({
                                 ...response,
                                 authenticated:true,
@@ -94,7 +92,6 @@ const Authentication = (props) => {
                         }
                     });
                 }
-            }
         })
     }
 

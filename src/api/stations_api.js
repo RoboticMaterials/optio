@@ -2,23 +2,38 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+import apolloClient from "./apollo_client";
+import { gql, useQuery } from '@apollo/client';
 
 const operator = 'stations'
 
+
 export async function getStations() {
     try {
-        const response = await axios({
-            method: 'GET',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
+
+
+        const query = gql`query MyQuery {
+            listStations {
+                dashboards
+                id
+                children
+                mapId
+                organizationId
+                pos_x
+                pos_y
+                rotation
+                schema
+                type
+                    x
+                y
             }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        }`
+
+        apolloClient.query({query})
+        .then(result => console.log("resultresultresult",result))
+            .catch(err => {
+                console.log("GET STATIONS ERR", err)
+            })
 
 
     } catch (error) {

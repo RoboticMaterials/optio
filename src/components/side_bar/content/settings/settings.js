@@ -29,7 +29,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
 import { getIsEquivalent } from '../../../../methods/utils/utils'
-import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
 
 const Settings = () => {
@@ -375,10 +374,10 @@ const Settings = () => {
 
         const signOut = async () => {
 
-            var poolData = {
-                UserPoolId: config.UserPoolId,
-                ClientId: config.ClientId,
-            };
+            const poolData = {
+                UserPoolId: process.env.REACT_APP_POOL_ID,
+                ClientId: process.env.REACT_APP_POOL_CLIENT,
+            }
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
             var cognitoUser = userPool.getCurrentUser();
@@ -399,7 +398,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
+                <Button style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>
 
             </styled.SettingContainer>
         )
