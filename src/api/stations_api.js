@@ -35,6 +35,11 @@ export async function getStations() {
                 console.log("GET STATIONS ERR", err)
             })
 
+        // const {data,loading, networkStatus}
+        // const {
+        //     listStations
+        // } = data || {}
+
 
     } catch (error) {
 

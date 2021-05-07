@@ -536,7 +536,7 @@ const ApiContainer = (props) => {
 
                 return newDashboard.then(async (dashPromise) => {
                     console.log(dashPromise)
-                    device.dashboards = [dashPromise._id.$oid]
+                    device.dashboards = [dashPromise?._id]
                     await onPutDevice(device, device._id)
                 })
 
