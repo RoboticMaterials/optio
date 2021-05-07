@@ -62,7 +62,7 @@ const Cards = (props) => {
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
-    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id))
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
         height: undefined,
@@ -88,7 +88,7 @@ const Cards = (props) => {
     * filters processes by map id
     * */
     useEffect(() => {
-        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id))
     }, [processes])
 
     /*
@@ -190,7 +190,7 @@ const Cards = (props) => {
                 const {
                     binId: currAddingBinId,
                     cardId: currAddingLotId,
-                    process_id: currAddingProcessId,
+                    processId: currAddingProcessId,
                 } = currLotToAdd
 
                 const existingIndex = selectedCards.findIndex((currExistingLot) => {
@@ -240,7 +240,7 @@ const Cards = (props) => {
                 const {
                     binId: currAddingBinId,
                     cardId: currAddingLotId,
-                    process_id: currAddingProcessId,
+                    processId: currAddingProcessId,
                 } = currLotToAdd
 
 

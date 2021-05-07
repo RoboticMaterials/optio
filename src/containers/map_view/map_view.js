@@ -104,7 +104,7 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-      var defaultMap = this.props.maps.find((map) => map?._id === this.props.currentMap?._id && map?.name === this.props.currentMap?.name)
+      var defaultMap = this.props.maps.find((map) => map?.id === this.props.currentMap?.id && map?.name === this.props.currentMap?.name)
       if(!defaultMap){
         const updatedSettings = {
           ...this.props.settings,
@@ -191,7 +191,7 @@ export class MapView extends Component {
 
         // Handle Stations
         if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
-            this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
+            this.props.dispatchSetStationAttributes(this.props.selectedStation.id, {
                 x: e.clientX,
                 y: e.clientY
             })
@@ -199,7 +199,7 @@ export class MapView extends Component {
 
         // Handle Positions
         else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
-            this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
+            this.props.dispatchSetPositionAttributes(this.props.selectedPosition.id, {
                 x: e.clientX,
                 y: e.clientY
             })
@@ -209,7 +209,7 @@ export class MapView extends Component {
         else if (!!this.props.selectedStationChildrenCopy) {
             const draggingChild = Object.values(this.props.selectedStationChildrenCopy).find(position => position.temp === true)
             if (!!draggingChild && !this.props.selectedPosition) {
-                this.props.dispatchSetPositionAttributes(draggingChild._id, {
+                this.props.dispatchSetPositionAttributes(draggingChild.id, {
                     x: e.clientX,
                     y: e.clientY
                 })
@@ -229,7 +229,7 @@ export class MapView extends Component {
         // Handle Stations
         if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
             const pos = convertD3ToReal([this.props.selectedStation.x, this.props.selectedStation.y], this.d3)
-            this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
+            this.props.dispatchSetStationAttributes(this.props.selectedStation.id, {
                 pos_x: pos[0],
                 pos_y: pos[1],
                 temp: false
@@ -239,7 +239,7 @@ export class MapView extends Component {
         // Handle Posiitions
         else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
             const pos = convertD3ToReal([this.props.selectedPosition.x, this.props.selectedPosition.y], this.d3)
-            this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
+            this.props.dispatchSetPositionAttributes(this.props.selectedPosition.id, {
                 pos_x: pos[0],
                 pos_y: pos[1],
                 temp: false
@@ -253,10 +253,10 @@ export class MapView extends Component {
 
                 // Update the new entity to the edited child copy
                 // Uses copy instead of the naked state in case you dont want to keep changes
-                newChildEntity = this.props.selectedStationChildrenCopy[newChildEntity._id]
+                newChildEntity = this.props.selectedStationChildrenCopy[newChildEntity.id]
 
                 const pos = convertD3ToReal([newChildEntity.x, newChildEntity.y], this.d3)
-                this.props.dispatchSetPositionAttributes(newChildEntity._id, {
+                this.props.dispatchSetPositionAttributes(newChildEntity.id, {
                     pos_x: pos[0],
                     pos_y: pos[1],
                     temp: false
@@ -313,7 +313,7 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-                        stations[station._id] = station
+                        stations[station.id] = station
 
                     })
 
@@ -342,7 +342,7 @@ export class MapView extends Component {
                             y: y,
                         }
 
-                        positions[position._id] = position
+                        positions[position.id] = position
 
                     })
 
@@ -370,7 +370,7 @@ export class MapView extends Component {
                                 x: x,
                                 y: y,
                             }
-                            updatedChildrenPositions[position._id] = position
+                            updatedChildrenPositions[position.id] = position
 
                         })
                     }
@@ -386,7 +386,7 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-                        devices[device._id] = device
+                        devices[device.id] = device
                     })
                     this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
 
@@ -511,7 +511,7 @@ export class MapView extends Component {
                     x: x,
                     y: y,
                 }
-                stations[station._id] = station
+                stations[station.id] = station
             })
             this.props.dispatchUpdateStations(stations, null, this.d3) // Bulk Update
 
@@ -525,7 +525,7 @@ export class MapView extends Component {
                 }
                 // TODO: Delete
                 // Object.assign(position, { x, y })
-                positions[position._id] = position
+                positions[position.id] = position
             })
             this.props.dispatchUpdatePositions(positions, null, null, this.d3) // Bulk Update
 
@@ -537,7 +537,7 @@ export class MapView extends Component {
                     x: x,
                     y: y,
                 }
-                devices[device._id] = device
+                devices[device.id] = device
             })
             this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
 
@@ -679,14 +679,14 @@ export class MapView extends Component {
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
-                                        .filter(station => (station.map_id === this.props.currentMap._id))
+                                        .filter(station => (station.mapId === this.props.currentMap.id))
                                         .map((station, ind) =>
 
                                             <Station
                                                 key={`loc-${ind}`}
                                                 // If there is a selected station, then render the selected station vs station in redux
                                                 // Selected station could contain local edits that are not on the backend (naked redux) yet
-                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                station={(!!selectedStation && station.id === selectedStation.id) ? selectedStation : station}
                                                 // station={station}
                                                 rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
                                                 d3={this.d3}
@@ -701,19 +701,19 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => (position.map_id === this.props.currentMap._id))
+                                        .filter(position => (position.mapId === this.props.currentMap.id))
                                         .map((position, ind) =>
                                             <Position
                                                 key={`pos-${ind}`}
                                                 position={
-                                                    (!!selectedPosition && position._id === selectedPosition._id) ?
+                                                    (!!selectedPosition && position.id === selectedPosition.id) ?
                                                         // If there is a selected station, then render the selected station vs station in redux
                                                         // Selected station could contain local edits that are not on the backend (naked redux) yet
                                                         selectedPosition
                                                         :
                                                         // If the positions parent is currently being edited
-                                                        (!!selectedStationChildrenCopy && position._id in selectedStationChildrenCopy) ?
-                                                            selectedStationChildrenCopy[position._id]
+                                                        (!!selectedStationChildrenCopy && position.id in selectedStationChildrenCopy) ?
+                                                            selectedStationChildrenCopy[position.id]
                                                             :
                                                             position
                                                 }
@@ -736,7 +736,7 @@ export class MapView extends Component {
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
                                             <>
                                                 {device.connected == true &&
-                                                    <MiR100 key={device._id}
+                                                    <MiR100 key={device.id}
                                                         device={device}
                                                         d3={this.d3}
                                                     />
@@ -759,8 +759,8 @@ export class MapView extends Component {
 
                     {!!this.props.devices &&
                         Object.values(this.props.devices).map((device) => {
-                            if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
-                                const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
+                            if (!!device.currentTaskQueueId && !!this.props.taskQueue[device.currentTaskQueueId] && !!this.props.taskQueue[device.currentTaskQueueId].custom_task && !!this.props.taskQueue[device.currentTaskQueueId].custom_task.coordinate) {
+                                const [x, y] = convertRealToD3([this.props.taskQueue[device.currentTaskQueueId].custom_task.coordinate.pos_x, this.props.taskQueue[device.currentTaskQueueId].custom_task.coordinate.pos_y], this.d3)
 
                                 return (
                                     <CartWaypoint
@@ -829,7 +829,7 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {
     return {
-        dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
+        dispatchGetMap: (mapId) => dispatch(getMap(mapId)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
 

@@ -47,7 +47,7 @@ export const getMaps = () => {
 
 // get map details
 // ******************************
-export const getMap = (map_id) => {
+export const getMap = (mapId) => {
     return async dispatch => {
 
       function onStart() {
@@ -64,7 +64,7 @@ export const getMap = (map_id) => {
 
       try {
         onStart();
-        const map = await api.getMap(map_id);
+        const map = await api.getMap(mapId);
         return onSuccess(map);
       } catch (error) {
         return onError(error);

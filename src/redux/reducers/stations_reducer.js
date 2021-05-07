@@ -55,10 +55,10 @@ export default function stationsReducer(state = defaultState, action) {
             ...state,
             stations: {
                 ...state.stations,
-                [station._id]: station
+                [station.id]: station
             },
             // If the post station is the selectedStation, then update selected station
-            selectedStation: (state.selectedStation !== null && state.selectedStation._id === station._id) && station,
+            selectedStation: (state.selectedStation !== null && state.selectedStation.id === station.id) && station,
             pending: false,
         }
     }
@@ -78,7 +78,7 @@ export default function stationsReducer(state = defaultState, action) {
         // Sets Stations Attributes
         case SET_STATION_ATTRIBUTES:
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
-            if (!!state.selectedStation && action.payload.id === state.selectedStation._id) {
+            if (!!state.selectedStation && action.payload.id === state.selectedStation.id) {
                 return {
                     ...state,
                     selectedStation: {

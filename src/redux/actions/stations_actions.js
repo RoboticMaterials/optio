@@ -40,7 +40,7 @@ import { deepCopy } from '../../methods/utils/utils';
 import { stationsSchema } from '../../normalizr/schema'
 
 // Import API
-import * as api from '../../api/stations_api'
+import * as api from '../../api/stations/stations_api'
 
 // Import Store
 import store from '../store/index'
@@ -129,7 +129,7 @@ export const putStation = (station) => {
             let stationCopy = deepCopy(station)
             await dispatch(onSaveChildren())
             delete stationCopy.temp
-            const updateStation = await api.putStation(stationCopy, stationCopy._id);
+            const updateStation = await api.putStation(stationCopy, stationCopy.id);
             return onSuccess(updateStation)
         } catch (error) {
             return onError(error)
@@ -158,7 +158,7 @@ export const putStationWithoutSavingChildren = (station) => {
             onStart();
             let stationCopy = deepCopy(station)
             delete stationCopy.temp
-            const updateStation = await api.putStation(stationCopy, stationCopy._id);
+            const updateStation = await api.putStation(stationCopy, stationCopy.id);
             return onSuccess(updateStation)
         } catch (error) {
             return onError(error)
@@ -186,7 +186,7 @@ export const deleteStation = (ID) => {
         try {
             onStart();
             const station = await dispatch(onDeleteStation(ID))
-            const removeStation = await api.deleteStation(station._id);
+            const removeStation = await api.deleteStation(station.id);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -262,7 +262,7 @@ const onRemoveStation = (id) => {
                 await dispatch(deletePosition(position, true))
             })
         }
-        return station._id
+        return station.id
     }
 }
 
@@ -293,7 +293,7 @@ const onDeleteStation = (id) => {
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!station.new) {
-            dispatch(removeStation(station._id))
+            dispatch(removeStation(station.id))
             return null
         }
 
@@ -308,9 +308,9 @@ const onDeleteStation = (id) => {
             // Sees if any tasks are associated with the position and delete them
             const tasks = tasksState.tasks
             Object.values(tasks).filter(task => {
-                return task.load.station === station._id || task.unload.station === station._id
+                return task.load.station === station.id || task.unload.station === station.id
             }).forEach(async relevantTask => {
-                await dispatch(deleteTask(relevantTask._id))
+                await dispatch(deleteTask(relevantTask.id))
             })
 
 
@@ -326,12 +326,12 @@ const onPostStation = (station) => {
             name: "",
             locked: false,
             buttons: [],
-            station: station._id
+            station: station.id
         }
 
         //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
         const postedDashboard = await dispatch(postDashboard(defaultDashboard))
-        station.dashboards = [postedDashboard._id.$oid]
+        station.dashboards = [postedDashboard.id]
 
         // Save Children
         await dispatch(onSaveChildren())

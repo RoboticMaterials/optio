@@ -16,7 +16,7 @@ mockStore.dispatch({
     type: 'SET_SELECTED_TASK', payload: {
         task: {
 
-            "_id": "5dce4e79-758c-4a89-81f1-bd48a0a6550b",
+            "id": "5dce4e79-758c-4a89-81f1-bd48a0a6550b",
             "name": "Route 1",
             "obj": "b81156bd-9859-498a-acfa-36c4451391f9",
             "type": "push",
@@ -24,7 +24,7 @@ mockStore.dispatch({
             "device_type": "human",
             "handoff": true,
             "track_quantity": true,
-            "map_id": "8cbe09ff-3bb0-11ea-975b-94c691a739e9",
+            "mapId": "8cbe09ff-3bb0-11ea-975b-94c691a739e9",
             "processes": [
                 "2e0104ee-b145-4e88-9c84-6166e641284d"
             ],

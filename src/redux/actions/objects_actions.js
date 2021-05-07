@@ -65,7 +65,7 @@ export const getObjects = () => {
 
             const normalizedObjects = {}
             objects.map((object) => {
-                normalizedObjects[object._id] = object
+                normalizedObjects[object.id] = object
             })
 
             return onSuccess(normalizedObjects);
@@ -80,7 +80,7 @@ export const getObjects = () => {
 
 // get object details
 // ******************************
-// export const getObject = (object_id) => {
+// export const getObject = (objectId) => {
 //   return async dispatch => {
 
 //     function onStart() {
@@ -97,7 +97,7 @@ export const getObjects = () => {
 
 //     try {
 //       onStart();
-//       const object_details = await api.getObject(object_id);
+//       const object_details = await api.getObject(objectId);
 //       return onSuccess(object_details);
 //     } catch (error) {
 //       return onError(error);

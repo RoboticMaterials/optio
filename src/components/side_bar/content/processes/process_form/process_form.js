@@ -109,14 +109,14 @@ const ProcessForm = (props) => {
 		}
 
 		dispatchSetSelectedTask(null) // clear selected task
-		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute._id)
+		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute.id)
 
 		// if new, POST
 		if (remainingValues.new) {
 			await dispatchPostProcess({
 				...remainingValues,
 				routes: mappedRoutes,
-				map_id: currentMap._id,
+				mapId: currentMap.id,
 			})
 		}
 
@@ -125,7 +125,7 @@ const ProcessForm = (props) => {
 			await dispatchPutProcess({
 				...remainingValues,
 				routes: mappedRoutes,
-				map_id: currentMap._id,
+				mapId: currentMap.id,
 			})
 		}
 
@@ -168,7 +168,7 @@ const ProcessForm = (props) => {
 		if (selectedProcess.routes.length > 0) {
 			selectedProcess.routes.forEach(route => {
 				if(isObject(route)) {
-					dispatchDeleteRouteClean(route._id)
+					dispatchDeleteRouteClean(route.id)
 				}
 				else {
 					dispatchDeleteRouteClean(route)
@@ -176,7 +176,7 @@ const ProcessForm = (props) => {
 			})
 		}
 
-		await dispatchDeleteProcessClean(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess.id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
@@ -185,7 +185,7 @@ const ProcessForm = (props) => {
 
 	const handleDeleteWithoutRoutes = async () => {
 
-		await dispatchDeleteProcessClean(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess.id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
@@ -239,10 +239,10 @@ const ProcessForm = (props) => {
 				name: selectedProcess ? selectedProcess.name : "",
 				routes: handleInitialRoutes(),
 				broken: selectedProcess ? selectedProcess.broken : false,
-				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
+				id: selectedProcess ? selectedProcess.id : uuid.v4(),
 				new: selectedProcess.new,
 				newRoute: null,
-				map_id: currentMap._id,
+				mapId: currentMap.id,
 				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
 

@@ -119,12 +119,12 @@ export default function LocationContent() {
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
                         // Filters out devices, entry positions, other positions and right click to move positions
-                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.map_id === currentMap._id))
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.mapId === currentMap.id))
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => {
                   if(selectedLocation===null){
-                    onSetSelectedLocation(location._id)
+                    onSetSelectedLocation(location.id)
                   }
                 }}
                 onMouseLeave={() => {
@@ -133,7 +133,7 @@ export default function LocationContent() {
                 }}
                 onClick={(location) => {
                     console.log('QQQQ Editing Location', location)
-                    onEditLocation(location._id)
+                    onEditLocation(location.id)
                 }}
                 onPlus={() => {
                     dispatchSetEditingStation(true)

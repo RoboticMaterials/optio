@@ -277,7 +277,7 @@ export const getAllTemplateFields = () => {
     Object.values(lotTemplates).forEach((currLotTemplate) => {
         const {
             fields,
-            _id: lotTemplateId
+            id: lotTemplateId
         } = currLotTemplate || {}
 
         fields.forEach((currRow) => {
@@ -288,7 +288,7 @@ export const getAllTemplateFields = () => {
                     dataType,		//"DATE_RANGE"
                     fieldName,		//"dates"
                     key,			//1
-                    _id,			//1
+                    id,			//1
                 } = currField || {}
 
                 const item = {
@@ -434,7 +434,7 @@ export const getCurrentRouteForLot = (lot, stationID) => {
     const processes = store.getState().processesReducer.processes || {}
     const routes = store.getState().tasksReducer.tasks || {}
 
-    const lotProcess = processes[lot.process_id]
+    const lotProcess = processes[lot.processId]
 
     for (let i = 0; i < lotProcess.routes.length; i++) {
         const loadStation = routes[lotProcess.routes[i]].load.station

@@ -122,7 +122,7 @@ export default function dashboardsReducer(state = defaultState, action) {
         case POST_DASHBOARD_SUCCESS:
             return {
                 ...state,
-                dashboards: {...state.dashboards, [action.payload._id.$oid]: action.payload},
+                dashboards: {...state.dashboards, [action.payload.id]: action.payload},
                 pending: false,
 
             }
@@ -151,7 +151,7 @@ export default function dashboardsReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                dashboards: {...state.dashboards, [action.payload._id.$oid]: action.payload},
+                dashboards: {...state.dashboards, [action.payload.id]: action.payload},
             }
 
         case PUT_DASHBOARD_FAILURE:

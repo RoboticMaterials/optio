@@ -109,7 +109,7 @@ const WidgetButton = (props) => {
             })
             dispatchWidgetLoaded(false)
             dispatchHoverStationInfo(null)
-            dispatchRemovePosition(selectedPosition._id)
+            dispatchRemovePosition(selectedPosition.id)
             dispatchSetSelectedPosition(null)
         }
         else {
@@ -129,7 +129,7 @@ const WidgetButton = (props) => {
     const onCancelClick = () => {
         dispatchWidgetLoaded(false)
         dispatchHoverStationInfo(null)
-        dispatchRemovePosition(selectedPosition._id)
+        dispatchRemovePosition(selectedPosition.id)
         dispatchSetSelectedPosition(null)
     }
 
@@ -159,7 +159,7 @@ const WidgetButton = (props) => {
                 name: selectedLocation.name + ' Dashboard',
                 locked: false,
                 buttons: [],
-                station: selectedLocation._id
+                station: selectedLocation.id
             }
 
             //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
@@ -167,9 +167,9 @@ const WidgetButton = (props) => {
 
             postDashboardPromise.then(async postedDashboard => {
 
-                selectedLocation.dashboards = [postedDashboard._id.$oid]
+                selectedLocation.dashboards = [postedDashboard.id]
 
-                await dispatchPutStation(selectedLocation, selectedLocation._id)
+                await dispatchPutStation(selectedLocation, selectedLocation.id)
 
                 history.push('/locations/' + id + '/' + type + '/' + dashboardID)
 

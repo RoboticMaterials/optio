@@ -60,7 +60,7 @@ const DashboardButtonList = ((props) => {
 
         const {
             type,
-            task_id: taskID,
+            taskId: taskID,
             id: buttonId,
             custom_task
         } = currentButton || {}

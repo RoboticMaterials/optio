@@ -148,8 +148,8 @@ const Widgets = (props) => {
         // If the schema is a station then show these buttons, else it's a position
         else if (location.schema === 'station') {
             // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
-            if (!!location.device_id) {
-                const device = devices[location.device_id]
+            if (!!location.deviceId) {
+                const device = devices[location.deviceId]
                 let deviceType = DeviceItemTypes['generic']
 
                 if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]

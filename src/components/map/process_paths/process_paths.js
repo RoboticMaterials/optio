@@ -21,11 +21,11 @@ const ProcessPaths = (props) => {
                 const {
                     load,
                     unload,
-                    _id: routeId
+                    id: routeId
                 } = (isObject(route) ? route : tasks[route]) || {}
 
                 const {
-                    _id: selectedRouteId
+                    id: selectedRouteId
                 } = selectedTask || {}
 
                 if(routeId === selectedRouteId) return false    // selected route is shown separately, so don't double dip
@@ -50,7 +50,7 @@ const ProcessPaths = (props) => {
             .map((route, ind) => {
                 if( isObject(route) ) {
                     return (
-                        <TaskPaths d3={d3} route={route} key={route._id} />
+                        <TaskPaths d3={d3} route={route} key={route.id} />
                     )
                 }
                 else {

@@ -195,7 +195,7 @@ export const ProcessField = (props) => {
 
             // add unsaved key if route being added doesn't already exist - used to determine if a route has been saved or not
             var newRoute
-            if (tasks[remainingRoute._id]) {
+            if (tasks[remainingRoute.id]) {
                 // task exists
                 newRoute = { ...remainingRoute }
             }
@@ -223,8 +223,8 @@ export const ProcessField = (props) => {
                 value: currRouteValue,
             } = fieldMeta
 
-            const routeProcesses = getRouteProcesses(currRouteValue._id) // get routes processes
-            const belongsToAnotherProcess = routeProcesses.findIndex((currProcess) => currProcess._id !== values._id) // does route belong to another process?
+            const routeProcesses = getRouteProcesses(currRouteValue.id) // get routes processes
+            const belongsToAnotherProcess = routeProcesses.findIndex((currProcess) => currProcess.id !== values.id) // does route belong to another process?
 
             // if route belongs to more than one process, give option to make a copy of the route so other processes won't be affected
             if (belongsToAnotherProcess !== -1) {
@@ -280,7 +280,7 @@ export const ProcessField = (props) => {
 
 
         const newId = uuid.v4()
-        const routeClone = { ...remainingValues, _id: newId, new: true } // copy all attributes, but make new id
+        const routeClone = { ...remainingValues, id: newId, new: true } // copy all attributes, but make new id
 
         // Not a new process, so save changes now
         if (!values.new) {
@@ -320,7 +320,7 @@ export const ProcessField = (props) => {
         setFieldValue("broken", willBreak)
 
         // Remove the route from the process
-        const index = values.routes.findIndex((currRoute) => currRoute._id === routeId)
+        const index = values.routes.findIndex((currRoute) => currRoute.id === routeId)
         let updatedRoutes = [...values.routes]
         updatedRoutes.splice(index, 1)
 
@@ -333,13 +333,13 @@ export const ProcessField = (props) => {
       var newRoute = true;
 
       Object.values(selectedProcess.routes).map((route) => {
-        if(route._id===selectedTask._id){
+        if(route.id===selectedTask.id){
           newRoute = false;
         }
       })
 
       if(newRoute === false){
-        const index = values.routes.findIndex((currRoute) => currRoute._id === selectedTask._id)
+        const index = values.routes.findIndex((currRoute) => currRoute.id === selectedTask.id)
         let updatedRoutes = [...values.routes]
         updatedRoutes.splice(index , 1)
         updatedRoutes.splice(index, 0, selectedTask)
@@ -366,14 +366,14 @@ export const ProcessField = (props) => {
 
         await dispatchDeleteRouteClean(routeId)
 
-        setFieldValue("routes", values.routes.filter(((currRoute) => currRoute._id !== routeId)))
+        setFieldValue("routes", values.routes.filter(((currRoute) => currRoute.id !== routeId)))
     }
 
     const handleIsRouteInProcess = () => {
       var inProcess = false;
 
       Object.values(selectedProcess?.routes).map((route) => {
-        if(route._id===selectedTask?._id){
+        if(route.id===selectedTask?.id){
           inProcess = true;
         }
       })
@@ -452,7 +452,7 @@ export const ProcessField = (props) => {
         }).map((currRoute, currIndex) => {
 
             const {
-                _id: currRouteId = "",
+                id: currRouteId = "",
             } = currRoute || {}
 
             const isLast = currIndex === routes.length - 1
@@ -500,7 +500,7 @@ export const ProcessField = (props) => {
 
                     <Button
                         schema={'devices'}
-                        // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                        // disabled={!!selectedProcess && !!selectedProcess.id && !!selectedProcess.new}
                         style={{margin: '0 0.5rem', width: 'calc(100% - 1rem)', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
                         disabled={selectedTask?.new}
                         tertiary
@@ -646,7 +646,7 @@ export const ProcessField = (props) => {
         const {
             value: currRouteValue,
         } = fieldMeta
-        const routeProcesses = getRouteProcesses(currRouteValue._id)
+        const routeProcesses = getRouteProcesses(currRouteValue.id)
 
         return (
             <div>
@@ -833,7 +833,7 @@ export const ProcessField = (props) => {
                         <Button
                             schema={'error'}
                             style = {{position: "absolute", bottom: "1rem", width: "90%"}}
-                            disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                            disabled={!!selectedProcess && !!selectedProcess.id && !!selectedProcess.new}
                             secondary
                             onClick={() => {
                                 setConfirmDeleteModal(true)

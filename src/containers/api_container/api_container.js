@@ -529,15 +529,15 @@ const ApiContainer = (props) => {
                 const newDeviceDashboard = {
                     name: `${device.device_name} Dashboard`,
                     buttons: [],
-                    device: device._id,
+                    device: device.id,
                 }
 
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
                 return newDashboard.then(async (dashPromise) => {
                     console.log(dashPromise)
-                    device.dashboards = [dashPromise?._id]
-                    await onPutDevice(device, device._id)
+                    device.dashboards = [dashPromise?.id]
+                    await onPutDevice(device, device.id)
                 })
 
 
@@ -551,22 +551,22 @@ const ApiContainer = (props) => {
                     const newDeviceDashboard = {
                         name: `${device.device_name} Dashboard`,
                         buttons: [],
-                        device: device._id,
+                        device: device.id,
                     }
 
                     const newDashboard = onPostDashoard(newDeviceDashboard)
 
                     return newDashboard.then(async (dashPromise) => {
-                        if (dashPromise._id !== undefined) {
+                        if (dashPromise.id !== undefined) {
                             // Add new dashboard
-                            device.dashboards.push(dashPromise._id.$oid)
+                            device.dashboards.push(dashPromise.id)
 
                             // Delete old dashboard
                             const index = device.dashboards.indexOf(dashboard)
                             device.dashboards.splice(index, 1)
                         }
 
-                        await onPutDevice(device, device._id)
+                        await onPutDevice(device, device.id)
                     })
 
 
@@ -600,9 +600,9 @@ const ApiContainer = (props) => {
 
             // Deletes the task if the load/unload position/station has been deleted from the positon list
             if ((!positions[task.load.position] && !stations[task.load.position]) || (!positions[task.unload.position]) && !stations[task.unload.position]) {
-                console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id)
+                console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task.id)
                 alert('Position doesnt exist in positions, DELETE TASK')
-                await onDeleteTask(task._id)
+                await onDeleteTask(task.id)
                 return
             }
 
@@ -611,19 +611,10 @@ const ApiContainer = (props) => {
                 (!!positions[task.unload.position] && !!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
                 console.log('QQQQ Position is deleted, waiting on back end, DELETE TASK')
                 alert('Position is deleted, waiting on back end, DELETE TASK')
-                await onDeleteTask(task._id)
+                await onDeleteTask(task.id)
                 return
             }
 
-            // Commented out for the AMR demo
-            // Deletes the task if the load/unload position has a parent, but that parent does not exist in stations (parent has been deleted)
-            // Also should delete the position as well
-            // if ((!!positions[task.load.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent)) ||
-            //     (!!positions[task.unload.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent))) {
-            //     console.log('QQQQ Position parent has been deleted, DELETE TASK AND POSITION')
-            //     await onDeleteTask(task._id)
-            //     return
-            // }
         })
     }
 
@@ -659,7 +650,7 @@ const ApiContainer = (props) => {
 
         Object.values(stations).map((station) => {
 
-            // if(station.children === undefined) onDeleteStation(station._id)
+            // if(station.children === undefined) onDeleteStation(station.id)
 
             station.children.map(async (position, ind) => {
                 if (!!positions[position] && positions[position].parent === null) {
@@ -668,9 +659,9 @@ const ApiContainer = (props) => {
                     console.log('QQQQ Stations with broken position', brokenPosition)
                     alert('Stations with broken position')
 
-                    brokenPosition.parent = station._id
+                    brokenPosition.parent = station.id
 
-                    onPutPosition(brokenPosition, brokenPosition._id)
+                    onPutPosition(brokenPosition, brokenPosition.id)
 
                 }
 
@@ -680,7 +671,7 @@ const ApiContainer = (props) => {
                     alert('Stations with deleted position')
 
                     brokenStation.children.splice(ind, 1)
-                    await onPutStation(brokenStation, brokenStation._id)
+                    await onPutStation(brokenStation, brokenStation.id)
                 }
             })
         })
@@ -698,11 +689,11 @@ const ApiContainer = (props) => {
         if (devices === undefined || stations === undefined) return
 
         Object.values(devices).map(async (device) => {
-            if (!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
+            if (!!device.stationId && !Object.keys(stations).includes(device.stationId)) {
                 console.log('QQQQ Device has a station ID that needs to be deleted', device)
                 alert('Device has a station ID that needs to be deleted')
-                delete device.station_id
-                onPutDevice(device, device._id)
+                delete device.stationId
+                onPutDevice(device, device.id)
             }
         })
 
@@ -724,21 +715,21 @@ const ApiContainer = (props) => {
         Object.values(stations).map((station) => {
 
             // Delete station
-            if (!!station.device_id && devices[station.device_id] === undefined) {
+            if (!!station.deviceId && devices[station.deviceId] === undefined) {
                 console.log('QQQQ Station has a device that is deleted')
                 alert('Station has a device that is deleted')
 
-                onDeleteStation(station._id)
+                onDeleteStation(station.id)
             }
 
             // Add station to device
-            else if (!!station.device_id && !devices[station.device_id].station_id) {
+            else if (!!station.deviceId && !devices[station.deviceId].stationId) {
                 console.log('QQQQ Station has a broken device')
                 alert('Station has a broken device')
 
-                const device = devices[station.device_id]
-                device.station_id = station._id
-                onPutDevice(device, device._id)
+                const device = devices[station.deviceId]
+                device.stationId = station.id
+                onPutDevice(device, device.id)
 
             }
         })
@@ -758,7 +749,7 @@ const ApiContainer = (props) => {
             if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 alert('Dashboard belongs to a station that does not exist')
-                onDeleteDashboard(dashboard._id.$oid)
+                onDeleteDashboard(dashboard.id)
             }
         })
 
@@ -797,18 +788,6 @@ const ApiContainer = (props) => {
                     await onPutProcess(updatedProcess)
                 }
 
-                // Else the task does exist, see if the task contains the process
-                // else {
-                //     if (!tasks[route].processes.includes(process._id)) {
-                //         console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
-                //         alert('Process containes a route, but the route does not contain the process, adding process to route')
-                //
-                //         let taskCopy = deepCopy(tasks[route])
-                //         taskCopy.processes.push(process._id)
-                //         dispatchPutTask(taskCopy, taskCopy._id)
-                //
-                //     }
-                // }
             })
         })
 
@@ -831,7 +810,7 @@ const ApiContainer = (props) => {
             if (!!task.new) {
                 console.log('QQQQ Task still has a new tag', deepCopy(task))
                 alert('Task still has a new tag, deleting task')
-                onDeleteTask(task._id)
+                onDeleteTask(task.id)
             }
 
             if (task.processes.length > 0) {
@@ -844,17 +823,17 @@ const ApiContainer = (props) => {
 
                         console.log('QQQQ Process does not exist anymore, removing from task', task)
                         alert('Process does not exist anymore, removing from task')
-                        dispatchPutTask(task, task._id)
+                        dispatchPutTask(task, task.id)
 
                     }
 
-                    else if (!processes[process].routes.includes(task._id)) {
+                    else if (!processes[process].routes.includes(task.id)) {
                         console.log('QQQQ Task is associated with a process that is not associated with the task anymore', task, process)
                         alert('Task is associated with a process that is not associated with the task anymore, adding back to process')
 
                         const index = task.processes.indexOf(process)
                         task.processes.splice(index, 1)
-                        dispatchPutTask(task, task._id)
+                        dispatchPutTask(task, task.id)
 
                     }
 
@@ -875,10 +854,10 @@ const ApiContainer = (props) => {
         if (taskQueue === undefined) return
 
         Object.values(taskQueue).map(async (Q, i) => {
-            if (tasks[Q.task_id] === undefined) {
+            if (tasks[Q.taskId] === undefined) {
                 console.log('QQQQ TaskQ associated task has been deleted')
                 alert('TaskQ associated task has been deleted')
-                await onDeleteTaskQItem(Q._id)
+                await onDeleteTaskQItem(Q.id)
             }
         })
     }

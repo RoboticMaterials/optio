@@ -97,7 +97,7 @@ const TaskField = (props) => {
         name,
         obj,
         track_quantity,
-        _id: routeId,
+        id: routeId,
         changed,
         temp
     } = values || {}
@@ -265,7 +265,7 @@ const TaskField = (props) => {
         var showModal = true;
 
         Object.values(selectedProcess.routes).map((route) => {
-          if(route._id===selectedTask._id){
+          if(route.id===selectedTask.id){
             showModal = false;
           }
         })
@@ -392,15 +392,15 @@ const TaskField = (props) => {
             description: obj.description,
             modelName: "",
             dimensions: null,
-            map_id: currentMap._id,
-            _id: !!selectedObject.new ? uuid.v4() : obj._id,
+            mapId: currentMap.id,
+            id: !!selectedObject.new ? uuid.v4() : obj.id,
         }
 
         if (!!selectedObject.new) {
             dispatchPostObject(object)
         }
         else {
-            await dispatchPutObject(object, obj._id)
+            await dispatchPutObject(object, obj.id)
         }
 
         dispatchSetEditingObject(false)
@@ -416,8 +416,8 @@ const TaskField = (props) => {
             description: "",
             modelName: "",
             dimensions: null,
-            map_id: currentMap._id,
-            _id: uuid.v4(),
+            mapId: currentMap.id,
+            id: uuid.v4(),
             new: true,
         }
 
@@ -457,13 +457,13 @@ const TaskField = (props) => {
                 name: updatedStation.name + ' Dashboard',
                 locked: false,
                 buttons: [],
-                station: updatedStation._id
+                station: updatedStation.id
             }
             const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
             postDashboardPromise.then(async postedDashboard => {
                 alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                updatedStation.dashboards = [postedDashboard._id.$oid]
-                await dispatchPutStation(updatedStation, updatedStation._id)
+                updatedStation.dashboards = [postedDashboard.id]
+                await dispatchPutStation(updatedStation, updatedStation.id)
 
             })
         }
@@ -472,14 +472,14 @@ const TaskField = (props) => {
 
         const newDashboardButton = {
             color: '#bcbcbc',
-            id: selectedTask._id,
+            id: selectedTask.id,
             name: selectedTask.name,
-            task_id: selectedTask._id
+            taskId: selectedTask.id
         }
         updatedDashboard.buttons.push(newDashboardButton)
-        dispatchPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
+        dispatchPutDashboard(updatedDashboard, updatedDashboard.id)
 
-        // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
+        // dispatch(taskActions.removeTask(selectedTask.id)) // Remove the temporary task from the local copy of tasks
     }
 
 
@@ -500,7 +500,7 @@ const TaskField = (props) => {
                         button_2_text={"No"}
                         handleClose={() => setConfirmDeleteObjectModal(null)}
                         handleOnClick1={() => {
-                            dispatchDeleteObject(selectedObject._id)
+                            dispatchDeleteObject(selectedObject.id)
                             setConfirmDeleteObjectModal(null)
 
                         }}
@@ -631,7 +631,7 @@ const TaskField = (props) => {
                                             options={
                                                 Object.values(routes)
                                                     .filter(task => {
-                                                        if (task.map_id !== currentMap._id) return false
+                                                        if (task.mapId !== currentMap.id) return false
 
                                                         // This filters out tasks when fixing a process
                                                         // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
@@ -659,7 +659,7 @@ const TaskField = (props) => {
                                                             }
                                                             else {
                                                                 // Gets the previous route
-                                                                const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
+                                                                const previousRoute = getPreviousRoute(selectedProcess.routes, values.id)
                                                                 return isNextRouteViable(previousRoute, task)
                                                             }
                                                         }
@@ -680,7 +680,7 @@ const TaskField = (props) => {
 
                                                 const {
                                                     obj: selectedObjId = "",
-                                                    _id: selectedRouteId = ""
+                                                    id: selectedRouteId = ""
                                                 } = selectedValue || {}
 
                                                 const selectedObj = selectedObjId ? (objects[selectedObjId] || null) : null
@@ -755,14 +755,14 @@ const TaskField = (props) => {
 
                                     {!showObjectSelector &&
                                         <>
-                                            {!!routeObject && !!objects[routeObject?._id] ?
+                                            {!!routeObject && !!objects[routeObject?.id] ?
                                                 <>
                                                     <styled.ListItem> {/* style = {{height: url==='/tasks' ? '4rem': '2.5rem', marginBottom: '0rem;'}}> */}
                                                         <styled.ItemContainer>
                                                             <styled.ListItemIcon
                                                                 className='fas fa-box'
                                                             />
-                                                            <styled.ListItemTitle style = {{paddingLeft: "1rem", flex: "1"}}>{routeObject ? objects[routeObject._id].name : ""}</styled.ListItemTitle>
+                                                            <styled.ListItemTitle style = {{paddingLeft: "1rem", flex: "1"}}>{routeObject ? objects[routeObject.id].name : ""}</styled.ListItemTitle>
 
                                                             <styled.Icon
                                                                 className='fas fa-exchange-alt'
@@ -787,7 +787,7 @@ const TaskField = (props) => {
                                                     style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
                                                     schema={'objects'}
                                                     secondary
-                                                    // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                                    // disabled={!!selectedTask && !!selectedTask.id && !!selectedTask.new}
                                                     onClick={() => setShowObjectSelector(!showObjectSelector)}
                                                 >
                                                     Choose an Object...
@@ -874,7 +874,7 @@ const TaskField = (props) => {
                                 {!!isProcessTask && selectedProcess ?
                                     <Button
                                         schema={'error'}
-                                        disabled={!!selectedTask && !!selectedTask._id && isNew}
+                                        disabled={!!selectedTask && !!selectedTask.id && isNew}
                                         secondary
                                         onClick={() => {
                                             onRemove(routeId)
@@ -886,7 +886,7 @@ const TaskField = (props) => {
                                     <Button
                                         schema={'error'}
                                         secondary
-                                        disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                        disabled={!!selectedTask && !!selectedTask.id && !!selectedTask.new}
                                         onClick={() => {
                                             setConfirmDeleteModal(true)
                                         }}

@@ -54,7 +54,7 @@ const LotFormCreator = (props) => {
 
 
 			} else {
-				if(currItem._id === id) {
+				if(currItem.id === id) {
 					found = true
 					indices = [...indices, currIndex]
 				}
@@ -74,7 +74,7 @@ const LotFormCreator = (props) => {
 		const {
 			key,
 			component,
-			_id: payloadId
+			id: payloadId
 		} = payload
 
 		if(addedIndex !== null) {
@@ -114,7 +114,7 @@ const LotFormCreator = (props) => {
 		} = dropResult
 
 		const {
-			_id: payloadId
+			id: payloadId
 		} = payload
 
 		if(addedIndex !== null) {
@@ -263,7 +263,7 @@ const LotFormCreator = (props) => {
 
 						{currRow.map((currItem, currItemIndex) => {
 							const {
-								_id: dropContainerId,
+								id: dropContainerId,
 								component,
 								fieldName
 							} = currItem || {}

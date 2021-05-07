@@ -94,7 +94,7 @@ export const putSkill = (skill, ID) => {
 
       try {
           onStart();
-          delete skill._id;
+          delete skill.id;
           const response = await api.putSkill(skill, ID);
           return onSuccess(response)
       } catch(error) {

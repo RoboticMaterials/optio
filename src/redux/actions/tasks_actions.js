@@ -61,7 +61,7 @@ export const getTasks = () => {
 
             const normalizedTasks = {}
             tasks.map((task) => {
-                normalizedTasks[task._id] = task
+                normalizedTasks[task.id] = task
                 return task
             })
 
@@ -77,7 +77,7 @@ export const getTasks = () => {
 
 // get task details
 // ******************************
-// export const getTask = (task_id) => {
+// export const getTask = (taskId) => {
 //   return async dispatch => {
 
 //     function onStart() {
@@ -94,7 +94,7 @@ export const getTasks = () => {
 
 //     try {
 //       onStart();
-//       const task_details = await api.getTask(task_id);
+//       const task_details = await api.getTask(taskId);
 //       return onSuccess(task_details);
 //     } catch (error) {
 //       return onError(error);
@@ -162,7 +162,7 @@ export const putTask = (task, ID) => {
             if(taskCopy.changed) {
                 delete taskCopy.changed
             }
-            // delete taskCopy._id
+            // delete taskCopy.id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)
         } catch (error) {
@@ -266,7 +266,7 @@ export const saveFormRoute = (formRoute) => {
         } = formRoute
         // get objectId
         const {
-            _id: objectId
+            id: objectId
         } = obj || {}
 
         // create payload
@@ -282,7 +282,7 @@ export const saveFormRoute = (formRoute) => {
 
         // update existing route
         else {
-            await dispatch(putRouteClean(payload, payload._id))
+            await dispatch(putRouteClean(payload, payload.id))
         }
     }
 }

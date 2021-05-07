@@ -107,15 +107,15 @@ const DeviceSchedule = (props) => {
                                                 placeholder="Select Position"
                                                 pattern={null}
                                                 labelField={'name'}
-                                                valueField={"_id"}
-                                                options={Object.values(positions).filter(positions => (positions.map_id === currentMap._id))}
+                                                valueField={"id"}
+                                                options={Object.values(positions).filter(positions => (positions.mapId === currentMap.id))}
                                                 mapInput={(val) => {
                                                     if (!!positions[val]) {
                                                         return [positions[val]]
                                                     }
                                                 }}
                                                 mapOutput={(val) => {
-                                                    return val[0]._id
+                                                    return val[0].id
                                                 }}
                                             />
                                         </styled.ColumnContainer>

@@ -148,9 +148,9 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        const ID = deepCopy(item._id)
+        const ID = deepCopy(item.id)
 
-        delete newItem._id
+        delete newItem.id
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly

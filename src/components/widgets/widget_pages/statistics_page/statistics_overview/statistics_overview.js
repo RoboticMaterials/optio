@@ -93,7 +93,7 @@ const StatisticsOverview = (props) => {
         const currReportButtons = dashboard.report_buttons ? dashboard.report_buttons : []
 
         // store as object of ids to prevent excessive looping
-        setReportButtons(convertArrayToObject(currReportButtons, "_id"))
+        setReportButtons(convertArrayToObject(currReportButtons, "id"))
 
     }, [stationID, dashboards, stations])
 
@@ -109,7 +109,7 @@ const StatisticsOverview = (props) => {
         dispatchGetReportEvents() // load report events
 
 
-        if (stations[params.stationID].device_id !== undefined) {
+        if (stations[params.stationID].deviceId !== undefined) {
             setIsDevice(true)
         }
 
@@ -148,7 +148,7 @@ const StatisticsOverview = (props) => {
 
     const handleDeviceStatistics = () => {
 
-        const device = devices[stations[params.stationID].device_id]
+        const device = devices[stations[params.stationID].deviceId]
         if (device === undefined) return
         return (
 

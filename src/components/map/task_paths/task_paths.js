@@ -59,7 +59,7 @@ export default function TaskPaths(props) {
             let load = stateRef.current.load
             load.position = null
             load.station = null
-            dispatch(setTaskAttributes(stateRef.current._id, { load }))
+            dispatch(setTaskAttributes(stateRef.current.id, { load }))
         }
     })
 

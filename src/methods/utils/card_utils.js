@@ -108,7 +108,7 @@ export const getFormCustomFields = (fields, card) => {
 				// extract properties of currItem
 				const {
 					fieldName,
-					_id: fieldId,
+					id: fieldId,
 					component,
 					dataType,
 					key
@@ -118,11 +118,11 @@ export const getFormCustomFields = (fields, card) => {
 				if(isArray(card)) {
 					for(const field of card.flat()) {
 						const {
-							_id,
+							id,
 							value: currVal
 						} = field || {}
 
-						if(_id === fieldId) {
+						if(id === fieldId) {
 							value = currVal
 						}
 					}
@@ -216,7 +216,7 @@ export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 	for(const primaryField of REQUIRED_FIELDS) {
 
 		const {
-			_id: primaryFieldId,
+			id: primaryFieldId,
 			fieldName,
 			dataType,
 			fieldPath,
@@ -274,7 +274,7 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 		index,
 		fieldName,
 		primary,
-		_id: fieldId,
+		id: fieldId,
 	} = sortMode
 
 	arr.sort((itemA, itemB) => {

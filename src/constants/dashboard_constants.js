@@ -44,19 +44,19 @@ export const OPERATION_TYPES = {
         schema: "error",
         name: "Report",
         key: "REPORT",
-        _id: 0
+        id: 0
     },
     KICK_OFF: {
         schema: "kick_off",
         key: "KICK_OFF",
         name: "Kick off",
-        _id: 1
+        id: 1
     },
     FINISH: {
         schema: "finish",
         key: "FINISH",
         name: "Finish",
-        _id: 2
+        id: 2
     }
 }
 

@@ -67,7 +67,7 @@ const DashboardLotPage = (props) => {
         if (lotID) {
             const lot = cards[lotID]
             setCurrentLot(lot)
-            const processStations = Object.keys(getProcessStations(processes[currentLot.process_id], routes))
+            const processStations = Object.keys(getProcessStations(processes[currentLot.processId], routes))
 
             // If its the last station in the process, then the only option is to finish the lot
             if (processStations[processStations.length - 1] === stationID) {
@@ -105,7 +105,7 @@ const DashboardLotPage = (props) => {
             custom,
         } = currentTask || {}
 
-        const Id = currentTask._id
+        const Id = currentTask.id
 
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
@@ -188,8 +188,8 @@ const DashboardLotPage = (props) => {
         const {
             bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            processId,
+            id: cardId,
         } = currentLot
 
         if (quantity && quantity > 0) {
@@ -203,7 +203,7 @@ const DashboardLotPage = (props) => {
             const queueBinCount = finishBin?.count ? finishBin.count : 0
             const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
 
-            // udpated currentLot will maintain all of the cards previous attributes with the station_id and route_id updated
+            // udpated currentLot will maintain all of the cards previous attributes with the stationId and routeId updated
             let updatedCard = {
                 ...currentLot,                                // spread unaltered attributes
                 bins: {

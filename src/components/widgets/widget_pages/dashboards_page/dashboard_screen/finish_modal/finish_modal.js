@@ -43,7 +43,7 @@ const FinishModal = (props) => {
     } = props
 
     // get current buttons, default to empty array
-    const dashboardId = dashboard?._id?.$oid
+    const dashboardId = dashboard?.id
 
     const params = useParams()
     const theme = useTheme()
@@ -109,7 +109,7 @@ const FinishModal = (props) => {
     * When a kick-off button is pressed, the lot is to be moved from the queue of the current process it resides in
     * to the first station in the process
     *
-    * This is done by updating the cards station_id and route_id to those of the first station in the first route
+    * This is done by updating the cards stationId and routeId to those of the first station in the first route
     * */
     const moveLot = async (card, quantity) => {
 
@@ -120,8 +120,8 @@ const FinishModal = (props) => {
         const {
             bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            processId,
+            id: cardId,
         } = card
 
         if (quantity && quantity > 0) {
@@ -135,7 +135,7 @@ const FinishModal = (props) => {
             const queueBinCount = finishBin?.count ? finishBin.count : 0
             const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
 
-            // udpated card will maintain all of the cards previous attributes with the station_id and route_id updated
+            // udpated card will maintain all of the cards previous attributes with the stationId and routeId updated
             let updatedCard = {
                 ...card,                                // spread unaltered attributes
                 bins: {
@@ -199,7 +199,7 @@ const FinishModal = (props) => {
             })
             .map((currCard, cardIndex) => {
                 const {
-                    _id: lotId,
+                    id: lotId,
                     // count = 0,
                     name,
                     start_date,
@@ -207,7 +207,7 @@ const FinishModal = (props) => {
                     flags,
                     lotNumber,
                     bins = {},
-                    process_id: processId = "",
+                    processId = "",
                     lotTemplateId
                 } = currCard
 

@@ -29,7 +29,7 @@ logger.setLevel("debug")
 export const putJunk = () => async dispatch => {
 
     const junkData = {
-        _id: uuid.v4(),
+        id: uuid.v4(),
         text: "alemfsefmseklfmsel",
         text1: "alemfsefmseklfmsel",
         text2: "alemfsefmseklfmsel",

@@ -37,8 +37,7 @@ export function getScheduleItemTemplate() {
 
     return {
         id: id,
-        _id: id,
-        task_id: DEFAULT_TASK_ID,
+        taskId: DEFAULT_TASK_ID,
         days_on: [],
         interval_on: false,
         schedule_on: true,
@@ -54,7 +53,7 @@ export function getScheduleItemTemplate() {
 export function getScheduleItemTemplate2(timeString) {
     return {
         id: uuidv4(),
-        task_id: DEFAULT_TASK_ID,
+        taskId: DEFAULT_TASK_ID,
         days_on: {
             friday: false,
             monday: false,
@@ -74,10 +73,10 @@ export function getScheduleItemTemplate2(timeString) {
 
 export function formatScheduleItemOld(scheduleItem) {
     console.log('formatScheduleItem scheduleItem', scheduleItem)
-    scheduleItem.id = scheduleItem._id.$oid;
+    scheduleItem.id = scheduleItem.id;
     if (!scheduleItem.name) scheduleItem.name = "";
     if (!scheduleItem.label) scheduleItem.label = "";
-    if (!scheduleItem.task_id) scheduleItem.task_id = "";
+    if (!scheduleItem.taskId) scheduleItem.taskId = "";
 
 
 
@@ -140,7 +139,7 @@ export class Schedule_v2 {
 
         this.interval_on = 'boolean';
         this.name = 'string';
-        this.precondition_id = 'string';
+        this.preconditionId = 'string';
         this.schedule_on = 'boolean';
         this.start_time = 'string';
         this.time_interval = 'string';
@@ -161,7 +160,7 @@ export class Schedule {
 
         let interval_on = 'boolean';
         let name = 'string';
-        let precondition_id = 'string';
+        let preconditionId = 'string';
         let schedule_on = 'boolean';
         let start_time = 'string';
         let time_interval = 'string';
@@ -180,7 +179,7 @@ interface ScheduleInterface {
     },
     interval_on: boolean;
     name: string;
-    precondition_id: string;
+    preconditionId: string;
     schedule_on: boolean;
     start_time: string;
     time_interval: string;

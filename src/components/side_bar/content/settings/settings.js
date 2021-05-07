@@ -110,7 +110,7 @@ const Settings = () => {
                     ...dashboard,
                     locked: locked
                 }
-                dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+                dispatchPutDashboard(newDashboard, newDashboard.id)
             }
         })
 
@@ -160,7 +160,7 @@ const Settings = () => {
         const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
-            delete serverSettingsState._id
+            delete serverSettingsState.id
             await dispatchPostSettings(serverSettingsState)
         }
 
@@ -330,7 +330,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        let selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
+        let selectedMap = maps.find((map) => map.id === mapReducer.currentMap?.id)
         if (!selectedMap) {
             dispatchSetCurrentMap(maps[0])
             selectedMap = maps[0]
@@ -347,7 +347,7 @@ const Settings = () => {
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
                         labelField="name"
-                        valueField="_id"
+                        valueField="id"
                         options={maps}
                         values={!!serverSettingsState.currentMap ? [serverSettingsState.currentMap] : []}
                         dropdownGap={2}

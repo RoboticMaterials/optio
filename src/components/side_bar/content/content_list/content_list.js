@@ -90,7 +90,7 @@ export default function ContentList(props) {
                     let inQueue = false
                     Object.values(taskQueue).forEach((item) => {
 
-                    if((item.task_id == element._id) && (props.schema === 'tasks')){
+                    if((item.taskId == element.id) && (props.schema === 'tasks')){
                         if(isOnlyHumanTask(element) && element.handoff === true) {
                             inQueue = false
                         }

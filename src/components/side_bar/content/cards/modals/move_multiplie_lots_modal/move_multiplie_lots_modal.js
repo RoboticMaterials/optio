@@ -88,12 +88,12 @@ const MoveMultipleLotsModal = (props) => {
 		setStationsAttributes([
 			{
 				name: BIN_THEMES.QUEUE.DISPLAY_NAME,
-				_id: BIN_IDS.QUEUE
+				id: BIN_IDS.QUEUE
 			},
 			...tempStationAttributes,
 			{
 				name: BIN_THEMES.FINISH.DISPLAY_NAME,
-				_id: BIN_IDS.FINISH
+				id: BIN_IDS.FINISH
 			}
 		])
 

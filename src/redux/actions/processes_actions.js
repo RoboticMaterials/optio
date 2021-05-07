@@ -106,7 +106,7 @@ export const putProcesses = (process) => {
 
         try {
             onStart();
-            const ID = deepCopy(process._id)
+            const ID = deepCopy(process.id)
 
             if(process.new) {
                 delete process.new
@@ -114,7 +114,7 @@ export const putProcesses = (process) => {
             if(process.changed) {
                 delete process.changed
             }
-            // delete process._id
+            // delete process.id
             const updateProcesses = await api.putProcesses(process, ID);
             return onSuccess(updateProcesses)
         } catch (error) {

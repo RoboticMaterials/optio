@@ -50,7 +50,7 @@ const CardEditor = (props) => {
 	} = props
 
 	const object = {
-		_id: 123,
+		id: 123,
 		name: "hopper"
 	}
 	const {
@@ -64,10 +64,9 @@ const CardEditor = (props) => {
 
 	const card = cards[cardId]
 	const {
-		station_id: stationId,
-		// process_id: processId = processIds[0],
-		route_id: routeId,
-		lot_id: lotId
+		stationId: stationId,
+		routeId,
+		lotId
 	} = card || {}
 
 	const lot = lots[lotId]
@@ -107,18 +106,12 @@ const CardEditor = (props) => {
 		}
 	}, [cardId])
 
-	// {
-	// 	name: "",
-	// 		route_id: matchingRoute._id,
-	// 	station_id: loadStationId,
-	// 	_id: currRouteId + "+" + loadStationId
-	// }
 	let dropdownOptions = [
 		{
 			name: "Queue",
-			route_id: "QUEUE",
-			station_id: "QUEUE",
-			_id: "QUEUE" + "+" + "QUEUE"
+			routeId: "QUEUE",
+			stationId: "QUEUE",
+			id: "QUEUE" + "+" + "QUEUE"
 		}
 	]
 
@@ -129,16 +122,16 @@ const CardEditor = (props) => {
 
 		loadStationId && dropdownOptions.push({
 			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[loadStationId]?.name,
-			route_id: matchingRoute._id,
-			station_id: loadStationId,
-			_id: currRouteId + "+" + loadStationId
+			routeId: matchingRoute.id,
+			stationId: loadStationId,
+			id: currRouteId + "+" + loadStationId
 		})
 
 		unloadStationId && dropdownOptions.push({
 			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[unloadStationId]?.name,
-			route_id: matchingRoute._id,
-			station_id: unloadStationId,
-			_id: currRouteId + "+" + unloadStationId
+			routeId: matchingRoute.id,
+			stationId: unloadStationId,
+			id: currRouteId + "+" + unloadStationId
 		})
 
 	})
@@ -174,7 +167,7 @@ const CardEditor = (props) => {
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
 
-		const objectId = (object && Array.isArray(object) && object.length > 0) ? object[0]._id : null
+		const objectId = (object && Array.isArray(object) && object.length > 0) ? object[0].id : null
 
 
 		// update (PUT)
@@ -191,12 +184,12 @@ const CardEditor = (props) => {
 
 			var submitItem = {
 				name,
-				station_id: bin[0]?.station_id,
-				route_id: bin[0]?.route_id,
+				stationId: bin[0]?.stationId,
+				routeId: bin[0]?.routeId,
 				description,
-				object_id: objectId,
-				process_id: card.process_id,
-				lot_id: card.lot_id,
+				objectId,
+				processId: card.processId,
+				lotId: card.lotId,
 				start_date: start,
 				end_date: end,
 				count,
@@ -209,9 +202,9 @@ const CardEditor = (props) => {
 				const moveCountVal = moveCount[0].value
 				const {
 					name: moveName,
-					route_id: moveRouteId,
-					station_id: moveStationId,
-					_id: moveId,
+					routeId: moveRouteId,
+					stationId: moveStationId,
+					id: moveId,
 				} = moveLocation[0]
 
 
@@ -219,11 +212,11 @@ const CardEditor = (props) => {
 				Object.values(cards).forEach((currCard, cardIndex) => {
 
 					// lot is in same lot
-					if(currCard.lot_id === card.lot_id) {
+					if(currCard.lotId === card.lotId) {
 
 						// lot exists at the station / route combo. update instead of create
-						if((currCard.route_id === moveRouteId) && (currCard.station_id === moveStationId)) {
-							destinationCardId = currCard._id
+						if((currCard.routeId === moveRouteId) && (currCard.stationId === moveStationId)) {
+							destinationCardId = currCard.id
 						}
 					}
 				})
@@ -246,61 +239,43 @@ const CardEditor = (props) => {
 					onPostCard({
 						name,
 						count: moveCountVal,
-						station_id: moveStationId,
-						route_id: moveRouteId,
+						stationId: moveStationId,
+						routeId: moveRouteId,
 						description,
-						object_id: objectId,
-						process_id: processId,
+						objectId,
+						processId,
 						start_date: start,
 						end_date: end,
-						lot_id: lotId
+						lotId
 					})
 				}
 			}
 
-
-
-			// update
-			// const submitItem = {
-			// 	name,
-			// 	station_id: bin[0]?.station_id,
-			// 	route_id: bin[0]?.route_id,
-			// 	description,
-			// 	object_id: objectId,
-			// 	process_id: lot.process_id,
-			// 	lot_id: lot.lot_id,
-			// 	start_date: start,
-			// 	end_date: end,
-			// 	count,
-			// }
-
-			onPutCard(submitItem, card._id)
+			onPutCard(submitItem, card.id)
 		}
 
 		// create (POST)
 		else {
 			const createdLot = await DispatchPostLot({
-				process_id: processId,
+				processId,
 				name
 			})
 
 			const {
-				_id: lotId
+				id: lotId
 			} = createdLot
 
 			const submitItem = {
 				name,
 				count,
-				// station_id: bin[0]?.station_id,
-				// route_id: bin[0]?.route_id,
-				station_id: "QUEUE",
-				route_id: "QUEUE",
+				stationId: "QUEUE",
+				routeId: "QUEUE",
 				description,
-				object_id: objectId,
-				process_id: processId,
+				objectId,
+				processId,
 				start_date: start,
 				end_date: end,
-				lot_id: lotId
+				lotId
 			}
 
 			onPostCard(submitItem)
@@ -328,14 +303,14 @@ const CardEditor = (props) => {
 			<Formik
 				initialValues={{
 					name: card ? card.name : "",
-					bin: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
+					bin: card ? dropdownOptions.filter((currOption) => (currOption.stationId === card.stationId) && (currOption.routeId === card.routeId)) : [dropdownOptions[0]],
 					description: card ? card.description : "",
 					dates: card ? {
 						start: card.start_date,
 						end: card.end_date,
 					} : null,
 					count: card ? card.count : 0,
-					object: (card && card.object_id) ?  [objects[card.object_id]] : []
+					object: (card && card.objectId) ?  [objects[card.objectId]] : []
 				}}
 
 				// validation control
@@ -401,7 +376,7 @@ const CardEditor = (props) => {
 										name="moveLocation"
 										labelField={'name'}
 										options={dropdownOptions}
-										valueField={"_id"}
+										valueField={"id"}
 									/>
 								</div>
 
@@ -477,7 +452,7 @@ const CardEditor = (props) => {
 												name="object"
 												labelField={'name'}
 												options={Object.values(objects)}
-												valueField={"_id"}
+												valueField={"id"}
 												// label={'Choose Draggable'}
 												onDropdownOpen={() => {
 												}}
@@ -511,21 +486,6 @@ const CardEditor = (props) => {
 										</styled.DateItem>
 									</styled.DatesContainer>
 								</span>
-
-
-								{/*<DropDownSearchField*/}
-								{/*	Container={styled.StationContainer}*/}
-								{/*	pattern={null}*/}
-								{/*	name="bin"*/}
-								{/*	labelField={'name'}*/}
-								{/*	options={dropdownOptions}*/}
-								{/*	valueField={"_id"}*/}
-								{/*	label={'Choose Draggable'}*/}
-								{/*	onDropdownOpen={() => {*/}
-								{/*	}}*/}
-								{/*/>*/}
-
-
 
 								<styled.WidgetContainer>
 									<styled.Icon
@@ -608,7 +568,7 @@ const CardEditor = (props) => {
 											secondary
 											type={"button"}
 											onClick={async () => {
-												onDeleteCard(card._id, processId)
+												onDeleteCard(card.id, processId)
 												close()
 											}}
 										>
@@ -662,13 +622,12 @@ const CardEditor = (props) => {
 
 										var modifiedData = data
 
-										// maps id value changes to names (eg if station_id changed, replaces the station_ids with the corresponding station names)
-										if(Object.keys(modifiedData).includes("station_id") || Object.keys(modifiedData).includes("route_id")) {
+										if(Object.keys(modifiedData).includes("stationId") || Object.keys(modifiedData).includes("routeId")) {
 
-											// handle station_id change
-											if(Object.keys(modifiedData).includes("station_id")) {
+											// handle stationId change
+											if(Object.keys(modifiedData).includes("stationId")) {
 												const {
-													station_id: {
+													stationId: {
 														new: newStationId,
 														old: oldStationId
 													},
@@ -683,10 +642,9 @@ const CardEditor = (props) => {
 												}
 											}
 
-											// handle route_id change
-											if(Object.keys(modifiedData).includes("route_id")) {
+											if(Object.keys(modifiedData).includes("routeId")) {
 												const {
-													route_id: {
+													routeId: {
 														new: newRouteId,
 														old: oldRouteId
 													},

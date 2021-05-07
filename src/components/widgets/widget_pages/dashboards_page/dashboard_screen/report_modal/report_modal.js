@@ -84,7 +84,7 @@ const ReportModal = (props) => {
     const sendReport = async (button) => {
         setSubmitting(true)
         const {
-            _id,
+            id,
             iconClassName,
             color,
             ...rest
@@ -92,9 +92,9 @@ const ReportModal = (props) => {
 
         const reportEvent = {
             // save identifying info
-            dashboard_id: dashboard._id.$oid,
-            station_id: dashboard.station,
-            report_button_id: _id,
+            dashboardId: dashboard.id,
+            stationId: dashboard.station,
+            reportButtonId: id,
             date: new Date().getTime(),
 
             // spread rest of buttons data - commented out for now, get remaining data from actual report button when its needed
@@ -143,7 +143,7 @@ const ReportModal = (props) => {
                 }
 
                 // update dashboard
-                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
+                dispatchPutDashboard(updatedDashboard, dashboard.id)
             }
         }
 
@@ -152,12 +152,12 @@ const ReportModal = (props) => {
 
     const handleButtonClick = useCallback((button) => {
         const {
-            _id
+            id
         } = button
 
         if (editing) {
             setAddingNew(true)
-            setReportButtonId(_id)
+            setReportButtonId(id)
         }
         else {
             sendReport(button)

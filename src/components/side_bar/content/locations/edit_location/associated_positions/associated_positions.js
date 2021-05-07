@@ -65,7 +65,7 @@ export default function Positions(props) {
      * @param {*} position
      */
     const onDelete = (position) => {
-        dispatchDeletePosition(position._id)
+        dispatchDeletePosition(position.id)
     }
 
     const renderAssociatedPositions = () => {
@@ -94,7 +94,7 @@ export default function Positions(props) {
                                 onChange={(e) => {
                                     setEditingIndex(i)
                                     dispatchPageDataChanged(true)
-                                    dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                                    dispatch(positionActions.setPositionAttributes(position.id, { name: e.target.value }))
                                 }}
 
                             />
@@ -127,21 +127,21 @@ export default function Positions(props) {
 
         const newPositionType = type
 
-        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
+        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation.id, currentMap.id)
 
         await dispatchSetSelectedStationChildrenCopy({
             ...selectedStationChildrenCopy,
-            [newPosition._id]: newPosition
+            [newPosition.id]: newPosition
         })
 
 
         await dispatchAddPosition(newPosition)
 
         let { children } = selectedStation
-        children.push(newPosition._id)
+        children.push(newPosition.id)
 
-        setMostRecentPositionId(newPosition._id)
-        dispatchSetStationAttributes(selectedStation._id, { children })
+        setMostRecentPositionId(newPosition.id)
+        dispatchSetStationAttributes(selectedStation.id, { children })
     }
 
     const onDeleteAssociatedPosition = async () => {

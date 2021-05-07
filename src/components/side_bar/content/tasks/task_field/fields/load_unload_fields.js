@@ -169,7 +169,7 @@ const LoadUnloadFields = (props) => {
                         mapOutput={(val) => {
                             let output = null
                             if(isArray(val) && val.length > 0) {
-                                output = val[0]?._id || null
+                                output = val[0]?.id || null
                             }
                             return output
                         }}
@@ -254,7 +254,7 @@ const LoadUnloadFields = (props) => {
                                 mapOutput={(val) => {
                                     let output = null
                                     if(isArray(val) && val.length > 0) {
-                                        output = val[0]?._id || null
+                                        output = val[0]?.id || null
                                     }
                                     return output
                                 }}
@@ -286,7 +286,7 @@ const LoadUnloadFields = (props) => {
                             closeOnSelect="true"
                             onChange={values => {
 
-                                const idleLocation = values[0]._id
+                                const idleLocation = values[0].id
 
                                 dispatchSetSelectedTask({
                                     ...selectedTask,

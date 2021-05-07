@@ -67,10 +67,10 @@ const Statistics = () => {
         // Else push all processes
         else {
             Object.values(processes)
-            .filter((currProcess) => currProcess.map_id === currentMap._id)
+            .filter((currProcess) => currProcess.mapId === currentMap.id)
             .forEach(process => {
               if(!!process.showStatistics){
-                processesToRender.push(process._id)
+                processesToRender.push(process.id)
               }
             });
 

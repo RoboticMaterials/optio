@@ -8,7 +8,7 @@ import Column from "../column/column"
 
 const FinishColumn = ((props) => {
 	const {
-		station_id,
+		stationId,
 		stationName = "Unnamed",
 		onCardClick,
 		cards = [],
@@ -75,7 +75,7 @@ const FinishColumn = ((props) => {
 					)
 				}
 			}}
-			station_id={station_id}
+			stationId={stationId}
 			stationName = {stationName}
 			onCardClick={onCardClick}
 			cards = {cards}

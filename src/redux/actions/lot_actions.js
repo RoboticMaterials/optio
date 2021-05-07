@@ -38,7 +38,7 @@ export const getLot = (lotId) =>  async (dispatch) => {
         // make request
         const lot = await api.getLot(lotId);
 
-        // const cardsObj = convertArrayToObject(cards, "_id")
+        // const cardsObj = convertArrayToObject(cards, "id")
         // console.log("getCard cardsObj",cardsObj)
 
         // format response
@@ -74,7 +74,7 @@ export const getLots = () =>  async (dispatch) => {
         // make request
         const lots = await api.getLots();
 
-        const lotsObj = convertArrayToObject(lots, "_id")
+        const lotsObj = convertArrayToObject(lots, "id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
@@ -110,7 +110,7 @@ export const getLots = () =>  async (dispatch) => {
 //         const cards = await api.getProcessCards(processId);
 //         console.log("getProcessCards cards",cards)
 //
-//         const cardsObj = convertArrayToObject(cards, "_id")
+//         const cardsObj = convertArrayToObject(cards, "id")
 //         console.log("getProcessCards cardsObj",cardsObj)
 //
 //         // return payload for redux
@@ -141,7 +141,7 @@ export const postLot = (lot) =>  async dispatch => {
 
         return {
             lot: createdLot,
-            processId: lot.process_id
+            processId: lot.processId
         };
     }
     //
@@ -184,7 +184,7 @@ export const putLot = (lot, lotId) => async dispatch => {
         //
         return {
             lot: response,
-            processId: lot.process_id
+            processId: lot.processId
         };
     }
 

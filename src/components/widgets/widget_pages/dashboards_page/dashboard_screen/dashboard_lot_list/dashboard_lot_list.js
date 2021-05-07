@@ -54,7 +54,7 @@ const DashboardLotList = () => {
 
         return sortedCards
             .filter((card, ind) => {
-                return getIsCardAtBin(card, station?._id)
+                return getIsCardAtBin(card, station?.id)
             })
             .filter((currLot) => {
                 const {
@@ -71,8 +71,8 @@ const DashboardLotList = () => {
             .map((card, ind) => {
 
                 const {
-                    _id: currCardId,
-                    process_id: currCardProcessId
+                    id: currCardId,
+                    processId: currCardProcessId
                 } = card || {}
 
                 return (

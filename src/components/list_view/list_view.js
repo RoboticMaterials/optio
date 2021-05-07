@@ -118,8 +118,8 @@ const ListView = (props) => {
 
     const onLocationClick = (item) => {
         // If the id is in station that its a station, else its the Mir Dashboard
-        const dashboardID = !!stations[item._id] ? stations[item._id].dashboards[0] : devices[item._id].dashboards[0]
-        history.push('/locations/' + item._id + '/' + "dashboards/" + dashboardID)
+        const dashboardID = !!stations[item.id] ? stations[item.id].dashboards[0] : devices[item.id].dashboards[0]
+        history.push('/locations/' + item.id + '/' + "dashboards/" + dashboardID)
         setShowDashboards(true)
     }
 
@@ -148,7 +148,7 @@ const ListView = (props) => {
             if (!!item.owner) {
 
                 // If the station is a device and the task q owner is that device then show the status
-                if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
+                if (!!devices[params.stationID] && item.owner === devices[params.stationID].id) {
 
                     let locationName = ''
 

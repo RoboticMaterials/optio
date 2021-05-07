@@ -26,7 +26,7 @@ export default function lotsReducer(state = defaultState, action) {
     case GET + LOT + SUCCESS:
       return {
         ...state,
-        lots: {...state.lots, [action.payload.lot._id]: action.payload.lot},
+        lots: {...state.lots, [action.payload.lot.id]: action.payload.lot},
       }
 
     case GET + LOTS + SUCCESS:
@@ -38,13 +38,13 @@ export default function lotsReducer(state = defaultState, action) {
     case PUT + LOT + SUCCESS:
       return {
         ...state,
-        lots: {...state.lots, [action.payload.lot._id]: action.payload.lot},
+        lots: {...state.lots, [action.payload.lot.id]: action.payload.lot},
       }
 
     case POST + LOT + SUCCESS:
       return {
         ...state,
-        lots: {...state.lots, [action.payload.lot._id]: action.payload.lot},
+        lots: {...state.lots, [action.payload.lot.id]: action.payload.lot},
       }
 
     case DELETE + LOT + SUCCESS:

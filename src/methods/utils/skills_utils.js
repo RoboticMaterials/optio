@@ -62,7 +62,7 @@ export const conditionSummary = (condition, skill, skills, objects, locations, b
                 if (condition.location == 'cart'){
                     location = 'Cart'
                 }else {
-                    location = locations.filter(location => location._id == condition.location);
+                    location = locations.filter(location => location.id == condition.location);
                     if (location.length) {location = location[0].name}
                     else {location = ''}
                 }
@@ -76,7 +76,7 @@ export const conditionSummary = (condition, skill, skills, objects, locations, b
                 object = 'Cart';
                 quantity = '';
             } else {
-                object = objects.filter(object => object._id.$oid == condition.object);
+                object = objects.filter(object => object.id == condition.object);
                 if (object.length) {object = object[0].name}
                 else {object = ''}
                 quantity = condition.quantity;
@@ -98,8 +98,8 @@ export const conditionSummary = (condition, skill, skills, objects, locations, b
         case 'hil_complete':
             let name;
             if (!!skills) {
-                if (!!skill.skill_id) {
-                    name = skills.filter(s => s._id.$oid == skill.skill_id.$oid);
+                if (!!skill.skillId) {
+                    name = skills.filter(s => s.id == skill.skillId);
                     if (name.length) {name = name[0].name}
                     else {name = ''}
                 } else {
@@ -177,7 +177,7 @@ export function methodLabel(method, verbose=false) {
 
 export function skillName(skill, locations, skills) {
 
-    let filteredSkills = skills.filter(skillz => skillz._id.$oid == skill.skill_id.$oid)
+    let filteredSkills = skills.filter(skillz => skillz.id == skill.skillId)
     let skillName = !!filteredSkills[0] && filteredSkills[0].name
     return skillName;
 }
@@ -209,7 +209,7 @@ export const getCurrentSkill = (skills, skillID) => {
 
 
     const skillIndex = skills.findIndex(d => {
-        return d._id.$oid == skillID
+        return d.id == skillID
     })
 
     return deepCopy(skills[skillIndex])

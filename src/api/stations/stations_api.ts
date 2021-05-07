@@ -1,44 +1,26 @@
 import axios from 'axios';
 import * as log from 'loglevel';
 
-import { apiIPAddress } from '../settings/settings'
-import apolloClient from "./apollo_client";
+import { apiIPAddress } from '../../settings/settings'
+import apolloClient from "../apollo_client";
 import { gql, useQuery } from '@apollo/client';
+import {StationInterface} from "./station";
+import {listStations} from "./queries";
+import {createStation} from "./mutations";
 
 const operator = 'stations'
 
 
-export async function getStations() {
+export const getStations =  async (): Promise<Array<StationInterface>> => {
     try {
 
-
-        const query = gql`query MyQuery {
-            listStations {
-                dashboards
-                id
-                children
-                mapId
-                organizationId
-                pos_x
-                pos_y
-                rotation
-                schema
-                type
-                    x
-                y
-            }
-        }`
-
-        apolloClient.query({query})
+        apolloClient.query({query: listStations})
         .then(result => console.log("resultresultresult",result))
             .catch(err => {
                 console.log("GET STATIONS ERR", err)
             })
 
-        // const {data,loading, networkStatus}
-        // const {
-        //     listStations
-        // } = data || {}
+        return []
 
 
     } catch (error) {
@@ -65,8 +47,6 @@ export async function getStations() {
         }
         throw error
     }
-
-
 }
 
 export async function deleteStation(ID) {
@@ -115,25 +95,19 @@ export async function deleteStation(ID) {
 }
 
 
-export async function postStation(station) {
+export async function postStation(station: any) {
     try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: JSON.stringify(station)
-        });
 
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        console.log("postStation station",station)
 
-        return dataJson;
+        apolloClient.mutate({mutation: createStation, variables: station})
+            .then(result => console.log("postStationpostStation",result))
+            .catch(err => {
+                console.log("postStationpostStation", err)
+            })
+
+
+        return ;
 
 
     } catch (error) {

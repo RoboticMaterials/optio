@@ -211,7 +211,7 @@ const PasteMapper = (props) => {
 						index,
 						fieldPath,
 						fieldName = `undefined field ${currColIndex}`,
-						_id: fieldId
+						id: fieldId
 					} = destinationField || {}
 
 					// check if field is from primary or secondary values

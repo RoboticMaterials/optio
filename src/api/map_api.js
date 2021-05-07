@@ -58,11 +58,11 @@ export async function getMaps() {
 
 }
 
-export async function getMap(map_id) {
+export async function getMap(mapId) {
   try {
     const response = await axios({
       method: 'GET',
-      url: apiIPAddress() + operator + '/' + map_id,
+      url: apiIPAddress() + operator + '/' + mapId,
       headers: {
         'Accept': 'application/json',
         'X-API-Key': '123456',

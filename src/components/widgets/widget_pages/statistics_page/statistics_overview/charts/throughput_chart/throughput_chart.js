@@ -52,8 +52,8 @@ const ThroughputChart = (props) => {
 
     const dropDownOptions = [
         { label: 'Object', value: 'object' },
-        { label: 'Lot', value: 'lot_id' },
-        { label: 'Route', value: 'route_id' }
+        { label: 'Lot', value: 'lotId' },
+        { label: 'Route', value: 'routeId' }
 
     ]
 
@@ -151,7 +151,7 @@ const ThroughputChart = (props) => {
                                     }
                                     break;
 
-                                case 'lot_id':
+                                case 'lotId':
                                     const lot = cards[currKey]
                                     if (!!lot) {
                                         onChartKeys(lot.name)
@@ -162,7 +162,7 @@ const ThroughputChart = (props) => {
                                     }
                                     break;
 
-                                case 'route_id':
+                                case 'routeId':
                                     const route = tasks[currKey]
                                     if (!!route) {
                                         onChartKeys(route.name)

@@ -5,10 +5,8 @@ const RouteTask = {
     obj: null,
     type: 'push',
     quantity: 1,
-    // device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
     handoff: true,
     track_quantity: true,
-    // map_id: currentMap._id,
     new: true,
     process: false,
     load: {
@@ -24,7 +22,7 @@ const RouteTask = {
         sound: null,
         instructions: 'Unload'
     },
-    _id: uuid.v4(),
+    id: uuid.v4(),
 }
 
 export default RouteTask

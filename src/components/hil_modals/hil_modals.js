@@ -56,8 +56,8 @@ const HILModals = (props) => {
 
     const {
         dashboard: dashboardId,
-        lot_id: lotId,
-        task_id: taskId
+        lotId: lotId,
+        taskId
     } = item || {}
 
     const params = useParams()
@@ -162,7 +162,7 @@ const HILModals = (props) => {
     useEffect(() => {
         dispatchGetStations()
 
-        const currentTask = tasks[item.task_id]
+        const currentTask = tasks[item.taskId]
         setTask(currentTask)
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
@@ -204,7 +204,7 @@ const HILModals = (props) => {
 
         dispatchTaskQueueItemClicked('')
 
-        const { _id, dashboard, ...rest } = item || {}
+        const { id, dashboard, ...rest } = item || {}
 
         let newItem = {
             ...rest,
@@ -243,7 +243,7 @@ const HILModals = (props) => {
             ...item,
             hil_response: false
         }
-        delete newItem._id
+        delete newItem.id
 
         dispatchGetTaskQueue()
         await putTaskQueueItem(newItem, taskQueueID)
@@ -348,8 +348,8 @@ const HILModals = (props) => {
 
     if (dataLoaded && modalClosed !== true) {
         const {
-            _id: lotId,
-            process_id: processId
+            id: lotId,
+            processId
         } = lot || {}
 
         return (
@@ -381,8 +381,8 @@ const HILModals = (props) => {
                         <styled.ColumnContainer>
                             <styled.HilMessage>{hilMessage}</styled.HilMessage>
                             <styled.HilTimer
-                                visible={!!hilTimers[item._id] && hilLoadUnload === 'load'}
-                            >{!!hilTimers[item._id] && hilLoadUnload === 'load' ? hilTimers[item._id] : ""}</styled.HilTimer>
+                                visible={!!hilTimers[item.id] && hilLoadUnload === 'load'}
+                            >{!!hilTimers[item.id] && hilLoadUnload === 'load' ? hilTimers[item.id] : ""}</styled.HilTimer>
                         </styled.ColumnContainer>
                     </styled.Header>
 

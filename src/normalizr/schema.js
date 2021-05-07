@@ -14,7 +14,7 @@ export const dashboardSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id.$oid
+            return value.id
         },
 
     },
@@ -35,7 +35,7 @@ export const deviceSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id
+            return value.id
         },
 
     },
@@ -53,7 +53,7 @@ export const locationsSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id.$oid
+            return value.id
         }
     }
 )
@@ -67,7 +67,7 @@ export const eventsSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id.$oid
+            return value.id
         }
     }
 )
@@ -84,7 +84,7 @@ export const processSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id
+            return value.id
         },
 
     },
@@ -105,7 +105,7 @@ export const soundSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id
+            return value.id
         },
 
     },
@@ -126,7 +126,7 @@ export const taskAnalysisSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value.task_id
+            return value.taskId
         },
 
     },
@@ -147,7 +147,7 @@ export const positionSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id
+            return value.id
         },
 
     },
@@ -166,7 +166,7 @@ export const stationSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id
+            return value.id
         },
 
     },
@@ -186,7 +186,7 @@ export const statusSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id.$oid
+            return value.id
         },
 
         // processStrategy

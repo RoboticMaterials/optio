@@ -26,27 +26,27 @@ const logger = log.getLogger("ReportEvents", "Redux")
 
 export const convertData = (array, key) => {
     const initialValue = {
-        station_id: {},
-        report_button_id: {}
+        stationId: {},
+        reportButtonId: {}
     };
     return array.reduce((obj, item) => {
-        let current = obj.station_id[item.station_id] ? obj.station_id[item.station_id] : []
-        let current1 = obj.report_button_id[item.report_button_id] ? obj.report_button_id[item.report_button_id] : []
+        let current = obj.stationId[item.stationId] ? obj.stationId[item.stationId] : []
+        let current1 = obj.reportButtonId[item.reportButtonId] ? obj.reportButtonId[item.reportButtonId] : []
 
         return {
             ...obj,
             // [item[key]]: item,
-            _id: {
-                ...obj._id,
-                [item._id]: item
+            id: {
+                ...obj.id,
+                [item.id]: item
             },
-            station_id: {
-                ...obj.station_id,
-                [item.station_id]: [...current, item._id]
+            stationId: {
+                ...obj.stationId,
+                [item.stationId]: [...current, item.id]
             },
-            report_button_id: {
-                ...obj.report_button_id,
-                [item.report_button_id]: [...current1, item._id]
+            reportButtonId: {
+                ...obj.reportButtonId,
+                [item.reportButtonId]: [...current1, item.id]
             }
         };
     }, initialValue);
@@ -66,7 +66,7 @@ export const getReportEvents = () =>  async (dispatch) => {
 
         // make request
         const reportEvents = await api.getReportEvents();
-        const reportEventsObj = convertData(reportEvents, "_id")
+        const reportEventsObj = convertData(reportEvents, "id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);

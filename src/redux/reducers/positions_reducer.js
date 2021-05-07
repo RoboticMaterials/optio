@@ -57,10 +57,10 @@ const positionsReducer = (state = defaultState, action) => {
             ...state,
             positions: {
                 ...state.positions,
-                [position._id]: position
+                [position.Id]: position
             },
             // If the post position is the selectedPosition, then update selected position
-            selectedPosition: state.selectedPosition !== null && state.selectedPosition._id === position._id && position,
+            selectedPosition: state.selectedPosition !== null && state.selectedPosition.id === position.id && position,
             pending: false,
         }
     }
@@ -90,7 +90,7 @@ const positionsReducer = (state = defaultState, action) => {
             }
 
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
-            else if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
+            else if (!!state.selectedPosition && action.payload.id === state.selectedPosition.id) {
                 return {
                     ...state,
                     selectedPosition: {

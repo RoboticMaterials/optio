@@ -48,7 +48,7 @@ const StationColumn = (props) => {
         const dashboardId = currentStation.dashboards && Array.isArray(currentStation.dashboards) && currentStation.dashboards[0]
         const dashboard = dashboards[dashboardId] ? dashboards[dashboardId] : {}
         const currReportButtons = dashboard.report_buttons ? dashboard.report_buttons : []
-        setReportButtons(convertArrayToObject(currReportButtons, "_id"))
+        setReportButtons(convertArrayToObject(currReportButtons, "id"))
 
     }, [currentStation, stations, dashboards])
 

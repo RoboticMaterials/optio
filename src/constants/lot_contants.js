@@ -122,7 +122,7 @@ export const DEFAULT_DATES_FIELD_ID = "DEFAULT_DATES_FIELD_ID"
 
 
 export const BASIC_DEFAULT_DESCIPTION_FIELD = {
-	_id: DEFAULT_DESCRIPTION_FIELD_ID,
+	id: DEFAULT_DESCRIPTION_FIELD_ID,
 	...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG,
 	[TEMPLATE_FIELD_KEYS.FIELD_NAME]: "description",
 	[TEMPLATE_FIELD_KEYS.REQUIRED]: false,
@@ -134,7 +134,7 @@ export const BASIC_DEFAULT_DESCIPTION_FIELD = {
 export const IGNORE_LOT_SYNC_WARNING = "ignoreLotSyncWarning"
 
 export const BASIC_DEFAULT_DATES_FIELD = {
-	_id: DEFAULT_DATES_FIELD_ID,
+	id: DEFAULT_DATES_FIELD_ID,
 	...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END,
 	[TEMPLATE_FIELD_KEYS.FIELD_NAME]: "dates",
 	[TEMPLATE_FIELD_KEYS.REQUIRED]: false,
@@ -151,15 +151,15 @@ export const EMPTY_DEFAULT_FIELDS =  [
 // same as EMPTY_DEFAULT_FIELDS, but creates new id for each field. Necessary for new templates to distinguish from basic template
 export const getDefaultFields = () => {
 	return [
-		[{...BASIC_DEFAULT_DESCIPTION_FIELD, _id: uuidv4()}],
-		[{...BASIC_DEFAULT_DATES_FIELD, _id: uuidv4()}]
+		[{...BASIC_DEFAULT_DESCIPTION_FIELD, id: uuidv4()}],
+		[{...BASIC_DEFAULT_DATES_FIELD, id: uuidv4()}]
 	]
 }
 
 export const BASIC_LOT_TEMPLATE = {
 	fields: EMPTY_DEFAULT_FIELDS,
 	name: "Basic",
-	_id: BASIC_LOT_TEMPLATE_ID
+	id: BASIC_LOT_TEMPLATE_ID
 }
 
 export const DEFAULT_NAME_DISPLAY_NAME = "Name"
@@ -175,8 +175,8 @@ export const COUNT_FIELD_ID = "COUNT_FIELD_ID"
 export const LOT_PRIMARY_FIELD_IDS = [NAME_FIELD_ID, COUNT_FIELD_ID]
 
 
-export const NAME_FIELD = {fieldName: "name", _id: NAME_FIELD_ID, dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
-export const COUNT_FIELD = {fieldName: "bins", _id: COUNT_FIELD_ID, fieldPath: ["QUEUE", "count"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
+export const NAME_FIELD = {fieldName: "name", id: NAME_FIELD_ID, dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
+export const COUNT_FIELD = {fieldName: "bins", id: COUNT_FIELD_ID, fieldPath: ["QUEUE", "count"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
 export const LOT_NUMBER_FIELD = {fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number"}
 
 

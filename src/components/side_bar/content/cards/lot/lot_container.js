@@ -29,7 +29,7 @@ const LotContainer = (props) => {
         lotTemplateId,
         name,
         flags,
-        process_id: processId
+        processId
     } = lot || {}
     const process = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
     const station = useSelector(state => { return state.stationsReducer.stations[binId] }) || {}

@@ -178,12 +178,12 @@ const EditLocation = (props) => {
         // Station
         if (!!selectedLocation) {
             if (selectedLocation.schema === 'station') {
-                await dispatchDeleteStation(selectedStation._id)
+                await dispatchDeleteStation(selectedStation.id)
             }
 
             // Position
             else {
-                await dispatchDeletePosition(selectedPosition._id)
+                await dispatchDeletePosition(selectedPosition.id)
             }
         }
 
@@ -209,7 +209,7 @@ const EditLocation = (props) => {
             Object.values(selectedStationChildrenCopyRef.current).forEach(child => {
                 // If it's a new child remove the position
                 if (!!child.new) {
-                    dispatchDeletePosition(child._id)
+                    dispatchDeletePosition(child.id)
                 }
             })
         }
@@ -218,11 +218,11 @@ const EditLocation = (props) => {
         // If there's a selected location and its new without saving, then delete
         if (!!selectedLocationRef.current && !!selectedLocationRef.current.new && !save) {
             if (selectedLocationRef.current.schema === 'station') {
-                dispatchRemoveStation(selectedLocationRef.current._id)
+                dispatchRemoveStation(selectedLocationRef.current.id)
             }
 
             else if (selectedLocationRef.current.schema === 'position') {
-                dispatchDeletePosition(selectedLocationRef.current._id)
+                dispatchDeletePosition(selectedLocationRef.current.id)
             }
         }
 
@@ -240,8 +240,8 @@ const EditLocation = (props) => {
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
         defaultAttributes['name'] = newName
-        defaultAttributes['map_id'] = currentMap._id
-        defaultAttributes['_id'] = uuid.v4()
+        defaultAttributes['mapId'] = currentMap.id
+        defaultAttributes['id'] = uuid.v4()
         defaultAttributes['temp'] = true
 
         const attributes = deepCopy(LocationTypes[type].attributes)
@@ -276,12 +276,12 @@ const EditLocation = (props) => {
         // Station
         if (!!selectedLocation && selectedLocation.temp) {
             if (selectedLocation.schema === 'station') {
-                await dispatchRemoveStation(selectedStation._id)
+                await dispatchRemoveStation(selectedStation.id)
             }
 
             // Position
             else {
-                await dispatchRemovePosition(selectedPosition._id)
+                await dispatchRemovePosition(selectedPosition.id)
             }
 
             dispatchSetSelectedStationChildrenCopy(null)
@@ -292,10 +292,10 @@ const EditLocation = (props) => {
 
     const onLocationNameChange = (e) => {
         if (!!selectedStation) {
-            dispatchSetStationAttributes(selectedStation._id, { name: e.target.value })
+            dispatchSetStationAttributes(selectedStation.id, { name: e.target.value })
         }
         else if (!!selectedPosition) {
-            dispatchSetPositionAttributes(selectedPosition._id, { name: e.target.value })
+            dispatchSetPositionAttributes(selectedPosition.id, { name: e.target.value })
         }
 
         // Location Type has not been defined yet
@@ -344,11 +344,11 @@ const EditLocation = (props) => {
                     rotation: devicePosition.orientation,
                 }
 
-                if (updatedPosition._id in selectedStationChildrenCopy) {
+                if (updatedPosition.id in selectedStationChildrenCopy) {
                     let copyOfCopy = deepCopy(selectedStationChildrenCopy)
                     copyOfCopy = {
                         ...copyOfCopy,
-                        [updatedPosition._id]: updatedPosition,
+                        [updatedPosition.id]: updatedPosition,
                     }
                     dispatchSetSelectedStationChildrenCopy(copyOfCopy)
                 }

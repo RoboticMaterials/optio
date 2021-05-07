@@ -11,7 +11,7 @@ export const poseSchema = new schema.Entity(
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id
+      return value.id
     },
 
     // processStrategy

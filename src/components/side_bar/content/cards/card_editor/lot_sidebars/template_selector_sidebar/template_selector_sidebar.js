@@ -101,7 +101,7 @@ const TemplateSelectorSidebar = (props) => {
                         const {
                             fields,
                             name,
-                            _id: currTemplateId
+                            id: currTemplateId
                         } = currTemplate
                         //
 

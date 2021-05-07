@@ -27,7 +27,7 @@ const ReportModalButtons = ((props) => {
 			console.log("renderButtons reportButtons",reportButtons)
 			return reportButtons.map((button, index) => {
 				const {
-					_id: buttonId,
+					id: buttonId,
 					description = "",
 					label = "",
 					iconClassName = "",

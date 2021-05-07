@@ -73,13 +73,13 @@ const RightClickMenu = (props) => {
             name: '',
             schema: 'temporary_position',
             type: 'cart_position',
-            map_id: currentMap._id,
+            mapId: currentMap.id,
             pos_x: pos[0],
             pos_y: pos[1],
             rotation: 0,
             x: coords.x,
             y: coords.y,
-            _id: uuid.v4()
+            id: uuid.v4()
         }
 
         await Object.assign(tempSelectedPosition, { ...PositionTypes['temporary_cart_position'].attributes, temp: true })
@@ -95,8 +95,8 @@ const RightClickMenu = (props) => {
 
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
-        defaultAttributes['map_id'] = currentMap._id
-        defaultAttributes['_id'] = uuid.v4()
+        defaultAttributes['mapId'] = currentMap.id
+        defaultAttributes['id'] = uuid.v4()
         defaultAttributes['pos_x'] = pos[0]
         defaultAttributes['pos_y'] = pos[1]
         defaultAttributes['x'] = coords.x

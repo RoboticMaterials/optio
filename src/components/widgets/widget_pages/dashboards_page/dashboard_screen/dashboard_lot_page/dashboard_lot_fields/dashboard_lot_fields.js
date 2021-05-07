@@ -27,7 +27,7 @@ const DashboardLotFields = (props) => {
 
     const count = getBinQuantity(currentLot, stationID)
     const totalQuantity = getLotTotalQuantity(currentLot)
-    const processName = processes[currentLot.process_id]?.name
+    const processName = processes[currentLot.processId]?.name
 
     const renderLotFields = useMemo(() => {
         const fields = getCustomFields(currentLot.lotTemplateId, currentLot)

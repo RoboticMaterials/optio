@@ -78,7 +78,7 @@ export const getDashboards = () => {
 
             const normalizedDashboards = {}
             dashboards.map((dashboard) => {
-                normalizedDashboards[dashboard._id.$oid] = dashboard
+                normalizedDashboards[dashboard.id] = dashboard
             })
 
             return onSuccess(normalizedDashboards)
@@ -104,7 +104,7 @@ export const postDashboard = (dashboard) => {
 
         try {
             onStart();
-            delete dashboard._id
+            delete dashboard.id
             const newDashboard = await api.postDashboards(dashboard);
             return onSuccess(newDashboard)
         } catch (error) {
@@ -129,7 +129,7 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            delete dashbaordCopy._id
+            delete dashbaordCopy.id
             const updateDashboard = await api.putDashboards(dashbaordCopy, ID);
             return onSuccess(updateDashboard)
         } catch (error) {
@@ -197,13 +197,13 @@ export const removeRouteFromAllDashboards = (routeId) => {
             ).forEach(currDashboard => {
                 var currButtons = [...currDashboard.buttons]
 
-                currButtons = currButtons.filter(button => button.task_id !== routeId)
+                currButtons = currButtons.filter(button => button.taskId !== routeId)
 
                 // update dashboard
                 dispatch(putDashboard({
                     ...currDashboard,
                     buttons: currButtons
-                }, currDashboard._id.$oid))
+                }, currDashboard.id))
             }
             )
 
@@ -222,7 +222,7 @@ export const addRouteToDashboards = (route) => {
         const stations = state.stationsReducer.stations || {}
 
         const {
-            _id: routeId,
+            id: routeId,
             type: routeType,
             name: routeName
         } = route
@@ -243,7 +243,7 @@ export const addRouteToDashboards = (route) => {
             color: '#bcbcbc',
             id: uuid.v4(),
             name: "",
-            task_id: routeId,
+            taskId: routeId,
             type: TYPES.ROUTES.key,
         }
 
@@ -252,20 +252,20 @@ export const addRouteToDashboards = (route) => {
                 name: "",
                 locked: false,
                 buttons: [newDashboardButton],
-                station: station._id
+                station: station.id
             }
             const postedDashboard = await dispatch(postDashboard(defaultDashboard))
             alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
             await dispatch(stationActions.putStation({
                 ...station,
-                dashboards: [postedDashboard._id.$oid]
-            }, station._id))
+                dashboards: [postedDashboard.id]
+            }, station.id))
         }
 
         else {
             // see if button for task already exists
             const buttonIndex = dashboard.buttons.findIndex((currButton) => {
-                return currButton.task_id === route._id
+                return currButton.taskId === route.id
             })
 
             // only add button if it isn't already in the dashboard
@@ -273,7 +273,7 @@ export const addRouteToDashboards = (route) => {
                 await dispatch(putDashboard({
                     ...dashboard,
                     buttons: [...dashboard.buttons, newDashboardButton]
-                }, dashboard._id.$oid))
+                }, dashboard.id))
             }
 
         }
@@ -291,7 +291,7 @@ export const removeRouteFromWrongDashboards = (route) => {
         const dashboards = Object.values(state.dashboardsReducer.dashboards) || []
 
         const {
-            _id: routeId,
+            id: routeId,
             type: routeType
         } = route
 
@@ -310,7 +310,7 @@ export const removeRouteFromWrongDashboards = (route) => {
         dashboards.forEach((currDashboard) => {
             const {
                 buttons: currDashboardButtons = [],
-                _id: currDashboardIdObj = {},
+                id: currDashboardIdObj = {},
                 station: currStationId
             } = currDashboard
 
@@ -324,7 +324,7 @@ export const removeRouteFromWrongDashboards = (route) => {
                 // loop through each button and check if the button needs to be removed
                 const filteredButtons = currDashboardButtons.filter((currButton, currButtonIndex) => {
                     const {
-                        task_id: currRouteId
+                        taskId: currRouteId
                     } = currButton
 
                     return (currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route

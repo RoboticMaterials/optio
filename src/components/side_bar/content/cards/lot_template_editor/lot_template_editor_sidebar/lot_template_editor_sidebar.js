@@ -84,11 +84,11 @@ const LotTemplateEditorSidebar = (props) => {
                         const {
                             component,
                             key,
-                            _id
+                            id
                         } = payload
 
                         if(isSource) {
-                            dispatchSetFieldDragging(_id)
+                            dispatchSetFieldDragging(id)
                         }
 
                     }}
@@ -102,7 +102,8 @@ const LotTemplateEditorSidebar = (props) => {
                         const {
                             component,
                             key,
-                            _id
+
+                            id
                         } = payload
 
                         if(isSource) {
@@ -122,7 +123,7 @@ const LotTemplateEditorSidebar = (props) => {
                         const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         const payload = {
                             ...selected[1],
-                            _id: uuidv4(),
+                            id: uuidv4(),
                             [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "",
                             [TEMPLATE_FIELD_KEYS.REQUIRED]: false,              // set to true to default checked when added
                             [TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,       // set to true to default checked when added
@@ -199,7 +200,7 @@ const LotTemplateEditorSidebar = (props) => {
                         const {
                             fields,
                             name,
-                            _id: currTemplateId
+                            id: currTemplateId
                         } = currTemplate
                         //
 

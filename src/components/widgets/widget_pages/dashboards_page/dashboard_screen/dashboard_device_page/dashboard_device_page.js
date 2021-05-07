@@ -47,7 +47,7 @@ const DashboardDevicePage = (props) => {
         } = props
 
         const lotID = ''
-        const Id = props.task_id
+        const Id = props.taskId
         const name = ''
         const custom = props.custom_task
 

@@ -21,8 +21,8 @@ const MiR100 = (props) => {
     // On Load, see if the stationID in the url matches this device and if its showing a widget page
     // If so, then disptach info to show that widget page
     useEffect(() => {
-        if (params.stationID !== undefined && params.stationID === props.device._id && !!params.widgetPage) {
-            dispatchHoverStationInfo({ id: device._id })
+        if (params.stationID !== undefined && params.stationID === props.device.id && !!params.widgetPage) {
+            dispatchHoverStationInfo({ id: device.id })
 
         }
     }, [])

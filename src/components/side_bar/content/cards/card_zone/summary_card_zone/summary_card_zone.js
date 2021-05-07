@@ -54,26 +54,8 @@ const SummaryCardZone = (props) => {
 
 	return(
 		<styled.CardZoneContainer ref={containerRef}>
-
-			{/*<Portal>*/}
-			{/*	<styled.ProcessNameContainer className={"banana"} positionX={wrapperPositionX+containerSize.offsetLeft -50} positionY={wrapperPositionY-50+((containerSize.offsetTop + containerSize.height/2) * scale)} >*/}
-			{/*		<styled.ProcessName>{processName}</styled.ProcessName>*/}
-			{/*		<Button*/}
-			{/*			style={{width: "fit-content", height: "fit-content"}}*/}
-			{/*			onClick={()=>{*/}
-			{/*				const filteredProcesses = selectedProcesses.filter((item,index) => item._id !== currProcess._id)*/}
-			{/*				setSelectedProcesses((filteredProcesses))*/}
-			{/*			}}*/}
-			{/*			schema={'processes'}*/}
-			{/*		>*/}
-			{/*			<i style={{fontSize: "1rem"}} className="fas fa-times"></i>*/}
-			{/*		</Button>*/}
-			{/*	</styled.ProcessNameContainer>*/}
-			{/*</Portal>*/}
-
-
 			<CardZone
-				processId={currProcess._id}
+				processId={currProcess.id}
 				handleCardClick={handleCardClick}
 			/>
 		</styled.CardZoneContainer>

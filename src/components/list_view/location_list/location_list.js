@@ -39,7 +39,7 @@ const LocationList = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const {
-        _id: mapId
+        id: mapId
     } = currentMap || {}
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
@@ -51,12 +51,12 @@ const LocationList = (props) => {
 
     /*
     * this effect updates locationsArr
-    * locations must be sorted a-z, and filtered by map_id
+    * locations must be sorted a-z, and filtered by mapId
     * name should be replaced with dashboard name (if it exists), otherwise default name should be made using station name
     * */
     useEffect(() => {
         // sort locations + filter by map id
-        let tempLocationsArr = locationsSortedAlphabetically(Object.values(locations).filter(loc => loc.map_id === currentMap._id))
+        let tempLocationsArr = locationsSortedAlphabetically(Object.values(locations).filter(loc => loc.mapId === currentMap.id))
 
         // map through locations and update name
         tempLocationsArr = tempLocationsArr.map((currLocation) => {

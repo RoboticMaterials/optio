@@ -128,7 +128,7 @@ const devicesReducer = (state = defaultState, action) => {
 
         case POST_DEVICES_SUCCESS:
             devicesClone = deepCopy(state.devices)
-            devicesClone[action.payload._id.$oid] = action.payload
+            devicesClone[action.payload.id] = action.payload
 
             return {
                 ...state,
@@ -163,7 +163,7 @@ const devicesReducer = (state = defaultState, action) => {
 
             devicesClone = deepCopy(state.devices)
 
-            devicesClone[currentDevice._id] = currentDevice
+            devicesClone[currentDevice.id] = currentDevice
 
             return setDevices(devicesClone)
 

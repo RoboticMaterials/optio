@@ -6,9 +6,9 @@ import { randomHash, deepCopy } from './utils.js'
  */
 export function treeSearch(tree, id) {
   for (let i = 0; i < tree.children.length; i++) {
-    // If the _id of the child matches the ID of the item searching for, then thats the child you are looking for
+    // If the id of the child matches the ID of the item searching for, then thats the child you are looking for
     // Suck it obi wan 
-     if (tree.children[i]._id === id) {
+     if (tree.children[i].id === id) {
        return tree.children[i];
      }
 
@@ -73,7 +73,7 @@ function postOrderIdify(node) {
     }
     oldPrev = Object.assign(prev);
     prev = {
-        _id : node._id,
+        id : node.id,
         children : node.children
     };
 }
@@ -91,8 +91,8 @@ function postOrderTieToId(node) {
     for (let i=0; i<node.children.length; i++) {
         node.children[i] = postOrderTieToId(node.children[i]);
     }
-    if (!!node._id && node._id != "None") {
-        skill = deepCopy(skills.find(skill => skill._id.$oid == node._id));
+    if (!!node.id && node.id != "None") {
+        skill = deepCopy(skills.find(skill => skill.id == node.id));
         skill.children = node.children;
         skill.name = randomHash();
         return skill;

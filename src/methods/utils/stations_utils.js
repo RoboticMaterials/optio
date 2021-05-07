@@ -10,7 +10,7 @@ export const getChildPositions = (stationID) => {
     let childrenArray = []
 
     positions.forEach(position => {
-        !!position.parent && position.parent === stationID && childrenArray.push(position._id)
+        !!position.parent && position.parent === stationID && childrenArray.push(position.id)
     })
 
 }

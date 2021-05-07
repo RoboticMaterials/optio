@@ -65,7 +65,7 @@ const ProcessesContent = () => {
 
     const onCardView = (element) => {
         const currentPath = history.location.pathname
-        history.push(currentPath + '/' + element._id + "/lots")
+        history.push(currentPath + '/' + element.id + "/lots")
     }
 
     if (editing && selectedProcess !== null) { // Editing Mode
@@ -81,7 +81,7 @@ const ProcessesContent = () => {
                 schema={'processes'}
                 // elements={Object.values(tasks)}
                 elements={
-                    Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id)
+                    Object.values(processes).filter((currProcess) => currProcess.mapId === currentMap.id)
                 }
                 onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
                 onMouseLeave={() => dispatchSetSelectedProcess(null)}
@@ -94,7 +94,7 @@ const ProcessesContent = () => {
                 onPlus={() => {
                     const newProcess = {
                         name: '',
-                        _id: uuid.v4(),
+                        id: uuid.v4(),
                         new: true,
                         routes: [],
                         broken: null,

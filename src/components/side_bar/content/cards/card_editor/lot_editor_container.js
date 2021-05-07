@@ -313,15 +313,15 @@ const LotEditorContainer = (props) => {
                         fieldName,
                         component,
                         dataType,
-                        _id
+                        id
                     } = currItem || {}
 
                     if (component === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
-                        newFieldNameArr.push({ _id, fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: `${fieldName} (start)` })
-                        newFieldNameArr.push({ _id, fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: `${fieldName} (end)` })
+                        newFieldNameArr.push({ id, fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: `${fieldName} (start)` })
+                        newFieldNameArr.push({ id, fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: `${fieldName} (end)` })
                     }
                     else {
-                        newFieldNameArr.push({ _id, fieldName, dataType: component, displayName: fieldName })
+                        newFieldNameArr.push({ id, fieldName, dataType: component, displayName: fieldName })
                     }
 
                 })
@@ -348,7 +348,7 @@ const LotEditorContainer = (props) => {
         Object.values(cards).forEach((currCard) => {
             const {
                 name,
-                _id: currLotId
+                id: currLotId
             } = currCard || {}
 
             tempCardNames.push({name, id: currLotId})
@@ -378,7 +378,7 @@ const LotEditorContainer = (props) => {
 
     const setPending = (index) => {
         const values = mappedValues[index]
-        if (values._id) return
+        if (values.id) return
 
         // update status
         setMappedStatus((previous) => {
@@ -399,7 +399,7 @@ const LotEditorContainer = (props) => {
     const createLot = async (index, cb) => {
         if(!createdLot) setCreatedLot(true)
         const values = mappedValues[index]
-        if (values._id) return	// lot was already created, don't try creating it again
+        if (values.id) return	// lot was already created, don't try creating it again
 
         // update status
         setMappedStatus((previous) => {
@@ -444,7 +444,7 @@ const LotEditorContainer = (props) => {
                 const submitItem = {
                     name: newName,
                     bins: newBins,
-                    process_id: newProcessId,
+                    processId: newProcessId,
                     lotTemplateId: lotTemplateId,
                     fields,
                     lotNumber: index //collectionCount + index
@@ -455,7 +455,7 @@ const LotEditorContainer = (props) => {
                         if (result) {
                             // successfully POSTed
                             const {
-                                _id = null
+                                id = null
                             } = result || {}
 
                             // update status, POST success
@@ -478,7 +478,7 @@ const LotEditorContainer = (props) => {
                             })
 
                             // call callback if provided
-                            cb && cb(_id)
+                            cb && cb(id)
                         }
 
                         else {
@@ -717,7 +717,7 @@ const LotEditorContainer = (props) => {
     * Updates form values with id of created lot
     * */
     const onAddCallback = (id) => {
-        setFieldValue("_id", id)
+        setFieldValue("id", id)
     }
 
     return (
@@ -780,14 +780,14 @@ const LotEditorContainer = (props) => {
                         const wholeVal = mappedValues[currIndex]
 
                         const {
-                            _id
+                            id
                         } = wholeVal
 
                         const currStatus = mappedStatus[currIndex] || {}
                         return {
                             errors: mappedErrors[currIndex] || {},
                             title: name,
-                            created: !!_id,
+                            created: !!id,
                             ...currStatus,
                             index: currIndex
                         }
@@ -897,7 +897,7 @@ const LotEditorContainer = (props) => {
                     setDisablePasteModal(false)
                 }}
                 {...props}
-                cardId={(props.cardId !== null) ? props.cardId : values._id ? values._id : null}
+                cardId={(props.cardId !== null) ? props.cardId : values.id ? values.id : null}
                 onValidate={handleValidate}
                 footerContent={() =>
                     (isArray(mappedValues) && mappedValues.length > 0) &&

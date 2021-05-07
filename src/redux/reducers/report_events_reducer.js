@@ -20,9 +20,9 @@ import {
 const defaultState = {
   reportEvents: {},
   id: {},
-  dashboard_id: {},
-  station_id: {},
-  report_button_id: {},
+  dashboardId: {},
+  stationId: {},
+  reportButtonId: {},
   error: {},
   pending: false
 };
@@ -59,9 +59,9 @@ export default function reportEventsReducer(state = defaultState, action) {
       return  Object.assign({}, state, {
         reportEvents: {
           ...state.reportEvents,
-          _id: {
-            ...state.reportEvents._id,
-            [created.report_button_id]: created
+          id: {
+            ...state.reportEvents.id,
+            [created.reportButtonId]: created
           }
         },
         pending: false
@@ -87,12 +87,12 @@ export default function reportEventsReducer(state = defaultState, action) {
       const {
         [action.payload.id]: old,
           ...rest
-      } = state.reportEvents._id
+      } = state.reportEvents.id
 
       return  Object.assign({}, state, {
         reportEvents: {
           ...state.reportEvents,
-          _id: {...rest,}
+          id: {...rest,}
         },
         pending: false
       });
@@ -117,9 +117,9 @@ export default function reportEventsReducer(state = defaultState, action) {
       return  Object.assign({}, state, {
         reportEvents: {
           ...state.reportEvents,
-          _id: {
-            ...state.reportEvents._id,
-            [action.payload.updatedReportEvent.report_button_id]: action.payload.updatedReportEvent
+          id: {
+            ...state.reportEvents.id,
+            [action.payload.updatedReportEvent.reportButtonId]: action.payload.updatedReportEvent
           }
         },
         pending: false

@@ -98,7 +98,7 @@ export default function taskQueueReducer(state = defaultState, action) {
 
         Object.values(taskQueue).forEach((item)=> {
           if(item.hil_response===false){
-            delete taskQueue[item._id]
+            delete taskQueue[item.id]
           }
         })
 
@@ -128,7 +128,7 @@ export default function taskQueueReducer(state = defaultState, action) {
                 ...state,
                 taskQueue: {
                     ...state.taskQueue,
-                    [action.payload.createdTaskQueueItem._id]: action.payload.createdTaskQueueItem
+                    [action.payload.createdTaskQueueItem.id]: action.payload.createdTaskQueueItem
                 },
                 error: '',
                 pending: false,
@@ -152,7 +152,7 @@ export default function taskQueueReducer(state = defaultState, action) {
 
             const updatedTaskQ = deepCopy({
                 ...action.payload.item,
-                _id: { $oid: action.payload.ID }
+                id: action.payload.ID
 
             })
             let forceUpdate = {}
