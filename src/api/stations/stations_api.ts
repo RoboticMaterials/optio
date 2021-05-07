@@ -100,7 +100,27 @@ export async function postStation(station: any) {
 
         console.log("postStation station",station)
 
-        apolloClient.mutate({mutation: createStation, variables: station})
+        // perform mutation
+        // const apiResponse = await API.graphql({
+        //     query,
+        //     variables
+        // })
+        const {
+            id,
+            children = [],
+            dashboards = [],
+            ...rest
+        } = station || {}
+
+        const payload = {
+            ...rest,
+            children: JSON.stringify([]),
+            dashboards: JSON.stringify([]),
+        }
+
+        console.log("payload",payload)
+
+        apolloClient.mutate({mutation: createStation, variables: {input: payload}})
             .then(result => console.log("postStationpostStation",result))
             .catch(err => {
                 console.log("postStationpostStation", err)

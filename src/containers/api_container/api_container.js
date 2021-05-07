@@ -112,7 +112,7 @@ const ApiContainer = (props) => {
 
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 50000));
 
 
         if (!!mapViewEnabled) {
@@ -240,11 +240,11 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                setPageDataInterval(setInterval(() => loadObjectsData(), 10000))
+                setPageDataInterval(setInterval(() => loadObjectsData(), 100000))
                 break;
 
             case 'scheduler':
-                setPageDataInterval(setInterval(() => loadSchedulerData(), 10000000))
+                setPageDataInterval(setInterval(() => loadSchedulerData(), 100000000))
                 break;
 
             case 'dashboards':
