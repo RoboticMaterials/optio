@@ -41,7 +41,7 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
     const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
@@ -57,7 +57,7 @@ const Settings = () => {
         currentMap,
         maps
     } = mapReducer
-    const [serverSettingsState, setServerSettingsState] = useState({})
+    const [serverSettingsState, setServerSettingsState] = useState(serverSettings)
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
@@ -346,13 +346,15 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={!!serverSettingsState.currentMap ? [serverSettingsState.currentMap] : []}
+                        values={maps[0]}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
+
                             // update current map
-                            handleUpdateServerSettings({currentMap: values[0]?._id})
+                            var index = maps.indexOf(values[0])
+                            handleUpdateServerSettings({currentMapIndex: index})
                         }}
                         className="w-100"
                     />
