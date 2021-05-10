@@ -38,8 +38,10 @@ const DeviceSchedule = (props) => {
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
-
+    const currentMapIndex = useSelector(state => state.settingsReducer.settings.currentMapIndex)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = maps[currentMapIndex]
+    
     const renderSchedules = () => {
 
         const renderDaySelector = (id, ind1) => {

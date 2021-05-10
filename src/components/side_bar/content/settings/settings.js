@@ -346,7 +346,7 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={maps[0]}
+                        values={!!serverSettingsState ? [maps[serverSettingsState.currentMapIndex]] : [maps[serverSettings.currentMapIndex]]}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"

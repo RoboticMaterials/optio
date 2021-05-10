@@ -85,7 +85,14 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
-      console.log(this.props.currentMapIndex)
+
+        if(!this.props.maps[this.props.currentMapIndex]){
+          const updatedSettings = {
+            ...this.props.settings,
+            currentMapIndex: 0,
+          }
+          this.props.dispatchPostSettings(updatedSettings)
+        }
 
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
@@ -104,17 +111,18 @@ export class MapView extends Component {
 
     }
 
-    checkForMapLoad = () => {
+  /*  checkForMapLoad = () => {
+      console.log('checkin')
 
       var defaultMap = this.props.maps[this.props.currentMapIndex]
       if(!defaultMap){
         const updatedSettings = {
           ...this.props.settings,
-          ["currentMapId"]: this.props.maps[0]._id
+          currentMapIndex: 0,
         }
         this.props.dispatchPostSettings(updatedSettings)
       }
-    }
+    } */
 
     componentDidUpdate(prevProps, prevState) {
 
@@ -683,7 +691,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
-                                        .filter(station => (station.map_id === this.state.mapIndex))
+                                        .filter(station => (station.map_id === this.props.maps[this.props.currentMapIndex]?._id))
                                         .map((station, ind) =>
 
                                             <Station
@@ -705,7 +713,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => (position.map_id === this.state.mapIndex))
+                                        .filter(position => (position.map_id === this.props.maps[this.props.currentMapIndex]?._id))
                                         .map((position, ind) =>
                                             <Position
                                                 key={`pos-${ind}`}
