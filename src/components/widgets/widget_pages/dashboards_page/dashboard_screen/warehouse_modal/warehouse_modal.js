@@ -15,6 +15,7 @@ import { getPreviousWarehouseStation } from '../../../../../../methods/utils/pro
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { getCustomFields, getLotTotalQuantity, getMatchesFilter, getIsCardAtBin } from "../../../../../../methods/utils/lot_utils";
 import { getStationProcesses } from '../../../../../../methods/utils/stations_utils'
+import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 
 // Import Constants
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
@@ -117,6 +118,13 @@ const WarehouseModal = (props) => {
 
             // get first route
             const firstRoute = routes[firstRouteId]
+
+            // extract route attributes
+            const {
+                load: {
+                    station: loadStation
+                }
+            } = firstRoute || {}
 
             // extract route attributes
             const {
@@ -328,10 +336,13 @@ const WarehouseModal = (props) => {
                     selectedFilterOption={selectedFilterOption}
                     setSelectedFilterOption={setSelectedFilterOption}
                 />
-                {renderAvailableLots}
 
 
             </styled.Header>
+
+            <styled.ContentContainer>
+                {renderAvailableLots}
+            </styled.ContentContainer>
 
         </styled.Container>
     )

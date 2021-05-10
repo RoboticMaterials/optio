@@ -45,3 +45,13 @@ export const Title = styled.h2`
   margin-bottom: 1rem;
   flex-grow: 1;
 `;
+
+export const ContentContainer = styled.div`
+	background: ${props => props.theme.bg.secondary};
+    height: 100%;
+	border-radius: 0rem;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	align-items: center;
+`

@@ -108,7 +108,7 @@ const DashboardOperationsMenu = (props) => {
     }
 
     const renderWarehouseButton = () => {
-        const schema = theme.main.schema.finish
+        const schema = theme.main.schema.warehouse
         const iconClassName = schema?.iconName
         const iconColor = schema?.solid
         return (
