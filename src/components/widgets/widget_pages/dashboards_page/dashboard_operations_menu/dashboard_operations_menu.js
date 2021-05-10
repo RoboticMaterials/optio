@@ -107,11 +107,30 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+    const renderWarehouseButton = () => {
+        const schema = theme.main.schema.finish
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Warehouse'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('warehouse')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderButtons = () => {
         return (
             <>
                 {renderReportButton()}
                 {renderTaskQueueButton()}
+                {renderWarehouseButton()}
 
                 {availableKickOffProcesses.length > 0 &&
                     renderKickOffButton()

@@ -16,6 +16,7 @@ import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import TaskQueueModal from './task_queue_modal/task_queue_modal'
+import WarehouseModal from './warehouse_modal/warehouse_modal'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES, OPERATION_TYPES } from "../../../../../constants/dashboard_constants";
@@ -239,6 +240,30 @@ const DashboardScreen = (props) => {
                     />
                 )
 
+            case 'warehouse':
+                return (
+                    <WarehouseModal
+                        isOpen={true}
+                        stationId={stationID}
+                        title={"Warehouse"}
+                        close={() => setSelectedOperation(null)}
+                        dashboard={currentDashboard}
+                        stationID={stationID}
+                        process={process}
+                        onSubmit={(name, success, quantity, message) => {
+                            // set alert
+                            setAddTaskAlert({
+                                type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
+                                label: success ? "Lot Moved To Station" : "Lot Move Failed",
+                                message: message
+                            })
+
+                            // clear alert
+                            setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
+                )
+
 
             default:
                 return (
@@ -261,6 +286,7 @@ const DashboardScreen = (props) => {
                 showEditButton={true}
                 currentDashboard={currentDashboard}
                 handleOperationSelected={(op) => {
+                    console.log('QQQQ op', op)
                     setSelectedOperation(op)
                 }}
                 handleTaskAlert={() => {
@@ -278,9 +304,9 @@ const DashboardScreen = (props) => {
             />
 
             {isDevice ?
-                <DashboardDevicePage 
+                <DashboardDevicePage
                     handleTaskAlert={() => {
-                        
+
                     }}
                 />
                 :
