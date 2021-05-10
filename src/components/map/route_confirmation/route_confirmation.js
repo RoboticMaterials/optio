@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as styled from './route_confirmation.style'
 import IconButton from '../../basic/icon_button/icon_button'
 import { showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute } from '../../../redux/actions/tasks_actions'
+import {isNonEmptyArray} from "../../../methods/utils/array_utils";
 
 const RouteConfirmation = (props) => {
 
@@ -18,14 +19,34 @@ const RouteConfirmation = (props) => {
     const dispatchAutoAddRoute = (bool) => dispatch(autoAddRoute(bool))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const showRouteConfirm = useSelector(state=> state.tasksReducer.showRouteConfirmation)
     const routeConfirmLocation = useSelector(state=> state.tasksReducer.routeConfirmationLocation)
     const positions = useSelector(state => state.positionsReducer.positions)
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    const [showContinue, setShowContinue] = useState(true)
+
+    useEffect(() => {
+        const insertIndex = selectedTask?.temp?.insertIndex
+
+        const processHasRoutes = isNonEmptyArray(selectedProcess?.routes)
+
+        if((insertIndex === 0) && processHasRoutes) {
+            setShowContinue(false)
+        }
+        else {
+            setShowContinue(true)
+        }
+        return () => {}
+    }, [selectedTask, selectedProcess])
+
+
     const handleSingleTask = (task) => {
           if (!!task && !!showRouteConfirm) {
+
+              //
 
             const loc = !!stations[routeConfirmLocation] ? stations[routeConfirmLocation] : positions[routeConfirmLocation]
 
@@ -42,7 +63,7 @@ const RouteConfirmation = (props) => {
 
                     >
                     <styled.RowContainer
-                       style={{borderBottom: '1px solid #7e7e7e', borderTopLeftRadius: "0.5rem", borderTopRightRadius: "0.5rem", padding: '0rem', width: '100%' }}
+                       style={{borderTopLeftRadius: "0.5rem", borderTopRightRadius: "0.5rem", padding: '0rem', width: '100%' }}
                        onClick = {()=>{
                          dispatchSetShowRouteConfirmation(false)
                          dispatchAutoAddRoute("finish")
@@ -55,20 +76,21 @@ const RouteConfirmation = (props) => {
                         </IconButton>
                     </styled.RowContainer>
 
+                    {showContinue &&
                     <styled.RowContainer
-                      style={{ borderBottomLeftRadius: "0.5rem", borderBottomRightRadius: "0.5rem", padding: '0.1rem .2rem 0.1rem .2rem', width: '100%' }}
-                      onClick = {()=> {
-                        dispatchSetShowRouteConfirmation(false)
-                        dispatchAutoAddRoute("continue")
-                      }}
-                      >
+                        style={{ borderBottomLeftRadius: "0.5rem", borderBottomRightRadius: "0.5rem", padding: '0.1rem .2rem 0.1rem .2rem', width: '100%' }}
+                        onClick = {()=> {
+                            dispatchSetShowRouteConfirmation(false)
+                            dispatchAutoAddRoute("continue")
+                        }}
+                    >
                         <styled.TaskText style={{ paddingRight: '.3rem', color: "#ffbf1f" }}>Add and continue</styled.TaskText>
 
                         <IconButton style={{paddingRight: '.2rem' }}>
-                                <i className="fas fa-arrow-alt-circle-right" style = {{color: "#ffbf1f"}}></i>
+                            <i className="fas fa-arrow-alt-circle-right" style = {{color: "#ffbf1f"}}></i>
                         </IconButton>
                     </styled.RowContainer>
-
+                    }
                 </styled.TaskStatisticsContainer>
             )
         }
