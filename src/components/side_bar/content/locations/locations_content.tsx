@@ -8,19 +8,21 @@ import EditLocation from './edit_location/edit_location'
 
 // Import actions
 import { setEditingPosition, setSelectedPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
-import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
-
+import {setSelectedStation } from '../../../../redux/actions/stations_actions'
+import { setEditingStation } from '../../../../redux/reducers/stations_reducer'
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
 
 // Import Utils
 import { locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
+import {stationSelectors} from "../../../../redux/selectors/station_selectors";
 
 
 // This adds a location selected info to the reducer
 export default function LocationContent() {
 
     const dispatch = useDispatch()
+
 
     const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
@@ -29,11 +31,13 @@ export default function LocationContent() {
     const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
     const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
 
-    const stations = useSelector(state => state.stationsReducer.stations)
+    const stations = useSelector(stationSelectors.selectAll)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const positions = useSelector(state => state.positionsReducer.positions)
-
+    // stations.
+    console.log("stationsstationsstationsstations", stations)
+    console.log("stationSelectors", stationSelectors)
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
 

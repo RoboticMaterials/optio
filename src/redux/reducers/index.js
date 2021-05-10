@@ -45,6 +45,7 @@ export default combineReducers({
     schedulesReducer,
     skillsReducer,
     positionsReducer,
+    stations: stationsReducer,
     stationsReducer,
     objectsReducer,
     dashboardsReducer,

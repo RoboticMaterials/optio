@@ -9,7 +9,7 @@ import * as styled from './side_bar.style'
 // Import Components
 import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
-import LocationsContent from '../../components/side_bar/content/locations/locations_content'
+import LocationsContent from '../../components/side_bar/content/locations/locations_content.tsx'
 import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
 import DevicesContent from '../../components/side_bar/content/devices/devices_content'
 import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
@@ -20,7 +20,7 @@ import Cards from "../../components/side_bar/content/cards/cards";
 import Statistics from '../../components/side_bar/content/statistics/statistics'
 
 // Import Actions
-import { setEditingStation, setSelectedStation } from '../../redux/actions/stations_actions'
+import { setSelectedStation } from '../../redux/actions/stations_actions'
 import { setEditingPosition, setSelectedPosition } from '../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
@@ -31,6 +31,7 @@ import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
 
 import disableBrowserBackButton from 'disable-browser-back-navigation';
+import {setEditingStation} from "../../redux/reducers/stations_reducer";
 
 const SideBar = (props) => {
 

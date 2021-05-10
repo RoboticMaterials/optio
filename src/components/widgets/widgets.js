@@ -9,7 +9,7 @@ import WidgetButton from './widget_button/widget_button'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
-import { setSelectedStation, setEditingStation } from '../../redux/actions/stations_actions'
+import { setSelectedStation} from '../../redux/actions/stations_actions'
 import { setSelectedPosition, setSelectedStationChildrenCopy, setEditingPosition } from '../../redux/actions/positions_actions'
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
@@ -21,6 +21,7 @@ import { deepCopy } from '../../methods/utils/utils'
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
 
 import * as styled from './widgets.style'
+import {setEditingStation} from "../../redux/reducers/stations_reducer";
 
 const Widgets = (props) => {
     const size = useWindowSize()

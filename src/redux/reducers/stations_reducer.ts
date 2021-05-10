@@ -1,35 +1,12 @@
-import {
-    GET_STATIONS_STARTED,
-    GET_STATIONS_SUCCESS,
-    GET_STATIONS_FAILURE,
-
-    POST_STATION_STARTED,
-    POST_STATION_SUCCESS,
-    POST_STATION_FAILURE,
-
-    PUT_STATION_STARTED,
-    PUT_STATION_SUCCESS,
-    PUT_STATION_FAILURE,
-
-    DELETE_STATION_STARTED,
-    DELETE_STATION_SUCCESS,
-    DELETE_STATION_FAILURE,
-
-    ADD_STATION,
-    SET_SELECTED_STATION,
-    UPDATE_STATION,
-    SET_STATION_ATTRIBUTES,
-    UPDATE_STATIONS,
-    REMOVE_STATION,
-    EDITING_STATION
-
-} from '../types/stations_types'
+import {EDITING_STATION} from '../types/stations_types'
 
 // Import Utils
-import { deepCopy } from '../../methods/utils/utils';
-import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
+import {deepCopy} from '../../methods/utils/utils';
+import {compareExistingVsIncomingLocations} from '../../methods/utils/locations_utils'
 import {isEmpty} from "../../methods/utils/object_utils";
-
+import {createSlice, PayloadAction, createEntityAdapter} from '@reduxjs/toolkit'
+import {getStations} from "../actions/stations_actions";
+import {Station} from "../../api/stations/station";
 
 
 interface StationState {
@@ -55,48 +32,48 @@ const defaultState = {
 
 
 
+export const stationsAdapter = createEntityAdapter<Station>({
+    // Assume IDs are stored in a field other than `book.id`
+    selectId: (book) => book.id,
+    // Keep the "all IDs" array sorted based on book titles
+    sortComparer: (a, b) => a.name.localeCompare(b.name),
+})
+
+
+
 const stationSlice: any = createSlice({
-    name: 'station',
-    initialState: defaultState,
+    name: 'stations',
+    initialState: stationsAdapter.getInitialState(),
     reducers: {
-        // increment(state) {
-        //     state.value++
-        // },
-        // decrement(state) {
-        //     state.value--
-        // },
-        // incrementByAmount(state, action: PayloadAction<number>) {
-        //     state.value += action.payload
-        // },
+        setEditingStation(state, action: PayloadAction<boolean>) {
+            state.editingStation = action.payload
+        },
     },
     extraReducers: {
         // Add reducers for additional action types here, and handle loading state as needed
         [getStations.fulfilled]: (state: any, action: any) => {
+            console.log("getStations.fulfilled action",action)
+
+
             // Add user to the state array
             if(isEmpty(state.d3)) {
-                return {
-                    ...state,
-                    stations: {...action.payload},
-                    pending: false
-                }
+                stationsAdapter.setAll(state, action.payload)
+                // state.stations = action.payload
             }
 
             else {
-                const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
 
-                return {
-                    ...state,
-                    stations: parsedStations,
-                    pending: false
-                }
+                // const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
+                // booksAdapter.setAll(state, parsedStations)
+                stationsAdapter.setAll(state, action.payload)
+
             }
-
-            // state.entities.push(action.payload)
         }
     }
 })
 
-export const { increment, decrement, incrementByAmount } = stationSlice.actions
+
+export const { setEditingStation } = stationSlice.actions
 export default stationSlice.reducer
 
 // function stationsReducer(state = defaultState, action: any) {
@@ -273,4 +250,7 @@ export default stationSlice.reducer
 //             return state
 //     }
 //
+// }
+// export const setEditingStation = (bool) => {
+//     return {type: EDITING_STATION, payload: bool}
 // }

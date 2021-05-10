@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import actions
-import { addStation, setSelectedStation, setEditingStation } from '../../../redux/actions/stations_actions'
+import { addStation, setSelectedStation} from '../../../redux/actions/stations_actions'
 import { addPosition, setSelectedPosition, setEditingPosition, setSelectedStationChildrenCopy } from '../../../redux/actions/positions_actions'
 import { setOpen } from "../../../redux/actions/sidebar_actions"
 
@@ -23,6 +23,7 @@ import { StationTypes } from '../../../constants/station_constants'
 import * as styled from './right_click_menu.style'
 
 import uuid from 'uuid'
+import {setEditingStation} from "../../../redux/reducers/stations_reducer";
 
 /**
  * This is the menu that opens on right click

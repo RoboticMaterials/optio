@@ -1,47 +1,40 @@
-import { normalize, schema } from 'normalizr';
+import {normalize} from 'normalizr';
 
 import {
-    GET_STATIONS_STARTED,
-    GET_STATIONS_SUCCESS,
-    GET_STATIONS_FAILURE,
-
-    POST_STATION_STARTED,
-    POST_STATION_SUCCESS,
-    POST_STATION_FAILURE,
-
-    PUT_STATION_STARTED,
-    PUT_STATION_SUCCESS,
-    PUT_STATION_FAILURE,
-
+    ADD_STATION,
+    DELETE_STATION_FAILURE,
     DELETE_STATION_STARTED,
     DELETE_STATION_SUCCESS,
-    DELETE_STATION_FAILURE,
-
-    ADD_STATION,
+    GET_STATIONS_FAILURE,
+    GET_STATIONS_STARTED,
+    GET_STATIONS_SUCCESS,
+    POST_STATION_FAILURE,
+    POST_STATION_STARTED,
+    POST_STATION_SUCCESS,
+    PUT_STATION_FAILURE,
+    PUT_STATION_STARTED,
+    PUT_STATION_SUCCESS,
+    REMOVE_STATION,
+    SET_SELECTED_STATION,
+    SET_STATION_ATTRIBUTES,
     UPDATE_STATION,
     UPDATE_STATIONS,
-    REMOVE_STATION,
-    SET_STATION_ATTRIBUTES,
-    SET_SELECTED_STATION,
-    EDITING_STATION,
 } from '../types/stations_types'
 
-import uuid from 'uuid';
-
 // Import External Actions
-import { deleteTask } from './tasks_actions'
-import { deletePosition, putPosition, postPosition } from './positions_actions'
-import { deleteDashboard, postDashboard } from './dashboards_actions'
+import {deleteTask} from './tasks_actions'
+import {deletePosition, postPosition, putPosition} from './positions_actions'
+import {deleteDashboard, postDashboard} from './dashboards_actions'
 
 // Import utils
-import { deepCopy } from '../../methods/utils/utils';
+import {deepCopy} from '../../methods/utils/utils';
 
 // Import Schema
-import { stationsSchema } from '../../normalizr/schema'
+import {stationsSchema} from '../../normalizr/schema'
 
 // Import API
 import * as api from '../../api/stations/stations_api'
-
+import {createAsyncThunk} from '@reduxjs/toolkit'
 // Import Store
 import store from '../store'
 
@@ -53,10 +46,7 @@ export const getStations = createAsyncThunk(
         // const response = await userAPI.fetchById(userId)
         const stations = await api.getStations();
 
-        const normalizedStations = !!normalize(stations, stationsSchema)?.entities?.stations ? normalize(stations, stationsSchema)?.entities?.stations : {}
-
-        // return onSuccess(normalizedStations);
-        return normalizedStations
+        return stations
     }
 )
 
@@ -247,10 +237,6 @@ export const setStationAttributes = (id, attr) => {
 
 export const setSelectedStation = (station) => {
     return { type: SET_SELECTED_STATION, payload: station }
-}
-
-export const setEditingStation = (bool) => {
-    return { type: EDITING_STATION, payload: bool }
 }
 
 

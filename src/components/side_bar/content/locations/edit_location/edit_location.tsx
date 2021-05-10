@@ -25,11 +25,11 @@ import { LocationDefaultAttributes } from '../../../../../constants/location_con
 // Import utils
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { locationSchema } from '../../../../../methods/utils/form_schemas'
-
+import { setEditingStation } from '../../../../../redux/reducers/stations_reducer'
 
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
 import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
 const EditLocation = (props) => {
@@ -70,7 +70,7 @@ const EditLocation = (props) => {
     const dispatchPostPosition = async (position) => await dispatch(postPosition(position))
     const dispatchRemovePosition = (id) => dispatch(removePosition(id))
 
-    const stations = useSelector(state => state.stationsReducer.stations)
+    const stations = useSelector(state => state.stations.entities)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)

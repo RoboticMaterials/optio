@@ -9,8 +9,8 @@ import {
     EDITING_LOCATION,
 } from '../types/locations_types'
 
-import * as stationActions from './stations_actions.js'
-import { deleteStation } from './stations_actions.js'
+import * as stationActions from './stations_actions'
+import { deleteStation } from './stations_actions'
 import * as positionActions from './positions_actions.js'
 import { deletePosition } from './positions_actions.js'
 import { setSelectedDevice, putDevices } from './devices_actions'

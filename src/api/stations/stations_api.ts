@@ -4,14 +4,15 @@ import * as log from 'loglevel';
 import { apiIPAddress } from '../../settings/settings'
 import apolloClient from "../apollo_client";
 import { gql, useQuery } from '@apollo/client';
-import {StationInterface} from "./station";
+import {StationInterface, StationClass, Station} from "./station";
 import {listStations} from "./queries";
 import {createStation} from "./mutations";
+import {parseStation} from "../../methods/utils/data_utils";
 
 const operator = 'stations'
 
 
-export const getStations =  async (): Promise<Array<StationInterface>> => {
+export const getStations =  async (): Promise<Array<Station>> => {
     try {
 
         const result = await apolloClient.query({query: listStations})
@@ -26,7 +27,8 @@ export const getStations =  async (): Promise<Array<StationInterface>> => {
             networkStatus
         } = result || {}
 
-        return data?.listStations || []
+
+        return (data?.listStations || []).map((currItem: any) => parseStation(currItem))
 
 
     } catch (error) {

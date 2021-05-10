@@ -305,16 +305,15 @@ export class MapView extends Component {
                     }
 
                     //// Apply the event translation to each station
+                    let newStations = {}
                     Object.values(stations).forEach(station => {
-
                         [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                        station = {
+
+                        newStations[station.id] = {
                             ...station,
                             x: x,
                             y: y,
                         }
-                        stations[station.id] = station
-
                     })
 
                     // Apply the event translation to selectedStation if there is one
@@ -330,7 +329,7 @@ export class MapView extends Component {
 
                     }
 
-                    this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
+                    this.props.dispatchUpdateStations(newStations, updatedSelectedStation, this.d3) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -504,16 +503,16 @@ export class MapView extends Component {
             let x, y
             let { stations, positions, devices } = this.props
             //// Apply the event translation to each station
-            Object.values(stations).forEach(station => {
+            let newStations = {}
+            Object.values(stations).forEach((station) => {
                 [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                station = {
+                newStations[station.id] = {
                     ...station,
                     x: x,
                     y: y,
                 }
-                stations[station.id] = station
             })
-            this.props.dispatchUpdateStations(stations, null, this.d3) // Bulk Update
+            this.props.dispatchUpdateStations(newStations, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
@@ -804,7 +803,7 @@ const mapStateToProps = function (state) {
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
-        stations: state.stationsReducer.stations,
+        stations: state.stations.entities,
         tasks: state.tasksReducer.tasks,
         taskQueue: state.taskQueueReducer.taskQueue,
         showRouteConfirmation: state.tasksReducer.showRouteConfirmation,
@@ -834,6 +833,7 @@ const mapDispatchToProps = dispatch => {
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
+        // dispatchUpdateStation: (stations, selectedStation, d3) => dispatch(updateStation(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
         dispatchUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 
