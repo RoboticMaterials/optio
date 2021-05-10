@@ -1,29 +1,30 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 // actions
-import {putCard, putCardAttributes} from "../../../../../redux/actions/card_actions"
+import { putCardAttributes } from "../../../../../redux/actions/card_actions"
 
 // functions external
-import {useDispatch} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 
 // components external
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 
 // constants
-import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../constants/lot_contants"
+import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../constants/lot_contants"
 
 // utils
-import {immutableDelete, immutableReplace, isArray} from "../../../../../methods/utils/array_utils"
-import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
+import { immutableDelete, immutableReplace, isArray } from "../../../../../methods/utils/array_utils"
+import { formatLotNumber } from "../../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from "./lot.style"
 import LotDateRangeRow from "./lot_date_range_row/lot_date_range_row";
 import LotSimpleRow from "./lot_simple_row/lot_simple_row";
 import LotDateRow from "./lot_date_row/lot_date_row";
+import LotFlags from './lot_flags/lot_flags'
 
 const Lot = (props) => {
     const {
@@ -39,13 +40,12 @@ const Lot = (props) => {
         enableFlagSelector,
         onClick,
         count,
-        start_date,
-        end_date,
         containerStyle,
         selectable,
         isSelected,
         flags,
-        processName
+        processName,
+        showCustomFields,
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -56,6 +56,7 @@ const Lot = (props) => {
 
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
+    const [popupOpen, setPopupOpen] = useState(false)
 
     useEffect(() => {
         setFormattedLotNumber(formatLotNumber(lotNumber))
@@ -71,142 +72,92 @@ const Lot = (props) => {
                 return Object.values(FIELD_DATA_TYPES).includes(dataType)
             })
             .map((currItem, currIndex, arr) => {
-            const {
-                dataType,
-                fieldName,
-                value
-            } = currItem
+                const {
+                    dataType,
+                    fieldName,
+                    value
+                } = currItem
 
                 const key = `${fieldName}+dataType`
 
-            const isLast = currIndex === arr.length - 1
+                const isLast = currIndex === arr.length - 1
 
 
-            switch(dataType) {
-                case FIELD_DATA_TYPES.STRING: {
-                    return(
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            value={value}
-                            isLast={isLast}
-                        />
-                    )
-                }
-                case FIELD_DATA_TYPES.EMAIL: {
-                    return(
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            value={value}
-                            isLast={isLast}
-                        />
-                    )
-                }
-                case FIELD_DATA_TYPES.DATE: {
-                    return(
-                        <LotDateRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            date={value}
-                        />
+                switch (dataType) {
+                    case FIELD_DATA_TYPES.STRING: {
+                        return (
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                value={value}
+                                isLast={isLast}
+                            />
+                        )
+                    }
+                    case FIELD_DATA_TYPES.EMAIL: {
+                        return (
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                value={value}
+                                isLast={isLast}
+                            />
+                        )
+                    }
+                    case FIELD_DATA_TYPES.DATE: {
+                        return (
+                            <LotDateRow
+                                key={key}
+                                label={fieldName}
+                                isLast={isLast}
+                                date={value}
+                            />
 
-                    )
+                        )
+                    }
+                    case FIELD_DATA_TYPES.DATE_RANGE: {
+                        return (
+                            <LotDateRangeRow
+                                key={key}
+                                label={fieldName}
+                                isLast={isLast}
+                                dateRange={value}
+                            />
+                        )
+                    }
+                    case FIELD_DATA_TYPES.URL: {
+                        return (
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                value={value}
+                                isLast={isLast}
+                            />
+                        )
+                    }
+                    case FIELD_DATA_TYPES.INTEGER: {
+                        return (
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                isLast={isLast}
+                                value={value}
+                            />
+                        )
+                    }
                 }
-                case FIELD_DATA_TYPES.DATE_RANGE: {
-                    return(
-                        <LotDateRangeRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            dateRange={value}
-                        />
-                    )
-                }
-                case FIELD_DATA_TYPES.URL: {
-                    return(
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            value={value}
-                            isLast={isLast}
-                        />
-                    )
-                }
-                case FIELD_DATA_TYPES.INTEGER: {
-                    return(
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            value={value}
-                        />
-                    )
-                }
-            }
-        })
+            })
     }
 
     const renderFlags = () => {
-        return(
-            <styled.FlagsContainer
-                style={{
-                    padding: 0,
-                    margin: '0.5rem 0',
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    width: 'fit-content',
-                    justifyContent: 'flex-start'
-                }}
-            >
-                {flags.length > 0 ?
-                    <>
-                        {flags.map((currFlagId) => {
-                            const flagOption = FLAG_OPTIONS[currFlagId]
-                            const {
-                                color: currColor
-                            } = flagOption
-
-                            return(
-                                <styled.FlagButton
-                                    key={currFlagId}
-                                    type={"button"}
-                                    selected={true}
-                                    color={currColor}
-                                    className="fas fa-square"
-                                    style={{
-                                        margin: "0 .55rem",
-                                        padding: 0,
-                                        fontSize: "1rem",
-                                        transform: 'scaleX(2)'
-                                    }}
-                                />
-                            )
-                        })
-
-                        }
-
-                    </>
-                    :
-                    <styled.FlagButton
-                        type={"button"}
-                        selected={true}
-                        color={'rgba(0, 0, 0, 0.3)'}
-                        className="fas fa-square"
-                        style={{
-                            margin: "0 .55rem",
-                            padding: 0,
-                            fontSize: "1rem",
-                            transform: 'scaleX(2)'
-                        }}
-                    />
-                }
-            </styled.FlagsContainer>
+        return (
+            <LotFlags
+                flags={flags}
+            />
         )
     }
 
-    return(
+    return (
         <styled.Container
             glow={glow}
             isFocused={isFocused}
@@ -230,8 +181,11 @@ const Lot = (props) => {
                         }}
 
                         trigger={open => (
-                            renderFlags()
+                            <div>
+                                {renderFlags()}
+                            </div>
                         )}
+                        open={popupOpen}
                         position="left center"
                         closeOnDocumentClick
                     >
@@ -246,7 +200,7 @@ const Lot = (props) => {
                                 const isSelected = flags.includes(currColorId)
                                 const selectedIndex = flags.indexOf(currColorId)
 
-                                return(
+                                return (
                                     <styled.FlagButton
                                         color={currColor}
                                         selected={isSelected}
@@ -257,7 +211,7 @@ const Lot = (props) => {
                                             e.preventDefault()
                                             e.stopPropagation()
 
-                                            if((isArray(flags) && !isSelected)) {
+                                            if ((isArray(flags) && !isSelected)) {
                                                 dispatchPutCardAttributes({
                                                     flags: [...flags, currColorId]
                                                 }, id)
@@ -275,6 +229,7 @@ const Lot = (props) => {
                     </Popup>
                     :
                     renderFlags()
+
                 }
 
                 <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
@@ -300,12 +255,12 @@ const Lot = (props) => {
 
                 {stationName &&
                     <LotSimpleRow
-                        label={"Bin"}
+                        label={"Station"}
                         value={stationName}
                     />
                 }
 
-                {renderTemplateValues()}
+                {showCustomFields && renderTemplateValues()}
             </styled.ContentContainer>
 
         </styled.Container>
@@ -317,6 +272,7 @@ Lot.propTypes = {
     isSelected: PropTypes.bool,
     selectable: PropTypes.bool,
     isFocused: PropTypes.bool,
+    showCustomFields: PropTypes.bool,
 }
 
 // Specifies the default values for props:
@@ -330,7 +286,8 @@ Lot.defaultProps = {
     templateValues: [],
     count: 0,
     glow: false,
-    stationName: ""
+    stationName: "",
+    showCustomFields: true,
 }
 
 export default Lot

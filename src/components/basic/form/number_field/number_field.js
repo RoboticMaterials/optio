@@ -27,10 +27,13 @@ const longPressOptions = {
 	delay: 500,
 }
 
-const NumberField = ({
-						maxValue,
-						minValue,
-					   ...props }) => {
+const NumberField = (props) => {
+
+	const {
+		maxValue,
+		minValue,
+		...rest
+	} = props
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext()
 	const [field, meta] = useField(props)
@@ -135,9 +138,7 @@ const NumberField = ({
 			setPreviousValue(parseInt(fieldValue))
 			setFieldValue(fieldName, "")
 		}
-
 	}
-
 
 	const handleBlur = () => {
 		if(isMobile) {
@@ -167,7 +168,7 @@ const NumberField = ({
 		}
 
 		// fieldValue cannot be negative
-		if (fieldValue > minValue) setFieldValue(fieldName,parseInt(fieldValue - 1))
+		if (fieldValue > minValue) setFieldValue(fieldName,parseInt(parseInt(fieldValue) - 1))
 		// setFieldValue(fieldName,fieldValue - 1)
 	}
 
@@ -178,8 +179,8 @@ const NumberField = ({
 
 		// if there is a maxValue, fieldValue cannot exceed maxValue
 		if (maxValue) {
-			if (fieldValue < maxValue) {
-				setFieldValue(fieldName,parseInt(fieldValue + 1))
+			if (parseInt(fieldValue) < maxValue) {
+				setFieldValue(fieldName,parseInt(parseInt(fieldValue) + 1))
 			}
 
 			// fieldValue is greater than count (probably was set before lot was selected), reduce to count
@@ -190,7 +191,7 @@ const NumberField = ({
 		}
 		// otherwise fieldValue can be anything
 		else {
-			setFieldValue(fieldName,parseInt(fieldValue + 1))
+			setFieldValue(fieldName,parseInt(parseInt(fieldValue) + 1))
 		}
 	}
 

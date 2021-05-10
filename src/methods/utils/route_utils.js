@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.mapReducer.currentMap
+    const currentMap = storeState.settingsReducer.settings.currentMap
 
     return {
         ...defaultTask,
@@ -21,6 +21,29 @@ export const generateDefaultRoute = (obj) => {
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
         obj: obj ? currentMap._id : currentMap._id,
+        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+    }
+}
+
+export const autoGenerateRoute = (obj) => {
+    const storeState = store.getState()
+    const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
+    const currentMap = storeState.mapReducer.currentMap
+    const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
+
+    const positions = storeState.positionsReducer.positions
+
+    return {
+        ...defaultTask,
+        device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
+        handoff: false,
+        map_id: currentMap._id,
+        load: {...defaultTask.load,
+               station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
+               position: routeConfirmationLocation,
+              },
+        unload: {...defaultTask.unload},
+        obj: obj ? obj : null,
         _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
@@ -106,6 +129,10 @@ export const getRouteEnd = (route) => {
     if(!hasEnd) hasEnd = getUnloadPositionId(route)
 
     return hasEnd
+}
+
+export const getHasStartAndEnd = (route) => {
+    return getRouteEnd(route) && getRouteStart(route)
 }
 
 export const isStationLoadStation = (route, stationId) => {

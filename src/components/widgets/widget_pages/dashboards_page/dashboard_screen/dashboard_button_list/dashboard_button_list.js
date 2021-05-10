@@ -13,19 +13,20 @@ import * as style from "./dashboard_button_list.style"
 import { useSelector, useDispatch } from "react-redux";
 import { getTasks } from '../../../../../../redux/actions/tasks_actions'
 
+// Import Utils
+import { OPERATION_TYPES, TYPES } from "../../../../../../constants/dashboard_constants";
+
 // logging
 import log from "../../../../../../logger"
 import { deepCopy } from "../../../../../../methods/utils/utils";
-import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
 import { theme } from "../../../../../../theme";
 import DashboardSplitButton from "../../dashboard_buttons/dashboard_split_button/dashboard_split_button";
-import { getCanDeleteDashboardButton } from "../../../../../../methods/utils/dashboards_utils";
 import {
     CUSTOM_CHARGE_TASK_ID, CUSTOM_IDLE_TASK_ID,
     CUSTOM_IDLE_TASK_NAME,
     CUSTOM_TASK_ID
 } from "../../../../../../constants/route_constants";
-import {getPositionAttributes} from "../../../../../../methods/utils/stations_utils";
+import { getPositionAttributes } from "../../../../../../methods/utils/stations_utils";
 const logger = log.getLogger("Dashboards")
 
 
@@ -68,11 +69,11 @@ const DashboardButtonList = ((props) => {
         } = custom_task || {}
 
         let customTaskName
-        if(taskID === CUSTOM_TASK_ID) {
-            if(buttonId === CUSTOM_IDLE_TASK_ID) {
+        if (taskID === CUSTOM_TASK_ID) {
+            if (buttonId === CUSTOM_IDLE_TASK_ID) {
                 customTaskName = CUSTOM_IDLE_TASK_NAME
             }
-            else if(buttonId === CUSTOM_CHARGE_TASK_ID) {
+            else if (buttonId === CUSTOM_CHARGE_TASK_ID) {
                 const {
                     name: positionName = ""
                 } = getPositionAttributes(positionId, ["name"]) || {}

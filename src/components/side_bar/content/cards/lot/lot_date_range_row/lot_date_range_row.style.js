@@ -6,7 +6,6 @@ export const lastItemCss = css`
 export const Row = styled.div`
     display: flex;
     width: 100%;
-    border-bottom: 1px solid ${props => props.theme.bg.quaternary};
     justify-content: space-between;
     padding: .25rem 0 .25rem 0;
   

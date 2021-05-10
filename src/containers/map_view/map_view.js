@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import { ReactDOM, Route } from 'react-dom'
-import { connect } from 'react-redux';
+import {connect, useSelector} from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
 
@@ -11,10 +11,11 @@ import * as d3 from 'd3'
 
 // Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import { isEquivalent, } from '../../methods/utils/utils.js'
+import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
+import { postSettings } from '../../redux/actions/settings_actions'
 import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
@@ -28,6 +29,7 @@ import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
 import Widgets from '../../components/widgets/widgets'
 import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
@@ -39,6 +41,7 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
+import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
 const logger = log.getLogger("MapView")
 
 export class MapView extends Component {
@@ -50,6 +53,7 @@ export class MapView extends Component {
 
         this.state = {
             showRightClickMenu: {},
+            hasStartAndEnd: false
         }
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
@@ -100,23 +104,14 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-        var defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
-
-        if (this.props.currentMapId && this.props.currentMap && this.props.currentMap._id && defaultMap) {
-            if (this.props.currentMapId !== this.props.currentMap._id) {
-                this.props.dispatchSetCurrentMap(defaultMap)
-            }
-
-        } else if (this.props.currentMapId && defaultMap) {
-            this.props.dispatchSetCurrentMap(defaultMap)
-
-        } else if (this.props.currentMap && this.props.currentMap._id) {
-            // do nothing
-        } else {
-
-            // default to first map found
-            this.props.dispatchSetCurrentMap(this.props.maps[0])
+      var defaultMap = this.props.maps.find((map) => map?._id === this.props.currentMap?._id && map?.name === this.props.currentMap?.name)
+      if(!defaultMap){
+        const updatedSettings = {
+          ...this.props.settings,
+          ["currentMap"]: this.props.maps[0]
         }
+        this.props.dispatchPostSettings(updatedSettings)
+      }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -128,10 +123,13 @@ export class MapView extends Component {
         // }
         this.checkForMapLoad() //test
 
+        if(prevProps.selectedTask !== this.props.selectedTask) {
+            this.setState({hasStartAndEnd: getHasStartAndEnd(this.props.selectedTask)})
+        }
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
-        if (!isEquivalent(prevProps.currentMap, this.props.currentMap)) {
+        if (!getIsEquivalent(prevProps.currentMap, this.props.currentMap)) {
             //this.calculateD3Geometry(this.mapContainer)
             this.bindZoomListener()
         }
@@ -189,7 +187,6 @@ export class MapView extends Component {
      * @param {*} e
      */
     dragNewEntity = e => {
-
         if (!this.mouseDown) return
 
         // Handle Stations
@@ -566,8 +563,10 @@ export class MapView extends Component {
 
     render() {
         let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
+        const { hasStartAndEnd } = this.state
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
+
 
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
@@ -652,7 +651,7 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask &&
+                        {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
                             <TaskPaths d3={this.d3} />
                         }
 
@@ -754,6 +753,10 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
+                    {!!this.props.showRouteConfirmation &&
+                        <RouteConfirmation d3={this.d3} />
+                    }
+
                     {!!this.props.devices &&
                         Object.values(this.props.devices).map((device) => {
                             if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
@@ -795,15 +798,16 @@ const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
-        currentMap: state.mapReducer.currentMap,
         deviceEnabled: state.settingsReducer.settings.deviceEnabled,
+        currentMap: state.settingsReducer.settings.currentMap,
+        settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
         taskQueue: state.taskQueueReducer.taskQueue,
-
+        showRouteConfirmation: state.tasksReducer.showRouteConfirmation,
 
         selectedStation: state.stationsReducer.selectedStation,
         selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,
@@ -813,6 +817,7 @@ const mapStateToProps = function (state) {
 
         selectedTask: state.tasksReducer.selectedTask,
         selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
+        editingTask: state.tasksReducer.editingTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 
@@ -826,6 +831,7 @@ const mapDispatchToProps = dispatch => {
     return {
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
+        dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),

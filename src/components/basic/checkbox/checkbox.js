@@ -1,27 +1,24 @@
 import React from 'react'
-import * as style from './checkbox.style'
+import * as styled from './checkbox.style'
 
 const Checkbox = (props) => {
 
     const {
-      onClick,
-      checked,
-      title,
+        onClick,
+        checked,
+        title,
+        css,
+        ...rest
     } = props
 
     return(
-        <React.Fragment>
-            <div className='checkbox'>
-                <style.Label>
-                    <style.Input
-                        type='checkbox'
-                        onClick={onClick}
-                        checked={checked}
-                    />
-                {title}
-                </style.Label>
-            </div>
-        </React.Fragment>
+        <styled.Checkbox
+            css={css}
+            type='checkbox'
+            onClick={onClick}
+            checked={checked}
+            {...rest}
+        />
     )
 }
 
