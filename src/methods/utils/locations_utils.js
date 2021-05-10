@@ -3,7 +3,7 @@ import { deepCopy } from './utils'
 import { convertRealToD3 } from './map_utils'
 
 // Import Store
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 
 
 /**

@@ -5,7 +5,7 @@ import {
     FIELD_DATA_TYPES,
     LOT_FILTER_OPTIONS
 } from "../../constants/lot_contants";
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import { toIntegerOrZero } from "./number_utils";
 import { useSelector } from "react-redux";

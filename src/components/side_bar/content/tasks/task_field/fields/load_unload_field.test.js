@@ -8,7 +8,7 @@ import LoadUnloadFields from './load_unload_fields'
 import TestProviderRender from '../../../../../../methods/tests/test_provider_renderer'
 
 // Import Store
-import Store from '../../../../../../redux/store/index'
+import Store from '../../../../../../redux/store'
 
 const mockStore = Store
 

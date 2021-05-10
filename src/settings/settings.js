@@ -1,4 +1,4 @@
-import  store  from "../redux/store/index";
+import  store  from "../redux/store";
 import ls from 'local-storage'
 
 export const mirURL = (url) => {

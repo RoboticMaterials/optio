@@ -1,5 +1,5 @@
 // Import Store
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 
 export const getMinutesFromMoment = (m) => {
     return m.minutes() + m.hours() * 60;

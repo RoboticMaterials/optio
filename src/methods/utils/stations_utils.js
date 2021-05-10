@@ -1,4 +1,4 @@
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 import {BIN_IDS} from "../../constants/lot_contants";
 import {isNonEmptyArray} from "./array_utils";
 import {callOnStations} from "./processes_utils";

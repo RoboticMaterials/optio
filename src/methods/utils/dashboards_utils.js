@@ -1,4 +1,4 @@
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 import { OPERATION_TYPES, TYPES } from '../../constants/dashboard_constants'
 import { isArray, isNonEmptyArray } from "./array_utils";
 import { DASHBOARD_BUTTON_COLORS } from "../../constants/dashboard_constants";

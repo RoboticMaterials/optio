@@ -44,7 +44,7 @@ import { putDevices } from './devices_actions'
 import { deepCopy } from '../../methods/utils/utils';
 
 // Import Store
-import store from '../store/index'
+import store from '../store'
 
 // get
 // ******************************

@@ -1,6 +1,6 @@
 import uuid from 'uuid'
 import {DEVICE_CONSTANTS} from "../../constants/device_constants";
-import  store  from "../../redux/store/index";
+import  store  from "../../redux/store";
 import {defaultTask} from "../../constants/route_constants";
 import {isArray} from "./array_utils";
 import {useSelector} from "react-redux";

@@ -43,11 +43,24 @@ import { stationsSchema } from '../../normalizr/schema'
 import * as api from '../../api/stations/stations_api'
 
 // Import Store
-import store from '../store/index'
+import store from '../store'
 
 // get
 // ******************************
-export const getStations = () => {
+export const getStations = createAsyncThunk(
+    'stations/getStations',
+    async (thunkAPI) => {
+        // const response = await userAPI.fetchById(userId)
+        const stations = await api.getStations();
+
+        const normalizedStations = !!normalize(stations, stationsSchema)?.entities?.stations ? normalize(stations, stationsSchema)?.entities?.stations : {}
+
+        // return onSuccess(normalizedStations);
+        return normalizedStations
+    }
+)
+
+export const getStationsa = () => {
     return async dispatch => {
 
         function onStart() {

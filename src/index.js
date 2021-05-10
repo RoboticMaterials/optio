@@ -10,7 +10,7 @@ import './methods/css/iwawa.css';
 import './methods/css/all.css';
 import 'xmlrpc'
 import { Provider } from 'react-redux'
-import store from './redux/store/index.js'
+import store from './redux/store'
 import './methods/css/fontawesome.min.css'
 import './graphics/icons/style.css'
 import 'nivo'

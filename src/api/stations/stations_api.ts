@@ -14,13 +14,19 @@ const operator = 'stations'
 export const getStations =  async (): Promise<Array<StationInterface>> => {
     try {
 
-        apolloClient.query({query: listStations})
-        .then(result => console.log("resultresultresult",result))
-            .catch(err => {
-                console.log("GET STATIONS ERR", err)
-            })
+        const result = await apolloClient.query({query: listStations})
+        // .then(result => console.log("resultresultresult",result))
+        //     .catch(err => {
+        //         console.log("GET STATIONS ERR", err)
+        //     })
+        console.log('resultresult', result)
+        const {
+            data,
+            loading,
+            networkStatus
+        } = result || {}
 
-        return []
+        return data?.listStations || []
 
 
     } catch (error) {

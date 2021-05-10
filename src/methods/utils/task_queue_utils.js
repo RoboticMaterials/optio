@@ -1,4 +1,4 @@
-import store from '../../redux/store/index'
+import store from '../../redux/store'
 import {useSelector} from "react-redux";
 import {isHumanTask, isMiRTask} from "./route_utils";
 import {DEVICE_CONSTANTS} from "../../constants/device_constants";
