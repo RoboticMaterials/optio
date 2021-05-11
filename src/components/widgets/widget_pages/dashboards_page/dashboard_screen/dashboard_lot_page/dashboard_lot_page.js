@@ -19,11 +19,12 @@ import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData, isPrevStationAWarehouse } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
+import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Actions
 import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
@@ -78,10 +79,12 @@ const DashboardLotPage = (props) => {
                 setCurrentTask(returnedRoute)
             }
 
-            // go back if lot has no items at this station (ex. just moved them all. Doesn't make sense to stay on this screen
+            // go back if lot has no items at this station (ex. just moved them all). 
+            // Dont go back though if the prevStation was a warehouse
+            // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {
                 const quantity = getBinQuantity(lot, stationID)
-                if (!quantity || (quantity <= 0)) {
+                if ((!quantity || (quantity <= 0)) && !isPrevStationAWarehouse(lot, stationID)) {
                     onBack()
                 }
             }
@@ -264,7 +267,7 @@ const DashboardLotPage = (props) => {
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
-            <LotFlags flags={currentLot?.flags} containerStyle={{alignSelf:'center'}}/>
+            <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams, useHistory } from 'react-router-dom'
 
 // Import Styles
 import * as styled from './warehouse_modal.style'
@@ -38,6 +39,14 @@ const WarehouseModal = (props) => {
         onSubmit,
         stationID
     } = props
+
+    const params = useParams()
+    const {
+        dashboardID,
+        subPage,
+    } = params || {}
+
+    const history = useHistory()
 
     const dispatch = useDispatch()
     const dispatchGetCards = () => dispatch(getCards())
@@ -84,6 +93,12 @@ const WarehouseModal = (props) => {
         setSelectedLot(lot)
     }
 
+    const handleCardClicked = (lotID) => {
+        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}`)
+        setSubmitting(false)
+        close()
+    }
+
     /*
     * handles the logic for when move button is pressed
     *
@@ -92,106 +107,18 @@ const WarehouseModal = (props) => {
     * This is done by updating the cards station_id and route_id to those of the selected station
     * */
     const moveLot = async (card, quantity) => {
-
-        let requestSuccessStatus = false
-        let message
-
-        // extract lot attributes
-        const {
-            bins,
-            name: cardName,
-            process_id,
-            _id: cardId,
-        } = card
-
-        if (quantity && quantity > 0) {
-
-            // get process of card
-            const cardProcess = processes[process_id]
-
-            // get routes of process
-            const processRoutes = cardProcess.routes
-
-            // get id of first route
-            var firstRouteId = null
-            if (processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
-
-            // get first route
-            const firstRoute = routes[firstRouteId]
-
-            // extract route attributes
-            const {
-                load: {
-                    station: loadStation
-                }
-            } = firstRoute || {}
-
-            // extract route attributes
-            const {
-                load: {
-                    station: unloadStation
-                }
-            } = firstRoute || {}
-
-            // update card
-            if (firstRouteId && firstRoute && unloadStation) {
-
-                // extract first station's bin and queue bin from bins
-                const {
-                    [unloadStation]: firstStationBin,
-                    ["QUEUE"]: queueBin,
-                    ...unalteredBins
-                } = bins || {}
-
-                const queueBinCount = queueBin?.count ? queueBin.count : 0
-                const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
+        // device_type: "human"
+        // hil_response: true
+        // lot_id: "6081b4bdf7a8bf5d56493f9b"
+        // owner: "human"
+        // quantity: 1
+        // showModal: null
+        // task_id: "022ea650-33de-4a96-af5a-d01c9a98ff90"
+        const lotID = card._id
+        console.log('QQQQ card', card)
+        console.log('QQQQ QTY', quantity)
 
 
-                // updated card will maintain all of the cards previous attributes with the station_id and route_id updated
-                let updatedCard = {
-                    ...card,                                // spread unaltered attributes
-                    bins: {
-                        ...unalteredBins,                   // spread unaltered bins
-                        [loadStation]: {
-                            ...firstStationBin,              // spread unaltered attributes of station bin if it exists
-                            count: parseInt(quantity) + parseInt(firstStationCount)    // increment first station's count by the count of the queue
-                        }
-                    },
-                }
-
-                // need to add queue bin back, but subtract moved quantity
-                if (quantity < queueBinCount) {
-                    updatedCard = {
-                        ...updatedCard,
-                        bins: {
-                            ...updatedCard.bins,
-                            QUEUE: {
-                                ...queueBin,
-                                count: parseInt(queueBinCount) - parseInt(quantity)
-                            }
-                        }
-                    }
-                }
-
-                // send update action
-                const result = await onPutCard(updatedCard, cardId)
-
-
-
-                // check if request was successful
-                if (!(result instanceof Error)) {
-                    requestSuccessStatus = true
-                    message = cardName ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
-                }
-            }
-        }
-        else {
-            message = "Quantity must be greater than 0"
-        }
-
-        onSubmit(cardName, requestSuccessStatus, quantity, message)
-        setSubmitting(false)
-        close()
     }
 
     /*
@@ -273,7 +200,7 @@ const WarehouseModal = (props) => {
                         id={lotId}
                         index={cardIndex}
                         onClick={() => {
-                            onButtonClick(currCard)
+                            handleCardClicked(lotId)
                         }}
                         containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
                     />
