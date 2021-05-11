@@ -336,7 +336,7 @@ const ApiContainer = (props) => {
         // Cleaner Functions
         if (!!mapViewEnabled) {
 
-            await handleDeviceWithoutADashboard(devices, dashboards)
+            // await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
             // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
             // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
@@ -518,62 +518,62 @@ const ApiContainer = (props) => {
      * Not the best place but it should still work
      * This will either make a dashboard for the device or replace a lost dashboard
      */
-    const handleDeviceWithoutADashboard = async (devices, dashboards) => {
-        Object.values(devices).map(async (device) => {
-            // if the device does not have a dashboard, add one
-            if (!device.dashboards || device.dashboards.length === 0) {
-
-                console.log('QQQQ Device does not have a dashboard', deepCopy(device))
-                alert('Device does not have a dashboard')
-
-                const newDeviceDashboard = {
-                    name: `${device.device_name} Dashboard`,
-                    buttons: [],
-                    device: device.id,
-                }
-
-                const newDashboard = onPostDashoard(newDeviceDashboard)
-
-                return newDashboard.then(async (dashPromise) => {
-                    console.log(dashPromise)
-                    device.dashboards = [dashPromise?.id]
-                    await onPutDevice(device, device.id)
-                })
-
-
-            }
-
-            device.dashboards.map((dashboard) => {
-                if (!dashboards[dashboard]) {
-                    console.log('QQQQ Dashboard has dissapeared for some reason', dashboard)
-                    alert('Devices dashboard has been deleted, recreating')
-
-                    const newDeviceDashboard = {
-                        name: `${device.device_name} Dashboard`,
-                        buttons: [],
-                        device: device.id,
-                    }
-
-                    const newDashboard = onPostDashoard(newDeviceDashboard)
-
-                    return newDashboard.then(async (dashPromise) => {
-                        if (dashPromise.id !== undefined) {
-                            // Add new dashboard
-                            device.dashboards.push(dashPromise.id)
-
-                            // Delete old dashboard
-                            const index = device.dashboards.indexOf(dashboard)
-                            device.dashboards.splice(index, 1)
-                        }
-
-                        await onPutDevice(device, device.id)
-                    })
-
-
-                }
-            })
-        })
-    }
+    // const handleDeviceWithoutADashboard = async (devices, dashboards) => {
+    //     Object.values(devices).map(async (device) => {
+    //         // if the device does not have a dashboard, add one
+    //         if (!device.dashboards || device.dashboards.length === 0) {
+    //
+    //             console.log('QQQQ Device does not have a dashboard', deepCopy(device))
+    //             alert('Device does not have a dashboard')
+    //
+    //             const newDeviceDashboard = {
+    //                 name: `${device.device_name} Dashboard`,
+    //                 buttons: [],
+    //                 device: device.id,
+    //             }
+    //
+    //             const newDashboard = onPostDashoard(newDeviceDashboard)
+    //
+    //             return newDashboard.then(async (dashPromise) => {
+    //                 console.log(dashPromise)
+    //                 device.dashboards = [dashPromise?.id]
+    //                 await onPutDevice(device, device.id)
+    //             })
+    //
+    //
+    //         }
+    //
+    //         device.dashboards.map((dashboard) => {
+    //             if (!dashboards[dashboard]) {
+    //                 console.log('QQQQ Dashboard has dissapeared for some reason', dashboard)
+    //                 alert('Devices dashboard has been deleted, recreating')
+    //
+    //                 const newDeviceDashboard = {
+    //                     name: `${device.device_name} Dashboard`,
+    //                     buttons: [],
+    //                     device: device.id,
+    //                 }
+    //
+    //                 const newDashboard = onPostDashoard(newDeviceDashboard)
+    //
+    //                 return newDashboard.then(async (dashPromise) => {
+    //                     if (dashPromise.id !== undefined) {
+    //                         // Add new dashboard
+    //                         device.dashboards.push(dashPromise.id)
+    //
+    //                         // Delete old dashboard
+    //                         const index = device.dashboards.indexOf(dashboard)
+    //                         device.dashboards.splice(index, 1)
+    //                     }
+    //
+    //                     await onPutDevice(device, device.id)
+    //                 })
+    //
+    //
+    //             }
+    //         })
+    //     })
+    // }
 
     /**
      * The dashboard is tied to a device that does not exist anymore, so delete the dashboard

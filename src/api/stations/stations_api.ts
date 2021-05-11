@@ -7,6 +7,7 @@ import { gql, useQuery } from '@apollo/client';
 import {StationInterface} from "./station";
 import {listStations} from "./queries";
 import {createStation} from "./mutations";
+import {parseStation} from "../../methods/utils/data_utils";
 
 const operator = 'stations'
 
@@ -14,13 +15,13 @@ const operator = 'stations'
 export const getStations =  async (): Promise<Array<StationInterface>> => {
     try {
 
-        apolloClient.query({query: listStations})
-        .then(result => console.log("resultresultresult",result))
-            .catch(err => {
-                console.log("GET STATIONS ERR", err)
-            })
+        const response = await apolloClient.query({query: listStations})
 
-        return []
+        const {data, loading, networkStatus} = response || {}
+
+        const {listStations: values} = data || {}
+
+        return (values || []).map((item: any) => parseStation(item))
 
 
     } catch (error) {
