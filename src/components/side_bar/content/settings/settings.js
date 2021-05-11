@@ -346,15 +346,13 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={!!serverSettingsState ? [maps[serverSettingsState.currentMapIndex]] : [maps[serverSettings.currentMapIndex]]}
+                        values={!!serverSettingsState ? [Object.values(maps).find(map => map._id === serverSettingsState.currentMapId)] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
-
                             // update current map
-                            var index = maps.indexOf(values[0])
-                            handleUpdateServerSettings({currentMapIndex: index})
+                            handleUpdateServerSettings({currentMapId: values[0]._id})
                         }}
                         className="w-100"
                     />

@@ -138,9 +138,9 @@ const TaskField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
-    const currentMapIndex = useSelector(state => state.settingsReducer.settings.currentMapIndex)
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = maps[currentMapIndex]
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)

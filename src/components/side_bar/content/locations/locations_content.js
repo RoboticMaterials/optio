@@ -39,9 +39,9 @@ export default function LocationContent() {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMapIndex = useSelector(state => state.settingsReducer.settings.currentMapIndex)
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = maps[currentMapIndex]
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const processes = useSelector(state => state.processesReducer.processes)
 

@@ -12,9 +12,9 @@ export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
 
-    const currentMapIndex = storeState.settingsReducer.settings.currentMapIndex
+    const currentMapId = storeState.settingsReducer.settings.currentMapId
     const maps = storeState.mapReducer.maps
-    const currentMap = maps[currentMapIndex]
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     return {
         ...defaultTask,
