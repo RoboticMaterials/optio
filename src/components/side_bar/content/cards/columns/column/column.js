@@ -21,9 +21,10 @@ import {useDispatch, useSelector} from "react-redux";
 import * as styled from "./column.style";
 
 /// utils
-import {getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
+import {getCustomFields} from "../../../../../../methods/utils/lot_utils";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
+import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
 
@@ -356,10 +357,10 @@ const Column = ((props) => {
 							...rest
 						} = card
 
-						const templateValues = getLotTemplateData(lotTemplateId, card)
+						// const templateValues = getCustomFields(lotTemplateId, card)
 
 						// const lotName = lots[lot_id] ? lots[lot_id].name : null
-						const objectName = objects[object_id] ? objects[object_id].name : null
+						// const objectName = objects[object_id] ? objects[object_id].name : null
 
 						const isSelected = getIsSelected(cardId, station_id)
 						const isDragging = draggingLotId === cardId
@@ -382,23 +383,14 @@ const Column = ((props) => {
 									style={{
 									}}
 								>
-									<Lot
+									<LotContainer
 										glow={isLastSelected}
 										isFocused={isDragging || isHovering}
 										enableFlagSelector={true}
-										templateValues={templateValues}
 										selectable={selectable}
 										isSelected={isSelected}
-										key={cardId}
-										// processName={processName}
-										totalQuantity={totalQuantity}
-										lotNumber={lotNumber}
-										name={name}
-										objectName={objectName}
-										count={count}
-										id={cardId}
-										flags={flags || []}
-										index={index}
+										lotId={cardId}
+										binId={station_id}
 										onClick={(e)=> {
 											const payload = getBetweenSelected(cardId)
 											onCardClick(

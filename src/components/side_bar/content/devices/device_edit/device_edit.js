@@ -75,7 +75,7 @@ const DeviceEdit = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const status = useSelector(state => state.statusReducer.status)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -103,21 +103,23 @@ const DeviceEdit = (props) => {
     const renderDeviceName = () => {
 
         return (
-            <styled.SectionsContainer>
+                <styled.Label schema={'devices'} >{selectedDevice.device_name}</styled.Label>
 
-                <styled.Label schema={'devices'} >Device Name</styled.Label>
+            // <styled.SectionsContainer>
 
-                <Textbox
-                    defaultValue={selectedDevice.device_name}
-                    placeholder={'Enter Device Name'}
-                    onChange={(event) => {
-                        onSetDeviceName(event.target.value)
-                    }}
-                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                    inputStyle={{ backgroundColor: 'white' }}
-                />
+            //     <styled.Label schema={'devices'} >Device Name</styled.Label>
 
-            </styled.SectionsContainer>
+            //     <Textbox
+            //         defaultValue={selectedDevice.device_name}
+            //         placeholder={'Enter Device Name'}
+            //         onChange={(event) => {
+            //             onSetDeviceName(event.target.value)
+            //         }}
+            //         style={{ fontWeight: '600', fontSize: '1.5rem' }}
+            //         inputStyle={{ backgroundColor: 'white' }}
+            //     />
+
+            // </styled.SectionsContainer>
         )
     }
 
@@ -441,7 +443,7 @@ const DeviceEdit = (props) => {
         let initialValues = {}
         if (!!selectedDevice.schedules && Object.values(selectedDevice.schedules).length > 0) {
             initialValues['schedules'] = Object.values(selectedDevice.schedules)
-        }
+        } 
         if (!!selectedDevice.charge_level) {
             initialValues['charge_level'] = selectedDevice.charge_level
 

@@ -1,6 +1,6 @@
 import {Formik} from "formik";
 import {routeSchema} from "../../../../../methods/utils/form_schemas";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import TaskField from "../task_field/route_field";
 import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
 import {useDispatch, useSelector} from "react-redux";
@@ -10,11 +10,23 @@ import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 const TaskForm = (props) => {
 
 	const {
-		initialValues,
+		initialVals,
 		toggleEditing,
 		isNew,
 		...remainingProps
 	} = props
+
+	const formRef = useRef(null)	// gets access to form state
+
+	const {
+			current
+	} = formRef || {}
+
+	const {
+			values = {},
+			initialValues = {}
+	} = current || {}
+
 	const dispatch = useDispatch()
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
@@ -33,6 +45,7 @@ const TaskForm = (props) => {
 		}
 
 	}, []);
+
 
 	const handleSubmit = async (values) => {
 
@@ -58,8 +71,8 @@ const TaskForm = (props) => {
 
 	return (
 		<Formik
-			initialValues={initialValues}
-
+			initialValues={initialVals}
+			innerRef = {formRef}
 
 			// validation control
 			validationSchema={routeSchema}
@@ -91,12 +104,10 @@ const TaskForm = (props) => {
 
 				const {
 					submitForm,
-					touched
+					touched,
+					initialValues,
+					values
 				} = formikProps
-
-				if(Object.keys(touched).length!==0 && !editing){
-					dispatchPageDataChanged(true)
-				}
 
 				return(
 					<TaskField

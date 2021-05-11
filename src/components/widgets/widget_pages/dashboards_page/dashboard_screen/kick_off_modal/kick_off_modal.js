@@ -20,7 +20,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
+import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
@@ -243,7 +243,7 @@ const KickOffModal = (props) => {
 
                 const count = bins["QUEUE"]?.count || 0
                 const totalQuantity = getLotTotalQuantity({bins})
-                const templateValues = getLotTemplateData(lotTemplateId, currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard)
 
                 return(
                         <Lot
@@ -377,9 +377,6 @@ const KickOffModal = (props) => {
                     zIndex: 500,
                     backgroundColor: 'rgba(0, 0, 0, 0.4)' 
                 },
-                content: {
-
-                }
             }}
         >
             {showLotEditor &&
@@ -404,6 +401,7 @@ const KickOffModal = (props) => {
 
                 </styled.HeaderMainContentContainer>
                 <SortFilterContainer
+                    lotFilterValue={lotFilterValue}
                     sortMode={sortMode}
                     setSortMode={setSortMode}
                     sortDirection={sortDirection}

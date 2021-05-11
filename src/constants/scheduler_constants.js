@@ -22,5 +22,5 @@ export const deviceSchedule = {
     name: null,
     position: null,
     days_on: [],
-    time: null,
+    time: '12:00',
 }

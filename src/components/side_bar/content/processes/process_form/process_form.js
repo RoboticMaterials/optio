@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
@@ -28,6 +28,17 @@ const ProcessForm = (props) => {
 		toggleEditingProcess,
 	} = props
 
+	const formRef = useRef(null)	// gets access to form state
+
+	const {
+			current
+	} = formRef || {}
+
+	const {
+			values = {},
+			initialValues = {}
+	} = current || {}
+
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 
 
@@ -48,8 +59,9 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMap = useSelector(state => state.mapReducer.currentMap)
+	const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 	const editing = useSelector(state => state.processesReducer.editingProcess)
+	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
 	useEffect(() => {
 		return () => {
@@ -57,6 +69,29 @@ const ProcessForm = (props) => {
 			dispatchSetSelectedProcess(null)
 		}
 	}, []);
+
+	useEffect(() => {
+		var {
+			newRoute,
+			...remainingInitialValues
+		} = initialValues
+
+		var {
+			newRoute,
+			changed,
+			...remainingValues
+		} = values
+
+
+		if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
+			dispatchPageDataChanged(true)
+		}
+
+		return () => {
+			dispatchPageDataChanged(false)
+		}
+
+	}, [values])
 
 	const handleSave = async (values, close) => {
 
@@ -208,10 +243,14 @@ const ProcessForm = (props) => {
 				new: selectedProcess.new,
 				newRoute: null,
 				map_id: currentMap._id,
+				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
+				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
+
 			}}
 
 			// validation control
 			validationSchema={processSchema}
+			innerRef = {formRef}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
@@ -245,12 +284,11 @@ const ProcessForm = (props) => {
 					setTouched,
 					resetForm,
 					setFieldValue,
-					touched
+					touched,
+					values,
+					initialValues,
 				} = formikProps
 
-				if(Object.keys(touched).length!==0 && !editing){
-					dispatchPageDataChanged(true)
-				}
 
 				return(
 					<ProcessField

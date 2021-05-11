@@ -11,6 +11,7 @@ import {
 	valueCss
 } from "../lot_bars.style";
 import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
+import * as styled from "../zone_header/zone_header.style";
 
 const SortFilterContainer = (props) => {
 	const {
@@ -21,11 +22,14 @@ const SortFilterContainer = (props) => {
 		shouldFocusLotFilter,
 		setLotFilterValue,
 		selectedFilterOption,
-		setSelectedFilterOption
+		setSelectedFilterOption,
+		lotFilterValue,
+        containerStyle,
 	} = props
 
 	return (
-		<BarsContainer>
+		<BarsContainer style={containerStyle}>
+			{/*<styled.OptionContainer>*/}
 			<LotSortBar
 				columnCss={columnCss}
 				containerCss={containerCss}
@@ -38,7 +42,11 @@ const SortFilterContainer = (props) => {
 				sortDirection={sortDirection}
 				setSortDirection={setSortDirection}
 			/>
+			{/*</styled.OptionContainer>*/}
+
+			{/*<styled.OptionContainer>*/}
 			<LotFilterBar
+				lotFilterValue={lotFilterValue}
 				columnCss={columnCss}
 				containerCss={containerCss}
 				descriptionCss={descriptionCss}
@@ -50,6 +58,7 @@ const SortFilterContainer = (props) => {
 				selectedFilterOption={selectedFilterOption}
 				setSelectedFilterOption={setSelectedFilterOption}
 			/>
+			{/*</styled.OptionContainer>*/}
 		</BarsContainer>
 	);
 };

@@ -49,27 +49,33 @@ const SummaryZone = ((props) => {
 				} = currProcess
 
 				// return a CardZone wrapped with a styled container and any additional elements
-				return	(
-					<styled.ZoneContainer
-						key={processId}
-					>
-						<styled.ProcessName>{processName}</styled.ProcessName>
 
-						<CardZone
-							handleAddLotClick={handleAddLotClick}
-							setSelectedCards={setSelectedCards}
-							selectedCards={selectedCards}
-							sortMode={sortMode}
-							sortDirection={sortDirection}
-							lotFilterValue={lotFilterValue}
-							selectedFilterOption={selectedFilterOption}
-							setShowCardEditor={setShowCardEditor}
-							showCardEditor={showCardEditor}
-							maxHeight={"30rem"}
-							processId={processId}
-							handleCardClick={handleCardClick}
-						/>
-					</styled.ZoneContainer>
+				return	(
+					<>
+						{!!currProcess.showSummary &&
+							<styled.ZoneContainer
+								key={processId}
+							>
+								<styled.ProcessName>{processName}</styled.ProcessName>
+
+								<CardZone
+									handleAddLotClick={handleAddLotClick}
+									setSelectedCards={setSelectedCards}
+									selectedCards={selectedCards}
+									sortMode={sortMode}
+									sortDirection={sortDirection}
+									lotFilterValue={lotFilterValue}
+									selectedFilterOption={selectedFilterOption}
+									setShowCardEditor={setShowCardEditor}
+									showCardEditor={showCardEditor}
+									maxHeight={"30rem"}
+									processId={processId}
+									handleCardClick={handleCardClick}
+								/>
+							</styled.ZoneContainer>
+						}
+					</>
+
 				)
 			})
 		)
@@ -90,7 +96,7 @@ SummaryZone.propTypes = {
 	setShowCardEditor: PropTypes.func,
 	handleAddLotClick: PropTypes.func,
 	showCardEditor: PropTypes.bool,
-	lotFilterValue: PropTypes.string
+	lotFilterValue: PropTypes.any
 }
 
 // Specifies the default values for props:
@@ -104,4 +110,3 @@ SummaryZone.defaultProps = {
 }
 
 export default memo(SummaryZone)
-

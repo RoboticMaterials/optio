@@ -150,12 +150,12 @@ export const theme = {
                 solid: '#b385ff',
                 iconName: "fas fa-play"
             },
-            charts: {
+            statistics: {
                 solid: "#54AAFF",
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#c59bff',
+                solid: '#a3ff9b',
                 iconName: "fas fa-play"
             },
             finish: {
@@ -178,8 +178,8 @@ export const theme = {
             },
             report: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
-                solid: '#e81a69',
-                iconName: "fas fa-sticky-note"
+                solid: '#e8321a',
+                iconName: "fas fa-exclamation-triangle"
             },
             devices: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
@@ -191,7 +191,8 @@ export const theme = {
             },
             taskQueue: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#c59bff'
+                solid: '#c59bff',
+                iconName: 'fa fa-tasks',
             },
             settings: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',

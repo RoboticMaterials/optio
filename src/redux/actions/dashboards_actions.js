@@ -42,18 +42,18 @@ import uuid from 'uuid'
 
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
-import {getLoadStationId, getRouteProcesses, getUnloadStationId} from "../../methods/utils/route_utils";
-import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
-import {putProcesses, setSelectedProcess} from "./processes_actions";
-import {deleteTask} from "./tasks_actions";
-import {deepCopy} from "../../methods/utils/utils";
-import {useSelector} from "react-redux";
+import { getLoadStationId, getRouteProcesses, getUnloadStationId } from "../../methods/utils/route_utils";
+import { willRouteDeleteBreakProcess } from "../../methods/utils/processes_utils";
+import { putProcesses, setSelectedProcess } from "./processes_actions";
+import { deleteTask } from "./tasks_actions";
+import { deepCopy } from "../../methods/utils/utils";
+import { useSelector } from "react-redux";
 import * as stationActions from "./stations_actions";
-import {getDefaultStation} from "../../methods/utils/station_utils";
-import {removeArrayIndices} from "../../methods/utils/array_utils";
-import {ROUTE_TYPES} from "../../constants/route_constants";
-import {TYPES} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
+import { getDefaultStation } from "../../methods/utils/station_utils";
+import { removeArrayIndices } from "../../methods/utils/array_utils";
+import { ROUTE_TYPES } from "../../constants/route_constants";
+import { OPERATION_TYPES, TYPES } from '../../constants/dashboard_constants'
+import { DASHBOARD_BUTTON_COLORS } from "../../constants/dashboard_constants";
 
 
 export const getDashboards = () => {
@@ -118,8 +118,8 @@ export const putDashboard = (dashboard, ID) => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
         }
-        function onSuccess(updatedDashboard) {
-            dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
+        async function onSuccess(updatedDashboard) {
+            await dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
             return updatedDashboard;
         }
         function onError(error) {
@@ -205,7 +205,7 @@ export const removeRouteFromAllDashboards = (routeId) => {
                     buttons: currButtons
                 }, currDashboard._id.$oid))
             }
-        )
+            )
 
     }
 }
@@ -229,7 +229,7 @@ export const addRouteToDashboards = (route) => {
 
         // get station for route button (load if push, unload if pull)
         let stationId
-        if(routeType === ROUTE_TYPES.PULL) {
+        if (routeType === ROUTE_TYPES.PULL) {
             stationId = getUnloadStationId(route)
         }
         else {
@@ -254,15 +254,12 @@ export const addRouteToDashboards = (route) => {
                 buttons: [newDashboardButton],
                 station: station._id
             }
-            const postDashboardPromise = dispatch(postDashboard(defaultDashboard))
-            postDashboardPromise.then(async postedDashboard => {
-                alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                await dispatch(stationActions.putStation({
-                    ...station,
-                    dashboards: [postedDashboard._id.$oid]
-                }, station._id))
-
-            })
+            const postedDashboard = await dispatch(postDashboard(defaultDashboard))
+            alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+            await dispatch(stationActions.putStation({
+                ...station,
+                dashboards: [postedDashboard._id.$oid]
+            }, station._id))
         }
 
         else {
@@ -272,8 +269,8 @@ export const addRouteToDashboards = (route) => {
             })
 
             // only add button if it isn't already in the dashboard
-            if(buttonIndex === -1) {
-                dispatch(putDashboard({
+            if (buttonIndex === -1) {
+                await dispatch(putDashboard({
                     ...dashboard,
                     buttons: [...dashboard.buttons, newDashboardButton]
                 }, dashboard._id.$oid))
@@ -300,7 +297,7 @@ export const removeRouteFromWrongDashboards = (route) => {
 
         // get station id for route (load for push, unload for pull)
         let stationId
-        if(routeType === ROUTE_TYPES.PULL) {
+        if (routeType === ROUTE_TYPES.PULL) {
             // if pull type, button should be at unload station
             stationId = getUnloadStationId(route)
         }
@@ -322,7 +319,7 @@ export const removeRouteFromWrongDashboards = (route) => {
             } = currDashboardIdObj
 
             // curr dashboard isn't the route's load station
-            if(currStationId !== stationId) {
+            if (currStationId !== stationId) {
 
                 // loop through each button and check if the button needs to be removed
                 const filteredButtons = currDashboardButtons.filter((currButton, currButtonIndex) => {
@@ -330,12 +327,12 @@ export const removeRouteFromWrongDashboards = (route) => {
                         task_id: currRouteId
                     } = currButton
 
-                    return(currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route
+                    return (currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route
                 })
 
                 // if length of buttons arr changed, a button was removed, so update
                 // otherwise nothing was removed, so need for update
-                if(filteredButtons.length !== currDashboardButtons.length) {
+                if (filteredButtons.length !== currDashboardButtons.length) {
                     // update the dashboard
                     dispatch(putDashboard({
                         ...currDashboard,
@@ -354,9 +351,9 @@ export const dashboardOpen = (bol) => {
 }
 
 export const setDashboardKickOffProcesses = (dashboardId, kickOffEnabled) => {
-    return { type: SET + DASHBOARD + KICK_OFF_ENABLED, payload: {dashboardId, kickOffEnabled} }
+    return { type: SET + DASHBOARD + KICK_OFF_ENABLED, payload: { dashboardId, kickOffEnabled } }
 }
 
 export const setDashboardFinishProcesses = (dashboardId, finishEnabled) => {
-    return { type: SET + DASHBOARD + FINISH_ENABLED, payload: {dashboardId, finishEnabled} }
+    return { type: SET + DASHBOARD + FINISH_ENABLED, payload: { dashboardId, finishEnabled } }
 }

@@ -38,6 +38,7 @@ const DeviceSchedule = (props) => {
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
 
     const renderSchedules = () => {
 
@@ -88,51 +89,62 @@ const DeviceSchedule = (props) => {
                                         />
                                     </styled.RowContainer>
 
-                                    <styled.RowContainer style={{ margin: '.2rem' }}>
-                                        {renderDaySelector(schedule.id, ind)}
-                                    </styled.RowContainer>
+                                    <styled.ColumnContainer style={{ alignItems: 'center' }}>
+                                        <styled.DayOfTheWeekText>Days On</styled.DayOfTheWeekText>
+                                        <styled.RowContainer style={{ margin: '.2rem', width: '100%' }}>
+                                            {renderDaySelector(schedule.id, ind)}
+                                        </styled.RowContainer>
+
+                                    </styled.ColumnContainer>
 
                                     <styled.RowContainer style={{ marginTop: '.5rem' }}>
-                                        <DropDownSearchField
-                                            name={`schedules.${ind}.position`}
-                                            containerSyle={{ flex: '9', marginRight: '1rem' }}
-                                            placeholder="Select Position"
-                                            pattern={null}
-                                            labelField={'name'}
-                                            valueField={"_id"}
-                                            options={Object.values(positions)}
-                                            mapInput={(val) => {
-                                                return [positions[val]]
-                                            }}
-                                            mapOutput={(val) => {
-                                                return val[0]._id
-                                            }}
-                                        />
-                                        <TimePickerField
-                                            name={`schedules.${ind}.time`}
-                                            mapInput={
-                                                (value) => {
-                                                    if (value) {
-                                                        const splitVal = value.split(':')
-                                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        <styled.ColumnContainer>
+                                            <styled.DayOfTheWeekText>Position</styled.DayOfTheWeekText>
+
+                                            <DropDownSearchField
+                                                name={`schedules.${ind}.position`}
+                                                containerSyle={{ flex: '9', marginRight: '1rem' }}
+                                                placeholder="Select Position"
+                                                pattern={null}
+                                                labelField={'name'}
+                                                valueField={"_id"}
+                                                options={Object.values(positions).filter(positions => (positions.map_id === currentMap._id))}
+                                                mapInput={(val) => {
+                                                    if (!!positions[val]) {
+                                                        return [positions[val]]
+                                                    }
+                                                }}
+                                                mapOutput={(val) => {
+                                                    return val[0]._id
+                                                }}
+                                            />
+                                        </styled.ColumnContainer>
+                                        <styled.ColumnContainer>
+                                            <styled.DayOfTheWeekText>Time</styled.DayOfTheWeekText>
+                                            <TimePickerField
+                                                name={`schedules.${ind}.time`}
+                                                mapInput={
+                                                    (value) => {
+                                                        if (value) {
+                                                            const splitVal = value.split(':')
+                                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            mapOutput={(value) => {
-                                                return convert12hto24h(value.format('hh:mm a'))
-                                            }}
-                                            containerStyle={{ width: '6rem' }}
-                                            style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                            showHour={true}
-                                            showSecond={false}
-                                            className="xxx"
-                                            use12Hours
-                                            format={'hh:mm a'}
-                                            autocomplete={"off"}
-                                            allowEmpty={false}
-                                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                        />
+                                                mapOutput={(value) => {
+                                                    return convert12hto24h(value.format('hh:mm a'))
+                                                }}
+                                                containerStyle={{ width: '6rem' }}
+                                                style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                                showHour={true}
+                                                showSecond={false}
+                                                className="xxx"
+                                                use12Hours
+                                                format={'hh:mm a'}
+                                                autocomplete={"off"}
+                                                allowEmpty={false}
+                                            />
+                                        </styled.ColumnContainer>
 
                                     </styled.RowContainer>
                                     <Button
@@ -142,7 +154,7 @@ const DeviceSchedule = (props) => {
                                         secondary
                                         onClick={() => {
                                             // onDeleteSchedule(schedule)
-                                            // Removes the values from formik. 
+                                            // Removes the values from formik.
                                             // Otherwise you would delete and schedule and then when re-adding a new one, it owuld use the old valus
                                             arrayHelpers.remove(ind)
                                         }}
@@ -169,8 +181,8 @@ const DeviceSchedule = (props) => {
                                 arrayHelpers.push(newSchedule)
                             }}
                         >
-                            Add Schedule
-                            </Button>
+                            {!!values.schedules && values.schedules.length > 0 ? 'Add Another Schedule' : 'Add Schedule'}
+                        </Button>
                     </styled.SectionsContainer>
 
                 )

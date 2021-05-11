@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 
 import moment from 'moment';
@@ -36,6 +36,18 @@ const LineThroughputChart = (props) => {
         date,
     } = props
 
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {},
+        touched = {}
+    } = current || {}
+
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
@@ -68,6 +80,12 @@ const LineThroughputChart = (props) => {
         return () => {
         }
     }, [settings])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values) && Object.keys(touched).length>0){
+        dispatchPageDataChanged(true)
+      }
+    }, [values])
 
 
     /**
@@ -542,6 +560,7 @@ const LineThroughputChart = (props) => {
                     validateOnChange={true}
                     validateOnMount={false}
                     validateOnBlur={false}
+                    innerRef = {formRef}
 
                     onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm}) => {
 
@@ -562,11 +581,6 @@ const LineThroughputChart = (props) => {
                             touched,
                             initialValues
                         } = formikProps
-
-
-                        if(Object.keys(touched).length>0){
-                          dispatchPageDataChanged(true)
-                        }
 
                         return (
                             <Form
@@ -633,7 +647,8 @@ const LineThroughputChart = (props) => {
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                             showHour={true}
                                             showSecond={false}
-                                            className="xxx"
+                                            className="xxx"                                            focus = {true}
+
                                             use12Hours
                                             format={'hh:mm a'}
                                             autocomplete={"off"}

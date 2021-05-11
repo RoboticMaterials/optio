@@ -2,6 +2,8 @@ import styled, {css} from "styled-components";
 import {Form} from "formik";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 import {containerLayout} from "../../../../../common_css/layout";
+import SyncProblemIcon from "@material-ui/icons/SyncProblem";
+import SyncIcon from "@material-ui/icons/Sync";
 
 export const rowCss = css`
 	// margin-bottom: 1rem;
@@ -16,7 +18,7 @@ export const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0.5rem;
+	padding: 1rem 0.5rem;
 	margin: 0;
 	background: ${props => props.theme.bg.secondary};
 	z-index: 10;
@@ -25,7 +27,9 @@ export const Header = styled.div`
 
 export const CloseIcon = styled.i`
     font-size: 1.4rem;
-    margin: 2rem;
+    //margin: 2rem;
+  	right: 2rem;
+  	position: absolute;
     color: ${props => props.theme.bg.quaternary};
     cursor: pointer;
 	
@@ -91,7 +95,7 @@ export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   // font-weight: ${props => props.theme.fontWeight.bold};
   font-family: ${props => props.theme.font.primary};
-  color: ${props => props.highlight ? props.theme.schema[props.schema].solid : "white"};
+  color: ${props => props.highlight ? props.theme.schema[props.schema].solid : props.textColor};
 `
 
 export const SectionContainer = styled.div`
@@ -254,6 +258,9 @@ const mainCss = css`
 
 export const StyledForm = styled(Form)`
     ${mainCss};
+  
+	transition: all .5s ease;
+	filter: ${props => props.loading && "blur(5px)"};
 `;
 
 export const SubContainer = styled.div`
@@ -292,8 +299,7 @@ export const BodyContainer = styled.div`
 	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
-
-	
+  
 `
 
 export const WidgetContainer = styled.div`
@@ -469,7 +475,7 @@ export const ContentValue = styled.span`
 //   font-weight: ${props => props.theme.fontWeight.no};
 // `
 
-export const LotName = styled.span`
+export const FieldLabel = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 	font-family: ${props => props.theme.font.primary};
@@ -478,12 +484,13 @@ export const LotName = styled.span`
 	margin-bottom: .5rem;
 `
 
-export const LotNumber = styled.div`
-  /* background-color: ${props => props.theme.bg.secondary}; */
+const fieldValueCss = css`
+ /* background-color: ${props => props.theme.bg.secondary}; */
   border: none;
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
   font-weight: bold;
+  white-space: nowrap;
   
   flex-grow: 1;
   color: ${props => props.theme.textColor};
@@ -495,21 +502,31 @@ export const LotNumber = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  padding: 0 2rem;
+`
+
+export const LotName = styled.span`
+  ${fieldValueCss};
+  padding: 0 .5rem;
+`
+
+export const LotNumber = styled.div`
+	${fieldValueCss};
+	
+	padding: 0 2rem;
 `
 
 export const TemplateButton = styled.button`
   ${iconButtonCss};
   ${commonClickableIcon};
-  font-size: 2rem;
+  font-size: 2.5rem;
+  
 `
 
 export const PasteIcon = styled.button`
 
 	${iconButtonCss};
   	${commonClickableIcon};
-	font-size: 2rem;
+	font-size: 2.5rem;
 
     animation: blinker 1s linear infinite;
 
@@ -558,14 +575,18 @@ export const SubHeader = styled.div`
 	display: flex;
   align-self: stretch;
   align-items: center;
+  justify-content: space-between;
   background: ${props => props.theme.bg.primary};
   padding: 0.5rem;
   border-bottom: 3px solid ${props => props.theme.bg.secondary};
+  
 `
 export const IconRow = styled.div`
   ${rowCss2};
   align-items: center;
-  padding: .25rem;
+  >div {
+    margin: 0 .5rem;
+  }
 `
 
 export const ColumnContainer = styled.div`
@@ -737,5 +758,16 @@ export const TemplateLabel = styled.span`
   font-family: ${props => props.theme.font.primary};
 `
 
+export const SyncProblem = styled(SyncProblemIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+`
+
+export const Sync = styled(SyncIcon)`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+  color: ${props => props.sync ? "#00d6d0" : "#a9a9a9"};
+  transition: all 2s ease;
+`
 
 

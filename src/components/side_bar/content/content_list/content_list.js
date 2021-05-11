@@ -108,7 +108,7 @@ export default function ContentList(props) {
                                 onMouseEnter={() => props.onMouseEnter(element)}
                                 onMouseLeave={() => props.onMouseLeave(element)}
                             >
-                                <styled.ListItemIconContainer>
+                                <styled.ListItemIconContainer style = {{paddingTop: element.type === "charger_position" ? '0.6rem': '0rem'}}>
 
                                     {props.schema === 'locations' &&
                                         <>
@@ -140,7 +140,7 @@ export default function ContentList(props) {
                                         </div>
                                         :
                                         <styled.ListItemIcon
-                                            className='far fa-clone'
+                                            className='fas fa-clone'
                                             style={{ color: '#ffb62e' }}
                                             onClick={() => {
                                                 handleCardView(element)

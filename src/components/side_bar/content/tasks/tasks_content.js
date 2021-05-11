@@ -32,7 +32,7 @@ import { willRouteDeleteBreakProcess } from "../../../../methods/utils/processes
 import { deleteRouteClean } from "../../../../redux/actions/tasks_actions";
 import { isObject } from "../../../../methods/utils/object_utils";
 import { DEVICE_CONSTANTS } from "../../../../constants/device_constants";
-import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_contants'
+import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_constants'
 import {getSidebarDeviceType, isRouteInQueue} from "../../../../methods/utils/task_queue_utils";
 import {isDeviceConnected} from "../../../../methods/utils/device_utils";
 
@@ -50,7 +50,7 @@ export default function TaskContent(props) {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -170,7 +170,7 @@ export default function TaskContent(props) {
         return (
             <TaskForm
                 isNew={isNew}
-                initialValues={{
+                initialVals={{
                     ...selectedTask,
                     obj: !!selectedTask.route_object ? selectedTask.route_object : null,
                 }}

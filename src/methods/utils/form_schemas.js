@@ -7,6 +7,7 @@ import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 import {convertCardDate} from "./card_utils";
 import {isEqualCI, isString} from "./string_utils";
+import {FIELD_DATA_TYPES} from "../../constants/lot_contants";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -242,10 +243,15 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
 
         var index = path.match(rx);
         let megaIndex = 0
-        index.forEach((currItem) => {
+        const last = index.pop()
 
-            megaIndex = megaIndex + parseInt(currItem.replace(reg2,''))
+        index.forEach((currItem) => {
+            const parsedIndex = parseInt(currItem.replace(reg2,''))
+            for(let i = 0; i < parsedIndex; i++) {
+                megaIndex = megaIndex + arr[i].length
+            }
         })
+        megaIndex = megaIndex + parseInt(last.replace(reg2,''))
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -254,6 +260,7 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         let isUnique = true
 
         let currIndex = 0
+
         for (const currItem of arr.flat()) {
             if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
@@ -275,6 +282,48 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         if (isUnique) {
             return true;
         }
+    });
+});
+
+// returns error if any item in nested array is duplicate
+Yup.addMethod(Yup.object, "lotFieldRequired", function (message) {
+    return this.test("lotFieldRequired", message, function (item) {
+        const { path, createError, parent, options } = this
+
+        const {
+            required,
+            value,
+            dataType
+        } = item || {}
+
+        if(required) {
+            switch (dataType) {
+                case FIELD_DATA_TYPES.DATE_RANGE: {
+                    if(!value || !isArray(value) || !(value[0] instanceof Date) || !(value[1]  instanceof Date)) {
+                        return createError({ path: `${path}.value`, message })
+                    }
+                    break
+                }
+                case FIELD_DATA_TYPES.DATE: {
+                    if(!(value  instanceof Date)) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                case FIELD_DATA_TYPES.INTEGER: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                case FIELD_DATA_TYPES.STRING: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+                default: {
+                    if(!value) return createError({ path: `${path}.value`, message })
+                    break
+                }
+            }
+        }
+
+        return true
     });
 });
 
@@ -318,12 +367,17 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
 });
 
 // returns error if value is in arr
-Yup.addMethod(Yup.string, "notIn", function (message, arr) {
+Yup.addMethod(Yup.string, "notIn", function (message, arr, pathToOthers) {
     return this.test("notIn", message, function (value) {
-        const { path, createError } = this;
+        const { path, createError, parent, options } = this
+        const {
+            context
+        } = options || {}
+        const {
+            [pathToOthers]: others = []
+        } = context || {}
 
-
-        for(const item of arr) {
+        for(const item of arr.concat(Object.values(others))) {
             if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
@@ -337,7 +391,6 @@ Yup.addMethod(Yup.string, "uniqueByPath", function (message, arrPath) {
 
         if (value) {
             const parentValues = parent[arrPath]
-
 
             if (isArray(parentValues)) {
                 for (const currParentValue of parentValues) {
@@ -435,6 +488,13 @@ export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         // .min(1, '1 character minimum.')
         .max(50, '50 character maximum.'),
+    fields: Yup.array().of(
+        Yup.array().of(
+            Yup.object().shape({
+                // value: Yup.
+            }).lotFieldRequired("This field is required.")
+        )
+    ),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(250, '250 character maximum.'),
@@ -472,6 +532,7 @@ export const LotFormSchema = Yup.object().shape({
                 fieldName: Yup.string()
                     .min(1, '1 character minimum.')
                     .max(50, '50 character maximum.')
+                    .notIn("This field name is already being used.", [], "displayNames")
                     .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
                     .required('Please enter a name for this field.'),
                 style: Yup.object()
@@ -676,7 +737,8 @@ export const throughputSchema = Yup.object().shape({
     startOfShift: Yup.string()
         .required('Required'),
     endOfShift: Yup.string()
-        .required('Required'),
+        .required('Required')
+        .lessThan("startOfShift", 'The end of the shift cannot be before the start of the shift'),
     startOfBreak1: Yup.string()
         // Only validate when true
         .when('switch1', {

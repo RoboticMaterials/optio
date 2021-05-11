@@ -27,6 +27,9 @@ import {
     EDITING_TASK,
     REMOVE_TASKS,
     SET_SELECTED_HOVERING_TASK,
+    SET_SHOW_ROUTE_CONFIRMATION,
+    SET_ROUTE_CONFIRMATION_LOCATION,
+    AUTO_ADD_ROUTE,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -274,12 +277,12 @@ export const saveFormRoute = (formRoute) => {
 
         // create new route
         if(isNew) {
-            dispatch(postRouteClean(payload))
+            await dispatch(postRouteClean(payload))
         }
 
         // update existing route
         else {
-            dispatch(putRouteClean(payload, payload._id))
+            await dispatch(putRouteClean(payload, payload._id))
         }
     }
 }
@@ -332,4 +335,16 @@ export const deselectTask = () => {
 
 export const editingTask = (bool) => {
     return { type: EDITING_TASK, payload: bool }
+}
+
+export const showRouteConfirmation = (bool) => {
+    return { type: SET_SHOW_ROUTE_CONFIRMATION, payload: bool }
+}
+
+export const setRouteConfirmationLocation = (id) => {
+    return { type: SET_ROUTE_CONFIRMATION_LOCATION, payload: id }
+}
+
+export const autoAddRoute = (bool) => {
+    return { type: AUTO_ADD_ROUTE, payload: bool }
 }
