@@ -29,6 +29,7 @@ import FlexibleContainer from "../basic/flexible_container/flexible_container";
 import ScaleWrapper from "../basic/scale_wrapper/scale_wrapper";
 import {getStationName} from "../../methods/utils/stations_utils";
 import {getStations} from "../../redux/actions/stations_actions";
+import {hilModalSchema} from "../../methods/utils/form_schemas";
 
 
 export const QUANTITY_MODES = {
@@ -85,15 +86,25 @@ const HILModals = (props) => {
         load,
         unload
     } = task || {}
+    const {
+        station: unloadStationId
+    } = unload || {}
+    const {
+        station: loadStationId
+    } = load || {}
 
     const [trackQuantity, setTrackQuantity] = useState(null)
     const [selectedDashboard, setSelectedDashboard] = useState(null)
+    const {
+        station: stationId
+    } = selectedDashboard || {}
+
     const [hilLoadUnload, setHilLoadUnload] = useState('')
     const [dataLoaded, setDataLoaded] = useState(false)
     const [content, setContent] = useState(CONTENT.QUANTITY_SELECTOR)
     const [lot, setLot] = useState({})
     const [modalClosed, setModalClosed] = useState(false)
-    const [maxQuantity, setMaxQuantity] = useState(0)
+    const [maxQuantity, setMaxQuantity] = useState(getBinQuantity(cards[lotId], stationId || loadStationId))
     const [loadStationName, setLoadStationName] = useState("")
     const [unloadStationName, setUnloadStationName] = useState("")
 
@@ -103,20 +114,8 @@ const HILModals = (props) => {
     } = formRef || {}
     const {
         values = {},
+        setFieldValue = () => {}
     } = formikProps || {}
-
-    const {
-        station: stationId
-    } = selectedDashboard || {}
-
-
-    const {
-        station: unloadStationId
-    } = unload || {}
-
-    const {
-        station: loadStationId
-    } = load || {}
 
     useEffect(() => {
         setLot(cards[lotId] || {})
@@ -125,12 +124,18 @@ const HILModals = (props) => {
         };
     }, [lotId, cards])
 
+    /* default quantity to max when max changes */
+    useEffect(() => {
+        setFieldValue('quantity',maxQuantity)
+        // return () => {};
+    }, [maxQuantity]);
+
+
     useEffect(() => {
         const {
             track_quantity
         } = task || {}
 
-        console.log("hilLoadUnload",hilLoadUnload)
         if(hilLoadUnload === 'load') {
             if(track_quantity && content !== CONTENT.QUANTITY_SELECTOR) {
                 setContent(CONTENT.QUANTITY_SELECTOR)
@@ -250,12 +255,11 @@ const HILModals = (props) => {
         dispatchTaskQueueItemClicked('')
     }
 
+    // updates max quantity
     useEffect(() => {
-        setMaxQuantity(getBinQuantity(lot, stationId || loadStationId))
-        return () => {
-
-        };
-    }, [lot, stationId, loadStationId]);
+        const newMax = getBinQuantity(lot, stationId || loadStationId)
+        if(parseInt(maxQuantity) !== parseInt(newMax)) setMaxQuantity(newMax)
+    }, [lot, stationId, loadStationId, maxQuantity]);
 
     useEffect(() => {
         setUnloadStationName(getStationName(unloadStationId))
@@ -264,7 +268,6 @@ const HILModals = (props) => {
     useEffect(() => {
         setLoadStationName(getStationName(loadStationId))
     }, [loadStationId, stations])
-
 
 
     const renderUnloadContent = useCallback(() => {
@@ -334,7 +337,7 @@ const HILModals = (props) => {
                 </styled.SubtitleContainer>
 
                 <NumberField
-                    minValue={0}
+                    minValue={1}
                     maxValue={maxQuantity}
                     name={`quantity`}
                 />
@@ -354,9 +357,10 @@ const HILModals = (props) => {
 
         return (
             <Formik
+                validationSchema={hilModalSchema}
                 innerRef={formRef}
                 initialValues={{
-                    quantity: 0,
+                    quantity: maxQuantity,
                     fraction: null
                 }}
                 validateOnChange={true}
@@ -402,7 +406,6 @@ const HILModals = (props) => {
                                 }}
                             >
 
-                            {/*{!falske &&*/}
                             <styled.LotInfoContainer>
                                 <styled.SubtitleContainer>
                                     <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
@@ -420,8 +423,8 @@ const HILModals = (props) => {
                                 />
                                 </ScaleWrapper>
                             </styled.LotInfoContainer>
-                            {/*}*/}
 
+                            {/*  render appropriate content  */}
                             {
                                 {
                                     [CONTENT.QUANTITY_SELECTOR]: renderQuantitySelector(),
