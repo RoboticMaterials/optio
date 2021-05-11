@@ -4,7 +4,7 @@ import {useHistory} from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 
-import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
+import { CognitoUserPool, AuthenticationDetails, CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js'
 
 import { Formik, Form } from 'formik'
 
@@ -36,7 +36,7 @@ const SignInUpPage = (props) => {
 
     // Dispatches
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+    // const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
@@ -48,6 +48,8 @@ const SignInUpPage = (props) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [organizationId, setOrganizationId] = useState('')
+
     const [errorText, setErrorText] = useState('')
 
     const [capsLock, setCapsLock] = useState(false)
@@ -63,7 +65,8 @@ const SignInUpPage = (props) => {
         const {
             email,
             password,
-            confirmPassword
+            confirmPassword,
+            organizationId
         } = values
 
         // User pool data for AWS Cognito
@@ -98,7 +101,7 @@ const SignInUpPage = (props) => {
                     dispatchPostLocalSettings({
                         ...localReducer,
                         authenticated: result.accessToken.payload.username,
-                        non_local_api_ip: window.location.hostname,
+                        non_local_api_ip: 'demo.rm.studio',//window.location.hostname,
                         non_local_api: true,
                         refreshToken: true
                     })
@@ -114,7 +117,20 @@ const SignInUpPage = (props) => {
             });
         } else {
             if (password === confirmPassword) {
-                userPool.signUp(email, password, [], null, (err, data) => {
+
+                // Create the custom attribute list
+                var attributeList = [];
+
+                const orgId = new CognitoUserAttribute();
+
+                orgId.Name = 'custom:organizationId'
+
+                orgId.Value = organizationId
+
+                attributeList.push(orgId);
+
+                // here we pass in data including organizationId
+                userPool.signUp(email, password, attributeList, null, (err, data) => {
                     if (err) {
                         if (err.message === 'Invalid version. Version should be 1') {
                             setErrorText('Invalid email. Please use a valid email.')
@@ -143,11 +159,13 @@ const SignInUpPage = (props) => {
                 email: email,
                 password: password,
                 confirmPassword: confirmPassword,
+                organizationId: organizationId
             }}
             initialTouched={{
                 email: true,
                 password: true,
                 confirmPassword: true,
+                organizationId: true
             }}
 
             validateOnBlur={false}
@@ -232,10 +250,22 @@ const SignInUpPage = (props) => {
                                     }}
                                 />
                             }
+                            {!signIn &&
+                                <TextField
+                                    name={"organizationId"}
+                                    placeholder='Enter Organization ID'
+                                    type='text'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        width: '25rem'
+                                    }}
+                                />
+                            }
 
                             {!signIn &&
                                 <styled.NoteText>
-                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, and 1 number
+                                    Note: Your password must be 8 characters long and contain 1 upper case letter, 1 lower case letter, and 1 number
                                 </styled.NoteText>
                             }
 

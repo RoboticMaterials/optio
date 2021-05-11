@@ -26,9 +26,6 @@ const Authentication = (props) => {
         mobileMode
     } = props
 
-    console.log("process.env",process.env)
-    // console.log("userPool.getCurrentUser()",userPool.getCurrentUser())
-
     const history = useHistory()
     const params = useParams()
 
@@ -84,7 +81,6 @@ const Authentication = (props) => {
                         }
 
                         if (session.isValid()) {
-                            console.log('sessionsession',session)
                             dispatchPostLocalSettings({
                                 ...response,
                                 authenticated:true,
