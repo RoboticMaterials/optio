@@ -304,6 +304,14 @@ const TaskField = (props) => {
         }
     }, [needsValidate])
 
+    useEffect(() => {
+        console.log('route field values',values)
+        return () => {
+
+        };
+    }, [values]);
+
+
 
     useEffect(() => {
         if (!!obj && !!selectedObject) {

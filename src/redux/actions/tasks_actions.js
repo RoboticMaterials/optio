@@ -37,6 +37,7 @@ import { deepCopy } from '../../methods/utils/utils';
 import * as api from '../../api/routes'
 import * as processesActions from "./processes_actions";
 import * as dashboardsActions from "./dashboards_actions";
+import {isString} from "../../methods/utils/string_utils";
 
 // get
 // ******************************
@@ -276,7 +277,7 @@ export const saveFormRoute = (formRoute) => {
         // create payload
         const payload = {
             ...remainingRoute,
-            obj: objectId
+            obj: isString(objectId) ? objectId : null
         }
 
         // create new route

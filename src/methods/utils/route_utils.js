@@ -4,11 +4,14 @@ import  store  from "../../redux/store/index";
 import {defaultTask} from "../../constants/route_constants";
 import {isArray} from "./array_utils";
 import {useSelector} from "react-redux";
+import {isString} from "./string_utils";
 
 /**
  * Creates a default route based on store state
  */
 export const generateDefaultRoute = (obj) => {
+    console.log('autoGenerateRoute DEFAULT obj',obj)
+    console.log('autoGenerateRoute DEFAULT isString(obj)',isString(obj))
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
     const currentMap = storeState.settingsReducer.settings.currentMap
@@ -20,12 +23,14 @@ export const generateDefaultRoute = (obj) => {
         mapId: currentMap.id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
-        obj: obj ? currentMap.id : currentMap.id,
+        obj: isString(obj) ? obj : null,
         id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
 
 export const autoGenerateRoute = (obj) => {
+    console.log('autoGenerateRoute obj',obj)
+    console.log('autoGenerateRoute isString(obj)',isString(obj))
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
     const currentMap = storeState.mapReducer.currentMap
@@ -43,7 +48,7 @@ export const autoGenerateRoute = (obj) => {
                position: routeConfirmationLocation,
               },
         unload: {...defaultTask.unload},
-        obj: obj,
+        obj: isString(obj) ? obj : null,
         id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
