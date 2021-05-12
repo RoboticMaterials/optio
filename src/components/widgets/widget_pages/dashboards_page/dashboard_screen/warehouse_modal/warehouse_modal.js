@@ -62,63 +62,22 @@ const WarehouseModal = (props) => {
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
-    const [didLoadData, setDidLoadData] = useState(false)
     const [selectedLot, setSelectedLot] = useState(null)
     const [lotCount, setLotCount] = useState(null)
-    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
-    const [availableKickOffCards, setAvailableKickOffCards] = useState([])
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
 
-
-    const onButtonClick = async (lot) => {
-        setShowQuantitySelector(true)
-
-        // extract card attributes
-        const {
-            bins,
-        } = lot
-
-        // extract first station's bin and queue bin from bins
-        const {
-            ["QUEUE"]: queueBin,
-        } = bins || {}
-
-        const queueBinCount = queueBin?.count ? queueBin.count : 0
-
-        setLotCount(queueBinCount)
-        setSelectedLot(lot)
-    }
-
+    // Add warehouse to URL
+    // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
+    // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
+    // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
-        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}`)
+        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
         setSubmitting(false)
         close()
-    }
-
-    /*
-    * handles the logic for when move button is pressed
-    *
-    * When a warehouse button is pressed, the lot is to be moved from the warehouse to the current station
-    *
-    * This is done by updating the cards station_id and route_id to those of the selected station
-    * */
-    const moveLot = async (card, quantity) => {
-        // device_type: "human"
-        // hil_response: true
-        // lot_id: "6081b4bdf7a8bf5d56493f9b"
-        // owner: "human"
-        // quantity: 1
-        // showModal: null
-        // task_id: "022ea650-33de-4a96-af5a-d01c9a98ff90"
-        const lotID = card._id
-        console.log('QQQQ card', card)
-        console.log('QQQQ QTY', quantity)
-
-
     }
 
     /*
@@ -140,98 +99,73 @@ const WarehouseModal = (props) => {
             sortBy(sortedCards, sortMode, sortDirection)
         }
 
-        return sortedCards
-            // Goes through the list of warehouses that might be before this station and sees if the card is at that warehouse
-            .filter((card, ind) => {
-                let cardAtWarehouse = false
-                warehouseStations.map((warehouse) => {
-                    if (getIsCardAtBin(card, warehouse?._id)) {
-                        cardAtWarehouse = true
-                    }
-                })
-                return cardAtWarehouse
-            })
-            .filter((currLot) => {
-                const {
-                    name: currLotName,
-                    bins = {},
-                } = currLot || {}
-
-                const count = bins[stationID]?.count
-                return getMatchesFilter({
-                    ...currLot,
-                    quantity: count
-                }, lotFilterValue, selectedFilterOption)
-            })
-            .map((currCard, cardIndex) => {
-                const {
-                    _id: lotId,
-                    name,
-                    start_date,
-                    end_date,
-                    bins = {},
-                    flags,
-                    lotNumber,
-                    process_id: processId,
-                    lotTemplateId
-                } = currCard
-
-                const process = processes[processId]
-                const {
-                    name: processName
-                } = process || {}
-
-                const count = bins["QUEUE"]?.count || 0
-                const totalQuantity = getLotTotalQuantity({ bins })
-                const templateValues = getCustomFields(lotTemplateId, currCard)
-
-                return (
-                    <Lot
-                        templateValues={templateValues}
-                        totalQuantity={totalQuantity}
-                        enableFlagSelector={false}
-                        lotNumber={lotNumber}
-                        processName={processName}
-                        flags={flags || []}
-                        name={name}
-                        start_date={start_date}
-                        end_date={end_date}
-                        count={count}
-                        id={lotId}
-                        index={cardIndex}
-                        onClick={() => {
-                            handleCardClicked(lotId)
-                        }}
-                        containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
-                    />
+        // Goes through each warehouse that is infront to the station and renders cards
+        return warehouseStations.map((warehouse) => {
+            const warehouseID = warehouse?._id
+            return sortedCards
+                .filter((card, ind) =>
+                    getIsCardAtBin(card, warehouseID)
                 )
-            })
+                .filter((currLot) => {
+                    const {
+                        name: currLotName,
+                        bins = {},
+                    } = currLot || {}
+
+                    const count = bins[warehouseID]?.count
+                    return getMatchesFilter({
+                        ...currLot,
+                        quantity: count
+                    }, lotFilterValue, selectedFilterOption)
+                })
+                .map((currCard, cardIndex) => {
+                    const {
+                        _id: lotId,
+                        name,
+                        start_date,
+                        end_date,
+                        bins = {},
+                        flags,
+                        lotNumber,
+                        process_id: processId,
+                        lotTemplateId
+                    } = currCard
+
+                    const process = processes[processId]
+                    const {
+                        name: processName
+                    } = process || {}
+
+                    const count = bins[warehouseID]?.count || 0
+                    const totalQuantity = getLotTotalQuantity({ bins })
+                    const templateValues = getCustomFields(lotTemplateId, currCard)
+
+                    return (
+                        <Lot
+                            templateValues={templateValues}
+                            totalQuantity={totalQuantity}
+                            enableFlagSelector={false}
+                            lotNumber={lotNumber}
+                            processName={processName}
+                            flags={flags || []}
+                            name={name}
+                            start_date={start_date}
+                            end_date={end_date}
+                            count={count}
+                            id={lotId}
+                            index={cardIndex}
+                            onClick={() => {
+                                handleCardClicked(lotId)
+                            }}
+                            containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
+                        />
+                    )
+                })
+
+        })
+
+
     }, [cards])
-
-    if (showQuantitySelector) {
-        return (
-            <QuantityModal
-                validationSchema={quantityOneSchema}
-                maxValue={lotCount}
-                minValue={1}
-                infoText={`${lotCount} items available.`}
-                isOpen={true}
-                title={"Select Quantity"}
-                onRequestClose={() => setShowQuantitySelector(false)}
-                onCloseButtonClick={() => setShowQuantitySelector(false)}
-                handleOnClick1={(quantity) => {
-                    setShowQuantitySelector(false)
-
-                }}
-                handleOnClick2={(quantity) => {
-                    setShowQuantitySelector(false)
-                    moveLot(selectedLot, quantity)
-                }}
-                button_1_text={"Cancel"}
-                button_2_text={"Confirm"}
-            />
-        )
-    }
 
 
     return (

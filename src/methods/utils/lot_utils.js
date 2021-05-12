@@ -282,7 +282,6 @@ export const getBinQuantity = ({ bins }, binId) => {
     const {
         count
     } = currentBin || {}
-
     return count
 }
 
@@ -436,7 +435,6 @@ export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) =
 
 
 export const getCurrentRouteForLot = (lot, stationID) => {
-
     let currentRoute
 
     const processes = store.getState().processesReducer.processes || {}
@@ -454,6 +452,24 @@ export const getCurrentRouteForLot = (lot, stationID) => {
     return currentRoute
 }
 
+export const getPreviousRouteForLot = (lot, stationID) => {
+    let prevRoute
+
+    const processes = store.getState().processesReducer.processes || {}
+    const routes = store.getState().tasksReducer.tasks || {}
+
+    const lotProcess = processes[lot.process_id]
+
+    for (let i = 0; i < lotProcess.routes.length; i++) {
+        const loadStation = routes[lotProcess.routes[i]].load.station
+        if (loadStation === stationID) {
+            prevRoute = routes[lotProcess.routes[i - 1]]
+            break
+        }
+    }
+    return prevRoute
+}
+
 export const isPrevStationAWarehouse = (lot, currStationID) => {
 
     const processes = store.getState().processesReducer.processes || {}
@@ -468,8 +484,7 @@ export const isPrevStationAWarehouse = (lot, currStationID) => {
             const currentRoute = routes[lotProcess.routes[i]]
             const loadStationID = currentRoute.load.station
             const loadStation = stations[loadStationID]
-            console.log('QQQQ load station', loadStation)
-            if(loadStation?.type === 'warehouse'){
+            if (loadStation?.type === 'warehouse') {
                 return true
             }
             else {

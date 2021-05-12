@@ -19,7 +19,7 @@ import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData, isPrevStationAWarehouse } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData, isPrevStationAWarehouse, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
@@ -51,7 +51,8 @@ const DashboardLotPage = (props) => {
         stationID,
         dashboardID,
         subPage,
-        lotID
+        lotID,
+        warehouse,
     } = params || {}
 
     // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
@@ -73,6 +74,11 @@ const DashboardLotPage = (props) => {
             // If its the last station in the process, then the only option is to finish the lot
             if (processStations[processStations.length - 1] === stationID) {
                 setIsFinish(true)
+            }
+            // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
+            else if (!!warehouse) {
+                const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
+                setCurrentTask(returnedRoute)
             }
             else {
                 const returnedRoute = getCurrentRouteForLot(currentLot, stationID)
@@ -265,12 +271,12 @@ const DashboardLotPage = (props) => {
         <styled.LotContainer>
             <styled.LotHeader>
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
-                <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
             <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}
+                warehouse={!!warehouse}
             />
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}

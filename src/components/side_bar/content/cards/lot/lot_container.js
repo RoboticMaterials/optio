@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
 // components internal
 import Lot from "./lot"
@@ -6,10 +6,11 @@ import Lot from "./lot"
 // functions external
 import PropTypes from 'prop-types'
 
-import {useSelector} from "react-redux"
+import { useSelector } from "react-redux"
 
 // utils
-import {getBinQuantity, getCustomFields, getLotTotalQuantity} from "../../../../../methods/utils/lot_utils"
+import { getBinQuantity, getCustomFields, getLotTotalQuantity } from "../../../../../methods/utils/lot_utils"
+import { getPreviousWarehouseStation } from '../../../../../methods/utils/processes_utils'
 
 const LotContainer = (props) => {
 
@@ -18,9 +19,9 @@ const LotContainer = (props) => {
         binId,
         enableFlagSelector,
         containerStyle,
+        warehouse,
         ...rest
     } = props
-
 
     const lot = useSelector(state => { return state.cardsReducer.cards[lotId] }) || {}
     const {
@@ -57,7 +58,14 @@ const LotContainer = (props) => {
     }, [bins])
 
     useEffect(() => {
-        setCount(getBinQuantity({bins}, binId))
+        // If its a warehouse, use the prev station
+        if (!!warehouse) {
+            setCount(getBinQuantity(lot, getPreviousWarehouseStation(processId, station._id)._id))
+        }
+        else {
+            setCount(getBinQuantity({ bins }, binId))
+
+        }
     }, [bins, binId])
 
 
@@ -80,7 +88,7 @@ const LotContainer = (props) => {
             }}
 
             {...rest}
-            containerStyle={{width: '80%', margin: '.5rem auto .5rem auto', ...containerStyle}}
+            containerStyle={{ width: '80%', margin: '.5rem auto .5rem auto', ...containerStyle }}
         />
     )
 }

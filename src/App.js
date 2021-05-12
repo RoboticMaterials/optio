@@ -182,7 +182,7 @@ const App = () => {
                                       }
 
                                       <Route
-                                          path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
+                                          path={["/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?", '/']}
                                           component={HILModal}
                                       />
 

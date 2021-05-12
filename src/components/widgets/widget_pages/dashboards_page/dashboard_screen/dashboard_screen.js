@@ -311,7 +311,6 @@ const DashboardScreen = (props) => {
                 showEditButton={true}
                 currentDashboard={currentDashboard}
                 handleOperationSelected={(op) => {
-                    console.log('QQQQ op', op)
                     setSelectedOperation(op)
                 }}
                 handleTaskAlert={() => {
