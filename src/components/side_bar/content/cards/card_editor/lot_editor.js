@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useContext, useCallback} from "react";
 
 // api
-import {getCardsCount} from "../../../../../api/cards_api";
+import {getCardsCount} from "../../../../../api/lots";
 
 // external functions
 import PropTypes from "prop-types";

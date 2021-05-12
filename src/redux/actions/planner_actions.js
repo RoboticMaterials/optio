@@ -5,7 +5,7 @@ import {
   POST_DASHBOARDS_FAILURE,
 } from '../types/dashboard_types'
 
-import * as api from '../../api/dashboards_api'
+import * as api from '../../api/dashboards'
 
 export const getPlan = (condition) => {
   return async dispatch => {

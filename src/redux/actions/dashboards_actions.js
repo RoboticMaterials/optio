@@ -40,7 +40,7 @@ import {
 
 import uuid from 'uuid'
 
-import * as api from '../../api/dashboards_api'
+import * as api from '../../api/dashboards'
 import { dashboardsSchema } from '../../normalizr/schema';
 import { getLoadStationId, getRouteProcesses, getUnloadStationId } from "../../methods/utils/route_utils";
 import { willRouteDeleteBreakProcess } from "../../methods/utils/processes_utils";

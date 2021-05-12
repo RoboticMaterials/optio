@@ -13,7 +13,7 @@ import {
 } from '../types/data_types';
 
 import { api_action } from './index';
-import * as api from '../../api/cards_api'
+import * as api from '../../api/lots'
 
 import log from "../../logger"
 import {convertArrayToObject} from "../../methods/utils/utils";

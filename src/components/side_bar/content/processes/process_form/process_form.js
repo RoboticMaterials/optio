@@ -102,9 +102,11 @@ const ProcessForm = (props) => {
 			...remainingValues
 		} = values
 
+		let routeIds = []
 		// perform any updates for routes
 		for (const currRoute of remainingValues.routes) {
 			const res = await dispatchSaveFormRoute(currRoute)
+			if(res?.id) routeIds.push(res.id)
 			console.log('resresres',res)
 			cleanRoute(currRoute)
 		}
@@ -116,7 +118,7 @@ const ProcessForm = (props) => {
 		if (remainingValues.new) {
 			await dispatchPostProcess({
 				...remainingValues,
-				routes: mappedRoutes,
+				routes: routeIds,
 				mapId: currentMap.id,
 			})
 		}

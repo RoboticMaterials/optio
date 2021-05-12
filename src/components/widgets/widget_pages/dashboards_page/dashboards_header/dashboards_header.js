@@ -50,7 +50,7 @@ const DashboardsHeader = (props) => {
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
 
-    const name = currentDashboard.name.length > 0 ? currentDashboard.name : stations[currentDashboard.station].name
+    const name = currentDashboard?.name?.length > 0 ? currentDashboard?.name : stations[currentDashboard?.station]?.name
 
     useEffect(() => {
         return () => {

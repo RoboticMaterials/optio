@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { postCard } from "../../../../../redux/actions/card_actions";
 
 // api
-import { getCardsCount } from "../../../../../api/cards_api";
+import { getCardsCount } from "../../../../../api/lots";
 
 // components internal
 import LotEditor from "./lot_editor"

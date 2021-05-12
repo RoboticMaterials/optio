@@ -25,7 +25,7 @@ import {
 
 } from '../types/notifications_types'
 
-import * as api from '../../api/dashboards_api'
+import * as api from '../../api/dashboards'
 import { dashboardsSchema } from '../../normalizr/schema';
 
 

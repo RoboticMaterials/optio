@@ -60,7 +60,7 @@ export async function postStation(station: any) {
     }
 }
 
-export async function putStation(station, ID) {
+export async function putStation(station: any, ID: string) {
     try {
         const {
             __typename,
