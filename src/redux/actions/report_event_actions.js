@@ -14,7 +14,7 @@ import {
 } from '../types/data_types';
 
 import { api_action } from './index';
-import * as api from '../../api/report_events_api'
+import * as api from '../../api/reportEvents'
 
 // import schema
 // import { scheduleSchema, schedulesSchema } from '../../normalizr/schedules_schema';

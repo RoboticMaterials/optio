@@ -27,6 +27,8 @@ export const parseItem = (obj, keys) => {
 export const stringifyItem = (obj, keys) => {
   let tempObj = {}
 
+  console.log('datautils', obj, keys);
+
   for(const entry of Object.entries(obj)) {
     const [key, value] = entry
 
@@ -51,6 +53,7 @@ export const RESOURCE_JSON_KEYS = {
   [dataTypes.LOT_TEMPLATE]: ["displayNames", "fields"],
   [dataTypes.SETTINGS]: ["loggers", "shiftDetails", "timezone"],
   [dataTypes.STATION]: ["children", "dashboards"],
+  [dataTypes.REPORT_EVENT]: [],
 }
 
 // parser for each resource
