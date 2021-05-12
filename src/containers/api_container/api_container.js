@@ -248,52 +248,52 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 300000))
                 break;
 
             case 'locations':
-                setPageDataInterval(setInterval(() => loadLocationsData(), 5000))
+                setPageDataInterval(setInterval(() => loadLocationsData(), 500000))
                 break
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                setPageDataInterval(setInterval(() => loadTasksData(), 100000))
                 break;
 
             case 'settings':
-                setPageDataInterval(setInterval(() => loadSettingsData(), 10000))
+                setPageDataInterval(setInterval(() => loadSettingsData(), 100000))
                 break;
 
             case 'lots':
-                setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                setPageDataInterval(setInterval(() => loadCardsData(), 100000))
                 break
 
             case 'processes':
                 if (data2 === "lots") {
                     loadCardsData(data1) // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(data1), 10000))
+                    setPageDataInterval(setInterval(() => loadCardsData(data1), 100000))
                 }
                 else if (data1 === "timeline") {
                     loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                    setPageDataInterval(setInterval(() => loadCardsData(), 100000))
                 }
                 else if (data1 === "summary") {
                     loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                    setPageDataInterval(setInterval(() => loadCardsData(), 100000))
                 }
                 else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    setPageDataInterval(setInterval(() => loadTasksData(), 100000))
                 }
 
                 break
 
             case 'more':
-                setPageDataInterval(setInterval(() => loadMoreData(), 10000))
+                setPageDataInterval(setInterval(() => loadMoreData(), 100000))
                 // pageDataInterval = ;
                 break;
 
             default:
                 if(!mapViewEnabled) {
-                    setPageDataInterval(setInterval(() => loadListViewData(), 5000))
+                    setPageDataInterval(setInterval(() => loadListViewData(), 500000))
                 }
                 break;
         }

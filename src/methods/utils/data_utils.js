@@ -42,7 +42,7 @@ export const stringifyItem = (obj, keys) => {
 }
 
 // keys that are just saved as JSON chunks for each resource
-const RESOURCE_JSON_KEYS = {
+export const RESOURCE_JSON_KEYS = {
   [dataTypes.PROCESS]: ["routes", "broken"],
   [dataTypes.CARD]: ["templateValues", "bins", "flags"],
   [dataTypes.TASK]: ["device_types", "processes", "load", "unload", "route_object"],

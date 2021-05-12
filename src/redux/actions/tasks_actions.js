@@ -34,7 +34,7 @@ import {
 
 import { deepCopy } from '../../methods/utils/utils';
 
-import * as api from '../../api/tasks_api'
+import * as api from '../../api/routes'
 import * as processesActions from "./processes_actions";
 import * as dashboardsActions from "./dashboards_actions";
 
@@ -57,7 +57,7 @@ export const getTasks = () => {
 
         try {
             onStart();
-            const tasks = await api.getTasks();
+            const tasks = await api.getRoutes();
 
             const normalizedTasks = {}
             tasks.map((task) => {
@@ -128,7 +128,7 @@ export const postTask = (task) => {
             if(task.changed) {
                 delete task.changed
             }
-            const newTask = await api.postTask(task);
+            const newTask = await api.postRoute(task);
             return onSuccess(newTask);
         } catch (error) {
             return onError(error);
@@ -163,7 +163,7 @@ export const putTask = (task, ID) => {
                 delete taskCopy.changed
             }
             // delete taskCopy.id
-            const updateTask = await api.putTask(taskCopy, ID);
+            const updateTask = await api.putRoute(taskCopy, ID);
             return onSuccess(updateTask)
         } catch (error) {
             return onError(error)
@@ -190,7 +190,7 @@ export const deleteTask = (ID) => {
 
         try {
             onStart();
-            await api.deleteTask(ID);
+            await api.deleteRoute(ID);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -222,13 +222,15 @@ export const putRouteClean = (route, routeId) => {
     return async (dispatch, getState) => {
 
         // put task
-        await dispatch(putTask(route, routeId));
+        const result = await dispatch(putTask(route, routeId));
 
         // remove buttons associated with route at dashboards at the wrong station
         await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
 
         // handle adding buttons to dashboards
         await dispatch(dashboardsActions.addRouteToDashboards(route))
+
+        return result
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -239,13 +241,15 @@ export const postRouteClean = (route) => {
     return async (dispatch, getState) => {
 
         // post route
-        await dispatch(postTask(route));
+        const posted = await dispatch(postTask(route));
 
         // remove buttons associated with route at dashboards at the wrong station
         await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
 
         // handle adding buttons to dashboards
         await dispatch(dashboardsActions.addRouteToDashboards(route))
+
+        return posted
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -277,12 +281,12 @@ export const saveFormRoute = (formRoute) => {
 
         // create new route
         if(isNew) {
-            await dispatch(postRouteClean(payload))
+            return await dispatch(postRouteClean(payload))
         }
 
         // update existing route
         else {
-            await dispatch(putRouteClean(payload, payload.id))
+            return await dispatch(putRouteClean(payload, payload.id))
         }
     }
 }

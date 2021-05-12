@@ -93,7 +93,7 @@ class Select extends Component {
   };
 
   saveList = node => {
-    this.list = node;
+    this.listRoutes = node;
   };
 
   scrollToSelected(duration) {

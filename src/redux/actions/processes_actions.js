@@ -23,7 +23,7 @@ import {
     EDITING_PROCESS,
 } from '../types/processes_types'
 
-import * as api from '../../api/processes_api'
+import * as api from '../../api/processes'
 import { processesSchema } from '../../normalizr/schema';
 import { deepCopy } from '../../methods/utils/utils'
 import {putDashboard} from "./dashboards_actions";

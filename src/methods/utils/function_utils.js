@@ -18,3 +18,7 @@ export const throttle = (func, limit) => {
         }
     }
 }
+
+export const isFunction = (functionToCheck) => {
+    return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+}

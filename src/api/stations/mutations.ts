@@ -1,27 +1,48 @@
 import {gql} from "@apollo/client";
+import {idType} from "aws-sdk/clients/iam";
 
 
-const typeDefs = gql`
-  # Your schema will go here
-  input StationInput {
-    name: String!
-    schema: String!
-    type: String!
-    pos_x: Float
-    pos_y: Float
-    rotation: Int!
-    x: Float!
-    y: Float!
-    mapId: String!
-    children: [String]!
-    dashboards: [String]!
-  }
-`;
-
-
-export const createStation = gql`mutation CreateStation($input: StationInput!) {
-  createStation(input: $input) {
-    id
-    name
-  }
+export const createStation = gql`mutation createStation($input: StationInput!) {
+    createStation(input: $input) {
+        dashboards
+        id
+        name
+        children
+        mapId
+        organizationId
+        pos_x
+        pos_y
+        rotation
+        schema
+        type
+        x
+        y
+    }
 }`
+
+export const updateStation = gql`mutation updateStation($input: StationUpdateInput!) {
+    updateStation(input: $input) {
+        children
+        y
+        x
+        type
+        schema
+        rotation
+        pos_y
+        pos_x
+        organizationId
+        name
+        mapId
+        id
+        dashboards
+    }
+}
+`
+export const deleteStation = gql`mutation deleteStation($id: ID!, $organizationId: ID!) {
+    deleteStation(id: $id, organizationId: $organizationId) {
+        children,
+        name
+    }
+}
+`
+

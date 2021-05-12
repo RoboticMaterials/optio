@@ -40,7 +40,7 @@ import { deepCopy } from '../../methods/utils/utils';
 import { stationsSchema } from '../../normalizr/schema'
 
 // Import API
-import * as api from '../../api/stations/stations_api'
+import * as api from '../../api/stations'
 
 // Import Store
 import store from '../store/index'

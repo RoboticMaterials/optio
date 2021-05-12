@@ -43,6 +43,17 @@ const authLink = setContext((_, { headers }) => {
 	}
 });
 
+const defaultOptions = {
+	watchQuery: {
+		fetchPolicy: 'no-cache',
+		errorPolicy: 'ignore',
+	},
+	query: {
+		fetchPolicy: 'no-cache',
+		errorPolicy: 'all',
+	},
+}
+
 const apolloClient = new ApolloClient({
 	// Provide required constructor fields
 	cache: cache,
@@ -53,11 +64,7 @@ const apolloClient = new ApolloClient({
 	name: 'react-web-client',
 	version: '1.3',
 	queryDeduplication: false,
-	defaultOptions: {
-		watchQuery: {
-			fetchPolicy: 'cache-and-network',
-		},
-	},
+	defaultOptions
 });
 
 export default apolloClient
