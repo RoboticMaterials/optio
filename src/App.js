@@ -209,7 +209,7 @@ const App = () => {
                                                 :
 
                                                 <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    path={["/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?", '/']}
                                                     component={ListView}
                                                 />
 
