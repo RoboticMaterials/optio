@@ -139,7 +139,6 @@ const HILModals = (props) => {
             track_quantity
         } = task || {}
 
-        console.log("hilLoadUnload", hilLoadUnload)
         if (hilLoadUnload === 'load') {
             if (track_quantity && content !== CONTENT.QUANTITY_SELECTOR) {
                 setContent(CONTENT.QUANTITY_SELECTOR)

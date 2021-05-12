@@ -19,10 +19,10 @@ import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData, isPrevStationAWarehouse, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations, getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from '../../../../../../methods/utils/utils'
 
@@ -90,7 +90,7 @@ const DashboardLotPage = (props) => {
             // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {
                 const quantity = getBinQuantity(lot, stationID)
-                if ((!quantity || (quantity <= 0)) && !isPrevStationAWarehouse(lot, stationID)) {
+                if ((!quantity || (quantity <= 0)) && !getPreviousWarehouseStation(lot.process_id, stationID)) {
                     onBack()
                 }
             }

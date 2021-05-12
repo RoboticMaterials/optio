@@ -469,27 +469,3 @@ export const getPreviousRouteForLot = (lot, stationID) => {
     }
     return prevRoute
 }
-
-export const isPrevStationAWarehouse = (lot, currStationID) => {
-
-    const processes = store.getState().processesReducer.processes || {}
-    const routes = store.getState().tasksReducer.tasks || {}
-    const stations = store.getState().stationsReducer.stations || {}
-
-    const lotProcess = processes[lot.process_id]
-
-    for (let i = 0; i < lotProcess.routes.length; i++) {
-        const unloadStation = routes[lotProcess.routes[i]].unload.station
-        if (unloadStation === currStationID) {
-            const currentRoute = routes[lotProcess.routes[i]]
-            const loadStationID = currentRoute.load.station
-            const loadStation = stations[loadStationID]
-            if (loadStation?.type === 'warehouse') {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-    }
-}
