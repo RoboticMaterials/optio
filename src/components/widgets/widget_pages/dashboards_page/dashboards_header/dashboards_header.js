@@ -32,7 +32,7 @@ const DashboardsHeader = (props) => {
         showSaveButton,
         currentDashboard,
         onBack,
-        onLockClick,
+        handleToggleLock,
         locked,
         onSave,
         handleOperationSelected,
@@ -62,26 +62,12 @@ const DashboardsHeader = (props) => {
         <styled.ColumnContainer>
 
             <styled.Header>
-                {showBackButton &&
-                    <styled.LockIcon
-                        styled={{ marginRight: locked ? '1rem' : '.68rem', }}
-                        className={!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
-                        onClick={onLockClick}
-                        locked={locked}
-                        data-tip
-                        data-for={toolTipId}
-                    >
-                        <ReactTooltip id={toolTipId}>
-                            <styled.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</styled.LockContainer>
-                        </ReactTooltip>
-                    </styled.LockIcon>
-                }
 
-                {showBackButton &&
+            { /*  {showBackButton &&
                     <BackButton styled={{ order: '1' }} containerStyle={{}}
                         onClick={onBack}
                     />
-                }
+                }*/}
 
                 <Button
                     schema="dashboards"
@@ -97,8 +83,30 @@ const DashboardsHeader = (props) => {
                 <styled.PaceContainer
                     color={color}
                 >
+
                     <styled.PaceText color={color}>89/100</styled.PaceText>
                 </styled.PaceContainer>
+
+                {!mobileMode &&
+                  <styled.LockIcon
+                      className={!currentDashboard.locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                      onClick={handleToggleLock}
+                      locked={locked}
+                      data-tip
+                      data-for={toolTipId}
+                  >
+                      <ReactTooltip id={toolTipId}>
+                        {!currentDashboard.locked ?
+                          <styled.LockContainer>Click to lock the dashboard. This will hide the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                          :
+                          <styled.LockContainer>Click to unlock the dashboard. This will show the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                        }
+
+                      </ReactTooltip>
+                  </styled.LockIcon>
+                }
+
+
 
                 {showOperationsMenu &&
                     <DashboardOperationsMenu

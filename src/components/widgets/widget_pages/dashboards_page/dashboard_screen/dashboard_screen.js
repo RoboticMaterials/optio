@@ -163,6 +163,30 @@ const DashboardScreen = (props) => {
 
     }
 
+    const handleToggleLock = async () => {
+
+      if(!!currentDashboard.locked){
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "Dashboard has been successfully unlocked!",
+        })
+      }
+      else {
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "Dashboard has been successfully locked!",
+        })
+      }
+
+      const updatedDashboard = {
+        ...currentDashboard,
+        locked: !currentDashboard.locked
+      }
+      dispatchPutDashboard(updatedDashboard,currentDashboard._id?.$oid)
+
+      return setTimeout(() => setAddTaskAlert(null), 2500)
+    }
+
     const renderModal = () => {
         switch (selectedOperation) {
             case 'report':
@@ -283,6 +307,7 @@ const DashboardScreen = (props) => {
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
+                handleToggleLock = {()=>handleToggleLock()}
                 showEditButton={true}
                 currentDashboard={currentDashboard}
                 handleOperationSelected={(op) => {
