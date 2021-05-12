@@ -13,7 +13,7 @@ export const parseItem = (obj, keys) => {
       ...rest
     } = tempObj || {}
 
-    parsedObj[key] = JSON.parse(currVal)
+    if(currVal) parsedObj[key] = JSON.parse(currVal)
     tempObj = {...rest}
   }
 

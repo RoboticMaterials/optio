@@ -49,8 +49,8 @@ export async function postProcesses(process) {
 
         const {
             id,
-            showSummary,
-            showStatistics,
+            // showSummary,
+            // showStatistics,
             ...rest
         } = process || {}
 

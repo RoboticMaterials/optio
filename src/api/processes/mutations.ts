@@ -28,7 +28,8 @@ export const updateProcess = gql`mutation updateProcess($input: ProcessUpdateInp
 
 export const deleteProcess = gql`mutation deleteProcess($id: ID!, $organizationId: ID!) {
     deleteProcess(id: $id, organizationId: $organizationId) {
-        name
+        id
+        organizationId
     }
 }
 `

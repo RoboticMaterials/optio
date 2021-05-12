@@ -205,10 +205,10 @@ export const deleteRouteClean = (routeId) => {
     return async (dispatch, getState) => {
 
         // remove route from all dashboards
-        await dispatch(dashboardsActions.removeRouteFromAllDashboards(routeId))
+        // await dispatch(dashboardsActions.removeRouteFromAllDashboards(routeId))
 
         // remove route from all processes
-        await dispatch(processesActions.removeRouteFromAllProcesses(routeId))
+        // await dispatch(processesActions.removeRouteFromAllProcesses(routeId))
 
         // delete route
         await dispatch(deleteTask(routeId));
@@ -225,10 +225,10 @@ export const putRouteClean = (route, routeId) => {
         const result = await dispatch(putTask(route, routeId));
 
         // remove buttons associated with route at dashboards at the wrong station
-        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+        // await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
 
         // handle adding buttons to dashboards
-        await dispatch(dashboardsActions.addRouteToDashboards(route))
+        // await dispatch(dashboardsActions.addRouteToDashboards(route))
 
         return result
     }
@@ -244,10 +244,10 @@ export const postRouteClean = (route) => {
         const posted = await dispatch(postTask(route));
 
         // remove buttons associated with route at dashboards at the wrong station
-        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+        // await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
 
         // handle adding buttons to dashboards
-        await dispatch(dashboardsActions.addRouteToDashboards(route))
+        // await dispatch(dashboardsActions.addRouteToDashboards(route))
 
         return posted
     }
