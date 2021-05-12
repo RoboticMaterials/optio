@@ -37,7 +37,6 @@ const SummaryZone = ((props) => {
     const routes = useSelector(state => state.tasksReducer.tasks)
 
     const renderProcessCycleTime = (process) => {
-        console.log('QQQQ process', process)
         const processStations = Object.keys(getProcessStations(process, routes))
 
         let totalCycleTime = moment().set({ 'hour': '00', 'minute': '00', 'second': '00' })
@@ -45,12 +44,10 @@ const SummaryZone = ((props) => {
             const station = stations[stationID]
             if (!!station.cycle_time) {
                 const splitVal = station.cycle_time.split(':')
-                console.log('QQQQ split val', splitVal)
                 totalCycleTime.add(parseInt(splitVal[0]), 'hours').add(parseInt(splitVal[1]), 'minutes').add(parseInt(splitVal[2]), 'seconds')
 
             }
         })
-        console.log('QQQQ tot hour', totalCycleTime.hour())
         if (totalCycleTime.hour() > 0 || totalCycleTime.minute() > 0 || totalCycleTime.second() > 0) {
 
             return (
