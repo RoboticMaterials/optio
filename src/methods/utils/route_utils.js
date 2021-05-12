@@ -43,7 +43,7 @@ export const autoGenerateRoute = (obj) => {
                position: routeConfirmationLocation,
               },
         unload: {...defaultTask.unload},
-        obj: obj ? currentMap.id : currentMap.id,
+        obj: obj,
         id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }

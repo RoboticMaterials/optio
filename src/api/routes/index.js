@@ -38,7 +38,7 @@ export async function postRoute(task) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.createRoute,
-            {input: stringifier({...rest, obj: ""})},
+            {input: stringifier(rest)},
             parser
         )
 
