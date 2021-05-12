@@ -90,7 +90,7 @@ const DashboardLotPage = (props) => {
             // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {
                 const quantity = getBinQuantity(lot, stationID)
-                if ((!quantity || (quantity <= 0)) && !getPreviousWarehouseStation(lot.process_id, stationID)) {
+                if ((!quantity || (quantity <= 0)) && !warehouse) {
                     onBack()
                 }
             }
