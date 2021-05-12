@@ -8,5 +8,7 @@ export const listProcesses = gql`query listProcesses {
         broken
         routes
         mapId
+        showSummary
+        showStatistics
     }
 }`

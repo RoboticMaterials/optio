@@ -12,6 +12,8 @@ export const createProcess = gql`mutation createProcess($input: ProcessInput!) {
         broken
         routes
         mapId
+        showSummary
+        showStatistics
     }
 }`
 
@@ -22,6 +24,8 @@ export const updateProcess = gql`mutation updateProcess($input: ProcessUpdateInp
         broken
         routes
         mapId
+        showSummary
+        showStatistics
     }
 }`
 

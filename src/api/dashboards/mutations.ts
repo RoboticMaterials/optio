@@ -11,7 +11,6 @@ export const createDashboard = gql`mutation createDashboard($input: DashboardInp
 export const updateDashboard = gql`mutation updateDashboard($input: DashboardUpdateInput!) {
     updateDashboard(input: $input) {
         id
-        organizationId
         data
     }
 }`
