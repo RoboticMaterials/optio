@@ -279,7 +279,6 @@ const HILModals = (props) => {
         else {
             newMax = getBinQuantity(lot, stationId || loadStationId)
         }
-        console.log('QQQQ new max', newMax)
 
         if (parseInt(maxQuantity) !== parseInt(newMax)) setMaxQuantity(newMax)
     }, [lot, stationId, loadStationId, maxQuantity]);
