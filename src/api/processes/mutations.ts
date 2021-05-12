@@ -18,7 +18,6 @@ export const createProcess = gql`mutation createProcess($input: ProcessInput!) {
 export const updateProcess = gql`mutation updateProcess($input: ProcessUpdateInput!) {
     updateProcess(input: $input) {
         id
-        organizationId
         name
         broken
         routes

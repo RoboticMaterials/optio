@@ -127,7 +127,7 @@ const ProcessForm = (props) => {
 		else {
 			await dispatchPutProcess({
 				...remainingValues,
-				routes: mappedRoutes,
+				routes: routeIds,
 				mapId: currentMap.id,
 			})
 		}

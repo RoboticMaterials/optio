@@ -129,7 +129,6 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            delete dashbaordCopy.id
             const updateDashboard = await api.putDashboards(dashbaordCopy, ID);
             return onSuccess(updateDashboard)
         } catch (error) {
