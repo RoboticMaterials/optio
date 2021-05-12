@@ -1,11 +1,14 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const onDeltaStation = /* GraphQL */ `
-  subscription OnDeltaStation($id: ID) {
-    onDeltaStation(id: $id) {
+  subscription OnDeltaStation {
+    onDeltaStation {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -17,16 +20,16 @@ export const onDeltaStation = /* GraphQL */ `
       mapId
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaPosition = /* GraphQL */ `
-  subscription OnDeltaPosition($id: ID) {
-    onDeltaPosition(id: $id) {
+  subscription OnDeltaPosition {
+    onDeltaPosition {
       id
       organizationId
+      createdAt
+      updatedAt
       change_key
       mapId
       name
@@ -38,16 +41,16 @@ export const onDeltaPosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaTask = /* GraphQL */ `
-  subscription OnDeltaTask($id: ID) {
-    onDeltaTask(id: $id) {
+  subscription OnDeltaTask {
+    onDeltaTask {
       id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -60,69 +63,66 @@ export const onDeltaTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaProcess = /* GraphQL */ `
-  subscription OnDeltaProcess($id: ID) {
-    onDeltaProcess(id: $id) {
+  subscription OnDeltaProcess {
+    onDeltaProcess {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       mapId
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaObject = /* GraphQL */ `
-  subscription OnDeltaObject($id: ID) {
-    onDeltaObject(id: $id) {
+  subscription OnDeltaObject {
+    onDeltaObject {
       id
       organizationId
+      createdAt
+      updatedAt
       description
       mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaCard = /* GraphQL */ `
-  subscription OnDeltaCard($id: ID) {
-    onDeltaCard(id: $id) {
+  subscription OnDeltaCard {
+    onDeltaCard {
       id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
       processId
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaDevice = /* GraphQL */ `
-  subscription OnDeltaDevice($id: ID) {
-    onDeltaDevice(id: $id) {
+  subscription OnDeltaDevice {
+    onDeltaDevice {
       id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
-      currentTaskQueueId
+      current_task_queue_id
       dashboards
       device_model
       device_name
@@ -132,36 +132,43 @@ export const onDeltaDevice = /* GraphQL */ `
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeltaStatus = /* GraphQL */ `
-  subscription OnDeltaStatus($id: ID) {
-    onDeltaStatus(id: $id) {
+  subscription OnDeltaStatus {
+    onDeltaStatus {
       id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
-export const onDeltaTasQueue = /* GraphQL */ `
-  subscription OnDeltaTasQueue($id: ID) {
-    onDeltaTasQueue(id: $id) {
+export const onDeltaTaskQueue = /* GraphQL */ `
+  subscription OnDeltaTaskQueue {
+    onDeltaTaskQueue {
       id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
       taskId
       custom_task
-      createdAt
-      updatedAt
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -170,17 +177,17 @@ export const onCreateUser = /* GraphQL */ `
     onCreateUser {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -190,17 +197,17 @@ export const onUpdateUser = /* GraphQL */ `
     onUpdateUser {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -210,17 +217,17 @@ export const onDeleteUser = /* GraphQL */ `
     onDeleteUser {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -230,16 +237,13 @@ export const onCreateOrganization = /* GraphQL */ `
     onCreateOrganization {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -248,16 +252,13 @@ export const onUpdateOrganization = /* GraphQL */ `
     onUpdateOrganization {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -266,16 +267,13 @@ export const onDeleteOrganization = /* GraphQL */ `
     onDeleteOrganization {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -284,6 +282,8 @@ export const onCreateStation = /* GraphQL */ `
     onCreateStation {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -295,8 +295,6 @@ export const onCreateStation = /* GraphQL */ `
       mapId
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -305,6 +303,8 @@ export const onUpdateStation = /* GraphQL */ `
     onUpdateStation {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -316,8 +316,6 @@ export const onUpdateStation = /* GraphQL */ `
       mapId
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -326,6 +324,8 @@ export const onDeleteStation = /* GraphQL */ `
     onDeleteStation {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -337,8 +337,51 @@ export const onDeleteStation = /* GraphQL */ `
       mapId
       children
       dashboards
+    }
+  }
+`;
+export const onCreateStationEvent = /* GraphQL */ `
+  subscription OnCreateStationEvent {
+    onCreateStationEvent {
+      id
+      organizationId
       createdAt
       updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const onUpdateStationEvent = /* GraphQL */ `
+  subscription OnUpdateStationEvent {
+    onUpdateStationEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const onDeleteStationEvent = /* GraphQL */ `
+  subscription OnDeleteStationEvent {
+    onDeleteStationEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
     }
   }
 `;
@@ -347,6 +390,8 @@ export const onCreatePosition = /* GraphQL */ `
     onCreatePosition {
       id
       organizationId
+      createdAt
+      updatedAt
       change_key
       mapId
       name
@@ -358,8 +403,6 @@ export const onCreatePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -368,6 +411,8 @@ export const onUpdatePosition = /* GraphQL */ `
     onUpdatePosition {
       id
       organizationId
+      createdAt
+      updatedAt
       change_key
       mapId
       name
@@ -379,8 +424,6 @@ export const onUpdatePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -389,6 +432,8 @@ export const onDeletePosition = /* GraphQL */ `
     onDeletePosition {
       id
       organizationId
+      createdAt
+      updatedAt
       change_key
       mapId
       name
@@ -400,8 +445,6 @@ export const onDeletePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -410,6 +453,8 @@ export const onCreateTask = /* GraphQL */ `
     onCreateTask {
       id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -422,8 +467,6 @@ export const onCreateTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -432,6 +475,8 @@ export const onUpdateTask = /* GraphQL */ `
     onUpdateTask {
       id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -444,8 +489,6 @@ export const onUpdateTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -454,6 +497,8 @@ export const onDeleteTask = /* GraphQL */ `
     onDeleteTask {
       id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -466,8 +511,6 @@ export const onDeleteTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -476,12 +519,12 @@ export const onCreateProcess = /* GraphQL */ `
     onCreateProcess {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       mapId
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -490,12 +533,12 @@ export const onUpdateProcess = /* GraphQL */ `
     onUpdateProcess {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       mapId
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -504,12 +547,12 @@ export const onDeleteProcess = /* GraphQL */ `
     onDeleteProcess {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       mapId
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -518,14 +561,14 @@ export const onCreateObject = /* GraphQL */ `
     onCreateObject {
       id
       organizationId
+      createdAt
+      updatedAt
       description
       mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -534,14 +577,14 @@ export const onUpdateObject = /* GraphQL */ `
     onUpdateObject {
       id
       organizationId
+      createdAt
+      updatedAt
       description
       mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -550,14 +593,14 @@ export const onDeleteObject = /* GraphQL */ `
     onDeleteObject {
       id
       organizationId
+      createdAt
+      updatedAt
       description
       mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -566,18 +609,15 @@ export const onCreateCard = /* GraphQL */ `
     onCreateCard {
       id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
       processId
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -586,18 +626,15 @@ export const onUpdateCard = /* GraphQL */ `
     onUpdateCard {
       id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
       processId
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -606,18 +643,165 @@ export const onDeleteCard = /* GraphQL */ `
     onDeleteCard {
       id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
       processId
-      totalQuantity
-      processName
+    }
+  }
+`;
+export const onCreateCardEvent = /* GraphQL */ `
+  subscription OnCreateCardEvent {
+    onCreateCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      username
       createdAt
       updatedAt
+      delta
+    }
+  }
+`;
+export const onUpdateCardEvent = /* GraphQL */ `
+  subscription OnUpdateCardEvent {
+    onUpdateCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const onDeleteCardEvent = /* GraphQL */ `
+  subscription OnDeleteCardEvent {
+    onDeleteCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const onCreateSettings = /* GraphQL */ `
+  subscription OnCreateSettings {
+    onCreateSettings {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const onUpdateSettings = /* GraphQL */ `
+  subscription OnUpdateSettings {
+    onUpdateSettings {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const onDeleteSettings = /* GraphQL */ `
+  subscription OnDeleteSettings {
+    onDeleteSettings {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const onCreateLotTemplate = /* GraphQL */ `
+  subscription OnCreateLotTemplate {
+    onCreateLotTemplate {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
+    }
+  }
+`;
+export const onUpdateLotTemplate = /* GraphQL */ `
+  subscription OnUpdateLotTemplate {
+    onUpdateLotTemplate {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
+    }
+  }
+`;
+export const onDeleteLotTemplate = /* GraphQL */ `
+  subscription OnDeleteLotTemplate {
+    onDeleteLotTemplate {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
     }
   }
 `;
@@ -626,9 +810,11 @@ export const onCreateDevice = /* GraphQL */ `
     onCreateDevice {
       id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
-      currentTaskQueueId
+      current_task_queue_id
       dashboards
       device_model
       device_name
@@ -638,8 +824,6 @@ export const onCreateDevice = /* GraphQL */ `
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -648,29 +832,8 @@ export const onUpdateDevice = /* GraphQL */ `
     onUpdateDevice {
       id
       organizationId
-      battery_percentage
-      connected
-      currentTaskQueueId
-      dashboards
-      device_model
-      device_name
-      distance_to_next_target
-      idle_location
-      map_id
-      position
-      shelf_attached
-      state_text
       createdAt
       updatedAt
-    }
-  }
-`;
-export const onDeleteDevice = /* GraphQL */ `
-  subscription OnDeleteDevice {
-    onDeleteDevice {
-      id
-      _id
-      organizationId
       battery_percentage
       connected
       current_task_queue_id
@@ -679,12 +842,32 @@ export const onDeleteDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
+    }
+  }
+`;
+export const onDeleteDevice = /* GraphQL */ `
+  subscription OnDeleteDevice {
+    onDeleteDevice {
+      id
+      organizationId
       createdAt
       updatedAt
+      battery_percentage
+      connected
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      mapId
+      position
+      shelf_attached
+      state_text
     }
   }
 `;
@@ -692,13 +875,12 @@ export const onCreateStatus = /* GraphQL */ `
   subscription OnCreateStatus {
     onCreateStatus {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -706,13 +888,12 @@ export const onUpdateStatus = /* GraphQL */ `
   subscription OnUpdateStatus {
     onUpdateStatus {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -720,13 +901,12 @@ export const onDeleteStatus = /* GraphQL */ `
   subscription OnDeleteStatus {
     onDeleteStatus {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -734,15 +914,23 @@ export const onCreateTaskQueue = /* GraphQL */ `
   subscription OnCreateTaskQueue {
     onCreateTaskQueue {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
-      createdAt
-      updatedAt
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -750,15 +938,23 @@ export const onUpdateTaskQueue = /* GraphQL */ `
   subscription OnUpdateTaskQueue {
     onUpdateTaskQueue {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
-      createdAt
-      updatedAt
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -766,15 +962,95 @@ export const onDeleteTaskQueue = /* GraphQL */ `
   subscription OnDeleteTaskQueue {
     onDeleteTaskQueue {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const onCreateTaskQueueEvents = /* GraphQL */ `
+  subscription OnCreateTaskQueueEvents {
+    onCreateTaskQueueEvents {
+      id
+      organizationId
       createdAt
       updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const onUpdateTaskQueueEvents = /* GraphQL */ `
+  subscription OnUpdateTaskQueueEvents {
+    onUpdateTaskQueueEvents {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const onDeleteTaskQueueEvents = /* GraphQL */ `
+  subscription OnDeleteTaskQueueEvents {
+    onDeleteTaskQueueEvents {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -782,11 +1058,10 @@ export const onCreateDashboard = /* GraphQL */ `
   subscription OnCreateDashboard {
     onCreateDashboard {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -794,11 +1069,10 @@ export const onUpdateDashboard = /* GraphQL */ `
   subscription OnUpdateDashboard {
     onUpdateDashboard {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -806,11 +1080,10 @@ export const onDeleteDashboard = /* GraphQL */ `
   subscription OnDeleteDashboard {
     onDeleteDashboard {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;

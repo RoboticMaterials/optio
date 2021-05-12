@@ -1,12 +1,75 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-
-lambdaDs.createResolver({
-	typeName: "Mutation",
-	fieldName: `create${typeName}`
-});
-
+export const manageTaskQueue = /* GraphQL */ `
+  mutation ManageTaskQueue($taskQueueItem: AWSJSON!) {
+    manageTaskQueue(taskQueueItem: $taskQueueItem) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const taskStats = /* GraphQL */ `
+  mutation TaskStats($taskId: ID, $organizationId: String!) {
+    taskStats(taskId: $taskId, organizationId: $organizationId) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const stationStats = /* GraphQL */ `
+  mutation StationStats(
+    $stationId: ID!
+    $timeSpan: String!
+    $index: Int!
+    $sortKey: String
+  ) {
+    stationStats(
+      stationId: $stationId
+      timeSpan: $timeSpan
+      index: $index
+      sortKey: $sortKey
+    ) {
+      stationId
+      organizationId
+      date
+      throughPut
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!
@@ -15,17 +78,17 @@ export const createUser = /* GraphQL */ `
     createUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -38,17 +101,17 @@ export const updateUser = /* GraphQL */ `
     updateUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -61,17 +124,17 @@ export const deleteUser = /* GraphQL */ `
     deleteUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -84,16 +147,13 @@ export const createOrganization = /* GraphQL */ `
     createOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -105,16 +165,13 @@ export const updateOrganization = /* GraphQL */ `
     updateOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -126,16 +183,13 @@ export const deleteOrganization = /* GraphQL */ `
     deleteOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -146,8 +200,9 @@ export const createStation = /* GraphQL */ `
   ) {
     createStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -156,11 +211,9 @@ export const createStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -171,8 +224,9 @@ export const updateStation = /* GraphQL */ `
   ) {
     updateStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -181,11 +235,9 @@ export const updateStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -196,8 +248,9 @@ export const deleteStation = /* GraphQL */ `
   ) {
     deleteStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -206,11 +259,63 @@ export const deleteStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
+    }
+  }
+`;
+export const createStationEvent = /* GraphQL */ `
+  mutation CreateStationEvent(
+    $input: CreateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    createStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
       createdAt
       updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const updateStationEvent = /* GraphQL */ `
+  mutation UpdateStationEvent(
+    $input: UpdateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    updateStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const deleteStationEvent = /* GraphQL */ `
+  mutation DeleteStationEvent(
+    $input: DeleteStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    deleteStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
     }
   }
 `;
@@ -221,10 +326,11 @@ export const createPosition = /* GraphQL */ `
   ) {
     createPosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -234,8 +340,6 @@ export const createPosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -246,10 +350,11 @@ export const updatePosition = /* GraphQL */ `
   ) {
     updatePosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -259,8 +364,6 @@ export const updatePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -271,10 +374,11 @@ export const deletePosition = /* GraphQL */ `
   ) {
     deletePosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -284,8 +388,6 @@ export const deletePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -296,12 +398,13 @@ export const createTask = /* GraphQL */ `
   ) {
     createTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -310,8 +413,6 @@ export const createTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -322,12 +423,13 @@ export const updateTask = /* GraphQL */ `
   ) {
     updateTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -336,8 +438,6 @@ export const updateTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -348,12 +448,13 @@ export const deleteTask = /* GraphQL */ `
   ) {
     deleteTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -362,8 +463,6 @@ export const deleteTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -374,14 +473,13 @@ export const createProcess = /* GraphQL */ `
   ) {
     createProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
-      map_id
-      createdAt
-      updatedAt
+      mapId
     }
   }
 `;
@@ -392,14 +490,13 @@ export const updateProcess = /* GraphQL */ `
   ) {
     updateProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
-      map_id
-      createdAt
-      updatedAt
+      mapId
     }
   }
 `;
@@ -410,14 +507,13 @@ export const deleteProcess = /* GraphQL */ `
   ) {
     deleteProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
-      map_id
-      createdAt
-      updatedAt
+      mapId
     }
   }
 `;
@@ -428,16 +524,15 @@ export const createObject = /* GraphQL */ `
   ) {
     createObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -448,16 +543,15 @@ export const updateObject = /* GraphQL */ `
   ) {
     updateObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -468,16 +562,15 @@ export const deleteObject = /* GraphQL */ `
   ) {
     deleteObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -488,20 +581,16 @@ export const createCard = /* GraphQL */ `
   ) {
     createCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
-      process_id
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
+      processId
     }
   }
 `;
@@ -512,20 +601,16 @@ export const updateCard = /* GraphQL */ `
   ) {
     updateCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
-      process_id
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
+      processId
     }
   }
 `;
@@ -536,20 +621,193 @@ export const deleteCard = /* GraphQL */ `
   ) {
     deleteCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       bins
-      dates
-      description
       flags
+      templateValues
       lotNumber
       lotTemplateId
       name
-      process_id
-      totalQuantity
-      processName
+      processId
+    }
+  }
+`;
+export const createCardEvent = /* GraphQL */ `
+  mutation CreateCardEvent(
+    $input: CreateCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    createCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
       createdAt
       updatedAt
+      delta
+    }
+  }
+`;
+export const updateCardEvent = /* GraphQL */ `
+  mutation UpdateCardEvent(
+    $input: UpdateCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    updateCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const deleteCardEvent = /* GraphQL */ `
+  mutation DeleteCardEvent(
+    $input: DeleteCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    deleteCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const createSettings = /* GraphQL */ `
+  mutation CreateSettings(
+    $input: CreateSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    createSettings(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const updateSettings = /* GraphQL */ `
+  mutation UpdateSettings(
+    $input: UpdateSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    updateSettings(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const deleteSettings = /* GraphQL */ `
+  mutation DeleteSettings(
+    $input: DeleteSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    deleteSettings(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+    }
+  }
+`;
+export const createLotTemplate = /* GraphQL */ `
+  mutation CreateLotTemplate(
+    $input: CreateLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    createLotTemplate(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
+    }
+  }
+`;
+export const updateLotTemplate = /* GraphQL */ `
+  mutation UpdateLotTemplate(
+    $input: UpdateLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    updateLotTemplate(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
+    }
+  }
+`;
+export const deleteLotTemplate = /* GraphQL */ `
+  mutation DeleteLotTemplate(
+    $input: DeleteLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    deleteLotTemplate(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      name
+      displayNames
+      fields
     }
   }
 `;
@@ -560,8 +818,9 @@ export const createDevice = /* GraphQL */ `
   ) {
     createDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -570,12 +829,10 @@ export const createDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -586,8 +843,9 @@ export const updateDevice = /* GraphQL */ `
   ) {
     updateDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -596,12 +854,10 @@ export const updateDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -612,8 +868,9 @@ export const deleteDevice = /* GraphQL */ `
   ) {
     deleteDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -622,12 +879,10 @@ export const deleteDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -638,13 +893,12 @@ export const createStatus = /* GraphQL */ `
   ) {
     createStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -655,13 +909,12 @@ export const updateStatus = /* GraphQL */ `
   ) {
     updateStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -672,13 +925,12 @@ export const deleteStatus = /* GraphQL */ `
   ) {
     deleteStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -689,15 +941,23 @@ export const createTaskQueue = /* GraphQL */ `
   ) {
     createTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
-      createdAt
-      updatedAt
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -708,15 +968,23 @@ export const updateTaskQueue = /* GraphQL */ `
   ) {
     updateTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
-      createdAt
-      updatedAt
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -727,15 +995,104 @@ export const deleteTaskQueue = /* GraphQL */ `
   ) {
     deleteTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const createTaskQueueEvents = /* GraphQL */ `
+  mutation CreateTaskQueueEvents(
+    $input: CreateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    createTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      organizationId
       createdAt
       updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const updateTaskQueueEvents = /* GraphQL */ `
+  mutation UpdateTaskQueueEvents(
+    $input: UpdateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    updateTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const deleteTaskQueueEvents = /* GraphQL */ `
+  mutation DeleteTaskQueueEvents(
+    $input: DeleteTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    deleteTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      taskId
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lotId
+      start_time
+      end_time
+      hil_station_id
+      hil_message
     }
   }
 `;
@@ -746,11 +1103,10 @@ export const createDashboard = /* GraphQL */ `
   ) {
     createDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -761,11 +1117,10 @@ export const updateDashboard = /* GraphQL */ `
   ) {
     updateDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -776,11 +1131,10 @@ export const deleteDashboard = /* GraphQL */ `
   ) {
     deleteDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;

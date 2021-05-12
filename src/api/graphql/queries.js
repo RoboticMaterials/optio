@@ -1,6 +1,44 @@
+/* tslint:disable */
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getStationEvent = /* GraphQL */ `
+  query GetStationEvent($id: ID!) {
+    getStationEvent(id: $id) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const listStationEvents = /* GraphQL */ `
+  query ListStationEvents(
+    $filter: ModelStationEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStationEvents(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        object
+        outgoing
+        quantity
+        station
+        time
+      }
+      nextToken
+    }
+  }
+`;
 export const usersbyOrg = /* GraphQL */ `
   query UsersbyOrg(
     $organizationId: ID
@@ -19,9 +57,9 @@ export const usersbyOrg = /* GraphQL */ `
       items {
         id
         organizationId
-        username
         createdAt
         updatedAt
+        username
         owner
       }
       nextToken
@@ -46,9 +84,9 @@ export const usersbyId = /* GraphQL */ `
       items {
         id
         organizationId
-        username
         createdAt
         updatedAt
+        username
         owner
       }
       nextToken
@@ -73,10 +111,10 @@ export const orgsById = /* GraphQL */ `
       items {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
       nextToken
     }
@@ -100,20 +138,15 @@ export const orgsByKey = /* GraphQL */ `
       items {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
       nextToken
     }
   }
 `;
-
-
-
-
-
 export const stationsByOrgId = /* GraphQL */ `
   query StationsByOrgId(
     $organizationId: ID
@@ -131,8 +164,9 @@ export const stationsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         name
         schema
         type
@@ -141,11 +175,39 @@ export const stationsByOrgId = /* GraphQL */ `
         rotation
         x
         y
-        map_id
+        mapId
         children
         dashboards
+      }
+      nextToken
+    }
+  }
+`;
+export const stationEventsByOrgId = /* GraphQL */ `
+  query StationEventsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelStationEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    StationEventsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
         createdAt
         updatedAt
+        object
+        outgoing
+        quantity
+        station
+        time
       }
       nextToken
     }
@@ -168,10 +230,11 @@ export const positionsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         change_key
-        map_id
+        mapId
         name
         parent
         pos_x
@@ -181,8 +244,6 @@ export const positionsByOrgId = /* GraphQL */ `
         type
         x
         y
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -205,12 +266,13 @@ export const tasksByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         device_types
         handoff
         load
-        map_id
+        mapId
         name
         processes
         quantity
@@ -219,8 +281,43 @@ export const tasksByOrgId = /* GraphQL */ `
         unload
         obj
         route_object
+      }
+      nextToken
+    }
+  }
+`;
+export const taskById = /* GraphQL */ `
+  query TaskById(
+    $id: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelTaskFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TaskById(
+      id: $id
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
         createdAt
         updatedAt
+        device_types
+        handoff
+        load
+        mapId
+        name
+        processes
+        quantity
+        track_quantity
+        type
+        unload
+        obj
+        route_object
       }
       nextToken
     }
@@ -243,14 +340,13 @@ export const processesByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         name
         broken
         routes
-        map_id
-        createdAt
-        updatedAt
+        mapId
       }
       nextToken
     }
@@ -273,16 +369,15 @@ export const objectsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         description
-        map_id
+        mapId
         modelName
         name
         dimensions
         quantity
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -305,20 +400,16 @@ export const cardsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         bins
-        dates
-        description
         flags
+        templateValues
         lotNumber
         lotTemplateId
         name
-        process_id
-        totalQuantity
-        processName
-        createdAt
-        updatedAt
+        processId
       }
       nextToken
     }
@@ -326,13 +417,45 @@ export const cardsByOrgId = /* GraphQL */ `
 `;
 export const getCardById = /* GraphQL */ `
   query GetCardById(
-    $organizationId: ID
+    $id: ID
     $sortDirection: ModelSortDirection
     $filter: ModelCardFilterInput
     $limit: Int
     $nextToken: String
   ) {
     getCardById(
+      id: $id
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        bins
+        flags
+        templateValues
+        lotNumber
+        lotTemplateId
+        name
+        processId
+      }
+      nextToken
+    }
+  }
+`;
+export const cardsEventsByOrgId = /* GraphQL */ `
+  query CardsEventsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelCardEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    CardsEventsByOrgId(
       organizationId: $organizationId
       sortDirection: $sortDirection
       filter: $filter
@@ -341,20 +464,79 @@ export const getCardById = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
-        bins
-        dates
-        description
-        flags
-        lotNumber
-        lotTemplateId
-        name
-        process_id
-        totalQuantity
-        processName
+        cardId
+        userId
+        username
         createdAt
         updatedAt
+        delta
+      }
+      nextToken
+    }
+  }
+`;
+export const settingsByOrgId = /* GraphQL */ `
+  query SettingsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelSettingsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    SettingsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        MiRMapEnabled
+        accessToken
+        authenticated
+        currentMapId
+        deviceEnabled
+        loggers
+        mapViewEnabled
+        non_local_api
+        non_local_api_ip
+        refreshToken
+        shiftDetails
+        toggleDevOptions
+        timezone
+      }
+      nextToken
+    }
+  }
+`;
+export const lotTemplatesByOrgId = /* GraphQL */ `
+  query LotTemplatesByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelLotTemplateFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    LotTemplatesByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        createdAt
+        updatedAt
+        name
+        displayNames
+        fields
       }
       nextToken
     }
@@ -377,8 +559,9 @@ export const devicesByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         battery_percentage
         connected
         current_task_queue_id
@@ -387,12 +570,10 @@ export const devicesByOrgId = /* GraphQL */ `
         device_name
         distance_to_next_target
         idle_location
-        map_id
+        mapId
         position
         shelf_attached
         state_text
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -415,13 +596,12 @@ export const statusByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         active_map
         mir_connection
         pause_status
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -444,15 +624,23 @@ export const taskQueueByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
+        createdAt
+        updatedAt
         device_type
         mission_status
         owner
-        task_id
+        taskId
         custom_task
-        createdAt
-        updatedAt
+        dashboard
+        showModal
+        hil_response
+        quantity
+        lotId
+        start_time
+        end_time
+        hil_station_id
+        hil_message
       }
       nextToken
     }
@@ -475,11 +663,10 @@ export const dashboardsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
-        data
         createdAt
         updatedAt
+        data
       }
       nextToken
     }
