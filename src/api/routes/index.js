@@ -1,7 +1,3 @@
-import axios from 'axios';
-import { apiIPAddress } from '../../settings/settings'
-import * as log from 'loglevel';
-
 import * as queries from "./queries";
 import * as mutations from "./mutations";
 import * as dataTypes from "../../redux/types/data_types";
