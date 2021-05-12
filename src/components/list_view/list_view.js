@@ -28,8 +28,6 @@ import log from '../../logger.js';
 
 import disableBrowserBackButton from 'disable-browser-back-navigation';
 
-const logger = log.getLogger("ListView")
-
 const SCREENS = {
     LOCATIONS: {
         title: "Locations",
