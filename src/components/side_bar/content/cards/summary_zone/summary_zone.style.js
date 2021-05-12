@@ -72,3 +72,14 @@ export const ProcessName = styled.h3`
    -webkit-line-clamp: 2; /* number of lines to show */
    -webkit-box-orient: vertical;
 `
+
+export const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+
+export const CycleTimeText = styled.h3`
+    font-size: ${props => props.theme.fontSize.sz4};
+
+`
