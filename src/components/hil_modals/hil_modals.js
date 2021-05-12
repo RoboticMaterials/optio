@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 // actions
 import { putTaskQueue, getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { setShowModalId } from '../../redux/actions/task_queue_actions'
+import { getStations } from "../../redux/actions/stations_actions";
 
 // api
 import { putTaskQueueItem } from '../../api/task_queue_api'
@@ -27,8 +28,8 @@ import { deepCopy } from '../../methods/utils/utils'
 import { getBinQuantity } from "../../methods/utils/lot_utils";
 import FlexibleContainer from "../basic/flexible_container/flexible_container";
 import ScaleWrapper from "../basic/scale_wrapper/scale_wrapper";
+import { getPreviousWarehouseStation } from '../../methods/utils/processes_utils'
 import { getStationName } from "../../methods/utils/stations_utils";
-import { getStations } from "../../redux/actions/stations_actions";
 
 
 export const QUANTITY_MODES = {
@@ -263,7 +264,14 @@ const HILModals = (props) => {
     }
 
     useEffect(() => {
-        setMaxQuantity(getBinQuantity(lot, stationId || loadStationId))
+        // If its a warehouse, use the prev station
+        if (!!warehouse) {
+            setMaxQuantity(getBinQuantity(lot, getPreviousWarehouseStation(lot.process_id, stationID)._id))
+        }
+        else {
+            setMaxQuantity(getBinQuantity(lot, stationId || loadStationId))
+        }
+        
         return () => {
 
         };
