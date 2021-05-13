@@ -145,6 +145,7 @@ const FormComponent = (props) => {
 	// actions
 	const dispatch = useDispatch()
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+	const dispatchGetCardHistory = (id) => dispatch(getCardHistory(id))
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
@@ -734,6 +735,25 @@ const FormComponent = (props) => {
 						>
 						</BackButton>
 						</div>
+					}
+
+					{formMode === FORM_MODES.UPDATE && ((content !== CONTENT.CALENDAR) && (content !== CONTENT.HISTORY) && (content !== CONTENT.MOVE)) &&
+					<styled.WidgetContainer onClick={()=> {
+						if(content !== CONTENT.HISTORY) {
+							dispatchGetCardHistory(cardId)
+							setContent(CONTENT.HISTORY)
+						}
+						else {
+							setContent(null)
+						}
+					}}>
+						<i
+							className="fas fa-history"
+							color={themeContext.schema.lots.solid}
+							style={{fontSize: '2rem', marginRight: '0.5rem', zIndex: 20, color: themeContext.schema.lots.solid, cursor: 'pointer'}}
+						/>
+						Lot History
+					</styled.WidgetContainer>
 					}
 
 					{content === CONTENT.HISTORY &&

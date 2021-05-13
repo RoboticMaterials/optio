@@ -13,7 +13,6 @@ import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 import { getDataStream } from '../../redux/actions/data_stream_actions'
 
-import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
@@ -64,7 +63,6 @@ const ApiContainer = (props) => {
 
     const onGetProcesses = () => dispatch(getProcesses());
 
-    const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
     const onGetStatus = () => dispatch(getStatus())
 
@@ -326,7 +324,7 @@ const ApiContainer = (props) => {
         const cards = onGetCards()
 
         const status = await onGetStatus()
-        const getSchedules = await onGetSchedules()
+        // const getSchedules = await onGetSchedules()
 
         const loggers = await onGetLoggers()
 
@@ -418,7 +416,6 @@ const ApiContainer = (props) => {
         schedules, tasks
     */
     const loadSchedulerData = async () => {
-        const schedules = await onGetSchedules();
         const tasks = await onGetTasks();
 
     }

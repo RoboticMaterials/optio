@@ -12,7 +12,6 @@ import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_ba
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
 import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
 import DevicesContent from '../../components/side_bar/content/devices/devices_content'
-import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
 import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
@@ -237,10 +236,6 @@ const SideBar = (props) => {
 
         case 'tasks':
             content = <TasksContent />
-            break
-
-        case 'scheduler':
-            content = <SchedulerContent />
             break
 
         case 'devices':

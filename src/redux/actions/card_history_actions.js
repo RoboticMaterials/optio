@@ -15,7 +15,7 @@ import {
 import { api_action } from './index';
 
 import log from "../../logger"
-import * as api from "../../api/card_history_api";
+import * as api from "../../api/lot_events";
 import {convertArrayToObject} from "../../methods/utils/utils";
 
 const logger = log.getLogger("Card History", "Redux")
