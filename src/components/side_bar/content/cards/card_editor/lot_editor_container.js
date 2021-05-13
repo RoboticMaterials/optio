@@ -69,7 +69,7 @@ const LotEditorContainer = (props) => {
     const [mappedErrors, setMappedErrors] = useState([])						// array of form errors objects
     // const [mappedWarnings, setMappedWarnings] = useState([])						// array of form errors objects
     const [mappedTouched, setMappedTouched] = useState([])					// array of form touched objects
-    const [pasteTable, setPasteTable] = useState([])							// array xample for mapping pasted table
+    const [pasteTable, setPasteTable] = useState([])							// array NEW_API_TEMPLATE_DIRECTORY for mapping pasted table
     const [disablePasteModal, setDisablePasteModal] = useState(false)			// bool - used to determine whether or not to show the paste modal
     const [resetPasteTable, setResetPasteTable] = useState(false)				// bool - used to reset values in pasteForm
     const [showPasteMapper, setShowPasteMapper] = useState(false)				// bool - used for whether or not to render pasteForm
@@ -676,7 +676,7 @@ const LotEditorContainer = (props) => {
     /*
     * Event handler for paste events
     *
-    * converts tabular data to an array of arrays xample (1 column X n rows)
+    * converts tabular data to an array of arrays NEW_API_TEMPLATE_DIRECTORY (1 column X n rows)
     * */
     const onPasteEvent = useCallback((e) => {
         const plainText = e.clipboardData.getData('text/plain')	// get clipboard data

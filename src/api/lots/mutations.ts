@@ -28,7 +28,7 @@ export const updateLot = gql`mutation updateLot($input: LotUpdateInput!) {
     }
 }`
 
-export const deleteLot = gql`mutation deleteLot($id: ID!, $organizationId: ID!) {
+export const deleteLot = gql`mutation deleteLot($id: ID!, $organizationId: ID) {
     deleteLot(id: $id, organizationId: $organizationId) {
         id
         organizationId

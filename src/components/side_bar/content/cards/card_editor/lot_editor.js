@@ -261,6 +261,7 @@ const FormComponent = (props) => {
 
 		var submitItem = {
 			...card,
+			id: cardId,
 			bins: {...remainingBins},
 		}
 

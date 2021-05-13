@@ -49,7 +49,7 @@ export async function deleteRoute(id) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.deleteRoute,
-            {id, organizationId: "Baca Inc"},
+            {id},
             parser
         )
 

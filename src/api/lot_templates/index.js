@@ -3,38 +3,28 @@ import axios from 'axios';
 
 import logger from '../../logger'
 
-import {streamlinedGraphqlCall, TRANSFORMS} from "../../methods/utils/api_utils";
+import { apiIPAddress } from '../../settings/settings'
+
 import * as queries from "./queries";
 import * as mutations from "./mutations";
 import * as dataTypes from "../../redux/types/data_types";
-
 import {parseItem, RESOURCE_JSON_KEYS, stringifyItem} from "../../methods/utils/data_utils";
 import {logError} from "../error_log";
+import {streamlinedGraphqlCall, TRANSFORMS} from "../../methods/utils/api_utils";
 
-const parser = (item) => parseItem(item, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
-const stringifier = (item) => stringifyItem(item, RESOURCE_JSON_KEYS[dataTypes.PROCESS])
+const parser = (item) => parseItem(item, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
+const stringifier = (item) => stringifyItem(item, RESOURCE_JSON_KEYS[dataTypes.LOT_TEMPLATE])
 
-export async function getProcesses() {
+
+const operator = 'cards/templates'
+const log = logger.getLogger('Api')
+
+export async function getLotTemplate(id) {
     try {
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.QUERY,
-            queries.listProcesses,
-            null,
-            parser
-        )
-
-    } catch (error) {
-        logError(error)
-    }
-}
-
-export async function deleteProcess(id) {
-    try {
-
-        return await streamlinedGraphqlCall(
-            TRANSFORMS.MUTATION,
-            mutations.deleteProcess,
+            queries.getLotTemplateById,
             {id},
             parser
         )
@@ -44,19 +34,47 @@ export async function deleteProcess(id) {
     }
 }
 
-export async function postProcesses(process) {
+export async function getLotTemplates() {
+    try {
+
+        return await streamlinedGraphqlCall(
+            TRANSFORMS.QUERY,
+            queries.listLotTemplates,
+            null,
+            parser
+        )
+
+    } catch (error) {
+        logError(error)
+    }
+}
+
+export async function deleteLotTemplate(id) {
+    try {
+
+        return await streamlinedGraphqlCall(
+            TRANSFORMS.MUTATION,
+            mutations.deleteLotTemplate,
+            {id},
+            parser
+        )
+
+    } catch (error) {
+        logError(error)
+    }
+}
+
+export async function postLotTemplate(lotTemplate) {
     try {
 
         const {
             id,
-            // showSummary,
-            // showStatistics,
             ...rest
-        } = process || {}
+        } = lotTemplate || {}
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
-            mutations.createProcess,
+            mutations.createLotTemplate,
             {input: stringifier(rest)},
             parser
         )
@@ -66,16 +84,16 @@ export async function postProcesses(process) {
     }
 }
 
-export async function putProcesses(process, ID) {
+export async function putLotTemplate(lotTemplate, ID) {
     try {
         const {
             __typename,
             ...rest
-        } = process || {}
+        } = lotTemplate || {}
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
-            mutations.updateProcess,
+            mutations.updateLotTemplate,
             {input: stringifier(rest)},
             parser
         )

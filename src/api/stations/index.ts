@@ -30,7 +30,7 @@ export async function deleteStation(ID: string) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.deleteStation,
-            {id: ID, organizationId: "Baca Inc"},
+            {id: ID},
             parseStation
         )
 

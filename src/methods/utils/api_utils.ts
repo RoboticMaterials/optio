@@ -6,6 +6,7 @@ import {isFunction} from "./function_utils";
 import {capitalizeFirstLetter} from "./string_utils";
 import apolloClient from "../../api/apollo_client";
 import {createStation} from "../../api/graphql/mutations";
+import {isArray} from "./array_utils";
 
 export const getSubscriptionData = (subscriptionData, subscriptionName, parser) => {
     const {
@@ -54,18 +55,27 @@ export const getQueryData = (queryResponse, queryName, parser) => {
     console.log('dataaaa',data)
 
     console.log('values',values)
-    let queryData = []
-    values.forEach((item: any) => {
-        if(isFunction(parser)) {
-            queryData.push(parser(item))
+
+
+    if(isArray(values)) {
+        let queryData = []
+
+        values.forEach((item: any) => {
+            if(isFunction(parser)) {
+                queryData.push(parser(item))
+                return
+            }
+
+            queryData.push(item)
             return
-        }
+        });
 
-        queryData.push(item)
-        return
-    });
+        return queryData
+    }
+    else {
+        return isFunction(parser) ? parser(values) : values
+    }
 
-    return queryData
 }
 
 export const getMutationName = (mutation) => {

@@ -92,7 +92,7 @@ const LotFilterBar = (props) => {
     /*
     * This effect is used to set the filter options
     *
-    * This is dependent on lotTemplates, as the available fields may change when a template does
+    * This is dependent on lot_templates, as the available fields may change when a template does
     * */
     useEffect(() => {
         const templateFields = getAllTemplateFields()

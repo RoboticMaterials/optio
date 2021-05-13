@@ -47,7 +47,7 @@ export async function deleteDashboards(id) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.deleteDashboard,
-            {id, organizationId: "Baca Inc"},
+            {id},
             parser
         )
 

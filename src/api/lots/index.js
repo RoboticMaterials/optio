@@ -134,7 +134,7 @@ export async function deleteCard(id) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.deleteLot,
-            {id, organizationId: "Baca Inc"},
+            {id},
             parser
         )
 
@@ -173,7 +173,7 @@ export async function putCard(card, id) {
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
             mutations.updateLot,
-            {input: stringifier(rest)},
+            {input: stringifier({...rest, id})},
             parser
         )
 
