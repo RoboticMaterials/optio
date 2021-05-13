@@ -40,7 +40,7 @@ import {
 import { mapArrayToObjById, deepCopy } from '../../methods/utils/utils';
 import { formatScheduleItem } from '../../methods/utils/data_utils';
 
-import * as api from '../../api/objects_api'
+import * as api from '../../api/objects'
 
 // get
 // ******************************
