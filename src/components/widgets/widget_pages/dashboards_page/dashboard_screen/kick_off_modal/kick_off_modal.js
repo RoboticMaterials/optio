@@ -62,8 +62,6 @@ const KickOffModal = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
-
-
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [showLotEditor, setShowLotEditor] = useState(false)

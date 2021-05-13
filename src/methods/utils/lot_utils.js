@@ -282,7 +282,6 @@ export const getBinQuantity = ({ bins }, binId) => {
     const {
         count
     } = currentBin || {}
-
     return count
 }
 
@@ -436,7 +435,6 @@ export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) =
 
 
 export const getCurrentRouteForLot = (lot, stationID) => {
-
     let currentRoute
 
     const processes = store.getState().processesReducer.processes || {}
@@ -452,4 +450,26 @@ export const getCurrentRouteForLot = (lot, stationID) => {
         }
     }
     return currentRoute
+}
+
+export const getPreviousRouteForLot = (lot, stationID) => {
+    let prevRoute
+
+    const processes = store.getState().processesReducer.processes || {}
+    const routes = store.getState().tasksReducer.tasks || {}
+
+    const lotProcess = processes[lot.process_id]
+
+    for (let i = 0; i < lotProcess.routes.length; i++) {
+        const loadStation = routes[lotProcess.routes[i]].load.station
+        const unloadStation = routes[lotProcess.routes[i]].unload.station
+        if (loadStation === stationID) {
+            prevRoute = routes[lotProcess.routes[i - 1]]
+            break
+        } else if (unloadStation === stationID) {
+            prevRoute = routes[lotProcess.routes[i]]
+            break
+        }
+    }
+    return prevRoute
 }
