@@ -101,7 +101,7 @@ const TaskField = (props) => {
         changed,
         temp
     } = values || {}
-
+    console.log(values.handoff)
 
     const {
         insertIndex
@@ -188,7 +188,9 @@ const TaskField = (props) => {
         }
 
         if (isMiRTask(selectedTask) && isNew) {
-            if (values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
+            if (values.handoff){
+             setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
+            }
         }
 
         else if (isOnlyHumanTask(selectedTask)) {
