@@ -123,7 +123,7 @@ const CardZone = ((props) => {
 				...rest
 			} = card
 
-			const totalQuantity = getLotTotalQuantity(card)
+			// const totalQuantity = getLotTotalQuantity(card)
 
 			const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
 
@@ -144,11 +144,12 @@ const CardZone = ((props) => {
 
 					const lotItem = {
 						...rest,
-						totalQuantity,
+						// totalQuantity,
 						binId,
+						id,
 						count,
 						cardId: id,
-						processName
+						// processName
 					}
 
 					// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin

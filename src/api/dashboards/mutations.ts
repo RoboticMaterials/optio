@@ -18,6 +18,7 @@ export const updateDashboard = gql`mutation updateDashboard($input: DashboardUpd
 export const deleteDashboard = gql`mutation deleteDashboard($id: ID!, $organizationId: ID!) {
     deleteDashboard(id: $id, organizationId: $organizationId) {
         id
+        organizationId
     }
 }
 `

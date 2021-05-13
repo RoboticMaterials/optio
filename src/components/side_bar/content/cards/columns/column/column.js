@@ -349,7 +349,6 @@ const Column = ((props) => {
 							cardId,
 							flags,
 							lotNumber,
-							totalQuantity,
 							processName,
 							lotTemplateId,
 							...rest

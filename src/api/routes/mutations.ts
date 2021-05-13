@@ -41,7 +41,8 @@ export const updateRoute = gql`mutation updateRoute($input: RouteUpdateInput!) {
 
 export const deleteRoute = gql`mutation deleteRoute($id: ID!, $organizationId: ID!) {
     deleteRoute(id: $id, organizationId: $organizationId) {
-        name
+        id
+        organizationId
     }
 }
 `

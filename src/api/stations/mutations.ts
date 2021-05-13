@@ -40,8 +40,8 @@ export const updateStation = gql`mutation updateStation($input: StationUpdateInp
 `
 export const deleteStation = gql`mutation deleteStation($id: ID!, $organizationId: ID!) {
     deleteStation(id: $id, organizationId: $organizationId) {
-        children,
-        name
+        id
+        organizationId
     }
 }
 `

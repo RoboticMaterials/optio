@@ -46,7 +46,7 @@ export const stringifyItem = (obj, keys) => {
 // keys that are just saved as JSON chunks for each resource
 export const RESOURCE_JSON_KEYS = {
   [dataTypes.PROCESS]: ["routes", "broken"],
-  [dataTypes.CARD]: ["templateValues", "bins", "flags"],
+  [dataTypes.CARD]: ["fields", "bins", "flags"],
   [dataTypes.TASK]: ["device_types", "processes", "load", "unload", "route_object"],
   [dataTypes.OBJECT]: [],
   [dataTypes.DASHBOARD]: ["data"],
@@ -65,14 +65,16 @@ export const parseObject = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataType
 export const parseSettings = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
 export const parseStation = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.STATION])
 export const parseDashboard = (dashboard) => {
+  console.log('parseDashboard dashboard',dashboard)
   const {
     data,
     ...rest
   } = dashboard
 
+  const parsedData = dashboard.data ? JSON.parse(dashboard.data) : {}
   return {
     ...rest,
-    ...JSON.parse(dashboard.data)
+    ...parsedData
   }
 }
 
