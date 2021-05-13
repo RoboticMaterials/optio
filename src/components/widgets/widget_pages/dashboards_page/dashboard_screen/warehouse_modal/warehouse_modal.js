@@ -99,6 +99,11 @@ const WarehouseModal = (props) => {
             sortBy(sortedCards, sortMode, sortDirection)
         }
 
+
+        // This array is all the IDs of the cards being shown
+        // This fixes an issue with 2 processes going from the same warehouse into the same station (this would show all those cards twice)
+        let warehouseCards = []
+
         // Goes through each warehouse that is infront to the station and renders cards
         return warehouseStations.map((warehouse) => {
             const warehouseID = warehouse?._id
@@ -130,6 +135,13 @@ const WarehouseModal = (props) => {
                         process_id: processId,
                         lotTemplateId
                     } = currCard
+
+                    // If the card is alwready being displayed, then dont show
+                    if (warehouseCards.includes(lotId)) {
+                        return
+                    } else {
+                        warehouseCards.push(lotId)
+                    }
 
                     const process = processes[processId]
                     const {

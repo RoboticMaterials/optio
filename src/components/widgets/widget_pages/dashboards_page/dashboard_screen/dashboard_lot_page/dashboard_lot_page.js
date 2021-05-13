@@ -72,7 +72,7 @@ const DashboardLotPage = (props) => {
             const processStations = Object.keys(getProcessStations(processes[currentLot.process_id], routes))
 
             // If its the last station in the process, then the only option is to finish the lot
-            if (processStations[processStations.length - 1] === stationID) {
+            if (processStations[processStations.length - 1] === stationID && !warehouse) {
                 setIsFinish(true)
             }
             // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
