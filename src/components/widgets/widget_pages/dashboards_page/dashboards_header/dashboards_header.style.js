@@ -21,7 +21,7 @@ export const Header = styled.div`
     height: 6rem;
 
     /* background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%); */
-    
+
 `
 
 
@@ -43,10 +43,10 @@ export const Title = styled.h2`
     text-overflow: ellipsis;
     position: absolute;
     text-align: center;
-    left: 0; 
-    right: 0; 
-    margin-left: auto; 
-    margin-right: auto; 
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
 
     // tablet style
     @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
@@ -103,10 +103,13 @@ export const MoreIcon = styled.i`
     margin-top: 1.8rem;
 `
 export const LockIcon = styled.i`
+    position: absolute;
+    right: 7rem;
     font-size: 1.3rem;
     color: ${props => props.theme.bg.quinary};
     cursor: pointer;
-    margin-top: 0.4rem;
+    margin-top: 0rem;
+    margin-left: 1rem;
 `
 
 export const SidebarButton = styled(AssignmentOutlinedIcon)`
