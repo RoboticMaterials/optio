@@ -20,20 +20,29 @@ const StatisticsPage = () => {
 
     const [showOverview, setShowOverview] = useState(true)
     const [barcode, setBarcode] = useState('')
+    const [full, setFull] = useState('')
 
     useEffect(() => {
         document.addEventListener('keypress', e => logKey(e))
-        console.log('QQQQ listen')
         return () => {
 
         }
     }, [])
 
+    useEffect(() => {
+        // console.log('QQQQ barcode', barcode)
+        let newFull = full + barcode
+        console.log('QQQQ New Full', newFull)
+        setFull(newFull) 
+        return () => {
+            
+        }
+    }, [barcode])
+
 
     const logKey = (e) => {
-        console.log('QQQQ event', e)
-        setBarcode(barcode.concat(e.key))
-        console.log('QQQQ barcode', barcode)
+        // const newBarcode = barcode + e.key
+        setBarcode(e.key)
     }
 
     return (

@@ -60,12 +60,51 @@ const DashboardsPage = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks })
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+    const [barcode, setBarcode] = useState('')
+    const [full, setFull] = useState('')
+
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
     if (dashboard === undefined) {
         history.push('/locations')
         window.location.reload()
     }
+
+    useEffect(() => {
+        document.addEventListener('keypress', logKey)
+        return () => {
+            document.removeEventListener('keypress', logKey)
+        }
+    }, [])
+
+    useEffect(() => {
+        // console.log('QQQQ barcode', barcode)
+        let newFull = full + barcode
+        console.log('QQQQ New Full', newFull)
+        setFull(newFull)
+        return () => {
+
+        }
+    }, [barcode])
+
+    useEffect(() => {
+        if(full.includes('RM-')) {
+            const enter = full.substring(full.length-5)
+            if(enter === 'Enter'){
+                alert('Show Lots')
+                setFull('')
+            }
+        }
+        return () => {
+            
+        }
+    }, [full])
+
+
+    const logKey = (e) => {
+        setBarcode(e.key)
+    }
+
 
 
     /**
