@@ -1,7 +1,7 @@
 import {gql} from "@apollo/client";
 
 export const listLot = gql`query listLot {
-    listLot {
+    listLots {
         id
         bins
         fields
