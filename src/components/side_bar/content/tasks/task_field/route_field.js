@@ -101,7 +101,6 @@ const TaskField = (props) => {
         changed,
         temp
     } = values || {}
-    console.log(values.handoff)
 
     const {
         insertIndex
