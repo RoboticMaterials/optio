@@ -10,7 +10,6 @@ import { useSelector } from "react-redux"
 
 // utils
 import { getBinQuantity, getCustomFields, getLotTotalQuantity } from "../../../../../methods/utils/lot_utils"
-import { getPreviousWarehouseStation } from '../../../../../methods/utils/processes_utils'
 
 const LotContainer = (props) => {
 
@@ -19,7 +18,6 @@ const LotContainer = (props) => {
         binId,
         enableFlagSelector,
         containerStyle,
-        warehouse,
         ...rest
     } = props
 
@@ -58,14 +56,7 @@ const LotContainer = (props) => {
     }, [bins])
 
     useEffect(() => {
-        // If its a warehouse, use the prev station
-        if (!!warehouse) {
-            setCount(getBinQuantity(lot, getPreviousWarehouseStation(processId, station._id)._id))
-        }
-        else {
-            setCount(getBinQuantity({ bins }, binId))
-
-        }
+        setCount(getBinQuantity({ bins }, binId))
     }, [bins, binId])
 
 

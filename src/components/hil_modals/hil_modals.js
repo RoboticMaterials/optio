@@ -437,10 +437,19 @@ const HILModals = (props) => {
                                         scaleFactor={isMobile ? 0.75 : 1}
                                     >
                                         <LotContainer
-                                            warehouse={!!warehouse}
                                             showCustomFields={false}
                                             lotId={lotId}
-                                            binId={hilLoadUnload === 'load' ? stationId || loadStationId : unloadStationId}
+                                            binId={
+                                                // If its a warehouse, the bin is going to be the previous station
+                                                !!warehouse ?
+                                                    getPreviousWarehouseStation(processId, stationID)._id
+                                                    :
+                                                    hilLoadUnload === 'load' ?
+                                                        stationId || loadStationId
+                                                        :
+                                                        unloadStationId
+
+                                            }
                                             processId={processId}
                                             containerStyle={{ margin: 0, padding: 0, width: "30rem" }}
                                         />
