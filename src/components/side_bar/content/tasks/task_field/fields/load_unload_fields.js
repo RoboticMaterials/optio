@@ -24,7 +24,6 @@ import { isString } from "../../../../../../methods/utils/string_utils";
 import { isObject } from "../../../../../../methods/utils/object_utils";
 import { ThemeContext } from 'styled-components';
 
-
 const LoadUnloadFields = (props) => {
 
     const {
@@ -221,7 +220,7 @@ const LoadUnloadFields = (props) => {
             {/* </styled.Card> */}
 
             {/* Hides the unload field if its a handoff task */}
-            {(!values.handoff || isMiRTask(selectedTask)) &&
+            {(isMiRTask(selectedTask)) &&
 
                 <styled.Card dark={isProcess}>
                     <styled.Header style={{ marginTop: '0rem', marginRight: ".5rem", fontSize: '1.2rem' }}>Unload</styled.Header>

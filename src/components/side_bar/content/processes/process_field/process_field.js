@@ -493,8 +493,6 @@ export const ProcessField = (props) => {
                         key={`li-${currIndex}`}
                     />
 
-
-
                     {/* If the process is broken and it's at the broken index, then show a button there to fix it */}
                     {(!!values.broken && currIndex === values.broken - 1) &&
 

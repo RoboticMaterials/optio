@@ -1,4 +1,4 @@
-import { hexToRGBA,  RGB_Linear_Shade } from './methods/utils/color_utils';
+import { hexToRGBA, RGB_Linear_Shade } from './methods/utils/color_utils';
 
 export const size = {
     tiny: '0px',
@@ -201,6 +201,11 @@ export const theme = {
             delete: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
                 solid: '#e36868'
+            },
+            warehouse: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',
+                solid: '#5c6fff',
+                iconName: 'fas fa-box',
             },
         }
     },

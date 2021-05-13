@@ -1,4 +1,4 @@
-import React, { useRef, } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -11,6 +11,10 @@ import DashboardButton from '../dashboard_buttons/dashboard_button/dashboard_but
 
 // Import Hooks
 import useOnClickOutside from '../../../../../hooks/useOnClickOutside'
+
+// Import Utils
+import { getPreviousWarehouseStation } from '../../../../../methods/utils/processes_utils'
+import { getStationProcesses } from '../../../../../methods/utils/stations_utils'
 
 const DashboardOperationsMenu = (props) => {
 
@@ -29,10 +33,24 @@ const DashboardOperationsMenu = (props) => {
     } = params || {}
 
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
+    const processes = useSelector(state => state.processesReducer.processes)
+    const [warehouseEnabled, setWarehouseEnabled] = useState(false)
 
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
+
+    // Set whether dashboard is warehouse enabled
+    useEffect(() => {
+        const stationProcesses = getStationProcesses(stationID)
+
+        for (let i = 0; i < stationProcesses.length; i++) {
+            const station = getPreviousWarehouseStation(stationProcesses[i], stationID)
+            if (!!station) {
+                setWarehouseEnabled(true)
+                break;
+            }
+        }
+    }, [processes])
 
     const renderReportButton = () => {
 
@@ -107,17 +125,35 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+    const renderWarehouseButton = () => {
+        const schema = theme.main.schema.warehouse
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Warehouse'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('warehouse')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderButtons = () => {
         return (
             <>
                 {renderReportButton()}
                 {renderTaskQueueButton()}
+                {warehouseEnabled &&
+                    renderWarehouseButton()
+                }
 
                 {availableKickOffProcesses.length > 0 &&
                     renderKickOffButton()
-                }
-                {availableFinishProcesses.length > 0 &&
-                    renderFinishButton()
                 }
 
             </>
