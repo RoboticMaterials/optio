@@ -33,7 +33,6 @@ const DashboardOperationsMenu = (props) => {
     } = params || {}
 
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const processes = useSelector(state => state.processesReducer.processes)
     const [warehouseEnabled, setWarehouseEnabled] = useState(false)
 
@@ -155,9 +154,6 @@ const DashboardOperationsMenu = (props) => {
 
                 {availableKickOffProcesses.length > 0 &&
                     renderKickOffButton()
-                }
-                {availableFinishProcesses.length > 0 &&
-                    renderFinishButton()
                 }
 
             </>

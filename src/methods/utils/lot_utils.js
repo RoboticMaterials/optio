@@ -462,8 +462,12 @@ export const getPreviousRouteForLot = (lot, stationID) => {
 
     for (let i = 0; i < lotProcess.routes.length; i++) {
         const loadStation = routes[lotProcess.routes[i]].load.station
+        const unloadStation = routes[lotProcess.routes[i]].unload.station
         if (loadStation === stationID) {
             prevRoute = routes[lotProcess.routes[i - 1]]
+            break
+        } else if (unloadStation === stationID) {
+            prevRoute = routes[lotProcess.routes[i]]
             break
         }
     }
