@@ -46,7 +46,7 @@ export default function mapReducer(state=defaultState, action) {
         case GET_MAPS_SUCCESS:
             return  {
                 ...state,
-                maps: action.payload.map(map => {return {...map, id: map.id}}),
+                maps: action.payload.map(map => {return {...map, id: map._id}}),
                 pending: false
             }
 
@@ -71,7 +71,7 @@ export default function mapReducer(state=defaultState, action) {
             });
 
         case GET_MAP_SUCCESS:
-            currentMapCopy = {...deepCopy(action.payload), id: action.payload.id}
+            currentMapCopy = {...deepCopy(action.payload), id: action.payload._id}
             currentMapCopy.d3 = {
                 scale: 1,
                 translate: [0,0],

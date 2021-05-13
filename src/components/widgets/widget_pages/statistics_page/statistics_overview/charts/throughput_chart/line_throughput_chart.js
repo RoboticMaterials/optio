@@ -22,7 +22,7 @@ import { convert12hto24h, convert24htoEpoch, convertDateto12h } from '../../../.
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 // Import actions
-import { postSettings } from '../../../../../../../redux/actions/settings_actions'
+import {postSettings, putSettings} from '../../../../../../../redux/actions/settings_actions'
 import { convertData } from '../../../../../../../redux/actions/report_event_actions';
 import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
 import { pageDataChanged } from '../../../../../../../redux/actions/sidebar_actions'
@@ -50,6 +50,7 @@ const LineThroughputChart = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPutSettings = (settings) => dispatch(putSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settings = useSelector(state => state.settingsReducer.settings)
@@ -395,12 +396,18 @@ const LineThroughputChart = (props) => {
             },
         }
 
-        dispatchPostSettings({
-            ...settings,
-            shiftDetails: shiftSettings,
-        })
-
-
+        if(settings.id) {
+            dispatchPutSettings({
+                ...settings,
+                shiftDetails: shiftSettings,
+            })
+        }
+        else {
+            dispatchPostSettings({
+                ...settings,
+                shiftDetails: shiftSettings,
+            })
+        }
     }
 
 

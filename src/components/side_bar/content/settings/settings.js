@@ -18,7 +18,7 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'
 
 // Import Actions
-import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
+import {postSettings, getSettings, putSettings} from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 
@@ -37,6 +37,7 @@ const Settings = () => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPutSettings = (settings) => dispatch(putSettings(settings))
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
@@ -159,15 +160,28 @@ const Settings = () => {
         const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
         const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
 
-        if (!serverChange) {
-            delete serverSettingsState.id
-            await dispatchPostSettings(serverSettingsState)
+
+        if(serverSettingsState.id) {
+            if (!serverChange) {
+                await dispatchPutSettings(serverSettingsState)
+            }
+
+            if (!deviceChange) {
+                await dispatchDeviceEnabled(devicesEnabled)
+                await dispatchPutSettings(serverSettingsState)
+            }
+        }
+        else {
+            if (!serverChange) {
+                await dispatchPostSettings(serverSettingsState)
+            }
+
+            if (!deviceChange) {
+                await dispatchDeviceEnabled(devicesEnabled)
+                await dispatchPostSettings(serverSettingsState)
+            }
         }
 
-        if (!deviceChange) {
-            await dispatchDeviceEnabled(devicesEnabled)
-            await dispatchPostSettings(serverSettingsState)
-        }
 
         await dispatchGetSettings()
         await dispatchGetStatus()

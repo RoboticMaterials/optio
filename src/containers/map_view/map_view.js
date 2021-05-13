@@ -15,7 +15,7 @@ import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
-import { postSettings } from '../../redux/actions/settings_actions'
+import {postSettings, putSettings} from '../../redux/actions/settings_actions'
 import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
@@ -106,22 +106,34 @@ export class MapView extends Component {
 
     }
 
-    checkForMapLoad = () => {
+    checkForMapLoad = async () => {
 
       var currentMap = this.props.maps.find(map => map.id === this.props.currentMapId)
 
+        // console.log("currentMap",currentMap)
+        // console.log("this.props.currentMapId",this.props.currentMapId)
+        // console.log("this.props.maps",this.props.maps)
+        // console.log("this.props.settings",this.props.settings)
       if(!currentMap){
-        this.setState({currentMap: this.props.maps[0]})
+          if(this.state.currentMap?.id !== this.props.maps[0]?.id) this.setState({currentMap: this.props.maps[0]})
 
-        const updatedSettings = {
-          ...this.props.settings,
-          currentMapId: this.props.maps[0].id,
-        }
-        this.props.dispatchPostSettings(updatedSettings)
+        // const updatedSettings = {
+        //   ...this.props.settings,
+        //   currentMapId: this.props.maps[0].id,
+        // }
+        //
+        // if(this.props.currentMapId !== this.props.maps[0].id) {
+        //     if(this.props.settings.id) {
+        //         await this.props.dispatchPutSettings(updatedSettings)
+        //     }
+        //     else {
+        //         await this.props.dispatchPostSettings(updatedSettings)
+        //     }
+        // }
       }
-      else{
-        this.setState({currentMap: currentMap})
-      }
+      // else{
+      //   this.setState({currentMap: currentMap})
+      // }
     }
 
 
@@ -846,6 +858,7 @@ const mapDispatchToProps = dispatch => {
         dispatchGetMap: (mapId) => dispatch(getMap(mapId)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
+        dispatchPutSettings: (settings) => dispatch(putSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),

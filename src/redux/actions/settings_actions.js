@@ -8,10 +8,10 @@ import {
     POST_SETTINGS_STARTED,
     POST_SETTINGS_SUCCESS,
     POST_SETTINGS_FAILURE,
-    DEVICE_ENABLED,
+    DEVICE_ENABLED, PUT_SETTINGS_STARTED, PUT_SETTINGS_SUCCESS, PUT_SETTINGS_FAILURE,
 } from '../types/setting_types'
 
-import * as api from '../../api/settings_api'
+import * as api from '../../api/settings'
 
 export const getSettings = () => {
     return async dispatch => {
@@ -43,13 +43,14 @@ export const getSettings = () => {
         }
     }
 }
+
 export const postSettings = (settings) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: POST_SETTINGS_STARTED });
         }
         function onSuccess(response) {
-            dispatch({ type: POST_SETTINGS_SUCCESS, payload: settings });
+            dispatch({ type: POST_SETTINGS_SUCCESS, payload: response });
             return response;
         }
         function onError(error) {
@@ -59,8 +60,31 @@ export const postSettings = (settings) => {
 
         try {
             onStart();
-            delete settings.id
             const newSettings = await api.postSettings(settings);
+            return onSuccess(newSettings)
+        } catch (error) {
+            return onError(error)
+        }
+    }
+}
+
+export const putSettings = (settings) => {
+    return async dispatch => {
+        function onStart() {
+            dispatch({ type: PUT_SETTINGS_STARTED });
+        }
+        function onSuccess(response) {
+            dispatch({ type: PUT_SETTINGS_SUCCESS, payload: response });
+            return response;
+        }
+        function onError(error) {
+            dispatch({ type: PUT_SETTINGS_FAILURE, payload: error });
+            return error;
+        }
+
+        try {
+            onStart();
+            const newSettings = await api.putSettings(settings);
             return onSuccess(newSettings)
         } catch (error) {
             return onError(error)

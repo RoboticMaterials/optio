@@ -8,12 +8,13 @@ import {
     POST_SETTINGS_STARTED,
     POST_SETTINGS_SUCCESS,
     POST_SETTINGS_FAILURE,
-    DEVICE_ENABLED,
+    DEVICE_ENABLED, PUT_SETTINGS, PUT_SETTINGS_SUCCESS, PUT_SETTINGS_FAILURE, PUT_SETTINGS_STARTED,
 
 } from '../types/setting_types'
 
 const defaultState = {
     settings: {
+        timezone: null,
         loggers: {
             Dashboards: false,
             Scheduler: false,
@@ -50,10 +51,7 @@ const defaultState = {
 
     error: {},
     pending: false,
-    enableLogger: '',
-    muteReducer: false,
     deviceEnabled: false,
-    apiSim: false,
 }
 
 export const mirUrl = (state = defaultState) => {
@@ -62,12 +60,6 @@ export const mirUrl = (state = defaultState) => {
 
 const settingsReducer = (state = defaultState, action) => {
     switch (action.type) {
-
-        case 'apiSim':
-            return {
-                ...state,
-                apiSim: action.payload
-            }
 
         case DEVICE_ENABLED:
             return {
@@ -89,7 +81,6 @@ const settingsReducer = (state = defaultState, action) => {
                 settings: {
                     ...state.settings,
                     ...action.payload,
-                    currentMap: {...action?.payload?.currentMap, id: action?.payload?.currentMap?._id},
                     loggers: { ...state.settings.loggers, ...action.payload.loggers },
                 },
                 pending: false,
@@ -106,6 +97,34 @@ const settingsReducer = (state = defaultState, action) => {
                 pending: true
             });
 
+
+        // ======================================== //
+        //                                          //
+        //             PUT SETTINGS                //
+        //                                          //
+        // ======================================== //
+        case PUT_SETTINGS:
+            break;
+
+        case PUT_SETTINGS_SUCCESS:
+            return {
+                ...state,
+                settings: { ...state.settings, ...action.payload },
+                pending: false,
+
+            }
+
+        case PUT_SETTINGS_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
+
+        case PUT_SETTINGS_STARTED:
+            return Object.assign({}, state, {
+                pending: true
+            });
+        // ~~~~~~~~~~~~~~~
         // ======================================== //
         //                                          //
         //             Post SETTINGS                //

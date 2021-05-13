@@ -17,7 +17,7 @@ import { throughputSchema } from '../../../../../../../../methods/utils/form_sch
 import { convert12hto24h } from '../../../../../../../../methods/utils/time_utils'
 
 // Import actions
-import { postSettings } from '../../../../../../../../redux/actions/settings_actions'
+import {postSettings, putSettings} from '../../../../../../../../redux/actions/settings_actions'
 import { pageDataChanged } from '../../../../../../../../redux/actions/sidebar_actions'
 
 const LineThroughputForm = (props) => {
@@ -28,6 +28,7 @@ const LineThroughputForm = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPutSettings = (settings) => dispatch(putSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settings = useSelector(state => state.settingsReducer.settings)
@@ -98,12 +99,18 @@ const LineThroughputForm = (props) => {
             },
         }
 
-        dispatchPostSettings({
-            ...settings,
-            shiftDetails: shiftSettings,
-        })
-
-
+        if(settings.id) {
+            dispatchPutSettings({
+                ...settings,
+                shiftDetails: shiftSettings,
+            })
+        }
+        else {
+            dispatchPostSettings({
+                ...settings,
+                shiftDetails: shiftSettings,
+            })
+        }
     }
 
     const renderBreaks = useMemo(() => {
