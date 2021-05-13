@@ -58,6 +58,7 @@ const DashboardsPage = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
+    const cards = useSelector(state => state.cardsReducer.cards)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
     const [barcode, setBarcode] = useState('')
@@ -72,6 +73,7 @@ const DashboardsPage = (props) => {
 
     useEffect(() => {
         document.addEventListener('keypress', logKey)
+        console.log('QQQQ card', cards[lotID])
         return () => {
             document.removeEventListener('keypress', logKey)
         }
@@ -91,7 +93,10 @@ const DashboardsPage = (props) => {
         if(full.includes('RM-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
-                alert('Show Lots')
+                const splitLot = full.split('-')
+                let lot = parseInt(splitLot[1].slice(0,-5))
+                alert(`Show Lots ${lot}`)
+                
                 setFull('')
             }
         }
@@ -105,6 +110,9 @@ const DashboardsPage = (props) => {
         setBarcode(e.key)
     }
 
+    const onScanLot = (id) => {
+        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${id}`)
+    }
 
 
     /**
