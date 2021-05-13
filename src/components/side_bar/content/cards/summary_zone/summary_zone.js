@@ -52,7 +52,7 @@ const SummaryZone = ((props) => {
 
             return (
                 <styled.ColumnContainer s>
-                    <styled.CycleTimeText style={{ fontWeight: 'bold' }}>Process Cyclie Time:</styled.CycleTimeText>
+                    <styled.CycleTimeText style={{ fontWeight: 'bold' }}>Process Cycle Time:</styled.CycleTimeText>
                     <styled.CycleTimeText>
                         {totalCycleTime.format('HH:mm:ss')}
                     </styled.CycleTimeText>
