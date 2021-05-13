@@ -19,13 +19,22 @@ const StatisticsPage = () => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [showOverview, setShowOverview] = useState(true)
+    const [barcode, setBarcode] = useState('')
 
     useEffect(() => {
-
+        document.addEventListener('keypress', e => logKey(e))
+        console.log('QQQQ listen')
         return () => {
 
         }
     }, [])
+
+
+    const logKey = (e) => {
+        console.log('QQQQ event', e)
+        setBarcode(barcode.concat(e.key))
+        console.log('QQQQ barcode', barcode)
+    }
 
     return (
         <styled.StatisticsContainer>
