@@ -1,8 +1,8 @@
 import {gql} from "@apollo/client";
 
 
-export const createRoute = gql`mutation createRoute($input: RouteInput!) {
-    createRoute(input: $input) {
+export const createSchedule = gql`mutation createSchedule($input: ScheduleInput!) {
+    createSchedule(input: $input) {
         id
         organizationId
         device_types
@@ -20,8 +20,8 @@ export const createRoute = gql`mutation createRoute($input: RouteInput!) {
     }
 }`
 
-export const updateRoute = gql`mutation updateRoute($input: RouteUpdateInput!) {
-    updateRoute(input: $input) {
+export const updateSchedule = gql`mutation updateSchedule($input: ScheduleUpdateInput!) {
+    updateSchedule(input: $input) {
         id
         organizationId
         device_types
@@ -39,8 +39,8 @@ export const updateRoute = gql`mutation updateRoute($input: RouteUpdateInput!) {
     }
 }`
 
-export const deleteRoute = gql`mutation deleteRoute($id: ID!, $organizationId: ID!) {
-    deleteRoute(id: $id, organizationId: $organizationId) {
+export const deleteSchedule = gql`mutation deleteSchedule($id: ID!, $organizationId: ID!) {
+    deleteSchedule(id: $id, organizationId: $organizationId) {
         id
         organizationId
     }

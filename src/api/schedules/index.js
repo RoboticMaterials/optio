@@ -8,12 +8,12 @@ import {streamlinedGraphqlCall, TRANSFORMS} from "../../methods/utils/api_utils"
 const parser = (item) => parseItem(item, RESOURCE_JSON_KEYS[dataTypes.TASK])
 const stringifier = (item) => stringifyItem(item, RESOURCE_JSON_KEYS[dataTypes.TASK])
 
-export async function getRoutes() {
+export async function getSchedules() {
     try {
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.QUERY,
-            queries.listRoutes,
+            queries.listSchedules,
             null,
             parser
         )
@@ -23,7 +23,7 @@ export async function getRoutes() {
     }
 };
 
-export async function postRoute(task) {
+export async function postSchedule(task) {
     try {
 
         const {
@@ -33,7 +33,7 @@ export async function postRoute(task) {
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
-            mutations.createRoute,
+            mutations.createSchedule,
             {input: stringifier(rest)},
             parser
         )
@@ -43,12 +43,12 @@ export async function postRoute(task) {
     }
 };
 
-export async function deleteRoute(id) {
+export async function deleteSchedule(id) {
     try {
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
-            mutations.deleteRoute,
+            mutations.deleteSchedule,
             {id, organizationId: "Baca Inc"},
             parser
         )
@@ -58,7 +58,7 @@ export async function deleteRoute(id) {
     }
 };
 
-export async function putRoute(task, id) {
+export async function putSchedule(task, id) {
     try {
         const {
             __typename,
@@ -67,7 +67,7 @@ export async function putRoute(task, id) {
 
         return await streamlinedGraphqlCall(
             TRANSFORMS.MUTATION,
-            mutations.updateRoute,
+            mutations.updateSchedule,
             {input: stringifier(rest)},
             parser
         )

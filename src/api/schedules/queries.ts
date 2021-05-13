@@ -1,7 +1,7 @@
 import {gql} from "@apollo/client";
 
-export const listRoutes = gql`query listRoutes {
-    listRoutes {
+export const listSchedules = gql`query listSchedules {
+    listSchedules {
         id
         organizationId
         device_types
