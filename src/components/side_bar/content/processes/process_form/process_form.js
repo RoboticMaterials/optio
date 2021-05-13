@@ -59,7 +59,9 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+	const maps = useSelector(state => state.mapReducer.maps)
+	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
