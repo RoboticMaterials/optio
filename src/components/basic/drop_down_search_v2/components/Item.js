@@ -164,13 +164,8 @@ const DefaultButtonComponent = styled.i`
 `
 
 const DefaultTextComponent = styled.span`
-  overflow: hidden;
   white-space: nowrap;
-  flex: 1;
   text-overflow: ellipsis;
-  // white-space: normal;
-  // word-wrap: break-word;
-  // word-break: break-all;
 `;
 
 // Specifies the default values for props:

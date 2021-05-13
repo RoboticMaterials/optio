@@ -14,6 +14,7 @@ import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../../constants/l
 
 // Import Utils
 import { getCustomFields, getLotTotalQuantity, getBinQuantity } from '../../../../../../../methods/utils/lot_utils'
+import { getPreviousWarehouseStation } from '../../../../../../../methods/utils/processes_utils'
 
 
 const DashboardLotFields = (props) => {
@@ -21,17 +22,19 @@ const DashboardLotFields = (props) => {
     const {
         currentLot,
         stationID,
+        warehouse,
     } = props || {}
 
     const processes = useSelector(state => state.processesReducer.processes)
 
-    const count = getBinQuantity(currentLot, stationID)
+    // If its a warehouse then use station before this one
+    const count = !!warehouse ? getBinQuantity(currentLot, getPreviousWarehouseStation(currentLot.processId, stationID).id) : getBinQuantity(currentLot, stationID)
+
     const totalQuantity = getLotTotalQuantity(currentLot)
     const processName = processes[currentLot.processId]?.name
 
     const renderLotFields = useMemo(() => {
         const fields = getCustomFields(currentLot.lotTemplateId, currentLot)
-
         return fields.map((field, currIndex, arr) => {
             const {
                 dataType,

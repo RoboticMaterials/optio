@@ -19,11 +19,12 @@ import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations, getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
+import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Actions
 import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
@@ -50,7 +51,8 @@ const DashboardLotPage = (props) => {
         stationID,
         dashboardID,
         subPage,
-        lotID
+        lotID,
+        warehouse,
     } = params || {}
 
     // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
@@ -70,18 +72,28 @@ const DashboardLotPage = (props) => {
             const processStations = Object.keys(getProcessStations(processes[currentLot.processId], routes))
 
             // If its the last station in the process, then the only option is to finish the lot
-            if (processStations[processStations.length - 1] === stationID) {
+            if (processStations[processStations.length - 1] === stationID && !warehouse) {
                 setIsFinish(true)
+            }
+            // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
+            else if (!!warehouse) {
+                console.log('QQQQ current lot', currentLot)
+                console.log('QQQQ stationId', stationID)
+                const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
+                console.log('QQQQ returned route', returnedRoute)
+                setCurrentTask(returnedRoute)
             }
             else {
                 const returnedRoute = getCurrentRouteForLot(currentLot, stationID)
                 setCurrentTask(returnedRoute)
             }
 
-            // go back if lot has no items at this station (ex. just moved them all. Doesn't make sense to stay on this screen
+            // go back if lot has no items at this station (ex. just moved them all). 
+            // Dont go back though if the prevStation was a warehouse
+            // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {
                 const quantity = getBinQuantity(lot, stationID)
-                if (!quantity || (quantity <= 0)) {
+                if ((!quantity || (quantity <= 0)) && !warehouse) {
                     onBack()
                 }
             }
@@ -262,12 +274,12 @@ const DashboardLotPage = (props) => {
         <styled.LotContainer>
             <styled.LotHeader>
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
-                <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
-            <LotFlags currentLot={currentLot} containerStyle={{alignSelf:'center'}}/>
+            <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}
+                warehouse={!!warehouse}
             />
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}

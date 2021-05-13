@@ -139,9 +139,9 @@ const LotFilterBar = (props) => {
                 <styled.ItemContainer>
                     <styled.OptionContainer>
                         <DropDownSearch
-                            reactDropdownSelectCss={props.reactDropdownSelectCss}
-                            dropdownCss={props.dropdownCss}
-                            valueCss={props.valueCss}
+                            // reactDropdownSelectCss={props.reactDropdownSelectCss}
+                            // dropdownCss={props.dropdownCss}
+                            // valueCss={props.valueCss}
                             options={lotFilterOptions}
                             onChange={(values) => {
                                 // *** selected new option ***
@@ -171,7 +171,8 @@ const LotFilterBar = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "7rem",
+                                minWidth: "15rem",
+                                maxWidth: "15rem",
                                 overflow: 'visible',
                                 background: themeContext.bg.tertiary,
                             }}

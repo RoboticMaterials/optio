@@ -184,7 +184,7 @@ const App = () => {
                                       }
 
                                       <Route
-                                          path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
+                                          path={["/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?", '/']}
                                           component={HILModal}
                                       />
 
@@ -211,7 +211,7 @@ const App = () => {
                                                 :
 
                                                 <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    path={["/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?", '/']}
                                                     component={ListView}
                                                 />
 

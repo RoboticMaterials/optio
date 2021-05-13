@@ -20,8 +20,9 @@ export default function ObjectsContent(props) {
     const dispatch = useDispatch()
     let objects = useSelector(state => state.objectsReducer.objects)
     let selectedObject = useSelector(state => state.objectsReducer.selectedObject)
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
-
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map.id === currentMapId)
     const [editing, toggleEditing] = useState(false)
     const [selectedObjectCopy, setSelectedObjectCopy] = useState(null)
 

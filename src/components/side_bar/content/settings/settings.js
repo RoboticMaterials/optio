@@ -43,7 +43,7 @@ const Settings = () => {
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
-    const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
+    const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -56,7 +56,7 @@ const Settings = () => {
         currentMap,
         maps
     } = mapReducer
-    const [serverSettingsState, setServerSettingsState] = useState({})
+    const [serverSettingsState, setServerSettingsState] = useState(serverSettings)
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
@@ -330,11 +330,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        let selectedMap = maps.find((map) => map.id === mapReducer.currentMap?.id)
-        if (!selectedMap) {
-            dispatchSetCurrentMap(maps[0])
-            selectedMap = maps[0]
-        }
+
         return (
             <styled.SettingContainer>
 
@@ -349,13 +345,13 @@ const Settings = () => {
                         labelField="name"
                         valueField="id"
                         options={maps}
-                        values={!!serverSettingsState.currentMap ? [serverSettingsState.currentMap] : []}
+                        values={!!serverSettingsState ? [Object.values(maps).find(map => map.id === serverSettingsState.currentMapId)] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateServerSettings({currentMap: values[0]})
+                            handleUpdateServerSettings({currentMapId: values[0].id})
                         }}
                         className="w-100"
                     />

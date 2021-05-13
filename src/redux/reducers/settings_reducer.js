@@ -89,6 +89,7 @@ const settingsReducer = (state = defaultState, action) => {
                 settings: {
                     ...state.settings,
                     ...action.payload,
+                    currentMap: {...action?.payload?.currentMap, id: action?.payload?.currentMap?._id},
                     loggers: { ...state.settings.loggers, ...action.payload.loggers },
                 },
                 pending: false,

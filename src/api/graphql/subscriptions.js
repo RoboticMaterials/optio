@@ -669,7 +669,6 @@ export const onDeleteDevice = /* GraphQL */ `
   subscription OnDeleteDevice {
     onDeleteDevice {
       id
-      _id
       organizationId
       battery_percentage
       connected
@@ -679,7 +678,7 @@ export const onDeleteDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      map_d
       position
       shelf_attached
       state_text

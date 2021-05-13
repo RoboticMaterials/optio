@@ -50,8 +50,9 @@ const ScheduleList = (props) => {
     let [nextScheduleName, setNextScheduleName] = useState("")
     let [id, setId] = useState("")
 
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
-
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map.id === currentMapId)
     /*
     * handles switch press event of list items
     *

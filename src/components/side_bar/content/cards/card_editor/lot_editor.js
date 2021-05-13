@@ -448,7 +448,6 @@ const FormComponent = (props) => {
 					<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem"}}>
 						<styled.InfoText>Select Quantity to Move</styled.InfoText>
 						<styled.InfoText style={{marginBottom: "1rem"}}>{maxValue} Items Available</styled.InfoText>
-
 						<NumberField
 							maxValue={maxValue}
 							minValue={1}
@@ -1296,7 +1295,7 @@ const LotEditor = (props) => {
 							id: card ? card.id : null,
 							processId: processId,
 							syncWithTemplate: card ? (card.syncWithTemplate || false) : false,
-							moveCount: 0,
+							moveCount: card?.bins[binId]?.count || 0,
 							moveLocation: [],
 							name: card ? card.name : ``,
 							bins: card && card.bins ?

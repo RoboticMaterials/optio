@@ -21,7 +21,10 @@ export const TaskStatisticsContainer = styled.div`
     background-color: rgba(255, 255, 255, 0.9);
 
     overflow: hidden;
-
+  
+  	div:not(:last-child) {
+      border-bottom: 1px solid #7e7e7e;
+	}
 `
 
 export const TaskNameContainer = styled.div`

@@ -14,7 +14,10 @@ export const generateDefaultRoute = (obj) => {
     console.log('autoGenerateRoute DEFAULT isString(obj)',isString(obj))
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.settingsReducer.settings.currentMap
+
+    const currentMapId = storeState.settingsReducer.settings.currentMapId
+    const maps = storeState.mapReducer.maps
+    const currentMap = Object.values(maps).find(map => map.id === currentMapId)
 
     return {
         ...defaultTask,
@@ -33,7 +36,9 @@ export const autoGenerateRoute = (obj) => {
     console.log('autoGenerateRoute isString(obj)',isString(obj))
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.mapReducer.currentMap
+    const currentMapId = storeState.settingsReducer.settings.currentMapId
+    const maps = storeState.mapReducer.maps
+    const currentMap = Object.values(maps).find(map => map.id === currentMapId)
     const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
 
     const positions = storeState.positionsReducer.positions

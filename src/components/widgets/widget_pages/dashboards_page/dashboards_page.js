@@ -11,7 +11,7 @@ import { withRouter } from "react-router-dom";
 // Import Components
 import DashboardScreen from './dashboard_screen/dashboard_screen'
 
-// Import Constants 
+// Import Constants
 import { OPERATION_TYPES } from '../../../../constants/dashboard_constants'
 
 import { PAGES } from "../../../../constants/dashboard_constants";
@@ -167,7 +167,7 @@ const DashboardsPage = (props) => {
             }
         }
     }
-    
+
     return (
         <style.PageContainer >
             <DndProvider backend={HTML5Backend}>
