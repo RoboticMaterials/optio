@@ -73,7 +73,7 @@ const WidgetPages = (props) => {
                 showWidgetPage={showWidgetPage}
             >
                 <Route
-                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?"
+                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?"
                     component={DashboardsPage}
                 />
                 <Route
