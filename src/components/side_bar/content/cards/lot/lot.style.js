@@ -136,14 +136,14 @@ export const LotName = styled.span`
   text-overflow: ellipsis;
 `
 
-export const FooterBar = styled.div`
+export const FooterContainer = styled.div`
 	height: fit-content;
-	background: ${props => props.theme.bg.septenary};
-	// background: ${props => props.color};
 	display: flex;
-	justify-content: space-between;
-	padding: 0 1rem 0 1rem;
-  font-size: ${props => props.theme.fontSize.sz4};
+	justify-content: center;
+	padding: 0.5rem 1rem;
+  color: #bbb;
+  font-weight: bold;
+  font-size: 0.9rem;
 `
 
 const notSelectedFlagCss = css`

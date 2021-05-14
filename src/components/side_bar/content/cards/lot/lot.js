@@ -34,6 +34,7 @@ const Lot = (props) => {
         stationName,
         totalQuantity,
         lotNumber,
+        leadTime,
         templateValues,
         id,
         enableFlagSelector,
@@ -307,6 +308,12 @@ const Lot = (props) => {
 
                 {renderTemplateValues()}
             </styled.ContentContainer>
+
+            {!!leadTime &&
+                <styled.FooterContainer>
+                    Completion: {leadTime}
+                </styled.FooterContainer>
+            }
 
         </styled.Container>
     )
