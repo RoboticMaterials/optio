@@ -46,8 +46,9 @@ const Cards = (props) => {
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
-
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
     // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))

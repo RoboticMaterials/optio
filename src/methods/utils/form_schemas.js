@@ -620,7 +620,10 @@ export const routeSchema = Yup.object().shape({
     unload: routeStationSchema//.required("Required."),
 })
 
-
+export const hilModalSchema = Yup.object().shape({
+    quantity: Yup.number()
+        .min(1, 'Minimum value of 1 required.')
+})
 
 export const routesSchema = Yup.array().of(
     routeSchema

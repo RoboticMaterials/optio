@@ -141,7 +141,9 @@ const ZoneHeader = (props) => {
 	const themeContext = useContext(ThemeContext)
 
 	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) }) || []
-	const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+	const maps = useSelector(state => state.mapReducer.maps)
+	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
 	return (
 		<styled.Container>

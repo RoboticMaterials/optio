@@ -17,18 +17,20 @@ import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_fl
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
+import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getLotTemplateData } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations, getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
+import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Actions
-import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
+import { handlePostTaskQueue, putTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
 import { isObject } from "../../../../../../methods/utils/object_utils";
-import { putCard } from '../../../../../../redux/actions/card_actions'
+import { putCard, getCards } from '../../../../../../redux/actions/card_actions'
 
 const DashboardLotPage = (props) => {
 
@@ -50,7 +52,8 @@ const DashboardLotPage = (props) => {
         stationID,
         dashboardID,
         subPage,
-        lotID
+        lotID,
+        warehouse,
     } = params || {}
 
     // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
@@ -62,6 +65,8 @@ const DashboardLotPage = (props) => {
 
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
+    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchGetCards = () => dispatch(getCards())
 
     useEffect(() => {
         if (lotID) {
@@ -70,18 +75,28 @@ const DashboardLotPage = (props) => {
             const processStations = Object.keys(getProcessStations(processes[currentLot.process_id], routes))
 
             // If its the last station in the process, then the only option is to finish the lot
-            if (processStations[processStations.length - 1] === stationID) {
+            if (processStations[processStations.length - 1] === stationID && !warehouse) {
                 setIsFinish(true)
+            }
+            // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
+            else if (!!warehouse) {
+                console.log('QQQQ current lot', currentLot)
+                console.log('QQQQ stationId', stationID)
+                const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
+                console.log('QQQQ returned route', returnedRoute)
+                setCurrentTask(returnedRoute)
             }
             else {
                 const returnedRoute = getCurrentRouteForLot(currentLot, stationID)
                 setCurrentTask(returnedRoute)
             }
 
-            // go back if lot has no items at this station (ex. just moved them all. Doesn't make sense to stay on this screen
+            // go back if lot has no items at this station (ex. just moved them all). 
+            // Dont go back though if the prevStation was a warehouse
+            // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {
                 const quantity = getBinQuantity(lot, stationID)
-                if (!quantity || (quantity <= 0)) {
+                if ((!quantity || (quantity <= 0)) && !warehouse) {
                     onBack()
                 }
             }
@@ -186,88 +201,88 @@ const DashboardLotPage = (props) => {
 
         // extract lot attributes
         const {
-            bins,
             name: cardName,
-            process_id,
-            _id: cardId,
+            _id: lotId,
         } = currentLot
 
         if (quantity && quantity > 0) {
-            // extract first station's bin and queue bin from bins
-            const {
-                [stationID]: currentStationBin,
-                ["FINISH"]: finishBin,
-                ...unalteredBins
-            } = bins || {}
 
-            const queueBinCount = finishBin?.count ? finishBin.count : 0
-            const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
-
-            // udpated currentLot will maintain all of the cards previous attributes with the station_id and route_id updated
-            let updatedCard = {
-                ...currentLot,                                // spread unaltered attributes
-                bins: {
-                    ...unalteredBins,                   // spread unaltered bins
-                    ["FINISH"]: {
-                        ...finishBin,              // spread unaltered attributes of station bin if it exists
-                        count: parseInt(queueBinCount) + parseInt(quantity)    // increment first station's count by the count of the queue
-                    }
+            // moving lot is handled through custom task
+            const custom = {
+                load: {
+                    station: stationID,
+                    instructions: "",
+                    position: null,
+                    sound: null,
                 },
+                unload: {
+                    station: "FINISH",
+                    instructions: "",
+                    position: null,
+                    sound: null,
+                },
+                handoff: true,
+                hil_response: null,
+                quantity: 1
             }
 
-            if (quantity < currentStationBinCount) {
-                updatedCard = {
-                    ...updatedCard,
-                    bins: {
-                        ...updatedCard.bins,
-                        [stationID]: {
-                            ...currentStationBin,
-                            count: parseInt(currentStationBinCount) - parseInt(quantity)
-                        }
-                    }
-                }
-            }
-
-            // send update action
-            const result = await onPutCard(updatedCard, cardId)
+            // first, post task queue
+            const result = await dispatchPostTaskQueue({ hil_response: null, tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
 
             // check if request was successful
             if (!(result instanceof Error)) {
+
+                const {
+                    _id,
+                    dashboardID,
+                    dashboard,
+                    ...rest
+                } = result || {}
+
+                // now must update task queue item to move the lot
+                setTimeout(async () => {
+
+                    await disptachPutTaskQueue(
+                        {
+                            ...rest,
+                            hil_response: true,
+                            lot_id: lotId,
+                            quantity
+                        }
+                        , result._id)
+                    await dispatchGetCards()
+                }, 1000)
+
                 requestSuccessStatus = true
                 message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
+                handleTaskAlert(
+                    ADD_TASK_ALERT_TYPE.FINISH_SUCCESS,
+                    "Lot Finished",
+                    message
+                )
             }
         }
 
         else {
             message = "Quantity must be greater than 0"
-        }
-
-        if (requestSuccessStatus) {
-            handleTaskAlert(
-                ADD_TASK_ALERT_TYPE.FINISH_SUCCESS,
-                "Lot has been finished",
-                message,
-            )
-        } else {
             handleTaskAlert(
                 ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-                "Finish failure",
-                message,
+                "Lot Failed",
+                message
             )
         }
-
     }
 
     return (
         <styled.LotContainer>
             <styled.LotHeader>
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
-                <styled.LotTitle>{getBinQuantity(currentLot, stationID)}</styled.LotTitle>
             </styled.LotHeader>
-            <LotFlags flags={currentLot?.flags} containerStyle={{alignSelf:'center'}}/>
+            <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
             <DashboardLotFields
                 currentLot={currentLot}
                 stationID={stationID}
+                warehouse={!!warehouse}
             />
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}
