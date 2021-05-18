@@ -431,7 +431,7 @@ const Column = ((props) => {
 							cycleTimeSeconds = 0
 						} else if (station_id === 'QUEUE') {
 							cycleTimeSeconds = 0
-						} else if (!!stations[station_id].cycle_time) {
+						} else if (!!stations[station_id] && !!stations[station_id].cycle_time) {
 							cycleTimeSeconds = moment.duration(stations[station_id].cycle_time).asSeconds()
 						} else {
 							cycleTimeSeconds = NaN
