@@ -140,28 +140,31 @@ const DashboardScreen = (props) => {
         }
     }, [editing])
 
-    // Posts HIL Success to API
-    const handleHilSuccess = async (item) => {
+    // Commented out for now
+    // Used for unloading human routes
+    // But we removed that ability as of now
+    // // Posts HIL Success to API
+    // const handleHilSuccess = async (item) => {
 
-        let newItem = {
-            ...item,
-            hil_response: true,
-            // quantity: quantity,
-        }
+    //     let newItem = {
+    //         ...item,
+    //         hil_response: true,
+    //         // quantity: quantity,
+    //     }
 
-        const ID = deepCopy(item._id)
+    //     const ID = deepCopy(item._id)
 
-        delete newItem._id
-        delete newItem.dashboard
+    //     delete newItem._id
+    //     delete newItem.dashboard
 
-        // This is used to make the tap of the HIL button respond quickly
-        // TODO: This may not be necessary here
-        onHILResponse(ID)
-        setTimeout(() => onHILResponse(''), 2000)
+    //     // This is used to make the tap of the HIL button respond quickly
+    //     // TODO: This may not be necessary here
+    //     onHILResponse(ID)
+    //     setTimeout(() => onHILResponse(''), 2000)
 
-        await onPutTaskQueue(newItem, ID)
+    //     await onPutTaskQueue(newItem, ID)
 
-    }
+    // }
 
     const handleToggleLock = async () => {
 

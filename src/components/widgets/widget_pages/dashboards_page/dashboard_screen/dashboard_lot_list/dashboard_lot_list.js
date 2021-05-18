@@ -31,6 +31,8 @@ const DashboardLotList = () => {
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
@@ -42,6 +44,20 @@ const DashboardLotList = () => {
 
     const handleCardClicked = (lotID) => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}`)
+    }
+
+    const onLotIsCurrentlyAtCart = (lot) => {
+        const currDevice = Object.values(devices)[0]
+        if (!!currDevice.current_task_queue_id && currDevice.current_task_queue_id.length > 0 && ) {
+            const currTaskQueue = taskQueue[currDevice.current_task_queue_id]
+            if (currTaskQueue?.lot_id === lot._id) {
+                console.log('QQQQ lot', lot)
+                console.log('QQQQ device', currDevice)
+                console.log('QQQQ task q', currTaskQueue)
+                return false
+            }
+        }
+        return true
     }
 
     const renderLotCards = useMemo(() => {
@@ -56,6 +72,7 @@ const DashboardLotList = () => {
             .filter((card, ind) => {
                 return getIsCardAtBin(card, station?._id)
             })
+            .filter((currLot) => { return onLotIsCurrentlyAtCart(currLot) })
             .filter((currLot) => {
                 const {
                     name: currLotName,
