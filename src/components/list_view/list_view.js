@@ -28,8 +28,6 @@ import log from '../../logger.js';
 
 import disableBrowserBackButton from 'disable-browser-back-navigation';
 
-const logger = log.getLogger("ListView")
-
 const SCREENS = {
     LOCATIONS: {
         title: "Locations",
@@ -72,7 +70,6 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
-
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
@@ -256,7 +253,7 @@ const ListView = (props) => {
             {(showDashboards && !showSettings) &&
                 // must be wrapped in route to give dashboards page the match params
                 <Route
-                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?"
+                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?"
                     component={DashboardsPage}
                 />
             }

@@ -59,8 +59,11 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+	const maps = useSelector(state => state.mapReducer.maps)
+	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 	const editing = useSelector(state => state.processesReducer.editingProcess)
+	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
 	useEffect(() => {
 		return () => {
@@ -81,12 +84,15 @@ const ProcessForm = (props) => {
 			...remainingValues
 		} = values
 
+
 		if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
 			dispatchPageDataChanged(true)
 		}
-		else{
+
+		return () => {
 			dispatchPageDataChanged(false)
 		}
+
 	}, [values])
 
 	const handleSave = async (values, close) => {
@@ -239,6 +245,9 @@ const ProcessForm = (props) => {
 				new: selectedProcess.new,
 				newRoute: null,
 				map_id: currentMap._id,
+				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
+				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
+
 			}}
 
 			// validation control

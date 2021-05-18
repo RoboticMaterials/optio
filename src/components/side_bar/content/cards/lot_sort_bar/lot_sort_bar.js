@@ -113,7 +113,8 @@ const LotSortBar = (props) => {
                                 style={{
                                     borderTopRightRadius: 0,
                                     borderBottomRightRadius: 0,
-                                    minWidth: "7rem",
+                                    minWidth: "15rem",
+                                    maxWidth: "15rem",
                                     background: themeContext.bg.tertiary
                                 }}
                             />

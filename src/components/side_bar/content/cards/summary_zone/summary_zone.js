@@ -143,4 +143,3 @@ SummaryZone.defaultProps = {
 }
 
 export default memo(SummaryZone)
-

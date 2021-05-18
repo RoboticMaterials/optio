@@ -140,7 +140,7 @@ export default function ContentList(props) {
                                         </div>
                                         :
                                         <styled.ListItemIcon
-                                            className='far fa-clone'
+                                            className='fas fa-clone'
                                             style={{ color: '#ffb62e' }}
                                             onClick={() => {
                                                 handleCardView(element)

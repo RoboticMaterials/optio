@@ -30,6 +30,9 @@ import {
     DESELECT_TASK,
     EDITING_TASK, REMOVE_TASKS,
     SET_SELECTED_HOVERING_TASK,
+    SET_SHOW_ROUTE_CONFIRMATION,
+    SET_ROUTE_CONFIRMATION_LOCATION,
+    AUTO_ADD_ROUTE,
 
 } from '../types/tasks_types'
 
@@ -43,7 +46,10 @@ const defaultState = {
     selectedHoveringTask: null,
 
     error: {},
-    pending: false
+    pending: false,
+    showRouteConfirmation: false,
+    routeConfirmationLocation: null,
+    autoAddRoute: false
 };
 
 export default function tasksReducer(state = defaultState, action) {
@@ -321,6 +327,24 @@ export default function tasksReducer(state = defaultState, action) {
                 ...state,
                 editingTask: action.payload,
             }
+
+        case SET_SHOW_ROUTE_CONFIRMATION:
+            return {
+                ...state,
+                showRouteConfirmation: action.payload,
+            }
+
+            case SET_ROUTE_CONFIRMATION_LOCATION:
+                return {
+                    ...state,
+                    routeConfirmationLocation: action.payload,
+                }
+
+            case AUTO_ADD_ROUTE:
+                return {
+                    ...state,
+                    autoAddRoute: action.payload,
+                }
         default:
             return state;
     }
