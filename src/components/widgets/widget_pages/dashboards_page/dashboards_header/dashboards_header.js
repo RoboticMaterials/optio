@@ -80,12 +80,12 @@ const DashboardsHeader = (props) => {
                     Operations
                 </Button>
                 <styled.Title>{name}</styled.Title>
-                <styled.PaceContainer
+                {/* <styled.PaceContainer
                     color={color}
                 >
 
                     <styled.PaceText color={color}>89/100</styled.PaceText>
-                </styled.PaceContainer>
+                </styled.PaceContainer> */}
 
                 {!mobileMode &&
                   <styled.LockIcon
