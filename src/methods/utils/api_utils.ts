@@ -126,18 +126,38 @@ export const streamlinedQuery = async (query, variables, selectionSetName, parse
 }
 
 export const streamlinedSubscription = async (sub, cb, parser) => {
+    console.log("streamlinedSubscription sub",sub)
 
-    const subscription = await API.graphql(
-        graphqlOperation(sub)
-    ).subscribe({
-        next: (subResult) => {
-            const subName = getSubscriptionName(sub)
-            const data = getSubscriptionData(subResult, subName, parser)
-            cb(data)
+    const subscription = apolloClient.subscribe({
+        query: sub,
+        // variables: { repoFullName: repoName },
+    })
 
+    console.log('subscription hereeee',subscription)
+
+    subscription.subscribe({
+        next(data) {
+            console.log('subscriptionsubscription data ',data)
+            // ... call updateQuery to integrate the new comment
+            // into the existing list of comments
         },
-        error: error => console.warn(error)
+        error(err) { console.error('subscriptionsubscription err', err); },
     });
+
+
+
+    // const subscription = await API.graphql(
+    //     graphqlOperation(sub)
+    // ).subscribe({
+    //     next: (subResult) => {
+    //
+    //         const subName = getSubscriptionName(sub)
+    //         const data = getSubscriptionData(subResult, subName, parser)
+    //         cb(data)
+    //
+    //     },
+    //     error: error => console.warn(error)
+    // });
 
     return subscription
 }

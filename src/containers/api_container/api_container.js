@@ -41,6 +41,17 @@ import { getMap } from '../../api/map_api';
 import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
 import { getReportEvents } from "../../redux/actions/report_event_actions";
+import {streamlinedSubscription} from "../../methods/utils/api_utils";
+import * as dataTypes from "../../redux/types/data_types";
+import * as stationSubs from "../../api/stations/subscriptions";
+import {onDelta} from "../../api/stations/subscriptions";
+import {createActionType} from "../../methods/utils/redux_utils";
+import {REMOVE, SET} from "../../redux/types/prefixes";
+import {DATA_PARSERS} from "../../methods/utils/data_utils";
+
+const subscriptions = {
+    [dataTypes.STATION]: stationSubs
+}
 
 const ApiContainer = (props) => {
 
@@ -99,6 +110,7 @@ const ApiContainer = (props) => {
     const [currentPage, setCurrentPage] = useState('')
     const [apiError, setApiError] = useState(false)
     const [pageDataInterval, setPageDataInterval] = useState(null)
+    const [currentSubscriptions, setCurrentSubscriptions] = useState([])
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
     const [localDataInterval, setLocalDataInterval] = useState(null)
     const [mapDataInterval, setMapDataInterval] = useState(null)
@@ -205,7 +217,7 @@ const ApiContainer = (props) => {
      * Handles data interval based on page
      */
 
-    const setDataInterval = (pageParams) => {
+    const setDataInterval = async (pageParams) => {
         let pageName = ''
         const {
             data1,
@@ -234,11 +246,12 @@ const ApiContainer = (props) => {
         // clear current interval
         clearInterval(pageDataInterval);
 
+        console.log('pageName', pageName)
         // set new interval for specific page
         switch (pageName) {
 
             case 'objects':
-                setPageDataInterval(setInterval(() => loadObjectsData(), 100000))
+                setPageDataInterval(setInterval(() => loadObjectsData(), 100000000))
                 break;
 
             case 'scheduler':
@@ -246,19 +259,19 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 300000))
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 30000000))
                 break;
 
             case 'locations':
-                setPageDataInterval(setInterval(() => loadLocationsData(), 500000))
-                break
+                setCurrentSubscriptions(await getLocationsPageSubscriptions())
+                break;
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 100000))
+                setPageDataInterval(setInterval(() => loadTasksData(), 1000000))
                 break;
 
             case 'settings':
-                setPageDataInterval(setInterval(() => loadSettingsData(), 100000))
+                setPageDataInterval(setInterval(() => loadSettingsData(), 1000000))
                 break;
 
             case 'lots':
@@ -296,6 +309,57 @@ const ApiContainer = (props) => {
                 break;
         }
 
+    }
+
+    console.log("currentSubscriptions",currentSubscriptions)
+    /*
+    * creates delta and delete subs for resource corresponding to resourceName
+    * */
+    const getResourceSubscription = async (resourceName, deleteCB, deltaCB) => {
+        let subs = []
+
+        // NOTE: need to subscribe to delete events separately in order to know to remove item from redux instead of insert / replace
+
+        const deltaSub = subscriptions[resourceName]?.onDelta
+
+
+        if(deltaSub) {
+            subs.push(await streamlinedSubscription(deltaSub, (data) => {
+                dispatch({type: createActionType([SET, resourceName]), payload: data})
+                deltaCB && deltaCB(data)
+
+            }, DATA_PARSERS[resourceName]))
+        }
+        console.log('deltaSub',deltaSub)
+
+        const deleteSub = subscriptions[resourceName]?.onDelete
+
+        if(deleteSub) {
+            subs.push(await streamlinedSubscription(deleteSub, (data) => {
+                dispatch({type: createActionType([REMOVE, resourceName]), payload: data})
+                deleteCB && deleteCB(data)
+            }, null))
+        }
+
+
+        return subs
+    }
+
+    /*
+    * calls getResourceSubscription for each string in resourceNames
+    * */
+    const getResourceSubscriptions = async (resourceNames) => {
+        let subs = []
+
+        for(const resourceName of resourceNames) {
+            subs = subs.concat(await getResourceSubscription(resourceName))
+        }
+
+        return subs
+    }
+
+    const getLocationsPageSubscriptions = async () => {
+        return await getResourceSubscriptions([dataTypes.STATION])
     }
 
     const loadInitialData = async () => {

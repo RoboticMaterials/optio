@@ -6,6 +6,7 @@ export const OBJECT = 'OBJECT';
 export const PROCESS = 'PROCESS';
 export const SETTINGS = 'SETTINGS';
 export const STATION = 'STATION';
+export const POSITION = 'POSITION';
 export const TASK = 'TASK';
 export const SHOW_EDITOR = 'CARDS';
 export const SHOW_FORM_EDITOR = 'SHOW__FORM_EDITOR';

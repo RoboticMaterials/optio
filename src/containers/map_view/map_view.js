@@ -110,30 +110,30 @@ export class MapView extends Component {
 
       var currentMap = this.props.maps.find(map => map.id === this.props.currentMapId)
 
-        // console.log("currentMap",currentMap)
-        // console.log("this.props.currentMapId",this.props.currentMapId)
-        // console.log("this.props.maps",this.props.maps)
-        // console.log("this.props.settings",this.props.settings)
+        console.log("currentMap",currentMap)
+        console.log("this.props.currentMapId",this.props.currentMapId)
+        console.log("this.props.maps",this.props.maps)
+        console.log("this.props.settings",this.props.settings)
       if(!currentMap){
           if(this.state.currentMap?.id !== this.props.maps[0]?.id) this.setState({currentMap: this.props.maps[0]})
 
-        // const updatedSettings = {
-        //   ...this.props.settings,
-        //   currentMapId: this.props.maps[0].id,
-        // }
-        //
-        // if(this.props.currentMapId !== this.props.maps[0].id) {
-        //     if(this.props.settings.id) {
-        //         await this.props.dispatchPutSettings(updatedSettings)
-        //     }
-        //     else {
-        //         await this.props.dispatchPostSettings(updatedSettings)
-        //     }
-        // }
+        const updatedSettings = {
+          ...this.props.settings,
+          currentMapId: this.props.maps[0].id,
+        }
+
+        if(this.props.currentMapId !== this.props.maps[0].id) {
+            if(this.props.settings.id) {
+                await this.props.dispatchPutSettings(updatedSettings)
+            }
+            else {
+                await this.props.dispatchPostSettings(updatedSettings)
+            }
+        }
       }
-      // else{
-      //   this.setState({currentMap: currentMap})
-      // }
+      else{
+        this.setState({currentMap: currentMap})
+      }
     }
 
 

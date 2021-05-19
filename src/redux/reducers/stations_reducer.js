@@ -24,11 +24,14 @@ import {
     EDITING_STATION
 
 } from '../types/stations_types'
+import * as prefixes from '../types/prefixes'
+import * as dataTypes from '../types/data_types'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 import {isEmpty} from "../../methods/utils/object_utils";
+import {createActionType} from "../../methods/utils/redux_utils";
 
 const defaultState = {
     stations: {},
@@ -70,6 +73,22 @@ export default function stationsReducer(state = defaultState, action) {
         //                UTILS                     //
         //                                          //
         // ======================================== //
+
+        case createActionType([prefixes.SET, dataTypes.STATION]): {
+            return onUpdateStation(action.payload)
+        }
+
+        case createActionType([prefixes.REMOVE, dataTypes.STATION]): {
+            const {
+                [action.payload.id]: removed,
+                ...remaining
+            } = state.stations
+
+            return {
+                ...state,
+                stations: { ...remaining },
+            }
+        }
 
         // Adds station to front-end without adding it to the backend
         case ADD_STATION:
