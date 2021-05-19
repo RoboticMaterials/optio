@@ -19,7 +19,7 @@ export const generateDefaultRoute = (obj) => {
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: false,
+        handoff: true,
         map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
@@ -41,7 +41,7 @@ export const autoGenerateRoute = (obj) => {
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: false,
+        handoff: true,
         map_id: currentMap._id,
         load: {...defaultTask.load,
                station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
