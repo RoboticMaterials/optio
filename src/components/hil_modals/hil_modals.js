@@ -377,6 +377,17 @@ const HILModals = (props) => {
             process_id: processId
         } = lot || {}
 
+        const {
+            quantity,
+            fraction
+        } = item || {}
+
+        const {
+            track_quantity: trackQuantity
+        } = task || {}
+
+        const unloadQuantity = trackQuantity ? quantity : Math.ceil(maxQuantity * fraction)
+
         return (
             <Formik
                 validationSchema={hilModalSchema}
@@ -439,6 +450,7 @@ const HILModals = (props) => {
                                         <LotContainer
                                             showCustomFields={false}
                                             lotId={lotId}
+                                            quantity={hilLoadUnload === 'unload' ? unloadQuantity : null}
                                             binId={
                                                 // If its a warehouse, the bin is going to be the previous station
                                                 !!warehouse ?
