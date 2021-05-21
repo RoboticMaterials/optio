@@ -31,6 +31,9 @@ const DashboardLotList = () => {
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const routes = useSelector(state => state.tasksReducer.tasks)
 
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
@@ -42,6 +45,41 @@ const DashboardLotList = () => {
 
     const handleCardClicked = (lotID) => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}`)
+    }
+
+    // Handles when lot is currently on the cart
+    const onLotIsCurrentlyAtCart = (lot) => {
+        const currDevice = Object.values(devices)[0]
+
+        // If device has a current task q item
+        if (!!currDevice && !!currDevice.current_task_queue_id && currDevice.current_task_queue_id.length > 0) {
+
+            // Get the corresponding task q
+            const currTaskQueue = taskQueue[currDevice.current_task_queue_id]
+
+            // Get the coresponding route
+            const currRoute = routes[taskQueue[currDevice.current_task_queue_id].task_id]
+
+            // See if the lot belongs to this task q item
+            const currLotIsInTaskQ = currTaskQueue?.lot_id === lot._id
+
+            // See if the device is at the unload station and unload hil is displaying
+            const deviceAtUnload = !currTaskQueue?.next_position && currRoute?.unload?.station === currTaskQueue.hil_station_id
+
+            // See if the lot already has a quantity at the station
+            // IE the lot is split and already here
+            const quantityAtStation = lot.bins[stationID].count
+            const lotHasQuantityAlreadyAtStation = currTaskQueue?.quantity !== quantityAtStation
+
+            // If lot is in the task, 
+            // lot does not have quantity at the station
+            // the device is driving to the next position or the device is at unload, 
+            // then dont show card on dashboard
+            if (currLotIsInTaskQ && !lotHasQuantityAlreadyAtStation && (!!currTaskQueue?.next_position || deviceAtUnload)) {
+                return false
+            }
+        }
+        return true
     }
 
     const renderLotCards = useMemo(() => {
@@ -56,6 +94,7 @@ const DashboardLotList = () => {
             .filter((card, ind) => {
                 return getIsCardAtBin(card, station?._id)
             })
+            .filter((currLot) => { return onLotIsCurrentlyAtCart(currLot) })
             .filter((currLot) => {
                 const {
                     name: currLotName,
