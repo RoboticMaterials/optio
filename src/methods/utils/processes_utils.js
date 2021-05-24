@@ -366,6 +366,28 @@ export const getStationAttributes = (processId, attributes) => {
     return stationAttributes
 }
 
+// Gets the previous station that is a warehouse
+// If it is a warehouse, it returns that station,
+// If not, it returns false
+export const getPreviousWarehouseStation = (processID, stationID) => {
+    const storeState = store.getState()
+    const routes = storeState.tasksReducer.tasks || {}
+    const process = storeState.processesReducer.processes[processID] || {}
+    const stations = storeState.stationsReducer.stations || {}
+
+
+    const processStations = Object.keys(getProcessStations(process, routes))
+    const currStationIndex = processStations.findIndex(el => el === stationID)
+    const warehouseID = processStations[currStationIndex - 1]
+    const warehouse = stations[warehouseID]
+
+    if (!!warehouse && warehouse?.type === 'warehouse') {
+        return warehouse
+    }
+    else {
+        return false
+    }
+}
 
 
 

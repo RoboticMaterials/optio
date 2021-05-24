@@ -106,6 +106,16 @@ const StatisticsOverview = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
+        getAllData()
+        const dataInterval = setInterval(() => getAllData(), 30000)
+        return () => {
+            clearInterval(dataInterval)
+        }
+    }, [])
+
+
+
+    const getAllData = () => {
         dispatchGetReportEvents() // load report events
 
 
@@ -134,7 +144,7 @@ const StatisticsOverview = (props) => {
         })
 
         getReportData(body)
-    }, [])
+    }
 
     const getReportData = async (body) => {
         setLoading(true)

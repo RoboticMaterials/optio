@@ -3,8 +3,7 @@ import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
 
 export const ContentContainer = styled.div`
     flex-grow: 1;
-    padding: 1rem;
-
+    padding: 1rem 1rem 0rem 1rem;
     display: flex;
     flex-direction: column;
 
@@ -27,6 +26,22 @@ export const ListItemIcon = styled.i`
         cursor: pointer;
     }
 
+`
+export const Title = styled.h1`
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: ${props => props.theme.bg.septenary};
+    user-select: none;
+`
+
+export const TaskContainer = styled.div`
+    background-color: ${props => props.theme.bg.secondary};
+    border-radius: 0.4rem;
+    overflow: auto;
+    // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    scrollbar-width: thin;
+    height: 100%;
 `
 
 export const Card = styled.div`
@@ -66,7 +81,7 @@ export const ListItem = styled.div`
     height: 2.5rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: ${props => props.theme.schema['objects'].solid};
+    background: ${props => props.theme.schema['tasks'].solid};
 
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
@@ -147,13 +162,13 @@ export const ObjectEditorText = styled.h3`
 export const DirectionText = styled.h3`
     font-size: 1rem;
     font-family: ${props => props.theme.font.primary};
-    color: ${props => props.theme.schema.tasks.solid};
+    color: ${props => props.theme.bg.septenary};
     text-align: center;
 `
 
 export const DualSelectionButton = styled.button`
     font-size: 1rem;
-    width: 8rem;
+    width: 50%;
     border: none;
     font-family: ${props => props.theme.font.primary};
 

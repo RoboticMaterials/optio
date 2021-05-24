@@ -73,54 +73,57 @@ const SummaryZone = ((props) => {
    *
    * no params
    * */
-    const renderSelectedProcesses = () => {
-        return (
-            // map through {selectedProcesses}
-            selectedProcesses.map((currProcess, processIndex) => {
+	const renderSelectedProcesses = () => {
+		return (
+			// map through {selectedProcesses}
+			selectedProcesses.map((currProcess, processIndex) => {
 
-                // extract process attributes
-                const {
-                    name: processName,
-                    _id: processId
-                } = currProcess
+				// extract process attributes
+				const {
+					name: processName,
+					_id: processId
+				} = currProcess
 
-                // return a CardZone wrapped with a styled container and any additional elements
-                return (
-                    <styled.ZoneContainer
-                        key={processId}
-                    >
-                        <styled.ColumnContainer>
-                            <styled.ProcessName>{processName}</styled.ProcessName>
-                            {renderProcessCycleTime(currProcess)}
-                        </styled.ColumnContainer>
+				// return a CardZone wrapped with a styled container and any additional elements
 
-                        <CardZone
-                            handleAddLotClick={handleAddLotClick}
-                            setSelectedCards={setSelectedCards}
-                            selectedCards={selectedCards}
-                            sortMode={sortMode}
-                            sortDirection={sortDirection}
-                            lotFilterValue={lotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
-                            setShowCardEditor={setShowCardEditor}
-                            showCardEditor={showCardEditor}
-                            maxHeight={"30rem"}
-                            processId={processId}
-                            handleCardClick={handleCardClick}
-                        />
-                    </styled.ZoneContainer>
-                )
-            })
-        )
-    }
+				return	(
+					<>
+						{!!currProcess.showSummary &&
+							<styled.ZoneContainer
+								key={processId}
+							>
+								<styled.ProcessName>{processName}</styled.ProcessName>
 
-    return (
-        <styled.Container >
-            <styled.ProcessesContainer>
-                {renderSelectedProcesses()}
-            </styled.ProcessesContainer>
-        </styled.Container>
-    )
+								<CardZone
+									handleAddLotClick={handleAddLotClick}
+									setSelectedCards={setSelectedCards}
+									selectedCards={selectedCards}
+									sortMode={sortMode}
+									sortDirection={sortDirection}
+									lotFilterValue={lotFilterValue}
+									selectedFilterOption={selectedFilterOption}
+									setShowCardEditor={setShowCardEditor}
+									showCardEditor={showCardEditor}
+									maxHeight={"30rem"}
+									processId={processId}
+									handleCardClick={handleCardClick}
+								/>
+							</styled.ZoneContainer>
+						}
+					</>
+
+				)
+			})
+		)
+	}
+
+	return(
+		<styled.Container >
+			<styled.ProcessesContainer>
+				{renderSelectedProcesses()}
+			</styled.ProcessesContainer>
+		</styled.Container>
+	)
 })
 
 // Specifies propTypes
@@ -143,4 +146,3 @@ SummaryZone.defaultProps = {
 }
 
 export default memo(SummaryZone)
-

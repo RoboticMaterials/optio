@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as styled from './statistics.style'
 import { ThemeContext } from 'styled-components';
 
-// Import Components 
+// Import Components
 import StationColumns from './station_columns/station_columns'
 import Header from '../cards/summary_header/summary_header'
 import StatisticsHeader from './statistics_header/statistics_header'
@@ -22,7 +22,9 @@ const Statistics = () => {
     const themeContext = useContext(ThemeContext);
 
     const processes = useSelector(state => state.processesReducer.processes)
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     const [dateIndex, setDateIndex] = useState(0)
     const [timeSpan, setTimeSpan] = useState('day')
@@ -33,15 +35,15 @@ const Statistics = () => {
 
     /**
      * Gets the new data based on the selected time span and dateIndex
-     * 
+     *
      * TimeSpan:
      * Can be either Day, Week, Month or Year
-     * 
+     *
      * DateIndex:
-     * The current date (today) index is 0, if you want to go back to the past date, the index would be 1 
-     * 
-     * @param {*} newTimeSpan 
-     * @param {*} newDateIndex 
+     * The current date (today) index is 0, if you want to go back to the past date, the index would be 1
+     *
+     * @param {*} newTimeSpan
+     * @param {*} newDateIndex
      */
     const onTimeSpan = async (newTimeSpan, newDateIndex) => {
 
@@ -69,7 +71,9 @@ const Statistics = () => {
             Object.values(processes)
             .filter((currProcess) => currProcess.map_id === currentMap._id)
             .forEach(process => {
+              if(!!process.showStatistics){
                 processesToRender.push(process._id)
+              }
             });
 
         }

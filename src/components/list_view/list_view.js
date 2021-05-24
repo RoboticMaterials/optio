@@ -28,8 +28,6 @@ import log from '../../logger.js';
 
 import disableBrowserBackButton from 'disable-browser-back-navigation';
 
-const logger = log.getLogger("ListView")
-
 const SCREENS = {
     LOCATIONS: {
         title: "Locations",
@@ -53,7 +51,14 @@ const ListView = (props) => {
     const dispatch = useDispatch()
     const history = useHistory()
     const params = useParams()
-    const { widgetPage } = props.match.params
+    const {
+        dashboardID,
+        editing,
+        lotID,
+        stationID,
+        warehouse 
+    } = params
+
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1025
@@ -72,7 +77,6 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
-
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
@@ -95,7 +99,7 @@ const ListView = (props) => {
         disableBrowserBackButton()
 
         // displays dashboards page if url is on widget page
-        if (widgetPage) {
+        if (stationID) {
             setShowDashboards(true)
         }
 
@@ -104,16 +108,16 @@ const ListView = (props) => {
             setShowDashboards(false)
         }
 
-    }, [widgetPage])
+    }, [stationID])
 
 
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
-            if (dashboard.station === params.stationID) {
+            if (dashboard.station === stationID) {
                 setLocked(dashboard.locked)
             }
         })
-    }, [params.stationID, dashboards])
+    }, [stationID, dashboards])
 
 
 
@@ -149,7 +153,7 @@ const ListView = (props) => {
             if (!!item.owner) {
 
                 // If the station is a device and the task q owner is that device then show the status
-                if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
+                if (!!devices[stationID] && item.owner === devices[stationID]._id) {
 
                     let locationName = ''
 
@@ -256,7 +260,7 @@ const ListView = (props) => {
             {(showDashboards && !showSettings) &&
                 // must be wrapped in route to give dashboards page the match params
                 <Route
-                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?"
+                    path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouse?"
                     component={DashboardsPage}
                 />
             }

@@ -11,7 +11,7 @@ import * as d3 from 'd3'
 
 // Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import { isEquivalent, } from '../../methods/utils/utils.js'
+import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
@@ -29,6 +29,7 @@ import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
 import Widgets from '../../components/widgets/widgets'
 import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
@@ -54,7 +55,8 @@ export class MapView extends Component {
 
         this.state = {
             showRightClickMenu: {},
-            hasStartAndEnd: false
+            hasStartAndEnd: false,
+            currentMap: null,
         }
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
@@ -87,6 +89,8 @@ export class MapView extends Component {
 
     componentDidMount() {
 
+
+
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
@@ -105,32 +109,42 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-      var defaultMap = this.props.maps.find((map) => map?._id === this.props.currentMap?._id && map?.name === this.props.currentMap?.name)
-      if(!defaultMap){
+
+      var currentMap = this.props.maps.find(map => map._id === this.props.currentMapId)
+
+      if(!currentMap){
+        this.setState({currentMap: this.props.maps[0]})
+
         const updatedSettings = {
           ...this.props.settings,
-          ["currentMap"]: this.props.maps[0]
+          currentMapId: this.props.maps[0]._id,
         }
         this.props.dispatchPostSettings(updatedSettings)
       }
+      else{
+        this.setState({currentMap: currentMap})
+      }
     }
 
-    componentDidUpdate(prevProps, prevState) {
 
+    componentDidUpdate(prevProps, prevState) {
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
         //     this.refreshMap()
         // }
-        this.checkForMapLoad() //test
+        //this.checkForMapLoad() //test
 
+        if(this.props.currentMapId !== this.state.currentMap._id){
+          this.checkForMapLoad()
+        }
         if(prevProps.selectedTask !== this.props.selectedTask) {
             this.setState({hasStartAndEnd: getHasStartAndEnd(this.props.selectedTask)})
         }
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
-        if (!isEquivalent(prevProps.currentMap, this.props.currentMap)) {
+        if (!getIsEquivalent(prevProps.currentMap, this.state.currentMap)) {
             //this.calculateD3Geometry(this.mapContainer)
             this.bindZoomListener()
         }
@@ -274,9 +288,8 @@ export class MapView extends Component {
      */
     bindZoomListener = () => {
         const { scaleExtent } = this.props
-        const { resolution } = this.props.currentMap
+        const { resolution } = this.state.currentMap
         const { translate, scale } = this.d3
-
         const svg = d3.select(`.${this.rd3tSvgClassName}`)
         const map = d3.selectAll(`.${this.rd3tMapClassName}`)
 
@@ -451,7 +464,7 @@ export class MapView extends Component {
      */
     calculateD3Geometry = () => {
         let { locations } = this.props
-        let { resolution } = this.props.currentMap
+        let { resolution } = this.state.currentMap
 
         let scale
         if (this.props.zoom > this.props.scaleExtent.max) {
@@ -565,7 +578,10 @@ export class MapView extends Component {
     render() {
         let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
         const { hasStartAndEnd } = this.state
-        if (this.props.currentMap == null) { return (<></>) }
+        if (this.state.currentMap == null) {
+
+           return (<></>)
+          }
         const { translate, scale } = this.d3;
 
         return (
@@ -626,14 +642,14 @@ export class MapView extends Component {
                         >
                             {/* Foreign object allows an image to be put in the SVG container */}
                             <foreignObject width='200%' height='200%' >
-                                {!!this.props.currentMap &&
+                                {!!this.state.currentMap &&
                                     <styled.MapImage ref={mi => (this.mapImage = mi)}
                                         tall={!!this.mapContainer && // Fixes the map sizing - cutoff issue
                                             this.mapContainer.getBoundingClientRect().height / this.naturalImageDimensions.height
                                             >
                                             this.mapContainer.getBoundingClientRect().width / this.naturalImageDimensions.width}
 
-                                        src={'data:image/png;base64, ' + this.props.currentMap.map}
+                                        src={'data:image/png;base64, ' + this.state.currentMap.map}
                                         onLoad={() => {
 
                                             this.naturalImageDimensions = {
@@ -644,7 +660,7 @@ export class MapView extends Component {
                                             // and the zoom listener needs to be re-bound to the new translations
                                             this.calculateD3Geometry()
                                             this.setState({
-                                                resolution: this.props.currentMap.resolution
+                                                resolution: this.state.currentMap.resolution
                                             }, () => this.bindZoomListener())
                                         }}
                                     >
@@ -686,7 +702,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
-                                        .filter(station => (station.map_id === this.props.currentMap._id))
+                                        .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
                                             <>
@@ -710,7 +726,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => (position.map_id === this.props.currentMap._id))
+                                        .filter(position => (position.map_id === this.state.currentMap?._id))
                                         .map((position, ind) =>
                                             <Position
                                                 key={`pos-${ind}`}
@@ -762,6 +778,10 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
+                    {!!this.props.showRouteConfirmation &&
+                        <RouteConfirmation d3={this.d3} />
+                    }
+
                     {!!this.props.devices &&
                         Object.values(this.props.devices).map((device) => {
                             if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
@@ -802,9 +822,8 @@ MapView.defaultProps = {
 const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
-        currentMapId: state.localReducer.localSettings.currentMapId,
+        currentMapId: state.settingsReducer.settings.currentMapId,
         deviceEnabled: state.settingsReducer.settings.deviceEnabled,
-        currentMap: state.settingsReducer.settings.currentMap,
         settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,
@@ -812,7 +831,7 @@ const mapStateToProps = function (state) {
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
         taskQueue: state.taskQueueReducer.taskQueue,
-
+        showRouteConfirmation: state.tasksReducer.showRouteConfirmation,
 
         selectedStation: state.stationsReducer.selectedStation,
         selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,

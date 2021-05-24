@@ -333,12 +333,7 @@ export const AddNewButtonContainer = styled.div`
 	justify-content: center;
   align-items: center;
 	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.quaternary};
-`
-export const AddNewButtonsText = styled.span`
-	font-size: ${props => props.theme.fontSize.sz3};
-	color: ${props => props.theme.textColor};
-	margin-right: 1rem;
+	padding: 0 1rem;
 `
 
 export const ColorFieldContainer = styled.div`

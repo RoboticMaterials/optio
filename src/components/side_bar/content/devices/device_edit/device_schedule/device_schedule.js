@@ -38,7 +38,9 @@ const DeviceSchedule = (props) => {
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     const renderSchedules = () => {
 
