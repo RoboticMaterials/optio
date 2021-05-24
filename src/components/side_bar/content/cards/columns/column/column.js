@@ -74,8 +74,6 @@ const Column = ((props) => {
 
 	useEffect(() => {
 
-		if (processes[processId].name !== 'Forney Welder Assembly') {return}
-
 		// Calculate proceeding lead time based on cards in later stations
 		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
 		let totalProceedingLeadTimeSeconds = 0
