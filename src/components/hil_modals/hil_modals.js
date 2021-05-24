@@ -113,7 +113,7 @@ const HILModals = (props) => {
     const [content, setContent] = useState(CONTENT.QUANTITY_SELECTOR)
     const [lot, setLot] = useState({})
     const [modalClosed, setModalClosed] = useState(false)
-    const [maxQuantity, setMaxQuantity] = useState(!!warehouse ? getBinQuantity(lot, getPreviousWarehouseStation(lot.process_id, stationID)._id) : getBinQuantity(cards[lotId], stationId || loadStationId))
+    const [maxQuantity, setMaxQuantity] = useState(!!lotId ? !!warehouse ? getBinQuantity(lot, getPreviousWarehouseStation(lot.process_id, stationID)._id) : getBinQuantity(cards[lotId], stationId || loadStationId) : null)
     const [loadStationName, setLoadStationName] = useState("")
     const [unloadStationName, setUnloadStationName] = useState("")
 
@@ -364,9 +364,11 @@ const HILModals = (props) => {
                     name={`quantity`}
                 />
 
-                <FlexibleContainer>
-                    <styled.InfoText style={{ marginBottom: "1rem" }}>{`There are ${maxQuantity} items available in the current lot.`}</styled.InfoText>
-                </FlexibleContainer>
+                {!!lotId &&
+                    <FlexibleContainer>
+                        <styled.InfoText style={{ marginBottom: "1rem" }}>{`There are ${maxQuantity} items available in the current lot.`}</styled.InfoText>
+                    </FlexibleContainer>
+                }
             </div>
         )
     }, [maxQuantity])
@@ -393,7 +395,7 @@ const HILModals = (props) => {
                 validationSchema={hilModalSchema}
                 innerRef={formRef}
                 initialValues={{
-                    quantity: maxQuantity,
+                    quantity: !!maxQuantity ? maxQuantity : 0,
                     fraction: null
                 }}
                 validateOnChange={true}
@@ -438,35 +440,37 @@ const HILModals = (props) => {
                                     flex: 1
                                 }}
                             >
+                                {!!lotId &&
+                                    // Only render this info if there is a lot
+                                    <styled.LotInfoContainer>
+                                        <styled.SubtitleContainer>
+                                            <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
+                                        </styled.SubtitleContainer>
 
-                                <styled.LotInfoContainer>
-                                    <styled.SubtitleContainer>
-                                        <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
-                                    </styled.SubtitleContainer>
-
-                                    <ScaleWrapper
-                                        scaleFactor={isMobile ? 0.75 : 1}
-                                    >
-                                        <LotContainer
-                                            showCustomFields={false}
-                                            lotId={lotId}
-                                            quantity={hilLoadUnload === 'unload' ? unloadQuantity : null}
-                                            binId={
-                                                // If its a warehouse, the bin is going to be the previous station
-                                                !!warehouse ?
-                                                    getPreviousWarehouseStation(processId, stationID)._id
-                                                    :
-                                                    hilLoadUnload === 'load' ?
-                                                        stationId || loadStationId
+                                        <ScaleWrapper
+                                            scaleFactor={isMobile ? 0.75 : 1}
+                                        >
+                                            <LotContainer
+                                                showCustomFields={false}
+                                                lotId={lotId}
+                                                quantity={hilLoadUnload === 'unload' ? unloadQuantity : null}
+                                                binId={
+                                                    // If its a warehouse, the bin is going to be the previous station
+                                                    !!warehouse ?
+                                                        getPreviousWarehouseStation(processId, stationID)._id
                                                         :
-                                                        unloadStationId
+                                                        hilLoadUnload === 'load' ?
+                                                            stationId || loadStationId
+                                                            :
+                                                            unloadStationId
 
-                                            }
-                                            processId={processId}
-                                            containerStyle={{ margin: 0, padding: 0, width: "30rem" }}
-                                        />
-                                    </ScaleWrapper>
-                                </styled.LotInfoContainer>
+                                                }
+                                                processId={processId}
+                                                containerStyle={{ margin: 0, padding: 0, width: "30rem" }}
+                                            />
+                                        </ScaleWrapper>
+                                    </styled.LotInfoContainer>
+                                }
 
                                 {
                                     {
