@@ -10,6 +10,7 @@ import {useSelector} from "react-redux";
 import {getFormCustomFields} from "../../../../../../methods/utils/card_utils";
 import LotFields from "../card_editor/lot_fields/lot_fields";
 import {BASIC_LOT_TEMPLATE} from "../../../../../../constants/lot_contants";
+import Button from "../../../../../basic/button/button";
 
 const SkuEditor = (props) => {
 
@@ -24,14 +25,10 @@ const SkuEditor = (props) => {
 
     const fields = getFormCustomFields(lotTemplate?.fields || [])
 
-    console.log('lotTemplate',lotTemplate)
-    console.log('fieldsfields',fields)
-
     return (
         <styled.Container
             isOpen={true}
             onRequestClose={() => {
-                // close()
                 props.close()
             }}
             contentLabel="Lot Editor Form"
@@ -60,9 +57,34 @@ const SkuEditor = (props) => {
                     :
                     <div
                         style={{
-                            width: '50%'
+                            width: '50%',
+                            position: 'relative'
                         }}
                     >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                background: 'rgba(0,0,0,0.15)',
+                                justifyContent: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                zIndex: 1000
+                            }}
+                        >
+                            <Button
+                                label={'Edit Fields'}
+                                schema={'lots'}
+                                style={{
+                                    zIndex: 1000,
+                                    flex: 1,
+                                    maxWidth: '30rem'
+                                }}
+                            />
+                        </div>
                         <ScaleWrapper
                             scaleFactor={.5}
                         >
