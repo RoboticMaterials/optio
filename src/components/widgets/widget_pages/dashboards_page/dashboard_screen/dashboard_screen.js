@@ -214,6 +214,10 @@ const DashboardScreen = (props) => {
                         }}
                     />
                 )
+
+            case 'merge': {
+                return <div>duh</div>
+            }
             case 'kickOff':
                 return (
                     <KickOffModal
