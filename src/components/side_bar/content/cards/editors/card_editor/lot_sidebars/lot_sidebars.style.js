@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
-import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../../methods/utils/color_utils";
-import * as pageStyle from "../../../../../widgets/widget_pages/dashboards_page/dashboards_header/dashboards_header.style"
-import {glow, goodGlow} from "../../../../../../common_css/common_css";
+import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../../../methods/utils/color_utils";
+import * as pageStyle from "../../../../../../widgets/widget_pages/dashboards_page/dashboards_header/dashboards_header.style"
+import {glow, goodGlow} from "../../../../../../../common_css/common_css";
 
 
 export const FooterContainer = styled.div`

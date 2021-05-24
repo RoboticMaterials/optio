@@ -1,6 +1,6 @@
 import styled, {css} from "styled-components";
 import Modal from "react-modal";
-import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {commonClickableIcon, iconButtonCss} from "../../../../../../common_css/common_css";
 
 export const rowCss = css`
 	margin-bottom: 1rem;

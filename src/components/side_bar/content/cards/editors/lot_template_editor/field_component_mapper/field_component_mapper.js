@@ -1,23 +1,23 @@
 import React, {useEffect, useState, useContext} from "react";
 
 // components internal
-import Textbox from "../../../../../basic/textbox/textbox";
-import NumberInput from "../../../../../basic/number_input/number_input";
-import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calendar_placeholder";
-import TextField from "../../../../../basic/form/text_field/text_field";
-import NumberField from "../../../../../basic/form/number_field/number_field";
-import CalendarButtonField from "../../../../../basic/form/calendar_button_field/calendar_button_field";
+import Textbox from "../../../../../../basic/textbox/textbox";
+import NumberInput from "../../../../../../basic/number_input/number_input";
+import CalendarPlaceholder from "../../../../../../basic/calendar_placeholder/calendar_placeholder";
+import TextField from "../../../../../../basic/form/text_field/text_field";
+import NumberField from "../../../../../../basic/form/number_field/number_field";
+import CalendarButtonField from "../../../../../../basic/form/calendar_button_field/calendar_button_field";
 
 // constants
-import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
+import {FIELD_COMPONENT_NAMES} from "../../../../../../../constants/lot_contants";
 
 // functions external
 import PropTypes from "prop-types";
 import { ThemeContext } from 'styled-components'
 
 // utils
-import {jsDateToString} from "../../../../../../methods/utils/card_utils";
-import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
+import {jsDateToString} from "../../../../../../../methods/utils/card_utils";
+import { LightenDarkenColor } from '../../../../../../../methods/utils/color_utils'
 
 // styles
 import * as styled from "./field_component_mapper.style"

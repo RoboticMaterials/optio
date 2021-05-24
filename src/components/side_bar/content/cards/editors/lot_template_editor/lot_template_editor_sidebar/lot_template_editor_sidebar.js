@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 
 // actions
-import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions"
-import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions"
+import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions"
+import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions"
 
 // components external
 import { DraggableCore } from "react-draggable"
@@ -10,7 +10,7 @@ import { Container, Draggable } from 'react-smooth-dnd'
 
 // components internal
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper"
-import WidgetButton from "../../../../../basic/widget_button/widget_button"
+import WidgetButton from "../../../../../../basic/widget_button/widget_button"
 
 // functions external
 import PropTypes from 'prop-types'
@@ -18,13 +18,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ThemeContext } from "styled-components"
 
 // logging
-import log from '../../../../../../logger'
+import log from '../../../../../../../logger'
 
 // utils
-import {uuidv4} from "../../../../../../methods/utils/utils"
+import {uuidv4} from "../../../../../../../methods/utils/utils"
 
 // constants
-import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES, TEMPLATE_FIELD_KEYS} from "../../../../../../constants/lot_contants"
+import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES, TEMPLATE_FIELD_KEYS} from "../../../../../../../constants/lot_contants"
 
 // styles
 import * as style from "../../card_editor/lot_sidebars/lot_sidebars.style"

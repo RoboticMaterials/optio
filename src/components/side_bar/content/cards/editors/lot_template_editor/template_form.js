@@ -7,45 +7,45 @@ import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
 // internal components
-import TextField from "../../../../basic/form/text_field/text_field";
-import Textbox from "../../../../basic/textbox/textbox";
-import Button from "../../../../basic/button/button";
-import BackButton from '../../../../basic/back_button/back_button';
-import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import TextField from "../../../../../basic/form/text_field/text_field";
+import Textbox from "../../../../../basic/textbox/textbox";
+import Button from "../../../../../basic/button/button";
+import BackButton from '../../../../../basic/back_button/back_button';
+import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // actions
-import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+import { pageDataChanged } from "../../../../../../redux/actions/sidebar_actions"
 
 // constants
-import {FORM_MODES} from "../../../../../constants/scheduler_constants";
+import {FORM_MODES} from "../../../../../../constants/scheduler_constants";
 
 // utils
-import {LotFormSchema} from "../../../../../methods/utils/form_schemas";
-import {isObject} from "../../../../../methods/utils/object_utils";
+import {LotFormSchema} from "../../../../../../methods/utils/form_schemas";
+import {isObject} from "../../../../../../methods/utils/object_utils";
 import set from "lodash/set";
 
 // import styles
 import * as styled from "../card_editor/lot_editor.style"
 
 // logger
-import log from '../../../../../logger'
+import log from '../../../../../../logger'
 import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
 import LotFormCreator from "./lot_form_creator/lot_form_creator";
-import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
+import SubmitErrorHandler from "../../../../../basic/form/submit_error_handler/submit_error_handler";
 import {
 	deleteLotTemplate,
 	getLotTemplate, getLotTemplates,
 	postLotTemplate,
 	putLotTemplate, setSelectedLotTemplate
-} from "../../../../../redux/actions/lot_template_actions";
-import NumberInput from "../../../../basic/number_input/number_input";
-import useChange from "../../../../basic/form/useChange";
+} from "../../../../../../redux/actions/lot_template_actions";
+import NumberInput from "../../../../../basic/number_input/number_input";
+import useChange from "../../../../../basic/form/useChange";
 import {
 	DEFAULT_COUNT_DISPLAY_NAME,
 	DEFAULT_DISPLAY_NAMES,
 	DEFAULT_NAME_DISPLAY_NAME,
 	EMPTY_DEFAULT_FIELDS, getDefaultFields
-} from "../../../../../constants/lot_contants";
+} from "../../../../../../constants/lot_contants";
 import {ThemeContext} from "styled-components";
 
 

@@ -1,7 +1,7 @@
 import styled, {css} from "styled-components";
 import {Form} from "formik";
-import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
-import {containerLayout} from "../../../../../common_css/layout";
+import {commonClickableIcon, iconButtonCss} from "../../../../../../common_css/common_css";
+import {containerLayout} from "../../../../../../common_css/layout";
 import SyncProblemIcon from "@material-ui/icons/SyncProblem";
 import SyncIcon from "@material-ui/icons/Sync";
 
@@ -84,12 +84,7 @@ export const TitleText = styled.span`
 
 `
 
-export const FieldTitle = styled.span`
-  font-size: ${props => props.theme.fontSize.sz3};
-  font-weight: ${props => props.theme.fontWeight.bold};
-  font-family: ${props => props.theme.font.primary};
-  align-self: center;
-`
+
 
 export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
@@ -279,13 +274,7 @@ export const ContentContainer = styled.div`
 	justify-content: space-between;
 `
 
-export const FieldContainer = styled.div`
-  margin: 1rem;
-  flex: 1;
-  align-self: center;
-  justify-content: center;
-  display: flex;
-`
+
 
 export const BodyContainer = styled.div`
 	display: flex;
@@ -320,12 +309,7 @@ export const Icon = styled.i`
 	margin-right: 1rem;
 `
 
-export const ObjectInfoContainer = styled.div`
-	display: flex;
-	//width: 100%;
-	flex-direction: column;
-	align-items: center;
-`
+
 
 
 
@@ -333,14 +317,7 @@ export const CountInput = styled.input`
 	width: fit-content;
 `
 
-export const ObjectLabel = styled.span`
-	display: inline-flex;
-	margin-right: 1rem;
-	font-family: ${props => props.theme.font.primary};
-	font-weight: bold;
-  align-items: center;
-  text-align: center;
-`
+
 
 export const QuantityErrorContainerComponent = styled.div`
     width: auto;
@@ -391,9 +368,12 @@ export const DatesContainer = styled.span`
 	border-radius: 1rem;
   width: fit-content;
   margin: 0;
-	
-	
-	//${rowCss};
+`
+
+export const ObjectInfoContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 `
 
 export const DateItem = styled.div`
@@ -695,52 +675,16 @@ export const TimePickerContainer = styled.div`
 
 
 
-export const buttonViewCss = css`
-	// border-right: ${props => !props.isLast && `solid ${props.theme.bg.quaternary} thin`}; // dont show border on last item
-	color: ${props => props.theme.bg.quinary};
-	padding: 0;
-	margin: 0;
-	padding-left: .5rem;
-	padding-right: .5rem;
-	font-size: ${props => props.theme.fontSize.sz3};
-	font-family: ${props => props.theme.font.primary};
-`
 
 
-export const buttonViewSelectedCss = css`
-	background: transparent;
-	color: ${props => props.theme.schema["lots"].solid};
-`
 
 
-export const buttonGroupContainerCss = css`
-	display: flex;
-	flex-direction: row;
-	align-self: center;
-	padding: 0;
-	//margin: 0 0 1rem 0;
-  width: fit-content;
-  
-	
-`
 
 
-export const buttonCss = css`
-	margin: 0;
-	padding: 0;
-  
-	
-	&:focus{
-	}
-	
-	&:active{
-	}
-	
-	&:hover{
-		cursor: default;
-	}
-	
-`
+
+
+
+
 
 export const TemplateNameContainer = styled.div`
   margin: 0 auto;

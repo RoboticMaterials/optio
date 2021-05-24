@@ -11,12 +11,12 @@ import * as style from "../lot_sidebars.style"
 import { ThemeContext } from "styled-components";
 
 
-import log from '../../../../../../../logger'
+import log from '../../../../../../../../logger'
 
-import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
-import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
-import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
-import Button from "../../../../../../basic/button/button";
+import {setFieldDragging} from "../../../../../../../../redux/actions/card_page_actions";
+import {setSelectedLotTemplate} from "../../../../../../../../redux/actions/lot_template_actions";
+import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../../constants/lot_contants";
+import Button from "../../../../../../../basic/button/button";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
 

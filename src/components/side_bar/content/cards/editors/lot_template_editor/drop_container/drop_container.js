@@ -2,8 +2,8 @@ import {Container, Draggable} from "react-smooth-dnd";
 
 // components internal
 import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
-import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
-import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
+import FieldWrapper from "../../../../../../basic/form/field_wrapper/field_wrapper";
+import ContainerWrapper from "../../../../../../basic/container_wrapper/container_wrapper";
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
 
 // functions external
@@ -12,10 +12,10 @@ import { ThemeContext } from 'styled-components'
 import {useDispatch, useSelector} from "react-redux";
 
 // actions
-import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
+import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
 
 // constants
-import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
+import {FIELD_COMPONENT_NAMES} from "../../../../../../../constants/lot_contants";
 
 // styles
 import * as styled from "./drop_container.style"

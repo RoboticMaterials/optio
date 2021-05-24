@@ -19,10 +19,10 @@ import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./lot_template_editor/template_form";
+import LotCreatorForm from "./editors/lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-import LotEditorContainer from "./card_editor/lot_editor_container";
+import LotEditorContainer from "./editors/card_editor/lot_editor_container";
 import SummaryHeader from "./summary_header/summary_header";
 import {immutableDelete} from "../../../../methods/utils/array_utils";
 import MultiSelectOptions from "./multi_select_options/multi_select_options";
@@ -32,6 +32,7 @@ import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_mult
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
+import SkuEditor from "./editors/sku_editor/sku_editor";
 
 const Cards = (props) => {
 
@@ -331,17 +332,10 @@ const Cards = (props) => {
             }
 
             {showCardEditor &&
-            <LotEditorContainer
-                isOpen={showCardEditor}
-                onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
-            />
+                <SkuEditor
+
+                />
+
             }
             <SummaryHeader
                 showBackButton={isProcessView}

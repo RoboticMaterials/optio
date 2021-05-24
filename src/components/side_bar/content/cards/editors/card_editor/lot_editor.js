@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useContext, useCallback} from "react";
 
 // api
-import {getCardsCount} from "../../../../../api/cards_api";
+import {getCardsCount} from "../../../../../../api/cards_api";
 
 // external functions
 import PropTypes from "prop-types";
@@ -17,70 +17,73 @@ import Popup from 'reactjs-popup';
 
 
 // internal components
-import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
-import TextField from "../../../../basic/form/text_field/text_field";
-import Textbox from "../../../../basic/textbox/textbox";
-import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
-import Button from "../../../../basic/button/button";
-import BackButton from '../../../../basic/back_button/back_button'
-import ButtonGroup from "../../../../basic/button_group/button_group";
-import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
-import NumberField from "../../../../basic/form/number_field/number_field";
+import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
+import TextField from "../../../../../basic/form/text_field/text_field";
+import Textbox from "../../../../../basic/textbox/textbox";
+import DropDownSearchField from "../../../../../basic/form/drop_down_search_field/drop_down_search_field";
+import Button from "../../../../../basic/button/button";
+import BackButton from '../../../../../basic/back_button/back_button'
+import ButtonGroup from "../../../../../basic/button_group/button_group";
+import ScrollingButtonField from "../../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
+import NumberField from "../../../../../basic/form/number_field/number_field";
 import FieldComponentMapper from "../lot_template_editor/field_component_mapper/field_component_mapper";
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
-import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
+import SubmitErrorHandler from "../../../../../basic/form/submit_error_handler/submit_error_handler";
 import LotCreatorForm from "../lot_template_editor/template_form";
-import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 
 // actions
-import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
-import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
-import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
-import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
+import {deleteCard, getCard, postCard, putCard} from "../../../../../../redux/actions/card_actions";
+import {getCardHistory} from "../../../../../../redux/actions/card_history_actions";
+import {getLotTemplates, setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
+import { pageDataChanged } from "../../../../../../redux/actions/sidebar_actions";
 
 
 // constants
-import {FORM_MODES} from "../../../../../constants/scheduler_constants";
+import {FORM_MODES} from "../../../../../../constants/scheduler_constants";
 import {
 	CONTENT,
 	DEFAULT_COUNT_DISPLAY_NAME,
 	DEFAULT_NAME_DISPLAY_NAME, defaultBins,
 	FORM_BUTTON_TYPES, IGNORE_LOT_SYNC_WARNING,
 	SIDE_BAR_MODES
-} from "../../../../../constants/lot_contants";
+} from "../../../../../../constants/lot_contants";
 
 // utils
 import {
 	getFormCustomFields,
 	parseMessageFromEvent
-} from "../../../../../methods/utils/card_utils";
+} from "../../../../../../methods/utils/card_utils";
 import {
 	CARD_SCHEMA_MODES,
 	uniqueNameSchema,
 	getCardSchema,
-} from "../../../../../methods/utils/form_schemas";
-import {getProcessStations} from "../../../../../methods/utils/processes_utils";
-import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
-import {isArray} from "../../../../../methods/utils/array_utils";
-import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
+} from "../../../../../../methods/utils/form_schemas";
+import {getProcessStations} from "../../../../../../methods/utils/processes_utils";
+import {isEmpty, isObject} from "../../../../../../methods/utils/object_utils";
+import {isArray} from "../../../../../../methods/utils/array_utils";
+import {formatLotNumber, getDisplayName} from "../../../../../../methods/utils/lot_utils";
 
 // import styles
 import * as styled from "./lot_editor.style"
 import * as FormStyle from "../lot_template_editor/lot_form_creator/lot_form_creator.style"
 
 // hooks
-import useWarn from "../../../../basic/form/useWarn";
+import useWarn from "../../../../../basic/form/useWarn";
 
 // logger
-import log from '../../../../../logger'
+import log from '../../../../../../logger'
 import { ThemeContext } from "styled-components";
-import {getIsEquivalent} from "../../../../../methods/utils/utils";
-import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
-import usePrevious from "../../../../../hooks/usePrevious";
-import WobbleButton from "../../../../basic/wobble_button/wobble_button";
-import {postLocalSettings} from "../../../../../redux/actions/local_actions";
+import {getIsEquivalent} from "../../../../../../methods/utils/utils";
+import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
+import usePrevious from "../../../../../../hooks/usePrevious";
+import WobbleButton from "../../../../../basic/wobble_button/wobble_button";
+import {postLocalSettings} from "../../../../../../redux/actions/local_actions";
 import LabeledButton from "./labeled_button/labeled_button";
+import SkuEditor from "../sku_editor/sku_editor";
+import LotFields from "./lot_fields/lot_fields";
+import LotEditorMainContent from "./lot_editor_main_content/lot_editor_main_content";
 
 
 const logger = log.getLogger("CardEditor")
@@ -471,55 +474,8 @@ const FormComponent = (props) => {
 		)
 	}
 
-	// renders main content
-	const renderMainContent = () => {
-		return(
-			<>
-				<styled.SectionContainer>
-					<styled.TheBody>
-						{renderFields()}
-					</styled.TheBody>
-				</styled.SectionContainer>
-				<styled.BodyContainer>
-					{formMode === FORM_MODES.UPDATE &&
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							marginBottom: "2rem",
-						}}
-					>
-						<styled.FieldTitle>Station</styled.FieldTitle>
-
-						<ButtonGroup
-							buttonViewCss={styled.buttonViewCss}
-							buttons={buttonGroupNames}
-							selectedIndex={buttonGroupIds.findIndex((ele) => ele === binId)}
-							onPress={(selectedIndex)=>{
-								setBinId(buttonGroupIds[selectedIndex])
-								// setFieldValue("selectedBin", buttonGroupIds[selectedIndex])
-								// setSelectedBin(availableBins[selectedIndex])
-							}}
-							containerCss={styled.buttonGroupContainerCss}
-							buttonViewSelectedCss={styled.buttonViewSelectedCss}
-							buttonCss={styled.buttonCss}
-						/>
-					</div>
-					}
-
-					<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-						<styled.ObjectInfoContainer>
-							<styled.ObjectLabel>{getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)}</styled.ObjectLabel>
-							<NumberField
-								minValue={1}
-								name={`bins.${binId}.count`}
-							/>
-						</styled.ObjectInfoContainer>
-					</div>
-				</styled.BodyContainer>
-			</>
-		)
-	}
+	const fields=(useCardFields && !values.syncWithTemplate) ? isArray(cardFields) ? cardFields : isArray(lotTemplate?.fields) ? lotTemplate.fields : []
+		: isArray(lotTemplate?.fields) ? lotTemplate.fields : []
 
 	// renders history content
 	const renderHistory = () => {
@@ -602,70 +558,7 @@ const FormComponent = (props) => {
 		)
 	}
 
-	/*
-	* Renders fields
-	* */
-	const renderFields = () => {
 
-		const fields =  (useCardFields && !values.syncWithTemplate) ? isArray(cardFields) ? cardFields : isArray(lotTemplate?.fields) ? lotTemplate.fields : []
-			: isArray(lotTemplate?.fields) ? lotTemplate.fields : []
-
-		return (
-			<FormStyle.ColumnContainer>
-
-				{fields.map((currRow, currRowIndex) => {
-
-
-					const isLastRow = currRowIndex === fields.length - 1
-					return <div
-						style={{flex: isLastRow && 1, display: isLastRow && "flex", flexDirection: "column"}}
-						key={currRowIndex}
-					>
-						<FormStyle.RowContainer>
-
-							{currRow.map((currItem, currItemIndex) => {
-								const {
-									_id: dropContainerId,
-									component,
-									fieldName,
-									dataType,
-									key,
-									required,
-									showInPreview,
-								} = currItem || {}
-
-								// get full field name
-								const fullFieldName = `fields[${currRowIndex}][${currItemIndex}].value`
-
-								// get template error
-								const {
-									[lotTemplateId]: templateErrors
-								} = errors || {}
-								// get field error
-								const {
-									[fieldName]: fieldError
-								} = templateErrors || {}
-
-								return <styled.FieldContainer
-									key={dropContainerId}
-								>
-									<FieldComponentMapper
-										required={required}
-										fieldId={dropContainerId}
-										displayName={fieldName}
-										preview={false}
-										component={component}
-										fieldName={fullFieldName}
-									/>
-								</styled.FieldContainer>
-							})}
-
-						</FormStyle.RowContainer>
-					</div>
-				})}
-			</FormStyle.ColumnContainer>
-		)
-	}
 
 	const renderProcessSelector = () => {
 
@@ -869,7 +762,15 @@ const FormComponent = (props) => {
 						</styled.FieldsHeader>
 
 						{(content === null) &&
-							renderMainContent()
+							<LotEditorMainContent
+								fields={fields}
+								formMode={formMode}
+								buttonGroupNames={buttonGroupNames}
+								lotTemplate={lotTemplate}
+								buttonGroupIds={buttonGroupIds}
+								binId={binId}
+								setBinId={setBinId}
+							/>
 						}
 						{(content === CONTENT.HISTORY) &&
 							renderHistory()
@@ -1257,16 +1158,7 @@ const LotEditor = (props) => {
 	if(loaded) {
 		return(
 			<>
-				{showLotTemplateEditor &&
-					<LotCreatorForm
-						isOpen={true}
-						onAfterOpen={null}
-						lotTemplateId={selectedLotTemplatesId}
-						close={()=>{
-							setShowLotTemplateEditor(false)
-						}}
-					/>
-				}
+
 				<styled.Container>
 					<Formik
 						innerRef={formRef}

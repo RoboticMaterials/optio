@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 
 import * as styled from "./lot_form_creator.style"
-import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
-import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
+import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../../methods/utils/array_utils";
+import {arraysEqual, uuidv4} from "../../../../../../../methods/utils/utils";
 import DropContainer from "../drop_container/drop_container";
-import Textbox from "../../../../../basic/textbox/textbox";
+import Textbox from "../../../../../../basic/textbox/textbox";
 import {Container} from "react-smooth-dnd";
-import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
-import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
+import FieldWrapper from "../../../../../../basic/form/field_wrapper/field_wrapper";
+import ContainerWrapper from "../../../../../../basic/container_wrapper/container_wrapper";
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
-import TextField from "../../../../../basic/form/text_field/text_field";
+import TextField from "../../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
 
 const LotFormCreator = (props) => {

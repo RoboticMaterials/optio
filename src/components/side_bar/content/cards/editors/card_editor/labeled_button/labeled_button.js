@@ -4,7 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 // components internal
-import WobbleButton from "../../../../../basic/wobble_button/wobble_button"
+import WobbleButton from "../../../../../../basic/wobble_button/wobble_button"
 
 // styles
 import * as styled from "./labeled_button.style"
