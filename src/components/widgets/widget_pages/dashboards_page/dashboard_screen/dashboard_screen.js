@@ -45,6 +45,7 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
+import MergeModal from "./merge_modal/merge_modal";
 
 
 
@@ -216,7 +217,7 @@ const DashboardScreen = (props) => {
                 )
 
             case 'merge': {
-                return <div>duh</div>
+                return <MergeModal/>
             }
             case 'kickOff':
                 return (
