@@ -88,7 +88,7 @@ SkuEditor.propTypes = {
 };
 
 SkuEditor.defaultProps = {
-
+    close: () => null
 };
 
 export default SkuEditor;

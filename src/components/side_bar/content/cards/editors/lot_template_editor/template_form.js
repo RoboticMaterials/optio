@@ -241,7 +241,6 @@ const FormComponent = (props) => {
 					<styled.BodyContainer style={disabledStyle}>
 						<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
 							<styled.ObjectInfoContainer>
-								{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
 								<TextField
 									name={"displayNames.count"}
 									InputComponent={Textbox}

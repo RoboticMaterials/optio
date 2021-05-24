@@ -61,13 +61,13 @@ const LotEditorMainContent = (props) => {
                     }
 
                     <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                        <styled.ObjectInfoContainer>
+                        <sharedStyles.ObjectInfoContainer>
                             <styled.ObjectLabel>{getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)}</styled.ObjectLabel>
                             <NumberField
                                 minValue={1}
                                 name={`bins.${binId}.count`}
                             />
-                        </styled.ObjectInfoContainer>
+                        </sharedStyles.ObjectInfoContainer>
                     </div>
                 </sharedStyles.BodyContainer>
             </>

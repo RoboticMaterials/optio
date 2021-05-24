@@ -730,7 +730,7 @@ const FormComponent = (props) => {
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 
-							<styled.RowContainer >
+							<styled.RowContainer>
 								<styled.NameContainer style={{flex: 0}}>
 									<styled.FieldLabel>Lot Number</styled.FieldLabel>
 									<styled.LotNumber>{formatLotNumber(lotNumber)}</styled.LotNumber>
