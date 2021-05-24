@@ -191,7 +191,7 @@ const TaskField = (props) => {
 
         if (isMiRTask(selectedTask) && isNew) {
             if (values.handoff){
-             setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
+             setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", true)
             }
         }
 

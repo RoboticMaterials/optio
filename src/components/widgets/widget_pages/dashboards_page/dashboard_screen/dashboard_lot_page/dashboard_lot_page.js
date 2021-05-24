@@ -80,10 +80,7 @@ const DashboardLotPage = (props) => {
             }
             // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
             else if (!!warehouse) {
-                console.log('QQQQ current lot', currentLot)
-                console.log('QQQQ stationId', stationID)
                 const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
-                console.log('QQQQ returned route', returnedRoute)
                 setCurrentTask(returnedRoute)
             }
             else {
