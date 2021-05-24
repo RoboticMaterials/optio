@@ -146,7 +146,7 @@ const DashboardOperationsMenu = (props) => {
     const renderButtons = () => {
         return (
             <>
-                {renderReportButton()}
+                {/* {renderReportButton()} */}
                 {renderTaskQueueButton()}
                 {warehouseEnabled &&
                     renderWarehouseButton()
