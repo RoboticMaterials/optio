@@ -22,9 +22,11 @@ import { useDispatch, useSelector } from "react-redux";
 import * as styled from "./column.style";
 
 /// utils
+import { sortBy } from "../../../../../../methods/utils/card_utils";
+import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
+import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils';
+import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
 import {getCustomFields} from "../../../../../../methods/utils/lot_utils";
-import {sortBy} from "../../../../../../methods/utils/card_utils";
-import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -457,6 +459,16 @@ const Column = ((props) => {
 										enableFlagSelector={true}
 										selectable={selectable}
 										isSelected={isSelected}
+										key={cardId}
+										// processName={processName}
+										totalQuantity={totalQuantity}
+										lotNumber={lotNumber}
+										name={name}
+										count={count}
+										leadTime={leadTime}
+										id={cardId}
+										flags={flags || []}
+										index={index}
 										lotId={cardId}
 										binId={station_id}
 										onClick={(e)=> {

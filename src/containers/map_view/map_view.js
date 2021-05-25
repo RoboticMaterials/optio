@@ -696,7 +696,7 @@ export class MapView extends Component {
                             <>
 
                                 {this.props.settings.mapApps.heatmap &&
-                                    <HeatMap map_id={this.props.currentMap._id} d3Scale={this.d3.scale} />
+                                    <HeatMap map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
 
                                 <>{
