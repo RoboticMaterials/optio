@@ -47,7 +47,7 @@ export const convert24hto12h = (time24h) => {
     }
 
     if (minutes.length === 1) {
-        minutes = `${minutes}0`
+        minutes = `0${minutes}`
     }
 
     return `${hours}:${minutes} ${modifier}`

@@ -9,64 +9,57 @@ import TextField from "../text_field/text_field";
 import Textbox from "../../textbox/textbox";
 import { ThemeContext } from "styled-components";
 import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
+import CheckboxField from "../checkbox_field/checkbox_field";
+import {TEMPLATE_FIELD_KEYS} from "../../../../constants/lot_contants";
 
 const FieldWrapper = (props) => {
 
 	const {
 		ContainerComponent,
-		// FieldComponent,
 		children,
 		onDeleteClick,
 		containerStyle,
-		name
+		fieldPath
 	} = props
 
-
-	// const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-	// const [field, meta] = useField(props);
-	const [updateColor, setUpdateColor] = useState(false)
-
 	const themeContext = useContext(ThemeContext);
-
-
-	// extract field data
-	// const {
-	// 	value: fieldValue,
-	// 	name: fieldName
-	// } = field
-
-	// extract meta data
-	// const { touched, error } = meta
-
-	// does the field contain an error?
-	// const hasError = touched && error
-
-	useEffect( () => {
-		const timeout = setTimeout(() => {
-			setUpdateColor(true)
-		}, 200)
-
-		return () => {
-			clearTimeout(timeout)
-		}
-	}, []);
 
 	return (
 		<ContainerComponent
 			style={containerStyle}
 		>
-			<styled.LabelContainer updateColor={updateColor}>
-				{/*<styled.GapFiller/>*/}
-				{/*<div style={{zIndex: 5}}>*/}
+			<styled.CheckItems>
+				<styled.Row>
+					<CheckboxField
+						css={styled.checkboxCss}
+						name={`${fieldPath}.${TEMPLATE_FIELD_KEYS.REQUIRED}`}
+					/>
+					<styled.CheckItemLabel>Require</styled.CheckItemLabel>
+				</styled.Row>
+
+				<styled.Row>
+					<CheckboxField
+						css={styled.checkboxCss}
+						name={`${fieldPath}.${TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW}`}
+					/>
+					<styled.CheckItemLabel>Show in cards</styled.CheckItemLabel>
+				</styled.Row>
+			</styled.CheckItems>
+
+			<styled.LabelContainer>
 				<TextField
 					placeholder={"Field name..."}
 					InputComponent={Textbox}
-					name={name}
+					name={`${fieldPath}.fieldName`}
 					style={{}}
 					textboxContainerStyle={{zIndex: 5}}
-					inputStyle={{fontSize: '1rem', flex: 1, textAlign: 'center', background: LightenDarkenColor(themeContext.bg.secondary, 10)}}
+					inputStyle={{
+						fontSize: '1rem',
+						flex: 1,
+						textAlign: 'center',
+						background: LightenDarkenColor(themeContext.bg.secondary, 10)}
+					}
 				/>
-				{/*</div>*/}
 				<styled.DeleteIcon
 					onClick={() => {
 						onDeleteClick()
@@ -76,29 +69,9 @@ const FieldWrapper = (props) => {
 				/>
 			</styled.LabelContainer>
 
-			<styled.FieldComponentContainer updateColor={updateColor}>
-
+			<styled.FieldComponentContainer>
 				{children}
-
-				
-
-				{/*<styled.StyleContainer>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>*/}
-				{/*</styled.StyleContainer>*/}
-
-
 			</styled.FieldComponentContainer>
-
-
-
-			{/*<styled.DeleteContainer updateColor={updateColor}>*/}
-
-			{/*</styled.DeleteContainer>*/}
-			{/*<i className=""></i>*/}
-
-
 		</ContainerComponent>
 	);
 };

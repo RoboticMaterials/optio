@@ -47,16 +47,14 @@ export const ContainerCss = css`
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-grow: 1;
   width: 100%;
   overflow: hidden;
 
-  background: ${props => `linear-gradient(180deg, 
+  background: ${props => !props.invert && `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, 20)} 0%, 
                             ${props.background} 60%, 
                             ${LightenDarkenColor(props.background, -15)} 100%)`};
   border-radius: 0.6rem;
-
 
   // margins
   margin: 0 0 0.1rem 0;
@@ -70,13 +68,14 @@ export const ContainerCss = css`
   }
 
   letter-spacing: 1.5px;
-  border: none;
+  border: ${props => props.invert ? `1px solid ${props.background}` : 'none'};
   box-shadow: ${props => props.clickable ? 'none' : `2px 2px 2px rgba(0, 0, 0, 0.5)`};
   transition: all 0.1s ease 0s;
   cursor: pointer;
   outline: none;
-
+    
   &:hover {
+    filter: brightness(110%);
     ${props => props.hoverable && !props.clickable &&
             {
               boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
@@ -85,7 +84,7 @@ export const ContainerCss = css`
     }
   }
 
-  ${props => props.clickable && !props.disabled &&
+  ${props => props.clickable && !props.disabled && !props.invert && 
           `&:active {
       background: ${`linear-gradient(180deg, 
           ${LightenDarkenColor(props.background, -20)} 0%, 

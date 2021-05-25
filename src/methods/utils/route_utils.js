@@ -11,16 +11,44 @@ import {useSelector} from "react-redux";
 export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMap = storeState.settingsReducer.settings.currentMap
+
+    const currentMapId = storeState.settingsReducer.settings.currentMapId
+    const maps = storeState.mapReducer.maps
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: false,
+        handoff: true,
         map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
-        obj: obj ? currentMap._id : currentMap._id,
+        obj: obj? obj : null,
+        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+    }
+}
+
+export const autoGenerateRoute = (obj) => {
+    const storeState = store.getState()
+    const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
+    const currentMapId = storeState.settingsReducer.settings.currentMapId
+    const maps = storeState.mapReducer.maps
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
+
+    const positions = storeState.positionsReducer.positions
+
+    return {
+        ...defaultTask,
+        device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
+        handoff: true,
+        map_id: currentMap._id,
+        load: {...defaultTask.load,
+               station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
+               position: routeConfirmationLocation,
+              },
+        unload: {...defaultTask.unload},
+        obj: obj ? obj : null,
         _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }

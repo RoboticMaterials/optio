@@ -141,7 +141,7 @@ const ObjectEditor = (props) => {
                     <Button
                         schema={'objects'}
                         style = {{width: '50%'}}
-                        tertiary
+                        secondary
                         disabled = {saveDisabled}
                         onClick= {()=>{
                           onSaveObject()
@@ -154,7 +154,7 @@ const ObjectEditor = (props) => {
                     <Button
                         schema={'error'}
                         style = {{width: '50%'}}
-                        tertiary
+                        secondary
                         disabled = {deleteDisabled}
                         onClick={() => {
                           onDeleteObject()

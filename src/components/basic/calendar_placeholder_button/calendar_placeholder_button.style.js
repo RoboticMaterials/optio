@@ -20,6 +20,7 @@ export const DateItem = styled.div`
 	border-radius: 0.2rem;
     width: fit-content;
     position: relative;
+    min-width: 10rem;
     
     padding: .5rem 1rem;
     align-items: center;

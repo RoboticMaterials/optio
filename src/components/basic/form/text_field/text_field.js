@@ -53,18 +53,11 @@ const TextField = ({
 
     const themeContext = useContext(ThemeContext)
 
-    const dispatch = useDispatch()
-
     const hasError = touched && error
     const hasWarning = touched && warning
 
-    useChange(setFieldValue)
-
-    const inputStyle = inputStyleFunc(hasError, showErrorStyle);
-
     const errorMessage = getMessageFromError(error)
     const warningMessage = getMessageFromError(warning)
-    useChange(setFieldValue)
 
     return (
         <>
@@ -74,12 +67,17 @@ const TextField = ({
             <ContentContainer style={containerStyle}>
                 <InputContainer>
                     <InputComponent
-
                         className='form-control'
                         {...field}
                         {...inputProps}
                         {...props}
-                        style={{ ...style, ...inputStyle }}
+
+                        style={{ ...style}}
+                        inputStyle={{
+                            ...props.inputStyle,
+                            boxShadow:  (hasError && showErrorStyle) && `0 0 5px red`,
+                            border: (hasError && showErrorStyle) && "1px solid red",
+                        }}
                         value={mapInput(field.value)}
                         onChange={(event) => {
                             // update touched if necessary
@@ -132,23 +130,9 @@ const TextField = ({
 * */
 const defaultInputStyleFunc = (hasError, showErrorStyle) => {
     return {
-        // borderColor: hasError && 'red',
-        // border: hasError && '1px solid red',
-        transition: "box-shadow .5s ease-in-out, border .5s ease-in-out",
-        // boxShadow:  && `0 0 1px red !important`,
-        // boxShadow: (hasError && showErrorStyle) && `0 0 5px 2px red`,
+        boxShadow:  hasError && `0 0 1px red !important`,
+        border: hasError && "1px solid red",
 
-        borderLeft: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
-        borderTop: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
-        borderRight: (hasError && showErrorStyle) ? 'none' : "1px solid transparent",
-        borderBottom: (hasError && showErrorStyle) && 'none',
-
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        // padding: "0.25rem"
     }
 }
 
@@ -183,7 +167,7 @@ TextField.defaultProps = {
     FieldContainer: styled.DefaultFieldContainer,
     style: {},
     validateOnBlur: false,
-    showErrorStyle: true,
+    showErrorStyle: false,
     mapInput: (val) => val,
     mapOutput: (val) => val,
 };

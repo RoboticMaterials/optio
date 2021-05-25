@@ -1,8 +1,8 @@
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 
-import {rowCss} from "../card_editor/lot_editor.style";
+import { rowCss } from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
-import {commonClickableIcon, commonIcon, glow, iconButtonCss} from "../../../../../common_css/common_css";
+import { commonClickableIcon, commonIcon, glow, iconButtonCss } from "../../../../../common_css/common_css";
 import { hexToRGBA, LightenDarkenColor } from '../../../../../methods/utils/color_utils'
 
 export const Container = styled.div`
@@ -32,10 +32,12 @@ export const Container = styled.div`
   transition: all 0.2s ease;
 
   cursor: pointer;
-  &:active {
-      box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-      cursor: grabbing;
-  }
+
+  &:active{
+        box-shadow: none;
+        filter: brightness(85%);
+        cursor: grabbing;
+    }
 
   &:hover {
     box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
@@ -62,7 +64,7 @@ const glowCss = css`
 
 const focusedCss = css`
 
-  background-color: ${props => LightenDarkenColor(props.theme.bg.primary,-10)};
+  background-color: ${props => LightenDarkenColor(props.theme.bg.primary, -10)};
 
   &:active {
     transform: translateY(-2px);

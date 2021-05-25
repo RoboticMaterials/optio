@@ -14,7 +14,7 @@ export const ContentContainer = styled.div`
 `
 
 export const ContentHeader = styled.div`
-    display: flex; 
+    display: flex;
     flex-direction: row;
 `
 

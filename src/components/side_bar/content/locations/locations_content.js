@@ -39,7 +39,9 @@ export default function LocationContent() {
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMap = useSelector(state => state.settingsReducer.settings.currentMap)
+    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const maps = useSelector(state => state.mapReducer.maps)
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const processes = useSelector(state => state.processesReducer.processes)
 
@@ -47,7 +49,6 @@ export default function LocationContent() {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
     const locations = {
         ...stations,
         ...positions
@@ -123,8 +124,15 @@ export default function LocationContent() {
                         .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.map_id === currentMap._id))
                 }
                 // elements={Object.values(locations)}
-                onMouseEnter={(location) => onSetSelectedLocation(location._id)}
-                onMouseLeave={() => onSetSelectedLocation(null)}
+                onMouseEnter={(location) => {
+                  if(selectedLocation===null){
+                    onSetSelectedLocation(location._id)
+                  }
+                }}
+                onMouseLeave={() => {
+                  if(selectedLocation?.schema!=="temporary_position")
+                  onSetSelectedLocation(null)
+                }}
                 onClick={(location) => {
                     console.log('QQQQ Editing Location', location)
                     onEditLocation(location._id)
