@@ -5,6 +5,8 @@ import StationsColumn from "../columns/station_column/station_column"
 import LotQueue from "../columns/lot_queue/lot_queue"
 import FinishColumn from "../columns/finish_column/finish_column"
 
+import { ShopifyColumn } from "../columns/shopify_column/shopify_column"
+
 // functions external
 import {useDispatch, useSelector} from "react-redux"
 import PropTypes from "prop-types"
@@ -229,6 +231,22 @@ const CardZone = ((props) => {
 
 	return(
 		<styled.Container style={{background: 'white'}}>
+			<ShopifyColumn
+				setSelectedCards={setSelectedCards}
+				selectedCards={selectedCards}
+				// key={"QUEUE"}
+				// sortMode={sortMode}
+				// sortDirection={sortDirection}
+				// maxHeight={maxHeight}
+				// station_id={"QUEUE"}
+				// setShowCardEditor={setShowCardEditor}
+				// showCardEditor={showCardEditor}
+				// stationName={"Queue"}
+				// processId={processId}
+				// cards={queue}
+				// onCardClick={handleCardClick}
+				// onAddLotClick={() => handleAddLotClick(processId)}
+			/>
 			<LotQueue
 				setSelectedCards={setSelectedCards}
 				selectedCards={selectedCards}

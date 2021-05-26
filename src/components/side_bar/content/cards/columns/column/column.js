@@ -166,7 +166,7 @@ const Column = ((props) => {
 	}
 
 	const getSelectedIndex = (lotId, binId) => {
-		return selectedCards.findIndex((currLot) => {
+		return selectedCards?.findIndex((currLot) => {
 			const {
 				cardId: currLotId,
 				binId: currBinId
