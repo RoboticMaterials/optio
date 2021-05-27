@@ -167,12 +167,12 @@ const SideBar = (props) => {
         }
       }
       if(binCount === 0){
-          setAddTaskAlert({
-              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-              label: "This lot does not exist!",
-          })
+        //  setAddTaskAlert({
+          //    type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+        //      label: "This lot does not exist!",
+        //  })
 
-          return setTimeout(() => setAddTaskAlert(null), 2500)
+        //  return setTimeout(() => setAddTaskAlert(null), 2500)
 
         }
       })
