@@ -58,7 +58,7 @@ const ListView = (props) => {
         editing,
         lotID,
         stationID,
-        warehouse 
+        warehouse
     } = params
 
     const size = useWindowSize()
@@ -86,7 +86,7 @@ const ListView = (props) => {
 
     const [barcode, setBarcode] = useState('')
     const [full, setFull] = useState('')
-    const [lotID, setLotID] = useState('')
+    const [lotNum, setLotNum] = useState('')
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
@@ -152,7 +152,7 @@ const ListView = (props) => {
             if(enter === 'Enter'){
                 const splitLot = full.split('-')
                 let lotId = parseInt(splitLot[1].slice(0,-5))
-                setLotID(lotId)
+                setLotNum(lotId)
                 onScanLot(lotId)
                 setFull('')
             }
@@ -252,7 +252,7 @@ const ListView = (props) => {
             <ScanLotModal
                 isOpen={!!showScanLotModal}
                 title={"This lot is split between multiple stations. Please pick a station"}
-                id = {lotID}
+                id = {lotNum}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => {
