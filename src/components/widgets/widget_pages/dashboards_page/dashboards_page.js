@@ -39,6 +39,7 @@ const logger = log.getLogger("DashboardsPage");
 const DashboardsPage = (props) => {
 
     const params = useParams()
+
     const {
         stationID,
         dashboardID,
@@ -61,8 +62,7 @@ const DashboardsPage = (props) => {
     const cards = useSelector(state => state.cardsReducer.cards)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-    const [barcode, setBarcode] = useState('')
-    const [full, setFull] = useState('')
+
 
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
@@ -72,47 +72,7 @@ const DashboardsPage = (props) => {
     }
 
     useEffect(() => {
-        document.addEventListener('keypress', logKey)
-        console.log('QQQQ card', cards[lotID])
-        return () => {
-            document.removeEventListener('keypress', logKey)
-        }
     }, [])
-
-    useEffect(() => {
-        // console.log('QQQQ barcode', barcode)
-        let newFull = full + barcode
-        console.log('QQQQ New Full', newFull)
-        setFull(newFull)
-        return () => {
-
-        }
-    }, [barcode])
-
-    useEffect(() => {
-        if(full.includes('RM-')) {
-            const enter = full.substring(full.length-5)
-            if(enter === 'Enter'){
-                const splitLot = full.split('-')
-                let lot = parseInt(splitLot[1].slice(0,-5))
-                alert(`Show Lots ${lot}`)
-                
-                setFull('')
-            }
-        }
-        return () => {
-            
-        }
-    }, [full])
-
-
-    const logKey = (e) => {
-        setBarcode(e.key)
-    }
-
-    const onScanLot = (id) => {
-        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${id}`)
-    }
 
 
     /**

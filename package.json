@@ -25,6 +25,7 @@
     "disable-browser-back-navigation": "^0.1.0",
     "formik": "^2.2.0",
     "jquery": "^3.5.1",
+    "jsbarcode": "^3.11.4",
     "local-storage": "^2.0.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.7.0",

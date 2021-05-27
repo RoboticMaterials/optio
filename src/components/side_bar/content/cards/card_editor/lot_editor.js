@@ -31,10 +31,10 @@ import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/te
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import LotCreatorForm from "../lot_template_editor/template_form";
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-
+import BarcodeModal from '../../../../basic/modals/barcode_modal/barcode_modal'
 
 // actions
-import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
+import {deleteCard, getCard, postCard, putCard, showBarcodeModal} from "../../../../../redux/actions/card_actions";
 import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
 import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
@@ -142,6 +142,7 @@ const FormComponent = (props) => {
 
 	const themeContext = useContext(ThemeContext);
 
+
 	// actions
 	const dispatch = useDispatch()
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
@@ -149,7 +150,7 @@ const FormComponent = (props) => {
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 	const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-
+	const dispatchShowBarcodeModal = (bool) => dispatch(showBarcodeModal(bool))
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
@@ -157,6 +158,7 @@ const FormComponent = (props) => {
 	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
 	const localReducer = useSelector(state => state.localReducer) || {}
+	const barcodeModal = useSelector(state => state.cardsReducer.showBarcodeModal)
 	const processesArray = Object.values(processes)
 
 	const [showTemplateSelector, setShowTemplateSelector] = useState(false)
@@ -168,6 +170,7 @@ const FormComponent = (props) => {
 
 	const [showFieldModal, setShowFieldModal] = useState(false)
 	const [checkedCardAndTemplateFields, setCheckedCardAndTemplateFields] = useState(false)
+
 
 	const [warningValues, setWarningValues] = useState()
 
@@ -714,11 +717,19 @@ const FormComponent = (props) => {
 						handleOnClick1={() => {
 							handleDeleteClick(binId)
 							setConfirmDeleteModal(null)
-
 						}}
 						handleOnClick2={() => {
 								setConfirmDeleteModal(null)
 						}}
+				/>
+
+				<BarcodeModal
+						isOpen={!!barcodeModal}
+						title={"RM-" + lotNumber + " Barcode" }
+						handleClose={() => {
+							dispatchShowBarcodeModal(false)
+						}}
+						barcodeId = {"RM-" + lotNumber}
 				/>
 				<styled.Header>
 					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
@@ -833,6 +844,19 @@ const FormComponent = (props) => {
 									/>
 								</LabeledButton>
 								}
+
+								<Button
+									schema={'lots'}
+									type={"button"}
+									disabled={submitDisabled}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									onClick={() => {
+										dispatchShowBarcodeModal(true)
+									}}
+								>
+								Generate Barcode
+								</Button>
+
 							</styled.SubHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}

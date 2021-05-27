@@ -4,3 +4,4 @@ export const SET_WIDTH = 'SET_WIDTH'
 export const SET_OPEN = 'SET_OPEN'
 export const PAGE_DATA_CHANGED = 'PAGE_DATA_CHANGED'
 export const SET_CONFIRM_DELETE = 'SET_CONFIRM_DELETE'
+export const SHOW_LOT_SCAN_MODAL = "SHOW_LOT_SCAN_MODAL"
