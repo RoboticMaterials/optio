@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import {Container} from "react-smooth-dnd";
+import { Container } from "react-smooth-dnd";
 
 // export const RouteContainer = styled.div`
 //     display: flex;
@@ -123,4 +123,21 @@ export const BodyContainer = styled.div`
 	border-bottom-right-radius: 1rem;
 	border-bottom-left-radius: 1rem;
 	justify-content: center;
+`
+
+export const HeaderSection = styled.div`
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    width:100%;
+    justify-content: space-between;
+    /* position: absolute; */
+    /* right: 1rem; */
+
+`
+
+export const HeaderSectionTitle = styled.h5`
+    text-align: center;
+    color: ${props => props.theme.bg.septenary};
+    font-family: ${props => props.theme.font.primary};
 `

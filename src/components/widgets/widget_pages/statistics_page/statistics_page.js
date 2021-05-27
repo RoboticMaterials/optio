@@ -21,11 +21,11 @@ const StatisticsPage = () => {
     const [showOverview, setShowOverview] = useState(true)
 
 
+
     return (
         <styled.StatisticsContainer>
             <styled.Header>
                 <styled.StationName>{stations[stationID].name}</styled.StationName>
-
                 {/* <styled.StatisticsSectionsButtonContainer>
                     <styled.StatisticsSectionsButton
                         style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}

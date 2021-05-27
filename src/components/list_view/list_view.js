@@ -53,7 +53,14 @@ const ListView = (props) => {
     const dispatch = useDispatch()
     const history = useHistory()
     const params = useParams()
-    const { widgetPage } = props.match.params
+    const {
+        dashboardID,
+        editing,
+        lotID,
+        stationID,
+        warehouse 
+    } = params
+
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1025
@@ -103,7 +110,7 @@ const ListView = (props) => {
         disableBrowserBackButton()
 
         // displays dashboards page if url is on widget page
-        if (widgetPage) {
+        if (stationID) {
             setShowDashboards(true)
         }
 
@@ -112,16 +119,16 @@ const ListView = (props) => {
             setShowDashboards(false)
         }
 
-    }, [widgetPage])
+    }, [stationID])
 
 
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
-            if (dashboard.station === params.stationID) {
+            if (dashboard.station === stationID) {
                 setLocked(dashboard.locked)
             }
         })
-    }, [params.stationID, dashboards])
+    }, [stationID, dashboards])
 
     useEffect(() => {
         document.addEventListener('keypress', logKey)
@@ -216,7 +223,7 @@ const ListView = (props) => {
             if (!!item.owner) {
 
                 // If the station is a device and the task q owner is that device then show the status
-                if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
+                if (!!devices[stationID] && item.owner === devices[stationID]._id) {
 
                     let locationName = ''
 

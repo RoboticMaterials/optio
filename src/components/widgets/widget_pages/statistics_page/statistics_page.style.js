@@ -82,11 +82,13 @@ export const StatisticsDownloadButton = styled.button`
 `
 export const Header = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
+    position: relative;
 	background: ${props => props.theme.bg.primary};
     box-shadow: ${props => props.theme.cardShadow};
   	width: 100%;
+      
   	padding: 1rem;
     z-index: 100;
 `
@@ -104,4 +106,20 @@ export const StatisticsSectionsContainer = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction:column;
+`
+
+export const HeaderSection = styled.div`
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 1rem;
+
+`
+
+export const HeaderSectionTitle = styled.h5`
+    text-align: center;
+    color: ${props => props.theme.bg.septenary};
+    font-family: ${props => props.theme.font.primary};
 `
