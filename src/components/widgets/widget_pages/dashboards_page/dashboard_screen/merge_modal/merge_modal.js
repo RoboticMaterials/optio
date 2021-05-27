@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 // external components
 import Modal from 'react-modal';
@@ -20,31 +20,273 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
+import {
+    getBinQuantity,
+    getCustomFields,
+    getLotTotalQuantity,
+    getMatchesFilter, moveLot
+} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
 import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
 import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
-import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
+import {FINISH_BIN_ID, LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
 import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
 import PropTypes from "prop-types";
 import TextField from "../../../../../basic/form/text_field/text_field";
+import * as taskQueueActions from "../../../../../../redux/actions/task_queue_actions";
+import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
+import {CloseButton, LotListContainer} from "./merge_modal.style";
+import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
+import {useSelectionContainer} from "react-drag-to-select";
+import BoxWrapper from "../../../../../basic/box_wrapper/box_wrapper";
+import {immutableReplace} from "../../../../../../methods/utils/array_utils";
+import HilButton from "../../../../../hil_modals/hil_button/hil_button";
+import FlexibleContainer from "../../../../../basic/flexible_container/flexible_container";
+import SelectLotQuantity from "./select_lot_quantity/select_lot_quantity";
+import MergeReview from "./merge_review/merge_review";
+import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
+import BackButton from "../../../../../basic/back_button/back_button";
+import {isShift} from "../../../../../../methods/utils/event_utils";
 
 Modal.setAppElement('body');
+
+const CONTENT_OPTIONS = {
+    SELECTING_LOTS: 'SELECTING_LOTS',
+    SELECTING_LOT_QUANTITIES: 'SELECTING_LOT_QUANTITIES',
+    REVIEW: 'REVIEW',
+    CREATE_NEW_LOT: 'CREATE_NEW_LOT',
+}
 
 const MergeModal = (props) => {
 
     const {
         stationId,
-        close
+        dashboardId,
+        close,
     } = props
 
+    const dispatch = useDispatch()
+    const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const processCards = useSelector(state => { return state.cardsReducer.processCards })
+    const cards = useSelector(state => { return state.cardsReducer.cards }) || {}
+
+    const [availableLots, setAvailableLots] = useState([])
+    const [lotPositions, setLotPositions] = useState([])
+    const [selectedLots, setSelectedLots] = useState([])
+    const [content, setContent] = useState(CONTENT_OPTIONS.SELECTING_LOTS)
+    const [quantityOptions, setQuantityOptions] = useState([])
+    const [optionsInitialIndex, setOptionsInitialIndex] = useState(0)
+    const [subTitle, setSubTitle] = useState('')
+    const [shift, setShift] = useState(false)
+
+    useEffect(() => {
+
+        let tempAvailableCards = []
+        availableFinishProcesses.forEach((finishProcessId) => {
+            const currentCards = processCards[finishProcessId]
+            // console.log('currentCards',currentCards)
+            const finishedCards = Object.values(currentCards).filter((card) => card?.bins[FINISH_BIN_ID]?.count > 0)
+            tempAvailableCards = tempAvailableCards.concat(finishedCards)
+
+        })
+
+        setAvailableLots(tempAvailableCards)
+
+        return () => {
+        };
+    }, [availableFinishProcesses]);
+
+    const  rectanglesIntersect = ({minX: minAx, minY: minAy, maxX: maxAx, maxY: maxAy}, {minX: minBx, minY: minBy, maxX: maxBx, maxY: maxBy} ) => {
+         const aLeftOfB = maxAx < minBx;
+         const aRightOfB = minAx > maxBx;
+         const aAboveB = minAy > maxBy;
+         const aBelowB = maxAy < minBy;
+
+        return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
+    }
+
+    const handleSelectionChange = useCallback((box) => {
+        console.log('boxboxbox',box);
+        console.log('lotPositions',lotPositions);
+        const {
+            height,
+            left,
+            top,
+            width,
+        } = box || {}
+
+        const reformattedBox = {
+            minX: left,
+            minY: top,
+            maxX: left + width,
+            maxY: top + height
+        }
+
+        let tempSelected = []
+        lotPositions.forEach(((currPosition, currIndex) => {
+            // console.log('currPosition',currPosition)
+            const {offsetHeight, offsetLeft, offsetTop, offsetWidth} = currPosition || {}
+
+            const reformattedPosition = {
+                minX: offsetLeft,
+                minY: offsetTop,
+                maxX: offsetLeft + offsetWidth,
+                maxY: offsetTop + offsetHeight
+            }
+
+            if(rectanglesIntersect(reformattedBox, reformattedPosition)) {
+                tempSelected.push(currIndex)
+            }
+        }))
+
+
+        if(shift) {
+
+        }
+        setSelectedLots(prevState => {
+            if(shift) {
+                return [...prevState.filter(item => tempSelected.indexOf(item) === -1), ...tempSelected]
+            }
+            else {
+                return tempSelected
+            }
+        })
+    },[lotPositions, shift])
+
+    // console.log('selectedLots', selectedLots)
+
+    const { DragSelection } = useCallback(
+        useSelectionContainer({
+            onSelectionChange: handleSelectionChange,
+            onSelectionEnd: (ayo) => {
+                console.log('ayo',ayo)
+            },
+            onSelectionStart: (stuff) => {
+                console.log('stuff',stuff)
+            },
+            selectionProps: {
+                style: {
+                    border: '2px dashed purple',
+                    borderRadius: 4,
+                    backgroundColor: 'darkmagenta',
+                    opacity: 0.5,
+                    zIndex: 2000
+                },
+            }
+            // isEnabled,
+            // selectionProps,
+            // eventsElement,
+
+        })
+        , [])
+
+    useEffect(() => {
+        console.log('DragSelection',DragSelection)
+        return () => {
+        };
+    }, [DragSelection]);
+
+    useEffect(() => {
+        switch(content) {
+            case CONTENT_OPTIONS.SELECTING_LOTS: {
+                setSubTitle('Select Lots to Merge')
+                break
+            }
+            case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
+                setSubTitle('Select Lot Quantities')
+                break
+            }
+            case CONTENT_OPTIONS.REVIEW: {
+                setSubTitle('Review')
+                break
+            }
+            case CONTENT_OPTIONS.CREATE_NEW_LOT: {
+                setSubTitle('Create New Low')
+                break
+            }
+            default: {
+                setSubTitle('')
+                break
+            }
+
+        }
+
+        return () => {};
+    }, [content]);
+
+    const onShift = useCallback((e) => {
+        if(isShift(e)) {
+            setShift(true)
+        }
+        else {
+            setShift(false)
+        }
+
+    }, [])
+
+    useEffect(() => {
+        document.addEventListener("mousemove", onShift);
+
+        // on dismount remove the event pasteListener
+        return () => {
+            document.removeEventListener("mousemove", onShift);
+        };
+    }, [])
+
+
+
+
+
+
+    const handleResize = ({offsetHeight, offsetLeft, offsetTop, offsetWidth}, index) => {
+
+        console.log('handleResize',{offsetHeight, offsetLeft, offsetTop, offsetWidth}, index)
+
+        setLotPositions((prev) => immutableReplace(prev, {offsetHeight, offsetLeft, offsetTop, offsetWidth}, index))
+    }
+
+    const renderLots = () => {
+        return availableLots.map((lot, ind) => {
+
+            const {
+                _id: lotId,
+            } = lot || {}
+
+            return (
+                <BoxWrapper
+                    containerStyle={{
+                        display: 'flex',
+                        // margin: ".5rem",
+                        alignSelf: 'stretch',
+                        height: 'auto',
+                        // background: 'rgba(255,0,0,0.2)',
+                        width: '30rem'
+                    }}
+                    sizeCb={(args) => handleResize(args, ind)}
+                >
+                    <LotContainer
+                        selectable={selectedLots.length > 0}
+                        isSelected={selectedLots.includes(ind)}
+                        lotId={lotId}
+                        binId={FINISH_BIN_ID}
+                        enableFlagSelector={false}
+                        containerStyle={{
+                            margin: ".5rem", alignSelf: 'stretch', height: 'auto', width: '100%'
+                        }}
+                    />
+                </BoxWrapper>
+            )
+        })
+    }
 
     return (
         <styled.Container
@@ -58,13 +300,136 @@ const MergeModal = (props) => {
                 },
             }}
         >
+
+
             <styled.Header>
-                stationId
+                {content !== CONTENT_OPTIONS.SELECTING_LOTS &&
+
+                <BackButton
+                    containerStyle={{
+                        position: 'absolute',
+                        margin: 0,
+                        padding: 0
+                    }}
+                    onClick={() => {
+                        switch(content) {
+                            case CONTENT_OPTIONS.SELECTING_LOTS: {
+                                break
+                            }
+                            case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
+                                setContent(CONTENT_OPTIONS.SELECTING_LOTS)
+                                break
+                            }
+                            case CONTENT_OPTIONS.REVIEW: {
+                                setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
+                                break
+                            }
+                            case CONTENT_OPTIONS.CREATE_NEW_LOT: {
+                                break
+                            }
+                            default: {
+                                break
+                            }
+
+                        }
+                    }}
+                />
+                }
+
+                <styled.Column style={{margin: 'auto'}}>
+                    <styled.Title>Merge Lots</styled.Title>
+                    <styled.SubTitle>{subTitle}</styled.SubTitle>
+                </styled.Column>
+
+                <styled.CloseButton
+                    className={'fas fa-times'}
+                    color={'red'}
+                    onClick={close}
+                />
+
             </styled.Header>
 
             <styled.BodyContainer>
+                {
+                    {
+                        [CONTENT_OPTIONS.SELECTING_LOTS]:
+                            <>
+                                <DragSelection/>
+                                <styled.LotListContainer>
+                                    {renderLots()}
+                                </styled.LotListContainer>
+                            </>,
+                        [CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES]:
+                            <SelectLotQuantity
+                                initialValues={quantityOptions}
+                                initialIndex={optionsInitialIndex}
+                                selectedLots={selectedLots.map(lotIndex => availableLots[lotIndex])}
+                                onSubmit={(values) => {
+                                    setOptionsInitialIndex(0)
+                                    setContent(CONTENT_OPTIONS.REVIEW)
+                                    setQuantityOptions(values)
+                                }}
+                            />,
+                        [CONTENT_OPTIONS.REVIEW]:
+                            <MergeReview
+                                quantityOptions={quantityOptions}
+                                onOptionClick={(index) => {
+                                    setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
+                                    setOptionsInitialIndex(index)
+                                }}
+                                onNext={() => {
+                                    setContent(CONTENT_OPTIONS.CREATE_NEW_LOT)
+                                }}
+                            />,
+                        [CONTENT_OPTIONS.CREATE_NEW_LOT]:
+                            <LotEditorContainer
+                                processOptions={availableKickOffProcesses}
+                                onSubmit={() => {
+                                    quantityOptions.forEach(option => {
+                                        const {lotId, quantity} = option || {}
+                                        const updatedLot = moveLot(cards[lotId], null, FINISH_BIN_ID, quantity)
+                                        console.log('updatedLot',updatedLot)
+                                        dispatchPutCard(updatedLot, lotId)
+                                    })
+                                    close()
+                                }}
+                                isOpen={true}
+                                onAfterOpen={null}
+                                cardId={null}
+                                processId={null}
+                                binId={null}
+                                close={()=>{
+                                    setContent(CONTENT_OPTIONS.REVIEW)
+                                    // onShowCardEditor(false)
+                                    // setSelectedCard(null)
+                                }}
+
+                            />,
+
+                    }[content] ||
+                    null
+                }
 
             </styled.BodyContainer>
+
+            {content === CONTENT_OPTIONS.SELECTING_LOTS &&
+            <styled.Footer>
+                <Button
+                    disabled={!(selectedLots.length > 0)}
+                    onClick={() => {
+                        switch(content) {
+                            case CONTENT_OPTIONS.SELECTING_LOTS: {
+                                setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
+                            }
+                            case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
+
+                            }
+                        }
+                    }}
+                    label={'Next'}
+                />
+            </styled.Footer>
+            }
         </styled.Container>
     );
 };

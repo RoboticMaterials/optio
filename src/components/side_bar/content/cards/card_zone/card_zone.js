@@ -139,6 +139,8 @@ const CardZone = ((props) => {
 						count
 					} = binValue
 
+					if(!(count > 0)) return
+
 					// don't render lot being dragged - prevents flicker bug after drop
 					if((binId === draggingBinId) && (_id === draggingLotId)) return
 

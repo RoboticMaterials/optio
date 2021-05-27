@@ -1127,6 +1127,7 @@ const LotEditor = (props) => {
 		onShowCreateStatusClick,
 		showCreationStatusButton,
 		showPasteIcon,
+		onSubmit,
 		close,
 		processId,
 		processOptions,
@@ -1316,6 +1317,8 @@ const LotEditor = (props) => {
 									setSubmitting(false)
 									return false
 								}
+
+								onSubmit && onSubmit()
 
 								let requestResult
 

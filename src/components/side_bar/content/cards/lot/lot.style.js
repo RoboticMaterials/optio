@@ -92,6 +92,7 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  justify-content: center;
 `
 
 export const NameContainer = styled.div`

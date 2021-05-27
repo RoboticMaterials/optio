@@ -239,8 +239,8 @@ const Lot = (props) => {
                 }
 
             </styled.HeaderBar>
-            <styled.ContentContainer>
 
+            <styled.ContentContainer>
                 <LotSimpleRow
                     label={"Quantity"}
                     value={`${count}/${totalQuantity}`}

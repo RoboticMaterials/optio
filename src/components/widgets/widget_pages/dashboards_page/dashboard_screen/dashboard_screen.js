@@ -217,7 +217,13 @@ const DashboardScreen = (props) => {
                 )
 
             case 'merge': {
-                return <MergeModal/>
+                return <MergeModal
+                    dashboardId={dashboardID}
+                    isOpen={true}
+                    stationId={stationID}
+                    title={"Merge Lots"}
+                    close={() => setSelectedOperation(null)}
+                />
             }
             case 'kickOff':
                 return (
