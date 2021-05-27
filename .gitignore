@@ -23,3 +23,6 @@ src/settings/config.js
 
 # VSCode
 .vscode
+
+# ENV
+.env*

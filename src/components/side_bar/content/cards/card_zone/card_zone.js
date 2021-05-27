@@ -1,11 +1,10 @@
-import React, {useEffect, useState, memo} from "react"
+import React, {useEffect, useState, memo, useMemo} from "react"
 
 // components internal
 import StationsColumn from "../columns/station_column/station_column"
 import LotQueue from "../columns/lot_queue/lot_queue"
 import FinishColumn from "../columns/finish_column/finish_column"
-
-import { ShopifyColumn } from "../columns/shopify_column/shopify_column"
+import {ShopifyColumn} from "../columns/shopify_column/shopify_column"
 
 // functions external
 import {useDispatch, useSelector} from "react-redux"
@@ -23,7 +22,6 @@ import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../constants/lot_
 
 
 const CardZone = ((props) => {
-
 	// extract props
 	const {
 		handleCardClick,
@@ -38,6 +36,7 @@ const CardZone = ((props) => {
 		selectedCards,
 		setSelectedCards,
 		handleAddLotClick,
+		showShopifyColumn
 	} = props
 
 	// redux state
@@ -231,7 +230,7 @@ const CardZone = ((props) => {
 
 	return(
 		<styled.Container style={{background: 'white'}}>
-			<ShopifyColumn
+			{showShopifyColumn && <ShopifyColumn
 				setSelectedCards={setSelectedCards}
 				selectedCards={selectedCards}
 				// key={"QUEUE"}
@@ -246,7 +245,7 @@ const CardZone = ((props) => {
 				// cards={queue}
 				// onCardClick={handleCardClick}
 				// onAddLotClick={() => handleAddLotClick(processId)}
-			/>
+			/>}
 			<LotQueue
 				setSelectedCards={setSelectedCards}
 				selectedCards={selectedCards}

@@ -36,6 +36,7 @@ import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/e
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
 
 import ShopifyModal from './modals/shopify_modal/move_multiplie_lots_modal'
+import ShopifyLoginModal from "./modals/shopify_login/shopify_login_modal";
 
 const Cards = (props) => {
 
@@ -60,6 +61,8 @@ const Cards = (props) => {
 
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+    const [showShopifyLogin, setShowShopifyLogin] = useState(false)
+
     const [showMoveModal, setShowMoveModal] = useState(false)
     const [selectedCards, setSelectedCards] = useState([])
     const [selectedCard, setSelectedCard] = useState(null)
@@ -79,7 +82,7 @@ const Cards = (props) => {
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
 
-    const [shopifyModal, setShopifyModal] = useState(true)
+    const [shopifyModal, setShopifyModal] = useState(false)
 
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(filteredProcesses) // array of {process} objects - the list of selected processes
@@ -317,28 +320,28 @@ const Cards = (props) => {
     return (
         <styled.Container>
             {showConfirmDeleteModal &&
-            <DeleteMultipleLotsModal
-                handleClose={() => setShowConfirmDeleteModal(false)}
-                lots={selectedCards}
-                isOpen={showConfirmDeleteModal}
-                setShowConfirmDeleteModal={setShowConfirmDeleteModal}
-                setSelectedCards={setSelectedCards}
-                selectedCards={selectedCards}
-            />
+                <DeleteMultipleLotsModal
+                    handleClose={() => setShowConfirmDeleteModal(false)}
+                    lots={selectedCards}
+                    isOpen={showConfirmDeleteModal}
+                    setShowConfirmDeleteModal={setShowConfirmDeleteModal}
+                    setSelectedCards={setSelectedCards}
+                    selectedCards={selectedCards}
+                />
             }
             {showMoveModal &&
-            <MoveMultipleLotsModal
-                handleClose={() => setShowMoveModal(false)}
-                lots={selectedCards}
-                isOpen={showMoveModal}
-                setShowConfirmDeleteModal={setShowMoveModal}
-                setSelectedCards={setSelectedCards}
-                selectedCards={selectedCards}
-            />
+                <MoveMultipleLotsModal
+                    handleClose={() => setShowMoveModal(false)}
+                    lots={selectedCards}
+                    isOpen={showMoveModal}
+                    setShowConfirmDeleteModal={setShowMoveModal}
+                    setSelectedCards={setSelectedCards}
+                    selectedCards={selectedCards}
+                />
             }
 
-            {shopifyModal &&
-                <ShopifyModal
+            {/* {shopifyModal && */}
+                <ShopifyLoginModal
                     handleClose={() => setShopifyModal(false)}
                     // lots={selectedCards}
                     isOpen={shopifyModal}
@@ -346,21 +349,34 @@ const Cards = (props) => {
                     // setSelectedCards={setSelectedCards}
                     // selectedCards={selectedCards}
                 />
-            }
+            {/* } */}
 
             {showCardEditor &&
-            <LotEditorContainer
-                isOpen={showCardEditor}
-                onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
-            />
+                <LotEditorContainer
+                    isOpen={showCardEditor}
+                    onAfterOpen={null}
+                    cardId={selectedCard ? selectedCard.cardId : null}
+                    processId={selectedCard ? selectedCard.processId : null}
+                    binId={selectedCard ? selectedCard.binId : null}
+                    close={()=>{
+                        onShowCardEditor(false)
+                        setSelectedCard(null)
+                    }}
+                />
             }
+
+            {showShopifyLogin &&
+                <ShopifyLoginModal
+                    isOpen={showShopifyLogin}
+                    onAfterOpen={null}
+                    setShowConfirmDeleteModal={setShowShopifyLogin}
+                    close={()=>{
+                        // onShowCardEditor(false)
+                        setShowShopifyLogin(false)
+                    }}
+                />
+            }
+
             <SummaryHeader
                 showBackButton={isProcessView}
                 title={title}
@@ -385,9 +401,9 @@ const Cards = (props) => {
                 />
 
                 <Button 
-                    color='green'
-                    // onClick={setShopifyModal(true)}
-                > Log Into Shopify </Button>
+                    // color='green'
+                    onClick={() => setShowShopifyLogin(true)}
+                > Connect to Shopify </Button>
 
             </div>
 
@@ -395,10 +411,12 @@ const Cards = (props) => {
                 id={"cards-body"}
             >
                 {showMenu &&
-                    <CardMenu
-                        currentProcess={currentProcess}
-                        close={() => setShowMenu(false)}
-                    />
+                    <div>
+                        <CardMenu
+                            currentProcess={currentProcess}
+                            close={() => setShowMenu(false)}
+                        />
+                    </div>
                 }
 
                 {
@@ -436,8 +454,11 @@ const Cards = (props) => {
                             selectedFilterOption={selectedFilterOption}
                             sortMode={sortMode}
                             sortDirection={sortDirection}
+                            showShopifyColumn={showShopifyLogin}
                         />
+                        
                     </styled.CardZoneContainer>
+                    
                 }
             </styled.Body>
         </styled.Container>
