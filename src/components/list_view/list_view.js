@@ -10,12 +10,14 @@ import Settings from "../side_bar/content/settings/settings";
 import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
 import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
 
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import actions
 import { postStatus } from '../../redux/actions/status_actions'
+import {showLotScanModal} from '../../redux/actions/sidebar_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
@@ -56,7 +58,7 @@ const ListView = (props) => {
         editing,
         lotID,
         stationID,
-        warehouse 
+        warehouse
     } = params
 
     const size = useWindowSize()
@@ -70,13 +72,22 @@ const ListView = (props) => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const settings = useSelector(state => state.settingsReducer.settings)
+    const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
+    const cards = useSelector(state => state.cardsReducer.cards)
+
     const deviceEnabled = settings.deviceEnabled
 
     const onPostStatus = (status) => dispatch(postStatus(status))
+    const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
 
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
+
+    const [barcode, setBarcode] = useState('')
+    const [full, setFull] = useState('')
+    const [lotNum, setLotNum] = useState('')
+
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
@@ -119,7 +130,66 @@ const ListView = (props) => {
         })
     }, [stationID, dashboards])
 
+    useEffect(() => {
+        document.addEventListener('keypress', logKey)
+        return () => {
+            document.removeEventListener('keypress', logKey)
+        }
+    }, [])
 
+    useEffect(() => {
+        // console.log('QQQQ barcode', barcode)
+        let newFull = full + barcode
+        setFull(newFull)
+        return () => {
+
+        }
+    }, [barcode])
+
+    useEffect(() => {
+        if(full.includes('RM-')) {
+            const enter = full.substring(full.length-5)
+            if(enter === 'Enter'){
+                const splitLot = full.split('-')
+                let lotId = parseInt(splitLot[1].slice(0,-5))
+                setLotNum(lotId)
+                onScanLot(lotId)
+                setFull('')
+            }
+        }
+        return () => {
+
+        }
+    }, [full])
+
+    const logKey = (e) => {
+        setBarcode(e.key)
+    }
+
+    const onScanLot = (id) => {
+
+      let binCount = 0
+      let statId = ""
+
+      Object.values(cards).forEach((card) => {
+        if(card.lotNumber === id){
+          Object.values(stations).forEach((station) => {
+            if(!!card.bins[station._id]){
+              binCount = binCount + 1
+              statId = station._id
+            }
+          })
+
+        if(binCount > 1){
+          dispatchShowLotScanModal(true)
+        }
+        else{
+          history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+          setShowDashboards(true)
+        }
+        }
+      })
+    }
 
     const onLocationClick = (item) => {
         // If the id is in station that its a station, else its the Mir Dashboard
@@ -178,6 +248,19 @@ const ListView = (props) => {
 
     return (
         <styled.Container>
+
+            <ScanLotModal
+                isOpen={!!showScanLotModal}
+                title={"This lot is split between multiple stations. Please pick a station"}
+                id = {lotNum}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => {
+                  dispatchShowLotScanModal(null)
+
+                }}
+
+            />
             <ClickNHold
                 time={2}
                 onClickNHold={() => {

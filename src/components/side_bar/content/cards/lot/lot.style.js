@@ -13,7 +13,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   // overflow: hidden;
-      
+
   background: ${props => props.theme.bg.primary};
   border-radius: 0.4rem;
   color: ${props => props.theme.bg.octonary};
@@ -25,7 +25,7 @@ export const Container = styled.div`
 
   // letter-spacing: 1.5px;
   box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-  
+
   outline: none;
   user-select: none;
 
@@ -45,13 +45,13 @@ export const Container = styled.div`
   }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
-  
+
   // ${props => (props.selectable && !(props.isSelected || props.isFocused)) && notSelectedCss};
   // ${props => props.glow && glowCss};
   // ${props => props.isFocused && focusedCss};
   // ${props => props.isSelected && selectedCss};
   // ${props => props.containerStyle};
-  
+
   max-width: 30rem;
 `
 
@@ -115,7 +115,7 @@ export const LotNumber = styled.span`
   font-size: ${props => props.theme.fontSize.sz4};
   color: ${props => props.theme.bg.octonary};
   font-weight: 300;
-  
+
 
   background: ${props => props.theme.bg.secondary};
   border-radius: 1rem;

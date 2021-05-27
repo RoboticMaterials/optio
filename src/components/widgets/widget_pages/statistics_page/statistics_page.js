@@ -20,12 +20,6 @@ const StatisticsPage = () => {
 
     const [showOverview, setShowOverview] = useState(true)
 
-    useEffect(() => {
-
-        return () => {
-
-        }
-    }, [])
 
 
     return (
