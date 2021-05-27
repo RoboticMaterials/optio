@@ -9,6 +9,8 @@ import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
 
+import Button from "../../../basic/button/button";
+
 // actions
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 
@@ -32,6 +34,8 @@ import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_mult
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
+
+import ShopifyModal from './modals/shopify_modal/move_multiplie_lots_modal'
 
 const Cards = (props) => {
 
@@ -74,6 +78,9 @@ const Cards = (props) => {
     const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+
+    const [shopifyModal, setShopifyModal] = useState(true)
+
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(filteredProcesses) // array of {process} objects - the list of selected processes
 
@@ -330,6 +337,17 @@ const Cards = (props) => {
             />
             }
 
+            {shopifyModal &&
+                <ShopifyModal
+                    handleClose={() => setShopifyModal(false)}
+                    // lots={selectedCards}
+                    isOpen={shopifyModal}
+                    setShowConfirmDeleteModal={setShopifyModal}
+                    // setSelectedCards={setSelectedCards}
+                    // selectedCards={selectedCards}
+                />
+            }
+
             {showCardEditor &&
             <LotEditorContainer
                 isOpen={showCardEditor}
@@ -365,6 +383,11 @@ const Cards = (props) => {
                     onMoveClick={handleMoveClick}
                     onClearClick={()=>setSelectedCards([])}
                 />
+
+                <Button 
+                    color='green'
+                    // onClick={setShopifyModal(true)}
+                > Log Into Shopify </Button>
 
             </div>
 
