@@ -12,18 +12,19 @@ import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
 import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
 import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_modal'
 import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
+import DashboardLotInputBox from './dashboard_lot_input_box/dashboard_lot_input_box'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
-import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
+import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants"
 import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
 import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations, getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from '../../../../../../methods/utils/utils'
 
@@ -62,13 +63,31 @@ const DashboardLotPage = (props) => {
     const [currentTask, setCurrentTask] = useState(null)
     const [isFinish, setIsFinish] = useState(false)
     const [showFinish, setShowFinish] = useState(false)
+    const [lotContainsInput, setLotContainsInput] = useState(false)
 
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchGetCards = () => dispatch(getCards())
 
+
+
+    // Used to show dashboard input
     useEffect(() => {
+        let containsInput = false
+        currentLot.fields.forEach((field) => {
+            field.forEach((subField) => {
+                if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
+                    containsInput = true
+                }
+            })
+        })
+
+        setLotContainsInput(containsInput)
+    }, [currentLot])
+
+    useEffect(() => {
+        console.log('QQQQ current lot', currentLot)
         if (lotID) {
             const lot = cards[lotID]
             setCurrentLot(lot)
@@ -281,6 +300,12 @@ const DashboardLotPage = (props) => {
                 stationID={stationID}
                 warehouse={!!warehouse}
             />
+            {!!lotContainsInput &&
+                <DashboardLotInputBox
+                    currentLot={currentLot}
+                />
+            }
+
             <DashboardLotButtons
                 handleMove={(type) => onMove(type)}
                 handleCancel={() => onBack()}
