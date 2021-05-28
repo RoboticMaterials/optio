@@ -67,7 +67,7 @@ const SideBar = (props) => {
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
-    const [barcode, setBarcode] = useState('')
+    const [barcode, setBarcode] = useState([])
     const [full, setFull] = useState('')
     const [lotID, setLotID] = useState('')
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -118,11 +118,9 @@ const SideBar = (props) => {
     }, [])
 
     useEffect(() => {
-        // console.log('QQQQ barcode', barcode)
-        let newFull = full + barcode
-        setFull(newFull)
+        setFull(barcode.join(''))
         return () => {
-
+          setTimeout(() => setBarcode([]), 200)
         }
     }, [barcode])
 
@@ -143,16 +141,18 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
-        setBarcode(e.key)
+        setBarcode(barcode => [...barcode, e.key])
     }
 
     const onScanLot = (id) => {
 
       let binCount = 0
       let statId = ""
+      let lotFound = false
 
       Object.values(cards).forEach((card) => {
         if(card.lotNumber === id){
+          lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){
               binCount = binCount + 1
@@ -162,25 +162,25 @@ const SideBar = (props) => {
         if(binCount > 1){
           dispatchShowLotScanModal(true)
         }
-        else{
-          history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+        else if(binCount === 1 && !!statId){
+              history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
         }
+
       }
-      if(binCount === 0){
-        //  setAddTaskAlert({
-          //    type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-        //      label: "This lot does not exist!",
-        //  })
+    })
 
-        //  return setTimeout(() => setAddTaskAlert(null), 2500)
-
-        }
-      })
-
-      if(id === 420){
+      if(id === 420 && lotFound === false){
         setShowSnoop(true)
         return setTimeout(() => setShowSnoop(null), 2500)
       }
+
+      if(lotFound===false) {
+          setAddTaskAlert({
+              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+              label: "This lot does not exist!",
+          })
+          return setTimeout(() => setAddTaskAlert(null), 2500)
+        }
     }
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
