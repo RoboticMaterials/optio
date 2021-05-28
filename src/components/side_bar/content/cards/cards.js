@@ -83,6 +83,7 @@ const Cards = (props) => {
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
 
     const [shopifyModal, setShopifyModal] = useState(false)
+    const [shopifyColumn, setShopifyColumn] = useState(false)
 
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(filteredProcesses) // array of {process} objects - the list of selected processes
@@ -340,16 +341,14 @@ const Cards = (props) => {
                 />
             }
 
-            {/* {shopifyModal && */}
+            {shopifyModal &&
                 <ShopifyLoginModal
                     handleClose={() => setShopifyModal(false)}
-                    // lots={selectedCards}
                     isOpen={shopifyModal}
                     setShowConfirmDeleteModal={setShopifyModal}
-                    // setSelectedCards={setSelectedCards}
-                    // selectedCards={selectedCards}
+                    setShopifyColumn={setShopifyColumn}
                 />
-            {/* } */}
+            } 
 
             {showCardEditor &&
                 <LotEditorContainer
@@ -401,7 +400,6 @@ const Cards = (props) => {
                 />
 
                 <Button 
-                    // color='green'
                     onClick={() => setShowShopifyLogin(true)}
                 > Connect to Shopify </Button>
 
@@ -454,7 +452,7 @@ const Cards = (props) => {
                             selectedFilterOption={selectedFilterOption}
                             sortMode={sortMode}
                             sortDirection={sortDirection}
-                            showShopifyColumn={showShopifyLogin}
+                            showShopifyColumn={shopifyColumn}
                         />
                         
                     </styled.CardZoneContainer>

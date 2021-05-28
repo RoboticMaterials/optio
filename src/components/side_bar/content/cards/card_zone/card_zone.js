@@ -1,4 +1,4 @@
-import React, {useEffect, useState, memo, useMemo} from "react"
+import React, {useEffect, useState, memo} from "react"
 
 // components internal
 import StationsColumn from "../columns/station_column/station_column"
@@ -22,7 +22,7 @@ import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../constants/lot_
 
 
 const CardZone = ((props) => {
-	// extract props
+
 	const {
 		handleCardClick,
 		processId,
@@ -233,18 +233,18 @@ const CardZone = ((props) => {
 			{showShopifyColumn && <ShopifyColumn
 				setSelectedCards={setSelectedCards}
 				selectedCards={selectedCards}
-				// key={"QUEUE"}
-				// sortMode={sortMode}
-				// sortDirection={sortDirection}
-				// maxHeight={maxHeight}
-				// station_id={"QUEUE"}
-				// setShowCardEditor={setShowCardEditor}
-				// showCardEditor={showCardEditor}
-				// stationName={"Queue"}
-				// processId={processId}
-				// cards={queue}
-				// onCardClick={handleCardClick}
-				// onAddLotClick={() => handleAddLotClick(processId)}
+				key={"SHOPIFY"}
+				sortMode={sortMode}
+				sortDirection={sortDirection}
+				maxHeight={maxHeight}
+				station_id={"SHOPIFY"}
+				setShowCardEditor={setShowCardEditor}
+				showCardEditor={showCardEditor}
+				stationName={"Shopify"}
+				processId={processId}
+				cards={[]}
+				onCardClick={handleCardClick}
+				onAddLotClick={() => handleAddLotClick(processId)}
 			/>}
 			<LotQueue
 				setSelectedCards={setSelectedCards}
@@ -291,7 +291,8 @@ CardZone.propTypes = {
 	processId: PropTypes.string,
 	lotFilterValue: PropTypes.any,
 	showCardEditor: PropTypes.bool,
-	maxHeight: PropTypes.any
+	maxHeight: PropTypes.any,
+	showShopifyColumn: PropTypes.bool
 }
 
 // Specifies the default values for props:
@@ -305,6 +306,7 @@ CardZone.defaultProps = {
 	selectedFilterOption: LOT_FILTER_OPTIONS.name,
 	sortMode: LOT_FILTER_OPTIONS.name,
 	sortDirection: SORT_DIRECTIONS.ASCENDING,
+	showShopifyColumn: true
 }
 
 export default memo(CardZone)

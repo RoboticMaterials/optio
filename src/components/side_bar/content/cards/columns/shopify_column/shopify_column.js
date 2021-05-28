@@ -2,52 +2,89 @@ import {SortableContainer} from "react-sortable-hoc";
 
 import * as styled from "./shopify_column.style";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import Column from "../column/column"
 
 import * as order from './thor_order.json' 
 
+import {deepCopy} from '../../../../../../methods/utils/utils'
+
 export const ShopifyColumn = ((props) => {
 	const {
-		// station_id,
+		station_id,
 		stationName = "Shopify",
-		// onCardClick,
+		onCardClick,
 		cards = [],
-		// processId,
-		// maxHeight,
-		// sortMode,
-		// sortDirection,
+		processId,
+		maxHeight,
+		sortMode,
+		sortDirection,
 		selectedCards = [],
 		setSelectedCards
 	} = props
 
-	order.default.order.line_items.forEach(lineItem => {
+	const [stateCards, setStateCards] = useState(cards)
 
-		cards.push({
-			binId: "SHOP",
-			cardId: lineItem.id,
-			count: lineItem.fulfillable_quantity,
-			description: "",
-			end_date: null,
-			name: lineItem.name,
-			processName: "Main",
-			process_id: lineItem.sku,
-			start_date: {year: 2021, month: 2, day: 12},
-			totalQuantity: lineItem.fulfillable_quantity,
-		})
-		
-	});
+	useEffect(() => {
+		const newCards = deepCopy(cards)
+		order.default.order.line_items.forEach(lineItem => {
+			newCards.push({
+				station_id: "SHOPIFY",
+				binId: "8127b77d-707b-4bb2-9c22-d916fd077a80",
+				cardId: lineItem.id,
+				count: lineItem.fulfillable_quantity,
+				name: lineItem.name,
+				processName: "Welder Assembly",
+				lotTemplateId: "BASIC_LOT_TEMPLATE",
+				// process_id: lineItem.sku,
+				process_id: "61753d6e-d0f1-4778-9543-22d8f1d2f352",
+				totalQuantity: lineItem.fulfillable_quantity,
+				syncWithTemplate: false,
+				lotNumber: 268000,
+				fields: [
+					{
+						component: "TEXT_BOX_BIG",
+						dataType: "STRING",
+						fieldName: "description",
+						key: 0,
+						required: false,
+						showInPreview: true,
+						value: "",
+						_id: "DEFAULT_DESCRIPTION_FIELD_ID"
+					},
+					{
+						component: "CALENDAR_START_END",
+						dataType: "DATE_RANGE",
+						fieldName: "dates",
+						key: 1,
+						required: false,
+						showInPreview: true,
+						value: [null, null],
+						_id: "DEFAULT_DATES_FIELD_ID"
+					}
+				],
+				flags: []
+			})
+		});
+
+		setStateCards(newCards)
+		return () => {
+			
+		}
+	}, [])
+
+
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
-			setSelectedCards={setSelectedCards}
-			selectedCards={selectedCards}
-			// sortDirection={sortDirection}
-			// maxHeight={maxHeight}
-			// sortMode={sortMode}
+			setSelectedCards={() => {}}
+			selectedCards={[]}
+			sortDirection={sortDirection}
+			maxHeight={maxHeight}
+			sortMode={sortMode}
 			maxWidth={"24rem"}
 			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0)=>{
 				if(isCollapsed) {
@@ -72,7 +109,6 @@ export const ShopifyColumn = ((props) => {
 								/>
 
 								<styled.LabelContainer>
-
 									<styled.StationTitle>{stationName}</styled.StationTitle>
 								</styled.LabelContainer>
 
@@ -94,11 +130,11 @@ export const ShopifyColumn = ((props) => {
 					)
 				}
 			}}
-			// station_id={station_id}
+			station_id={station_id}
 			stationName = {stationName}
-			// onCardClick={onCardClick}
-			cards = {cards}
-			// processId={processId}
+			onCardClick={onCardClick}
+			cards = {stateCards}
+			processId={processId}
 			isCollapsed={isCollapsed}
 		/>
 	)

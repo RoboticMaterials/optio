@@ -79,7 +79,7 @@ const Column = ((props) => {
 		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
 		let totalProceedingLeadTimeSeconds = 0
 
-		if (station_id === 'FINISH') {	// No lead time once in finished bin
+		if (station_id === 'FINISH' || 'SHOPIFY') {	// No lead time once in finished bin
 			return;
 		}
 
@@ -122,8 +122,8 @@ const Column = ((props) => {
 			tempLotQuantitySummation = parseInt(tempLotQuantitySummation) + parseInt(count)
 		})
 
-		setNumberOfLots(tempNumberOfLots)
-		setLotQuantitySummation(tempLotQuantitySummation)
+		// setNumberOfLots(tempNumberOfLots)
+		// setLotQuantitySummation(tempLotQuantitySummation)
 	}, [cards])
 
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
@@ -409,6 +409,8 @@ const Column = ((props) => {
 							...rest
 						} = card
 
+						// console.log(card);
+
 						// const templateValues = getCustomFields(lotTemplateId, card)
 
 						// const lotName = lots[lot_id] ? lots[lot_id].name : null
@@ -426,7 +428,7 @@ const Column = ((props) => {
 
 						// Find cycle time in seconds
 						let cycleTimeSeconds
-						if (station_id === 'FINISH') {
+						if (station_id === 'FINISH' || 'SHOPIFY') {
 							cycleTimeSeconds = 0
 						} else if (station_id === 'QUEUE') {
 							cycleTimeSeconds = 0
@@ -460,7 +462,7 @@ const Column = ((props) => {
 										selectable={selectable}
 										isSelected={isSelected}
 										key={cardId}
-										// processName={processName}
+										processName={processName}
 										totalQuantity={totalQuantity}
 										lotNumber={lotNumber}
 										name={name}
@@ -469,7 +471,7 @@ const Column = ((props) => {
 										id={cardId}
 										flags={flags || []}
 										index={index}
-										lotId={cardId}
+										lotId={cardId.toString()}
 										binId={station_id}
 										onClick={(e)=> {
 											const payload = getBetweenSelected(cardId)
