@@ -43,9 +43,9 @@ import * as taskQueueActions from "../../../../../../redux/actions/task_queue_ac
 import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
 import {CloseButton, LotListContainer} from "./merge_modal.style";
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
-import {useSelectionContainer} from "react-drag-to-select";
+// import {useSelectionContainer} from "react-drag-to-select";
 import BoxWrapper from "../../../../../basic/box_wrapper/box_wrapper";
-import {immutableReplace} from "../../../../../../methods/utils/array_utils";
+import {immutableDelete, immutableInsert, immutableReplace} from "../../../../../../methods/utils/array_utils";
 import HilButton from "../../../../../hil_modals/hil_button/hil_button";
 import FlexibleContainer from "../../../../../basic/flexible_container/flexible_container";
 import SelectLotQuantity from "./select_lot_quantity/select_lot_quantity";
@@ -53,8 +53,9 @@ import MergeReview from "./merge_review/merge_review";
 import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
 import BackButton from "../../../../../basic/back_button/back_button";
 import {isShift} from "../../../../../../methods/utils/event_utils";
+import useScrollInfo from "../../../../../../hooks/useScrollInfo";
 
-Modal.setAppElement('body');
+// Modal.setAppElement('body');
 
 const CONTENT_OPTIONS = {
     SELECTING_LOTS: 'SELECTING_LOTS',
@@ -79,6 +80,7 @@ const MergeModal = (props) => {
     const processCards = useSelector(state => { return state.cardsReducer.processCards })
     const cards = useSelector(state => { return state.cardsReducer.cards }) || {}
 
+    const [scrollInfo, setRef] = useScrollInfo()
     const [availableLots, setAvailableLots] = useState([])
     const [lotPositions, setLotPositions] = useState([])
     const [selectedLots, setSelectedLots] = useState([])
@@ -87,6 +89,12 @@ const MergeModal = (props) => {
     const [optionsInitialIndex, setOptionsInitialIndex] = useState(0)
     const [subTitle, setSubTitle] = useState('')
     const [shift, setShift] = useState(false)
+
+    useEffect(() => {
+        console.log('scrollInfo',scrollInfo)
+        console.log('scrollInfo?.y?.value',scrollInfo?.y?.value)
+        return () => {}
+    }, [scrollInfo])
 
     useEffect(() => {
 
@@ -126,12 +134,13 @@ const MergeModal = (props) => {
 
         const reformattedBox = {
             minX: left,
-            minY: top,
+            minY: top + parseInt(scrollInfo?.y?.value),
             maxX: left + width,
-            maxY: top + height
+            maxY: top + height + parseInt(scrollInfo?.y?.value)
         }
 
         let tempSelected = []
+        let firstIsAdd = false
         lotPositions.forEach(((currPosition, currIndex) => {
             // console.log('currPosition',currPosition)
             const {offsetHeight, offsetLeft, offsetTop, offsetWidth} = currPosition || {}
@@ -143,7 +152,15 @@ const MergeModal = (props) => {
                 maxY: offsetTop + offsetHeight
             }
 
+
             if(rectanglesIntersect(reformattedBox, reformattedPosition)) {
+                let itemIndex = selectedLots.indexOf(currIndex)
+                if(itemIndex !== -1 && currIndex === 0) {
+
+                }
+                else {
+
+                }
                 tempSelected.push(currIndex)
             }
         }))
@@ -153,47 +170,47 @@ const MergeModal = (props) => {
 
         }
         setSelectedLots(prevState => {
-            if(shift) {
+            // if(shift) {
                 return [...prevState.filter(item => tempSelected.indexOf(item) === -1), ...tempSelected]
-            }
-            else {
-                return tempSelected
-            }
+            // }
+            // else {
+            //     return tempSelected
+            // }
         })
-    },[lotPositions, shift])
+    },[lotPositions, shift, scrollInfo, scrollInfo?.y?.value])
 
     // console.log('selectedLots', selectedLots)
 
-    const { DragSelection } = useCallback(
-        useSelectionContainer({
-            onSelectionChange: handleSelectionChange,
-            onSelectionEnd: (ayo) => {
-                console.log('ayo',ayo)
-            },
-            onSelectionStart: (stuff) => {
-                console.log('stuff',stuff)
-            },
-            selectionProps: {
-                style: {
-                    border: '2px dashed purple',
-                    borderRadius: 4,
-                    backgroundColor: 'darkmagenta',
-                    opacity: 0.5,
-                    zIndex: 2000
-                },
-            }
-            // isEnabled,
-            // selectionProps,
-            // eventsElement,
+    // const { DragSelection } = useCallback(
+    //     useSelectionContainer({
+    //         onSelectionChange: handleSelectionChange,
+    //         onSelectionEnd: (ayo) => {
+    //             console.log('ayo',ayo)
+    //         },
+    //         onSelectionStart: (stuff) => {
+    //             console.log('stuff',stuff)
+    //         },
+    //         selectionProps: {
+    //             style: {
+    //                 border: 'none',
+    //                 borderRadius: 4,
+    //                 backgroundColor: 'red',
+    //                 opacity: 0.5,
+    //                 zIndex: 2000
+    //             },
+    //         }
+    //         // isEnabled,
+    //         // selectionProps,
+    //         // eventsElement,
+    //
+    //     })
+    //     , [])
 
-        })
-        , [])
-
-    useEffect(() => {
-        console.log('DragSelection',DragSelection)
-        return () => {
-        };
-    }, [DragSelection]);
+    // useEffect(() => {
+    //     console.log('DragSelection',DragSelection)
+    //     return () => {
+    //     };
+    // }, [DragSelection]);
 
     useEffect(() => {
         switch(content) {
@@ -277,6 +294,17 @@ const MergeModal = (props) => {
                         selectable={selectedLots.length > 0}
                         isSelected={selectedLots.includes(ind)}
                         lotId={lotId}
+                        onClick={() => {
+                            const itemIndex = selectedLots.indexOf(ind)
+                            let updated
+                            if(itemIndex !== -1) {
+                                updated = immutableDelete(selectedLots, itemIndex)
+                            }
+                            else {
+                                updated = immutableInsert(selectedLots, ind, selectedLots.length)
+                            }
+                            setSelectedLots(updated)
+                        }}
                         binId={FINISH_BIN_ID}
                         enableFlagSelector={false}
                         containerStyle={{
@@ -300,8 +328,6 @@ const MergeModal = (props) => {
                 },
             }}
         >
-
-
             <styled.Header>
                 {content !== CONTENT_OPTIONS.SELECTING_LOTS &&
 
@@ -354,8 +380,10 @@ const MergeModal = (props) => {
                     {
                         [CONTENT_OPTIONS.SELECTING_LOTS]:
                             <>
-                                <DragSelection/>
-                                <styled.LotListContainer>
+                                {/*<DragSelection/>*/}
+                                <styled.LotListContainer
+                                    ref={setRef}
+                                >
                                     {renderLots()}
                                 </styled.LotListContainer>
                             </>,

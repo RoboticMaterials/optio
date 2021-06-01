@@ -24,7 +24,8 @@ export const LotListContainer = styled.div`
     
     justify-content: center;
     
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     flex-wrap: wrap;
     position: relative;
     //padding: 1rem;
