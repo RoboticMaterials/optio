@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { FieldArray, Form, Formik } from 'formik'
 
 
 export const Container = styled.div`
@@ -16,8 +17,16 @@ export const Container = styled.div`
 
     align-self: center;
 
+    margin-bottom: 1rem;
+
 `
 
 export const Title = styled.h3`
 
+`
+
+export const InputForm = styled(Form)`
+    display: flex;
+    justify-content:center;
+    flex-direction: column;
 `

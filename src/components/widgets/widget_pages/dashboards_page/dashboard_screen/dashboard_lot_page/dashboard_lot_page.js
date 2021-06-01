@@ -124,7 +124,6 @@ const DashboardLotPage = (props) => {
     }, [lotID, cards])
 
 
-
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
     }
