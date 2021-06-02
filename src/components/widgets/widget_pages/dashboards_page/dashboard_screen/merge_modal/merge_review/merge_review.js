@@ -15,7 +15,6 @@ const MergeReview = props => {
 	} = props
 
 	const renderOptions = () => {
-		console.log('quantityOptions',quantityOptions)
 		return quantityOptions.map((option, index) => {
 
 			const {
@@ -50,7 +49,7 @@ const MergeReview = props => {
 		</sharedStyles.BodyContainer>
 			<sharedStyles.Footer>
 				<Button
-					label={'Next'}
+					label={'Create New Lot'}
 					onClick={onNext}
 				/>
 			</sharedStyles.Footer>

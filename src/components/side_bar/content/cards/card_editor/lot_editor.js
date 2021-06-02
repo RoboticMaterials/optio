@@ -46,7 +46,7 @@ import {
 	CONTENT,
 	DEFAULT_COUNT_DISPLAY_NAME,
 	DEFAULT_NAME_DISPLAY_NAME, defaultBins,
-	FORM_BUTTON_TYPES, IGNORE_LOT_SYNC_WARNING,
+	FORM_BUTTON_TYPES, getDefaultBins, IGNORE_LOT_SYNC_WARNING, QUEUE_BIN_ID,
 	SIDE_BAR_MODES
 } from "../../../../../constants/lot_contants";
 
@@ -1119,6 +1119,7 @@ const LotEditor = (props) => {
 
 	const {
 		isOpen,
+		initialBin,
 		onAddClick,
 		footerContent,
 		lotTemplateId,
@@ -1281,7 +1282,7 @@ const LotEditor = (props) => {
 							bins: card && card.bins ?
 								card.bins
 								:
-								defaultBins,
+								getDefaultBins(initialBin),
 							fields: getFormCustomFields((useCardFields && !card?.syncWithTemplate) ? ( card?.fields || []) : lotTemplate.fields, card?.fields ? card?.fields : null)
 
 						}}
@@ -1468,10 +1469,7 @@ const LotEditor = (props) => {
 										else {
 											console.error("requestResult error",requestResult)
 										}
-
 									}
-
-
 								}
 
 								setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
@@ -1569,6 +1567,7 @@ LotEditor.propTypes = {
 // Specifies the default values for props:
 LotEditor.defaultProps = {
 	binId: "QUEUE",
+	initialBin: QUEUE_BIN_ID,
 	showProcessSelector: false,
 	providedValues: []
 };

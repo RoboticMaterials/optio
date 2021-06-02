@@ -91,18 +91,12 @@ const MergeModal = (props) => {
     const [shift, setShift] = useState(false)
 
     useEffect(() => {
-        console.log('scrollInfo',scrollInfo)
-        console.log('scrollInfo?.y?.value',scrollInfo?.y?.value)
-        return () => {}
-    }, [scrollInfo])
-
-    useEffect(() => {
 
         let tempAvailableCards = []
         availableFinishProcesses.forEach((finishProcessId) => {
             const currentCards = processCards[finishProcessId]
             // console.log('currentCards',currentCards)
-            const finishedCards = Object.values(currentCards).filter((card) => card?.bins[FINISH_BIN_ID]?.count > 0)
+            const finishedCards = Object.values(currentCards).filter((card) => card?.bins[stationId]?.count > 0)
             tempAvailableCards = tempAvailableCards.concat(finishedCards)
 
         })
@@ -123,8 +117,6 @@ const MergeModal = (props) => {
     }
 
     const handleSelectionChange = useCallback((box) => {
-        console.log('boxboxbox',box);
-        console.log('lotPositions',lotPositions);
         const {
             height,
             left,
@@ -142,7 +134,6 @@ const MergeModal = (props) => {
         let tempSelected = []
         let firstIsAdd = false
         lotPositions.forEach(((currPosition, currIndex) => {
-            // console.log('currPosition',currPosition)
             const {offsetHeight, offsetLeft, offsetTop, offsetWidth} = currPosition || {}
 
             const reformattedPosition = {
@@ -179,7 +170,6 @@ const MergeModal = (props) => {
         })
     },[lotPositions, shift, scrollInfo, scrollInfo?.y?.value])
 
-    // console.log('selectedLots', selectedLots)
 
     // const { DragSelection } = useCallback(
     //     useSelectionContainer({
@@ -265,9 +255,6 @@ const MergeModal = (props) => {
 
 
     const handleResize = ({offsetHeight, offsetLeft, offsetTop, offsetWidth}, index) => {
-
-        console.log('handleResize',{offsetHeight, offsetLeft, offsetTop, offsetWidth}, index)
-
         setLotPositions((prev) => immutableReplace(prev, {offsetHeight, offsetLeft, offsetTop, offsetWidth}, index))
     }
 
@@ -305,7 +292,7 @@ const MergeModal = (props) => {
                             }
                             setSelectedLots(updated)
                         }}
-                        binId={FINISH_BIN_ID}
+                        binId={stationId}
                         enableFlagSelector={false}
                         containerStyle={{
                             margin: ".5rem", alignSelf: 'stretch', height: 'auto', width: '100%'
@@ -389,6 +376,7 @@ const MergeModal = (props) => {
                             </>,
                         [CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES]:
                             <SelectLotQuantity
+                                stationId={stationId}
                                 initialValues={quantityOptions}
                                 initialIndex={optionsInitialIndex}
                                 selectedLots={selectedLots.map(lotIndex => availableLots[lotIndex])}
@@ -411,12 +399,13 @@ const MergeModal = (props) => {
                             />,
                         [CONTENT_OPTIONS.CREATE_NEW_LOT]:
                             <LotEditorContainer
+                                initialBin={stationId}
+                                binId={stationId}
                                 processOptions={availableKickOffProcesses}
                                 onSubmit={() => {
                                     quantityOptions.forEach(option => {
                                         const {lotId, quantity} = option || {}
-                                        const updatedLot = moveLot(cards[lotId], null, FINISH_BIN_ID, quantity)
-                                        console.log('updatedLot',updatedLot)
+                                        const updatedLot = moveLot(cards[lotId], FINISH_BIN_ID, stationId, quantity)
                                         dispatchPutCard(updatedLot, lotId)
                                     })
                                     close()
@@ -425,11 +414,8 @@ const MergeModal = (props) => {
                                 onAfterOpen={null}
                                 cardId={null}
                                 processId={null}
-                                binId={null}
                                 close={()=>{
                                     setContent(CONTENT_OPTIONS.REVIEW)
-                                    // onShowCardEditor(false)
-                                    // setSelectedCard(null)
                                 }}
 
                             />,
@@ -454,7 +440,7 @@ const MergeModal = (props) => {
                             }
                         }
                     }}
-                    label={'Next'}
+                    label={'Select Quantities'}
                 />
             </styled.Footer>
             }

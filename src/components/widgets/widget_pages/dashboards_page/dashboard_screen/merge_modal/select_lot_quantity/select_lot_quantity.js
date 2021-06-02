@@ -17,6 +17,7 @@ const SelectLotQuantity = (props) => {
 
 	const {
 		selectedLots,
+		stationId,
 		onSubmit,
 		initialIndex,
 		initialValues
@@ -36,7 +37,7 @@ const SelectLotQuantity = (props) => {
 		let tempCurrentLot = selectedLots[currentLotIndex]
 		setCurrentLot(tempCurrentLot)
 
-		setMaxQuantity(getBinQuantity(tempCurrentLot, FINISH_BIN_ID))
+		setMaxQuantity(getBinQuantity(tempCurrentLot, stationId))
 		return () => {};
 	}, [selectedLots, currentLotIndex]);
 
@@ -59,7 +60,7 @@ const SelectLotQuantity = (props) => {
 				<styled.Column>
 					<LotContainer
 						lotId={currentLot?._id}
-						binId={FINISH_BIN_ID}
+						binId={stationId}
 						enableFlagSelector={false}
 						containerStyle={{marginBottom: '1rem'}}
 					/>
@@ -76,7 +77,7 @@ const SelectLotQuantity = (props) => {
 						onClick={() => {
 							 submitForm()
 						}}
-						label={'Next'}
+						label={'Review'}
 					/>
 
 					<PageSelector
