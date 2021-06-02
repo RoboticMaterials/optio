@@ -452,7 +452,6 @@ const DeviceEdit = (props) => {
         } else {
             initialValues['charge_level'] = { chargeEnabled: false, min: '10', max: '80' }
         }
-        console.log('QQQQ initial vals', initialValues)
         return initialValues
     }
 
