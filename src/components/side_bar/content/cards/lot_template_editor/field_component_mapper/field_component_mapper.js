@@ -152,7 +152,7 @@ const FieldComponentMapper = (props) => {
                             <Textbox
                                 type="text"
                                 usable={usable}
-                                placeholder="Input Text On Dashboard..."
+                                placeholder="Enter Text On Dashboard..."
                                 InputComponent={Textbox}
                                 lines={5}
                                 style={{ ...style }}
