@@ -479,3 +479,45 @@ export const getPreviousRouteForLot = (lot, stationID) => {
     }
     return prevRoute
 }
+
+
+export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
+
+        let updatedLot = {...lot}
+
+            const oldBins = lot.bins ? lot.bins : {}
+
+            const {
+                [startBinId]: startBin,
+                [destinationBinId]: destinationBin,
+                ...remainingOldBins
+            } = oldBins || {}
+
+            if(startBin) {
+                // handle updating lot
+                {
+                    const destinationBinQuantity = parseInt(destinationBin?.count || 0)
+                    const startBinQuantity = parseInt(startBin?.count || 0)
+
+                    if(quantity > startBinQuantity) return false
+
+                    updatedLot = {
+                        ...updatedLot,
+                        bins: {
+                            ...remainingOldBins,
+                            [startBinId]: {
+                                ...startBin,
+                                count: startBinQuantity - quantity
+                            },
+                            [destinationBinId]: {
+                                ...destinationBin,
+                                count:  destinationBinQuantity + quantity
+                            }
+                        }
+                    }
+                }
+            }
+
+            return updatedLot
+        // }
+}
