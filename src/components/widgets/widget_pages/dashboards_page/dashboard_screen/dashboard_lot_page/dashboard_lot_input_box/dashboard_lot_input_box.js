@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { FieldArray, Form, Formik } from 'formik'
 
 // Import Style
@@ -14,7 +14,10 @@ import Textbox from '../../../../../../basic/textbox/textbox'
 import { FIELD_COMPONENT_NAMES } from "../../../../../../../constants/lot_contants"
 
 // Import Utils
-// IMPORT DEEP COPY
+import { deepCopy } from '../../../../../../../methods/utils/utils'
+
+// Import Actions
+import { putCard } from '../../../../../../../redux/actions/card_actions'
 
 
 const DashboardLotInputBox = (props) => {
@@ -25,6 +28,10 @@ const DashboardLotInputBox = (props) => {
 
     useEffect(() => {
     }, [])
+
+    const dispatch = useDispatch()
+    const dispatchPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
+
 
     // Since fields are nested arrays, you need to reference the location of the field in each array
     // That is also how the name of the formik component works: inputBox.firstIndex.secondIndex.input
@@ -50,22 +57,16 @@ const DashboardLotInputBox = (props) => {
     }
 
     const onSave = (values) => {
-        console.log('QQQQ values', values)
-
+        let lotCopy = deepCopy(currentLot)
         const fieldValues = values.inputBox
-        console.log('QQQQ field', fieldValues)
         Object.keys(fieldValues).forEach((ind1) => {
-            console.log('QQQQ ind1', ind1)
             const subFieldValues = fieldValues[ind1]
-            console.log('QQQQ Subfield vals', subFieldValues)
             Object.keys(subFieldValues).forEach((ind2) => {
                 const inputValue = subFieldValues[ind2].input
-
-
-
+                lotCopy.fields[ind1][ind2].value = inputValue
             })
         })
-
+        dispatchPutCard(lotCopy, lotCopy._id)
     }
 
 
@@ -81,6 +82,7 @@ const DashboardLotInputBox = (props) => {
                             <TextField
                                 name={`inputBox.${ind1}.${ind2}.input`}
                                 InputComponent={Textbox}
+                                lines={5}
                                 placeholder='Schedule Name'
 
                             />

@@ -39,3 +39,22 @@ export const LotContainer = styled.div`
 
 `
 
+export const LotButtonContainer = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-top: .5rem;
+
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    background: ${props => props.theme.bg.secondary};
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+
+`
+
+export const LotBodyContainer = styled.div`
+    overflow-y: auto;
+`
+

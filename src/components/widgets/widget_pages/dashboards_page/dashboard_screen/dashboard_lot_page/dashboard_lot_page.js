@@ -87,7 +87,6 @@ const DashboardLotPage = (props) => {
     }, [currentLot])
 
     useEffect(() => {
-        console.log('QQQQ current lot', currentLot)
         if (lotID) {
             const lot = cards[lotID]
             setCurrentLot(lot)
@@ -294,26 +293,29 @@ const DashboardLotPage = (props) => {
                 <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
             </styled.LotHeader>
             <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
-            <DashboardLotFields
-                currentLot={currentLot}
-                stationID={stationID}
-                warehouse={!!warehouse}
-            />
-            {!!lotContainsInput &&
-                <DashboardLotInputBox
+
+            <styled.LotBodyContainer>
+                <DashboardLotFields
                     currentLot={currentLot}
+                    stationID={stationID}
+                    warehouse={!!warehouse}
                 />
-            }
-
-            <DashboardLotButtons
-                handleMove={(type) => onMove(type)}
-                handleCancel={() => onBack()}
-                isDeviceRoute={currentTask?.device_types?.length > 1}
-                isFinish={isFinish}
-                handleFinish={() => setShowFinish(true)}
-                route={currentTask}
-            />
-
+                {!!lotContainsInput &&
+                    <DashboardLotInputBox
+                        currentLot={currentLot}
+                    />
+                }
+            </styled.LotBodyContainer>
+            <styled.LotButtonContainer>
+                <DashboardLotButtons
+                    handleMove={(type) => onMove(type)}
+                    handleCancel={() => onBack()}
+                    isDeviceRoute={currentTask?.device_types?.length > 1}
+                    isFinish={isFinish}
+                    handleFinish={() => setShowFinish(true)}
+                    route={currentTask}
+                />
+            </styled.LotButtonContainer>
             {showFinish &&
                 renderFinishQuantity()
             }
