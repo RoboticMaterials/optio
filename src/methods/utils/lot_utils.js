@@ -289,6 +289,12 @@ export const getIsCardAtBin = ({ bins }, binId) => {
     return !!getBinQuantity({ bins }, binId)
 }
 
+export const getCardsInBin = (cards, binId, processId) => {
+	return Object.values(cards).filter((card, ind) => {
+				return getIsCardAtBin(card, binId) && (!processId || card.process_id === processId)
+			})
+}
+
 export const getAllTemplateFields = () => {
     const lotTemplates = {
         [BASIC_LOT_TEMPLATE_ID]: { ...BASIC_LOT_TEMPLATE },

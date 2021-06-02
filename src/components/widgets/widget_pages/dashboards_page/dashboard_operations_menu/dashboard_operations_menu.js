@@ -146,6 +146,25 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+
+    const renderRouteWithoutLotButton = () => {
+        const schema = theme.main.schema.routes
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Run a Route Without Lot'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('route')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderMergeButton = () => {
         const schema = theme.main.schema.merge
         const iconClassName = schema?.iconName
@@ -168,12 +187,13 @@ const DashboardOperationsMenu = (props) => {
             <>
                 {renderReportButton()}
                 {renderTaskQueueButton()}
+                {renderRouteWithoutLotButton()}
                 {warehouseEnabled &&
                     renderWarehouseButton()
                 }
 
                 {mergeEnabled &&
-                renderMergeButton()
+                    renderMergeButton()
                 }
 
                 {availableKickOffProcesses.length > 0 &&

@@ -13,7 +13,8 @@ import {
     CARD,
     CARD_HISTORY,
     PROCESS_CARDS,
-    SHOW_EDITOR
+    SHOW_EDITOR,
+    SHOW_BARCODE_MODAL,
 } from '../types/data_types';
 
 import { api_action } from './index';
@@ -245,5 +246,9 @@ export const putCardAttributes = (attributes, cardId) => async (dispatch, getSta
 
 export const showEditor = (bool) => {
     return { type: SHOW_EDITOR, payload: bool }
+}
+
+export const showBarcodeModal = (bool) => {
+    return { type: SHOW_BARCODE_MODAL, payload: bool }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

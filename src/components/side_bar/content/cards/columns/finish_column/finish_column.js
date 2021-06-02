@@ -29,7 +29,7 @@ const FinishColumn = ((props) => {
 			sortDirection={sortDirection}
 			maxHeight={maxHeight}
 			sortMode={sortMode}
-			maxWidth={"20rem"}
+			maxWidth={"24rem"}
 			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0)=>{
 				if(isCollapsed) {
 					return(

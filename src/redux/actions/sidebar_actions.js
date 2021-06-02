@@ -4,6 +4,7 @@ import {
     SET_WIDTH,
     SET_OPEN,
     PAGE_DATA_CHANGED, SET_CONFIRM_DELETE,
+    SHOW_LOT_SCAN_MODAL,
 } from '../types/sidebar_types'
 
 export const setMode = (mode) => {
@@ -28,4 +29,8 @@ export const pageDataChanged = (state) => {
 
 export const setConfirmDelete = (show, callback) => {
     return { type: SET_CONFIRM_DELETE, payload: {show, callback}}
+}
+
+export const showLotScanModal = (show) => {
+    return { type: SHOW_LOT_SCAN_MODAL, payload: show }
 }
