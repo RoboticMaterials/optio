@@ -78,7 +78,7 @@ const DashboardLotInputBox = (props) => {
 
                     return (
                         <styled.Container key={`${ind1}.container.${ind2}`}>
-                            <p>{subField.fieldName}</p>
+                            <styled.Title>{subField.fieldName}</styled.Title>
                             <TextField
                                 name={`inputBox.${ind1}.${ind2}.input`}
                                 InputComponent={Textbox}
@@ -89,6 +89,7 @@ const DashboardLotInputBox = (props) => {
                             <Button
                                 schema={'dashboards'}
                                 type={'submit'}
+                                style={{width:'10rem', alignSelf:'center', marginTop:'.5rem'}}
                             >
                                 Save
                             </Button>

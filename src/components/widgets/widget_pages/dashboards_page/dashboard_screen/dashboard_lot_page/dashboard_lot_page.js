@@ -289,12 +289,12 @@ const DashboardLotPage = (props) => {
 
     return (
         <styled.LotContainer>
-            <styled.LotHeader>
-                <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
-            </styled.LotHeader>
-            <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
-
             <styled.LotBodyContainer>
+                <styled.LotHeader>
+                    <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+                </styled.LotHeader>
+                <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
+
                 <DashboardLotFields
                     currentLot={currentLot}
                     stationID={stationID}
