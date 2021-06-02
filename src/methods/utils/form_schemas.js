@@ -556,6 +556,16 @@ export const templateMapperSchema = Yup.object().shape({
     )
 })
 
+export const selectLotQuantitySchema = Yup.object().shape({
+    items: Yup.array().of(
+        Yup.object().shape({
+            quantity: Yup.number()
+                .min(1, 'Must be at least 1.')
+                .required('Required.')
+        })
+    )
+})
+
 
 export const getCardSchema = (mode, availableBinItems) => {
     switch (mode) {

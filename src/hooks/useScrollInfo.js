@@ -14,7 +14,10 @@ function useResizeObserver(ref, callback) {
 				callback(entries[0].contentRect);
 			});
 
-			resizeObserver.observe(ref.current);
+			if(ref.current) {
+				resizeObserver.observe(ref.current);
+			}
+
 
 			return () => {
 				resizeObserver.disconnect();
