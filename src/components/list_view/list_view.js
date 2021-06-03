@@ -11,6 +11,8 @@ import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
 import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
+import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
+import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
@@ -84,9 +86,11 @@ const ListView = (props) => {
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
 
-    const [barcode, setBarcode] = useState('')
+    const [barcode, setBarcode] = useState([])
     const [full, setFull] = useState('')
     const [lotNum, setLotNum] = useState('')
+    const [showSnoop, setShowSnoop] = useState(null)
+    const [addTaskAlert, setAddTaskAlert] = useState(null);
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
@@ -138,12 +142,10 @@ const ListView = (props) => {
     }, [])
 
     useEffect(() => {
-        // console.log('QQQQ barcode', barcode)
-        let newFull = full + barcode
-        setFull(newFull)
-        return () => {
-
-        }
+      setFull(barcode.join(''))
+      return () => {
+        setTimeout(() => setBarcode([]), 200)
+      }
     }, [barcode])
 
     useEffect(() => {
@@ -163,16 +165,18 @@ const ListView = (props) => {
     }, [full])
 
     const logKey = (e) => {
-        setBarcode(e.key)
+      setBarcode(barcode => [...barcode, e.key])
     }
 
     const onScanLot = (id) => {
 
       let binCount = 0
       let statId = ""
+      let lotFound = false
 
       Object.values(cards).forEach((card) => {
         if(card.lotNumber === id){
+          lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){
               binCount = binCount + 1
@@ -183,12 +187,26 @@ const ListView = (props) => {
         if(binCount > 1){
           dispatchShowLotScanModal(true)
         }
-        else{
+        else if(binCount ===1 && !!statId){
+          setShowSettings(false)
           history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
           setShowDashboards(true)
         }
         }
       })
+
+      if(id === 420 && lotFound === false){
+        setShowSnoop(true)
+        return setTimeout(() => setShowSnoop(null), 2500)
+      }
+
+      if(lotFound===false) {
+          setAddTaskAlert({
+              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+              label: "This lot does not exist!",
+          })
+          return setTimeout(() => setAddTaskAlert(null), 2500)
+        }
     }
 
     const onLocationClick = (item) => {
@@ -261,6 +279,21 @@ const ListView = (props) => {
                 }}
 
             />
+            <TaskAddedAlert
+                containerStyle={{
+                    'position': 'absolute'
+                }}
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
+
+            {!!showSnoop &&
+              <img
+               src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
+               alt="new"
+               />
+            }
+
             <ClickNHold
                 time={2}
                 onClickNHold={() => {

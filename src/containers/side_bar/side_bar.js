@@ -118,9 +118,11 @@ const SideBar = (props) => {
     }, [])
 
     useEffect(() => {
-        setFull(barcode.join(''))
+        let newBarcode = barcode.join('')
+        setFull(newBarcode)
+        console.log(full)
         return () => {
-          setTimeout(() => setBarcode([]), 200)
+          //setTimeout(() => setBarcode([]), 200)
         }
     }, [barcode])
 
