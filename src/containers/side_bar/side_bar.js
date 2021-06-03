@@ -110,12 +110,12 @@ const SideBar = (props) => {
         disableBrowserBackButton()
     }, [url])
 
-    useEffect(() => {
-        document.addEventListener('keypress', logKey)
-        return () => {
-            document.removeEventListener('keypress', logKey)
-        }
-    }, [])
+    // useEffect(() => {
+    //     document.addEventListener('keypress', logKey)
+    //     return () => {
+    //         document.removeEventListener('keypress', logKey)
+    //     }
+    // }, [])
 
     useEffect(() => {
         let newBarcode = barcode.join('')
