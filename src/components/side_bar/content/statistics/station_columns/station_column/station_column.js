@@ -54,6 +54,7 @@ const StationColumn = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
+        onGetAllData()
         const dataInterval = setInterval(() => onGetAllData(), 30000)
 
         return () => {
