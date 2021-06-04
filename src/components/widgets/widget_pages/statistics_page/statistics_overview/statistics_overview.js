@@ -107,7 +107,7 @@ const StatisticsOverview = (props) => {
     // On page load, load in the data for today
     useEffect(() => {
         getAllData()
-        const dataInterval = setInterval(() => getAllData(), 30000)
+        const dataInterval = setInterval(() => getAllData(), 3000)
         return () => {
             clearInterval(dataInterval)
         }
@@ -123,7 +123,6 @@ const StatisticsOverview = (props) => {
             setIsDevice(true)
         }
 
-        // TEMP
         // If the page has been loaded in (see widget pages) then don't delay chart load, 
         // else delay chart load because it slows down the widget page opening animation.
         if (widgetPageLoaded) {
@@ -134,11 +133,25 @@ const StatisticsOverview = (props) => {
             }, 300);
         }
 
-        // TEMP
         const body = { timespan: timeSpan, index: dateIndex }
         const dataPromise = getStationAnalytics(stationID, body)
         dataPromise.then(response => {
             if (response === undefined) return
+
+            // Convert Throughput for line chart
+            if (timeSpan === 'line') {
+                let convertedThroughput = []
+                response.throughPut.forEach((dataPoint) => {
+                    // Round Epoch time and multiply by 1000 to match front end times
+                    let convertedTime = dataPoint.x * 1000
+                    convertedTime = Math.round(convertedTime)
+                    convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
+                })
+                response = {
+                    ...response,
+                    throughPut: convertedThroughput
+                }
+            }
             setThroughputData(response)
 
         })
