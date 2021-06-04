@@ -107,7 +107,7 @@ const StatisticsOverview = (props) => {
     // On page load, load in the data for today
     useEffect(() => {
         getAllData()
-        const dataInterval = setInterval(() => getAllData(), 3000)
+        const dataInterval = setInterval(() => getAllData(), 30000)
         return () => {
             clearInterval(dataInterval)
         }
