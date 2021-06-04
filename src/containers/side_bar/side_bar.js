@@ -111,7 +111,7 @@ const SideBar = (props) => {
     }, [url])
 
      useEffect(() => {
-         document.addEventListener('keyup', logKey)
+          document.addEventListener('keyup', logKey)
          return () => {
              document.removeEventListener('keyup', logKey)
          }
@@ -144,7 +144,6 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
-        console.log(e.key)
         setBarcode(barcode => [...barcode,e.key])
     }
 

@@ -63,10 +63,7 @@ const BarcodeModal = (props) => {
             </styled.Title>
                 <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
             </styled.Header>
-            <styled.BodyContainer>
-                <styled.ContentContainer>
-                    {children}
-                </styled.ContentContainer>
+            <styled.BodyContainer generated = {generated}>
 
                 {!generated &&
                   <Button
