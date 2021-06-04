@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
@@ -67,7 +67,7 @@ const SideBar = (props) => {
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
-    const [barcode, setBarcode] = useState('')
+    const [barcode, setBarcode] = useState([])
     const [full, setFull] = useState('')
     const [lotID, setLotID] = useState('')
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -110,26 +110,23 @@ const SideBar = (props) => {
         disableBrowserBackButton()
     }, [url])
 
-    // useEffect(() => {
-    //     document.addEventListener('keypress', logKey)
-    //     return () => {
-    //         document.removeEventListener('keypress', logKey)
-    //     }
-    // }, [])
+     useEffect(() => {
+          document.addEventListener('keyup', logKey)
+         return () => {
+             document.removeEventListener('keyup', logKey)
+         }
+     }, [])
+
 
     useEffect(() => {
-        // console.log('QQQQ barcode', barcode)
-        let newFull = full + barcode
-        setFull(newFull)
-        return () => {
-
-        }
+        setFull(barcode.join(''))
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RM-')) {
+        if(full.includes('RMShift-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
+                setBarcode([])
                 const splitLot = full.split('-')
                 let lotId = parseInt(splitLot[1].slice(0,-5))
                 setLotID(lotId)
@@ -137,22 +134,21 @@ const SideBar = (props) => {
                 setFull('')
             }
         }
-        return () => {
 
-        }
     }, [full])
 
     const logKey = (e) => {
-        setBarcode(e.key)
+        setBarcode(barcode => [...barcode,e.key])
     }
 
     const onScanLot = (id) => {
-
       let binCount = 0
       let statId = ""
+      let lotFound = false
 
       Object.values(cards).forEach((card) => {
         if(card.lotNumber === id){
+          lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){
               binCount = binCount + 1
@@ -162,25 +158,24 @@ const SideBar = (props) => {
         if(binCount > 1){
           dispatchShowLotScanModal(true)
         }
-        else{
-          history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+        else if(binCount === 1 && !!statId){
+              history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
         }
+
       }
-      if(binCount === 0){
-        //  setAddTaskAlert({
-          //    type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-        //      label: "This lot does not exist!",
-        //  })
-
-        //  return setTimeout(() => setAddTaskAlert(null), 2500)
-
-        }
-      })
-
-      if(id === 420){
+    })
+      if(id === 420 && lotFound === false){
         setShowSnoop(true)
         return setTimeout(() => setShowSnoop(null), 2500)
       }
+
+      if(lotFound===false) {
+          setAddTaskAlert({
+              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+              label: "This lot does not exist!",
+          })
+          return setTimeout(() => setAddTaskAlert(null), 2500)
+        }
     }
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active

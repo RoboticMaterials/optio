@@ -220,11 +220,10 @@ export const TextContainer = styled.div`
 
 export const BodyContainer = styled.div`
 	display: flex;
-	flex-direction: column;
+  flex-direction: ${props => !!props.generated ? "row" : "column"};
 	padding: 1rem;
-	flex: 1;
-	justify-content: space-between;
-    text-align: center;
+	justify-content: center;
+  text-align: center;
 	overflow: hidden;
 
 	background: ${props => props.theme.bg.primary};
