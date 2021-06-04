@@ -62,6 +62,11 @@ const LineThroughputChart = (props) => {
             }
         }
 
+        // If startIndex is undefined, then the start of the shift is after any data points
+        if(startIndex === undefined){
+            startIndex = dataCopy.length
+        }
+
         // Convert end of shift to epoch
         const endEpoch = convert24htoEpoch(shiftDetails.endOfShift, date)
         let endIndex = dataCopy.length
