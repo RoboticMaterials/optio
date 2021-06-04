@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
@@ -110,26 +110,27 @@ const SideBar = (props) => {
         disableBrowserBackButton()
     }, [url])
 
-    // useEffect(() => {
-    //     document.addEventListener('keypress', logKey)
-    //     return () => {
-    //         document.removeEventListener('keypress', logKey)
-    //     }
-    // }, [])
+     useEffect(() => {
+         document.addEventListener('keyup', logKey)
+         return () => {
+             document.removeEventListener('keyup', logKey)
+         }
+     }, [])
+
 
     useEffect(() => {
         let newBarcode = barcode.join('')
         setFull(newBarcode)
-        console.log(full)
-        return () => {
-          //setTimeout(() => setBarcode([]), 200)
-        }
+
+        if(newBarcode.substring(newBarcode.length-5) === 'Enter') setBarcode([])
+
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RM-')) {
+        if(full.includes('RMShift-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
+                setBarcode([])
                 const splitLot = full.split('-')
                 let lotId = parseInt(splitLot[1].slice(0,-5))
                 setLotID(lotId)
@@ -143,11 +144,11 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
-        setBarcode(barcode => [...barcode, e.key])
+        console.log(e.key)
+        setBarcode(barcode => [...barcode,e.key])
     }
 
     const onScanLot = (id) => {
-
       let binCount = 0
       let statId = ""
       let lotFound = false
@@ -170,7 +171,6 @@ const SideBar = (props) => {
 
       }
     })
-
       if(id === 420 && lotFound === false){
         setShowSnoop(true)
         return setTimeout(() => setShowSnoop(null), 2500)
