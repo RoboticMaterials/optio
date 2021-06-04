@@ -111,9 +111,7 @@ const StatisticsOverview = (props) => {
         return () => {
             clearInterval(dataInterval)
         }
-    }, [])
-
-
+    }, [timeSpan])
 
     const getAllData = () => {
         dispatchGetReportEvents() // load report events
