@@ -135,23 +135,21 @@ const ListView = (props) => {
     }, [stationID, dashboards])
 
     useEffect(() => {
-        document.addEventListener('keypress', logKey)
+        document.addEventListener('keyup', logKey)
         return () => {
-            document.removeEventListener('keypress', logKey)
+            document.removeEventListener('keyup', logKey)
         }
     }, [])
 
     useEffect(() => {
       setFull(barcode.join(''))
-      return () => {
-        setTimeout(() => setBarcode([]), 200)
-      }
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RM-')) {
+        if(full.includes('RMShift-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
+                setBarcode([])
                 const splitLot = full.split('-')
                 let lotId = parseInt(splitLot[1].slice(0,-5))
                 setLotNum(lotId)
@@ -159,9 +157,7 @@ const ListView = (props) => {
                 setFull('')
             }
         }
-        return () => {
 
-        }
     }, [full])
 
     const logKey = (e) => {

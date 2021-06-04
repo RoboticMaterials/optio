@@ -119,11 +119,7 @@ const SideBar = (props) => {
 
 
     useEffect(() => {
-        let newBarcode = barcode.join('')
-        setFull(newBarcode)
-
-        if(newBarcode.substring(newBarcode.length-5) === 'Enter') setBarcode([])
-
+        setFull(barcode.join(''))
     }, [barcode])
 
     useEffect(() => {
@@ -138,9 +134,7 @@ const SideBar = (props) => {
                 setFull('')
             }
         }
-        return () => {
 
-        }
     }, [full])
 
     const logKey = (e) => {
