@@ -4,26 +4,27 @@ import moment from 'moment';
 import { Formik, Form } from 'formik'
 
 // Import Components
-import TextField from '../../../../../../../basic/form/text_field/text_field.js'
-import Textbox from '../../../../../../../basic/textbox/textbox'
-import TimePickerField from '../../../../../../../basic/form/time_picker_field/time_picker_field'
-import Switch from '../../../../../../../basic/form/switch_field/switch_field'
+import TextField from '../../../../basic/form/text_field/text_field.js'
+import Textbox from '../../../../basic/textbox/textbox'
+import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field'
+import Switch from '../../../../basic/form/switch_field/switch_field'
 
 // Import Styles
-import * as styled from '../../charts.style'
+import * as styled from './shift_settings.style'
 
 // Import utils
-import { throughputSchema } from '../../../../../../../../methods/utils/form_schemas'
-import { convert12hto24h } from '../../../../../../../../methods/utils/time_utils'
+import { throughputSchema } from '../../../../../methods/utils/form_schemas'
+import { convert12hto24h } from '../../../../../methods/utils/time_utils'
 
 // Import actions
-import { postSettings } from '../../../../../../../../redux/actions/settings_actions'
-import { pageDataChanged } from '../../../../../../../../redux/actions/sidebar_actions'
+import { postSettings } from '../../../../../redux/actions/settings_actions'
+import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
-const LineThroughputForm = (props) => {
+const ShiftSettings = (props) => {
 
     const {
         themeContext,
+        enableOutput,
     } = props
 
     const dispatch = useDispatch()
@@ -112,7 +113,7 @@ const LineThroughputForm = (props) => {
 
         return (
             <>
-                <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
+                <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
 
                     <styled.RowContainer style={{ width: '100%' }}>
 
@@ -145,7 +146,7 @@ const LineThroughputForm = (props) => {
                         const breakStart = `startOfBreak${adjustedInd}`
                         const breakEnd = `endOfBreak${adjustedInd}`
                         return (
-                            <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
+                            <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
 
                                 <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                                     <styled.Label>{breakName}</styled.Label>
@@ -182,7 +183,7 @@ const LineThroughputForm = (props) => {
                                             }}
                                             name={breakStart}
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                            containerStyle={{ width: '6rem' }}
+                                            containerStyle={{ width: '5rem' }}
                                             showHour={true}
                                             showMinute={true}
                                             showSecond={false}
@@ -292,7 +293,9 @@ const LineThroughputForm = (props) => {
                             backgroundColor: themeContext.bg.primary,
                             boxShadow: themeContext.cardShadow,
                             padding: '.5rem',
-                            borderRadius: '.5rem'
+                            borderRadius: '.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}
                     >
                         <styled.ColumnContainer>
@@ -360,25 +363,26 @@ const LineThroughputForm = (props) => {
                                     defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                 />
                             </styled.RowContainer>
-
-                            <styled.RowContainer style={{ justifyContent: 'space-between' }}>
-                                <styled.Label>
-                                    Expected Output
-                            </styled.Label>
-                                <TextField
-                                    name={"expectedOutput"}
-                                    placeholder='Qty'
-                                    InputComponent={Textbox}
-                                    ContentContainer={styled.RowContainer}
-                                    style={{
-                                        'fontSize': '1rem',
-                                        'fontWeight': '600',
-                                        'marginBottom': '.5rem',
-                                        'marginTop': '0',
-                                        'width': '6rem',
-                                    }}
-                                />
-                            </styled.RowContainer>
+                            {!!enableOutput &&
+                                <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                                    <styled.Label>
+                                        Expected Output
+                                </styled.Label>
+                                    <TextField
+                                        name={"expectedOutput"}
+                                        placeholder='Qty'
+                                        InputComponent={Textbox}
+                                        ContentContainer={styled.RowContainer}
+                                        style={{
+                                            'fontSize': '1rem',
+                                            'fontWeight': '600',
+                                            'marginBottom': '.5rem',
+                                            'marginTop': '0',
+                                            'width': '6rem',
+                                        }}
+                                    />
+                                </styled.RowContainer>
+                            }
 
                         </styled.ColumnContainer>
                         <styled.BreakContainer>
@@ -388,7 +392,7 @@ const LineThroughputForm = (props) => {
                         {/* <styled.RowContainer>
 
         </styled.RowContainer> */}
-                        <styled.ChartButton type={'submit'}>Calculate and Save</styled.ChartButton>
+                        <styled.ChartButton type={'submit'}>{!!enableOutput ? 'Calculate and Save' : 'Save'}</styled.ChartButton>
 
 
                     </Form>
@@ -398,4 +402,8 @@ const LineThroughputForm = (props) => {
     )
 }
 
-export default LineThroughputForm
+ShiftSettings.defaultProps = {
+    enableOutput: true
+};
+
+export default ShiftSettings
