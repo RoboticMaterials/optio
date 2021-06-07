@@ -21,6 +21,8 @@ import { LightenDarkenColor } from '../../../../../../../methods/utils/color_uti
 
 // styles
 import * as styled from "./field_component_mapper.style"
+import TimePickerField from "../../../../../../basic/form/time_picker_field/time_picker_field";
+import FileUploaderField from "../../../../../../basic/form/file_uploader_field/file_uploader_field";
 
 const REQUIRED_TEXT = "This field is required."
 
@@ -33,7 +35,8 @@ const FieldComponentMapper = (props) => {
 		style,
 		displayName,
 		usable,
-		required
+		required,
+		showName,
 	} = props
 
 	const themeContext = useContext(ThemeContext);
@@ -47,10 +50,10 @@ const FieldComponentMapper = (props) => {
 						flex: 1
 					}}
 				>
-					{displayName ?
+					{showName && (displayName ?
 						<styled.Label>{displayName}:</styled.Label>
 						:
-						fieldName && <styled.Label>{fieldName}:</styled.Label>
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 					{preview ?
 						<styled.TextContainer>
@@ -92,10 +95,10 @@ const FieldComponentMapper = (props) => {
 						flex: 1,
 					}}
 				>
-					{displayName ?
+					{showName && (displayName ?
 						<styled.Label>{displayName}:</styled.Label>
 						:
-						fieldName && <styled.Label>{fieldName}:</styled.Label>
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 					{preview ?
 						<styled.TextContainer>
@@ -105,9 +108,8 @@ const FieldComponentMapper = (props) => {
 								placeholder="Enter text..."
 								InputComponent={Textbox}
 								lines={5}
-								style={{...style}}
-								// style={{display: "flex", flex: 1}}
-								textboxContainerStyle={{display: "flex", flex: 1}}
+								style={{...style, display: "flex", flex: 1, alignSelf: 'stretch'}}
+								textboxContainerStyle={{}}
 								inputStyle={{background: LightenDarkenColor(themeContext.bg.secondary, 10), cursor: 'default', pointerEvents: 'none'}}
 								schema={"lots"}
 							/>
@@ -143,10 +145,10 @@ const FieldComponentMapper = (props) => {
 						alignItems: "center",
 					}}
 				>
-					{displayName ?
+					{showName && (displayName ?
 						<styled.Label>{displayName}:</styled.Label>
 						:
-						fieldName && <styled.Label>{fieldName}:</styled.Label>
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 					{preview ?
 						<NumberInput
@@ -182,10 +184,10 @@ const FieldComponentMapper = (props) => {
 						alignItems: "center"
 					}}
 				>
-					{displayName ?
+					{showName && (displayName ?
 						<styled.Label>{displayName}:</styled.Label>
 						:
-						fieldName && <styled.Label>{fieldName}:</styled.Label>
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 
 					{preview ?
@@ -217,10 +219,10 @@ const FieldComponentMapper = (props) => {
 						alignItems: "center"
 					}}
 				>
-					{displayName ?
+					{showName && (displayName ?
 						<styled.Label>{displayName}:</styled.Label>
 						:
-						fieldName && <styled.Label>{fieldName}:</styled.Label>
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 
 					{preview ?
@@ -243,6 +245,68 @@ const FieldComponentMapper = (props) => {
 				</styled.Container>
 			)
 		}
+		case FIELD_COMPONENT_NAMES.TIME_SELECTOR: {
+			return(
+				<styled.Container
+					style={{
+						...containerStyle,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+				>
+					{showName && (displayName ?
+						<styled.Label>{displayName}:</styled.Label>
+						:
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
+					}
+
+					{preview ?
+						<div>NOT YET IMPLEMENTED</div>
+						:
+						<TimePickerField
+							name={fieldName}
+							usable={usable}
+						/>
+					}
+
+					{required &&
+					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+					}
+
+				</styled.Container>
+			)
+		}
+		case FIELD_COMPONENT_NAMES.IMAGE_SELECTOR: {
+			return(
+				<styled.Container
+					style={{
+						...containerStyle,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+				>
+					{showName && (displayName ?
+						<styled.Label>{displayName}:</styled.Label>
+						:
+						fieldName && <styled.Label>{fieldName}:</styled.Label>)
+					}
+
+					{preview ?
+						<div>NOT YET IMPLEMENTED</div>
+						:
+						<FileUploaderField
+							name={fieldName}
+							usable={usable}
+						/>
+					}
+
+					{required &&
+					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+					}
+
+				</styled.Container>
+			)
+		}
 		default:
 			return null
 	}
@@ -251,14 +315,16 @@ const FieldComponentMapper = (props) => {
 // Specifies propTypes
 FieldComponentMapper.propTypes = {
 	preview: PropTypes.bool,
-	usable: PropTypes.bool
+	usable: PropTypes.bool,
+	showName: PropTypes.bool,
 };
 
 // Specifies the default values for props:
 FieldComponentMapper.defaultProps = {
 	preview: true,
 	onCalendarClick: () => {},
-	usable: true
+	usable: true,
+	showName: true,
 };
 
 

@@ -2,36 +2,34 @@ import styled, { css } from "styled-components"
 import Modal from "react-modal";
 import {containerLayout} from "../../../../../../common_css/layout";
 
-export const Container = styled(Modal)`
-  outline: none !important;
-  outline-offset: none !important;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  right: auto;
-  bottom: auto;
 
-  position: absolute;
-	overflow: hidden;
-  z-index: 50;
-  
-  min-width: 95%;
-  max-width: 95%;
-  max-height: 95%;
-  
-  
-   height: ${props => props.formEditor && "95%"};
-   min-height: 95%;
-  
-  color: ${props => props.theme.textColor};
-  
+export const TemplateNameContainer = styled.div`
+  margin: 0 auto;
+  padding: 1rem 0;
+  align-self: center;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  
-  // background: red;
-  
-`;
+`
+
+export const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 0.5rem;
+	margin: 0;
+	background: ${props => props.theme.bg.secondary};
+	z-index: 10;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+	align-self: stretch;
+`
+
+export const TemplateLabel = styled.span`
+	margin-right: 1rem;
+  white-space: nowrap ;
+  width: fit-content;
+  font-size: ${props => props.theme.fontSize.sz2};
+  font-family: ${props => props.theme.font.primary};
+`
 
 export const Container2 = styled.div`
   display: flex;
@@ -39,10 +37,25 @@ export const Container2 = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-  width: 95%;
-  height: 95%;
   background: ${props => props.theme.bg.primary};
 `;
+
+export const WorkInstructionsContainer = styled.div`
+    margin-left: 2rem;
+    margin-right: 2rem;
+`
+
+export const ContentContainer = styled.div`
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+`
+
+export const Label = styled.span`
+    font-size: ${props => props.theme.fontSize.sz2};
+    font-weight: ${props => props.theme.fontWeight};
+`
 
 export const TheBody = styled.div`
   position: relative;

@@ -15,6 +15,7 @@ export const TextContainer = styled.div`
   //width: 100%;
   position: relative;
   display: flex;
+  
 `
 
 export const Label = styled.span`

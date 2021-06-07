@@ -721,25 +721,7 @@ const LotEditorContainer = (props) => {
     }
 
     return (
-        <styled.Container
-            isOpen={true}
-            onRequestClose={() => {
-                // close()
-                props.close()
-
-            }}
-            contentLabel="Lot Editor Form"
-            style={{
-                overlay: {
-                    zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    backdropFilter: 'blur(4px)'
-                },
-                content: {
-
-                }
-            }}
-        >
+        <styled.Container>
             {showStatusList &&
                 <StatusList
                     displayNames={lotTemplate?.displayNames || {}}

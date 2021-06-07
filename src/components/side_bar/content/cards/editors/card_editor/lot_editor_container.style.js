@@ -6,30 +6,14 @@ export const rowCss = css`
 	margin-bottom: 1rem;
 `
 
-export const Container = styled(Modal)`
-  outline: none !important;
-  outline-offset: none !important;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  right: auto;
-  bottom: auto;
-
-  position: absolute;
-	overflow: hidden;
-  z-index: 50;
-  
-  min-width: 95%;
-  max-width: 95%;
-  max-height: 95%;
-  
-   height: ${props => props.formEditor && "95%"};
+export const Container = styled.div`
   
   color: ${props => props.theme.bg.octonary};
   
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden
   
   color: ${props => props.theme.bg.octonary};
 `;

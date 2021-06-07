@@ -32,11 +32,11 @@ const TextField = ({
     mapInput,
     mapOutput,
     inputProps,
-
     style,
+form,
     ...props }) => {
 
-    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, status, validateForm, ...context } = useFormikContext();
+    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, status, validateForm, ...context } =  useFormikContext() || {}
     const [field, meta] = useField(props);
     const { touched, error } = meta
     const {
@@ -170,6 +170,7 @@ TextField.defaultProps = {
     showErrorStyle: false,
     mapInput: (val) => val,
     mapOutput: (val) => val,
+    form: true,
 };
 
 export default TextField;

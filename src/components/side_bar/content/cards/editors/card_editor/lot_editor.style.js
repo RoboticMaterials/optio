@@ -107,8 +107,12 @@ export const TheBody = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;  
+	
+
 
 `
+
+
 
 export const ScrollContainer = styled.div`
   position: relative;
@@ -694,13 +698,7 @@ export const TemplateNameContainer = styled.div`
   align-items: center;
 `
 
-export const TemplateLabel = styled.span`
-	margin-right: 1rem;
-  white-space: nowrap ;
-  width: fit-content;
-  font-size: ${props => props.theme.fontSize.sz2};
-  font-family: ${props => props.theme.font.primary};
-`
+
 
 export const SyncProblem = styled(SyncProblemIcon)`
   ${iconButtonCss};

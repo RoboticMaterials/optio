@@ -71,6 +71,7 @@ const FormComponent = (props) => {
 		submitCount,
 		submitForm,
 		formikProps,
+		onBackClick,
 		loaded
 	} = props
 
@@ -145,31 +146,7 @@ const FormComponent = (props) => {
 				onSubmitError={() => {}}
 				formik={formikProps}
 			/>
-			<styled.Header>
-				{/*<styled.Title>*/}
-				<BackButton
-					secondary
-					onClick={close}
-					schema={'error'}
-				>
-				</BackButton>
 
-				<div style={{marginRight: "auto"}}/>
-
-				<styled.TemplateNameContainer>
-					<styled.TemplateLabel>Template Name</styled.TemplateLabel>
-					<TextField
-						name={"name"}
-						placeholder={"Enter template name..."}
-						InputComponent={Textbox}
-						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
-						inputStyle={{background: themeContext.bg.tertiary}}
-					/>
-				</styled.TemplateNameContainer>
-				{/*</styled.Title>*/}
-
-
-			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 				<LotTemplateEditorSidebar/>
@@ -319,22 +296,26 @@ const LotCreatorForm = (props) => {
 		close,
 		processOptions,
 		showProcessSelector,
-		lotTemplateId
+		lotTemplateId,
+		onBackClick,
+		formMode,
+		setFormMode,
+		formikProps
 	} = props
 
 	// actions
+
 	const dispatch = useDispatch()
 	const dispatchPostLotTemplate= async (lotTemplate) => await dispatch(postLotTemplate(lotTemplate))
 	const dispatchGetLotTemplate = async (id) => await dispatch(getLotTemplate(id))
 	const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
-	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
+
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
 	const [loaded, setLoaded] = useState(false)
-	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 
 	// get lot object from redux by cardId
 	const lotTemplate = lotTemplates[lotTemplateId] || null
@@ -401,135 +382,14 @@ const LotCreatorForm = (props) => {
 	/*
 	*
 	* */
-	const handleSubmit = async (values, formMode) => {
 
-		const {
-			fields,
-			name,
-			displayNames
-		} = values
-
-		let response
-
-		// update (PUT)
-		if(formMode === FORM_MODES.UPDATE) {
-			response = await dispatchPutLotTemplate({fields, name, displayNames}, lotTemplateId)
-		}
-
-		// // create (POST)
-		else {
-			response = await dispatchPostLotTemplate({fields, name, displayNames})
-			//
-			if(!(response instanceof Error)) {
-				const {
-					lotTemplate: createdLotTemplate
-				} = response || {}
-
-				const {
-					_id: createdLotTemplateId,
-				} = createdLotTemplate || {}
-
-				dispatchSetSelectedLotTemplate(createdLotTemplateId)
-			}
-			else {
-				console.error("postResult",response)
-			}
-		}
-
-		return response;
-	}
 
 	return(
-		<styled.Container
-			formEditor={true}
-			isOpen={isOpen}
-			onRequestClose={()=> {
-				close()
-
-			}}
-			contentLabel="Lot Editor Form"
-			style={{
-				overlay: {
-                    zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
-                },
-				content: {
-
-				},
-			}}
-		>
-			<Formik
-				initialValues={{
-					fields: lotTemplate ?
-						lotTemplate.fields
-						:
-						getDefaultFields(),
-
-					name: lotTemplate ? lotTemplate.name : "",
-					changed: false,
-					displayNames: lotTemplate ?
-						isObject(lotTemplate.displayNames) ?
-							{
-								name: lotTemplate?.displayNames?.name || DEFAULT_NAME_DISPLAY_NAME ,
-								count: lotTemplate?.displayNames?.count || DEFAULT_COUNT_DISPLAY_NAME
-							}
-							:
-							DEFAULT_DISPLAY_NAMES
-						:
-						DEFAULT_DISPLAY_NAMES
-				}}
-
-				// validation control
-				// validationSchema={LotFormSchema}
-				validate={(values, props) => {
-					try {
-						LotFormSchema.validateSync(values, {
-							abortEarly: false,
-							context: values
-						});
-					} catch (error) {
-						if (error.name !== "ValidationError") {
-							throw error;
-						}
-
-						return error.inner.reduce((errors, currentError) => {
-							errors = set(errors, currentError.path, currentError.message)
-							return errors;
-						}, {});
-					}
-				}}
-				validateOnChange={true}
-				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
-				validateOnBlur={true}
-
-				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
-					// set submitting to true, handle submit, then set submitting to false
-					// the submitting property is useful for eg. displaying a loading indicator
-					const {
-						buttonType
-					} = values
-
-					setSubmitting(true)
-
-					const submitPromise = await handleSubmit(values, formMode)
-					setSubmitting(false)
-
-					if(!(submitPromise instanceof Error) && submitPromise !== undefined) {
-						close()
-					}
-
-					return submitPromise;
-				}}
-			>
-				{formikProps => {
-
-					const {
-						values
-					} = formikProps
+		<styled.Container>
 
 
-					return (
+
+
 						<FormComponent
 							loaded={loaded}
 							close={close}
@@ -541,10 +401,11 @@ const LotCreatorForm = (props) => {
 							processOptions={processOptions}
 							showProcessSelector={showProcessSelector}
 							lotTemplateId={lotTemplateId}
+							onBackClick={onBackClick}
 						/>
-					)
-				}}
-			</Formik>
+
+
+
 		</styled.Container>
 	)
 }
@@ -553,12 +414,14 @@ const LotCreatorForm = (props) => {
 LotCreatorForm.propTypes = {
 	binId: PropTypes.string,
 	showProcessSelector: PropTypes.bool,
+	onBackClick: PropTypes.func,
 };
 
 // Specifies the default values for props:
 LotCreatorForm.defaultProps = {
 	binId: "QUEUE",
-	showProcessSelector: false
+	showProcessSelector: false,
+	onBackClick: () => null
 };
 
 export default LotCreatorForm
