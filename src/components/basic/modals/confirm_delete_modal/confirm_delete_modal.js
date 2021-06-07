@@ -44,7 +44,6 @@ const ConfirmDeleteModal = (props) => {
         >
             <styled.Header>
                 <styled.Title>{title}</styled.Title>
-
                 <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={handleClose}/>
             </styled.Header>
             <styled.BodyContainer>
@@ -80,4 +79,4 @@ const ConfirmDeleteModal = (props) => {
     );
 };
 
-export default ConfirmDeleteModal
+export default ConfirmDeleteModal;

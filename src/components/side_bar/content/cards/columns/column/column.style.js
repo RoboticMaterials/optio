@@ -1,5 +1,7 @@
 import styled, { css } from "styled-components";
 
+import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
+
 const minHeight = "10rem"
 
 export const RotationWrapperOuter = styled.div`
@@ -72,7 +74,7 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
 	min-height: ${minHeight};
 	overflow: hidden;
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.special ? props.theme.bg.tertiary : props.theme.bg.secondary};
 	opacity: ${props => props.dragEnter ? 0.75 : 1};
 	border-bottom-right-radius: 0.5rem;
 	border-bottom-left-radius: 0.5rem;

@@ -1,9 +1,12 @@
 import React, {useEffect, useState, memo} from "react"
 
 // components internal
+import NewColumn from "../columns/new_column/new_column"
 import StationsColumn from "../columns/station_column/station_column"
 import LotQueue from "../columns/lot_queue/lot_queue"
 import FinishColumn from "../columns/finish_column/finish_column"
+
+import ApiModal from '../../../../basic/modals/api_modal/api_modal'
 
 // functions external
 import {useDispatch, useSelector} from "react-redux"
@@ -48,13 +51,14 @@ const CardZone = ((props) => {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
-
+	
 	// component state
 	const [cardsSorted, setCardsSorted] = useState({})
 	const [bins, setBins] = useState({})
 	const [queue, setQueue] = useState([])
 	const [finished, setFinished] = useState([])
 	const [cards, setCards] = useState({})
+	const [showApiModal, setShowApiModal] = useState(false)
 	const {
 		name: processName = ""
 	} = currentProcess || {}
@@ -228,42 +232,52 @@ const CardZone = ((props) => {
 	}
 
 	return(
-		<styled.Container style={{background: 'white'}}>
-			<LotQueue
-				setSelectedCards={setSelectedCards}
-				selectedCards={selectedCards}
-				key={"QUEUE"}
-				sortMode={sortMode}
-				sortDirection={sortDirection}
-				maxHeight={maxHeight}
-				station_id={"QUEUE"}
-				setShowCardEditor={setShowCardEditor}
-				showCardEditor={showCardEditor}
-				stationName={"Queue"}
+		<>
+			{showApiModal &&
+			<ApiModal 
+				onClose={() => setShowApiModal(false)}
+				isOpen={showApiModal}
 				processId={processId}
-				cards={queue}
-				onCardClick={handleCardClick}
-				onAddLotClick={() => handleAddLotClick(processId)}
 			/>
+			}
+			<styled.Container style={{background: 'white'}}>
+				<NewColumn onClick={() => setShowApiModal(true)}/>
+				<LotQueue
+					setSelectedCards={setSelectedCards}
+					selectedCards={selectedCards}
+					key={"QUEUE"}
+					sortMode={sortMode}
+					sortDirection={sortDirection}
+					maxHeight={maxHeight}
+					station_id={"QUEUE"}
+					setShowCardEditor={setShowCardEditor}
+					showCardEditor={showCardEditor}
+					stationName={"Queue"}
+					processId={processId}
+					cards={queue}
+					onCardClick={handleCardClick}
+					onAddLotClick={() => handleAddLotClick(processId)}
+				/>
 
-			{renderStationColumns()}
+				{renderStationColumns()}
 
-			<FinishColumn
-				setSelectedCards={setSelectedCards}
-				selectedCards={selectedCards}
-				key={"FINISH"}
-				sortMode={sortMode}
-				sortDirection={sortDirection}
-				maxHeight={maxHeight}
-				station_id={"FINISH"}
-				setShowCardEditor={setShowCardEditor}
-				showCardEditor={showCardEditor}
-				stationName={"Finished"}
-				processId={processId}
-				cards={finished}
-				onCardClick={handleCardClick}
-			/>
-		</styled.Container>
+				<FinishColumn
+					setSelectedCards={setSelectedCards}
+					selectedCards={selectedCards}
+					key={"FINISH"}
+					sortMode={sortMode}
+					sortDirection={sortDirection}
+					maxHeight={maxHeight}
+					station_id={"FINISH"}
+					setShowCardEditor={setShowCardEditor}
+					showCardEditor={showCardEditor}
+					stationName={"Finished"}
+					processId={processId}
+					cards={finished}
+					onCardClick={handleCardClick}
+				/>
+			</styled.Container>
+		</>
 	)
 })
 

@@ -43,7 +43,7 @@ const StationsColumn = ((props) => {
 				}
 				else {
 					return(
-						<styled.StationHeader>
+						<styled.StationHeader special={stationName === 'Queue' || stationName === 'Finish'}>
 							<styled.HeaderRow
 								style={{
 									marginBottom: "1rem"

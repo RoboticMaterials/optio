@@ -23,9 +23,7 @@ export const BackSymbol = styled.i`
 
 export const BackButton = styled.button`
     width: 2rem;
-    min-width: 2rem;
     height: 2rem;
-    min-height: 2rem;
     
     margin: 0.3rem 0.5rem 0.3rem 0.5rem;
     padding: 0;

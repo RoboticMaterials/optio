@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux'
 
 // import components
 import ScheduleList from './schedule_list/schedule_list'
-import {ConfirmDeleteModal} from "../../../basic/modals/modals"
+import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
 import CreateScheduleForm from "./create_schedule_form/create_schedule_form"
 
 // import styles
@@ -54,10 +54,13 @@ const SchedulerContent = () => {
             <ConfirmDeleteModal
                 isOpen={showDeleteModal}
                 title={"Confirm Delete"}
-                textMain={"Are you sure you want to delete this schedule?"}
-                caption={"This action cannot be undone."}
-                onCancelClick={()=>setShowDeleteModal(false)}
-                onDeleteClick={handleDelete}
+                onSubmit={handleDelete}
+                handleClose={()=>setShowDeleteModal(false)}
+                handleOnClick1={()=>setShowDeleteModal(false)}
+                handleOnClick2={handleDelete}
+                button_1_text="Cancel"
+                button_2_text="Delete"
+                children
             />
             {showScheduleCreator ?
                 <CreateScheduleForm

@@ -296,6 +296,7 @@ const Column = ((props) => {
 		return(
 			<styled.BodyContainer
 				dragEnter={dragEnter}
+				special={stationName === 'Queue' || stationName === 'Finished'}
 			>
 				<Container
 					onDrop={async (DropResult)=> {
@@ -427,7 +428,7 @@ const Column = ((props) => {
 			>
 				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
-				<styled.BodyContainer style={{
+				<styled.BodyContainer special={stationName === 'Queue' || stationName === 'Finish'} style={{
 					padding: "1rem 0",
 					whiteSpace: "nowrap",
 					overflow: "hidden",
