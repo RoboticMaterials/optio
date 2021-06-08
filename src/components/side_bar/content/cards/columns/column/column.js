@@ -26,7 +26,7 @@ import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils';
 import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
-import {getCustomFields} from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -56,6 +56,9 @@ const Column = ((props) => {
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
+	const { shiftDetails } = useSelector(state => state.settingsReducer.settings)
+
+	// console.log(shiftDetails)
 
 	// actions
 	const dispatch = useDispatch()
@@ -69,46 +72,122 @@ const Column = ((props) => {
 	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
-	const [proceedingLeadTimeSeconds, setProceedingLeadTimeSeconds] = useState(NaN);
+
+	// const [breaks, setBreaks] = useState([])
+	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
+	// const [precedingQuantity, setPrecedingQuantity] = useState(0);
 
 	let cumulativeLotQuantity = 0
 
-	useEffect(() => {
+	const convertShiftDetails = (details) => {
 
-		// Calculate proceeding lead time based on cards in later stations
+		let breaks = [{
+			start: moment.duration(0).asSeconds(),
+			end: moment.duration(details.startOfShift).asSeconds()
+		}];
+		Object.values(shiftDetails.breaks)
+			.sort((a, b) => a.startOfBreak - b.startOfBreak)
+			.forEach(br => {
+				if (br.enabled) {
+					breaks.push({
+						start: moment.duration(br.startOfBreak).asSeconds(),
+						end: moment.duration(br.endOfBreak).asSeconds()
+					})
+				}
+			})
+
+		breaks.push({
+			start: moment.duration(details.endOfShift).asSeconds(),
+			end: moment.duration(24, 'hours').asSeconds()
+		})
+
+		return breaks;
+
+	}
+
+	useEffect(() => {
+		// === Calculate preceding lead time based on cards in later stations
+
+		// Get stations in this process (reversed list because cards further in process are processed first)
 		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
-		let totalProceedingLeadTimeSeconds = 0
 
 		if (station_id === 'FINISH') {	// No lead time once in finished bin
 			return;
 		}
 
+		// Convert the shiftDetails object to an array of [startShift, shiftDuration] pairs for a single day
+		const breaks = convertShiftDetails(shiftDetails)
+
 		var i
-		for (i=0; i<processStations.length; i++) {
+		let bottleneckCycleTime = 0;
+		let precedingQty = 0;
+		for (i = 0; i < processStations.length; i++) {
 			let pStationId = processStations[i]
-			
+
+			let stationCycleTime = stations[pStationId].cycle_time;
+
+			// Once we get to this current station break. No need to deal with earlier stations in the process
 			if (pStationId === station_id) {
+				bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
 				break;
 			}
 
+			// Get all cards in this station's bin
 			let stationCards = getCardsInBin(allCards, pStationId, processId)
 
-			let stationLotsQuantitySummation = 0
+			// Get the total quantity of parts in this process, after this station
 			stationCards.forEach((currLot) => {
-				stationLotsQuantitySummation += currLot.bins[pStationId].count
+				precedingQty += currLot.bins[pStationId].count
 			})
 
-			let stationCycleTime = stations[pStationId].cycle_time;
-			if (!!stationCycleTime && !isNaN(totalProceedingLeadTimeSeconds)) {
-				totalProceedingLeadTimeSeconds += moment.duration(stationCycleTime).asSeconds() * stationLotsQuantitySummation
-			} else {
-				totalProceedingLeadTimeSeconds = NaN
-			}
+
+			bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
+
 		}
 
-		setProceedingLeadTimeSeconds(totalProceedingLeadTimeSeconds)
+		const nowSeconds = moment.duration(moment({}).format("hh:mm:ss")).asSeconds();
 		
-	}, [])
+
+		const cardsWLeadTime = props.cards.map((card, index) => {
+			const {
+				_id,
+				count = 0,
+				name
+			} = card;
+
+			// Calculate lead time
+
+
+			let leadTimeWorkingSeconds = (precedingQty + count) * bottleneckCycleTime;
+			console.log(name, count, leadTimeWorkingSeconds)
+			let leadTimeSeconds = 0;
+			let brIdx = 0;
+			let shiftStart, shiftEnd, shiftDuration;
+			while (leadTimeWorkingSeconds > 0) {
+
+				// Break time always added
+				leadTimeSeconds += breaks[brIdx].end - breaks[brIdx].start;
+
+				// Working time (time in between breaks)
+				shiftStart = breaks[brIdx].end % 86400; // Mod 86400 wraps shifts overnight
+				brIdx = (brIdx + 1) % breaks.length;
+				shiftEnd = breaks[brIdx].start;
+
+				shiftDuration = Math.min(shiftEnd - shiftStart, leadTimeWorkingSeconds);
+				leadTimeSeconds += shiftDuration;
+				leadTimeWorkingSeconds -= shiftDuration;
+
+			}
+
+			const leadTime = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds).format('lll')
+
+			return { leadTime, ...card }
+
+		})
+
+		setCards(cardsWLeadTime);
+
+	}, [shiftDetails, props.cards])
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -132,16 +211,16 @@ const Column = ((props) => {
 		setIsSelectedCardsNotEmpty(isNonEmptyArray(selectedCards))
 	}, [selectedCards])
 
-	useEffect(() => {
-		if (sortMode) {
-			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
-			sortBy(tempCards, sortMode, sortDirection)
-			setCards(tempCards)
-		}
-		else {
-			setCards(props.cards)
-		}
-	}, [props.cards, sortMode, sortDirection])
+	// useEffect(() => {
+	// 	if (sortMode) {
+	// 		let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
+	// 		sortBy(tempCards, sortMode, sortDirection)
+	// 		setCards(tempCards)
+	// 	}
+	// 	else {
+	// 		setCards(props.cards)
+	// 	}
+	// }, [props.cards, sortMode, sortDirection])
 
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
@@ -244,10 +323,6 @@ const Column = ((props) => {
 		else {
 			return cards.slice(existingIndex, selectedIndex + 1).reverse()
 		}
-	}
-
-	const getCardLeadTime = (cardIndex) => {
-
 	}
 
 	const handleDrop = async (dropResult) => {
@@ -398,6 +473,7 @@ const Column = ((props) => {
 						const {
 							_id,
 							count = 0,
+							leadTime,
 							name,
 							object_id,
 							cardId,
@@ -408,6 +484,8 @@ const Column = ((props) => {
 							lotTemplateId,
 							...rest
 						} = card
+
+						// console.log(lotNumber, leadTime)
 
 						// const templateValues = getCustomFields(lotTemplateId, card)
 
@@ -422,24 +500,6 @@ const Column = ((props) => {
 
 						// const isSelected = (draggingLotId !== null) ? () : ()
 						const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
-
-
-						// Find cycle time in seconds
-						let cycleTimeSeconds
-						if (station_id === 'FINISH') {
-							cycleTimeSeconds = 0
-						} else if (station_id === 'QUEUE') {
-							cycleTimeSeconds = 0
-						} else if (!!stations[station_id] && !!stations[station_id].cycle_time) {
-							cycleTimeSeconds = moment.duration(stations[station_id].cycle_time).asSeconds()
-						} else {
-							cycleTimeSeconds = NaN
-						}
-
-						// Calculate lead time
-						cumulativeLotQuantity += count
-						const leadTimeSeconds = proceedingLeadTimeSeconds + (cumulativeLotQuantity * cycleTimeSeconds);
-						const leadTime = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds).format('lll')
 
 						return (
 							<Draggable
@@ -471,7 +531,7 @@ const Column = ((props) => {
 										index={index}
 										lotId={cardId}
 										binId={station_id}
-										onClick={(e)=> {
+										onClick={(e) => {
 											const payload = getBetweenSelected(cardId)
 											onCardClick(
 												e,
