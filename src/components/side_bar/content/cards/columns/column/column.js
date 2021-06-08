@@ -417,6 +417,9 @@ const Column = ((props) => {
 				}
                 else {
                     console.log('QQQQ HELLLO', dropResult)
+                    // TODO: Basically you have the remove and added index
+                    // First: Make sure sort mode is set to Lead Time
+                    // Second: Use those indexes to change the position
                 }
 
 				await dispatchSetDroppingLotId(null, null)
