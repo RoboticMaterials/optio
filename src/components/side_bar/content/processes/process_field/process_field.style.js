@@ -16,7 +16,7 @@ export const ListItem = styled(stylec.ListItem)`
 `
 
 export const Container = styled(stylec.Container)`
-	overflow: hidden;
+	overflowY: hidden;
 `
 
 export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
@@ -25,7 +25,17 @@ export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
 
 export const ColumnContainer = styled.div`
 	display: flex;
+	flex-direction: column;
 	width: 100%;
+`
+
+export const ContentContainer = styled.div`
+		display: flex;
+		flex-direction: column;
+    flex-grow: 1;
+    padding-top: 1.5rem;
+		justify-content: space-between;
+
 `
 
 export const Title = styled.h1`
