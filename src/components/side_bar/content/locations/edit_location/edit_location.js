@@ -437,10 +437,9 @@ const EditLocation = (props) => {
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
                     validationSchema={locationSchema(stations, selectedLocation)}
-                    onSubmit={async (values, { setSubmitting, setTouched }) => {
+                    onSubmit={async (values, { setSubmitting }) => {
                         setSubmitting(true)
                         await onSave(deepCopy(values.locationName))
-                        setTouched({})
                         setSubmitting(false)
                     }}
                 >
