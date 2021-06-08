@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import * as styled from "./with_modal.style";
 
-const withModal = (WrappedComponent) => {
+const withModal = (WrappedComponent, width = 'auto', height = 'auto') => {
     // const {
     //     width,
     //     height
@@ -13,8 +13,6 @@ const withModal = (WrappedComponent) => {
         const {
             close,
             contentLabel,
-            width = '95%',
-            height = '95%',
         } = props
 
         return <styled.Container
