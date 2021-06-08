@@ -5,6 +5,8 @@ export const Container = styled.div`
     border: 1px dashed black;
     padding: 1rem;
     border-radius: .3rem;
+    height: auto;
+    width: auto;
 `
 
 export const UploadButton = styled.button`

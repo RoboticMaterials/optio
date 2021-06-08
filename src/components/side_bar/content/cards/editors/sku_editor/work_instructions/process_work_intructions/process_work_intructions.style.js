@@ -3,13 +3,15 @@ import styled, { css } from "styled-components"
 const transitionTime = '.5s'
 
 export const Container = styled.div`
-    display: flex;
-    align-items: center;
-    transition: all ease ${transitionTime};
-    box-shadow: 0px 5px 5px rgba(0,0,0,0.2);
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: .3rem;
+  display: flex;
+  align-items: center;
+  transition: all ease ${transitionTime};
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background: linear-gradient(217deg, rgba(0, 0, 0, 0.49), rgba(0, 0, 0, 0.09) 70.71%),
+  linear-gradient(127deg, rgba(0, 0, 0, 0.33), rgba(0, 0, 0, 0.28) 70.71%),
+  linear-gradient(336deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.29) 70.71%);
+  border-radius: .3rem;
 `
 // box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 // box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;

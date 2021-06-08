@@ -49,7 +49,7 @@ const ProcessWorkInstructions = props => {
 
             {/**/}
                 <ScrollContainer
-                    dividerTransition={'0.5s'}
+                    dividerTransition={'0.25s'}
                     threshold={2}
                     containerStyle={{
                         // padding: '1rem 0'
