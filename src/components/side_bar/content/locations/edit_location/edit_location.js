@@ -437,11 +437,10 @@ const EditLocation = (props) => {
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
                     validationSchema={locationSchema(stations, selectedLocation)}
-                    onSubmit={async (values, { setSubmitting }) => {
+                    onSubmit={async (values, { setSubmitting, setTouched }) => {
                         setSubmitting(true)
-
                         await onSave(deepCopy(values.locationName))
-
+                        setTouched({})
                         setSubmitting(false)
                     }}
                 >
@@ -456,12 +455,10 @@ const EditLocation = (props) => {
                         return (
                             <Form
                                 onKeyDown={(e) => {
-                                    if (((e.charCode || e.keyCode) === 13) && Object.keys(errors).length === 0) {
-                                        submitForm()
-                                    }
-                                    else if ((e.charCode || e.keyCode) === 13) {
-                                        e.preventDefault();
-                                    }
+
+                                   if ((e.charCode || e.keyCode) === 13) {
+                                      e.preventDefault();
+                                  }
                                 }}
                                 style={{ flex: '1', margin: '0' }}
                             >
@@ -527,6 +524,7 @@ const EditLocation = (props) => {
                                                 isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
                                                 locationAdded={true}
                                                 handleAddLocation={() => null}
+
                                             />
 
                                         }
@@ -557,7 +555,7 @@ const EditLocation = (props) => {
 
 
                                     {/* Delete Location Button */}
-                                    <Button type={'submit'} schema={'locations'} onClick={() => { }} >Save Location</Button>
+                                    <Button type={'button'} schema={'locations'} onClick={() => onSave(deepCopy(values.locationName))} >Save Location</Button>
                                     <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
