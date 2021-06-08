@@ -145,9 +145,25 @@ const Column = ((props) => {
 
 		}
 
-		const nowSeconds = moment.duration(moment({}).format("hh:mm:ss")).asSeconds();
-		
+		const nowSeconds = moment.duration(moment({}).format("HH:mm:ss")).asSeconds();
+		let leadTimeWorkingSecondsOffset, leadTimeSecondsOffset, brStartIdx;
+		for (let i=0; i<breaks.length; i++) {
+			if (breaks[i].start > nowSeconds) { // Now is in middle of shift, add remaining shift to leadTime and remove from workingTime
+				leadTimeWorkingSecondsOffset = -(breaks[i].start - nowSeconds);
+				leadTimeSecondsOffset = breaks[i].start - nowSeconds;
 
+				brStartIdx = i;
+				break;
+			} else if (breaks[i].end > nowSeconds) { // Now is in middle of break, add remaining break to leadTime
+				leadTimeWorkingSecondsOffset = 0;
+				leadTimeSecondsOffset = breaks[i].end - nowSeconds;
+
+				brStartIdx = (i+1) % breaks.length;
+				break;
+			}
+		}
+
+		let columnCount = 0;
 		const cardsWLeadTime = props.cards.map((card, index) => {
 			const {
 				_id,
@@ -158,11 +174,12 @@ const Column = ((props) => {
 			// Calculate lead time
 
 
-			let leadTimeWorkingSeconds = (precedingQty + count) * bottleneckCycleTime;
-			console.log(name, count, leadTimeWorkingSeconds)
-			let leadTimeSeconds = 0;
-			let brIdx = 0;
+			let leadTimeWorkingSeconds = (precedingQty + (columnCount + count)) * bottleneckCycleTime;
+			let leadTimeSeconds = Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds);
+			leadTimeWorkingSeconds += leadTimeWorkingSecondsOffset;
+
 			let shiftStart, shiftEnd, shiftDuration;
+			let brIdx = brStartIdx;
 			while (leadTimeWorkingSeconds > 0) {
 
 				// Break time always added
@@ -179,9 +196,13 @@ const Column = ((props) => {
 
 			}
 
-			const leadTime = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds).format('lll')
+			const m = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds);
+			const leadTime = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
+			const formattedLeadTime = leadTime.format('lll')
 
-			return { leadTime, ...card }
+			columnCount += count;
+
+			return { leadTime: formattedLeadTime, ...card }
 
 		})
 
