@@ -24,7 +24,6 @@ const ReportModalButtons = ((props) => {
 
 	const renderButtons = useCallback(
 		() => {
-			console.log("renderButtons reportButtons",reportButtons)
 			return reportButtons.map((button, index) => {
 				const {
 					_id: buttonId,
