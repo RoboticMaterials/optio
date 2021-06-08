@@ -211,16 +211,16 @@ const Column = ((props) => {
 		setIsSelectedCardsNotEmpty(isNonEmptyArray(selectedCards))
 	}, [selectedCards])
 
-	// useEffect(() => {
-	// 	if (sortMode) {
-	// 		let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
-	// 		sortBy(tempCards, sortMode, sortDirection)
-	// 		setCards(tempCards)
-	// 	}
-	// 	else {
-	// 		setCards(props.cards)
-	// 	}
-	// }, [props.cards, sortMode, sortDirection])
+	useEffect(() => {
+		if (sortMode) {
+			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
+			sortBy(tempCards, sortMode, sortDirection)
+			setCards(tempCards)
+		}
+		else {
+			setCards(props.cards)
+		}
+	}, [props.cards, sortMode, sortDirection])
 
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
@@ -342,7 +342,9 @@ const Column = ((props) => {
 
 				await dispatchSetDroppingLotId(cardId, binId)
 
+                // If the bin and station are different, then move the card over
 				if (!(binId === station_id)) {
+                    console.log('QQQQ HELLLO')
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -413,9 +415,16 @@ const Column = ((props) => {
 						}
 					}
 				}
+                else {
+                    console.log('QQQQ HELLLO', dropResult)
+                }
 
 				await dispatchSetDroppingLotId(null, null)
 			}
+            else {
+                // Its not added, but rearranged
+                console.log('QQQQ drop result!!!!!')
+            }
 		}
 	}
 
@@ -532,6 +541,7 @@ const Column = ((props) => {
 										lotId={cardId}
 										binId={station_id}
 										onClick={(e) => {
+                                            console.log('QQQQ card', allCards[cardId])
 											const payload = getBetweenSelected(cardId)
 											onCardClick(
 												e,
