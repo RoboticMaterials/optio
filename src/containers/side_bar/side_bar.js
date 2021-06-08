@@ -77,6 +77,7 @@ const SideBar = (props) => {
     const [showSnoop, setShowSnoop] = useState(null)
     const [statId, setStatId] = useState(null)
     const [cardId, setCardId] = useState(null)
+    const [binCount, setBinCount] = useState(null)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -161,13 +162,22 @@ const SideBar = (props) => {
             }
           })
         if(binCount > 1){
-          dispatchShowLotScanModal(true)
+          if(!!pageInfoChanged){
+            setConfirmDeleteModal(true)
+            setStatId(statId)
+            setCardId(card._id)
+            setBinCount(binCount)
+          }
+          else{
+            dispatchShowLotScanModal(true)
+          }
         }
         else if(binCount === 1 && !!statId){
             if(!!pageInfoChanged){
               setConfirmDeleteModal(true)
               setStatId(statId)
               setCardId(card._id)
+              setBinCount(binCount)
             }
             else{
               history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
@@ -380,7 +390,10 @@ const SideBar = (props) => {
                       dispatchEditingStation(false)
                       dispatchEditingPosition(false)
                     }
-                    history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${cardId}`)
+                    if(binCount === 1){
+                      history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${cardId}`)
+                    }
+                    else dispatchShowLotScanModal(true)
 
                     setCardId(null)
                     setStatId(null)
