@@ -164,6 +164,7 @@ const ListView = (props) => {
       setBarcode(barcode => [...barcode, e.key])
     }
 
+
     const onScanLot = (id) => {
 
       let binCount = 0
