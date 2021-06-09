@@ -109,6 +109,7 @@ export async function getCards() {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
+        console.log('QQQQ cards api', dataJson)
         return dataJson;
 
 

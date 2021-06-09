@@ -377,6 +377,21 @@ const Column = ((props) => {
 
     // This 
     const onLeadTimeSortChange = (drop) => {
+        console.log('QQQQ drop', drop)
+        const { removedIndex, addedIndex, payload, element } = drop || {}
+        const {
+            binId,
+            cardId,
+            count,
+            // process_id: oldProcessId,
+            ...remainingPayload
+        } = payload
+
+        // Update the cards positions
+        console.log('QQQQ cards in props', props.cards)
+        console.log('QQQQ all cards', allCards)
+
+        
 
     }
 
@@ -399,7 +414,6 @@ const Column = ((props) => {
 
                 // If the bin and station are different, then move the card over
                 if (!(binId === station_id)) {
-                    console.log('QQQQ HELLLO')
                     const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
                     const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -471,13 +485,11 @@ const Column = ((props) => {
                     }
                 }
                 else {
-                    console.log('QQQQ HELLLO', dropResult)
 
                     // TODO: Basically you have the remove and added index
                     // First: Make sure sort mode is set to Lead Time
                     // Second: Use those indexes to change the position
                     if (sortMode.fieldName === LEAD_TIME_FIELD.fieldName) {
-                        console.log('QQQQ sort Mode', sortMode)
                         onLeadTimeSortChange(dropResult)
                     }
                 }
@@ -485,8 +497,6 @@ const Column = ((props) => {
                 await dispatchSetDroppingLotId(null, null)
             }
             else {
-                // Its not added, but rearranged
-                console.log('QQQQ drop result!!!!!')
             }
         }
     }
@@ -556,8 +566,6 @@ const Column = ((props) => {
                             lotTemplateId,
                             ...rest
                         } = card
-
-                        // console.log(lotNumber, leadTime)
 
                         // const templateValues = getCustomFields(lotTemplateId, card)
 
