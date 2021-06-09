@@ -111,7 +111,7 @@ const ListView = (props) => {
     pause_status ? playButtonClassName += 'play' : playButtonClassName += 'pause';
 
     useEffect(() => {
-        //disableBrowserBackButton()
+        disableBrowserBackButton()
 
         // displays dashboards page if url is on widget page
         if (stationID) {
