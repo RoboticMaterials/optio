@@ -78,7 +78,6 @@ const SideBar = (props) => {
     const [statId, setStatId] = useState(null)
     const [cardId, setCardId] = useState(null)
     const [binCount, setBinCount] = useState(null)
-
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const cards = useSelector(state => state.cardsReducer.cards)
@@ -129,7 +128,7 @@ const SideBar = (props) => {
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RMShift-')) {
+        if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
                 setBarcode([])
@@ -144,6 +143,7 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
+        console.log(e.key)
         setBarcode(barcode => [...barcode,e.key])
     }
 
