@@ -225,9 +225,11 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
     text-align: center;
-	overflow: hidden;
+	overflow: scroll;
 
 	background: ${props => props.theme.bg.primary};
+
+
 `
 
 export const ButtonForm = styled.div`
