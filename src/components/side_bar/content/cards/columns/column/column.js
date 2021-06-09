@@ -105,6 +105,18 @@ const Column = ((props) => {
 
 	}
 
+	function addWeekdays(date, days) {
+		date = moment(date); // use a clone
+		while (days > 0) {
+		  date = date.add(1, 'days');
+		  // decrease "days" only if it's a weekday.
+		  if (date.isoWeekday() !== 6 && date.isoWeekday() !== 7) {
+			days -= 1;
+		  }
+		}
+		return date;
+	  }
+
 	useEffect(() => {
 		// === Calculate preceding lead time based on cards in later stations
 
@@ -118,12 +130,14 @@ const Column = ((props) => {
 		// Convert the shiftDetails object to an array of [startShift, shiftDuration] pairs for a single day
 		const breaks = convertShiftDetails(shiftDetails)
 
+		// ================================================== //
+		//// Get total quanity of all SKUs in subsequent stations and get bottleneck (max) cycle time for subsequent stations
+
 		var i
 		let bottleneckCycleTime = 0;
 		let precedingQty = 0;
 		for (i = 0; i < processStations.length; i++) {
 			let pStationId = processStations[i]
-
 			let stationCycleTime = stations[pStationId].cycle_time;
 
 			// Once we get to this current station break. No need to deal with earlier stations in the process
@@ -140,28 +154,38 @@ const Column = ((props) => {
 				precedingQty += currLot.bins[pStationId].count
 			})
 
-
 			bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
 
 		}
 
+		// ================================================== //
+		//// Determine if now is during a break of a shift. Adjust the starting offsets accordingly
+		// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
+		// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
+
 		const nowSeconds = moment.duration(moment({}).format("HH:mm:ss")).asSeconds();
-		let leadTimeWorkingSecondsOffset, leadTimeSecondsOffset, brStartIdx;
+		let leadTimeWorkingSecondsOffset, leadTimeSecondsOffset, brStartIdx, isBreak;
 		for (let i=0; i<breaks.length; i++) {
 			if (breaks[i].start > nowSeconds) { // Now is in middle of shift, add remaining shift to leadTime and remove from workingTime
 				leadTimeWorkingSecondsOffset = -(breaks[i].start - nowSeconds);
 				leadTimeSecondsOffset = breaks[i].start - nowSeconds;
 
+				isBreak = false;
 				brStartIdx = i;
 				break;
 			} else if (breaks[i].end > nowSeconds) { // Now is in middle of break, add remaining break to leadTime
 				leadTimeWorkingSecondsOffset = 0;
 				leadTimeSecondsOffset = breaks[i].end - nowSeconds;
 
+				isBreak = true;
 				brStartIdx = (i+1) % breaks.length;
 				break;
 			}
 		}
+
+		// ================================================== //
+		//// Calculate lead time for each card
+		
 
 		let columnCount = 0;
 		const cardsWLeadTime = props.cards.map((card, index) => {
@@ -172,10 +196,10 @@ const Column = ((props) => {
 			} = card;
 
 			// Calculate lead time
-
-
+			// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
+			// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
 			let leadTimeWorkingSeconds = (precedingQty + (columnCount + count)) * bottleneckCycleTime;
-			let leadTimeSeconds = Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds);
+			let leadTimeSeconds = isBreak ? leadTimeSecondsOffset : Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds); // might not even need to go past end of this (current) shift
 			leadTimeWorkingSeconds += leadTimeWorkingSecondsOffset;
 
 			let shiftStart, shiftEnd, shiftDuration;
@@ -196,9 +220,11 @@ const Column = ((props) => {
 
 			}
 
-			const m = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds);
-			const leadTime = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
-			const formattedLeadTime = leadTime.format('lll')
+			const leadDays = Math.floor(leadTimeSeconds / 86400);
+			const leadSeconds = leadTimeSeconds - (leadDays*86400);
+			let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
+			// leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
+			const formattedLeadTime = leadTime.format('lll') // Format lead time
 
 			columnCount += count;
 
