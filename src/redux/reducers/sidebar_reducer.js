@@ -4,6 +4,7 @@ import {
     SET_WIDTH,
     SET_OPEN,
     PAGE_DATA_CHANGED, SET_CONFIRM_DELETE,
+    SHOW_LOT_SCAN_MODAL,
 } from '../types/sidebar_types'
 
 
@@ -14,7 +15,8 @@ const defaultState = {
     open: false,
     pageDataChanged:false,
     showConfirmDeleteModal: false,
-    confirmDeleteCallback: null
+    confirmDeleteCallback: null,
+    showLotScanModal: false,
 };
 
 export default function sidebarReducer(state = defaultState, action) {
@@ -59,6 +61,11 @@ export default function sidebarReducer(state = defaultState, action) {
                 pageDataChanged: action.payload
             }
 
+        case SHOW_LOT_SCAN_MODAL:
+            return {
+                ...state,
+                showLotScanModal: action.payload
+            }
 
 
         default:

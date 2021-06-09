@@ -13,7 +13,9 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden
+  overflow: hidden;
+  flex: 1;
+  align-self: stretch;
   
   color: ${props => props.theme.bg.octonary};
 `;

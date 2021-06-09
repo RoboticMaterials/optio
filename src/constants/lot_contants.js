@@ -203,6 +203,22 @@ export const defaultBins = {
 	},
 }
 
+export const createBin = (binId) => {
+	return {
+		[binId]: {
+			count: 0
+		}
+	}
+}
+
+export const getDefaultBins = (initialBin) => {
+	return initialBin ? {
+		...createBin(initialBin)
+	} : {
+		...createBin(QUEUE_BIN_ID)
+	}
+}
+
 export const FLAG_OPTIONS = {
 	0: {
 		color: "#876CDD",

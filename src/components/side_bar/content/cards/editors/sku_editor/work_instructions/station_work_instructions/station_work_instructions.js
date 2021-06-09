@@ -3,28 +3,33 @@ import PropTypes from 'prop-types';
 
 import * as styled from './station_work_instructions.style'
 import EditButton from "../../../../../../../basic/edit_button/edit_button";
+import {isString} from "../../../../../../../../methods/utils/string_utils";
 
 const StationWorkInstructions = props => {
 
     const {
         name,
         workInstructions,
-        onEditClick
+        onEditClick,
+        processId,
+        stationId,
     } = props
 
     const renderWorkInstructions = () => {
-        return workInstructions.fields.map(workInstruction => {
+        return workInstructions.fields.map((workInstruction, index) => {
 
             const {label, value} = workInstruction
 
             return(
-                <styled.InstructionContainer>
+                <styled.InstructionContainer
+                    onClick={() => onEditClick({processId, stationId, index})}
+                >
                     <styled.ValidityIcon
                         className={value ? 'fas fa-check' : 'fas fa-times'}
                         valid={value}
                     />
                     <styled.FieldLabel>{label}</styled.FieldLabel>
-                    <span>{value}</span>
+                    <span>{isString(value) ? value : ''}</span>
                 </styled.InstructionContainer>
             )
         })
@@ -38,7 +43,7 @@ const StationWorkInstructions = props => {
                         position: 'absolute',
                         left: 0
                     }}
-                    onClick={() => onEditClick(workInstructions)}
+                    onClick={() => onEditClick({processId, stationId})}
                 />
                 <styled.Name>{name}</styled.Name>
             </styled.Header>

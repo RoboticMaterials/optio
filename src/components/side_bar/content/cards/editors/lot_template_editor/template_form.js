@@ -72,7 +72,9 @@ const FormComponent = (props) => {
 		submitForm,
 		formikProps,
 		onBackClick,
-		loaded
+		loaded,
+		confirmDeleteTemplateModal,
+		setConfirmDeleteTemplateModal
 	} = props
 
 	const themeContext = useContext(ThemeContext)
@@ -80,12 +82,8 @@ const FormComponent = (props) => {
 	useChange()
 	// component state
 	const [preview, ] = useState(false)
-	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
 
 
-	const errorCount = Object.keys(errors).length > 0 // get number of field errors
-	const touchedCount = Object.values(touched).length // number of touched fields
-	const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
 	/*
 	* handles when enter key is pressed
 	*
@@ -240,55 +238,10 @@ const FormComponent = (props) => {
 					</styled.BodyContainer>
 				</styled.ScrollContainer>
 			</styled.RowContainer>
-
-
-
-		<styled.ButtonContainer style={{width: "100%"}}>
-			<Button
-				style={{...buttonStyle}}
-				onClick={async () => {
-					submitForm()
-				}}
-				schema={"ok"}
-				disabled={submitDisabled}
-			>
-				{formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
-			</Button>
-			{/* <Button
-				style={buttonStyle}
-				onClick={()=>close()}
-				// schema={"error"}
-			>
-				Close
-			</Button> */}
-
-			{/* <Button
-				style={buttonStyle}
-				onClick={()=>setPreview(!preview)}
-				schema={"error"}
-			>
-				{preview ? "Show Editor" : "Show Preview"}
-			</Button> */}
-			{formMode === FORM_MODES.UPDATE &&
-			<Button
-				style={buttonStyle}
-				onClick={()=>setConfirmDeleteTemplateModal(true)}
-				schema={"error"}
-			>
-				Delete Template
-			</Button>
-			}
-
-		</styled.ButtonContainer>
-
-
 		</styled.StyledForm>
 	)
 
 }
-
-
-
 
 const LotCreatorForm = (props) => {
 	const {
@@ -300,7 +253,9 @@ const LotCreatorForm = (props) => {
 		onBackClick,
 		formMode,
 		setFormMode,
-		formikProps
+		formikProps,
+		confirmDeleteTemplateModal,
+		setConfirmDeleteTemplateModal
 	} = props
 
 	// actions
@@ -402,6 +357,8 @@ const LotCreatorForm = (props) => {
 							showProcessSelector={showProcessSelector}
 							lotTemplateId={lotTemplateId}
 							onBackClick={onBackClick}
+							confirmDeleteTemplateModal={confirmDeleteTemplateModal}
+							setConfirmDeleteTemplateModal={setConfirmDeleteTemplateModal}
 						/>
 
 

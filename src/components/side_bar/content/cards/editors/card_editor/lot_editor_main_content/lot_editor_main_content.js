@@ -32,7 +32,7 @@ const LotEditorMainContent = (props) => {
         setBinId,
         lotNumber,
         content,
-        preview
+        preview,
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -46,7 +46,7 @@ const LotEditorMainContent = (props) => {
                     <styled.RowContainer>
                         <styled.NameContainer style={{flex: 0}}>
                             <styled.FieldLabel>Lot Number</styled.FieldLabel>
-                            <styled.LotNumber>{formatLotNumber(3)}</styled.LotNumber>
+                            <styled.LotNumber>{formatLotNumber(lotNumber)}</styled.LotNumber>
                         </styled.NameContainer>
 
                         <styled.NameContainer>
@@ -54,7 +54,6 @@ const LotEditorMainContent = (props) => {
                             {preview ?
                                 <Textbox
                                     style={{alignSelf: 'stretch'}}
-                                    // inputStyle={{flex: 1}}
                                 />
                                 :
                                 <TextField
@@ -149,6 +148,7 @@ LotEditorMainContent.propTypes = {
 LotEditorMainContent.defaultProps = {
     buttonGroupNames: [],
     buttonGroupIds: [],
+    lotNumber: 1
 };
 
 

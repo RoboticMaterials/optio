@@ -3,22 +3,21 @@ import PropTypes from 'prop-types';
 
 import * as styled from "./with_modal.style";
 
-const withModal = (WrappedComponent, width = 'auto', height = 'auto') => {
-    // const {
-    //     width,
-    //     height
-    // } = props
+const withModal = (WrappedComponent, minWidth = 'auto', maxWidth = 'auto', minHeight = 'auto', maxHeight = 'auto') => {
     return (props) => {
 
         const {
             close,
             contentLabel,
+            isOpen
         } = props
 
         return <styled.Container
-            width={width}
-            height={height}
-            isOpen={true}
+            minWidth={minWidth}
+            minHeight={minHeight}
+            maxWidth={maxWidth}
+            maxHeight={maxHeight}
+            isOpen={isOpen}
             onRequestClose={() => {
                 close()
             }}

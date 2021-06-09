@@ -24,6 +24,9 @@ import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
 import SkuEditorModal from "./editors/sku_editor/sku_editor_modal";
+import LotEditorContainer from "./editors/card_editor/lot_editor_container";
+import LotEditorModal from "./editors/card_editor/lot_editor_modal";
+import EditorContainer from "./editors/editor_container/editor_container";
 
 const Cards = (props) => {
 
@@ -322,12 +325,13 @@ const Cards = (props) => {
             />
             }
 
-            {showCardEditor &&
-                <SkuEditorModal
-                    close={() => onShowCardEditor(false)}
-                />
+            <EditorContainer
+                cardId={selectedCard ? selectedCard.cardId : null}
+                processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
+                setSelectedCard={setSelectedCard}
+            />
 
-            }
             <SummaryHeader
                 showBackButton={isProcessView}
                 title={title}

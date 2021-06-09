@@ -33,8 +33,11 @@ const DashboardOperationsMenu = (props) => {
     } = params || {}
 
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
+    const availablFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const processes = useSelector(state => state.processesReducer.processes)
     const [warehouseEnabled, setWarehouseEnabled] = useState(false)
+
+    const mergeEnabled = availablFinishProcesses.length > 0 && availableKickOffProcesses.length > 0
 
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element
@@ -143,13 +146,54 @@ const DashboardOperationsMenu = (props) => {
         )
     }
 
+
+    const renderRouteWithoutLotButton = () => {
+        const schema = theme.main.schema.routes
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Run a Route Without Lot'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('route')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
+    const renderMergeButton = () => {
+        const schema = theme.main.schema.merge
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Merge'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('merge')}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
     const renderButtons = () => {
         return (
             <>
                 {renderReportButton()}
                 {renderTaskQueueButton()}
+                {renderRouteWithoutLotButton()}
                 {warehouseEnabled &&
                     renderWarehouseButton()
+                }
+
+                {mergeEnabled &&
+                    renderMergeButton()
                 }
 
                 {availableKickOffProcesses.length > 0 &&

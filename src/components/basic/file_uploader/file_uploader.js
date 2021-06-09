@@ -1,75 +1,83 @@
-import React, {useRef, useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useRef, useState} from 'react'
+import PropTypes from 'prop-types'
 
 import * as styled from './file_uploader.style'
-import PdfViewerModal from "../pdf_viewer/pdf_viewer_modal";
+import PdfViewerModal from "../pdf_viewer/pdf_viewer_modal"
+import PdfViewer from "../pdf_viewer/pdf_viewer"
 
 const FileUploader = props => {
 
+    const {
+        value
+    } = props
+
     const inputFile = useRef(null)
 
-    const [val, setVal] = useState(null)
-
+    const [file, setFile] = useState(value)
     const [showFile, setShowFile] = useState(false)
 
-
-
     const onChange = (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        var file = event.target.files[0];
-        console.log(file);
-        console.log('event.target', event.target);
-        console.log('event.target.files', event.target.files);
-        setVal(file); /// if you want to upload latter
+        event.stopPropagation()
+        event.preventDefault()
 
-        var form = new FormData();
-        form.append('file', file);
-        console.log({form});
-
-        console.log('form.entries()', form.entries())
-
-
-        form.forEach((thing) => console.log('thing', thing))
-
+        const file = event.target.files[0]
+        setFile(file)
         setShowFile(true)
-        // console.log('form.getAll()', form.getAll())
-
-
     }
 
     const onButtonClick = () => {
-        // `current` points to the mounted file input element
-        inputFile.current.click();
-    };
+        inputFile.current.click()
+    }
 
     return (
         <>
             {showFile &&
             <PdfViewerModal
                 close={() => setShowFile(false)}
+                onOkClick={() => {
+                    props.onChange(file)
+                    setShowFile(false)
+                }}
+                onCancelClick={() => {
+                    setShowFile(false)
+                    setFile(value)
+                    onButtonClick()
+                }}
+                file={file}
             />
             }
             <styled.Container>
-                <styled.UploadButton
-                    onClick={onButtonClick}
-                    className="fas fa-upload"
-                    color={'#34a8eb'}
-                />
-                <input
-                    type='file'
-                    id='file'
-                    ref={inputFile}
-                    style={{display: 'none'}}
-                    onChange={onChange}
-                />
+                {(!file || showFile) ?
+                    <styled.UploadButton
+                        onClick={onButtonClick}
+                        className="fas fa-upload"
+                        color={'#34a8eb'}
+                    />
+                    :
+                    <div onClick={onButtonClick} style={{cursor: 'pointer'}}>
+                        <PdfViewer
+                            file={file}
+                        />
+                    </div>
+                }
             </styled.Container>
+            <input
+                type='file'
+                id='file'
+                ref={inputFile}
+                style={{display: 'none'}}
+                onChange={onChange}
+            />
         </>
-    );
-};
+    )
+}
 
 FileUploader.propTypes = {
-    
-};
+    onChange: PropTypes.func,
+}
 
-export default FileUploader;
+FileUploader.defaultProps = {
+    onChange: () => null
+}
+
+export default FileUploader

@@ -65,3 +65,16 @@ export const TheBody = styled.div`
   flex-direction: column;  
 
 `
+
+export const ButtonContainer = styled.div`
+	display: flex;
+	align-items: center;
+	width: 100%;
+	justify-content: center;
+	align-self: center;
+	padding: 1.5rem;
+
+	background: ${props => props.theme.bg.secondary};
+	z-index: 10;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+`

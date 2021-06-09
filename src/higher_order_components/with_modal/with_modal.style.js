@@ -13,20 +13,16 @@ export const Container = styled(Modal)`
   position: absolute;
   z-index: 50;
   
-    min-width: ${props => props.width};
-    max-width: ${props => props.width};
-    max-height: ${props => props.height};
-    min-height: ${props => props.height};
+    min-width: ${props => props.minWidth};
+    max-width: ${props => props.maxWidth};
+    max-height: ${props => props.maxHeight};
+    min-height: ${props => props.minHeight};
   
   color: ${props => props.theme.textColor};
   
   display: flex;
   flex-direction: column;
-  align-items: center;
   border-radius: .4rem;
   overflow: hidden;
   align-items: stretch;
-  
-  // background: red;
-  
 `;

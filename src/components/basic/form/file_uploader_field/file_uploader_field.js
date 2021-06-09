@@ -11,8 +11,11 @@ const FileUploaderField = (props) => {
     const [field, meta] = useField(props);
     const { touched, error } = meta
     const {
-        name: fieldName
+        name: fieldName,
+        value: fieldValue
     } = field
+
+    console.log('fieldname', fieldName)
 
     const {
         warnings
@@ -32,7 +35,8 @@ const FileUploaderField = (props) => {
 
     return (
         <FileUploader
-
+            value={fieldValue}
+            onChange={(value) => setFieldValue(fieldName, value)}
         />
     );
 };

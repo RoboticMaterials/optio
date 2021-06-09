@@ -57,8 +57,10 @@ const DashboardLotList = () => {
             // Get the corresponding task q
             const currTaskQueue = taskQueue[currDevice.current_task_queue_id]
 
+            if(!currTaskQueue) return true
+
             // Get the coresponding route
-            const currRoute = routes[taskQueue[currDevice.current_task_queue_id].task_id]
+            const currRoute = routes[currTaskQueue?.task_id]
 
             // See if the lot belongs to this task q item
             const currLotIsInTaskQ = currTaskQueue?.lot_id === lot._id

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
@@ -18,6 +18,9 @@ import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import Cards from "../../components/side_bar/content/cards/cards";
 import Statistics from '../../components/side_bar/content/statistics/statistics'
+import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
+import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
 
 // Import Actions
 import { setEditingStation, setSelectedStation } from '../../redux/actions/stations_actions'
@@ -29,6 +32,7 @@ import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
+import {showLotScanModal} from '../../redux/actions/sidebar_actions'
 
 import disableBrowserBackButton from 'disable-browser-back-navigation';
 
@@ -56,24 +60,35 @@ const SideBar = (props) => {
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
     const dispatchSetConfirmDelete = (show, callback) => dispatch(sidebarActions.setConfirmDelete(show, callback))
+    const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
 
     const [pageWidth, setPageWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(pageWidth)
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
+    const [barcode, setBarcode] = useState([])
+    const [full, setFull] = useState('')
+    const [lotID, setLotID] = useState('')
+    const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [showSnoop, setShowSnoop] = useState(null)
+
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
+    const cards = useSelector(state => state.cardsReducer.cards)
+    const stations = useSelector(state =>state.stationsReducer.stations)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
     const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+    const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
+
+
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
     const url = useLocation().pathname
-
     const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings', 'statistics']
 
     const boundToWindowSize = () => {
@@ -81,6 +96,7 @@ const SideBar = (props) => {
         setPageWidth(newWidth)
         dispatchSetWidth(newWidth)
     }
+
     useEffect(() => {
         disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
@@ -93,6 +109,74 @@ const SideBar = (props) => {
     useEffect(() => {
         disableBrowserBackButton()
     }, [url])
+
+     useEffect(() => {
+          document.addEventListener('keyup', logKey)
+         return () => {
+             document.removeEventListener('keyup', logKey)
+         }
+     }, [])
+
+
+    useEffect(() => {
+        setFull(barcode.join(''))
+    }, [barcode])
+
+    useEffect(() => {
+        if(full.includes('RMShift-')) {
+            const enter = full.substring(full.length-5)
+            if(enter === 'Enter'){
+                setBarcode([])
+                const splitLot = full.split('-')
+                let lotId = parseInt(splitLot[1].slice(0,-5))
+                setLotID(lotId)
+                onScanLot(lotId)
+                setFull('')
+            }
+        }
+
+    }, [full])
+
+    const logKey = (e) => {
+        setBarcode(barcode => [...barcode,e.key])
+    }
+
+    const onScanLot = (id) => {
+      let binCount = 0
+      let statId = ""
+      let lotFound = false
+
+      Object.values(cards).forEach((card) => {
+        if(card.lotNumber === id){
+          lotFound = true
+          Object.values(stations).forEach((station) => {
+            if(!!card.bins[station._id]){
+              binCount = binCount + 1
+              statId = station._id
+            }
+          })
+        if(binCount > 1){
+          dispatchShowLotScanModal(true)
+        }
+        else if(binCount === 1 && !!statId){
+              history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+        }
+
+      }
+    })
+      if(id === 420 && lotFound === false){
+        setShowSnoop(true)
+        return setTimeout(() => setShowSnoop(null), 2500)
+      }
+
+      if(lotFound===false) {
+          setAddTaskAlert({
+              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+              label: "This lot does not exist!",
+          })
+          return setTimeout(() => setAddTaskAlert(null), 2500)
+        }
+    }
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
@@ -292,6 +376,39 @@ const SideBar = (props) => {
                     setConfirmDeleteModal(null)
                     dispatchSetConfirmDelete(false, null)
                 }}
+            />
+
+            <ScanLotModal
+                isOpen={!!showScanLotModal}
+                title={"This lot is split between multiple stations. Please pick a station"}
+                id = {lotID}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => {
+                  dispatchShowLotScanModal(null)
+
+                }}
+                handleOnClick1={() => {
+
+                }}
+                handleOnClick2={() => {
+                  dispatchShowLotScanModal(null)
+                }}
+            />
+
+            {!!showSnoop &&
+              <img
+               src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
+               alt="new"
+               />
+            }
+
+            <TaskAddedAlert
+                containerStyle={{
+                    'position': 'absolute'
+                }}
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
             />
 
             <styled.SideBarOpenCloseButton

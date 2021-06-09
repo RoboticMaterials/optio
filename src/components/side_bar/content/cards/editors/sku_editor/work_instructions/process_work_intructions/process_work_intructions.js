@@ -11,7 +11,8 @@ const ProcessWorkInstructions = props => {
         name,
         stationIds,
         containerStyle,
-        workInstructions
+        workInstructions,
+        processId
     } = props
 
     const stations = useSelector(state => { return state.stationsReducer.stations }) || {}
@@ -31,6 +32,8 @@ const ProcessWorkInstructions = props => {
             // console.log('station',station)
             return(
                 <SkuContextStationWorkInstructions
+                    stationId={stationId}
+                    processId={processId}
                     workInstructions={workInstructions[stationId]}
                     name={name}
                 />

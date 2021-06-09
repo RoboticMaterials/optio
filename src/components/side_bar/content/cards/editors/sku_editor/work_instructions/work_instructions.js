@@ -25,9 +25,6 @@ const WorkInstructions = props => {
             } = process
 
             const stations = getProcessStations(process, tasks)
-            // console.log('stations',stations)
-            // console.log('process',process)
-            // getProcessStations()
 
             return(
                 <ProcessWorkInstructions
@@ -35,6 +32,7 @@ const WorkInstructions = props => {
                     containerStyle={{margin: '1rem 0'}}
                     name={name}
                     stationIds={Object.keys(stations)}
+                    processId={processId}
                 />
             )
         })

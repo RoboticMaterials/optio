@@ -14,7 +14,10 @@ import {
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR, SHOW_FORM_EDITOR
+  SHOW_EDITOR,
+  SHOW_FORM_EDITOR,
+  SHOW_BARCODE_MODAL
+
 } from '../types/data_types'
 
 const defaultState = {
@@ -25,7 +28,8 @@ const defaultState = {
   error: {},
   pending: false,
   showEditor:false,
-  showFormEditor:false
+  showFormEditor:false,
+  showBarcodeModal: false,
 
 };
 
@@ -135,6 +139,12 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         showFormEditor: action.payload,
+      }
+
+    case SHOW_BARCODE_MODAL:
+      return {
+        ...state,
+        showBarcodeModal: action.payload,
       }
 
     default:

@@ -12,6 +12,9 @@ export const rowCss = css`
 export const Container = styled.div`
   ${containerLayout};
   overflow: hidden;
+  flex: 1;
+  align-self: stretch;
+  //background: red;
 `;
 
 export const Header = styled.div`

@@ -35,21 +35,20 @@ import {getProcessStations} from "../../../../../../methods/utils/processes_util
 import withModal from "../../../../../../higher_order_components/with_modal/with_modal";
 import InstructionEditor from "./work_instructions/instruction_editor/instruction_editor";
 
-const InstructionEditorModal = withModal(InstructionEditor)
+const InstructionEditorModal = withModal(InstructionEditor, 'auto', '90%', 'auto', '90%')
 
 export const SkuContext = createContext()
+const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 const SkuEditor = (props) => {
 
     const {
         selectedLotTemplatesId,
-        setShowLotTemplateEditor,
         lotTemplateId,
         close
     } = props
 
     const themeContext = useContext(ThemeContext)
-
 
     const dispatch = useDispatch()
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
@@ -61,9 +60,10 @@ const SkuEditor = (props) => {
     const tasks = useSelector(state => { return state.tasksReducer.tasks }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations }) || {}
 
-    const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
+    const [formMode, setFormMode] = useState(selectedLotTemplatesId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
     const [showInstructionEditor, setShowInstructionEditor] = useState(false)
     const [editingFields, setEditingFields] = useState(false)
+    const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
 
     const fields = getFormCustomFields(lotTemplate?.fields || [])
 
@@ -72,19 +72,20 @@ const SkuEditor = (props) => {
         const {
             fields,
             name,
-            displayNames
+            displayNames,
+            workInstructions
         } = values
 
         let response
 
         // update (PUT)
         if(formMode === FORM_MODES.UPDATE) {
-            response = await dispatchPutLotTemplate({fields, name, displayNames}, lotTemplateId)
+            response = await dispatchPutLotTemplate({fields, name, displayNames, workInstructions}, lotTemplateId)
         }
 
         // // create (POST)
         else {
-            response = await dispatchPostLotTemplate({fields, name, displayNames})
+            response = await dispatchPostLotTemplate({fields, name, displayNames, workInstructions})
             //
             if(!(response instanceof Error)) {
                 const {
@@ -210,6 +211,21 @@ const SkuEditor = (props) => {
         >
 
             {formikProps => {
+                const {
+                    values,
+                    submitForm,
+                    isSubmitting,
+                    submitCount,
+                    errors,
+                    touched
+                } = formikProps
+
+                const errorCount = Object.keys(errors).length > 0 // get number of field errors
+                const touchedCount = Object.values(touched).length // number of touched fields
+                const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
+
+
+                // console.log('values',values)
 
                 return (
                     <>
@@ -218,7 +234,9 @@ const SkuEditor = (props) => {
                             width={'fit-content'}
                             height={'fit-content'}
                             stationId={showInstructionEditor?.stationId}
-                            fields={showInstructionEditor?.fields}
+                            processId={showInstructionEditor?.processId}
+                            selectedIndex={showInstructionEditor?.index}
+                            fields={values?.workInstructions[showInstructionEditor?.processId][showInstructionEditor?.stationId]?.fields}
                             // values={showInstructionEditor}
                             // width={'10%'}
                             close={() => setShowInstructionEditor(false)}
@@ -241,8 +259,6 @@ const SkuEditor = (props) => {
                                     >
                                     </BackButton>
 
-                                    {/*<div style={{marginRight: "auto"}}/>*/}
-
                                     <styled.TemplateNameContainer>
                                         <styled.TemplateLabel>SKU</styled.TemplateLabel>
                                         <TextField
@@ -253,8 +269,6 @@ const SkuEditor = (props) => {
                                             inputStyle={{background: themeContext.bg.tertiary}}
                                         />
                                     </styled.TemplateNameContainer>
-                                    {/*</styled.Title>*/}
-
 
                                 </styled.Header>
 
@@ -267,6 +281,8 @@ const SkuEditor = (props) => {
                                         lotTemplateId={lotTemplateId}
                                         formMode={formMode}
                                         setFormMode={setFormMode}
+                                        confirmDeleteTemplateModal={confirmDeleteTemplateModal}
+                                        setConfirmDeleteTemplateModal={setConfirmDeleteTemplateModal}
                                     />
                                     :
                                     <styled.ContentContainer>
@@ -326,6 +342,43 @@ const SkuEditor = (props) => {
                                     </styled.ContentContainer>
                                 }
                             </SkuContext.Provider>
+                            <styled.ButtonContainer style={{width: "100%"}}>
+                                <Button
+                                    style={{...buttonStyle}}
+                                    onClick={async () => {
+                                        submitForm()
+                                    }}
+                                    schema={"ok"}
+                                    disabled={submitDisabled}
+                                >
+                                    {formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
+                                </Button>
+                                {/* <Button
+				style={buttonStyle}
+				onClick={()=>close()}
+				// schema={"error"}
+			>
+				Close
+			</Button> */}
+
+                                {/* <Button
+				style={buttonStyle}
+				onClick={()=>setPreview(!preview)}
+				schema={"error"}
+			>
+				{preview ? "Show Editor" : "Show Preview"}
+			</Button> */}
+                                {formMode === FORM_MODES.UPDATE &&
+                                <Button
+                                    style={buttonStyle}
+                                    onClick={()=>setConfirmDeleteTemplateModal(true)}
+                                    schema={"error"}
+                                >
+                                    Delete Template
+                                </Button>
+                                }
+
+                            </styled.ButtonContainer>
                         </styled.Container2>
                     </>
                 )
