@@ -63,7 +63,7 @@ const DashboardsHeader = (props) => {
 
             <styled.Header>
 
-            { /*  {showBackButton &&
+                { /*  {showBackButton &&
                     <BackButton styled={{ order: '1' }} containerStyle={{}}
                         onClick={onBack}
                     />
@@ -75,10 +75,32 @@ const DashboardsHeader = (props) => {
                         setShowOperationsMenu(true)
                     }}
                     disabled={showOperationsMenu}
-                    style={{height: '3rem'}}
+                    style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
                 >
                     Operations
                 </Button>
+                <Button
+                    schema="delete"
+                    onClick={() => {
+                        handleOperationSelected('report')
+                        setShowOperationsMenu(false)
+                    }}
+                    disabled={showOperationsMenu}
+                    style={{ 
+                        height: '3rem', 
+                        boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'absolute',
+                        right: '1rem'
+                        
+                    }}
+                >
+                    Report
+                    {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
+                </Button>
+
                 <styled.Title>{name}</styled.Title>
                 {/* <styled.PaceContainer
                     color={color}
@@ -88,22 +110,22 @@ const DashboardsHeader = (props) => {
                 </styled.PaceContainer> */}
 
                 {!mobileMode &&
-                  <styled.LockIcon
-                      className={!currentDashboard.locked ? 'fas fa-lock-open' : 'fas fa-lock'}
-                      onClick={handleToggleLock}
-                      locked={locked}
-                      data-tip
-                      data-for={toolTipId}
-                  >
-                      <ReactTooltip id={toolTipId}>
-                        {!currentDashboard.locked ?
-                          <styled.LockContainer>Click to lock the dashboard. This will hide the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
-                          :
-                          <styled.LockContainer>Click to unlock the dashboard. This will show the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
-                        }
+                    <styled.LockIcon
+                        className={!currentDashboard.locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                        onClick={handleToggleLock}
+                        locked={locked}
+                        data-tip
+                        data-for={toolTipId}
+                    >
+                        <ReactTooltip id={toolTipId}>
+                            {!currentDashboard.locked ?
+                                <styled.LockContainer>Click to lock the dashboard. This will hide the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                                :
+                                <styled.LockContainer>Click to unlock the dashboard. This will show the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                            }
 
-                      </ReactTooltip>
-                  </styled.LockIcon>
+                        </ReactTooltip>
+                    </styled.LockIcon>
                 }
 
 
