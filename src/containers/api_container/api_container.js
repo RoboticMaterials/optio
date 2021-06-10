@@ -524,7 +524,7 @@ const ApiContainer = (props) => {
             if (!device.dashboards || device.dashboards.length === 0) {
 
                 console.log('QQQQ Device does not have a dashboard', deepCopy(device))
-                alert('Device does not have a dashboard')
+                // alert('Device does not have a dashboard')
 
                 const newDeviceDashboard = {
                     name: `${device.device_name} Dashboard`,
@@ -536,8 +536,11 @@ const ApiContainer = (props) => {
 
                 return newDashboard.then(async (dashPromise) => {
                     console.log(dashPromise)
-                    device.dashboards = [dashPromise._id.$oid]
-                    await onPutDevice(device, device._id)
+                    if(dashPromise?._id?.$oid) {
+                        device.dashboards = [dashPromise._id.$oid]
+                        await onPutDevice(device, device._id)
+                    }
+
                 })
 
 

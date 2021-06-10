@@ -33,6 +33,7 @@ const ProcessWorkInstructions = props => {
             return(
                 <SkuContextStationWorkInstructions
                     stationId={stationId}
+                    key={stationId}
                     processId={processId}
                     workInstructions={workInstructions[stationId]}
                     name={name}
@@ -71,12 +72,15 @@ const ProcessWorkInstructions = props => {
 };
 
 ProcessWorkInstructions.propTypes = {
-
+    name: PropTypes.string,
+    stations: PropTypes.array,
+    workInstructions: PropTypes.object
 };
 
 ProcessWorkInstructions.defaultProps = {
     name: '',
     stations: [],
+    workInstructions: {}
 };
 
 export default ProcessWorkInstructions;

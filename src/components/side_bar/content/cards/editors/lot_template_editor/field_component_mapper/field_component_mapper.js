@@ -276,7 +276,7 @@ const FieldComponentMapper = (props) => {
 				</styled.Container>
 			)
 		}
-		case FIELD_COMPONENT_NAMES.IMAGE_SELECTOR: {
+		case FIELD_COMPONENT_NAMES.PDF_SELECTOR: {
 			return(
 				<styled.Container
 					style={{

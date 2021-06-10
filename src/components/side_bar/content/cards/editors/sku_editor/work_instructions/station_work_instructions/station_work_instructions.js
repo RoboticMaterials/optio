@@ -22,6 +22,7 @@ const StationWorkInstructions = props => {
 
             return(
                 <styled.InstructionContainer
+                    key={index}
                     onClick={() => onEditClick({processId, stationId, index})}
                 >
                     <styled.ValidityIcon
@@ -29,7 +30,7 @@ const StationWorkInstructions = props => {
                         valid={value}
                     />
                     <styled.FieldLabel>{label}</styled.FieldLabel>
-                    <span>{isString(value) ? value : ''}</span>
+                    {/*<span>{isString(value) ? value : ''}</span>*/}
                 </styled.InstructionContainer>
             )
         })
@@ -57,10 +58,12 @@ const StationWorkInstructions = props => {
 
 StationWorkInstructions.propTypes = {
     onEditClick: PropTypes.func,
+    workInstructions: PropTypes.object
 };
 
 StationWorkInstructions.defaultProps = {
     onEditClick: () => null,
+    workInstructions: {}
 };
 
 

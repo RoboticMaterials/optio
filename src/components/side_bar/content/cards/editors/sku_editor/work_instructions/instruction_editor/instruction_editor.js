@@ -6,6 +6,7 @@ import {useSelector} from "react-redux";
 import FieldComponentMapper from "../../../lot_template_editor/field_component_mapper/field_component_mapper";
 import {FIELD_COMPONENT_NAMES} from "../../../../../../../../constants/lot_contants";
 import {ComponentContainer} from "./instruction_editor.style";
+import Button from "../../../../../../../basic/button/button";
 
 const InstructionEditor = props => {
 
@@ -13,7 +14,8 @@ const InstructionEditor = props => {
         stationId,
         processId,
         fields,
-        selectedIndex
+        selectedIndex,
+        close
     } = props
 
     const stations = useSelector(state => { return state.stationsReducer.stations }) || {}
@@ -62,7 +64,11 @@ const InstructionEditor = props => {
             <styled.FieldsContainer>{renderFields()}</styled.FieldsContainer>
 
             <styled.Footer>
-
+                <Button
+                    schema={'ok'}
+                    label={'Ok'}
+                    onClick={close}
+                />
             </styled.Footer>
         </styled.Container>
     );

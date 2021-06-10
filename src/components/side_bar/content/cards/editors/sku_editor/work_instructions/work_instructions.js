@@ -28,6 +28,7 @@ const WorkInstructions = props => {
 
             return(
                 <ProcessWorkInstructions
+                    key={processId}
                     workInstructions={workInstructions[processId]}
                     containerStyle={{margin: '1rem 0'}}
                     name={name}
@@ -45,11 +46,11 @@ const WorkInstructions = props => {
 };
 
 WorkInstructions.propTypes = {
-
+    workInstructions: PropTypes.object
 };
 
 WorkInstructions.defaultProps = {
-
+    workInstructions: {}
 };
 
 export default WorkInstructions;

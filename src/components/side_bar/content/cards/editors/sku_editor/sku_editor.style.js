@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components"
 import Modal from "react-modal";
 import {containerLayout} from "../../../../../../common_css/layout";
+import {commonClickableIcon, iconButtonCss} from "../../../../../../common_css/common_css";
 
 
 export const TemplateNameContainer = styled.div`
@@ -9,6 +10,17 @@ export const TemplateNameContainer = styled.div`
   align-self: center;
   display: flex;
   align-items: center;
+`
+
+export const CloseButton = styled.button`
+	${commonClickableIcon};
+	${iconButtonCss};
+  font-size: 2rem;
+  position: absolute;
+  margin: 0.3rem 0.5rem 0.3rem 0.5rem;
+  border: 1px solid ${props => props.color};
+  border-radius: 0.35rem;
+  padding: .25rem .5rem
 `
 
 export const Header = styled.div`
@@ -21,6 +33,7 @@ export const Header = styled.div`
 	z-index: 10;
 	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 	align-self: stretch;
+  //position: relative;
 `
 
 export const TemplateLabel = styled.span`

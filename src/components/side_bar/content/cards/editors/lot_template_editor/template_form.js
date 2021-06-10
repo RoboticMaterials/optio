@@ -80,6 +80,7 @@ const FormComponent = (props) => {
 	const themeContext = useContext(ThemeContext)
 
 	useChange()
+
 	// component state
 	const [preview, ] = useState(false)
 

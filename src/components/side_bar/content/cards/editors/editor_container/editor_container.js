@@ -26,7 +26,8 @@ const EditorContainer = props => {
 		<>
 			{showCardEditor &&
 			<LotEditorModal
-				isOpen={!showSkuEditor}
+				// isOpen={!showSkuEditor}
+				isOpen={true}
 				onAfterOpen={null}
 				cardId={cardId}
 				processId={processId}
@@ -51,12 +52,6 @@ const EditorContainer = props => {
 		</>
 	)
 
-
-	return (
-		<div>
-
-		</div>
-	);
 };
 
 EditorContainer.propTypes = {

@@ -33,6 +33,7 @@ const FileUploader = props => {
         <>
             {showFile &&
             <PdfViewerModal
+                isOpen={true}
                 close={() => setShowFile(false)}
                 onOkClick={() => {
                     props.onChange(file)
