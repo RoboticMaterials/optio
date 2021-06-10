@@ -391,6 +391,15 @@ const Column = ((props) => {
         console.log('QQQQ cards in props', props.cards)
         console.log('QQQQ all cards', allCards)
 
+        // Get cards that belong to bin
+
+        // See if there is a sort index at bin
+        
+        // Find cards that have a sort index after the new index
+        
+        // Add 1 to each of those indexs and put cards
+
+        // Put the original card with new index
         
 
     }
