@@ -26,7 +26,7 @@ const LotFlags = (props) => {
                 ...containerStyle
             }}
         >
-            {flags.length > 0 ?
+            {flags?.length > 0 ?
                 <>
                     {flags.map((currFlagId) => {
                         const flagOption = FLAG_OPTIONS[currFlagId]
