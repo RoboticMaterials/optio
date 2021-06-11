@@ -27,6 +27,7 @@ const SelectLotQuantity = (props) => {
 	const {
 		submitForm,
 		errors,
+		setFieldValue
 	} = formRef?.current || {}
 
 	const [currentLotIndex, setCurrentLotIndex] = useState(initialIndex ? initialIndex : 0)
@@ -63,6 +64,10 @@ const SelectLotQuantity = (props) => {
 						binId={stationId}
 						enableFlagSelector={false}
 						containerStyle={{marginBottom: '1rem'}}
+						onClick={() => {
+							const maxQuanttiy = getBinQuantity(currentLot, stationId)
+							setFieldValue(`items[${currentLotIndex}].quantity`, maxQuanttiy)
+						}}
 					/>
 					<NumberField
 						name={`items[${currentLotIndex}].quantity`}
