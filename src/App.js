@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Redirect,} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
@@ -21,14 +21,16 @@ import { postLocalSettings, getLocalSettings } from './redux/actions/local_actio
 import ApiContainer from './containers/api_container/api_container';
 import StatusHeader from './containers/status_header/status_header';
 import Logger from './containers/logger/logger';
-import SideBar from './containers/side_bar/side_bar'
+//import SideBar from './containers/side_bar/side_bar'
 import MapView from './containers/map_view/map_view'
 import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
-import ListView from "./components/list_view/list_view";
+//import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
+const SideBar = lazy(() => import('./containers/side_bar/side_bar'));
+const ListView = lazy(() => import('./components/list_view/list_view'))
 const widthBreakPoint = 1000;
 
 const App = () => {
@@ -96,9 +98,8 @@ const App = () => {
     // }
 
     return (
-        <>
+      <Suspense fallback = {<h1>Still Loading...</h1>}>
             <Logger />
-
 
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>
@@ -163,6 +164,7 @@ const App = () => {
                                           <Route
                                               path={["/:page?/:id?/:subpage?", '/']}
                                           >
+
                                               <SideBar
                                                 showSideBar={sideBarOpen}
                                                 setShowSideBar={setShowSideBar}
@@ -241,7 +243,7 @@ const App = () => {
                       </BrowserRouter>
                   </styled.Container>
               </ThemeProvider>
-              </>
+            </Suspense>
     );
 
 }
