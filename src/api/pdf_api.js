@@ -18,10 +18,8 @@ export async function getPdfs() {
 
     // Success
     const data = response.data;
-    console.error("getImage data", data)
 
     const dataJson = JSON.parse(data);
-    console.error("getImage dataJson", dataJson)
     return dataJson;
 
 
@@ -80,7 +78,6 @@ export function b64toBlob(b64Data, contentType) {
 export async function getPdf(id) {
     try {
 
-        console.log('getPdf called',id)
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + "/" + id,
@@ -92,9 +89,9 @@ export async function getPdf(id) {
         // Success 🎉
         const data = response.data;
 
-        const stuff = b64toBlob(data, 'application/pdf')
+        const blobData = b64toBlob(data, 'application/pdf')
 
-        return stuff;
+        return blobData;
 
 
     } catch (error) {
@@ -136,8 +133,6 @@ export async function postPdf(pdf) {
                 // 'Accept': 'application/json',
                 // 'Access-Control-Allow-Origin': '*'
             },
-            body: {pdf},
-            pdf,
             data: pdf,
         });
 
@@ -146,7 +141,6 @@ export async function postPdf(pdf) {
 
 
         const responseDataJson = JSON.parse(responseData);
-        console.log('responseDataJson',responseDataJson)
         return responseDataJson;
 
     } catch (error) {

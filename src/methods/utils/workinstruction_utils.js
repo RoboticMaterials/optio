@@ -1,21 +1,40 @@
 import {getProcessStations} from "./processes_utils";
 import {FIELD_COMPONENT_NAMES} from "../../constants/lot_contants";
 
-export const iterateWorkInstructions = (workInstructions, callback) => {
-    Object.entries(workInstructions).forEach(processEntry => {
+export const iterateWorkInstructionFields = async (workInstructions, callback) => {
+    await iterateWorkInstructions(workInstructions, async (instructionObjects, processId, stationId) => {
+        const {fields} = instructionObjects
+
+        let index = 0
+        for(const field of fields) {
+            await callback(field, processId, stationId, index)
+            index = index + 1
+        }
+    })
+}
+
+export const iterateWorkInstructionsSync = (workInstructions, callback) => {
+    for(const processEntry of Object.entries(workInstructions || {})) {
         const [processId, stationObjs] = processEntry
 
-        Object.entries(stationObjs).forEach(stationEntry => {
+        for(const stationEntry of Object.entries(stationObjs|| {})) {
             const [stationId, instructionObjects] = stationEntry
-            const {
-                fields
-            } = instructionObjects
 
-            fields.forEach((field, index) => {
-                callback(field, processId, stationId, index)
-            })
-        })
-    })
+            callback(instructionObjects, processId, stationId)
+        }
+    }
+}
+
+export const iterateWorkInstructions = async (workInstructions, callback) => {
+    for(const processEntry of Object.entries(workInstructions)) {
+        const [processId, stationObjs] = processEntry
+
+        for(const stationEntry of Object.entries(stationObjs)) {
+            const [stationId, instructionObjects] = stationEntry
+
+            await callback(instructionObjects, processId, stationId)
+        }
+    }
 }
 
 export const getDefaultWorkInstructions = (processes, tasks) => {

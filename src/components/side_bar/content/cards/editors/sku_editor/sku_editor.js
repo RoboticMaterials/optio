@@ -1,4 +1,4 @@
-import React, {useContext, useState, createContext, useRef} from 'react';
+import React, {useContext, useState, createContext, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import LotCreatorForm from "../lot_template_editor/template_form";
 import * as styled from "./sku_editor.style";
@@ -37,12 +37,15 @@ import InstructionEditor from "./work_instructions/instruction_editor/instructio
 import useChange from "../../../../../basic/form/useChange";
 import {
     getDefaultWorkInstructions,
-    iterateWorkInstructions
+    iterateWorkInstructionFields, iterateWorkInstructions, iterateWorkInstructionsSync
 } from "../../../../../../methods/utils/workinstruction_utils";
 import {postImage} from "../../../../../../api/image_api";
 import {getPdf, getPdfs, postPdf} from "../../../../../../api/pdf_api";
 import PdfViewer from "../../../../../basic/pdf_viewer/pdf_viewer";
 import PdfViewerModal from "../../../../../basic/pdf_viewer/pdf_viewer_modal";
+import {postWorkInstruction} from "../../../../../../redux/actions/work_instructions_actions";
+import {putWorkInstruction} from "../../../../../../api/work_instructions_api";
+import {isString} from "../../../../../../methods/utils/string_utils";
 
 const InstructionEditorModal = withModal(InstructionEditor, 'auto', '90%', 'auto', '90%')
 
@@ -62,14 +65,20 @@ const SkuEditor = (props) => {
     const themeContext = useContext(ThemeContext)
 
     const formRef = useRef(null)
-
+    const {
+        values = {},
+        resetForm = () => {}
+    } = formRef?.current || {}
 
     const dispatch = useDispatch()
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
+    const dispatchPostWorkInstruction = async (workInstruction) => await dispatch(postWorkInstruction(workInstruction))
+    const dispatchPutWorkInstruction = async (workInstruction, id) => await dispatch(putWorkInstruction(workInstruction, id))
     const dispatchPostLotTemplate= async (lotTemplate) => await dispatch(postLotTemplate(lotTemplate))
 
     const lotTemplate = useSelector(state => { return state.lotTemplatesReducer.lotTemplates[selectedLotTemplatesId] })
+    const reduxWorkInstructions = useSelector(state => { return state.workInstructionsReducer.workInstructions }) || {}
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations }) || {}
@@ -78,9 +87,68 @@ const SkuEditor = (props) => {
     const [showInstructionEditor, setShowInstructionEditor] = useState(false)
     const [editingFields, setEditingFields] = useState(false)
     const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
-    const [testFile, setTestFile] = useState(null);
+    const [pdfs, setPdfs] = useState({});
 
     const fields = getFormCustomFields(lotTemplate?.fields || [])
+
+    /*
+	* resert form if template id changes
+	* */
+    useEffect(() => {
+        resetForm()
+    }, [selectedLotTemplatesId])
+
+    /*
+    * this useeffect loads all the pdfs in the templates work instructions.
+    * Since the files may be large, they're only retrieved in the context of this component instead of being stored in redux
+    * */
+    useEffect(() => {
+
+        // loop through all work instructions
+        iterateWorkInstructionsSync(lotTemplate?.workInstructions,  async (workInstructionId, processId, stationId) => {
+
+            // get work instruction from redux
+            const workInstruction = reduxWorkInstructions[workInstructionId]
+
+            const {
+                fields = []
+            } = workInstruction || {}
+
+            // loop through fields
+            for(const field of fields) {
+                const {
+                    value,
+                    component,
+                    label
+                } = field || {}
+
+                // get data type
+                const dataType = FIELD_COMPONENT_DATA_TYPES[component]
+
+                /*
+                * handle dataTypes as necessary
+                * */
+                switch (dataType) {
+
+                    case FIELD_DATA_TYPES.PDF: {
+                        // get the pdf using the value in the work instruction (which is just the id of the pdf)
+                        if(isString(value)) {
+                            const pdf = await getPdf(value)
+                            setPdfs((prevState => {
+                                return {...prevState, [value]: pdf}
+                            }))
+                            break
+                        }
+                    }
+                    default: {
+                    }
+                }
+            }
+        })
+
+        return () => {};
+    }, [lotTemplate?.workInstructions]);
+
 
     const handleSubmit = async (values, formMode) => {
 
@@ -93,46 +161,88 @@ const SkuEditor = (props) => {
 
         let response
 
+        // first handle work instructions
+        let mappedWorkInstructions = {} // stores workInstructions with values converted for storage (if necessary)
+
+        await iterateWorkInstructionFields(workInstructions, async (field, processId, stationId, index) => {
+            const {
+                value,
+                component,
+                label
+            } = field
+
+            // create objects for process and station
+            if(!mappedWorkInstructions[processId]) mappedWorkInstructions[processId] = {}
+            if(!mappedWorkInstructions[processId][stationId]) mappedWorkInstructions[processId][stationId] = {fields: []}
+
+            // get data type
+            const dataType = FIELD_COMPONENT_DATA_TYPES[component]
+
+            // handle if data has to be handled differently
+            switch (dataType) {
+
+                case FIELD_DATA_TYPES.PDF: {
+                    // pdf files shouldn't be stored directly in db, instead need to post separately and just store the id of the document
+
+                    if(value) {
+                        const formData = new FormData();
+                        formData.set('pdf', value, 'pdf');
+
+                        const postedPdf = await postPdf(formData) // post it
+
+                        const pdfId = postedPdf?._id
+
+                        // replace value with id of pdf
+                        mappedWorkInstructions[processId][stationId].fields[index] = {...field, value: pdfId}
+                    }
+                    else {
+                        // if no value, make sure its set to null
+                        mappedWorkInstructions[processId][stationId].fields[index] = {...field, value: null}
+                    }
+                    break
+                }
+                default: {
+                    // otherwise just spread the field
+                    mappedWorkInstructions[processId][stationId].fields[index] = {...field}
+                }
+            }
+        })
+
+        // now must post/put each individual work instruction
+        let templateWorkInstructions = {}
+        await iterateWorkInstructions(mappedWorkInstructions, async (instructionObjects, processId, stationId) => {
+            if(!templateWorkInstructions[processId]) templateWorkInstructions[processId] = {}
+            if(!templateWorkInstructions[processId][stationId]) templateWorkInstructions[processId][stationId] = null
+
+            // get id
+            let workInstructionId = instructionObjects?._id
+
+            // if has id, put, otherwise post
+            if(workInstructionId) {
+                // update
+                const result = await dispatchPutWorkInstruction(instructionObjects, workInstructionId)
+            }
+            else {
+                // create
+                const result = await dispatchPostWorkInstruction(instructionObjects)
+                workInstructionId = result._id
+            }
+
+            // just store the id of the work instruction in the actual lot template
+            templateWorkInstructions[processId][stationId] = workInstructionId
+        })
+
+        // NOW, save the lot template itself
+
         // update (PUT)
         if(formMode === FORM_MODES.UPDATE) {
-
-            await iterateWorkInstructions(workInstructions, async (field, processId, stationId, index) => {
-                const {
-                    value,
-                    component
-                } = field
-
-                const dataType = FIELD_COMPONENT_DATA_TYPES[component]
-                const convertedValue = convertValue(value, dataType)
-
-                switch (dataType) {
-
-                    case FIELD_DATA_TYPES.PDF: {
-                        if(value) {
-                            const formData = new FormData();
-                            formData.set('pdf', value, 'pdf');
-
-
-                            await postPdf(formData)
-
-                            // workInstructions[processId][stationId].fields[index].value = formData
-                        }
-
-                    }
-                    default: {
-
-                    }
-                }
-
-            })
-
-            response = await dispatchPutLotTemplate({fields, name, displayNames, workInstructions}, lotTemplateId)
+            response = await dispatchPutLotTemplate({fields, name, displayNames, workInstructions: templateWorkInstructions}, lotTemplateId)
         }
 
         // // create (POST)
         else {
-            response = await dispatchPostLotTemplate({fields, name, displayNames, workInstructions})
-            //
+            response = await dispatchPostLotTemplate({fields, name, displayNames, workInstructions: templateWorkInstructions})
+
             if(!(response instanceof Error)) {
                 const {
                     lotTemplate: createdLotTemplate
@@ -152,58 +262,79 @@ const SkuEditor = (props) => {
         return response;
     }
 
+    /*
+    * this function gets initial values for workInstructions
+    * */
     const getInitialWorkInstructions = () => {
 
+        // if the template has work instructions, parse em out
         if(lotTemplate?.workInstructions) {
 
-            let workInstructions = {}
+            const mappedWorkInstructions = {}
 
-            workInstructions = {...lotTemplate?.workInstructions}
+            // iterate through work instructions
+            iterateWorkInstructionsSync(lotTemplate.workInstructions,  (workInstructionId, processId, stationId) => {
+                if(!mappedWorkInstructions[processId]) mappedWorkInstructions[processId] = {}
+                if(!mappedWorkInstructions[processId][stationId]) mappedWorkInstructions[processId][stationId] = {}
 
-            iterateWorkInstructions(workInstructions,  (field, processId, stationId, index) => {
+                // get work instructoin from redux using id
+                const workInstructionObj = reduxWorkInstructions[workInstructionId]
                 const {
-                    value,
-                    component
-                } = field
+                    fields = [],
+                    _id
+                } = workInstructionObj || {}
 
-                const dataType = FIELD_COMPONENT_DATA_TYPES[component]
-                const convertedValue = convertValue(value, dataType)
+                // create mutable form of work instruction so it doesn't change values in redux
+                let mappedWorkInstructionObj = {fields: fields.map(field => {
+                        return {...field}
+                    }), _id}
 
-                switch (dataType) {
+                // loop through fields for any necessary conversions
+                let index = 0
+                for(const field of fields) {
+                    const {
+                        value,
+                        component
+                    } = field
 
-                    case FIELD_DATA_TYPES.PDF: {
-                        if(true) {
-                            // const pdf = getPdf('60c24db8e684efe8c8a34437').then(data => {
-                            //
-                            //     if(!testFile) {
-                            //         console.log('getPdf data',data)
-                            //         console.log('getPdf typeof data',typeof  data)
-                            //         setTestFile((data))
-                            //         // window.open("data:application/pdf;base64," + Base64.encode(out))
-                            //     }
-                            // })
+                    const dataType = FIELD_COMPONENT_DATA_TYPES[component]
 
+                    const mappedField = {...field} // spread field so you can change it without unwanted side-effects
 
+                    if(value) {
+                        switch (dataType) {
+
+                            case FIELD_DATA_TYPES.PDF: {
+                                // only pdf ID is save in WI, so replace value with the actual pdf
+                                if(value) {
+                                    mappedField.value = pdfs[value]
+                                    break
+                                }
+                            }
+                            default: {
+                                // nothing special, so just run value through converter
+                                const convertedValue = convertValue(value, dataType)
+                                mappedField.value = convertedValue
+                            }
                         }
-
                     }
-                    default: {
 
-                    }
+                    // update the field in the WI object
+                    mappedWorkInstructionObj.fields[index] = {...mappedField}
+
+                    index = index + 1
                 }
 
+                // update workInstructions object
+                mappedWorkInstructions[processId][stationId] = mappedWorkInstructionObj
             })
 
-            return workInstructions
+            return mappedWorkInstructions
         }
 
+        // lot template doesn't have WI's, so use defaults
         return getDefaultWorkInstructions(processes, tasks)
     }
-
-    if(testFile) return(
-        <PdfViewer file={testFile}/>
-
-    )
 
     return (
         <Formik
@@ -227,9 +358,6 @@ const SkuEditor = (props) => {
                     :
                     DEFAULT_DISPLAY_NAMES
             }}
-
-            // validation control
-            // validationSchema={LotFormSchema}
             validate={(values, props) => {
                 try {
                     LotFormSchema.validateSync(values, {
@@ -251,7 +379,7 @@ const SkuEditor = (props) => {
             validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
             validateOnBlur={true}
 
-            enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+            enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
             onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
                 // set submitting to true, handle submit, then set submitting to false
                 // the submitting property is useful for eg. displaying a loading indicator
@@ -289,155 +417,153 @@ const SkuEditor = (props) => {
 
                 return(
 
-            <>
-                {showInstructionEditor &&
-                <InstructionEditorModal
-                    isOpen={true}
-                    width={'fit-content'}
-                    height={'fit-content'}
-                    stationId={showInstructionEditor?.stationId}
-                    processId={showInstructionEditor?.processId}
-                    selectedIndex={showInstructionEditor?.index}
-                    fields={values?.workInstructions[showInstructionEditor?.processId][showInstructionEditor?.stationId]?.fields}
-                    // values={showInstructionEditor}
-                    // width={'10%'}
-                    close={() => setShowInstructionEditor(false)}
-                />
-                }
-                <styled.Container2>
+                    <>
+                        {showInstructionEditor &&
+                        <InstructionEditorModal
+                            isOpen={true}
+                            width={'fit-content'}
+                            height={'fit-content'}
+                            stationId={showInstructionEditor?.stationId}
+                            processId={showInstructionEditor?.processId}
+                            selectedIndex={showInstructionEditor?.index}
+                            fields={values?.workInstructions[showInstructionEditor?.processId][showInstructionEditor?.stationId]?.fields}
+                            close={() => setShowInstructionEditor(false)}
+                        />
+                        }
+                        <styled.Container2>
 
-                    <SkuContext.Provider
-                        value={{
-                            setShowInstructionEditor: setShowInstructionEditor,
-                            showInstructionEditor: showInstructionEditor
-                        }}
-                    >
-                        <styled.Header>
-                            {editingFields ?
-                                <BackButton
-                                    containerStyle={{position: 'absolute'}}
-                                    secondary
-                                    onClick={()=>setEditingFields(false)}
-                                    schema={'error'}
-                                />
-                                :
-                                <styled.CloseButton
-                                    color={themeContext.schema.error.solid}
-                                    className={'fas fa-times'}
-                                    onClick={close}
-                                />
-                            }
-
-                            <styled.TemplateNameContainer>
-                                <styled.TemplateLabel>SKU</styled.TemplateLabel>
-                                <TextField
-                                    name={"name"}
-                                    onChange={() => setFieldValue('changed', true)}
-                                    placeholder={"Enter template name..."}
-                                    InputComponent={Textbox}
-                                    style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
-                                    inputStyle={{background: themeContext.bg.tertiary}}
-                                />
-                            </styled.TemplateNameContainer>
-
-                        </styled.Header>
-
-                        {editingFields ?
-                            <LotCreatorForm
-                                onBackClick={()=>setEditingFields(false)}
-                                formikProps={formikProps}
-                                isOpen={true}
-                                onAfterOpen={null}
-                                lotTemplateId={lotTemplateId}
-                                formMode={formMode}
-                                setFormMode={setFormMode}
-                                confirmDeleteTemplateModal={confirmDeleteTemplateModal}
-                                setConfirmDeleteTemplateModal={setConfirmDeleteTemplateModal}
-                            />
-                            :
-                            <styled.ContentContainer>
-                                <div
-                                    style={{
-                                        width: '50%',
-                                        position: 'relative',
-                                        marginTop: '3rem',
-                                        marginBottom: '3rem',
-                                        alignSelf: 'center'
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'rgba(0,0,0,0.15)',
-                                            justifyContent: 'center',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            zIndex: 1000
-                                        }}
-                                    >
-                                        <Button
-                                            label={'Edit Fields'}
-                                            schema={'lots'}
-                                            style={{
-                                                zIndex: 1000,
-                                                flex: 1,
-                                                maxWidth: '30rem'
-                                            }}
-                                            onClick={()=>setEditingFields(true)}
+                            <SkuContext.Provider
+                                value={{
+                                    setShowInstructionEditor: setShowInstructionEditor,
+                                    showInstructionEditor: showInstructionEditor
+                                }}
+                            >
+                                <styled.Header>
+                                    {editingFields ?
+                                        <BackButton
+                                            containerStyle={{position: 'absolute'}}
+                                            secondary
+                                            onClick={()=>setEditingFields(false)}
+                                            schema={'error'}
                                         />
-                                    </div>
-                                    <ScaleWrapper
-                                        scaleFactor={.7}
-                                    >
-                                        <styled.TheBody>
-                                            <LotEditorMainContent
-                                                fields={fields}
-                                                usable={false}
-                                                preview={true}
-                                            />
-                                        </styled.TheBody>
-                                    </ScaleWrapper>
-                                </div>
+                                        :
+                                        <styled.CloseButton
+                                            color={themeContext.schema.error.solid}
+                                            className={'fas fa-times'}
+                                            onClick={close}
+                                        />
+                                    }
 
-                                <styled.WorkInstructionsContainer>
-                                    <styled.Label>Work Instructions</styled.Label>
-                                    <WorkInstructions
-                                        workInstructions={values.workInstructions}
+                                    <styled.TemplateNameContainer>
+                                        <styled.TemplateLabel>SKU</styled.TemplateLabel>
+                                        <TextField
+                                            name={"name"}
+                                            onChange={() => setFieldValue('changed', true)}
+                                            placeholder={"Enter template name..."}
+                                            InputComponent={Textbox}
+                                            style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
+                                            inputStyle={{background: themeContext.bg.tertiary}}
+                                        />
+                                    </styled.TemplateNameContainer>
+
+                                </styled.Header>
+
+                                {editingFields ?
+                                    <LotCreatorForm
+                                        onBackClick={()=>setEditingFields(false)}
+                                        formikProps={formikProps}
+                                        isOpen={true}
+                                        onAfterOpen={null}
+                                        lotTemplateId={lotTemplateId}
+                                        formMode={formMode}
+                                        setFormMode={setFormMode}
+                                        confirmDeleteTemplateModal={confirmDeleteTemplateModal}
+                                        setConfirmDeleteTemplateModal={setConfirmDeleteTemplateModal}
                                     />
-                                </styled.WorkInstructionsContainer>
-                            </styled.ContentContainer>
-                        }
-                    </SkuContext.Provider>
-                    <styled.ButtonContainer style={{width: "100%"}}>
-                        <Button
-                            style={{...buttonStyle}}
-                            onClick={async () => {
-                                submitForm()
-                            }}
-                            schema={"ok"}
-                            disabled={submitDisabled}
-                        >
-                            {formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
-                        </Button>
+                                    :
+                                    <styled.ContentContainer>
+                                        <div
+                                            style={{
+                                                width: '50%',
+                                                position: 'relative',
+                                                marginTop: '3rem',
+                                                marginBottom: '3rem',
+                                                alignSelf: 'center'
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    background: 'rgba(0,0,0,0.15)',
+                                                    justifyContent: 'center',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    zIndex: 1000
+                                                }}
+                                            >
+                                                <Button
+                                                    label={'Edit Fields'}
+                                                    schema={'lots'}
+                                                    style={{
+                                                        zIndex: 1000,
+                                                        flex: 1,
+                                                        maxWidth: '30rem'
+                                                    }}
+                                                    onClick={()=>setEditingFields(true)}
+                                                />
+                                            </div>
+                                            <ScaleWrapper
+                                                scaleFactor={.7}
+                                            >
+                                                <styled.TheBody>
+                                                    <LotEditorMainContent
+                                                        fields={fields}
+                                                        usable={false}
+                                                        preview={true}
+                                                    />
+                                                </styled.TheBody>
+                                            </ScaleWrapper>
+                                        </div>
 
-                        {formMode === FORM_MODES.UPDATE &&
-                        <Button
-                            style={buttonStyle}
-                            onClick={()=>setConfirmDeleteTemplateModal(true)}
-                            schema={"error"}
-                        >
-                            Delete Template
-                        </Button>
-                        }
+                                        <styled.WorkInstructionsContainer>
+                                            <styled.Label>Work Instructions</styled.Label>
+                                            <WorkInstructions
+                                                workInstructions={values.workInstructions}
+                                            />
+                                        </styled.WorkInstructionsContainer>
+                                    </styled.ContentContainer>
+                                }
+                            </SkuContext.Provider>
+                            <styled.ButtonContainer style={{width: "100%"}}>
+                                <Button
+                                    style={{...buttonStyle}}
+                                    onClick={async () => {
+                                        submitForm()
+                                    }}
+                                    schema={"ok"}
+                                    disabled={submitDisabled}
+                                >
+                                    {formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
+                                </Button>
 
-                    </styled.ButtonContainer>
-                </styled.Container2>
-            </>
-            )
+                                {formMode === FORM_MODES.UPDATE &&
+                                <Button
+                                    style={buttonStyle}
+                                    onClick={()=>setConfirmDeleteTemplateModal(true)}
+                                    schema={"error"}
+                                >
+                                    Delete Template
+                                </Button>
+                                }
+
+                            </styled.ButtonContainer>
+                        </styled.Container2>
+                    </>
+                )
             }}
 
         </Formik>

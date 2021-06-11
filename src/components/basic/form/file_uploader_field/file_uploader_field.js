@@ -15,8 +15,6 @@ const FileUploaderField = (props) => {
         value: fieldValue
     } = field
 
-    console.log('fieldname', fieldName)
-
     const {
         warnings
     } = status || {}

@@ -115,13 +115,6 @@ const FormComponent = (props) => {
 		};
 	}, [])
 
-	/*
-	* resert form if template id changes
-	* */
-	useEffect(() => {
-		formikProps.resetForm()
-	}, [lotTemplateId])
-
 	return(
 		<styled.StyledForm>
 			<ConfirmDeleteModal
