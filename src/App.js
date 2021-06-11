@@ -20,17 +20,26 @@ import { postLocalSettings, getLocalSettings } from './redux/actions/local_actio
 // import containers
 import ApiContainer from './containers/api_container/api_container';
 import StatusHeader from './containers/status_header/status_header';
-import Logger from './containers/logger/logger';
-//import SideBar from './containers/side_bar/side_bar'
+//import Logger from './containers/logger/logger';
+import SideBar from './containers/side_bar/side_bar'
 import MapView from './containers/map_view/map_view'
-import HILModal from './containers/hil_modal/hil_modal'
-import Authentication from './containers/authentication/authentication'
-import Widgets from './components/widgets/widgets'
+//import HILModal from './containers/hil_modal/hil_modal'
+//import Authentication from './containers/authentication/authentication'
+//import Widgets from './components/widgets/widgets'
 //import ListView from "./components/list_view/list_view";
-import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+//import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
-const SideBar = lazy(() => import('./containers/side_bar/side_bar'));
 const ListView = lazy(() => import('./components/list_view/list_view'))
+const ConfirmDeleteModal = lazy(() => import('./components/basic/modals/confirm_delete_modal/confirm_delete_modal'));
+const Widgets = lazy(() => import('./components/widgets/widgets'))
+const Authentication = lazy(() => import('./containers/authentication/authentication'))
+const HILModal = lazy(() => import('./containers/hil_modal/hil_modal'))
+const Logger = lazy(() => import('./containers/logger/logger'))
+
+
+
+
+
 const widthBreakPoint = 1000;
 
 const App = () => {
