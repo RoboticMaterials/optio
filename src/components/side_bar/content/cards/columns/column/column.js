@@ -194,7 +194,7 @@ const Column = ((props) => {
 
 			const updatedCard = {...card}
 
-			if (station_id !== 'FINISH') {	// No lead time once in finished bin
+			if (station_id !== FINISH_BIN_ID) {	// No lead time once in finished bin
 				// Calculate lead time
 				// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
 				// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
@@ -575,7 +575,7 @@ const Column = ((props) => {
 										lotNumber={lotNumber}
 										name={name}
 										count={count}
-										leadTime={leadTime}
+										leadTime={station_id !== FINISH_BIN_ID && leadTime}
 										id={cardId}
 										flags={flags || []}
 										index={index}
