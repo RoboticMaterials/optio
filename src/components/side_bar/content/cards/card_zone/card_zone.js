@@ -17,7 +17,7 @@ import {getLoadStationId, getUnloadStationId} from "../../../../../methods/utils
 import * as styled from "./card_zone.style"
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
-import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../constants/lot_contants";
+import {FINISH_BIN_ID, LOT_FILTER_OPTIONS, QUEUE_BIN_ID, SORT_DIRECTIONS} from "../../../../../constants/lot_contants";
 
 
 const CardZone = ((props) => {
@@ -169,12 +169,12 @@ const CardZone = ((props) => {
 					}
 
 					// if {binId} is queue, add the lot to the queue
-					else if(binId === "QUEUE") {
+					else if(binId === QUEUE_BIN_ID) {
 						tempQueue.push(lotItem)
 					}
 
 					// if the {binId} is finish, add the lot to the finished column
-					else if(binId === "FINISH") {
+					else if(binId === FINISH_BIN_ID) {
 						tempFinished.push(lotItem)
 					}
 

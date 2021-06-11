@@ -28,6 +28,7 @@ import { getProcessStationsSorted } from '../../../../../../methods/utils/proces
 import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
 import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
 import LotContainer from "../../lot/lot_container";
+import {FINISH_BIN_ID} from "../../../../../../constants/lot_contants";
 
 const Column = ((props) => {
 
@@ -123,10 +124,6 @@ const Column = ((props) => {
 		// Get stations in this process (reversed list because cards further in process are processed first)
 		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
 
-		if (station_id === 'FINISH') {	// No lead time once in finished bin
-			return;
-		}
-
 		// Convert the shiftDetails object to an array of [startShift, shiftDuration] pairs for a single day
 		const breaks = convertShiftDetails(shiftDetails)
 
@@ -195,40 +192,46 @@ const Column = ((props) => {
 				name
 			} = card;
 
-			// Calculate lead time
-			// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
-			// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
-			let leadTimeWorkingSeconds = (precedingQty + (columnCount + count)) * bottleneckCycleTime;
-			let leadTimeSeconds = isBreak ? leadTimeSecondsOffset : Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds); // might not even need to go past end of this (current) shift
-			leadTimeWorkingSeconds += leadTimeWorkingSecondsOffset;
+			const updatedCard = {...card}
 
-			let shiftStart, shiftEnd, shiftDuration;
-			let brIdx = brStartIdx;
-			while (leadTimeWorkingSeconds > 0) {
+			if (station_id !== 'FINISH') {	// No lead time once in finished bin
+				// Calculate lead time
+				// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
+				// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
+				let leadTimeWorkingSeconds = (precedingQty + (columnCount + count)) * bottleneckCycleTime;
+				let leadTimeSeconds = isBreak ? leadTimeSecondsOffset : Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds); // might not even need to go past end of this (current) shift
+				leadTimeWorkingSeconds += leadTimeWorkingSecondsOffset;
 
-				// Break time always added
-				leadTimeSeconds += breaks[brIdx].end - breaks[brIdx].start;
+				let shiftStart, shiftEnd, shiftDuration;
+				let brIdx = brStartIdx;
+				while (leadTimeWorkingSeconds > 0) {
 
-				// Working time (time in between breaks)
-				shiftStart = breaks[brIdx].end % 86400; // Mod 86400 wraps shifts overnight
-				brIdx = (brIdx + 1) % breaks.length;
-				shiftEnd = breaks[brIdx].start;
+					// Break time always added
+					leadTimeSeconds += breaks[brIdx].end - breaks[brIdx].start;
 
-				shiftDuration = Math.min(shiftEnd - shiftStart, leadTimeWorkingSeconds);
-				leadTimeSeconds += shiftDuration;
-				leadTimeWorkingSeconds -= shiftDuration;
+					// Working time (time in between breaks)
+					shiftStart = breaks[brIdx].end % 86400; // Mod 86400 wraps shifts overnight
+					brIdx = (brIdx + 1) % breaks.length;
+					shiftEnd = breaks[brIdx].start;
 
+					shiftDuration = Math.min(shiftEnd - shiftStart, leadTimeWorkingSeconds);
+					leadTimeSeconds += shiftDuration;
+					leadTimeWorkingSeconds -= shiftDuration;
+
+				}
+
+				const leadDays = Math.floor(leadTimeSeconds / 86400);
+				const leadSeconds = leadTimeSeconds - (leadDays*86400);
+				let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
+				// leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
+				const formattedLeadTime = leadTime.format('lll') // Format lead time
+
+				updatedCard.leadTime = formattedLeadTime
 			}
-
-			const leadDays = Math.floor(leadTimeSeconds / 86400);
-			const leadSeconds = leadTimeSeconds - (leadDays*86400);
-			let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
-			// leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
-			const formattedLeadTime = leadTime.format('lll') // Format lead time
 
 			columnCount += count;
 
-			return { leadTime: formattedLeadTime, ...card }
+			return updatedCard
 
 		})
 
