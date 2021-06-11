@@ -45,10 +45,20 @@ export const immutableReplace = (arr, ele, index) => {
 
 export const immutableSet = (arr, ele, index) => {
     let arrCopy = [...arr]
-    for(let i = 0; i < index; i++) {
-        if(!arrCopy[i]) arrCopy[i] = null
+    for (let i = 0; i < index; i++) {
+        if (!arrCopy[i]) arrCopy[i] = null
     }
     arrCopy[index] = ele
 
     return arrCopy
+}
+
+export const immutableMove = (arr, fromIndex, toIndex) => {
+    let copyArr = [...arr]
+    // Delete the item from it's current position
+    const item = copyArr.splice(fromIndex, 1);
+
+    // Move the item to its new position
+    copyArr.splice(toIndex, 0, item[0]);
+    return copyArr
 }

@@ -23,10 +23,12 @@ import * as styled from "./column.style";
 
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
-import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
+import { immutableDelete, immutableReplace, isArray, isNonEmptyArray, immutableMove } from "../../../../../../methods/utils/array_utils";
 import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils';
 import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
 import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
+import { deepCopy } from '../../../../../../methods/utils/utils'
+
 import LotContainer from "../../lot/lot_container";
 
 // Import Constants 
@@ -375,8 +377,8 @@ const Column = ((props) => {
         }
     }
 
-    // This 
-    const onLeadTimeSortChange = (drop) => {
+    // This is gonna be awesome saucesome blossom
+    const onLeadTimeSortChange = async (drop) => {
         console.log('QQQQ drop', drop)
         const { removedIndex, addedIndex, payload, element } = drop || {}
         const {
@@ -387,20 +389,20 @@ const Column = ((props) => {
             ...remainingPayload
         } = payload
 
-        // Update the cards positions
-        console.log('QQQQ cards in props', props.cards)
-        console.log('QQQQ all cards', allCards)
 
-        // Get cards that belong to bin
+        // Update the array with the new position
+        let stationCards = deepCopy(getCardsInBin(allCards, station_id, processId))
+        const updatedArray = immutableMove(stationCards, removedIndex, addedIndex)
 
-        // See if there is a sort index at bin
-        
-        // Find cards that have a sort index after the new index
-        
-        // Add 1 to each of those indexs and put cards
+        // Update the index of each card
+        await updatedArray.forEach( async(card, ind) => {
+            card.lead_time_index = ind
+            await dispatchPutCard(card, card._id)
 
+            console.log('QQQQ card', card)
+        })
         // Put the original card with new index
-        
+
 
     }
 
