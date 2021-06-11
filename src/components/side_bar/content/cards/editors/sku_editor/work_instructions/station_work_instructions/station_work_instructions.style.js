@@ -12,6 +12,7 @@ export const Container = styled.div`
     color: ${props => props.theme.textColor};
     border-radius: .3rem;
     width: fit-content;
+  	min-width: 10rem;
 `
 
 export const ValidityIcon = styled.i`

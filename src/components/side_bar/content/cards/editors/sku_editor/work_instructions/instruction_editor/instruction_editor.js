@@ -75,7 +75,7 @@ const InstructionEditor = props => {
 };
 
 InstructionEditor.propTypes = {
-    width: PropTypes.string
+    // width: PropTypes.string
 };
 
 InstructionEditor.defaultProps = {

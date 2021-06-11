@@ -63,7 +63,7 @@ StationWorkInstructions.propTypes = {
 
 StationWorkInstructions.defaultProps = {
     onEditClick: () => null,
-    workInstructions: {}
+    workInstructions: {fields: []}
 };
 
 

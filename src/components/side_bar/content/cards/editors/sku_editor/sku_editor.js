@@ -35,9 +35,14 @@ import {getProcessStations} from "../../../../../../methods/utils/processes_util
 import withModal from "../../../../../../higher_order_components/with_modal/with_modal";
 import InstructionEditor from "./work_instructions/instruction_editor/instruction_editor";
 import useChange from "../../../../../basic/form/useChange";
-import {iterateWorkInstructions} from "../../../../../../methods/utils/workinstruction_utils";
+import {
+    getDefaultWorkInstructions,
+    iterateWorkInstructions
+} from "../../../../../../methods/utils/workinstruction_utils";
 import {postImage} from "../../../../../../api/image_api";
 import {getPdf, getPdfs, postPdf} from "../../../../../../api/pdf_api";
+import PdfViewer from "../../../../../basic/pdf_viewer/pdf_viewer";
+import PdfViewerModal from "../../../../../basic/pdf_viewer/pdf_viewer_modal";
 
 const InstructionEditorModal = withModal(InstructionEditor, 'auto', '90%', 'auto', '90%')
 
@@ -73,6 +78,7 @@ const SkuEditor = (props) => {
     const [showInstructionEditor, setShowInstructionEditor] = useState(false)
     const [editingFields, setEditingFields] = useState(false)
     const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
+    const [testFile, setTestFile] = useState(null);
 
     const fields = getFormCustomFields(lotTemplate?.fields || [])
 
@@ -90,7 +96,7 @@ const SkuEditor = (props) => {
         // update (PUT)
         if(formMode === FORM_MODES.UPDATE) {
 
-            iterateWorkInstructions(workInstructions, (field, processId, stationId, index) => {
+            await iterateWorkInstructions(workInstructions, async (field, processId, stationId, index) => {
                 const {
                     value,
                     component
@@ -99,7 +105,6 @@ const SkuEditor = (props) => {
                 const dataType = FIELD_COMPONENT_DATA_TYPES[component]
                 const convertedValue = convertValue(value, dataType)
 
-                console.log('dataType',dataType)
                 switch (dataType) {
 
                     case FIELD_DATA_TYPES.PDF: {
@@ -108,10 +113,7 @@ const SkuEditor = (props) => {
                             formData.set('pdf', value, 'pdf');
 
 
-                            console.log('whoaaaa', value)
-                            console.log('whoaaaa formData', formData)
-
-                            postPdf(formData)
+                            await postPdf(formData)
 
                             // workInstructions[processId][stationId].fields[index].value = formData
                         }
@@ -150,15 +152,15 @@ const SkuEditor = (props) => {
         return response;
     }
 
-    const getInitialWorkInstructions = async () => {
-        let workInstructions = {}
-
-
+    const getInitialWorkInstructions = () => {
 
         if(lotTemplate?.workInstructions) {
+
+            let workInstructions = {}
+
             workInstructions = {...lotTemplate?.workInstructions}
 
-            await iterateWorkInstructions(workInstructions, async (field, processId, stationId, index) => {
+            iterateWorkInstructions(workInstructions,  (field, processId, stationId, index) => {
                 const {
                     value,
                     component
@@ -167,19 +169,21 @@ const SkuEditor = (props) => {
                 const dataType = FIELD_COMPONENT_DATA_TYPES[component]
                 const convertedValue = convertValue(value, dataType)
 
-                console.log('dataType',dataType)
                 switch (dataType) {
 
                     case FIELD_DATA_TYPES.PDF: {
                         if(true) {
-                            const pdf = await getPdf('60c24db8e684efe8c8a34437')
+                            // const pdf = getPdf('60c24db8e684efe8c8a34437').then(data => {
+                            //
+                            //     if(!testFile) {
+                            //         console.log('getPdf data',data)
+                            //         console.log('getPdf typeof data',typeof  data)
+                            //         setTestFile((data))
+                            //         // window.open("data:application/pdf;base64," + Base64.encode(out))
+                            //     }
+                            // })
 
 
-
-                            console.log('whoaaaa', value)
-                            console.log('whoaaaa pdf', pdf)
-
-                            // workInstructions[processId][stationId].fields[index].value = formData
                         }
 
                     }
@@ -193,36 +197,13 @@ const SkuEditor = (props) => {
             return workInstructions
         }
 
-        Object.values(processes).forEach(process => {
-            const {
-                _id: processId
-            } = process
-
-            workInstructions[processId] = {}
-
-            const stationIds = getProcessStations(process, tasks)
-            Object.keys(stationIds).forEach(stationId => {
-                // workInstructions[processId]
-                workInstructions[processId][stationId] = {
-                    stationId,
-                    fields: [
-                        {
-                            label: 'Cycle Time',
-                            value: null,
-                            component: FIELD_COMPONENT_NAMES.TIME_SELECTOR,
-                        },
-                        {
-                            label: 'Work Instructions',
-                            value: null,
-                            component: FIELD_COMPONENT_NAMES.PDF_SELECTOR,
-                        }
-                    ]
-                }
-            })
-        })
-
-        return workInstructions
+        return getDefaultWorkInstructions(processes, tasks)
     }
+
+    if(testFile) return(
+        <PdfViewer file={testFile}/>
+
+    )
 
     return (
         <Formik
@@ -302,7 +283,6 @@ const SkuEditor = (props) => {
                     setFieldValue = {}
                 } = formikProps
 
-
                 const errorCount = Object.keys(errors).length > 0 // get number of field errors
                 const touchedCount = Object.values(touched).length // number of touched fields
                 const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
@@ -325,6 +305,7 @@ const SkuEditor = (props) => {
                 />
                 }
                 <styled.Container2>
+
                     <SkuContext.Provider
                         value={{
                             setShowInstructionEditor: setShowInstructionEditor,
