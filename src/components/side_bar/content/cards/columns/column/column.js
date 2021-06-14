@@ -393,10 +393,10 @@ const Column = ((props) => {
         // Update the array with the new position
         let stationCards = deepCopy(getCardsInBin(allCards, station_id, processId))
         const updatedArray = immutableMove(cards, removedIndex, addedIndex)
-        setCards(updatedArray)
+        // setCards(updatedArray)
         console.log('QQQQ updated Array', updatedArray)
 
-        
+
         // Update the index of each card
         await updatedArray.forEach( async(card, ind) => {
             card.lead_time_index = ind
