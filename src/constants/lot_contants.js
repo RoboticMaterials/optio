@@ -46,6 +46,7 @@ export const FIELD_DATA_TYPES = {
     DATE_RANGE: "DATE_RANGE",
     URL: "URL",
     INTEGER: "INTEGER",
+    LEAD_TIME: 'LEAD_TIME'
 }
 
 export const CONTENT = {
@@ -183,7 +184,7 @@ export const LOT_PRIMARY_FIELD_IDS = [NAME_FIELD_ID, COUNT_FIELD_ID]
 export const NAME_FIELD = { fieldName: "name", _id: NAME_FIELD_ID, dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name" }
 export const COUNT_FIELD = { fieldName: "bins", _id: COUNT_FIELD_ID, fieldPath: ["QUEUE", "count"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity" }
 export const LOT_NUMBER_FIELD = { fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number" }
-export const LEAD_TIME_FIELD = { fieldName: "leadTime", dataType: FIELD_DATA_TYPES.DATE, label: "Lead Time" }
+export const LEAD_TIME_FIELD = { fieldName: "leadTime", dataType: FIELD_DATA_TYPES.LEAD_TIME, label: "Lead Time" }
 
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]

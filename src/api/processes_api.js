@@ -20,7 +20,6 @@ export async function getProcesses() {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-        console.log('QQQQ process', dataJson)
         return dataJson;
 
 

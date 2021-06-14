@@ -54,11 +54,15 @@ export const immutableSet = (arr, ele, index) => {
 }
 
 export const immutableMove = (arr, fromIndex, toIndex) => {
+    console.log('QQQQ og array', arr)
+    console.log('QQQQ from index', fromIndex)
+    console.log('QQQQ to index', toIndex)
     let copyArr = [...arr]
     // Delete the item from it's current position
     const item = copyArr.splice(fromIndex, 1);
-
+    console.log('QQQQ item', item)
     // Move the item to its new position
     copyArr.splice(toIndex, 0, item[0]);
+    console.log('QQQQ move', copyArr)
     return copyArr
 }
