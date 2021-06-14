@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import moment from 'moment';
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -24,8 +23,6 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils';
-import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
 import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
 import LotContainer from "../../lot/lot_container";
 
@@ -52,11 +49,9 @@ const Column = ((props) => {
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 
-	const allCards = useSelector(state => state.cardsReducer.cards)
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
-	const { shiftDetails } = useSelector(state => state.settingsReducer.settings)
 
 	// console.log(shiftDetails)
 
@@ -76,165 +71,6 @@ const Column = ((props) => {
 	// const [breaks, setBreaks] = useState([])
 	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
 	// const [precedingQuantity, setPrecedingQuantity] = useState(0);
-
-	let cumulativeLotQuantity = 0
-
-	const convertShiftDetails = (details) => {
-
-		let breaks = [{
-			start: moment.duration(0).asSeconds(),
-			end: moment.duration(details.startOfShift).asSeconds()
-		}];
-		Object.values(shiftDetails.breaks)
-			.sort((a, b) => a.startOfBreak - b.startOfBreak)
-			.forEach(br => {
-				if (br.enabled) {
-					breaks.push({
-						start: moment.duration(br.startOfBreak).asSeconds(),
-						end: moment.duration(br.endOfBreak).asSeconds()
-					})
-				}
-			})
-
-		breaks.push({
-			start: moment.duration(details.endOfShift).asSeconds(),
-			end: moment.duration(24, 'hours').asSeconds()
-		})
-
-		return breaks;
-
-	}
-
-	function addWeekdays(date, days) {
-		date = moment(date); // use a clone
-		while (days > 0) {
-		  date = date.add(1, 'days');
-		  // decrease "days" only if it's a weekday.
-		  if (date.isoWeekday() !== 6 && date.isoWeekday() !== 7) {
-			days -= 1;
-		  }
-		}
-		return date;
-	  }
-
-	useEffect(() => {
-		// === Calculate preceding lead time based on cards in later stations
-
-		// Get stations in this process (reversed list because cards further in process are processed first)
-		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
-
-		if (station_id === 'FINISH') {	// No lead time once in finished bin
-			return;
-		}
-
-		// Convert the shiftDetails object to an array of [startShift, shiftDuration] pairs for a single day
-		const breaks = convertShiftDetails(shiftDetails)
-
-		// ================================================== //
-		//// Get total quanity of all SKUs in subsequent stations and get bottleneck (max) cycle time for subsequent stations
-
-		var i
-		let bottleneckCycleTime = 0;
-		let precedingQty = 0;
-		for (i = 0; i < processStations.length; i++) {
-			let pStationId = processStations[i]
-			let stationCycleTime = stations[pStationId].cycle_time;
-
-			// Once we get to this current station break. No need to deal with earlier stations in the process
-			if (pStationId === station_id) {
-				bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
-				break;
-			}
-
-			// Get all cards in this station's bin
-			let stationCards = getCardsInBin(allCards, pStationId, processId)
-
-			// Get the total quantity of parts in this process, after this station
-			stationCards.forEach((currLot) => {
-				precedingQty += currLot.bins[pStationId].count
-			})
-
-			bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
-
-		}
-
-		// ================================================== //
-		//// Determine if now is during a break of a shift. Adjust the starting offsets accordingly
-		// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
-		// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
-
-		const nowSeconds = moment.duration(moment({}).format("HH:mm:ss")).asSeconds();
-		let leadTimeWorkingSecondsOffset, leadTimeSecondsOffset, brStartIdx, isBreak;
-		for (let i=0; i<breaks.length; i++) {
-			if (breaks[i].start > nowSeconds) { // Now is in middle of shift, add remaining shift to leadTime and remove from workingTime
-				leadTimeWorkingSecondsOffset = -(breaks[i].start - nowSeconds);
-				leadTimeSecondsOffset = breaks[i].start - nowSeconds;
-
-				isBreak = false;
-				brStartIdx = i;
-				break;
-			} else if (breaks[i].end > nowSeconds) { // Now is in middle of break, add remaining break to leadTime
-				leadTimeWorkingSecondsOffset = 0;
-				leadTimeSecondsOffset = breaks[i].end - nowSeconds;
-
-				isBreak = true;
-				brStartIdx = (i+1) % breaks.length;
-				break;
-			}
-		}
-
-		// ================================================== //
-		//// Calculate lead time for each card
-		
-
-		let columnCount = 0;
-		const cardsWLeadTime = props.cards.map((card, index) => {
-			const {
-				_id,
-				count = 0,
-				name
-			} = card;
-
-			// Calculate lead time
-			// NOTE: leadTimeWorkingSeconds keeps track of the ~active~ seconds for that lot, and is subtracted from till 0 for each loop of a shift
-			// NOTE: leadTimeSeconds is the actual seconds of lead time including breaks and weekends. It is added to as workingSeconds is subtracted
-			let leadTimeWorkingSeconds = (precedingQty + (columnCount + count)) * bottleneckCycleTime;
-			let leadTimeSeconds = isBreak ? leadTimeSecondsOffset : Math.min(leadTimeSecondsOffset, leadTimeWorkingSeconds); // might not even need to go past end of this (current) shift
-			leadTimeWorkingSeconds += leadTimeWorkingSecondsOffset;
-
-			let shiftStart, shiftEnd, shiftDuration;
-			let brIdx = brStartIdx;
-			while (leadTimeWorkingSeconds > 0) {
-
-				// Break time always added
-				leadTimeSeconds += breaks[brIdx].end - breaks[brIdx].start;
-
-				// Working time (time in between breaks)
-				shiftStart = breaks[brIdx].end % 86400; // Mod 86400 wraps shifts overnight
-				brIdx = (brIdx + 1) % breaks.length;
-				shiftEnd = breaks[brIdx].start;
-
-				shiftDuration = Math.min(shiftEnd - shiftStart, leadTimeWorkingSeconds);
-				leadTimeSeconds += shiftDuration;
-				leadTimeWorkingSeconds -= shiftDuration;
-
-			}
-
-			const leadDays = Math.floor(leadTimeSeconds / 86400);
-			const leadSeconds = leadTimeSeconds - (leadDays*86400);
-			let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
-			// leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
-			const formattedLeadTime = leadTime.format('lll') // Format lead time
-
-			columnCount += count;
-
-			return { leadTime: formattedLeadTime, ...card }
-
-		})
-
-		setCards(cardsWLeadTime);
-
-	}, [shiftDetails, props.cards])
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -258,16 +94,16 @@ const Column = ((props) => {
 		setIsSelectedCardsNotEmpty(isNonEmptyArray(selectedCards))
 	}, [selectedCards])
 
-	// useEffect(() => {
-	// 	if (sortMode) {
-	// 		let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
-	// 		sortBy(tempCards, sortMode, sortDirection)
-	// 		setCards(tempCards)
-	// 	}
-	// 	else {
-	// 		setCards(props.cards)
-	// 	}
-	// }, [props.cards, sortMode, sortDirection])
+	useEffect(() => {
+		if (sortMode) {
+			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
+			sortBy(tempCards, sortMode, sortDirection)
+			setCards(tempCards)
+		}
+		else {
+			setCards(props.cards)
+		}
+	}, [props.cards, sortMode, sortDirection])
 
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
