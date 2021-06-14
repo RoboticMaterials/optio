@@ -94,7 +94,7 @@ const MergeModal = (props) => {
 
         let tempAvailableCards = []
         availableFinishProcesses.forEach((finishProcessId) => {
-            const currentCards = processCards[finishProcessId]
+            const currentCards = processCards[finishProcessId] || {}
             // console.log('currentCards',currentCards)
             const finishedCards = Object.values(currentCards).filter((card) => card?.bins[stationId]?.count > 0)
             tempAvailableCards = tempAvailableCards.concat(finishedCards)

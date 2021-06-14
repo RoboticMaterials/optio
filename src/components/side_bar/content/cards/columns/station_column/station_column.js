@@ -132,7 +132,7 @@ const StationsColumn = ((props) => {
                                 </div>
 
                             </styled.HeaderRow>
-                            {renderCycleTime()}
+                            {/* {renderCycleTime()} */}
                         </styled.StationHeader>
                     )
                 }
