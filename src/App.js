@@ -19,10 +19,10 @@ import { postLocalSettings, getLocalSettings } from './redux/actions/local_actio
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
-import StatusHeader from './containers/status_header/status_header';
+//import StatusHeader from './containers/status_header/status_header';
 //import Logger from './containers/logger/logger';
-import SideBar from './containers/side_bar/side_bar'
-import MapView from './containers/map_view/map_view'
+//import SideBar from './containers/side_bar/side_bar'
+//import MapView from './containers/map_view/map_view'
 //import HILModal from './containers/hil_modal/hil_modal'
 //import Authentication from './containers/authentication/authentication'
 //import Widgets from './components/widgets/widgets'
@@ -35,9 +35,9 @@ const Widgets = lazy(() => import('./components/widgets/widgets'))
 const Authentication = lazy(() => import('./containers/authentication/authentication'))
 const HILModal = lazy(() => import('./containers/hil_modal/hil_modal'))
 const Logger = lazy(() => import('./containers/logger/logger'))
-
-
-
+const MapView = lazy(()=> import('./containers/map_view/map_view'))
+const StatusHeader = lazy(() => import('./containers/status_header/status_header'))
+const SideBar = lazy(() => import('./containers/side_bar/side_bar'))
 
 
 const widthBreakPoint = 1000;

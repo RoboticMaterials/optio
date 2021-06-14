@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useState, lazy, Suspense } from 'react'
 import { ReactDOM, Route } from 'react-dom'
 import {connect, useSelector} from 'react-redux';
 import moduleName from 'react'
@@ -22,21 +22,10 @@ import * as deviceActions from '../../redux/actions/devices_actions'
 
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
-// Import Components
-import TaskPaths from '../../components/map/task_paths/task_paths.js'
-import ProcessPaths from '../../components/map/process_paths/process_paths'
-import MiR100 from '../../components/map/amrs/mir100/mir100.js'
-import Zones from '../../components/map/zones/zones'
-import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
-import TaskStatistics from '../../components/map/task_statistics/task_statistics'
-import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
-import Widgets from '../../components/widgets/widgets'
-import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
-
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
 import HeatMap from '../../components/map/heatmap/heatmap'
-import MapApps from '../../components/map/map_apps/map_apps'
+import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
 // logging
 import log from "../../logger"
@@ -45,6 +34,31 @@ import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
 import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
 const logger = log.getLogger("MapView")
+
+// Import Components
+//import TaskPaths from '../../components/map/task_paths/task_paths.js'
+//import ProcessPaths from '../../components/map/process_paths/process_paths'
+//import MiR100 from '../../components/map/amrs/mir100/mir100.js'
+//import Zones from '../../components/map/zones/zones'
+//import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
+//import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+//import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
+//import Widgets from '../../components/widgets/widgets'
+
+
+//import MapApps from '../../components/map/map_apps/map_apps'
+
+const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
+const ProcessPaths = lazy(()=> import('../../components/map/process_paths/process_paths'))
+const MiR100 = lazy(()=> import('../../components/map/amrs/mir100/mir100.js'))
+const Zones = lazy(()=> import('../../components/map/zones/zones'))
+const RightClickMenu = lazy(()=> import('../../components/map/right_click_menu/right_click_menu'))
+const TaskStatistics = lazy(()=> import('../../components/map/task_statistics/task_statistics'))
+const RouteConfirmation = lazy(()=> import('../../components/map/route_confirmation/route_confirmation'))
+const Widgets = lazy(()=> import('../../components/widgets/widgets'))
+const MapApps = lazy(()=> import('../../components/map/map_apps/map_apps'))
+
+
 
 export class MapView extends Component {
     constructor(props) {
@@ -585,7 +599,9 @@ export class MapView extends Component {
         const { translate, scale } = this.d3;
 
         return (
+
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
+            <Suspense fallback = {<h1 style = {{visibility: "false"}}>Still Loading...</h1>}>
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
                     <MapApps />
@@ -805,7 +821,7 @@ export class MapView extends Component {
 
 
                 </styled.MapContainer>
-
+              </Suspense>
             </div >
         )
     }
