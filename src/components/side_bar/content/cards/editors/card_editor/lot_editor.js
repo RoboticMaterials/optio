@@ -1145,16 +1145,6 @@ const LotEditor = (props) => {
 
 	}, [card, lotTemplate, lotTemplateId, collectionCount])
 
-	useEffect( () => {
-		dispatchGetLotTemplates()
-		dispatchSetSelectedLotTemplate(null)
-
-		// return () => {
-		// 	close()
-		// }
-
-	}, [])
-
 	if(loaded) {
 		return(
 				<styled.Container>

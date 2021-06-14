@@ -37,6 +37,7 @@ const FieldComponentMapper = (props) => {
 		usable,
 		required,
 		showName,
+		...rest
 	} = props
 
 	const themeContext = useContext(ThemeContext);
@@ -297,6 +298,7 @@ const FieldComponentMapper = (props) => {
 						<FileUploaderField
 							name={fieldName}
 							usable={usable}
+							{...rest}
 						/>
 					}
 

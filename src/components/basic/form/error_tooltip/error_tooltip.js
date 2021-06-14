@@ -1,5 +1,5 @@
 // import external dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import ReactTooltip from "react-tooltip";
 
 import Portal from "../../../../higher_order_components/portal";
@@ -10,8 +10,11 @@ import { uuidv4 } from '../../../../methods/utils/utils'
 import * as styled from './error_tooltip.style';
 import DropDownSearchField from "../drop_down_search_field/drop_down_search_field";
 import theme from '../../../../theme'
+import {ThemeContext} from "styled-components";
 
 const ErrorTooltip = (props) => {
+
+    const themeContext = useContext(ThemeContext)
 
     const {
         ContainerComponent,
@@ -19,7 +22,7 @@ const ErrorTooltip = (props) => {
         visible,
         onClick,
         className,
-        color,
+        color = themeContext.bad,
         containerStyle,
         tooltip,
         type
@@ -133,7 +136,6 @@ const ErrorTooltip = (props) => {
 ErrorTooltip.defaultProps = {
     ContainerComponent: styled.IconContainer,
     className: "fas fa-exclamation-triangle",
-    color: theme.main.error,
     type: 'error'
 };
 

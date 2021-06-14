@@ -44,7 +44,6 @@ import {postLocalSettings} from "../../../../../../redux/actions/local_actions";
 
 const LotEditorContainer = (props) => {
 
-    console.log('LotEditorContainerLotEditorContainer')
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))

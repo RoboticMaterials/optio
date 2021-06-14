@@ -4,8 +4,11 @@ import PropTypes from 'prop-types';
 import * as styled from './instruction_editor.style'
 import {useSelector} from "react-redux";
 import FieldComponentMapper from "../../../lot_template_editor/field_component_mapper/field_component_mapper";
-import {FIELD_COMPONENT_NAMES} from "../../../../../../../../constants/lot_contants";
-import {ComponentContainer} from "./instruction_editor.style";
+import {
+    FIELD_COMPONENT_DATA_TYPES,
+    FIELD_COMPONENT_NAMES,
+    FIELD_DATA_TYPES
+} from "../../../../../../../../constants/lot_contants";
 import Button from "../../../../../../../basic/button/button";
 
 const InstructionEditor = props => {
@@ -33,26 +36,60 @@ const InstructionEditor = props => {
         return fields
             .filter((field, index) => selectedIndex >= 0 ? index === selectedIndex : true)
             .map((field, index) => {
-            const {
-                label,
-                value,
-                component
-            } = field
-            return(
-                <styled.FieldContainer direction={component === FIELD_COMPONENT_NAMES.IMAGE_SELECTOR}>
-                    <styled.FieldName>{label}</styled.FieldName>
+                const {
+                    label,
+                    value,
+                    component
+                } = field
 
-                    {/*<styled.ComponentContainer>*/}
+                const dataType = FIELD_COMPONENT_DATA_TYPES[component]
+
+                return(
+                    <styled.FieldContainer>
+                        <styled.FieldName>{label}</styled.FieldName>
+
                         <FieldComponentMapper
                             component={component}
+                            mapInput={(val) => {
+                                switch(dataType) {
+                                    // for pdf, the data comes as object {id, data}
+                                    // we just want the data for the field
+                                    case FIELD_DATA_TYPES.PDF: {
+                                        return val?.data
+                                    }
+                                    default: {
+                                        return val
+                                    }
+                                }
+                                    return val?.data
+                            }}
+                            mapOutput={(val) => {
+                                switch(dataType) {
+                                    // for pdf, the output is just the file, but we want to store the file and id
+                                    // we just want the data for the field
+                                    case FIELD_DATA_TYPES.PDF: {
+                                        return {
+                                            data: val,
+                                            id: null,
+                                            formMeta: {
+                                                changed: true
+                                            }
+                                        }
+                                    }
+                                    default: {
+                                        return val
+                                    }
+                                }
+                                    return val?.data
+                            }}
+
                             fieldName={`workInstructions[${processId}][${stationId}].fields[${selectedIndex >= 0 ? selectedIndex : index}].value`}
                             preview={false}
                             showName={false}
                         />
-                    {/*</styled.ComponentContainer>*/}
-                </styled.FieldContainer>
-            )
-        })
+                    </styled.FieldContainer>
+                )
+            })
     }
 
     return (

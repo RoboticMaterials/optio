@@ -124,6 +124,8 @@ export async function getPdf(id) {
 export async function postPdf(pdf) {
     try {
 
+        console.log('postPdfpostPdfpostPdfpostPdfpostPdfpostPdf')
+
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,

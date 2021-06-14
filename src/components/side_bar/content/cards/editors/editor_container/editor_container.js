@@ -17,7 +17,6 @@ const EditorContainer = props => {
 	const dispatch = useDispatch()
 	const onShowCardEditor = (bool) => dispatch(showEditor(bool))
 
-	console.log('EDITOR CONTAINERRRRRR')
 	const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
 	const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
 
@@ -28,7 +27,6 @@ const EditorContainer = props => {
 			{showCardEditor &&
 			<LotEditorModal
 				isOpen={!showSkuEditor}
-				// isOpen={true}
 				onAfterOpen={null}
 				cardId={cardId}
 				processId={processId}

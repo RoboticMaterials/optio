@@ -7,6 +7,11 @@ import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 const FileUploaderField = (props) => {
 
+    const {
+        mapInput,
+        mapOutput
+    } = props
+
     const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, status, validateForm, ...context } =  useFormikContext() || {}
     const [field, meta] = useField(props);
     const { touched, error } = meta
@@ -33,14 +38,20 @@ const FileUploaderField = (props) => {
 
     return (
         <FileUploader
-            value={fieldValue}
-            onChange={(value) => setFieldValue(fieldName, value)}
+            value={mapInput(fieldValue)}
+            onChange={(value) => setFieldValue(fieldName, mapOutput(value))}
         />
     );
 };
 
 FileUploaderField.propTypes = {
+    mapInput: PropTypes.func,
+    mapOutput: PropTypes.func,
+};
 
+FileUploaderField.defaultProps = {
+    mapInput: (val) => val,
+    mapOutput: (val) => val
 };
 
 export default FileUploaderField;

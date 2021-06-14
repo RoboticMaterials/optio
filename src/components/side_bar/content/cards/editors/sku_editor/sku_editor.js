@@ -57,8 +57,6 @@ const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 const SkuEditor = (props) => {
 
-    console.log('SkuEditorSkuEditorSkuEditor')
-
     const {
         selectedLotTemplatesId,
         lotTemplateId,
@@ -69,7 +67,6 @@ const SkuEditor = (props) => {
 
     const formRef = useRef(null)
     const {
-        values = {},
         resetForm = () => {}
     } = formRef?.current || {}
 
@@ -84,7 +81,6 @@ const SkuEditor = (props) => {
     const reduxWorkInstructions = useSelector(state => { return state.workInstructionsReducer.workInstructions }) || {}
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks }) || {}
-    const stations = useSelector(state => { return state.stationsReducer.stations }) || {}
 
     const [formMode, setFormMode] = useState(selectedLotTemplatesId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
     const [showInstructionEditor, setShowInstructionEditor] = useState(false)
@@ -96,14 +92,14 @@ const SkuEditor = (props) => {
     const fields = getFormCustomFields(lotTemplate?.fields || [])
 
     /*
-	* resert form if template id changes
+	* reset form if template id changes
 	* */
     useEffect(() => {
         resetForm()
     }, [selectedLotTemplatesId])
 
     /*
-    * this useeffect loads all the pdfs in the templates work instructions.
+    * this use-effect loads all the pdfs in the templates work instructions.
     * Since the files may be large, they're only retrieved in the context of this component instead of being stored in redux
     * */
     useEffect(() => {
@@ -111,6 +107,9 @@ const SkuEditor = (props) => {
         return () => {};
     }, [lotTemplate?.workInstructions]);
 
+    /*
+    * This goes through each work instruction, checks if it has a PDF, and if so, loads it from the backend and stores them in state
+    * */
     const checkForPdfs = async () => {
         // loop through all work instructions
         await iterateWorkInstructions(lotTemplate?.workInstructions,  async (workInstructionId, processId, stationId) => {
@@ -125,7 +124,7 @@ const SkuEditor = (props) => {
             // loop through fields
             for(const field of fields) {
                 const {
-                    value,
+                    value: pdfId,
                     component,
                     label
                 } = field || {}
@@ -140,10 +139,12 @@ const SkuEditor = (props) => {
 
                     case FIELD_DATA_TYPES.PDF: {
                         // get the pdf using the value in the work instruction (which is just the id of the pdf)
-                        if(isString(value)) {
-                            const pdf = await getPdf(value)
+                        if(isString(pdfId)) {
+                            const pdf = await getPdf(pdfId)
+
+                            // add pdf to pds object, with the id as the key
                             setPdfs((prevState => {
-                                return {...prevState, [value]: pdf}
+                                return {...prevState, [pdfId]: pdf}
                             }))
                             break
                         }
@@ -186,21 +187,30 @@ const SkuEditor = (props) => {
             // get data type
             const dataType = FIELD_COMPONENT_DATA_TYPES[component]
 
-            // handle if data has to be handled differently
+            // some data may have to be handled differently (ex: PDFs)
             switch (dataType) {
 
                 case FIELD_DATA_TYPES.PDF: {
-                    // pdf files shouldn't be stored directly in db, instead need to post separately and just store the id of the document
-
+                    // pdf files shouldn't be stored directly in db, instead need to post separately and just store the id in db
                     if(value) {
-                        const formData = new FormData();
-                        formData.set('pdf', value, 'pdf');
+                        const {data} = value || {}
 
-                        const postedPdf = await postPdf(formData) // post it
+                        let formData = new FormData();
+                        if(data) formData.set('pdf', data, 'pdf'); // only set formData if there is data
 
-                        const pdfId = postedPdf?._id
+                        let pdfId = value?.id
 
-                        // replace value with id of pdf
+                        if(pdfId) {
+                            // entity exists, PUT
+                            // not yey implemented
+                        }
+                        else {
+                            // entity doesn't exist yet, POST
+                            const postedPdf = await postPdf(formData) // post it
+                            pdfId = postedPdf?._id
+                        }
+
+                        // replace value with id of pdf, so only id is stored in the work instruction
                         mappedWorkInstructions[processId][stationId].fields[index] = {...field, value: pdfId}
                     }
                     else {
@@ -219,13 +229,14 @@ const SkuEditor = (props) => {
         // now must post/put each individual work instruction
         let templateWorkInstructions = {}
         await iterateWorkInstructions(mappedWorkInstructions, async (instructionObjects, processId, stationId) => {
+            // just initializing each process / station attribute here, can probably find a nicer way to do this
             if(!templateWorkInstructions[processId]) templateWorkInstructions[processId] = {}
             if(!templateWorkInstructions[processId][stationId]) templateWorkInstructions[processId][stationId] = null
 
             // get id
             let workInstructionId = instructionObjects?._id
 
-            // if has id, put, otherwise post
+            // if has id, PUT, otherwise POST
             if(workInstructionId) {
                 // update
                 const result = await dispatchPutWorkInstruction(instructionObjects, workInstructionId)
@@ -240,7 +251,7 @@ const SkuEditor = (props) => {
             templateWorkInstructions[processId][stationId] = workInstructionId
         })
 
-        // NOW, save the lot template itself
+        // finally, save the lot template itself, which has the id's of the work instruction entities
 
         // update (PUT)
         if(formMode === FORM_MODES.UPDATE) {
@@ -274,30 +285,29 @@ const SkuEditor = (props) => {
     * this function gets initial values for workInstructions
     * */
     const getInitialWorkInstructions = () => {
-
         // if the template has work instructions, parse em out
         if(lotTemplate?.workInstructions) {
 
             const mappedWorkInstructions = {}
 
-            // iterate through work instructions
+            // iterate through work instructions (do sync since this can't be used asynchronously in the formik component (or maybe it can if you look into it more)
             iterateWorkInstructionsSync(lotTemplate.workInstructions,  (workInstructionId, processId, stationId) => {
                 if(!mappedWorkInstructions[processId]) mappedWorkInstructions[processId] = {}
                 if(!mappedWorkInstructions[processId][stationId]) mappedWorkInstructions[processId][stationId] = {}
 
-                // get work instructoin from redux using id
+                // get work instruction entity from redux using id
                 const workInstructionObj = reduxWorkInstructions[workInstructionId]
                 const {
                     fields = [],
                     _id
                 } = workInstructionObj || {}
 
-                // create mutable form of work instruction so it doesn't change values in redux
+                // create mutable copy of work instruction so you can change it without changing redux state
                 let mappedWorkInstructionObj = {fields: fields.map(field => {
                         return {...field}
                     }), _id}
 
-                // loop through fields for any necessary conversions
+                // loop through fields for any necessary conversions (ex: PDF )
                 let index = 0
                 for(const field of fields) {
                     const {
@@ -313,14 +323,17 @@ const SkuEditor = (props) => {
                         switch (dataType) {
 
                             case FIELD_DATA_TYPES.PDF: {
-                                // only pdf ID is save in WI, so replace value with the actual pdf
+                                // only pdf ID is saved in WI, so replace value with the actual pdf
                                 if(value) {
-                                    mappedField.value = pdfs[value]
+                                    mappedField.value = {
+                                        data: pdfs[value],
+                                        id: value
+                                    }
                                     break
                                 }
                             }
                             default: {
-                                // nothing special, so just run value through converter
+                                // otherwise use generic converter (ex date-strings to moment)
                                 const convertedValue = convertValue(value, dataType)
                                 mappedField.value = convertedValue
                             }
@@ -368,6 +381,7 @@ const SkuEditor = (props) => {
                     :
                     DEFAULT_DISPLAY_NAMES
             }}
+
             validate={(values, props) => {
                 try {
                     LotFormSchema.validateSync(values, {
@@ -386,10 +400,9 @@ const SkuEditor = (props) => {
                 }
             }}
             validateOnChange={true}
-            validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
+            validateOnMount={false}
             validateOnBlur={true}
-
-            enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+            enableReinitialize={true}
             onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
                 // set submitting to true, handle submit, then set submitting to false
                 // the submitting property is useful for eg. displaying a loading indicator
@@ -443,11 +456,10 @@ const SkuEditor = (props) => {
                         />
                         }
                         <styled.Container2>
-
                             <SkuContext.Provider
                                 value={{
-                                    setShowInstructionEditor: setShowInstructionEditor,
-                                    showInstructionEditor: showInstructionEditor
+                                    setShowInstructionEditor,
+                                    showInstructionEditor
                                 }}
                             >
                                 <styled.Header>
@@ -477,7 +489,6 @@ const SkuEditor = (props) => {
                                             inputStyle={{background: themeContext.bg.tertiary}}
                                         />
                                     </styled.TemplateNameContainer>
-
                                 </styled.Header>
 
                                 {editingFields ?

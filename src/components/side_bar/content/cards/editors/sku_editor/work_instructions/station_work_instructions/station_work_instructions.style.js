@@ -15,6 +15,10 @@ export const Container = styled.div`
   	min-width: 10rem;
 `
 
+export const TooltipContainer = styled.div`
+    margin-right: 1rem;
+`
+
 export const ValidityIcon = styled.i`
     color: ${props => props.valid ? props.theme.good : props.theme.bad};
     margin-right: 1rem;
