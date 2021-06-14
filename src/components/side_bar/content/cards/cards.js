@@ -320,7 +320,6 @@ const Cards = (props) => {
 
     return (
         <styled.Container>
-          <Suspense fallback = {<h1 style = {{visibility: "false"}}>CARDS...</h1>}>
             {showConfirmDeleteModal &&
             <DeleteMultipleLotsModal
                 handleClose={() => setShowConfirmDeleteModal(false)}
@@ -405,7 +404,6 @@ const Cards = (props) => {
                             />
 
             </styled.Body>
-          </Suspense>
         </styled.Container>
     )
 }

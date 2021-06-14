@@ -383,7 +383,6 @@ const SideBar = (props) => {
 
     return (
         <>
-          <Suspense fallback = {<h1 style = {{visibility: "false"}}>SIDE BAR...</h1>}>
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal || !!showConfirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
@@ -499,7 +498,6 @@ const SideBar = (props) => {
                     </styled.SidebarContent>
                 </styled.SidebarWrapper>
             }
-            </Suspense>
         </>
     )
 
