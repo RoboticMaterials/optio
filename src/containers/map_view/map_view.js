@@ -601,7 +601,7 @@ export class MapView extends Component {
         return (
 
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
-            <Suspense fallback = {<h1 style = {{visibility: "false"}}>Still Loading...</h1>}>
+            <Suspense fallback = {<h1 style = {{visibility: "false"}}>MAP VIEW...</h1>}>
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
                     <MapApps />
