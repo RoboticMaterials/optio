@@ -32,7 +32,7 @@ import { deepCopy } from '../../../../../../methods/utils/utils'
 import LotContainer from "../../lot/lot_container";
 
 // Import Constants 
-import { LEAD_TIME_FIELD } from '../../../../../../constants/lot_contants'
+import { LEAD_TIME_FIELD, FIELD_DATA_TYPES } from '../../../../../../constants/lot_contants'
 
 const Column = ((props) => {
 
@@ -266,6 +266,12 @@ const Column = ((props) => {
     useEffect(() => {
         if (sortMode) {
             let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
+
+            // If the sort mode is Lead tiem and the state of cards is greater then 0, then use the state cards to sort
+            // The reason why this needs to be done here is that props.cards doesnt have the most recent lead_time_index but the state does
+            if(sortMode.dataType === FIELD_DATA_TYPES.LEAD_TIME && cards.length > 0){
+                tempCards = [...cards]
+            }
             sortBy(tempCards, sortMode, sortDirection)
             setCards(tempCards)
         }
@@ -379,7 +385,6 @@ const Column = ((props) => {
 
     // This is gonna be awesome saucesome blossom
     const onLeadTimeSortChange = async (drop) => {
-        console.log('QQQQ drop', drop)
         const { removedIndex, addedIndex, payload, element } = drop || {}
         const {
             binId,
@@ -391,18 +396,16 @@ const Column = ((props) => {
 
 
         // Update the array with the new position
-        let stationCards = deepCopy(getCardsInBin(allCards, station_id, processId))
         const updatedArray = immutableMove(cards, removedIndex, addedIndex)
-        // setCards(updatedArray)
-        console.log('QQQQ updated Array', updatedArray)
-
 
         // Update the index of each card
         await updatedArray.forEach( async(card, ind) => {
-            card.lead_time_index = ind
-            await dispatchPutCard(card, card._id)
 
-            console.log('QQQQ card', card)
+            card.lead_time_index = ind
+            let updatedCard = deepCopy(allCards[card.cardId])
+            updatedCard.lead_time_index = card.lead_time_index
+            await dispatchPutCard(updatedCard, updatedCard._id)
+
         })
 
 
@@ -625,7 +628,6 @@ const Column = ((props) => {
                                         lotId={cardId}
                                         binId={station_id}
                                         onClick={(e) => {
-                                            console.log('QQQQ card', allCards[cardId])
                                             const payload = getBetweenSelected(cardId)
                                             onCardClick(
                                                 e,

@@ -358,8 +358,6 @@ export const sortBy = (arr, sortMode, sortDirection) => {
                 break
             }
             case FIELD_DATA_TYPES.LEAD_TIME:
-                console.log('QQQQ here A', itemA)
-                console.log('QQQQ here B', itemB)
                 fieldA = itemA.lead_time_index
                 fieldB = itemB.lead_time_index
                 if (isAscending) {
