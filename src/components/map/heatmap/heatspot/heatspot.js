@@ -9,16 +9,16 @@ const HeatSpot = (props) => {
     } = props;
 
     const color = () => {
-        if (wipRatio < 1) {
+        if (wipRatio < 1.5) {
             return 'url(#goodGrad)';
-        } else if (wipRatio < 2) {
+        } else if (wipRatio < 3) {
             return 'url(#okayGrad)';
         } else {
             return 'url(#badGrad)'
         }
     }
 
-    const spotSize = 50*Math.min(Math.max(1, wipRatio), 4)*d3Scale;
+    const spotSize = 30*Math.min(Math.max(1, wipRatio), 4)*d3Scale;
     
 
     return (

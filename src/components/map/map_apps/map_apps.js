@@ -30,7 +30,9 @@ const MapApps = (props) => {
     if (!settings.mapApps) {
         const settingsCopy = deepCopy(settings)
         settingsCopy.mapApps = {
-            heatmap: true
+            ratsnest: true,
+            labels: true,
+            heatmap: true,
         }
 
         dispatchPostSettings(settingsCopy);
@@ -39,16 +41,10 @@ const MapApps = (props) => {
     }
 
     return (
-        <div style={{position: 'absolute', bottom: 0, right: 0}}>
-            <g>
-                <defs>
-                    
-                </defs>
-            </g>
+        <div style={{position: 'absolute', bottom: 0, right: 0, display: 'flex', flexDirection: 'row'}}>
             {Object.keys(settings.mapApps).map(app => (
                 <MapApp appName={app} enabled={settings.mapApps[app]} onClick={() => toggleMapApp(app)} />
             ))}
-            
         </div>
     )
 
