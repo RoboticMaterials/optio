@@ -46,6 +46,7 @@ import PdfViewerModal from "../../../../../basic/pdf_viewer/pdf_viewer_modal";
 import {postWorkInstruction} from "../../../../../../redux/actions/work_instructions_actions";
 import {putWorkInstruction} from "../../../../../../api/work_instructions_api";
 import {isString} from "../../../../../../methods/utils/string_utils";
+import ChangeDetector from "../../../../../basic/form/change_detector/change_detector";
 
 const InstructionEditorModal = withModal(InstructionEditor, 'auto', '90%', 'auto', '90%')
 
@@ -88,6 +89,7 @@ const SkuEditor = (props) => {
     const [editingFields, setEditingFields] = useState(false)
     const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
     const [pdfs, setPdfs] = useState({});
+    const [loaded, setLoaded] = useState(false);
 
     const fields = getFormCustomFields(lotTemplate?.fields || [])
 
@@ -103,9 +105,13 @@ const SkuEditor = (props) => {
     * Since the files may be large, they're only retrieved in the context of this component instead of being stored in redux
     * */
     useEffect(() => {
+        checkForPdfs()
+        return () => {};
+    }, [lotTemplate?.workInstructions]);
 
+    const checkForPdfs = async () => {
         // loop through all work instructions
-        iterateWorkInstructionsSync(lotTemplate?.workInstructions,  async (workInstructionId, processId, stationId) => {
+        await iterateWorkInstructions(lotTemplate?.workInstructions,  async (workInstructionId, processId, stationId) => {
 
             // get work instruction from redux
             const workInstruction = reduxWorkInstructions[workInstructionId]
@@ -146,8 +152,8 @@ const SkuEditor = (props) => {
             }
         })
 
-        return () => {};
-    }, [lotTemplate?.workInstructions]);
+        if(!loaded) setLoaded(true)
+    }
 
 
     const handleSubmit = async (values, formMode) => {
@@ -336,6 +342,8 @@ const SkuEditor = (props) => {
         return getDefaultWorkInstructions(processes, tasks)
     }
 
+    if(!loaded) return null
+
     return (
         <Formik
             innerRef={formRef}
@@ -379,7 +387,7 @@ const SkuEditor = (props) => {
             validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
             validateOnBlur={true}
 
-            enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+            enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
             onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
                 // set submitting to true, handle submit, then set submitting to false
                 // the submitting property is useful for eg. displaying a loading indicator
@@ -418,6 +426,8 @@ const SkuEditor = (props) => {
                 return(
 
                     <>
+                        <ChangeDetector/>
+
                         {showInstructionEditor &&
                         <InstructionEditorModal
                             isOpen={true}
