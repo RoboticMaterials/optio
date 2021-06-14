@@ -390,9 +390,6 @@ const Cards = (props) => {
                     />
                 }
 
-                {
-                    {
-                        'summary':
                             <SummaryZone
                                 setSelectedCards={setSelectedCards}
                                 selectedCards={selectedCards}
@@ -405,29 +402,8 @@ const Cards = (props) => {
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
                                 handleAddLotClick={handleAddLotClick}
-                            />,
-                        'timeline':
-                            <div
-                                handleCardClick={handleCardClick}
-                                initialProcesses={[currentProcess]}
                             />
-                    }[id] ||
-                    <styled.CardZoneContainer ref={zoneRef}>
-                        <CardZone
-                            handleAddLotClick={handleAddLotClick}
-                            setSelectedCards={setSelectedCards}
-                            selectedCards={selectedCards}
-                            setShowCardEditor={onShowCardEditor}
-                            showCardEditor={showCardEditor}
-                            handleCardClick={handleCardClick}
-                            processId={id}
-                            lotFilterValue={lotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
-                            sortMode={sortMode}
-                            sortDirection={sortDirection}
-                        />
-                    </styled.CardZoneContainer>
-                }
+
             </styled.Body>
           </Suspense>
         </styled.Container>
