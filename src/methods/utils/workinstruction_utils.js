@@ -26,7 +26,7 @@ export const iterateWorkInstructionsSync = (workInstructions, callback) => {
 }
 
 export const iterateWorkInstructions = async (workInstructions, callback) => {
-    for(const processEntry of Object.entries(workInstructions)) {
+    for(const processEntry of Object.entries(workInstructions || {})) {
         const [processId, stationObjs] = processEntry
 
         for(const stationEntry of Object.entries(stationObjs)) {

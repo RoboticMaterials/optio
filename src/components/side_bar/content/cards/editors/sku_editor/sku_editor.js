@@ -57,6 +57,8 @@ const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 const SkuEditor = (props) => {
 
+    console.log('SkuEditorSkuEditorSkuEditor')
+
     const {
         selectedLotTemplatesId,
         lotTemplateId,

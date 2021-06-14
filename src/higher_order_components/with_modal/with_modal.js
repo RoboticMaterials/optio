@@ -12,6 +12,8 @@ const withModal = (WrappedComponent, minWidth = 'auto', maxWidth = 'auto', minHe
             isOpen
         } = props
 
+        if(!isOpen) return null
+
         return <styled.Container
             minWidth={minWidth}
             minHeight={minHeight}
