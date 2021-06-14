@@ -142,6 +142,7 @@ export const WidgetButtonContainer = styled.div`
     justify-content: center;
     align-content:center;
 
+    background: red;
 `
 
 export const WidgetBlurContainer = styled.div`
