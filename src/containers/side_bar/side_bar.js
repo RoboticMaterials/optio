@@ -153,7 +153,6 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
-        console.log(e.key)
         setBarcode(barcode => [...barcode,e.key])
     }
 

@@ -5,9 +5,9 @@ import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
 // internal components
-import CardMenu from "./card_menu/card_menu";
-import CardZone from "./card_zone/card_zone";
-import SummaryZone from "./summary_zone/summary_zone";
+//import CardMenu from "./card_menu/card_menu";
+//import CardZone from "./card_zone/card_zone";
+//import SummaryZone from "./summary_zone/summary_zone";
 
 // actions
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
@@ -17,7 +17,7 @@ import * as styled from './cards.style'
 import Textbox from "../../../basic/textbox/textbox";
 import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-//import ZoneHeader from "./zone_header/zone_header";
+import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
 //import LotCreatorForm from "./lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
@@ -34,13 +34,15 @@ import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/e
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
 
 
-const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
+//const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
 const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
 const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
 const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
 const MultiSelectOptions = lazy(() => import("./multi_select_options/multi_select_options"))
 
-
+const CardMenu = lazy(() => import("./card_menu/card_menu"))
+const CardZone = lazy(() => import("./card_zone/card_zone"))
+const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
 
 const Cards = (props) => {
 
@@ -318,6 +320,7 @@ const Cards = (props) => {
 
     return (
         <styled.Container>
+          <Suspense fallback = {<h1 style = {{visibility: "false"}}>CARDS...</h1>}>
             {showConfirmDeleteModal &&
             <DeleteMultipleLotsModal
                 handleClose={() => setShowConfirmDeleteModal(false)}
@@ -426,6 +429,7 @@ const Cards = (props) => {
                     </styled.CardZoneContainer>
                 }
             </styled.Body>
+          </Suspense>
         </styled.Container>
     )
 }
