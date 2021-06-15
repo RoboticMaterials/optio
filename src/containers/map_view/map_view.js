@@ -110,9 +110,9 @@ export class MapView extends Component {
         // in the returned list (which will be the active map)
         // this.refreshMap()
         this.checkForMapLoad()
-        window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
-        window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
+        window.addEventListener('mousedown', () => this.mouseDown = true, { passive: true })
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: true })
+        window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) }, {passive: true});
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {

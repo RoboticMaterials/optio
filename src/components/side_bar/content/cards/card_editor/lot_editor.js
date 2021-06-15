@@ -215,7 +215,7 @@ const FormComponent = (props) => {
 		// keydown event listener
 
 		// add event listener to 'keydown'
-		document.addEventListener("keydown", enterListener);
+		document.addEventListener("keydown", enterListener, {passive: true});
 
 		// on dismount remove the event listener
 		return () => {

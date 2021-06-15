@@ -135,9 +135,9 @@ const ListView = (props) => {
     }, [stationID, dashboards])
 
     useEffect(() => {
-        document.addEventListener('keyup', logKey)
+        document.addEventListener('keyup', logKey, {passive: true})
         return () => {
-            document.removeEventListener('keyup', logKey)
+            document.removeEventListener('keyup', logKey, {passive: true})
         }
     }, [])
 

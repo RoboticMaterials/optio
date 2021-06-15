@@ -21,7 +21,7 @@ const ObjectLink = (props) => {
             setY1(objectLinks.startPos.y)
             setX2(objectLinks.startPos.x)
             setY2(objectLinks.startPos.y)
-            window.addEventListener('mousemove', lockToMouse, false)
+            window.addEventListener('mousemove', lockToMouse, false, {passive: true})
         }
         // If the opposite is true, then set the start pos
         else if (objectLinks.endPos.x !== null && objectLinks.startPos.x === null) {
@@ -29,7 +29,7 @@ const ObjectLink = (props) => {
             setY1(objectLinks.endPos.y)
             setX2(objectLinks.endPos.x)
             setY2(objectLinks.endPos.y)
-            window.addEventListener('mousemove', lockToMouse, false)
+            window.addEventListener('mousemove', lockToMouse, false, {passive: true})
         }
 
         // Else both are defined so that's good, I guess...

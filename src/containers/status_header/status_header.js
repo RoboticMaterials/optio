@@ -164,7 +164,7 @@ const StatusHeader = (props) => {
 
             }
         });
-        window.addEventListener('resize', generatePath)
+        window.addEventListener('resize', generatePath, {passive: true})
 
         return () => {
             window.removeEventListener('resize', generatePath)

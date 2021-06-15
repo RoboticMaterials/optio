@@ -253,7 +253,7 @@ function Position(props) {
     // ======================================== //
 
     useEffect(() => {
-        window.addEventListener("mouseup", onSetListener)
+        window.addEventListener("mouseup", onSetListener, {passive: true})
         return () => {
             window.removeEventListener("mouseup", onSetListener)
         }

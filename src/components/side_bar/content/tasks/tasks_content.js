@@ -90,8 +90,8 @@ export default function TaskContent(props) {
     // Creates listeners for if the shift key is pressed
     useEffect(() => {
 
-        window.addEventListener('keydown', shiftCallback)
-        window.addEventListener('keyup', shiftCallback)
+        window.addEventListener('keydown', shiftCallback, {passive: true})
+        window.addEventListener('keyup', shiftCallback, {passive: true})
 
         // When component unmounts, clean up by removing listeners
         return function cleanup() {

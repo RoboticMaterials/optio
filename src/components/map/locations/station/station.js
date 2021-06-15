@@ -218,7 +218,7 @@ function Station(props) {
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
-        window.addEventListener("mouseup", onSetListener)
+        window.addEventListener("mouseup", onSetListener, {passive: true})
         return () => {
             window.removeEventListener("mouseup", onSetListener)
         }

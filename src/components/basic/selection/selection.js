@@ -69,8 +69,8 @@ const Selection = (props) => {
 			y: e.pageY
 		})
 
-		window.document.addEventListener('mousemove', onMouseMove);
-		window.document.addEventListener('mouseup', onMouseUp);
+		window.document.addEventListener('mousemove', onMouseMove, {passive: true});
+		window.document.addEventListener('mouseup', onMouseUp, {passive: true});
 	}
 
 	/**

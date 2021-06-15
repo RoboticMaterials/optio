@@ -241,7 +241,7 @@ const MergeModal = (props) => {
     }, [])
 
     useEffect(() => {
-        document.addEventListener("mousemove", onShift);
+        document.addEventListener("mousemove", onShift, {passive: true});
 
         // on dismount remove the event pasteListener
         return () => {

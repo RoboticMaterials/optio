@@ -369,7 +369,7 @@ const LotEditorContainer = (props) => {
     * */
     useEffect(() => {
         // add event listener to 'paste'
-        document.addEventListener("paste", onPasteEvent);
+        document.addEventListener("paste", onPasteEvent, {passive: true});
 
         // on dismount remove the event pasteListener
         return () => {

@@ -126,7 +126,7 @@ const SideBar = (props) => {
     }, [url])
 
      useEffect(() => {
-          document.addEventListener('keyup', logKey)
+          document.addEventListener('keyup', logKey, {passive: true})
          return () => {
              document.removeEventListener('keyup', logKey)
          }

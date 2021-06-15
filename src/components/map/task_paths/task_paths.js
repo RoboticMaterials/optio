@@ -101,8 +101,8 @@ export default function TaskPaths(props) {
         if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
             setX2(x1)
             setY2(y1)
-            window.addEventListener('mousemove', lockToMouse, false)
-            window.addEventListener('keydown', exitTaskPath)
+            window.addEventListener('mousemove', lockToMouse, {passive: true}, false)
+            window.addEventListener('keydown', exitTaskPath, {passive: true})
         } else {
             window.removeEventListener('mousemove', lockToMouse, false)
             window.removeEventListener('keydown', exitTaskPath)
