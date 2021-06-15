@@ -1,5 +1,6 @@
 // Import Store
 import store from '../../redux/store/index'
+import moment from 'moment';
 
 export const getMinutesFromMoment = (m) => {
     return m.minutes() + m.hours() * 60;
@@ -185,4 +186,31 @@ export const isDateToday = (date) => {
     else {
         return false
     }
+}
+
+// Takes shift details and returns total work time in seconds
+export const convertShiftDetailsToWorkingTime = (shiftDetails) => {
+    let totalBreakTime = 0
+
+    Object.values(shiftDetails.breaks)
+        .sort((a, b) => a.startOfBreak - b.startOfBreak)
+        .forEach(br => {
+            if (br.enabled) {
+
+                const start = moment.duration(br.startOfBreak).asSeconds()
+                const end = moment.duration(br.endOfBreak).asSeconds()
+
+                const breakLength = end - start
+                totalBreakTime += breakLength
+
+            }
+        })
+
+
+    const startOfShift = moment.duration(shiftDetails.startOfShift).asSeconds()
+    const endOfShift = moment.duration(shiftDetails.endOfShift).asSeconds()
+
+    const workingTime = endOfShift - startOfShift - totalBreakTime
+    return workingTime
+
 }

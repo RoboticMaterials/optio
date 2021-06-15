@@ -14,6 +14,7 @@ import PropTypes from "prop-types"
 import { getLotTotalQuantity, getMatchesFilter, getCardsInBin } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
+import { convertShiftDetailsToWorkingTime } from '../../../../../methods/utils/time_utils'
 
 // styles
 import * as styled from "./card_zone.style"
@@ -61,7 +62,7 @@ const CardZone = ((props) => {
     const [queue, setQueue] = useState([])
     const [finished, setFinished] = useState([])
     const [cards, setCards] = useState({})
-    const [deleteStationStats, setDeleteStationStats] = useState({})
+    const [deleteStationCycleTime, setDeleteStationCycleTime] = useState({})
 
     const {
         name: processName = ""
@@ -113,23 +114,21 @@ const CardZone = ((props) => {
     useEffect(() => {
         deleteGetCycleTimes()
 
-    }, [])
+    }, [shiftDetails, allCards])
 
     const deleteGetCycleTimes = async () => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
-        console.log('QQQQ stations', processStations)
         const body = { timespan: 'day', index: 0 }
+        const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
         for (const ind in processStations) {
             const stationID = processStations[ind]
-            console.log('QQQQ station id', stationID)
             const response = await getStationAnalytics(stationID, body)
             // dataPromise.then(response => {
 
-            console.log('QQQQ res', response)
             const throughput = response.throughPut
             let sum = 0
             throughput.forEach((dataPoint) => {
@@ -137,24 +136,19 @@ const CardZone = ((props) => {
                     sum += dataPoint?.null
                 }
             })
-            console.log('QQQQ sum', sum)
 
             stationCycleTimes =
             {
                 ...stationCycleTimes,
-                [stationID]: sum,
+                [stationID]: sum != 0 ? workingTime / sum : 0,
 
             }
             // })
         }
-
-
-        console.log('QQQQ cycle', stationCycleTimes)
-
+        setDeleteStationCycleTime(stationCycleTimes)
     }
 
     useEffect(() => {
-        console.log('QQQQ here')
         // === Calculate preceding lead time based on cards in later stations
 
         // Get stations in this process
@@ -183,7 +177,7 @@ const CardZone = ((props) => {
             pStationSimCards.push(stationSimCards);
 
             if (stationSimCards.length) {
-                stationCycleTime = moment.duration(stations[processStations[i]]?.cycle_time || 0).asSeconds();
+                stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
                 stationTimesUntilMove[i] = stationSimCards[0].qty * stationCycleTime;
             } else {
                 stationTimesUntilMove[i] = Infinity;
@@ -237,7 +231,7 @@ const CardZone = ((props) => {
 
                         //// Since we moved a card, we now need to calculate the nextMoveTime for THAT next station
                         topCard = pStationSimCards[i + 1][0];
-                        stationCycleTime = moment.duration(stations[processStations[i + 1]]?.cycle_time || 0).asSeconds();
+                        stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
                         // This is a little hacky, buuuut in the next itt we will subtract simStep so i added it back here to offset that.
                         stationTimesUntilMove[i + 1] = (topCard.qty * stationCycleTime) + simStep;
                     }
@@ -252,7 +246,7 @@ const CardZone = ((props) => {
                     //// Now that card has been moved, calculate time until move for THIS station (based on remaining cards)
                     if (!pStationSimCards[i].length) { stationTimesUntilMove[i] = Infinity; continue }
                     topCard = pStationSimCards[i][0];
-                    stationCycleTime = moment.duration(stations[processStations[i]]?.cycle_time || 0).asSeconds();
+                    stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
                     stationTimesUntilMove[i] = topCard.qty * stationCycleTime;
 
                 } else {
