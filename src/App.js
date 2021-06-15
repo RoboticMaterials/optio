@@ -114,6 +114,7 @@ const App = () => {
               <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
+
                     <ConfirmDeleteModal
                         isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
                         title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, lazy } from 'react'
 
 // actions
 import { postCard } from "../../../../../redux/actions/card_actions";
@@ -7,10 +7,12 @@ import { postCard } from "../../../../../redux/actions/card_actions";
 import { getCardsCount } from "../../../../../api/cards_api";
 
 // components internal
-import LotEditor from "./lot_editor"
-import StatusList from "../../../../basic/status_list/status_list"
-import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper"
-import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+//import LotEditor from "./lot_editor"
+//import StatusList from "../../../../basic/status_list/status_list"
+//import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper"
+//import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+
+
 
 // constants
 import {
@@ -41,6 +43,11 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 // styles
 import * as styled from "./lot_editor_container.style";
 import {postLocalSettings} from "../../../../../redux/actions/local_actions";
+
+const LotEditor = lazy(()=> import("./lot_editor"))
+const StatusList = lazy(()=> import("../../../../basic/status_list/status_list"))
+const PasteForm = lazy(()=> import("../../../../basic/paste_mapper/paste_mapper"))
+const SimpleModal = lazy(()=> import("../../../../basic/modals/simple_modal/simple_modal"))
 
 const LotEditorContainer = (props) => {
 
