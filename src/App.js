@@ -107,14 +107,13 @@ const App = () => {
     // }
 
     return (
-      <Suspense fallback = {<h1>Still Loading...</h1>}>
+      <Suspense fallback = {<h2>Still Loading...</h2>}>
             <Logger />
 
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
-
                     <ConfirmDeleteModal
                         isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
                         title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
@@ -253,7 +252,7 @@ const App = () => {
                       </BrowserRouter>
                   </styled.Container>
               </ThemeProvider>
-            </Suspense>
+              </Suspense>
     );
 
 }
