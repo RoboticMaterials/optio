@@ -599,7 +599,7 @@ export class MapView extends Component {
         const { translate, scale } = this.d3;
 
         return (
-
+          <Suspense fallback = {<h1>Load....</h1>}>
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
@@ -821,6 +821,7 @@ export class MapView extends Component {
 
                 </styled.MapContainer>
             </div >
+          </Suspense>
         )
     }
 }

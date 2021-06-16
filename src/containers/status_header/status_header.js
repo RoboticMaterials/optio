@@ -1,5 +1,5 @@
 // import external dependencies
-import React, { useState, useMemo, useRef, useEffect, useContext } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useContext, lazy, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -15,7 +15,7 @@ import * as taskQueueActions from '../../redux/actions/task_queue_actions'
 import { setWidth, setOpen} from "../../redux/actions/sidebar_actions";
 
 // import components
-import RightMenu from '../right_menu/right_menu'
+//import RightMenu from '../right_menu/right_menu'
 
 // import hooks
 import useWindowSize from '../../hooks/useWindowSize'
@@ -28,6 +28,7 @@ import * as styled from './status_header.style'
 import { render } from '@testing-library/react';
 import { ThemeContext } from 'styled-components'
 
+const RightMenu = lazy(() => import('../right_menu/right_menu'))
 
 const StatusHeader = (props) => {
 
@@ -292,9 +293,9 @@ const StatusHeader = (props) => {
                         </styled.RightMenuContainer>
 
                         {(taskQueueOpen || newNotification) &&
-                            <>
+                            <Suspense fallback = {null}>
                                 <RightMenu showRightMenu={taskQueueOpen} newNotification={newNotification} />
-                            </>
+                            </Suspense>
                         }
                     </>
                 }

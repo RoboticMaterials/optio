@@ -45,6 +45,10 @@ const ProcessesContent = lazy(() => import('../../components/side_bar/content/pr
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
 const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
 const Statistics = lazy(() => import('../../components/side_bar/content/statistics/statistics'))
+//const ConfirmDeleteModal = lazy(() => import('../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'))
+//const ScanLotModal = lazy(() => import('../../components/basic/modals/scan_lot_modal/scan_lot_modal'))
+//const TaskAddedAlert = lazy(() => import("../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert"))
+
 
 const SideBar = (props) => {
 
@@ -324,7 +328,7 @@ const SideBar = (props) => {
     let content
     switch (page) {
         case 'locations':
-            content = <LocationsContent />
+            content = <LocationsContent/>
             break
 
         // Commented out for now
@@ -364,7 +368,7 @@ const SideBar = (props) => {
             break
 
         case 'settings':
-            content = <Settings />
+            content = <Settings/>
             break
 
         case 'statistics':
@@ -478,18 +482,19 @@ const SideBar = (props) => {
 
             {showSideBar &&
                 <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex", }} open={showSideBar}>
-
+                  <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}
                         showSideBar={showSideBar}
                     />
-
+                  </Suspense>
                     <styled.SidebarContent
                         key="sidebar-content"
                         style={{}}
                     >
+                      <Suspense fallback = {null}>
                         {content}
-
+                      </Suspense>
                         <DraggableCore key="handle" onDrag={handleDrag} >
                             <styled.ResizeBar>
                                 <styled.ResizeHandle content={mode}></styled.ResizeHandle>

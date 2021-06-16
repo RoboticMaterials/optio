@@ -39,7 +39,6 @@ const MapView = lazy(()=> import('./containers/map_view/map_view'))
 const StatusHeader = lazy(() => import('./containers/status_header/status_header'))
 const SideBar = lazy(() => import('./containers/side_bar/side_bar'))
 
-
 const widthBreakPoint = 1000;
 
 const App = () => {
@@ -107,7 +106,7 @@ const App = () => {
     // }
 
     return (
-      <Suspense fallback = {<h2>Still Loading...</h2>}>
+      <Suspense fallback = {null}>
             <Logger />
 
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
