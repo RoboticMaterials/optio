@@ -104,7 +104,7 @@ export const MoreIcon = styled.i`
 `
 export const LockIcon = styled.i`
     position: absolute;
-    right: 2rem;
+    right: 8.5rem;
     font-size: 1.3rem;
     color: ${props => props.theme.bg.quinary};
     cursor: pointer;
@@ -163,4 +163,8 @@ export const ColumnContainer = styled.div`
     flex-direction: column;
     width: 100%;
 
+`
+
+export const ReportIcon = styled.i`
+    font-size: 1.5rem;
 `

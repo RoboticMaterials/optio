@@ -146,7 +146,8 @@ const ListView = (props) => {
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RMShift-')) {
+      //this is ridiculous but there are different codes for usb transmitter/bluetooth/wired to all need to be included to register different methods
+      if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
                 setBarcode([])
@@ -163,6 +164,7 @@ const ListView = (props) => {
     const logKey = (e) => {
       setBarcode(barcode => [...barcode, e.key])
     }
+
 
     const onScanLot = (id) => {
 

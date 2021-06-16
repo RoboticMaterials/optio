@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 // components internal
 import Textbox from "../../../../../../basic/textbox/textbox";
@@ -40,7 +40,7 @@ const FieldComponentMapper = (props) => {
 		...rest
 	} = props
 
-	const themeContext = useContext(ThemeContext);
+    const themeContext = useContext(ThemeContext);
 
 	switch(component) {
 		case FIELD_COMPONENT_NAMES.TEXT_BOX: {
@@ -81,9 +81,9 @@ const FieldComponentMapper = (props) => {
 						/>
 					}
 
-					{required &&
-						<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
-					}
+                    {required &&
+                        <styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+                    }
 
 				</styled.Container>
 			)
@@ -109,7 +109,9 @@ const FieldComponentMapper = (props) => {
 								placeholder="Enter text..."
 								InputComponent={Textbox}
 								lines={5}
-								style={{...style, display: "flex", flex: 1, alignSelf: 'stretch'}}
+								style={{ ...style }}
+								// style={{...style, display: "flex", flex: 1, alignSelf: 'stretch'}}
+								textboxContainerStyle={{ display: "flex", flex: 1 }}
 								textboxContainerStyle={{}}
 								inputStyle={{background: LightenDarkenColor(themeContext.bg.secondary, 10), cursor: 'default', pointerEvents: 'none'}}
 								schema={"lots"}
@@ -129,17 +131,69 @@ const FieldComponentMapper = (props) => {
 						/>
 					}
 
-					{required &&
-					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
-					}
+                    {required &&
+                        <styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+                    }
 
-				</styled.Container>
-			)
-		}
-		case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-			return(
-				<styled.Container
-					style={{
+                </styled.Container>
+            )
+        }
+
+        case FIELD_COMPONENT_NAMES.INPUT_BOX: {
+            return (
+                <styled.Container
+                    style={{
+                        ...containerStyle,
+                        flex: 1,
+                    }}
+                >
+                    {displayName ?
+                        <styled.Label>{displayName}:</styled.Label>
+                        :
+                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                    }
+                    {preview ?
+                        <styled.TextContainer>
+                            <Textbox
+                                type="text"
+                                usable={usable}
+                                placeholder="Enter Text On Dashboard..."
+                                InputComponent={Textbox}
+                                lines={5}
+                                style={{ ...style }}
+                                disabled
+                                // style={{display: "flex", flex: 1}}
+                                textboxContainerStyle={{ display: "flex", flex: 1 }}
+                                inputStyle={{ background: LightenDarkenColor(themeContext.bg.secondary, 10), cursor: 'default', pointerEvents: 'none' }}
+                                schema={"lots"}
+                            />
+                        </styled.TextContainer>
+                        :
+                        <TextField
+                            usable={usable}
+                            name={fieldName}
+                            type="text"
+                            placeholder="Enter text..."
+                            inputStyle={{}}
+                            InputComponent={Textbox}
+                            lines={5}
+                            schema={"lots"}
+                            showErrorStyle={true}
+                        />
+                    }
+
+                    {required &&
+                        <styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+                    }
+
+                </styled.Container>
+            )
+        }
+
+        case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
+            return (
+                <styled.Container
+                    style={{
 
 						...containerStyle,
 						justifyContent: "center",
@@ -191,18 +245,18 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 
-					{preview ?
-						<CalendarPlaceholder
-							usable={usable}
-							containerStyle={{width: "8rem", cursor: 'default', userSelect: 'none'}}
-						/>
-						:
-						<CalendarButtonField
-							name={fieldName}
-							usable={usable}
-							containerStyle={{width: "8rem", cursor: 'default', userSelect: 'none'}}
-						/>
-					}
+                    {preview ?
+                        <CalendarPlaceholder
+                            usable={usable}
+                            containerStyle={{ width: "8rem", cursor: 'default', userSelect: 'none' }}
+                        />
+                        :
+                        <CalendarButtonField
+                            name={fieldName}
+                            usable={usable}
+                            containerStyle={{ width: "8rem", cursor: 'default', userSelect: 'none' }}
+                        />
+                    }
 
 
 					{required &&
@@ -226,22 +280,22 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>)
 					}
 
-					{preview ?
-					<CalendarPlaceholder
-						usable={usable}
-						selectRange={true}
-					/>
-						:
-						<CalendarButtonField
-							name={fieldName}
-							usable={usable}
-							selectRange={true}
-						/>
-					}
+                    {preview ?
+                        <CalendarPlaceholder
+                            usable={usable}
+                            selectRange={true}
+                        />
+                        :
+                        <CalendarButtonField
+                            name={fieldName}
+                            usable={usable}
+                            selectRange={true}
+                        />
+                    }
 
-					{required &&
-					<styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
-					}
+                    {required &&
+                        <styled.RequiredText>{REQUIRED_TEXT}</styled.RequiredText>
+                    }
 
 				</styled.Container>
 			)

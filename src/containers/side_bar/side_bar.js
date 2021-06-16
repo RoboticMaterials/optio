@@ -56,6 +56,9 @@ const SideBar = (props) => {
     const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
+    const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
+    const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
+
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
@@ -72,7 +75,9 @@ const SideBar = (props) => {
     const [lotID, setLotID] = useState('')
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [showSnoop, setShowSnoop] = useState(null)
-
+    const [statId, setStatId] = useState(null)
+    const [cardId, setCardId] = useState(null)
+    const [binCount, setBinCount] = useState(null)
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const cards = useSelector(state => state.cardsReducer.cards)
@@ -123,7 +128,7 @@ const SideBar = (props) => {
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RMShift-')) {
+        if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
                 setBarcode([])
@@ -138,6 +143,7 @@ const SideBar = (props) => {
     }, [full])
 
     const logKey = (e) => {
+        console.log(e.key)
         setBarcode(barcode => [...barcode,e.key])
     }
 
@@ -156,10 +162,26 @@ const SideBar = (props) => {
             }
           })
         if(binCount > 1){
-          dispatchShowLotScanModal(true)
+          if(!!pageInfoChanged){
+            setConfirmDeleteModal(true)
+            setStatId(statId)
+            setCardId(card._id)
+            setBinCount(binCount)
+          }
+          else{
+            dispatchShowLotScanModal(true)
+          }
         }
         else if(binCount === 1 && !!statId){
+            if(!!pageInfoChanged){
+              setConfirmDeleteModal(true)
+              setStatId(statId)
+              setCardId(card._id)
+              setBinCount(binCount)
+            }
+            else{
               history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+            }
         }
 
       }
@@ -177,6 +199,7 @@ const SideBar = (props) => {
           return setTimeout(() => setAddTaskAlert(null), 2500)
         }
     }
+
 
     // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
@@ -361,12 +384,28 @@ const SideBar = (props) => {
                     dispatchSetConfirmDelete(false, null)
                 }}
                 handleOnClick1={() => {
+
+                  if(!!statId && !!cardId){
+                    if(url=== '/locations'){
+                      dispatchEditingStation(false)
+                      dispatchEditingPosition(false)
+                    }
+                    if(binCount === 1){
+                      history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${cardId}`)
+                    }
+                    else dispatchShowLotScanModal(true)
+
+                    setCardId(null)
+                    setStatId(null)
+                  }
+                  else{
                     if (showConfirmDeleteModal) {
                         confirmDeleteCallback()
                     }
                     else {
                         handleSideBarOpenCloseButtonClick()
                     }
+                  }
 
                     setConfirmDeleteModal(null)
                     dispatchPageDataChanged(false)
