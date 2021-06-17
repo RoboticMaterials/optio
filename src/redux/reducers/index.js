@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import schedulesReducer from './schedules_reducer_v2';
 import skillsReducer from './skills_reducer';
 import stationsReducer from './stations_reducer';
+import workInstructionsReducer from './work_instructions_reducer';
 import positionsReducer from './positions_reducer'
 import objectsReducer from './objects_reducer';
 import apiReducer from './api_reducer';
@@ -38,6 +39,7 @@ import cardPageReducer from "./card_page_reducer"
 export default combineReducers({
     cardPageReducer,
     lotTemplatesReducer,
+    workInstructionsReducer,
     apiReducer,
     reportEventsReducer,
     cardsReducer,

@@ -5,15 +5,15 @@ export const Container = styled.div`
   overflow: hidden;
   align-self: stretch;
   display: flex;
-  flex-direction: column;
+  flex-direction: ${props => props.axis === 'y' ? 'column' : 'row'};
 `
 
 export const ScrollContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: ${props => props.axis === 'y' ? 'column' : 'row'};
   position: relative;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   align-self: stretch;
   align-items: center;
   flex: 1;
@@ -23,7 +23,7 @@ export const ContentContainer = styled.div`
 	height: fit-content;
 	min-height: fit-content;
   display: flex;
-  flex-direction: column;
+  flex-direction: ${props => props.axis === 'y' ? 'column' : 'row'};
   padding: 0 1rem;
 	//max-height: fit-content;
   //background: pink;
@@ -36,16 +36,17 @@ export const ContentContainer = styled.div`
 export const Divider = styled.div`
     border: 0;
     position: absolute;
-  height: 1px;
+    height: ${props => props.axis === 'y' ? '1px' : '100%'};
     top: 0;
-  left: 0;
+    left: 0;
     background: transparent;
-    box-shadow: inset 0 12px 12px -12px rgba(0, 0, 0, 0.75);
-    width: 100%;
-    padding-bottom: 12px;
+    box-shadow: ${props => props.axis === 'y' ?  'inset 0 12px 12px -12px rgba(0, 0, 0, 0.75)': 'inset 12px 0 12px -10px  rgba(0, 0, 0, 0.75)'};
+    width: ${props => props.axis === 'y' ?  '100%': '1px'};
+    padding-bottom: ${props => props.axis === 'y' ?  '12px': '0'};
+    padding-right: ${props => props.axis === 'x' ?  '12px': '0'};
     z-index: 10000;
   
   opacity: ${props => props.visible ? 1 : 0};
-  //transition: opacity .5s ease-out;
+  transition: opacity ${props => props.transition} ease;
 `
 

@@ -13,7 +13,12 @@ import * as styled from "./scroll_container.style"
 const ScrollContainer = (props) => {
 
 	const {
-		children
+		children,
+		axis,
+		setScrolling,
+		containerStyle,
+		threshold,
+		dividerTransition
 	} = props
 
 	const [scrollInfo, setRef] = useScrollInfo()
@@ -21,8 +26,8 @@ const ScrollContainer = (props) => {
 	const [showDivider, setShowDivider] = useState(false)
 
 	useEffect(() => {
-		setShowDivider(scrollInfo?.y?.value > 1)
-
+		setShowDivider(axis === 'y' ? scrollInfo?.y?.value > threshold : scrollInfo?.x?.value > threshold)
+		setScrolling(axis === 'y' ? scrollInfo?.y?.value > threshold : scrollInfo?.x?.value > threshold)
 
 		return () => {
 
@@ -30,8 +35,10 @@ const ScrollContainer = (props) => {
 	}, [scrollInfo])
 
 	return (
-		<styled.Container>
-			<styled.Divider visible={showDivider}/>
+		<styled.Container
+			style={containerStyle}
+		>
+			<styled.Divider axis={axis} visible={showDivider} transition={dividerTransition}/>
 
 			<styled.ScrollContainer
 				ref={setRef}
@@ -45,11 +52,16 @@ const ScrollContainer = (props) => {
 }
 
 ScrollContainer.propTypes = {
-	children: PropTypes.any
+	children: PropTypes.any,
+	threshold: PropTypes.number,
+	dividerTransition: PropTypes.string,
 }
 
 ScrollContainer.defaultProps = {
-
+	axis: 'y',
+	setScrolling: () => null,
+	threshold: 1,
+	dividerTransition: '0s'
 }
 
 export default ScrollContainer

@@ -84,6 +84,8 @@ export const TextboxArea = styled.textarea`
     display: flex;
     flex-grow: 1;
     color: ${props => props.theme.bg.octonary};
+    
+    resize: ${props => props.readOnly && 'none'};
 
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     border-bottom: 2px solid ${props => props.theme.bg.secondary};

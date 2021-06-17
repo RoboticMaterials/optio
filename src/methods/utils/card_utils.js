@@ -14,6 +14,7 @@ import {toIntegerOrZero} from "./number_utils";
 import {isValidDateString} from "./date_utils";
 import {isInteger} from "formik";
 import {getLotField} from "./lot_utils";
+import moment from "moment";
 
 const EVENT_NAMES = {
 	CREATE: "create",
@@ -151,6 +152,9 @@ export const convertValue = (value, dataType) => {
 	if(!value) return DATA_TYPE_DEFAULTS[dataType]
 
 	switch(dataType) {
+		case FIELD_DATA_TYPES.MOMENT: {
+			return moment(value)
+		}
 		case FIELD_DATA_TYPES.STRING: {
 			if(!(value instanceof String)) return value.toString()
 		}

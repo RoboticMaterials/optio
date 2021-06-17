@@ -14,24 +14,19 @@ import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_ac
 
 // styles
 import * as styled from './cards.style'
-import Textbox from "../../../basic/textbox/textbox";
 import { ThemeContext } from "styled-components";
-import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
-import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-import LotEditorContainer from "./card_editor/lot_editor_container";
 import SummaryHeader from "./summary_header/summary_header";
 import {immutableDelete} from "../../../../methods/utils/array_utils";
-import MultiSelectOptions from "./multi_select_options/multi_select_options";
-import {isEmpty} from "../../../../methods/utils/object_utils";
-import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
-import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
+import SkuEditorModal from "./editors/sku_editor/sku_editor_modal";
+import LotEditorContainer from "./editors/card_editor/lot_editor_container";
+import LotEditorModal from "./editors/card_editor/lot_editor_modal";
+import EditorContainer from "./editors/editor_container/editor_container";
 
 const Cards = (props) => {
 
@@ -330,19 +325,13 @@ const Cards = (props) => {
             />
             }
 
-            {showCardEditor &&
-            <LotEditorContainer
-                isOpen={showCardEditor}
-                onAfterOpen={null}
+            <EditorContainer
                 cardId={selectedCard ? selectedCard.cardId : null}
                 processId={selectedCard ? selectedCard.processId : null}
                 binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
+                setSelectedCard={setSelectedCard}
             />
-            }
+
             <SummaryHeader
                 showBackButton={isProcessView}
                 title={title}
