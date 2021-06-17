@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { CSSTransitionGroup } from 'react-transition-group';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 // import components
@@ -21,6 +22,7 @@ import { deepCopy } from '../../methods/utils/utils'
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
 
 import * as styled from './widgets.style'
+import { connect } from 'formik';
 
 const Widgets = (props) => {
     const size = useWindowSize()
@@ -63,6 +65,11 @@ const Widgets = (props) => {
     const editing = editingStation ? editingStation : editingPosition
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
+
+    const widgetRadius = useMemo(() => {
+        return 2.5*Math.log(2*(hoveringInfo.scale + 1)) + 'rem';
+    }, [hoveringInfo])
+
     // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
@@ -73,7 +80,6 @@ const Widgets = (props) => {
             onWidgetClose()
         }
     }, [])
-
 
     /**
      * Closes the widget
@@ -130,6 +136,8 @@ const Widgets = (props) => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
         const device = devices[hoveringInfo.id]
 
+        const Wrapper = !!widgetPage ? React.Fragment : styled.WidgetButtonWrapper;
+
         // If device only show dashboards
         if (!!device) {
             return (
@@ -158,36 +166,42 @@ const Widgets = (props) => {
                     switch (page) {
                         case 'statistics':
                             return (
-                                <WidgetButton
-                                    key={ind}
-                                    id={stationID}
-                                    type={'statistics'}
-                                    label={'Statistics'}
-                                    currentPage={widgetPage}
-
-                                />
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                        <WidgetButton
+                                        key={ind}
+                                        id={stationID}
+                                        type={'statistics'}
+                                        label={'Statistics'}
+                                        currentPage={widgetPage} 
+                                        switcher={!!widgetPage}
+                                    />
+                                </Wrapper>
                             )
                         case 'dashboards':
                             return (
-                                <WidgetButton
-                                    key={ind}
-                                    id={stationID}
-                                    type={'dashboards'}
-                                    label={'Dashboards'}
-                                    currentPage={widgetPage}
-
-                                />
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                    <WidgetButton
+                                        key={ind}
+                                        id={stationID}
+                                        type={'dashboards'}
+                                        label={'Dashboards'}
+                                        currentPage={widgetPage}
+                                        switcher={!!widgetPage}
+                                    />
+                                </Wrapper>
                             )
                         case 'view':
                             return (
-                                <WidgetButton
-                                    key={ind}
-                                    id={stationID}
-                                    type={'view'}
-                                    label={'View'}
-                                    currentPage={widgetPage}
-
-                                />
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                    <WidgetButton
+                                        key={ind}
+                                        id={stationID}
+                                        type={'view'}
+                                        label={'View'}
+                                        currentPage={widgetPage}
+                                        switcher={!!widgetPage}
+                                    />
+                                </Wrapper>
                             )
 
                         default:
@@ -200,40 +214,25 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
-                        <WidgetButton
-                            id={stationID}
-                            type={'statistics'}
-                            label={'Statistics'}
-                            currentPage={widgetPage}
+                        <Wrapper idx={0} numItems={2} radius={widgetRadius}>
+                            <WidgetButton
+                                id={stationID}
+                                type={'statistics'}
+                                label={'Statistics'}
+                                currentPage={widgetPage}
+                                switcher={!!widgetPage}
+                            />
+                        </Wrapper>
 
-                        />
-
-                        <WidgetButton
-                            id={stationID}
-                            type={'dashboards'}
-                            label={'Dashboards'}
-                            currentPage={widgetPage}
-
-                        />
-
-                        {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
-                        {/* <WidgetButton
-                    id={stationID}
-                    type={'tasks'}
-                    currentPage={widgetPage}
-                /> */}
-
-                        {/* <WidgetButton
-                            id={stationID}
-                            type={'objects'}
-                            currentPage={widgetPage}
-                        /> */}
-
-                        {/* <WidgetButton
-                    id={stationID}
-                    type={'view'}
-                    currentPage={widgetPage}
-                /> */}
+                        <Wrapper idx={1} numItems={2} radius={widgetRadius}>
+                            <WidgetButton
+                                id={stationID}
+                                type={'dashboards'}
+                                label={'Dashboards'}
+                                currentPage={widgetPage}
+                                switcher={!!widgetPage}
+                            />
+                        </Wrapper>
                     </>
 
                 )
@@ -243,66 +242,43 @@ const Widgets = (props) => {
         else if (selectedPosition.schema === 'temporary_position') {
             return (
                 <>
-                    <WidgetButton
-                        id={stationID}
-                        type={'cart'}
-                        coordinateMove={true}
-                        currentPage={widgetPage}
-                        label={'Send Cart Here'}
-
-                    />
-                    <WidgetButton
-                        id={stationID}
-                        type={'cancel'}
-                        currentPage={widgetPage}
-
-                    />
+                    <styled.WidgetButtonWrapper idx={1} numItems={2} radius={widgetRadius}>
+                        <WidgetButton
+                            id={stationID}
+                            type={'cart'}
+                            coordinateMove={true}
+                            currentPage={widgetPage}
+                            label={'Send Cart Here'}
+                            switcher={!!widgetPage}
+                        />
+                    </styled.WidgetButtonWrapper>
+                    <styled.WidgetButtonWrapper idx={1} numItems={2} radius={widgetRadius}>
+                        <WidgetButton
+                            id={stationID}
+                            type={'cancel'}
+                            currentPage={widgetPage}
+                            switcher={!!widgetPage}
+                        />
+                    </styled.WidgetButtonWrapper>
                 </>
             )
         }
 
         else {
             return (
-                <WidgetButton
-                    id={stationID}
-                    type={'cart'}
-                    label={'Send Cart Here'}
-                    currentPage={widgetPage}
-
-                />
+                <styled.WidgetButtonWrapper idx={1} numItems={2} radius={widgetRadius}>
+                    <WidgetButton
+                        id={stationID}
+                        type={'cart'}
+                        label={'Send Cart Here'}
+                        currentPage={widgetPage}
+                        switcher={!!widgetPage}
+                    />
+                </styled.WidgetButtonWrapper>
             )
         }
     }, [widgetPage])
 
-    const statistics = useMemo(() => {
-
-        return (
-            <styled.WidgetStatisticsContainer>
-
-                <styled.WidgetStatisticsBlock>
-                    <styled.WidgetStatisticsIcon className="far fa-clock" />
-                    <styled.WidgetStatisticsText>
-                        30s
-                    </styled.WidgetStatisticsText>
-                </styled.WidgetStatisticsBlock>
-
-                <styled.WidgetStatisticsBlock>
-                    <styled.WidgetStatisticsIcon className="fas fa-arrow-right" />
-                    <styled.WidgetStatisticsText>
-                        25 Units
-                    </styled.WidgetStatisticsText>
-                </styled.WidgetStatisticsBlock>
-
-                <styled.WidgetStatisticsBlock>
-                    <styled.WidgetStatisticsIcon className="fas fa-percent" />
-                    <styled.WidgetStatisticsText>
-                        98%
-                    </styled.WidgetStatisticsText>
-                </styled.WidgetStatisticsBlock>
-
-            </styled.WidgetStatisticsContainer>
-        )
-    }, [stations, positions])
 
     /**
      * This handles the x and y position of the widget.
@@ -313,149 +289,201 @@ const Widgets = (props) => {
     // Left outside of function so that otherplaces can access it
     const element = document.getElementById(hoveringInfo.id)
 
-    const onWidgetPosition = (coord) => {
-
-
+    const getXPos = useMemo(() => {
         // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
-            if (coord === 'x') {
-                return hoveringInfo.xPosition + 'px'
-            } else {
-
-                return hoveringInfo.yPosition + 'px'
-            }
+            return hoveringInfo.xPosition + 'px'
         }
 
         const elementHeight = element.getBoundingClientRect().height
         const elementWidth = element.getBoundingClientRect().width
 
-
-        let widgetPosition = {}
-
         // Handles the x and y, use location x if right click menu so it can also move
-        if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
-
-            // Handles when scale gets to large
-            if (hoveringInfo.scale === .8) {
-                widgetPosition.x = selectedPosition.x - elementWidth / 2 - 25 + 'px'
-                widgetPosition.y = selectedPosition.y + elementHeight / 2 - 20 + 'px'
-            }
-            else {
-                widgetPosition.x = selectedPosition.x - elementWidth / 2 + 30 + 'px'
-                widgetPosition.y = selectedPosition.y + elementHeight / 2 + 20 + 'px'
-            }
-
+        if (!!selectedLocation && selectedLocation.schema === 'temporary_position') {
+            return selectedLocation.x + 'px';
         }
         else {
-            widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
-            widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+            return hoveringInfo.x + 'px';
+        }
+    }, [selectedLocation, hoveringInfo])
+
+    const getYPos = useMemo(() => {
+        // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
+        if (element === null) {
+            return hoveringInfo.yPosition + 'px'
         }
 
-        if (coord === 'x') {
-            return widgetPosition.x
+        const elementHeight = element.getBoundingClientRect().height
+        const elementWidth = element.getBoundingClientRect().width
 
-        } else {
-            return widgetPosition.y
+        // Handles the x and y, use location x if right click menu so it can also move
+        if (!!selectedLocation && selectedLocation.schema === 'temporary_position') {
+            return selectedLocation.y + 'px';
         }
-
-    }
+        else {
+            return hoveringInfo.y + 'px';
+        }
+    }, [selectedLocation, hoveringInfo])
 
     return (
         <>
-            {!!widgetPage &&
-                <styled.WidgetBlurContainer />
-            }
+
             {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
-            <styled.WidgetLocationContainer
-                id={hoveringInfo.id}
-                onMouseEnter={() => {
-                    dispatchHoverStationInfo(hoveringInfo)
-                    onWidgetPosition()
-                }}
+            {!widgetPage ?
+                <styled.WidgetLocationContainer
+                    id={hoveringInfo.id}
+                    onMouseEnter={() => {
+                        dispatchHoverStationInfo(hoveringInfo)
+                    }}
+                    onMouseLeave={() => {
+                        if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
+                            onWidgetClose()
+                            dispatchSetSelectedStation(null)
+                            dispatchSetSelectedPosition(null)
+                        }
+                    }}
 
-                onMouseLeave={() => {
-                    if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
-                        onWidgetClose()
-                        dispatchSetSelectedStation(null)
-                        dispatchSetSelectedPosition(null)
+                    xPosition={getXPos}
+                    yPosition={getYPos}
+                    scale={hoveringInfo.scale}
+                    widgetPage={widgetPage}
+
+                    // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
+                    style={{ 
+                        opacity: !widgetPage && element === null ? '0' : '1',
+                        height: `calc(${widgetRadius} * 2)`,
+                        width: `calc(${widgetRadius} * 2)`,
+                    }}
+                >
+                    {!!selectedLocation&&
+                        <CSSTransitionGroup
+                            transitionName={'expand'}
+                            transitionAppear={true}
+                            transitionAppearTimeout={200}
+                        >
+                            <styled.WidgetButtonContainer widgetPage={widgetPage}>
+                                {renderWidgetButtons}
+                                <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                            </styled.WidgetButtonContainer>
+
+                        </CSSTransitionGroup>
                     }
-                }}
 
-                // xPosition={hoveringInfo.xPosition + 'px'}
-                xPosition={onWidgetPosition('x')}
-                yPosition={onWidgetPosition('y')}
-                scale={hoveringInfo.scale}
-                widgetPage={widgetPage}
-
-                // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
-                style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
-            >
-                {/* If not widget page and not a right click widget then add an invisable hover area */}
-                {!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' &&
-                    <styled.WidgetHoverArea
-                        hoverScale={hoveringInfo.realScale}
-                        onMouseEnter={() => {
-                            dispatchHoverStationInfo(hoveringInfo)
-                        }}
-
-                    />
-                }
-                {!!selectedLocation &&
-                  <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
-                      {!widgetPage && !!selectedLocation &&
-                          <>
-                              {selectedLocation.schema == "temporary_position" ?
-                                  <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
-                                  :
-                                  <>
-                                      {!!selectedLocation.parent ?
-                                          <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
-                                          :
-                                          <styled.RowContainer>
-                                              <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
-                                              <styled.EditIcon
-                                                  className='fas fa-edit'
-                                                  styled={{ color: '#ff1818' }}
-                                                  onClick={() => onClickLocation()}
-                                              />
-                                          </styled.RowContainer>
-
-                                      }
-                                  </>
-                              }
-                          </>
-                      }
+                    {onWidgetPageOpen()}
 
 
+                </styled.WidgetLocationContainer>
+            
+            :
 
-                      <styled.WidgetButtonContainer widgetPage={widgetPage}>
-                          {renderWidgetButtons}
-                      </styled.WidgetButtonContainer>
-
-
-                      {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
-                      {/* {!widgetPage &&
-                          statistics
-                      } */}
-
-                      {onWidgetPageOpen()}
-                  </styled.WidgetContainer>
-                }
-
-
-
-
-            </styled.WidgetLocationContainer>
-
-            {!!widgetPage &&
-                <>
-                    <WidgetPages />
-                </>
-            }
+            <>
+                <styled.WidgetBlurContainer />
+                <styled.WidgetButtonRow>
+                    {renderWidgetButtons}
+                </styled.WidgetButtonRow>
+                <WidgetPages />
+            </>
+        }
 
         </>
-
     )
+
+    // return (
+    //     <>
+    //         {!!widgetPage &&
+    //             <styled.WidgetBlurContainer />
+    //         }
+    //         {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
+    //         <styled.WidgetLocationContainer
+    //             id={hoveringInfo.id}
+    //             onMouseEnter={() => {
+    //                 dispatchHoverStationInfo(hoveringInfo)
+    //                 onWidgetPosition()
+    //             }}
+
+    //             onMouseLeave={() => {
+    //                 if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
+    //                     onWidgetClose()
+    //                     dispatchSetSelectedStation(null)
+    //                     dispatchSetSelectedPosition(null)
+    //                 }
+    //             }}
+
+    //             // xPosition={hoveringInfo.xPosition + 'px'}
+    //             xPosition={onWidgetPosition('x')}
+    //             yPosition={onWidgetPosition('y')}
+    //             scale={hoveringInfo.scale}
+    //             widgetPage={widgetPage}
+
+    //             // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
+    //             style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
+    //         >
+    //             {/* If not widget page and not a right click widget then add an invisable hover area */}
+    //             {!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' &&
+    //                 <styled.WidgetHoverArea
+    //                     hoverScale={hoveringInfo.realScale}
+    //                     onMouseEnter={() => {
+    //                         dispatchHoverStationInfo(hoveringInfo)
+    //                     }}
+
+    //                 />
+    //             }
+    //             {!!selectedLocation &&
+    //               <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
+    //                   {!widgetPage && !!selectedLocation &&
+    //                       <>
+    //                           {selectedLocation.schema == "temporary_position" ?
+    //                               <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
+    //                               :
+    //                               <>
+    //                                   {!!selectedLocation.parent ?
+    //                                       <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
+    //                                       :
+    //                                       <styled.RowContainer>
+    //                                           <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+    //                                           <styled.EditIcon
+    //                                               className='fas fa-edit'
+    //                                               styled={{ color: '#ff1818' }}
+    //                                               onClick={() => onClickLocation()}
+    //                                           />
+    //                                       </styled.RowContainer>
+
+    //                                   }
+    //                               </>
+    //                           }
+    //                       </>
+    //                   }
+
+
+
+    //                   <styled.WidgetButtonContainer widgetPage={widgetPage}>
+    //                       {renderWidgetButtons}
+    //                   </styled.WidgetButtonContainer>
+
+
+    //                   {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
+    //                   {/* {!widgetPage &&
+    //                       statistics
+    //                   } */}
+
+    //                   {onWidgetPageOpen()}
+    //               </styled.WidgetContainer>
+    //             }
+
+
+
+
+    //         </styled.WidgetLocationContainer>
+
+    //         {!!widgetPage &&
+    //             <>
+    //                 <WidgetPages />
+    //             </>
+    //         }
+
+    //     </>
+
+    // )
 }
 
 export default Widgets

@@ -97,6 +97,7 @@ const ApiContainer = (props) => {
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const localSettings = useSelector(state => state.localReducer.localSettings)
+    const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
 
 
     // States
@@ -336,7 +337,7 @@ const ApiContainer = (props) => {
         // const dataUpdate = await onUpdateTaskData(tasks)
 
         // Cleaner Functions
-        if (!!mapViewEnabled) {
+        if (!!mapViewEnabled && !!deviceEnabled) {
 
             await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)

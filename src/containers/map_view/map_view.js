@@ -36,6 +36,7 @@ import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_wayp
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
 import HeatMap from '../../components/map/heatmap/heatmap'
+import RatsNest from '../../components/map/ratsnest/ratsnest'
 import MapApps from '../../components/map/map_apps/map_apps'
 
 // logging
@@ -698,6 +699,12 @@ export class MapView extends Component {
                                 {this.props.settings.mapApps.heatmap &&
                                     <HeatMap map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
+
+                                {this.props.settings.mapApps.ratsnest &&
+                                    <RatsNest map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
+                                }
+
+                                
 
                                 <>{
                                     //// Render Locations
