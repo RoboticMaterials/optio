@@ -293,4 +293,3 @@ CardZone.defaultProps = {
 }
 
 export default memo(CardZone)
-

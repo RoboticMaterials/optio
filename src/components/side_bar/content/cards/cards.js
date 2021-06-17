@@ -22,7 +22,7 @@ import {SORT_MODES} from "../../../../constants/common_contants";
 //import LotCreatorForm from "./lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-//import LotEditorContainer from "./card_editor/lot_editor_container";
+import LotEditorContainer from "./card_editor/lot_editor_container";
 //import SummaryHeader from "./summary_header/summary_header";
 import {immutableDelete} from "../../../../methods/utils/array_utils";
 //import MultiSelectOptions from "./multi_select_options/multi_select_options";
@@ -37,7 +37,7 @@ import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multi
 //const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
 const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
 const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
-const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
+//const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
 const MultiSelectOptions = lazy(() => import("./multi_select_options/multi_select_options"))
 
 const CardMenu = lazy(() => import("./card_menu/card_menu"))
@@ -319,6 +319,7 @@ const Cards = (props) => {
     }
 
     return (
+      <Suspense fallback = {<></>}>
         <styled.Container>
             {showConfirmDeleteModal &&
             <DeleteMultipleLotsModal
@@ -405,6 +406,7 @@ const Cards = (props) => {
 
             </styled.Body>
         </styled.Container>
+        </Suspense>
     )
 }
 

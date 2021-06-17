@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, lazy } from 'react'
+import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react'
 
 // actions
 import { postCard } from "../../../../../redux/actions/card_actions";
@@ -8,11 +8,9 @@ import { getCardsCount } from "../../../../../api/cards_api";
 
 // components internal
 //import LotEditor from "./lot_editor"
-//import StatusList from "../../../../basic/status_list/status_list"
-//import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper"
-//import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
-
-
+import StatusList from "../../../../basic/status_list/status_list"
+import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper"
+import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
 
 // constants
 import {
@@ -44,10 +42,7 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 import * as styled from "./lot_editor_container.style";
 import {postLocalSettings} from "../../../../../redux/actions/local_actions";
 
-const LotEditor = lazy(()=> import("./lot_editor"))
-const StatusList = lazy(()=> import("../../../../basic/status_list/status_list"))
-const PasteForm = lazy(()=> import("../../../../basic/paste_mapper/paste_mapper"))
-const SimpleModal = lazy(()=> import("../../../../basic/modals/simple_modal/simple_modal"))
+const LotEditor = lazy(() => import("./lot_editor"))
 
 const LotEditorContainer = (props) => {
 
@@ -369,7 +364,7 @@ const LotEditorContainer = (props) => {
     * */
     useEffect(() => {
         // add event listener to 'paste'
-        document.addEventListener("paste", onPasteEvent, {passive: true});
+        document.addEventListener("paste", onPasteEvent);
 
         // on dismount remove the event pasteListener
         return () => {
@@ -728,6 +723,7 @@ const LotEditorContainer = (props) => {
     }
 
     return (
+      <Suspense fallback = {<></>}>
         <styled.Container
             isOpen={true}
             onRequestClose={() => {
@@ -929,6 +925,7 @@ const LotEditorContainer = (props) => {
                 }
             />
         </styled.Container>
+      </Suspense>
     );
 };
 

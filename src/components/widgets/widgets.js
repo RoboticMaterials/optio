@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 // import components
-import WidgetPages from './widget_pages/widget_pages'
-import WidgetButton from './widget_button/widget_button'
+//import WidgetPages from './widget_pages/widget_pages'
+//import WidgetButton from './widget_button/widget_button'
 
 // import hooks
 import useWindowSize from '../../hooks/useWindowSize'
@@ -21,6 +21,10 @@ import { deepCopy } from '../../methods/utils/utils'
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
 
 import * as styled from './widgets.style'
+
+const WidgetPages = lazy(() => import('./widget_pages/widget_pages'))
+const WidgetButton = lazy(() => import('./widget_button/widget_button'))
+
 
 const Widgets = (props) => {
     const size = useWindowSize()
@@ -361,7 +365,7 @@ const Widgets = (props) => {
     }
 
     return (
-        <>
+        <Suspense fallback = {<></>}>
             {!!widgetPage &&
                 <styled.WidgetBlurContainer />
             }
@@ -453,7 +457,7 @@ const Widgets = (props) => {
                 </>
             }
 
-        </>
+        </Suspense>
 
     )
 }

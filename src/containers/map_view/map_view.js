@@ -599,18 +599,20 @@ export class MapView extends Component {
         const { translate, scale } = this.d3;
 
         return (
-          <Suspense fallback = {<h1>Load....</h1>}>
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
-
+                  <Suspense fallback = {<></>}>
                     <MapApps />
+                  </Suspense>
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
 
                     {/* Right menu */}
                     {Object.keys(this.state.showRightClickMenu).length > 0 &&
+                      <Suspense fallback = {<></>}>
                         <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} d3={this.d3} />
+                      </Suspense>
                     }
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
@@ -685,15 +687,21 @@ export class MapView extends Component {
                         </styled.MapGroup>
 
                         {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
+                          <Suspense fallback = {<></>}>
                             <TaskPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         {!!this.props.selectedHoveringTask &&
+                          <Suspense fallback = {<></>}>
                             <TaskPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         {!!this.props.selectedProcess &&
+                          <Suspense fallback = {<></>}>
                             <ProcessPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         <defs>
@@ -776,10 +784,12 @@ export class MapView extends Component {
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
                                             <>
                                                 {device.connected == true &&
+                                                  <Suspense fallback = {<></>}>
                                                     <MiR100 key={device._id}
                                                         device={device}
                                                         d3={this.d3}
                                                     />
+                                                  </Suspense>
                                                 }
                                             </>
 
@@ -790,11 +800,15 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
+                      <Suspense fallback = {<></>}>
                         <TaskStatistics d3={this.d3} />
+                      </Suspense>
                     }
 
                     {!!this.props.showRouteConfirmation &&
+                      <Suspense fallback = {<></>}>
                         <RouteConfirmation d3={this.d3} />
+                      </Suspense>
                     }
 
                     {!!this.props.devices &&
@@ -815,13 +829,14 @@ export class MapView extends Component {
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
+                      <Suspense fallback = {<></>}>
                         <Widgets />
+                      </Suspense>
                     }
 
 
                 </styled.MapContainer>
             </div >
-          </Suspense>
         )
     }
 }
