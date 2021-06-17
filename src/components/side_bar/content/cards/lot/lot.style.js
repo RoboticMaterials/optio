@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-import { rowCss } from "../card_editor/lot_editor.style";
+import { rowCss } from "../editors/card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
 import { commonClickableIcon, commonIcon, glow, iconButtonCss } from "../../../../../common_css/common_css";
 import { hexToRGBA, LightenDarkenColor } from '../../../../../methods/utils/color_utils'

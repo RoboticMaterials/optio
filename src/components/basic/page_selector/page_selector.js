@@ -17,6 +17,7 @@ const PageSelector = (props) => {
 			<styled.Selector
 				className="fas fa-chevron-left"
 				onClick={onBack}
+				disabled={value <= 1}
 			/>
 
 			<styled.Text>
@@ -26,6 +27,7 @@ const PageSelector = (props) => {
 			<styled.Selector
 				className="fas fa-chevron-right"
 				onClick={onForward}
+				disabled={value === maxValue}
 			/>
 		</styled.Container>
 

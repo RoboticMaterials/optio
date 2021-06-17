@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import moment from 'moment';
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -24,9 +23,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils';
-import { getCardsInBin, getLotTotalQuantity } from '../../../../../../methods/utils/lot_utils';
-import {getCustomFields} from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -52,10 +49,11 @@ const Column = ((props) => {
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 
-	const allCards = useSelector(state => state.cardsReducer.cards)
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
+
+	// console.log(shiftDetails)
 
 	// actions
 	const dispatch = useDispatch()
@@ -69,46 +67,10 @@ const Column = ((props) => {
 	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
-	const [proceedingLeadTimeSeconds, setProceedingLeadTimeSeconds] = useState(NaN);
 
-	let cumulativeLotQuantity = 0
-
-	useEffect(() => {
-
-		// Calculate proceeding lead time based on cards in later stations
-		const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
-		let totalProceedingLeadTimeSeconds = 0
-
-		if (station_id === 'FINISH') {	// No lead time once in finished bin
-			return;
-		}
-
-		var i
-		for (i=0; i<processStations.length; i++) {
-			let pStationId = processStations[i]
-			
-			if (pStationId === station_id) {
-				break;
-			}
-
-			let stationCards = getCardsInBin(allCards, pStationId, processId)
-
-			let stationLotsQuantitySummation = 0
-			stationCards.forEach((currLot) => {
-				stationLotsQuantitySummation += currLot.bins[pStationId].count
-			})
-
-			let stationCycleTime = stations[pStationId].cycle_time;
-			if (!!stationCycleTime && !isNaN(totalProceedingLeadTimeSeconds)) {
-				totalProceedingLeadTimeSeconds += moment.duration(stationCycleTime).asSeconds() * stationLotsQuantitySummation
-			} else {
-				totalProceedingLeadTimeSeconds = NaN
-			}
-		}
-
-		setProceedingLeadTimeSeconds(totalProceedingLeadTimeSeconds)
-		
-	}, [])
+	// const [breaks, setBreaks] = useState([])
+	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
+	// const [precedingQuantity, setPrecedingQuantity] = useState(0);
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -244,10 +206,6 @@ const Column = ((props) => {
 		else {
 			return cards.slice(existingIndex, selectedIndex + 1).reverse()
 		}
-	}
-
-	const getCardLeadTime = (cardIndex) => {
-
 	}
 
 	const handleDrop = async (dropResult) => {
@@ -398,6 +356,7 @@ const Column = ((props) => {
 						const {
 							_id,
 							count = 0,
+							leadTime,
 							name,
 							object_id,
 							cardId,
@@ -408,6 +367,8 @@ const Column = ((props) => {
 							lotTemplateId,
 							...rest
 						} = card
+
+						// console.log(lotNumber, leadTime)
 
 						// const templateValues = getCustomFields(lotTemplateId, card)
 
@@ -422,24 +383,6 @@ const Column = ((props) => {
 
 						// const isSelected = (draggingLotId !== null) ? () : ()
 						const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
-
-
-						// Find cycle time in seconds
-						let cycleTimeSeconds
-						if (station_id === 'FINISH') {
-							cycleTimeSeconds = 0
-						} else if (station_id === 'QUEUE') {
-							cycleTimeSeconds = 0
-						} else if (!!stations[station_id] && !!stations[station_id].cycle_time) {
-							cycleTimeSeconds = moment.duration(stations[station_id].cycle_time).asSeconds()
-						} else {
-							cycleTimeSeconds = NaN
-						}
-
-						// Calculate lead time
-						cumulativeLotQuantity += count
-						const leadTimeSeconds = proceedingLeadTimeSeconds + (cumulativeLotQuantity * cycleTimeSeconds);
-						const leadTime = isNaN(leadTimeSeconds) ? null : moment({}).seconds(leadTimeSeconds).format('lll')
 
 						return (
 							<Draggable
@@ -471,7 +414,7 @@ const Column = ((props) => {
 										index={index}
 										lotId={cardId}
 										binId={station_id}
-										onClick={(e)=> {
+										onClick={(e) => {
 											const payload = getBetweenSelected(cardId)
 											onCardClick(
 												e,

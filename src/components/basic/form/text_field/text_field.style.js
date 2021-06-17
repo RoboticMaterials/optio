@@ -14,7 +14,6 @@ export const DefaultContentContainer = styled.div`
     width: 100%;
     position: relative;
     display: flex;
-    
 `;
 
 export const DefaultInputContainer = styled.div`

@@ -128,3 +128,9 @@ export const DualSelectionButton = styled.button`
         //background-color: ${props => props.theme.bg.quaternary};
     }
 `
+
+export const ShiftSettingsContainer = styled.div`
+    width: 100%;
+    min-width: 22rem;
+    margin-bottom: 1rem;
+`

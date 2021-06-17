@@ -30,7 +30,7 @@ import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_s
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
-import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
+import LotEditorContainer from "../../../../../side_bar/content/cards/editors/card_editor/lot_editor_container";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 Modal.setAppElement('body');

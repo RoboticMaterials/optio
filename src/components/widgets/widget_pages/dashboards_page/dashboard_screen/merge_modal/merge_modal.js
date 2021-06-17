@@ -13,47 +13,18 @@ import {getCards, getProcessCards, putCard} from "../../../../../../redux/action
 
 // styles
 import * as styled from './merge_modal.style'
-import {useTheme} from "styled-components";
-import {getProcesses} from "../../../../../../redux/actions/processes_actions";
-import FadeLoader from "react-spinners/FadeLoader";
-import Textbox from "../../../../../basic/textbox/textbox";
-import {SORT_MODES} from "../../../../../../constants/common_contants";
-import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {
-    getBinQuantity,
-    getCustomFields,
-    getLotTotalQuantity,
-    getMatchesFilter, moveLot
-} from "../../../../../../methods/utils/lot_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
-import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
-import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
-import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
-import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
-import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import {FINISH_BIN_ID, LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
-import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
-import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
-import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
-import PropTypes from "prop-types";
-import TextField from "../../../../../basic/form/text_field/text_field";
-import * as taskQueueActions from "../../../../../../redux/actions/task_queue_actions";
-import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
-import {CloseButton, LotListContainer} from "./merge_modal.style";
+import LotEditorContainer from "../../../../../side_bar/content/cards/editors/card_editor/lot_editor_container";
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
-// import {useSelectionContainer} from "react-drag-to-select";
 import BoxWrapper from "../../../../../basic/box_wrapper/box_wrapper";
 import {immutableDelete, immutableInsert, immutableReplace} from "../../../../../../methods/utils/array_utils";
-import HilButton from "../../../../../hil_modals/hil_button/hil_button";
-import FlexibleContainer from "../../../../../basic/flexible_container/flexible_container";
 import SelectLotQuantity from "./select_lot_quantity/select_lot_quantity";
 import MergeReview from "./merge_review/merge_review";
-import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
+import LotEditor from "../../../../../side_bar/content/cards/editors/card_editor/lot_editor";
 import BackButton from "../../../../../basic/back_button/back_button";
 import {isShift} from "../../../../../../methods/utils/event_utils";
 import useScrollInfo from "../../../../../../hooks/useScrollInfo";
+import {moveLot} from "../../../../../../methods/utils/lot_utils";
 
 // Modal.setAppElement('body');
 
@@ -94,7 +65,7 @@ const MergeModal = (props) => {
 
         let tempAvailableCards = []
         availableFinishProcesses.forEach((finishProcessId) => {
-            const currentCards = processCards[finishProcessId]
+            const currentCards = processCards[finishProcessId] || {}
             // console.log('currentCards',currentCards)
             const finishedCards = Object.values(currentCards).filter((card) => card?.bins[stationId]?.count > 0)
             tempAvailableCards = tempAvailableCards.concat(finishedCards)
