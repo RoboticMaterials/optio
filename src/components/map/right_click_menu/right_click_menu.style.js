@@ -10,11 +10,10 @@ export const MenuContainer = styled.div`
     background: white;
 
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    border-radius: 1rem;
+    border-radius: 0.3rem;
 
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.6);
-    padding: .1rem 0rem;
 
     display: flex;
     flex-direction: column;
@@ -29,12 +28,11 @@ export const MenuButton = styled.button`
     height: 2rem;
     outline:none;
 
-    margin: .1rem;
 
     background-color: transparent;
 
     &:hover{
-        background-color: ${props => props.theme.bg.septenary};
+        background-color: ${props => props.theme.bg.tertiary};
     }
 
     &:focus{

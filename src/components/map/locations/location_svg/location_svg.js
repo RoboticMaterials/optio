@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 import * as styled from './location_svg.style'
 
@@ -35,6 +36,12 @@ const LocationSvg = (props) => {
         ...PositionTypes
     }
 
+    const settings = useSelector(state => state.settingsReducer.settings)
+
+    const ellipsis = (text) => {
+
+    }
+
     return (
         <styled.WorkstationGroup
             id={rd3tClassName}
@@ -51,6 +58,9 @@ const LocationSvg = (props) => {
             }}
             transform={`translate(${location.x},${location.y}) rotate(${-location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
+            {((settings.mapApps.labels || isSelected) && hoveringInfo?.id !== location?._id) && 
+                <text y={-16} fontSize="0.7em" dominant-baseline="middle" text-anchor="middle">{location.name}</text>
+            }
             <defs>
 
                 {/* a transparent glow that takes on the colour of the object it's applied to */}
