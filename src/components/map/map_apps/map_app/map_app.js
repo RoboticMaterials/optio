@@ -13,22 +13,24 @@ const MapApp = (props) => {
 
     return (
         <AppContainer onClick={onClick}>
-            <g>
+            <g style={{height: 50, width: 50, alignItems: 'center'}}>
                 {appIcons[appName](enabled)}
             </g>
-            <p3 style={{color: enabled ? 'black' : 'grey'}}>{appName}</p3>
+            <p3 style={{color: enabled ? 'black' : 'grey', height: 20, width: 70, textAlign: 'center'}}>{appName}</p3>
         </AppContainer>
     )
 
 }
 
 const AppContainer = styled.div`
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 10px;
     margin: 10px;
+
+    justify-content: center;
+    align-content: center;
 
     border-radius: 10px;
 
