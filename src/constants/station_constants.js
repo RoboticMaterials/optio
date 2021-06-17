@@ -2,7 +2,7 @@ import React from 'react'
 
 import theme from '../theme';
 
-const stationColor = theme.main.schema.locations.solid
+export const stationColor = theme.main.schema.locations.solid
 
 export const StationTypes = {
 

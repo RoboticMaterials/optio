@@ -704,6 +704,8 @@ export class MapView extends Component {
                                     <RatsNest map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
 
+                                
+
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)

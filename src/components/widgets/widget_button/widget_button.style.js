@@ -1,30 +1,24 @@
 import styled from 'styled-components'
+import { stationColor } from '../../../constants/station_constants'
 
 export const WidgetButtonButton = styled.button`
+
     display:flex;
-    align-self:center;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
     flex-direction: column;
     border: none;
-    border-radius: 1rem;
     text-align: center;
-    width: 6rem;
-    height: 4rem;
     outline:none;
-    margin: 0rem .3rem;
-    padding-top:.5rem;
 
-    /* margin-top: 0.5rem; */
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 50%;
+    background: white;
+    box-shadow: ${props => props.theme.cardShadow};
 
-    box-shadow: 0 1px 2px 2px rgba(0, 0, 0, 0.1);
-
-    // background-color: ${props => props.pageID === props.currentPage ? props.theme.bg.quaternary : props.theme.bg.septenary};
-    background-color: ${props => props.theme.bg.primary};
-
-    transition: background-color 0.25s ease, box-shadow 0.1s ease;
-
-    &:hover{
-        background-color: ${props => props.theme.bg.secondary};
-    }
+    transform: translate(-50%, -50%);
 
     &:focus{
         outline: 0 !important
@@ -34,11 +28,11 @@ export const WidgetButtonButton = styled.button`
         box-shadow: none;
     }
 
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        width: 6rem;
-        height: 4rem;
+    // @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+    //     width: 6rem;
+    //     height: 4rem;
 
-    }
+    // }
 `;
 
 export const WidgetButtonLabel = styled.label`
@@ -49,14 +43,14 @@ export const WidgetButtonLabel = styled.label`
 `;
 
 export const WidgetButtonText = styled.h4`
-    font-size: ${props => props.theme.fontSize.sz6};
+    font-size: 0.6rem;
     font-family: ${props => props.theme.font.primary};
-    font-weight: bold;
+    font-weight: regular;
 
     text-align: center;
     align-self:center;
 
-    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
+    color: ${stationColor};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
 
@@ -77,10 +71,10 @@ export const WidgetStationName = styled.h4`
 `;
 
 export const WidgetButtonIcon = styled.i`
-    font-size: 2.2rem;
-    margin-bottom:0.3rem;
+    font-size: 1.8rem;
+    margin-bottom:0rem;
     align-self:center;
-    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
+    color: ${stationColor};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;
