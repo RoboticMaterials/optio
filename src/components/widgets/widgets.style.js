@@ -156,6 +156,18 @@ export const WidgetButtonContainer = styled.div`
     }
 `
 
+export const WidgetButtonRow = styled.div`
+    height: 4rem;
+    display: flex;
+    flex-direction: row;
+    z-index: 4;
+
+    position: absolute;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+`
+
 const getTransformAroundCircle = (idx, numItems, radius) => {
     const start = 110;
     const end = 250;
@@ -183,7 +195,7 @@ export const WidgetBlurContainer = styled.div`
     width: 100%;
     height: 100%;
     /* z-index: -1; */
-    // backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 
     /* opacity: ${props => !!props.showWidgetPage ? '100%' : '0%'};
 

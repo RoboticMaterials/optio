@@ -136,6 +136,8 @@ const Widgets = (props) => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
         const device = devices[hoveringInfo.id]
 
+        const Wrapper = !!widgetPage ? React.Fragment : styled.WidgetButtonWrapper;
+
         // If device only show dashboards
         if (!!device) {
             return (
@@ -164,39 +166,42 @@ const Widgets = (props) => {
                     switch (page) {
                         case 'statistics':
                             return (
-                                <styled.WidgetButtonWrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
                                         <WidgetButton
                                         key={ind}
                                         id={stationID}
                                         type={'statistics'}
                                         label={'Statistics'}
-                                        currentPage={widgetPage}
+                                        currentPage={widgetPage} 
+                                        switcher={!!widgetPage}
                                     />
-                                </styled.WidgetButtonWrapper>
+                                </Wrapper>
                             )
                         case 'dashboards':
                             return (
-                                <styled.WidgetButtonWrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
                                     <WidgetButton
                                         key={ind}
                                         id={stationID}
                                         type={'dashboards'}
                                         label={'Dashboards'}
                                         currentPage={widgetPage}
+                                        switcher={!!widgetPage}
                                     />
-                                </styled.WidgetButtonWrapper>
+                                </Wrapper>
                             )
                         case 'view':
                             return (
-                                <styled.WidgetButtonWrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
+                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
                                     <WidgetButton
                                         key={ind}
                                         id={stationID}
                                         type={'view'}
                                         label={'View'}
                                         currentPage={widgetPage}
+                                        switcher={!!widgetPage}
                                     />
-                                </styled.WidgetButtonWrapper>
+                                </Wrapper>
                             )
 
                         default:
@@ -209,23 +214,25 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
-                        <styled.WidgetButtonWrapper idx={0} numItems={2} radius={widgetRadius}>
+                        <Wrapper idx={0} numItems={2} radius={widgetRadius}>
                             <WidgetButton
                                 id={stationID}
                                 type={'statistics'}
                                 label={'Statistics'}
                                 currentPage={widgetPage}
+                                switcher={!!widgetPage}
                             />
-                        </styled.WidgetButtonWrapper>
+                        </Wrapper>
 
-                        <styled.WidgetButtonWrapper idx={1} numItems={2} radius={widgetRadius}>
+                        <Wrapper idx={1} numItems={2} radius={widgetRadius}>
                             <WidgetButton
                                 id={stationID}
                                 type={'dashboards'}
                                 label={'Dashboards'}
                                 currentPage={widgetPage}
+                                switcher={!!widgetPage}
                             />
-                        </styled.WidgetButtonWrapper>
+                        </Wrapper>
                     </>
 
                 )
@@ -242,6 +249,7 @@ const Widgets = (props) => {
                             coordinateMove={true}
                             currentPage={widgetPage}
                             label={'Send Cart Here'}
+                            switcher={!!widgetPage}
                         />
                     </styled.WidgetButtonWrapper>
                     <styled.WidgetButtonWrapper idx={1} numItems={2} radius={widgetRadius}>
@@ -249,6 +257,7 @@ const Widgets = (props) => {
                             id={stationID}
                             type={'cancel'}
                             currentPage={widgetPage}
+                            switcher={!!widgetPage}
                         />
                     </styled.WidgetButtonWrapper>
                 </>
@@ -263,6 +272,7 @@ const Widgets = (props) => {
                         type={'cart'}
                         label={'Send Cart Here'}
                         currentPage={widgetPage}
+                        switcher={!!widgetPage}
                     />
                 </styled.WidgetButtonWrapper>
             )
@@ -317,11 +327,9 @@ const Widgets = (props) => {
 
     return (
         <>
-            {!!widgetPage &&
-                <styled.WidgetBlurContainer />
-            }
+
             {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
-            
+            {!widgetPage ?
                 <styled.WidgetLocationContainer
                     id={hoveringInfo.id}
                     onMouseEnter={() => {
@@ -342,13 +350,12 @@ const Widgets = (props) => {
 
                     // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
                     style={{ 
-                        opacity: !!widgetPage ? '0' : '1',
+                        opacity: !widgetPage && element === null ? '0' : '1',
                         height: `calc(${widgetRadius} * 2)`,
                         width: `calc(${widgetRadius} * 2)`,
                     }}
                 >
-                    {!!selectedLocation &&
-
+                    {!!selectedLocation&&
                         <CSSTransitionGroup
                             transitionName={'expand'}
                             transitionAppear={true}
@@ -367,12 +374,16 @@ const Widgets = (props) => {
 
                 </styled.WidgetLocationContainer>
             
+            :
 
-            {!!widgetPage &&
-                <>
-                    <WidgetPages />
-                </>
-            }
+            <>
+                <styled.WidgetBlurContainer />
+                <styled.WidgetButtonRow>
+                    {renderWidgetButtons}
+                </styled.WidgetButtonRow>
+                <WidgetPages />
+            </>
+        }
 
         </>
     )

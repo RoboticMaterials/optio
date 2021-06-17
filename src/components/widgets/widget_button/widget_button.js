@@ -28,6 +28,7 @@ const WidgetButton = (props) => {
         id,
         coordinateMove,
         label,
+        switcher,
         toggle,
     } = props
 
@@ -182,7 +183,6 @@ const WidgetButton = (props) => {
         dispatchDashboardOpen(true)
     }
 
-
     return (
         <styled.WidgetButtonButton
             onClick={() => {
@@ -190,8 +190,10 @@ const WidgetButton = (props) => {
                 handleOnClick()
 
             }}
+            switcher={switcher}
             pageID={type}
             currentPage={currentPage}
+            active={type === currentPage}
         >
             {type === 'view' ?
                 <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage} />
