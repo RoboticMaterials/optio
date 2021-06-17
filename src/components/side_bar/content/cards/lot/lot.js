@@ -266,7 +266,7 @@ const Lot = (props) => {
 
             {!!leadTime &&
                 <styled.FooterContainer>
-                    Completion: {leadTime}
+                    {leadTime}
                 </styled.FooterContainer>
             }
 
