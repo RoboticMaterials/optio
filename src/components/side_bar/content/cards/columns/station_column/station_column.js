@@ -47,7 +47,6 @@ const StationsColumn = ((props) => {
 
     const handleSaveCycleTime = () => {
         let station = deepCopy(stations[station_id])
-        console.log('QQQQ station', station)
         station.cycle_time = setTime
         dispatchPutStation(station)
     }
