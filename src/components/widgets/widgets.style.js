@@ -315,3 +315,20 @@ export const CloseButton = styled.i`
     z-index: 10000;
 
 `;
+
+
+export const LocationOverlay = styled.div`
+    cursor: pointer;
+    z-index: 100;
+
+    ${props => `
+        height: ${17*props.scale}px;
+        width: ${17*props.scale}px;
+        border-radius: ${2*props.scale}px;
+    `}
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+`

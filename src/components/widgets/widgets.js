@@ -361,6 +361,7 @@ const Widgets = (props) => {
                             transitionAppear={true}
                             transitionAppearTimeout={200}
                         >
+                            <styled.LocationOverlay scale={hoveringInfo.scale} onClick={() => onClickLocation()} />
                             <styled.WidgetButtonContainer widgetPage={widgetPage}>
                                 {renderWidgetButtons}
                                 <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>

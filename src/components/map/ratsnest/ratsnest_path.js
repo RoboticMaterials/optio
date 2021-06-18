@@ -22,6 +22,8 @@ export default function RatsnestPaths(props) {
 
     const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
     const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
+
+    if (!startPos || !endPos) {return null}
     
 
     return (
