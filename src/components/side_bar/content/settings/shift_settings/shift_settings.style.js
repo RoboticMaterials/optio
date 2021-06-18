@@ -47,4 +47,3 @@ export const Label = styled.label`
   font-family: ${props => props.theme.font.primary};
   color: ${props => props.theme.bg.octonary};
 `
-
