@@ -66,7 +66,7 @@ const StationsColumn = ((props) => {
                         Cycle Time
                     </styled.HeaderSectionTitle>
                     <styled.RowContainer>
-                        <styled.QuantityText style={{ marginRight: '.25rem' }}>Auto</styled.QuantityText>
+                        <styled.QuantityText style={{ marginRight: '.25rem', display: 'flex', alignItems: 'center' }}>Auto</styled.QuantityText>
                         <Switch
                             onColor='red'
                             checked={!!stations[station_id]?.manual_cycle_time}
@@ -74,7 +74,7 @@ const StationsColumn = ((props) => {
                                 handleEnableManualCycleTime()
                             }}
                         />
-                        <styled.QuantityText style={{ marginLeft: '.25rem' }}>Manual</styled.QuantityText>
+                        <styled.QuantityText style={{ marginLeft: '.25rem', display: 'flex', alignItems: 'center' }}>Manual</styled.QuantityText>
                     </styled.RowContainer>
 
 
