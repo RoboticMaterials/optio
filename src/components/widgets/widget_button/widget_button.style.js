@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { stationColor } from '../../../constants/station_constants'
+import {LightenDarkenColor} from "../../../methods/utils/color_utils";
 
 export const WidgetButtonButton = styled.button`
 
@@ -26,6 +27,10 @@ export const WidgetButtonButton = styled.button`
 
     &:active{
         box-shadow: none;
+    }
+
+    &:hover{
+      background: ${props => LightenDarkenColor(props.theme.bg.primary, -10)};
     }
 
     ${props => props.switcher &&
