@@ -30,7 +30,8 @@ const MapApps = (props) => {
 
 
     // handle if the mapApps hasnt been created in settings
-    if (!settings.mapApps) {
+    const hasAllKeys = (keys, obj) => keys.every(item => obj.hasOwnProperty(item));
+    if (!settings.mapApps || !hasAllKeys(['ratsnest', 'labels', 'heatmap'], settings.mapApps)) {
         const settingsCopy = deepCopy(settings)
         settingsCopy.mapApps = {
             ratsnest: true,
@@ -45,10 +46,10 @@ const MapApps = (props) => {
 
     return (
         <>
-        <Icon active={active} className="fa fa-chevron-up" onClick={() => setActive(!active)}/>
+        <Icon active={active} className="fa fa-ellipsis-v" onClick={() => setActive(!active)}/>
         {active &&
             <>
-            <Container style={{background: 'white', opacity: 0.3, width: 110*Object.keys(settings.mapApps).length}}/>
+            <Container style={{background: 'white', opacity: 0.3, height: 110*Object.keys(settings.mapApps).length}}/>
             <Container>
                 {Object.keys(settings.mapApps).map(app => (
                     <MapApp appName={app} enabled={settings.mapApps[app]} onClick={() => toggleMapApp(app)} />
@@ -63,20 +64,23 @@ const MapApps = (props) => {
 
 const Icon = styled.i`
     position: absolute;
-    bottom: 0;
-    right: 1rem;
+    bottom: 0px;
+    right: 0px;
 
-    transform: ${props => props.active ? 'scaleY(-1)' : 'scaleY(1)'};
-    transition: transform 100ms ease;
+    // transform: ${props => props.active ? 'scaleX(-1)' : 'scaleX(1)'};
+    // transition: transform 100ms ease;
 
     border: none;
-    background: none;
+    background: ${props => props.active ? 'rgba(240, 240, 255, 0.2)' : 'none'};
     color: ${props => props.theme.bg.octonary};
     text-align: center;
 
-    font-size: 3rem;
-    margin: 20px;
+    font-size: 2rem;
+    margin: 10px 10px;
     width: 70px;
+    height: 70px;
+    line-height: 70px;
+    border-radius: 35px;
 
     cursor: pointer;
     &:focus {outline:0;}
@@ -85,16 +89,20 @@ const Icon = styled.i`
         font-size: 3rem;
     }
 
+    &:hover {
+        background: rgba(240, 240, 255, 0.3);
+    }
+
 `
 
 const Container = styled.div`
     position: absolute;
-    right: 1rem;
-    bottom: 70px;
+    bottom: 90px;
+    right: 10px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column-reverse;
 
-    height: 110px;
+    width: 110px;
     border-radius: 10px;
 `
 
