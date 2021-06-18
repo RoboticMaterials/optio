@@ -14,7 +14,7 @@ import PropTypes from "prop-types"
 import { getLotTotalQuantity, getMatchesFilter, getCardsInBin } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
-import { convertShiftDetailsToWorkingTime } from '../../../../../methods/utils/time_utils'
+import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
 
 // styles
 import * as styled from "./card_zone.style"
@@ -111,11 +111,15 @@ const CardZone = ((props) => {
         return date;
     }
 
+    // Useeffect for cycle times
+    // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
         deleteGetCycleTimes()
 
-    }, [shiftDetails, allCards])
+    }, [shiftDetails, allCards, stations])
 
+    // This function calculates cycle time based on the throughput of that day
+    // PROBABLY SHOULD DELETE THIS
     const deleteGetCycleTimes = async () => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
@@ -126,24 +130,36 @@ const CardZone = ((props) => {
 
         for (const ind in processStations) {
             const stationID = processStations[ind]
-            const response = await getStationAnalytics(stationID, body)
-            // dataPromise.then(response => {
 
-            const throughput = response.throughPut
-            let sum = 0
-            throughput.forEach((dataPoint) => {
-                if (!!dataPoint.null) {
-                    sum += dataPoint?.null
+            const station = stations[stationID]
+            if (!!station?.manual_cycle_time && !!station?.cycle_time) {
+                const seconds = convertHHMMSSStringToSeconds(station.cycle_time)
+                stationCycleTimes =
+                {
+                    ...stationCycleTimes,
+                    [stationID]: seconds,
+
                 }
-            })
-
-            stationCycleTimes =
-            {
-                ...stationCycleTimes,
-                [stationID]: sum != 0 ? workingTime / sum : 0,
-
             }
-            // })
+            else {
+                const response = await getStationAnalytics(stationID, body)
+                const throughput = response.throughPut
+                let sum = 0
+                throughput.forEach((dataPoint) => {
+                    if (!!dataPoint.null) {
+                        sum += dataPoint?.null
+                    }
+                })
+
+                stationCycleTimes =
+                {
+                    ...stationCycleTimes,
+                    [stationID]: sum != 0 ? workingTime / sum : 0,
+
+                }
+            }
+
+
         }
         setDeleteStationCycleTime(stationCycleTimes)
     }
@@ -346,7 +362,7 @@ const CardZone = ((props) => {
 
         setCards(cardsWLeadTime || {})
 
-    }, [shiftDetails, allCards])
+    }, [shiftDetails, allCards, deleteStationCycleTime])
 
     // need to loop through the process's routes first and get all station ids involved in the process
     // this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
