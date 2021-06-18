@@ -22,6 +22,9 @@ const HeatMap = (props) => {
     const cards = useSelector(state => state.cardsReducer.cards)
 	const routes = useSelector(state => state.tasksReducer.tasks)
 
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
+
     let stations = useSelector(state => state.stationsReducer.stations)
     stations = Object.values(stations).filter(station => (station.map_id === map_id))
 
@@ -90,7 +93,7 @@ const HeatMap = (props) => {
                     <stop offset="100%" style={{stopColor: '#ff6800', stopOpacity: spotEndOpacity}} />
                 </radialGradient>
             </defs>
-            {
+            {!editingStation && !editingPosition &&
                 stations.map(station => 
                     station._id in stationWIPRatios && 
                         <HeatSpot 
