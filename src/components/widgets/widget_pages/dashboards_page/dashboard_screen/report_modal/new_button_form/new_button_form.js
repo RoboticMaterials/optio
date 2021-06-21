@@ -177,7 +177,7 @@ const NewButtonForm = (props) => {
                             type={"button"}
                             iconClassName={iconClassName}
                             iconColor={color}
-                            containerStyle={{ height: '4rem', minHeight: "4rem", lineHeight: '3rem', width: '80%', alignSelf: "center", marginBottom: "1rem" }}
+                            containerStyle={{ height: '4rem', minHeight: "4rem", width: '80%', alignSelf: "center", marginBottom: "1rem" }}
                             hoverable={false}
                             color={color}
                             disabled={false}
