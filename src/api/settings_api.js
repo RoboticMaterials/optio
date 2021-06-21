@@ -20,11 +20,9 @@ export async function getSettings() {
             // token: token.username
         });
         // Success 🎉
-        log.debug('getSettings response', response);
         const data = response.data;
 
         const dataJson = JSON.parse(data)
-        log.debug('getSettings dataJson', dataJson);
         return dataJson;
 
         // const settings = {
