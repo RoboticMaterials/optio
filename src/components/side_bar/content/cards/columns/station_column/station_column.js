@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { SortableContainer } from "react-sortable-hoc";
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
+import Switch from 'react-ios-switch';
 
+import { useTheme } from "styled-components";
 import * as styled from "./station_column.style";
 
 // Import Components
@@ -34,49 +36,86 @@ const StationsColumn = ((props) => {
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
 
     const stations = useSelector(state => state.stationsReducer.stations)
+    const theme = useTheme()
 
     const [isCollapsed, setCollapsed] = useState(false)
     const [setTime, setSetTime] = useState(!!stations[station_id]?.cycle_time ? stations[station_id]?.cycle_time : '00:00:00')
+    const [enable, setEnable] = useState(false)
 
     const handleConvertMoment = (time) => {
         const splitVal = time.split(':')
         return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1], 'second': splitVal[2] })
     }
 
-    const handleSaveCycleTime = () => {
+    const handleSaveCycleTime = (time) => {
         let station = deepCopy(stations[station_id])
-        station.cycle_time = setTime
+        station.cycle_time = time
+        dispatchPutStation(station)
+    }
+
+    const handleEnableManualCycleTime = () => {
+        let station = deepCopy(stations[station_id])
+        station.manual_cycle_time = !station?.manual_cycle_time
         dispatchPutStation(station)
     }
 
     const renderCycleTime = () => {
         return (
-            <styled.HeaderSection>
-                <styled.HeaderSectionTitle>
-                    Cycle Time
-                </styled.HeaderSectionTitle>
-                <TimePicker
-                    showHours={true}
-                    showMinutes={true}
-                    // format={'HH:mm:ss'}
-                    defaultValue={handleConvertMoment(setTime)}
-                    // value={setTime}
-                    onChange={(val) => {
-                        setSetTime(val.format('HH:mm:ss'))
-                    }}
-                    style={{ width: '8rem' }}
-                    allowEmpty={false}
-                />
-                <Button
-                    label={'Save'}
-                    secondary
-                    onClick={() => {
-                        handleSaveCycleTime()
-                    }}
-                    schema={'lots'}
-                />
+            <>
+                <styled.divider />
+                <styled.HeaderSection style={{ marginTop: '.5rem' }}>
+                    <styled.HeaderSectionTitle>
+                        Cycle Time
+                    </styled.HeaderSectionTitle>
+                    <styled.RowContainer>
+                        <styled.QuantityText style={{ marginRight: '.25rem', display: 'flex', alignItems: 'center' }}>Auto</styled.QuantityText>
+                        <Switch
+                            onColor={theme.schema.lots.solid}
+                            style={{transform: 'scale(0.8)'}}
+                            checked={!!stations[station_id]?.manual_cycle_time}
+                            onChange={() => {
+                                handleEnableManualCycleTime()
+                            }}
+                        />
+                        <styled.QuantityText style={{ marginLeft: '.25rem', display: 'flex', alignItems: 'center' }}>Manual</styled.QuantityText>
+                    </styled.RowContainer>
 
-            </styled.HeaderSection>
+
+                </styled.HeaderSection>
+
+                <styled.HeaderSection style={{ opacity: !stations[station_id]?.manual_cycle_time && '50%' }}>
+                    <styled.HeaderSectionTitle style={{ fontSize: '1rem' }}>
+                        Manual Cycle Time
+                    </styled.HeaderSectionTitle>
+
+                    <TimePicker
+                        showHours={true}
+                        showMinutes={true}
+                        // format={'HH:mm:ss'}
+                        defaultValue={handleConvertMoment(setTime)}
+                        // value={setTime}
+                        onChange={(val) => {
+                            setSetTime(val.format('HH:mm:ss'))
+                            handleSaveCycleTime(val.format('HH:mm:ss'))
+                        }}
+                        style={{ width: '10rem' }}
+                        allowEmpty={false}
+                        disabled={!stations[station_id]?.manual_cycle_time}
+                    />
+                    {/* <Button
+                        label={'Save'}
+                        secondary
+                        onClick={() => {
+                            handleSaveCycleTime()
+                        }}
+                        schema={'lots'}
+                        disabled={!stations[station_id]?.manual_cycle_time}
+                    /> */}
+
+                </styled.HeaderSection>
+                <styled.divider />
+
+            </>
         )
     }
 
@@ -132,7 +171,7 @@ const StationsColumn = ((props) => {
                                 </div>
 
                             </styled.HeaderRow>
-                            {/* {renderCycleTime()} */}
+                            {renderCycleTime()}
                         </styled.StationHeader>
                     )
                 }

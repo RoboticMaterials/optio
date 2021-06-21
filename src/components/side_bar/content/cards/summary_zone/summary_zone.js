@@ -104,7 +104,7 @@ const SummaryZone = ((props) => {
 									selectedFilterOption={selectedFilterOption}
 									setShowCardEditor={setShowCardEditor}
 									showCardEditor={showCardEditor}
-									maxHeight={"30rem"}
+									maxHeight={"50rem"}
 									processId={processId}
 									handleCardClick={handleCardClick}
 								/>

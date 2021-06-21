@@ -33,10 +33,11 @@ const ShiftSettings = (props) => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
-    const settingsInReducer = useSelector(state=>state.settingsReducer.settings)
+    const settingsInReducer = useSelector(state => state.settingsReducer.settings)
+
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-    const [breaksEnabled, setBreaksEnabled] = useState({})
     const [settings,setSettings] = useState(settingsInReducer)
+    const [breaksEnabled, setBreaksEnabled] = useState({})
     const shiftDetails = settings.shiftDetails;
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
@@ -185,7 +186,7 @@ const ShiftSettings = (props) => {
                                             }}
                                             name={breakStart}
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                            containerStyle={{ width: '5rem' }}
+                                            containerStyle={{ width: '6.5rem' }}
                                             showHour={true}
                                             showMinute={true}
                                             showSecond={false}
