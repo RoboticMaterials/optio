@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 import { Formik, Form } from 'formik'
@@ -8,6 +8,7 @@ import TextField from '../../../../basic/form/text_field/text_field.js'
 import Textbox from '../../../../basic/textbox/textbox'
 import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field'
 import Switch from '../../../../basic/form/switch_field/switch_field'
+import Button from '../../../../basic/button/button'
 
 // Import Styles
 import * as styled from './shift_settings.style'
@@ -26,6 +27,18 @@ const ShiftSettings = (props) => {
         themeContext,
         enableOutput,
     } = props
+
+    const formRef = useRef(null)	// gets access to form state
+
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        initialValues = {},
+        touched = {}
+    } = current || {}
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -57,6 +70,13 @@ const ShiftSettings = (props) => {
         return () => {
         }
     }, [settings])
+
+    useEffect(() => {
+      if(JSON.stringify(initialValues)!==JSON.stringify(values) && Object.keys(touched).length>0){
+        dispatchPageDataChanged(true)
+      }
+      else dispatchPageDataChanged(false)
+    }, [values])
 
     // Submits the shift details to the backend via settings
     const onSubmitShift = (values) => {
@@ -262,10 +282,12 @@ const ShiftSettings = (props) => {
             validateOnChange={true}
             validateOnMount={false}
             validateOnBlur={false}
+            innerRef = {formRef}
 
             onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm }) => {
 
                 setSubmitting(true)
+                console.log('submittttt')
                 onSubmitShift(values)
                 setSubmitting(false)
                 setTouched({})
@@ -280,13 +302,10 @@ const ShiftSettings = (props) => {
                     values,
                     errors,
                     touched,
-                    initialValues
+                    initialValues,
+                    setSubmitting,
+                    validateForm
                 } = formikProps
-
-
-                if (Object.keys(touched).length > 0) {
-                    dispatchPageDataChanged(true)
-                }
 
                 return (
                     <Form
@@ -397,8 +416,7 @@ const ShiftSettings = (props) => {
                         {/* <styled.RowContainer>
 
         </styled.RowContainer> */}
-                        <styled.ChartButton type={'submit'}>{!!enableOutput ? 'Calculate and Save' : 'Save'}</styled.ChartButton>
-
+                        <Button schema={'settings'}  type={'submit'} style = {{margin: '.5rem 0rem 0rem 0rem'}}>Save</Button>
 
                     </Form>
                 )
