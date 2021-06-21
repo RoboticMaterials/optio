@@ -31,14 +31,15 @@ const ShiftSettings = (props) => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
-    const settings = useSelector(state => state.settingsReducer.settings)
-
+    const settingsInReducer = useSelector(state=>state.settingsReducer.settings)
     const [breaksEnabled, setBreaksEnabled] = useState({})
+    const [settings,setSettings] = useState(settingsInReducer)
     const shiftDetails = settings.shiftDetails;
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below for more details
     useEffect(() => {
+      console.log('QQQQ here')
 
         // If there's shift details
         if (!!settings.shiftDetails) {
@@ -113,7 +114,7 @@ const ShiftSettings = (props) => {
 
         return (
             <>
-                <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
+                <styled.RowContainer style={{ width:'100%', minWidth: '20rem' }}>
 
                     <styled.RowContainer style={{ width: '100%' }}>
 
@@ -121,12 +122,12 @@ const ShiftSettings = (props) => {
                     <styled.RowContainer>
                         <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
                             <styled.BreakLabel>
-                                Start of Break
+                                Start Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                         <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
                             <styled.BreakLabel>
-                                End of Break
+                                End Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                     </styled.RowContainer>
@@ -148,7 +149,7 @@ const ShiftSettings = (props) => {
                         return (
                             <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
 
-                                <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                                <styled.RowContainer style={{ justifyContent: 'spaceAround', width: '100%', marginTop: '.25rem', marginRight: '1rem' }}>
                                     <styled.Label>{breakName}</styled.Label>
                                     <Switch
                                         name={switchName}
@@ -299,8 +300,7 @@ const ShiftSettings = (props) => {
                         }}
                     >
                         <styled.ColumnContainer>
-                            <styled.Label>Shift Details</styled.Label>
-                            <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                            <styled.RowContainer style={{ justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                 <styled.Label>
                                     Start of Shift
                             </styled.Label>
@@ -319,7 +319,7 @@ const ShiftSettings = (props) => {
                                     }}
                                     name={'startOfShift'}
                                     style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                    containerStyle={{ width: '6rem' }}
+                                    containerStyle={{ width: '7rem' }}
                                     showHour={true}
                                     formikProps
                                     showSecond={false}
@@ -332,7 +332,7 @@ const ShiftSettings = (props) => {
                                     defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                 />
                             </styled.RowContainer>
-                            <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                            <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: '1px solid #b8b9bf', marginBottom: '0.5rem', paddingBottom: '0.5rem'}}>
                                 <styled.Label>
                                     End of Shift
                             </styled.Label>
@@ -350,7 +350,7 @@ const ShiftSettings = (props) => {
                                         return convert12hto24h(value.format('hh:mm a'))
                                     }}
                                     name={'endOfShift'}
-                                    containerStyle={{ width: '6rem' }}
+                                    containerStyle={{ width: '7rem' }}
                                     style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                     showHour={true}
                                     showSecond={false}
@@ -362,6 +362,12 @@ const ShiftSettings = (props) => {
                                     defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                     defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                 />
+                            </styled.RowContainer>
+
+                            <styled.RowContainer style={{ justifyContent: 'space-between', }}>
+                                <styled.Label>
+                                    Breaks
+                            </styled.Label>
                             </styled.RowContainer>
                             {!!enableOutput &&
                                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
@@ -386,7 +392,6 @@ const ShiftSettings = (props) => {
 
                         </styled.ColumnContainer>
                         <styled.BreakContainer>
-                            <styled.Label>Breaks</styled.Label>
                             {renderBreaks}
                         </styled.BreakContainer>
                         {/* <styled.RowContainer>

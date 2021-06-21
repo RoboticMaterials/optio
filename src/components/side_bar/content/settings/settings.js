@@ -372,7 +372,7 @@ const Settings = () => {
     const renderShiftSettings = () => {
         return (
             <>
-                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start'}}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem'}}>
                     <styled.SwitchContainerLabel>Show Shift Settings</styled.SwitchContainerLabel>
 
                     <styled.ChevronIcon
