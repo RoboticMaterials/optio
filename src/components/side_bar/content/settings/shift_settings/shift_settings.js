@@ -31,9 +31,10 @@ const ShiftSettings = (props) => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
-    const settings = useSelector(state => state.settingsReducer.settings)
+    const settingsInReducer = useSelector(state => state.settingsReducer.settings)
 
     const [breaksEnabled, setBreaksEnabled] = useState({})
+    const [settings, setSettings] = useState(settingsInReducer)
     const shiftDetails = settings.shiftDetails;
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
