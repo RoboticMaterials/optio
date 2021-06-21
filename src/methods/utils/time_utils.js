@@ -214,3 +214,15 @@ export const convertShiftDetailsToWorkingTime = (shiftDetails) => {
     return workingTime
 
 }
+
+// Converts time string to 
+export const convertHHMMSSStringToSeconds = (timeStr) => {
+    let [hour, minute, second] = timeStr.split(':')
+
+    hour = parseInt(hour)
+    minute = parseInt(minute)
+    second = parseInt(second)
+
+    const totalSeconds = hour * 60 * 60 + minute * 60 + second
+    return totalSeconds
+}

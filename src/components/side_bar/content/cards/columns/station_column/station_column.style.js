@@ -131,6 +131,8 @@ export const HeaderSection = styled.div`
     align-items: center;
     width:100%;
     justify-content: space-between;
+    align-content: center;
+    margin: 0.2rem 0;
     /* position: absolute; */
     /* right: 1rem; */
 
@@ -140,4 +142,17 @@ export const HeaderSectionTitle = styled.h5`
     text-align: center;
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
+`
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+`
+
+export const divider = styled.hr`
+    border-top: .05rem solid;
+    border-color: ${props => props.theme.bg.quaternary};
+    border-radius: .25rem;
+    width: 100%;
+    margin: 0;
 `
