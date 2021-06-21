@@ -147,9 +147,9 @@ const ShiftSettings = (props) => {
                         const breakStart = `startOfBreak${adjustedInd}`
                         const breakEnd = `endOfBreak${adjustedInd}`
                         return (
-                            <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
+                            <styled.RowContainer style={{width:'100%', minWidth: '20rem' }}>
 
-                                <styled.RowContainer style={{ justifyContent: 'spaceAround', width: '100%', marginTop: '.25rem', marginRight: '1rem' }}>
+                                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem', marginRight: '1rem' }}>
                                     <styled.Label>{breakName}</styled.Label>
                                     <Switch
                                         name={switchName}
@@ -217,7 +217,7 @@ const ShiftSettings = (props) => {
                                             }}
                                             name={breakEnd}
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                            containerStyle={{ width: '6rem' }}
+                                            containerStyle={{ width: '6rem', marginLeft: '1rem' }}
                                             showHour={true}
                                             showMinute={true}
                                             showSecond={false}
