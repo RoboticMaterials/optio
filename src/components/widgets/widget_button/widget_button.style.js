@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { stationColor } from '../../../constants/station_constants'
-
+import {LightenDarkenColor} from '../../../methods/utils/color_utils';
 export const WidgetButtonButton = styled.button`
 
     display:flex;
@@ -27,6 +27,9 @@ export const WidgetButtonButton = styled.button`
     &:active{
         box-shadow: none;
     }
+    &:hover{
+      background: ${props => !props.currentPage && LightenDarkenColor(props.theme.bg.primary, -10)};
+    }
 
     ${props => props.switcher &&
     `
@@ -35,20 +38,21 @@ export const WidgetButtonButton = styled.button`
         border-radius: 0.4rem;
         transform: none;
         margin: 0 0.2rem;
+        padding-top: .6rem;
     `
     }
 
     ${props => props.active &&
     `
-        background: ${props.theme.bg.tertiary};
+        background: ${props.theme.bg.primary};
     `
     }
 `;
 export const WidgetButtonText = styled.h4`
-    font-size: 0.6rem;
+    font-size: ${props => props.currentPage ? '.8rem': '0.6rem'};
     font-family: ${props => props.theme.font.primary};
-
-    color: ${stationColor};
+    padding-top: ${props=>props.currentPage && '0.2rem'};
+    color: ${props=>props.active || !props.currentPage ? stationColor : props.theme.bg.quaternary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
 
@@ -57,8 +61,8 @@ export const WidgetButtonText = styled.h4`
 
 
 export const WidgetButtonIcon = styled.i`
-    font-size: 1.8rem;
-    color: ${stationColor};
+    font-size: ${props => props.currentPage ? '2rem': '1.8rem'};
+    color: ${props=>props.active || !props.currentPage ? stationColor : props.theme.bg.quaternary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;
