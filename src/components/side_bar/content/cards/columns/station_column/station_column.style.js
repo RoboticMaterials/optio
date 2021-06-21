@@ -131,6 +131,8 @@ export const HeaderSection = styled.div`
     align-items: center;
     width:100%;
     justify-content: space-between;
+    align-content: center;
+    margin: 0.2rem 0;
     /* position: absolute; */
     /* right: 1rem; */
 

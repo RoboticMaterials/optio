@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 import Switch from 'react-ios-switch';
 
+import { useTheme } from "styled-components";
 import * as styled from "./station_column.style";
 
 // Import Components
@@ -35,6 +36,7 @@ const StationsColumn = ((props) => {
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
 
     const stations = useSelector(state => state.stationsReducer.stations)
+    const theme = useTheme()
 
     const [isCollapsed, setCollapsed] = useState(false)
     const [setTime, setSetTime] = useState(!!stations[station_id]?.cycle_time ? stations[station_id]?.cycle_time : '00:00:00')
@@ -45,9 +47,9 @@ const StationsColumn = ((props) => {
         return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1], 'second': splitVal[2] })
     }
 
-    const handleSaveCycleTime = () => {
+    const handleSaveCycleTime = (time) => {
         let station = deepCopy(stations[station_id])
-        station.cycle_time = setTime
+        station.cycle_time = time
         dispatchPutStation(station)
     }
 
@@ -68,7 +70,8 @@ const StationsColumn = ((props) => {
                     <styled.RowContainer>
                         <styled.QuantityText style={{ marginRight: '.25rem', display: 'flex', alignItems: 'center' }}>Auto</styled.QuantityText>
                         <Switch
-                            onColor='red'
+                            onColor={theme.schema.lots.solid}
+                            style={{transform: 'scale(0.8)'}}
                             checked={!!stations[station_id]?.manual_cycle_time}
                             onChange={() => {
                                 handleEnableManualCycleTime()
@@ -93,12 +96,13 @@ const StationsColumn = ((props) => {
                         // value={setTime}
                         onChange={(val) => {
                             setSetTime(val.format('HH:mm:ss'))
+                            handleSaveCycleTime(val.format('HH:mm:ss'))
                         }}
-                        style={{ width: '5rem' }}
+                        style={{ width: '10rem' }}
                         allowEmpty={false}
                         disabled={!stations[station_id]?.manual_cycle_time}
                     />
-                    <Button
+                    {/* <Button
                         label={'Save'}
                         secondary
                         onClick={() => {
@@ -106,7 +110,7 @@ const StationsColumn = ((props) => {
                         }}
                         schema={'lots'}
                         disabled={!stations[station_id]?.manual_cycle_time}
-                    />
+                    /> */}
 
                 </styled.HeaderSection>
                 <styled.divider />

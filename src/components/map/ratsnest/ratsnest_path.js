@@ -26,13 +26,13 @@ export default function RatsnestPaths(props) {
 
     return (
         <>
-            <g>
+            {/* <g>
                 <line x1={`${startPos.x}`} y1={`${startPos.y}`}
                     x2={`${endPos.x}`} y2={`${endPos.y}`}
                     strokeWidth={`${d3Scale * 0.8}`} stroke={'lightgrey'}
                     strokeLinecap="round"
                 />
-            </g>
+            </g> */}
         </>
     )
 }
