@@ -57,7 +57,7 @@ const DashboardLotList = () => {
             // Get the corresponding task q
             const currTaskQueue = taskQueue[currDevice.current_task_queue_id]
 
-            if(!currTaskQueue) return true
+            if (!currTaskQueue) return true
 
             // Get the coresponding route
             const currRoute = routes[currTaskQueue?.task_id]
@@ -148,7 +148,9 @@ const DashboardLotList = () => {
                 setSelectedFilterOption={setSelectedFilterOption}
                 containerStyle={{ justifyContent: 'center' }}
             />
-            {renderLotCards}
+            <styled.LotCardContainer>
+                {renderLotCards}
+            </styled.LotCardContainer>
         </styled.LotListContainer>
     )
 
