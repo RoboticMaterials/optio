@@ -117,25 +117,23 @@ const ShiftSettings = (props) => {
 
         return (
             <>
-                <styled.RowContainer style={{ width:'100%', minWidth: '20rem' }}>
-
-                    <styled.RowContainer style={{ width: '100%' }}>
-
-                    </styled.RowContainer>
-                    <styled.RowContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                    <styled.RowContainer style = {{width: '100%'}}>
+                      <styled.ColumnContainer style={{ margin: '.25rem', flex: '3'}}>
+                          <styled.BreakLabel>
+                              Break #
+                      </styled.BreakLabel>
+                      </styled.ColumnContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '2rem'}}>
                             <styled.BreakLabel>
                                 Start Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '1.5rem'}}>
                             <styled.BreakLabel>
                                 End Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                     </styled.RowContainer>
-                </styled.RowContainer>
-
                 {
                     numberOfBreaks.map((bk, ind) => {
                         const adjustedInd = ind + 1
@@ -145,14 +143,14 @@ const ShiftSettings = (props) => {
                         // This also allows to enable a break, but not effect the graph until submitted
                         const breakEnabled = breaksEnabled[ind]
 
-                        const breakName = `Break ${adjustedInd}`
+                        const breakName = `${adjustedInd}`
                         const switchName = `switch${adjustedInd}`
                         const breakStart = `startOfBreak${adjustedInd}`
                         const breakEnd = `endOfBreak${adjustedInd}`
                         return (
                             <styled.RowContainer style={{width:'100%', minWidth: '20rem' }}>
 
-                                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem', marginRight: '1rem' }}>
+                                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem'}}>
                                     <styled.Label>{breakName}</styled.Label>
                                     <Switch
                                         name={switchName}
