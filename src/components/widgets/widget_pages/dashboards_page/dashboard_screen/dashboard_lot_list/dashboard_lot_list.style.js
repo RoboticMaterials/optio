@@ -3,10 +3,17 @@ import * as commonCss from '../../../../../../common_css/common_css'
 
 
 export const LotListContainer = styled.div`
-    ${commonCss.rowContainer}
+    ${commonCss.columnContainer}
     justify-content: center;
-    overflow: auto;
-    flex-wrap: wrap;
     padding: 1rem;
+    width: 100%;
+    overflow: auto;
+
+`
+
+export const LotCardContainer = styled.div`
+    ${commonCss.rowContainer}
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
 `
