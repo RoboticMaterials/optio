@@ -40,11 +40,11 @@ export const RowContainer = styled.div`
     ${commonCss.rowContainer};
     justify-content: space-around;
     position: relative;
+    padding-left: .5rem
 `
 
 export const Label = styled.label`
-  font-size: ${props => props.theme.fontSize.sz3};
+  font-size: 1rem;
   font-family: ${props => props.theme.font.primary};
   color: ${props => props.theme.bg.octonary};
 `
-

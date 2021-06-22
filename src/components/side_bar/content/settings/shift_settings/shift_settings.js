@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo} from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 import { Formik, Form } from 'formik'
@@ -8,6 +8,7 @@ import TextField from '../../../../basic/form/text_field/text_field.js'
 import Textbox from '../../../../basic/textbox/textbox'
 import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field'
 import Switch from '../../../../basic/form/switch_field/switch_field'
+import Button from '../../../../basic/button/button'
 
 // Import Styles
 import * as styled from './shift_settings.style'
@@ -27,19 +28,22 @@ const ShiftSettings = (props) => {
         enableOutput,
     } = props
 
+
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settingsInReducer = useSelector(state => state.settingsReducer.settings)
 
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
+    const [settings,setSettings] = useState(settingsInReducer)
     const [breaksEnabled, setBreaksEnabled] = useState({})
-    const [settings, setSettings] = useState(settingsInReducer)
     const shiftDetails = settings.shiftDetails;
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below for more details
     useEffect(() => {
+      console.log('QQQQ here')
 
         // If there's shift details
         if (!!settings.shiftDetails) {
@@ -114,25 +118,23 @@ const ShiftSettings = (props) => {
 
         return (
             <>
-                <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
-
-                    <styled.RowContainer style={{ width: '100%' }}>
-
-                    </styled.RowContainer>
-                    <styled.RowContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                    <styled.RowContainer style = {{width: '100%'}}>
+                      <styled.ColumnContainer style={{ margin: '.25rem', flex: '3'}}>
+                          <styled.BreakLabel>
+                              Break #
+                      </styled.BreakLabel>
+                      </styled.ColumnContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '2rem'}}>
                             <styled.BreakLabel>
-                                Start of Break
+                                Start Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '1.5rem'}}>
                             <styled.BreakLabel>
-                                End of Break
+                                End Time
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                     </styled.RowContainer>
-                </styled.RowContainer>
-
                 {
                     numberOfBreaks.map((bk, ind) => {
                         const adjustedInd = ind + 1
@@ -142,14 +144,14 @@ const ShiftSettings = (props) => {
                         // This also allows to enable a break, but not effect the graph until submitted
                         const breakEnabled = breaksEnabled[ind]
 
-                        const breakName = `Break ${adjustedInd}`
+                        const breakName = `${adjustedInd}`
                         const switchName = `switch${adjustedInd}`
                         const breakStart = `startOfBreak${adjustedInd}`
                         const breakEnd = `endOfBreak${adjustedInd}`
                         return (
-                            <styled.RowContainer style={{ alignItems: 'center', width:'100%', minWidth: '20rem' }}>
+                            <styled.RowContainer style={{width:'100%', minWidth: '20rem' }}>
 
-                                <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem'}}>
                                     <styled.Label>{breakName}</styled.Label>
                                     <Switch
                                         name={switchName}
@@ -217,7 +219,7 @@ const ShiftSettings = (props) => {
                                             }}
                                             name={breakEnd}
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                            containerStyle={{ width: '6.5rem' }}
+                                            containerStyle={{ width: '6rem', marginLeft: '1rem' }}
                                             showHour={true}
                                             showMinute={true}
                                             showSecond={false}
@@ -261,7 +263,7 @@ const ShiftSettings = (props) => {
             validationSchema={throughputSchema}
             validateOnChange={true}
             validateOnMount={false}
-            validateOnBlur={false}
+            validateOnBlur={true}
 
             onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm }) => {
 
@@ -280,9 +282,10 @@ const ShiftSettings = (props) => {
                     values,
                     errors,
                     touched,
-                    initialValues
+                    initialValues,
+                    setSubmitting,
+                    validateForm
                 } = formikProps
-
 
                 if (Object.keys(touched).length > 0) {
                     dispatchPageDataChanged(true)
@@ -300,8 +303,7 @@ const ShiftSettings = (props) => {
                         }}
                     >
                         <styled.ColumnContainer>
-                            <styled.Label>Shift Details</styled.Label>
-                            <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                            <styled.RowContainer style={{ justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                 <styled.Label>
                                     Start of Shift
                             </styled.Label>
@@ -320,7 +322,7 @@ const ShiftSettings = (props) => {
                                     }}
                                     name={'startOfShift'}
                                     style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                    containerStyle={{ width: '6rem' }}
+                                    containerStyle={{ width: '7rem' }}
                                     showHour={true}
                                     formikProps
                                     showSecond={false}
@@ -333,7 +335,7 @@ const ShiftSettings = (props) => {
                                     defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                 />
                             </styled.RowContainer>
-                            <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                            <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: '1px solid #b8b9bf', marginBottom: '0.5rem', paddingBottom: '0.5rem'}}>
                                 <styled.Label>
                                     End of Shift
                             </styled.Label>
@@ -351,7 +353,7 @@ const ShiftSettings = (props) => {
                                         return convert12hto24h(value.format('hh:mm a'))
                                     }}
                                     name={'endOfShift'}
-                                    containerStyle={{ width: '6rem' }}
+                                    containerStyle={{ width: '7rem' }}
                                     style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                     showHour={true}
                                     showSecond={false}
@@ -363,6 +365,12 @@ const ShiftSettings = (props) => {
                                     defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                     defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                 />
+                            </styled.RowContainer>
+
+                            <styled.RowContainer style={{ justifyContent: 'space-between', }}>
+                                <styled.Label>
+                                    Breaks
+                            </styled.Label>
                             </styled.RowContainer>
                             {!!enableOutput &&
                                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
@@ -387,14 +395,12 @@ const ShiftSettings = (props) => {
 
                         </styled.ColumnContainer>
                         <styled.BreakContainer>
-                            <styled.Label>Breaks</styled.Label>
                             {renderBreaks}
                         </styled.BreakContainer>
                         {/* <styled.RowContainer>
 
         </styled.RowContainer> */}
-                        <styled.ChartButton type={'submit'}>{!!enableOutput ? 'Calculate and Save' : 'Save'}</styled.ChartButton>
-
+                        <Button schema={'settings'} disabled = {!pageInfoChanged} type={'submit'} style = {{margin: '.5rem 0rem 0rem 0rem'}}>{!!enableOutput ? 'Calculate and Save' : 'Save Shift Details'}</Button>
 
                     </Form>
                 )
