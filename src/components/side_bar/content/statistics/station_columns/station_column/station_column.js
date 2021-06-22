@@ -132,9 +132,11 @@ const StationColumn = (props) => {
                     aria-hidden="true"
                     onClick={() => setCollapsed(false)}
                 />
-                <styled.StationTitle rotated={true}>
-                    {currentStation.name}
-                </styled.StationTitle>
+                <styled.StationDiv>
+                  <styled.StationTitle rotated={true}>
+                      {currentStation.name}
+                  </styled.StationTitle>
+                </styled.StationDiv>
             </styled.StationCollapsedContainer >
             :
             <styled.StationColumnContainer >
@@ -143,7 +145,7 @@ const StationColumn = (props) => {
                         className="fa fa-chevron-down"
                         aria-hidden="true"
                         onClick={() => setCollapsed(true)} />
-                    <styled.StationTitle>{currentStation.name}  {!showReport && ' - Output'}</styled.StationTitle> 
+                    <styled.StationTitle>{currentStation.name}  {!showReport && ' - Output'}</styled.StationTitle>
                 </styled.StationColumnHeader >
 
                 {showReport ?

@@ -47,4 +47,3 @@ export const CollapseIcon = styled.i`
     /* top: 50%; */
     /* transform: translateY(-50%); */
 `
-

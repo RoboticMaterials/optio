@@ -20,15 +20,15 @@ export const StationContainerCss = css`
 	display: flex;
     flex-direction: column;
     min-height: ${minHeight};
-    
+
     width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     max-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     min-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     margin-right: 1rem;
-    
+
     border-radius: 1rem;
     overflow: hidden;
-    
+
     color: ${props => props.theme.bg.octonary};
 `
 
@@ -83,6 +83,8 @@ export const RouteContainer = styled.div`
 export const LabelContainer = styled.div`
 	display: flex;
 	align-items: center;
+	white-space: nowrap;
+	overflow: hidden;
 	// justify-content: space-between;
 `
 
