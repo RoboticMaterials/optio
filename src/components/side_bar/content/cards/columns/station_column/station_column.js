@@ -85,7 +85,7 @@ const StationsColumn = ((props) => {
 
                 <styled.HeaderSection style={{ opacity: !stations[station_id]?.manual_cycle_time && '50%' }}>
                     <styled.HeaderSectionTitle style={{ fontSize: '1rem' }}>
-                        Manual Cycle Time
+                        Manual Cycle Time (HH:MM:SS)
                     </styled.HeaderSectionTitle>
 
                     <TimePicker
@@ -98,7 +98,7 @@ const StationsColumn = ((props) => {
                             setSetTime(val.format('HH:mm:ss'))
                             handleSaveCycleTime(val.format('HH:mm:ss'))
                         }}
-                        style={{ width: '10rem' }}
+                        style={{ width: '5rem' }}
                         allowEmpty={false}
                         disabled={!stations[station_id]?.manual_cycle_time}
                     />
