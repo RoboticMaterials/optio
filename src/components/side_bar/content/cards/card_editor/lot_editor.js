@@ -705,9 +705,8 @@ const FormComponent = (props) => {
     const renderSelectedProcess = () => {
         return (
             <styled.ProcessFieldContainer>
-
                 <styled.ContentHeader style={{ marginBottom: ".5rem" }}>
-                    <styled.ContentTitle>Selected Process:</styled.ContentTitle>
+                    <styled.ContentTitle>Selected Process: {processes[values.processId].name}</styled.ContentTitle>
                 </styled.ContentHeader>
             </styled.ProcessFieldContainer>
 
