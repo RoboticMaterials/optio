@@ -150,6 +150,11 @@ export const theme = {
                 solid: '#b385ff',
                 iconName: "fas fa-play"
             },
+            merge: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(235, 52, 97, 0.95) 0%, rgba(235, 52, 189, 0.95) 100%)',
+                solid: '#eb3461',
+                iconName: "fas fa-object-group"
+            },
             statistics: {
                 solid: "#54AAFF",
             },

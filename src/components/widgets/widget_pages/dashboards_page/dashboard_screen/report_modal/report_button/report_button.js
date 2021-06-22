@@ -40,7 +40,6 @@ const ReportButton = (props) => {
 				containerStyle={{
 					height: '4rem',
 					minHeight: "4rem",
-					lineHeight: '3rem',
 					margin: '0.5rem auto',
 					flex: 1,
 					width: "unset",

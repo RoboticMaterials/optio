@@ -52,8 +52,11 @@ const defaultState = {
     pending: false,
     enableLogger: '',
     muteReducer: false,
-    deviceEnabled: false,
     apiSim: false,
+
+    mapApps: {
+        heatmap: true
+    }
 }
 
 export const mirUrl = (state = defaultState) => {

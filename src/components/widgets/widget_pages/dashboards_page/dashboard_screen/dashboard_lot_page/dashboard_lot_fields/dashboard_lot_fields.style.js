@@ -10,4 +10,6 @@ export const LotFieldsContainer = styled.div`
     padding: 1rem;
     border-radius: .5rem;
     align-self: center;
+
+    margin-bottom: 2rem;
 `

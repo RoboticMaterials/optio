@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import * as styled from '../../charts.style'
 
 // Import components
-import LineThroughputForm from './line_throughput_form'
+import ShiftSettings from '../../../../../../../side_bar/content/settings/shift_settings/shift_settings'
 
 // Import Charts
 import { ResponsiveLine } from '@nivo/line'
@@ -60,6 +60,11 @@ const LineThroughputChart = (props) => {
                 startIndex = i
                 break
             }
+        }
+
+        // If startIndex is undefined, then the start of the shift is after any data points
+        if(startIndex === undefined){
+            startIndex = dataCopy.length
         }
 
         // Convert end of shift to epoch
@@ -426,7 +431,7 @@ const LineThroughputChart = (props) => {
                         <>
                             { showForm &&
                                 <div style={{ flexGrow: '3' }}>
-                                    <LineThroughputForm themeContext={themeContext} />
+                                    <ShiftSettings themeContext={themeContext} />
                                 </div>
                             }
                             <styled.FormIcon onClick={() => setShowForm(!showForm)} className="fas fa-cog" />

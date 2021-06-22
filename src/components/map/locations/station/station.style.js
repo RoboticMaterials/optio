@@ -18,3 +18,8 @@ export const WorkstationGroup = styled.g`
     stroke-width: 0;
     opacity: 0.8;
 `
+
+export const StationLabel = styled.h1`
+    color: red;
+    position: relative;
+`

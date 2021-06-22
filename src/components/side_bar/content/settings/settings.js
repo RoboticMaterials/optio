@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TimezoneSelect from 'react-timezone-select'
 
@@ -9,13 +9,20 @@ import TimezonePicker, { timezones } from 'react-timezone';
 import Button from "../../../basic/button/button";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ContentHeader from '../content_header/content_header'
-import { Timezones } from '../../../../constants/timezone_constants'
 import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TaskAddedAlert from "../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import ShiftSettings from './shift_settings/shift_settings'
+
+// Import Constants
 import { ADD_TASK_ALERT_TYPE } from "../../../../constants/dashboard_constants";
+import { Timezones } from '../../../../constants/timezone_constants'
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+
+// Import Styles
 import * as styled from './settings.style'
+import { ThemeContext } from 'styled-components';
+
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
@@ -41,7 +48,7 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
     const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
@@ -49,24 +56,24 @@ const Settings = () => {
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const deviceEnabledSetting = serverSettings.deviceEnabled
-    const localReducer = useSelector(state => state.localReducer.localSettings)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const {
         currentMap,
         maps
     } = mapReducer
+
     const [serverSettingsState, setServerSettingsState] = useState(serverSettings)
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
-    const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
-    const [selectedTimezone, setSelectedTimezone] = useState({})
-
+    const [showShiftSettings, setShowShiftSettings] = useState(false)
     const [confirmUnlock, setConfirmUnlock] = useState(false)
     const [confirmLock, setConfirmLock] = useState(false)
     const [addTaskAlert, setAddTaskAlert] = useState(null);
+
+    const themeContext = useContext(ThemeContext);
+
 
     /**
      *  Sets current settings to state so that changes can be discarded or saved
@@ -217,7 +224,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer >
 
-                <styled.RowContainer style={{ justifyContent: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
                     <styled.SwitchContainerLabel>Show Developer Settings</styled.SwitchContainerLabel>
 
                     <styled.ChevronIcon
@@ -352,13 +359,40 @@ const Settings = () => {
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateServerSettings({currentMapId: values[0]._id})
+                            handleUpdateServerSettings({ currentMapId: values[0]._id })
                         }}
                         className="w-100"
                     />
                 </styled.RowContainer>
 
             </styled.SettingContainer>
+        )
+    }
+
+    const renderShiftSettings = () => {
+        return (
+            <>
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem'}}>
+                    <styled.SwitchContainerLabel>Show Shift Settings</styled.SwitchContainerLabel>
+
+                    <styled.ChevronIcon
+                        className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
+                        style={{ color: 'black' }}
+                        onClick={() => {
+                            setShowShiftSettings(!showShiftSettings)
+                        }}
+                    />
+
+                </styled.RowContainer>
+                {!!showShiftSettings &&
+                    <styled.ShiftSettingsContainer>
+                        <ShiftSettings
+                            themeContext={themeContext}
+                            enableOutput={false}
+                        />
+                    </styled.ShiftSettingsContainer>
+                }
+            </>
         )
     }
 
@@ -440,9 +474,12 @@ const Settings = () => {
             {MapViewEnabled()}
             {CurrentMap()}
             {TimeZone()}
-            {APIAddress()}
             {LockUnlockAllDashboards()}
+            {renderShiftSettings()}
+
+            {APIAddress()}
             {SignOut()}
+
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

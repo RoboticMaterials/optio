@@ -35,6 +35,9 @@ import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_wayp
 
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
+import HeatMap from '../../components/map/heatmap/heatmap'
+import RatsNest from '../../components/map/ratsnest/ratsnest'
+import MapApps from '../../components/map/map_apps/map_apps'
 
 // logging
 import log from "../../logger"
@@ -582,10 +585,11 @@ export class MapView extends Component {
           }
         const { translate, scale } = this.d3;
 
-
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
+
+                    <MapApps />
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
@@ -691,25 +695,38 @@ export class MapView extends Component {
 
                         {!!this.state.resolution && !!this.mapImage &&
                             <>
+
+                                {this.props.settings.mapApps.heatmap &&
+                                    <HeatMap map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
+                                }
+
+                                {this.props.settings.mapApps.ratsnest &&
+                                    <RatsNest map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
+                                }
+
+                                
+
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
                                         .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
-                                            <Station
-                                                key={`loc-${ind}`}
-                                                // If there is a selected station, then render the selected station vs station in redux
-                                                // Selected station could contain local edits that are not on the backend (naked redux) yet
-                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
-                                                // station={station}
-                                                rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
-                                                d3={this.d3}
-                                                handleEnableDrag={this.onEnableDrag}
-                                                handleDisableDrag={this.onDisableDrag}
-                                                // Mouse down is used to disabling hovering when the mouse is down on the map
-                                                mouseDown={this.mouseDown}
-                                            />
+                                            <>
+                                                <Station
+                                                    key={`loc-${ind}`}
+                                                    // If there is a selected station, then render the selected station vs station in redux
+                                                    // Selected station could contain local edits that are not on the backend (naked redux) yet
+                                                    station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                    // station={station}
+                                                    rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
+                                                    d3={this.d3}
+                                                    handleEnableDrag={this.onEnableDrag}
+                                                    handleDisableDrag={this.onDisableDrag}
+                                                    // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                    mouseDown={this.mouseDown}
+                                                />
+                                            </>
                                         )
                                 }</>
 

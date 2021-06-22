@@ -7,7 +7,7 @@ import * as styled from './statistics_header.style'
 import SortDropdown from '../../../../basic/sort_dropdown/sort_dropdown'
 
 // Import Components
-import LineThroughputForm from '../../../../widgets/widget_pages/statistics_page/statistics_overview/charts/throughput_chart/line_throughput_chart/line_throughput_form'
+import ShiftSettings from '../../../content/settings/shift_settings/shift_settings'
 import DaySelector from '../../../../basic/day_selector/day_selector'
 import TimeSpanSelector from '../../../../basic/timespan_selector/time_span_selector'
 
@@ -38,7 +38,7 @@ const StatisticsHeader = (props) => {
     const renderShiftSettings = () => {
         return (
             <styled.ShiftSettingsContainer>
-                <LineThroughputForm themeContext={themeContext} />
+                <ShiftSettings themeContext={themeContext} />
             </styled.ShiftSettingsContainer>
         )
     }
