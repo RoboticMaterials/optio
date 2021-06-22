@@ -40,9 +40,18 @@ export const StationColumnHeader = styled.div`
 export const StationTitle = styled.p`
     font-size: ${props => props.theme.fontSize.sz3};
     text-overflow: ellipsis;
+    white-space: nowrap;
     color: ${props => props.theme.textColor};
     margin: 0;
     transform: ${props => !!props.rotated && 'rotate(90deg)'};
+`
+
+export const StationDiv = styled.div`
+    width: 100%;
+    padding: 1rem;
+    height: 80%;
+    align-content: center;
+    overflow: hidden;
 `
 
 export const CollapseIcon = styled.i`
