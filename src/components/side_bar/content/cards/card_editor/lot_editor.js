@@ -122,7 +122,8 @@ const FormComponent = (props) => {
         loaded,
         cardNames,
         useCardFields,
-        setUseCardFields
+        setUseCardFields,
+        merge
     } = props
 
     const {
@@ -1007,7 +1008,7 @@ const FormComponent = (props) => {
                                                 </Button>
                                             }
 
-                                            {!disabledAddButton &&
+                                            {!disabledAddButton && !merge &&
                                                 <Button
                                                     schema={'lots'}
                                                     type={"button"}
@@ -1019,6 +1020,20 @@ const FormComponent = (props) => {
                                                     }}
                                                 >
                                                     Add & Next
+                                                </Button>
+                                            }
+                                            {!!merge &&
+                                                <Button
+                                                    schema={'lots'}
+                                                    type={"button"}
+                                                    secondary
+                                                    disabled={submitDisabled}
+                                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
+                                                    onClick={async () => {
+                                                        onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_MOVE)
+                                                    }}
+                                                >
+                                                    Add & Move Lot to Next Station
                                                 </Button>
                                             }
                                         </>
@@ -1176,6 +1191,7 @@ const LotEditor = (props) => {
         onValidate,
         onPasteIconClick,
         cardNames,
+        merge,
     } = props
 
     // redux state
@@ -1355,7 +1371,7 @@ const LotEditor = (props) => {
                                     return false
                                 }
 
-                                onSubmit && onSubmit()
+                                onSubmit && onSubmit(values, buttonType)
 
                                 let requestResult
 
@@ -1516,6 +1532,10 @@ const LotEditor = (props) => {
                                         resetForm()
                                         close()
                                         break
+                                    case FORM_BUTTON_TYPES.ADD_AND_MOVE:
+                                        resetForm()
+                                        close()
+                                        break
                                     case FORM_BUTTON_TYPES.MOVE_OK:
                                         resetForm()
                                         close()
@@ -1570,6 +1590,7 @@ const LotEditor = (props) => {
                                     setContent={setContent}
                                     card={card}
                                     onPasteIconClick={onPasteIconClick}
+                                    merge={merge}
                                 />
                             )
                         }}
