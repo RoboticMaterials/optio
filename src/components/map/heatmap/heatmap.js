@@ -34,8 +34,8 @@ const HeatMap = (props) => {
     useEffect(() => {
 
         let WIPBuildupRatios = {};    // The WIP ratios of each station on the map (stationWIP / meanProcessWIP) (refer to meanProcessWIP (~line 45))
+        const processStations = getProcessStationsSorted(process, routes);
         processes.forEach(process => {
-            const processStations = getProcessStationsSorted(process, routes);
 
             let totalProcessWIP = 0;    // Tracks total WIP in the process
             let stationWIP = {}         // Tracks WIP at each station in the process (by id)
