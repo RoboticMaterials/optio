@@ -60,10 +60,11 @@ import {
     uniqueNameSchema,
     getCardSchema,
 } from "../../../../../methods/utils/form_schemas";
-import { getProcessStations } from "../../../../../methods/utils/processes_utils";
+import { getProcessStations, getNextStationInProcess } from "../../../../../methods/utils/processes_utils";
 import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import { formatLotNumber, getDisplayName } from "../../../../../methods/utils/lot_utils";
+import { deepCopy } from '../../../../../methods/utils/utils'
 
 // import styles
 import * as styled from "./lot_editor.style"
@@ -1030,7 +1031,11 @@ const FormComponent = (props) => {
                                                     disabled={submitDisabled}
                                                     style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
                                                     onClick={async () => {
-                                                        onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_MOVE)
+                                                        // For Merge and Move, you need to take the bins value and move the location to the next one of that current bin location
+                                                        let copyValues = deepCopy(values)
+                                                        const nextStation = getNextStationInProcess(processes[values.processId], Object.keys(values.bins)[0])
+                                                        copyValues.bins = { [nextStation._id]: Object.values(values.bins)[0] }
+                                                        onSubmit(copyValues, FORM_BUTTON_TYPES.ADD_AND_MOVE)
                                                     }}
                                                 >
                                                     Merge & Move Lot to Next Station
@@ -1506,14 +1511,8 @@ const LotEditor = (props) => {
                                             fields,
                                             syncWithTemplate
                                         }
-                                        console.log('QQQQ posting', submitItem)
-
-                                        if(buttonType === FORM_BUTTON_TYPES.ADD_AND_MOVE) {
-                                            
-                                        }
 
                                         requestResult = await onPostCard(submitItem)
-
 
                                         if (!(requestResult instanceof Error)) {
                                             const {
