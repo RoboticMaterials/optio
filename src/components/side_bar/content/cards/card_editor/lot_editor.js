@@ -1004,7 +1004,7 @@ const FormComponent = (props) => {
                                                         onSubmit(values, FORM_BUTTON_TYPES.ADD)
                                                     }}
                                                 >
-                                                    Add
+                                                    {!!merge ? 'Merge' : 'Add'}
                                                 </Button>
                                             }
 
@@ -1033,7 +1033,7 @@ const FormComponent = (props) => {
                                                         onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_MOVE)
                                                     }}
                                                 >
-                                                    Add & Move Lot to Next Station
+                                                    Merge & Move Lot to Next Station
                                                 </Button>
                                             }
                                         </>
@@ -1496,7 +1496,6 @@ const LotEditor = (props) => {
 
                                     // create (POST)
                                     else {
-
                                         const submitItem = {
                                             name,
                                             bins,
@@ -1506,6 +1505,11 @@ const LotEditor = (props) => {
                                             lotNumber,
                                             fields,
                                             syncWithTemplate
+                                        }
+                                        console.log('QQQQ posting', submitItem)
+
+                                        if(buttonType === FORM_BUTTON_TYPES.ADD_AND_MOVE) {
+                                            
                                         }
 
                                         requestResult = await onPostCard(submitItem)
