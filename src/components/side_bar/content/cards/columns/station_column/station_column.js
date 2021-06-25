@@ -29,8 +29,11 @@ const StationsColumn = ((props) => {
         sortMode,
         sortDirection,
         selectedCards,
-        setSelectedCards
+        setSelectedCards,
+        autoCycleTime
     } = props
+
+    console.log('QQQQ auto cycle', autoCycleTime)
 
     const dispatch = useDispatch()
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
@@ -39,7 +42,7 @@ const StationsColumn = ((props) => {
     const theme = useTheme()
 
     const [isCollapsed, setCollapsed] = useState(false)
-    const [setTime, setSetTime] = useState(!!stations[station_id]?.cycle_time ? stations[station_id]?.cycle_time : '00:00:00')
+    const [setTime, setSetTime] = useState(!!stations[station_id]?.cycle_time ? stations[station_id]?.cycle_time : !!autoCycleTime ? autoCycleTime : '00:00:00')
     const [enable, setEnable] = useState(false)
 
     const handleConvertMoment = (time) => {

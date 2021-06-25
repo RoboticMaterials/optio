@@ -25,6 +25,9 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lo
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
 
+// Import API
+import { getStationCycleTime } from '../../../../../api/stations_api'
+
 
 const CardZone = ((props) => {
 
@@ -123,13 +126,14 @@ const CardZone = ((props) => {
     const deleteGetCycleTimes = async () => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
-        const body = { timespan: 'day', index: 0 }
-        const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
+        // const body = { timespan: 'day', index: 0 }
+        // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
         for (const ind in processStations) {
             const stationID = processStations[ind]
+
 
             const station = stations[stationID]
             if (!!station?.manual_cycle_time && !!station?.cycle_time) {
@@ -142,19 +146,11 @@ const CardZone = ((props) => {
                 }
             }
             else {
-                const response = await getStationAnalytics(stationID, body)
-                const throughput = response.throughPut
-                let sum = 0
-                throughput.forEach((dataPoint) => {
-                    if (!!dataPoint.null) {
-                        sum += dataPoint?.null
-                    }
-                })
-
+                const cycleTime = await getStationCycleTime(stationID)
                 stationCycleTimes =
                 {
                     ...stationCycleTimes,
-                    [stationID]: sum != 0 ? workingTime / sum : 0,
+                    [stationID]: cycleTime,
 
                 }
             }
@@ -521,6 +517,7 @@ const CardZone = ((props) => {
                     route_id={route_id}
                     cards={cardsArr}
                     onCardClick={handleCardClick}
+                    autoCycleTime={deleteStationCycleTime[station_id]}
                 />
             )
         })
