@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -17,7 +17,7 @@ import Textbox from '../basic/textbox/textbox'
 
 import * as styled from './sign_in_up_page.style'
 
-import {loaderCSS} from './sign_in_up_page.style'
+import { loaderCSS } from './sign_in_up_page.style'
 
 import PropagateLoader from "react-spinners/PropagateLoader";
 
@@ -62,6 +62,7 @@ const SignInUpPage = (props) => {
     } = props
 
     const [email, setEmail] = useState('')
+    const [accessCode, setAccessCode] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [errorText, setErrorText] = useState('')
@@ -157,11 +158,13 @@ const SignInUpPage = (props) => {
         <Formik
             initialValues={{
                 email: email,
+                accessCode: accessCode,
                 password: password,
                 confirmPassword: confirmPassword,
             }}
             initialTouched={{
                 email: true,
+                accessCode: true,
                 password: true,
                 confirmPassword: true,
             }}
@@ -174,7 +177,7 @@ const SignInUpPage = (props) => {
 
             onChange={() => {
                 console.log('changing');
-              }}
+            }}
 
             onSubmit={async (values, { setSubmitting }) => {
 
@@ -193,7 +196,7 @@ const SignInUpPage = (props) => {
                     <Form
                         onKeyDown={
                             (keyEvent) => {
-                                if(keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
+                                if (keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
                                     setCapsLock(!capsLock)
                                 }
                                 else {
@@ -221,7 +224,19 @@ const SignInUpPage = (props) => {
                                 }}
                             />
 
-                            <div style={{display: 'flex', flexDirection: 'row'}}>
+                            {!signIn &&
+                                <TextField
+                                    name={"accessCode"}
+                                    placeholder='Enter Access Code'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        flexGrow: 1
+                                    }}
+                                />
+                            }
+
+                            <div style={{ display: 'flex', flexDirection: 'row' }}>
                                 {capsLock && <styled.CapsIconContainer><styled.CapsIcon className="fas fa-arrow-alt-circle-up" /></styled.CapsIconContainer>}
                                 <TextField
                                     name={"password"}
