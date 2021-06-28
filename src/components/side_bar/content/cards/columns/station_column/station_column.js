@@ -17,6 +17,7 @@ import { putStation } from '../../../../../../redux/actions/stations_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../../../methods/utils/utils'
+import { convertSecondsToHHMMSS } from '../../../../../../methods/utils/time_utils'
 
 const StationsColumn = ((props) => {
     const {
@@ -33,7 +34,6 @@ const StationsColumn = ((props) => {
         autoCycleTime
     } = props
 
-    console.log('QQQQ auto cycle', autoCycleTime)
 
     const dispatch = useDispatch()
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
@@ -42,13 +42,28 @@ const StationsColumn = ((props) => {
     const theme = useTheme()
 
     const [isCollapsed, setCollapsed] = useState(false)
-    const [setTime, setSetTime] = useState(!!stations[station_id]?.cycle_time ? stations[station_id]?.cycle_time : !!autoCycleTime ? autoCycleTime : '00:00:00')
-    const [enable, setEnable] = useState(false)
 
-    const handleConvertMoment = (time) => {
+    const handleDisplayTime = () => {
+
+        let time = '00:00:00'
+
+        // If there is a manual time and its enable then use that time
+        if (!!stations[station_id]?.cycle_time && !!stations[station_id]?.manual_cycle_time) {
+            time = stations[station_id].cycle_time
+        }
+
+        // Else if there is a auto cycle time then use that
+        else if (!!autoCycleTime) {
+            time = convertSecondsToHHMMSS(autoCycleTime)
+        }
+
+        // Split the time up
         const splitVal = time.split(':')
+
+        // Set it to a moment for the time picker
         return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1], 'second': splitVal[2] })
     }
+
 
     const handleSaveCycleTime = (time) => {
         let station = deepCopy(stations[station_id])
@@ -74,7 +89,7 @@ const StationsColumn = ((props) => {
                         <styled.QuantityText style={{ marginRight: '.25rem', display: 'flex', alignItems: 'center' }}>Auto</styled.QuantityText>
                         <Switch
                             onColor={theme.schema.lots.solid}
-                            style={{transform: 'scale(0.8)'}}
+                            style={{ transform: 'scale(0.8)' }}
                             checked={!!stations[station_id]?.manual_cycle_time}
                             onChange={() => {
                                 handleEnableManualCycleTime()
@@ -94,16 +109,13 @@ const StationsColumn = ((props) => {
                     <TimePicker
                         showHours={true}
                         showMinutes={true}
-                        // format={'HH:mm:ss'}
-                        defaultValue={handleConvertMoment(setTime)}
-                        // value={setTime}
+                        value={handleDisplayTime()}
                         onChange={(val) => {
-                            setSetTime(val.format('HH:mm:ss'))
                             handleSaveCycleTime(val.format('HH:mm:ss'))
                         }}
                         style={{ width: '5rem' }}
                         allowEmpty={false}
-                        disabled={!stations[station_id]?.manual_cycle_time}
+                    // disabled={!stations[station_id]?.manual_cycle_time}
                     />
                     {/* <Button
                         label={'Save'}

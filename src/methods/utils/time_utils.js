@@ -226,3 +226,9 @@ export const convertHHMMSSStringToSeconds = (timeStr) => {
     const totalSeconds = hour * 60 * 60 + minute * 60 + second
     return totalSeconds
 }
+
+// Convert Seconds to HHMMSS
+export const convertSecondsToHHMMSS = (seconds) => {
+    const date = new Date(seconds * 1000).toISOString().substr(11, 8)
+    return date
+}
