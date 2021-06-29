@@ -54,6 +54,7 @@ const ListView = (props) => {
     const dispatch = useDispatch()
     const history = useHistory()
     const params = useParams()
+
     const {
         dashboardID,
         editing,
@@ -61,11 +62,11 @@ const ListView = (props) => {
         stationID,
         warehouse
     } = params
-    console.log('hey')
 
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1025
+    const phoneView = windowWidth < 500
 
     const positions = useSelector(state => state.positionsReducer.positions)
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -349,7 +350,7 @@ const ListView = (props) => {
                             }
 
 
-                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
+                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }} phoneView = {phoneView}>{title}</styled.Title>
                     {handleTaskQueueStatus()}
 
                     {!!deviceEnabled &&

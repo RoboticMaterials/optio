@@ -12,8 +12,8 @@ export const ModalContainerCSS = styled(Modal)`
 	bottom: auto;
 	position: absolute;
 	z-index: 500;
-	
-	min-width: 30rem;
+
+	min-width: 15rem;
     max-width: 95%;
     width: ${isMobile && "95%"};
 
