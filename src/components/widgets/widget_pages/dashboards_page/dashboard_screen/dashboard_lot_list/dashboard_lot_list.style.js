@@ -16,4 +16,5 @@ export const LotCardContainer = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
+    overflow: auto;
 `
