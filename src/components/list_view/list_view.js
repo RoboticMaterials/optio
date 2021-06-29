@@ -13,7 +13,6 @@ import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_del
 import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
 import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
 import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
@@ -62,6 +61,7 @@ const ListView = (props) => {
         stationID,
         warehouse
     } = params
+    console.log('hey')
 
     const size = useWindowSize()
     const windowWidth = size.width
