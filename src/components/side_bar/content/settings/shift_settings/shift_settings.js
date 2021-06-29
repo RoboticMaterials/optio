@@ -18,8 +18,8 @@ import { throughputSchema } from '../../../../../methods/utils/form_schemas'
 import { convert12hto24h } from '../../../../../methods/utils/time_utils'
 
 // Import actions
-import {postSettings, putSettings} from '../../../../../../../../redux/actions/settings_actions'
-import { pageDataChanged } from '../../../../../../../../redux/actions/sidebar_actions'
+import {postSettings, putSettings} from '../../../../../redux/actions/settings_actions'
+import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
 const ShiftSettings = (props) => {
 

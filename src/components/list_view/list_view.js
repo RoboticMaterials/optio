@@ -19,7 +19,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import actions
 import { postStatus } from '../../redux/actions/status_actions'
-import {showLotScanModal} from '../../redux/actions/sidebar_actions'
+import { showLotScanModal } from '../../redux/actions/sidebar_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
@@ -142,17 +142,17 @@ const ListView = (props) => {
     }, [])
 
     useEffect(() => {
-      setFull(barcode.join(''))
+        setFull(barcode.join(''))
     }, [barcode])
 
     useEffect(() => {
-      //this is ridiculous but there are different codes for usb transmitter/bluetooth/wired to all need to be included to register different methods
-      if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
-            const enter = full.substring(full.length-5)
-            if(enter === 'Enter'){
+        //this is ridiculous but there are different codes for usb transmitter/bluetooth/wired to all need to be included to register different methods
+        if (full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
+            const enter = full.substring(full.length - 5)
+            if (enter === 'Enter') {
                 setBarcode([])
                 const splitLot = full.split('-')
-                let lotId = parseInt(splitLot[1].slice(0,-5))
+                let lotId = parseInt(splitLot[1].slice(0, -5))
                 setLotNum(lotId)
                 onScanLot(lotId)
                 setFull('')
@@ -162,48 +162,48 @@ const ListView = (props) => {
     }, [full])
 
     const logKey = (e) => {
-      setBarcode(barcode => [...barcode, e.key])
+        setBarcode(barcode => [...barcode, e.key])
     }
 
 
     const onScanLot = (id) => {
 
-      let binCount = 0
-      let statId = ""
-      let lotFound = false
+        let binCount = 0
+        let statId = ""
+        let lotFound = false
 
-      Object.values(cards).forEach((card) => {
-        if(card.lotNumber === id){
-          lotFound = true
-          Object.values(stations).forEach((station) => {
-            if(!!card.bins[station._id]){
-              binCount = binCount + 1
-              statId = station._id
+        Object.values(cards).forEach((card) => {
+            if (card.lotNumber === id) {
+                lotFound = true
+                Object.values(stations).forEach((station) => {
+                    if (!!card.bins[station._id]) {
+                        binCount = binCount + 1
+                        statId = station._id
+                    }
+                })
+
+                if (binCount > 1) {
+                    dispatchShowLotScanModal(true)
+                }
+                else if (binCount === 1 && !!statId) {
+                    setShowSettings(false)
+                    history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+                    setShowDashboards(true)
+                }
             }
-          })
+        })
 
-        if(binCount > 1){
-          dispatchShowLotScanModal(true)
+        if (id === 420 && lotFound === false) {
+            setShowSnoop(true)
+            return setTimeout(() => setShowSnoop(null), 2500)
         }
-        else if(binCount ===1 && !!statId){
-          setShowSettings(false)
-          history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
-          setShowDashboards(true)
-        }
-        }
-      })
 
-      if(id === 420 && lotFound === false){
-        setShowSnoop(true)
-        return setTimeout(() => setShowSnoop(null), 2500)
-      }
-
-      if(lotFound===false) {
-          setAddTaskAlert({
-              type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-              label: "This lot does not exist!",
-          })
-          return setTimeout(() => setAddTaskAlert(null), 2500)
+        if (lotFound === false) {
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+                label: "This lot does not exist!",
+            })
+            return setTimeout(() => setAddTaskAlert(null), 2500)
         }
     }
 
@@ -239,11 +239,7 @@ const ListView = (props) => {
             if (!!item.owner) {
 
                 // If the station is a device and the task q owner is that device then show the status
-<<<<<<< HEAD
-                if (!!devices[params.stationID] && item.owner === devices[params.stationID].id) {
-=======
                 if (!!devices[stationID] && item.owner === devices[stationID]._id) {
->>>>>>> development
 
                     let locationName = ''
 
@@ -272,11 +268,11 @@ const ListView = (props) => {
             <ScanLotModal
                 isOpen={!!showScanLotModal}
                 title={"This lot is split between multiple stations. Please pick a station"}
-                id = {lotNum}
+                id={lotNum}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => {
-                  dispatchShowLotScanModal(null)
+                    dispatchShowLotScanModal(null)
 
                 }}
 
@@ -290,10 +286,10 @@ const ListView = (props) => {
             />
 
             {!!showSnoop &&
-              <img
-               src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
-               alt="new"
-               />
+                <img
+                    src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
+                    alt="new"
+                />
             }
 
             <ClickNHold
@@ -305,52 +301,52 @@ const ListView = (props) => {
             >
                 <styled.Header>
 
-                            {(showDashboards) ?
-                              <>
-                                {!locked &&
-                                  <BounceButton
-                                      color={"black"}
-                                      onClick={() => {
-                                          setShowDashboards(false)
-                                          history.push('/locations')
-                                      }}
-                                      containerStyle={{
-                                          width: "3rem",
-                                          height: "3rem",
-                                          position: "relative"
-                                      }}
-                                  >
-
-                                      <styled.Icon
-                                          className={"fa fa-times"}
-                                      />
-                                  </BounceButton>
-                                }
-                              </>
-                                :
+                    {(showDashboards) ?
+                        <>
+                            {!locked &&
                                 <BounceButton
                                     color={"black"}
                                     onClick={() => {
-                                        setShowSettings(!showSettings)
-                                        if (showSettings) {
-                                            history.push(`/`)
-                                        }
-                                        else {
-                                            history.push(`/settings`)
-                                        }
+                                        setShowDashboards(false)
+                                        history.push('/locations')
                                     }}
-                                    active={showSettings}
                                     containerStyle={{
                                         width: "3rem",
                                         height: "3rem",
                                         position: "relative"
                                     }}
                                 >
+
                                     <styled.Icon
-                                        className={!showSettings ? "fa fa-cog" : "fa fa-times"}
+                                        className={"fa fa-times"}
                                     />
                                 </BounceButton>
                             }
+                        </>
+                        :
+                        <BounceButton
+                            color={"black"}
+                            onClick={() => {
+                                setShowSettings(!showSettings)
+                                if (showSettings) {
+                                    history.push(`/`)
+                                }
+                                else {
+                                    history.push(`/settings`)
+                                }
+                            }}
+                            active={showSettings}
+                            containerStyle={{
+                                width: "3rem",
+                                height: "3rem",
+                                position: "relative"
+                            }}
+                        >
+                            <styled.Icon
+                                className={!showSettings ? "fa fa-cog" : "fa fa-times"}
+                            />
+                        </BounceButton>
+                    }
 
 
                     <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
