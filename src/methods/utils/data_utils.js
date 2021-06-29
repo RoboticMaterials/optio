@@ -64,6 +64,7 @@ export const parseLotTemplate = (data) => parseItem(data, RESOURCE_JSON_KEYS[dat
 export const parseObject = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.OBJECT])
 export const parseSettings = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.SETTINGS])
 export const parseStation = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.STATION])
+export const parsePosition = (data) => parseItem(data, RESOURCE_JSON_KEYS[dataTypes.POSITION])
 export const parseDashboard = (dashboard) => {
   console.log('parseDashboard dashboard',dashboard)
   const {

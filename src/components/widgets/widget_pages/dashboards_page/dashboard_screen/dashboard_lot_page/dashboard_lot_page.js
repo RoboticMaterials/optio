@@ -260,7 +260,7 @@ const DashboardLotPage = (props) => {
                         {
                             ...rest,
                             hil_response: true,
-                            lot_id: lotId,
+                            lot_id: cardId,
                             quantity
                         }
                         , result._id)
