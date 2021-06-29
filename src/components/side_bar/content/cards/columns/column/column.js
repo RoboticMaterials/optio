@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import moment from 'moment';
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -24,6 +25,8 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
+import { getProcessStationsSorted } from '../../../../../../methods/utils/processes_utils'
+
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -120,7 +123,7 @@ const Column = ((props) => {
         // Get stations in this process (reversed list because cards further in process are processed first)
         const processStations = getProcessStationsSorted(processes[processId], routes).reverse()
 
-        if (station_id === 'FINISH') {	// No lead time once in finished bin
+        if (stationId === 'FINISH') {	// No lead time once in finished bin
             return;
         }
 
@@ -138,7 +141,7 @@ const Column = ((props) => {
             let stationCycleTime = stations[pStationId].cycle_time;
 
             // Once we get to this current station break. No need to deal with earlier stations in the process
-            if (pStationId === station_id) {
+            if (pStationId === stationId) {
                 bottleneckCycleTime = Math.max(bottleneckCycleTime, moment.duration(stationCycleTime).asSeconds());
                 break;
             }
@@ -276,7 +279,7 @@ const Column = ((props) => {
         } = payload
 
         if (oldProcessId !== processId) return false
-        // if(binId === station_id) return false
+        // if(binId === stationId) return false
         return true
     }
 
@@ -312,7 +315,7 @@ const Column = ((props) => {
                 binId: currBinId
             } = currLot || {}
 
-            if ((currBinId === station_id) && (i > addedIndex)) {
+            if ((currBinId === stationId) && (i > addedIndex)) {
                 addedIndex = i
             }
         }
@@ -385,7 +388,7 @@ const Column = ((props) => {
 
                 await dispatchSetDroppingLotId(cardId, binId)
 
-                if (!(binId === station_id)) {
+                if (!(binId === stationId)) {
                     const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
                     const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -396,7 +399,7 @@ const Column = ((props) => {
 
                     if (movedBin) {
                         // already contains items in bin
-                        if (oldBins[station_id] && movedBin) {
+                        if (oldBins[stationId] && movedBin) {
 
                             // handle updating lot
                             {
@@ -407,8 +410,8 @@ const Column = ((props) => {
                                     ...remainingPayload,
                                     bins: {
                                         ...remainingOldBins,
-                                        [station_id]: {
-                                            ...oldBins[station_id],
+                                        [stationId]: {
+                                            ...oldBins[stationId],
                                             count: oldCount + movedCount
                                         }
                                     }
@@ -534,7 +537,7 @@ const Column = ((props) => {
                         // const lotName = lots[lot_id] ? lots[lot_id].name : null
                         // const objectName = objects[object_id] ? objects[object_id].name : null
 
-                        const isSelected = getIsSelected(cardId, station_id)
+                        const isSelected = getIsSelected(cardId, stationId)
                         const isDragging = draggingLotId === cardId
                         const isHovering = hoveringLotId === cardId
 
@@ -572,7 +575,7 @@ const Column = ((props) => {
                                         flags={flags || []}
                                         index={index}
                                         lotId={cardId}
-                                        binId={station_id}
+                                        binId={stationId}
                                         onClick={(e) => {
                                             const payload = getBetweenSelected(cardId)
                                             onCardClick(
