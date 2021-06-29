@@ -26,6 +26,11 @@ import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_s
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import * as taskQueueActions from "../../../../../../redux/actions/task_queue_actions";
+import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
+import {CUSTOM_TASK_ID} from "../../../../../../constants/route_constants";
+import {deepCopy} from "../../../../../../methods/utils/utils";
+import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
 
 Modal.setAppElement('body');
 
@@ -61,11 +66,15 @@ const FinishModal = (props) => {
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+    const dispatchHandlePostTaskQueue = async (props) => await dispatch(taskQueueActions.handlePostTaskQueue(props))
+    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const finishEnabledDashboard = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const processCards = useSelector(state => { return state.cardsReducer.processCards })
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
+    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
 
     const [selectedLot, setSelectedLot] = useState(lotSelected ? processCards[lotID] : null)
@@ -118,53 +127,58 @@ const FinishModal = (props) => {
 
         // extract lot attributes
         const {
-            bins,
             name: cardName,
-            processId,
             id: cardId,
         } = card
 
-        if (quantity && quantity > 0) {
-            // extract first station's bin and queue bin from bins
-            const {
-                [stationId]: currentStationBin,
-                ["FINISH"]: finishBin,
-                ...unalteredBins
-            } = bins || {}
+        if(quantity && quantity > 0) {
 
-            const queueBinCount = finishBin?.count ? finishBin.count : 0
-            const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
-
-            // udpated card will maintain all of the cards previous attributes with the stationId and routeId updated
-            let updatedCard = {
-                ...card,                                // spread unaltered attributes
-                bins: {
-                    ...unalteredBins,                   // spread unaltered bins
-                    ["FINISH"]: {
-                        ...finishBin,              // spread unaltered attributes of station bin if it exists
-                        count: parseInt(queueBinCount) + parseInt(quantity)    // increment first station's count by the count of the queue
-                    }
+            // moving lot is handled through custom task
+            const custom = {
+                load: {
+                    station: stationId,
+                    instructions: "",
+                    position: null,
+                    sound: null,
                 },
+                unload: {
+                    station: "FINISH",
+                    instructions: "",
+                    position: null,
+                    sound: null,
+                },
+                handoff: true,
+                hil_response: null,
+                quantity: 1
             }
 
-            if (quantity < currentStationBinCount) {
-                updatedCard = {
-                    ...updatedCard,
-                    bins: {
-                        ...updatedCard.bins,
-                        [stationId]: {
-                            ...currentStationBin,
-                            count: parseInt(currentStationBinCount) - parseInt(quantity)
-                        }
-                    }
-                }
-            }
-
-            // send update action
-            const result = await onPutCard(updatedCard, cardId)
+            // first, post task queue
+            const result = await dispatchHandlePostTaskQueue({ hil_response: null, tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
 
             // check if request was successful
-            if (!(result instanceof Error)) {
+            if(!(result instanceof Error)) {
+
+                const {
+                    _id,
+                    dashboardID,
+                    dashboard,
+                    ...rest
+                } = result || {}
+
+                // now must update task queue item to move the lot
+                setTimeout(async () =>  {
+
+                    await disptachPutTaskQueue(
+                        {
+                            ...rest,
+                            hil_response: true,
+                            lot_id: lotId,
+                            quantity
+                        }
+                        , result._id)
+                    await dispatchGetCards()
+                }, 1000)
+
                 requestSuccessStatus = true
                 message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
             }

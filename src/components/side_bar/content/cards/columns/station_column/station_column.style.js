@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import {Container} from "react-smooth-dnd";
+import { Container } from "react-smooth-dnd";
 
 // export const RouteContainer = styled.div`
 //     display: flex;
@@ -20,15 +20,15 @@ export const StationContainerCss = css`
 	display: flex;
     flex-direction: column;
     min-height: ${minHeight};
-    
+
     width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     max-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     min-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     margin-right: 1rem;
-    
+
     border-radius: 1rem;
     overflow: hidden;
-    
+
     color: ${props => props.theme.bg.octonary};
 `
 
@@ -83,6 +83,8 @@ export const RouteContainer = styled.div`
 export const LabelContainer = styled.div`
 	display: flex;
 	align-items: center;
+	white-space: nowrap;
+	overflow: hidden;
 	// justify-content: space-between;
 `
 
@@ -123,4 +125,36 @@ export const BodyContainer = styled.div`
 	border-bottom-right-radius: 1rem;
 	border-bottom-left-radius: 1rem;
 	justify-content: center;
+`
+
+export const HeaderSection = styled.div`
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    width:100%;
+    justify-content: space-between;
+    align-content: center;
+    margin: 0.2rem 0;
+    /* position: absolute; */
+    /* right: 1rem; */
+
+`
+
+export const HeaderSectionTitle = styled.h5`
+    text-align: center;
+    color: ${props => props.theme.bg.septenary};
+    font-family: ${props => props.theme.font.primary};
+`
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+`
+
+export const divider = styled.hr`
+    border-top: .05rem solid;
+    border-color: ${props => props.theme.bg.quaternary};
+    border-radius: .25rem;
+    width: 100%;
+    margin: 0;
 `

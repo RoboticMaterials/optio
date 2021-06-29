@@ -18,6 +18,7 @@ const LotContainer = (props) => {
         binId,
         enableFlagSelector,
         containerStyle,
+        quantity,
         ...rest
     } = props
 
@@ -70,7 +71,7 @@ const LotContainer = (props) => {
             flags={flags || []}
             enableFlagSelector={enableFlagSelector}
             name={name}
-            count={count}
+            count={quantity ? quantity : count}
             id={lotId}
             isSelected={false}
             selectable={false}

@@ -22,12 +22,12 @@ export const generateDefaultRoute = (obj) => {
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: false,
-        mapId: currentMap.id,
+        handoff: true,
+        map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
-        obj: isString(obj) ? obj : null,
-        id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+        obj: obj? obj : null,
+        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
 
@@ -46,8 +46,8 @@ export const autoGenerateRoute = (obj) => {
     return {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: false,
-        mapId: currentMap.id,
+        handoff: true,
+        map_id: currentMap._id,
         load: {...defaultTask.load,
                station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
                position: routeConfirmationLocation,

@@ -39,7 +39,8 @@ const LocationList = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map.id === currentMapId)
+    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
     const {
         id: mapId
     } = currentMap || {}
@@ -79,7 +80,12 @@ const LocationList = (props) => {
 
     // this effect updates dashboardsArr
     useEffect(() => {
+      if(!!deviceEnabled){
         setDashboardsArr([...locationsArr, ...Object.values(devices)])
+      }
+      else{
+        setDashboardsArr([...locationsArr])
+      }
     }, [locationsArr, devices])
 
     return (

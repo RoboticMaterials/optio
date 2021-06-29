@@ -493,8 +493,6 @@ export const ProcessField = (props) => {
                         key={`li-${currIndex}`}
                     />
 
-
-
                     {/* If the process is broken and it's at the broken index, then show a button there to fix it */}
                     {(!!values.broken && currIndex === values.broken - 1) &&
 
@@ -802,6 +800,7 @@ export const ProcessField = (props) => {
                     :
                     <>
 
+                      <styled.ContentContainer>
                         <styled.AddRoutesContainer style = {{height: "auto"}}>
                             <>
                                 {handleAddBeginningRoute()}
@@ -820,34 +819,32 @@ export const ProcessField = (props) => {
 
 
                         {/* Delete Task Button */}
-                        <Button
-                            schema={'processes'}
-                            style = {{position: "absolute", bottom: "4rem", width: "90%"}}
-                            disabled={!!selectedTask && !!editingTask || submitDisabled}
-                            onClick={() => {
-                                onSave(values, true)
-                            }}
-                        >
-                            Save Process
-                        </Button>
+                        <styled.ColumnContainer>
+                          <Button
+                              schema={'processes'}
+                              disabled={!!selectedTask && !!editingTask || submitDisabled}
+                              onClick={() => {
+                                  onSave(values, true)
+                              }}
+                          >
+                              Save Process
+                          </Button>
 
-                        {/* Delete Task Button */}
-                        <Button
-                            schema={'error'}
-                            style = {{position: "absolute", bottom: "1rem", width: "90%"}}
-                            disabled={!!selectedProcess && !!selectedProcess.id && !!selectedProcess.new}
-                            secondary
-                            onClick={() => {
-                                setConfirmDeleteModal(true)
-                            }}
-                        >
-                            Delete Process
-                        </Button>
+                          {/* Delete Task Button */}
+                          <Button
+                              schema={'error'}
+                              disabled={!!selectedProcess && !!selectedProcess.id && !!selectedProcess.new}
+                              secondary
+                              onClick={() => {
+                                  setConfirmDeleteModal(true)
+                              }}
+                          >
+                              Delete Process
+                          </Button>
+                          </styled.ColumnContainer>
+                      </styled.ContentContainer>
                     </>
                 }
-
-
-
 
             </styled.Container>
         </>

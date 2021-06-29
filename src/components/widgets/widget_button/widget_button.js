@@ -28,6 +28,7 @@ const WidgetButton = (props) => {
         id,
         coordinateMove,
         label,
+        switcher,
         toggle,
     } = props
 
@@ -182,7 +183,6 @@ const WidgetButton = (props) => {
         dispatchDashboardOpen(true)
     }
 
-
     return (
         <styled.WidgetButtonButton
             onClick={() => {
@@ -190,27 +190,29 @@ const WidgetButton = (props) => {
                 handleOnClick()
 
             }}
+            switcher={switcher}
             pageID={type}
             currentPage={currentPage}
+            active={type === currentPage}
         >
             {type === 'view' ?
                 <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage} />
                 :
                 type === 'cancel' ?
                     <>
-                        <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
-                        <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{"Cancel"}</styled.WidgetButtonText>
+                    <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} active={type === currentPage} />
+                    <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{"Cancel"} active={type === currentPage}</styled.WidgetButtonText>
                     </>
                     :
                     type === 'lots' ?
                         <>
-                            <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
+                        <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} active={type === currentPage} />
+                        <styled.WidgetButtonText pageID={type} currentPage={currentPage} active={type === currentPage}>{label}</styled.WidgetButtonText>
                         </>
                         :
                         <>
-                            <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
+                        <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} active={type === currentPage} />
+                        <styled.WidgetButtonText pageID={type} currentPage={currentPage} active={type === currentPage}>{label}</styled.WidgetButtonText>
                         </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}

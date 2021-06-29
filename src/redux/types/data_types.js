@@ -22,3 +22,4 @@ export const REPORT_EVENT = 'REPORT_EVENT';
 export const REPORT_EVENTS = 'REPORT_EVENTS';
 export const DASHBOARDS = 'DASHBOARDS';
 export const DASHBOARD = 'DASHBOARD';
+export const SHOW_BARCODE_MODAL = 'SHOW_BARCODE_MODAL';

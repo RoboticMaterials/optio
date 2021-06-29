@@ -54,6 +54,15 @@ const StationColumn = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
+        onGetAllData()
+        const dataInterval = setInterval(() => onGetAllData(), 30000)
+
+        return () => {
+            clearInterval(dataInterval)
+        }
+    }, [showReport, timeSpan, dateIndex, sortLevel])
+
+    const onGetAllData = () => {
         if (!!showReport) {
             dispatchGetReportEvents() // load report events
 
@@ -63,7 +72,7 @@ const StationColumn = (props) => {
         } else {
             onGetThroughputData()
         }
-    }, [showReport, timeSpan, dateIndex, sortLevel])
+    }
 
     const onGetReportData = async (body) => {
         setLoading(true)
@@ -123,9 +132,11 @@ const StationColumn = (props) => {
                     aria-hidden="true"
                     onClick={() => setCollapsed(false)}
                 />
-                <styled.StationTitle rotated={true}>
-                    {currentStation.name}
-                </styled.StationTitle>
+                <styled.StationDiv>
+                  <styled.StationTitle rotated={true}>
+                      {currentStation.name}
+                  </styled.StationTitle>
+                </styled.StationDiv>
             </styled.StationCollapsedContainer >
             :
             <styled.StationColumnContainer >
@@ -134,7 +145,7 @@ const StationColumn = (props) => {
                         className="fa fa-chevron-down"
                         aria-hidden="true"
                         onClick={() => setCollapsed(true)} />
-                    <styled.StationTitle>{currentStation.name}  {!showReport && ' - Output'}</styled.StationTitle> 
+                    <styled.StationTitle>{currentStation.name}  {!showReport && ' - Output'}</styled.StationTitle>
                 </styled.StationColumnHeader >
 
                 {showReport ?

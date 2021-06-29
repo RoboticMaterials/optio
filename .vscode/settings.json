@@ -3,7 +3,12 @@
     "python.autoComplete.extraPaths": [
         "/opt/ros/melodic/lib/python2.7/dist-packages"
     ],
+<<<<<<< HEAD
     "cSpell.ignoreWords": [
         "stringifier"
+=======
+    "python.analysis.extraPaths": [
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+>>>>>>> development
     ]
 }

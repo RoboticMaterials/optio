@@ -35,7 +35,7 @@ const LotQueue = ((props) => {
 			sortDirection={sortDirection}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
-			maxWidth={"20rem"}
+			maxWidth={"24rem"}
 			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
 				if(isCollapsed) {
 					return(

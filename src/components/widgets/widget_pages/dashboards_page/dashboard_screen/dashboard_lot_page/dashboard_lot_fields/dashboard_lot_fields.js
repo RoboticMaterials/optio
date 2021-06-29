@@ -10,7 +10,7 @@ import LotSimpleRow from '../../../../../../side_bar/content/cards/lot/lot_simpl
 import LotDateRow from '../../../../../../side_bar/content/cards/lot/lot_date_row/lot_date_row'
 
 // Import Constants
-import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../../constants/lot_contants"
+import { FIELD_DATA_TYPES } from "../../../../../../../constants/lot_contants"
 
 // Import Utils
 import { getCustomFields, getLotTotalQuantity, getBinQuantity } from '../../../../../../../methods/utils/lot_utils'

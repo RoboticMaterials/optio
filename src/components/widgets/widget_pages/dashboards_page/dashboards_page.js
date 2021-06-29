@@ -39,6 +39,7 @@ const logger = log.getLogger("DashboardsPage");
 const DashboardsPage = (props) => {
 
     const params = useParams()
+
     const {
         stationID,
         dashboardID,
@@ -58,14 +59,20 @@ const DashboardsPage = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
+    const cards = useSelector(state => state.cardsReducer.cards)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+
+
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
     if (dashboard === undefined) {
         history.push('/locations')
         window.location.reload()
     }
+
+    useEffect(() => {
+    }, [])
 
 
     /**

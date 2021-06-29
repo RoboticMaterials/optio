@@ -49,21 +49,11 @@ const WarehouseModal = (props) => {
     const history = useHistory()
 
     const dispatch = useDispatch()
-    const dispatchGetCards = () => dispatch(getCards())
-    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
-    const dispatchGetProcesses = () => dispatch(getProcesses());
-    const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
-    const stations = useSelector(state => state.stationsReducer.stations)
 
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
-    const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
-    const processCards = useSelector(state => { return state.cardsReducer.processCards })
     const cards = useSelector(state => state.cardsReducer.cards)
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [submitting, setSubmitting] = useState(false)
-    const [selectedLot, setSelectedLot] = useState(null)
-    const [lotCount, setLotCount] = useState(null)
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
@@ -76,7 +66,6 @@ const WarehouseModal = (props) => {
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
-        setSubmitting(false)
         close()
     }
 

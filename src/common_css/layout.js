@@ -8,7 +8,7 @@ export const containerLayout = css`
 `
 
 export const columnRowLayout = css`
-	align-self: stretch
+	align-self: stretch;
 `
 
 export const bodyStyle = css`

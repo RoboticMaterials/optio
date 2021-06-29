@@ -17,12 +17,10 @@ import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import TaskQueueModal from './task_queue_modal/task_queue_modal'
 import WarehouseModal from './warehouse_modal/warehouse_modal'
+import RouteModal from './route_modal/route_modal'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES, OPERATION_TYPES } from "../../../../../constants/dashboard_constants";
-
-// Import Utils
-import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import Hooks
 import useWindowSize from '../../../../../hooks/useWindowSize'
@@ -40,11 +38,11 @@ import { getProcesses } from "../../../../../redux/actions/processes_actions";
 import { getTasks } from '../../../../../redux/actions/tasks_actions'
 
 // Import styles
-import * as pageStyle from '../dashboards_header/dashboards_header.style'
 import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
+import MergeModal from "./merge_modal/merge_modal";
 
 
 
@@ -140,28 +138,31 @@ const DashboardScreen = (props) => {
         }
     }, [editing])
 
-    // Posts HIL Success to API
-    const handleHilSuccess = async (item) => {
+    // Commented out for now
+    // Used for unloading human routes
+    // But we removed that ability as of now
+    // // Posts HIL Success to API
+    // const handleHilSuccess = async (item) => {
 
-        let newItem = {
-            ...item,
-            hil_response: true,
-            // quantity: quantity,
-        }
+    //     let newItem = {
+    //         ...item,
+    //         hil_response: true,
+    //         // quantity: quantity,
+    //     }
 
-        const ID = deepCopy(item.id)
+    //     const ID = deepCopy(item._id)
 
-        delete newItem.id
-        delete newItem.dashboard
+    //     delete newItem._id
+    //     delete newItem.dashboard
 
-        // This is used to make the tap of the HIL button respond quickly
-        // TODO: This may not be necessary here
-        onHILResponse(ID)
-        setTimeout(() => onHILResponse(''), 2000)
+    //     // This is used to make the tap of the HIL button respond quickly
+    //     // TODO: This may not be necessary here
+    //     onHILResponse(ID)
+    //     setTimeout(() => onHILResponse(''), 2000)
 
-        await onPutTaskQueue(newItem, ID)
+    //     await onPutTaskQueue(newItem, ID)
 
-    }
+    // }
 
     const handleToggleLock = async () => {
 
@@ -211,6 +212,16 @@ const DashboardScreen = (props) => {
                         }}
                     />
                 )
+
+            case 'merge': {
+                return <MergeModal
+                    dashboardId={dashboardID}
+                    isOpen={true}
+                    stationId={stationID}
+                    title={"Merge Lots"}
+                    close={() => setSelectedOperation(null)}
+                />
+            }
             case 'kickOff':
                 return (
                     <KickOffModal
@@ -288,6 +299,24 @@ const DashboardScreen = (props) => {
                     />
                 )
 
+            case 'route':
+                return (
+                    <RouteModal
+                        isOpen={true}
+                        close={() => setSelectedOperation(null)}
+                        handleTaskAlert={(type, label, message) => {
+                            setAddTaskAlert({
+                                type: type,
+                                label: label,
+                                message: message,
+                            })
+
+                            // clear alert after timeout
+                            return setTimeout(() => setAddTaskAlert(null), 1800)
+                        }}
+                    />
+                )
+
 
             default:
                 return (
@@ -307,7 +336,7 @@ const DashboardScreen = (props) => {
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
-                handleToggleLock = {()=>handleToggleLock()}
+                handleToggleLock={() => handleToggleLock()}
                 showEditButton={true}
                 currentDashboard={currentDashboard}
                 handleOperationSelected={(op) => {

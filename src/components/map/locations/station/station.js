@@ -247,7 +247,6 @@ function Station(props) {
      */
     const handleWidgetHover = () => {
         return handleWidgetHoverCoord(station, rd3tClassName, d3)
-
     }
 
     // Handles if URL has widget page open
@@ -376,7 +375,11 @@ function Station(props) {
                 handleTranslating={onTranslating}
                 handleRotating={onRotating}
 
-            />
+            >
+                
+            </LocationSvg>
+
+            <h1 style={{position: 'absolute', left: '50%', top: '50%'}}>Hello</h1>
 
             <DragEntityProto
                 isSelected={isSelected}

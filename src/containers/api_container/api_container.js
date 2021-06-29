@@ -396,7 +396,7 @@ const ApiContainer = (props) => {
         // const dataUpdate = await onUpdateTaskData(tasks)
 
         // Cleaner Functions
-        if (!!mapViewEnabled) {
+        if (!!mapViewEnabled && !!settings.deviceEnabled) {
 
             // await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)

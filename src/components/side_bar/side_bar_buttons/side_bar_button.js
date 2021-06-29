@@ -63,6 +63,18 @@ const SideBarButton = (props) => {
                         dispatchProcessEditing(false)
                         dispatchSetPageDataChanged(false)
                     }
+
+                    if (props.mode === 'statistics') {
+                        const currentPath = history.location.pathname
+                        history.push('/statistics/summary')
+
+                        setConfirmDeleteModal(null)
+                        dispatchLocationEditing(false)
+                        dispatchTaskEditing(false)
+                        dispatchProcessEditing(false)
+                        dispatchSetPageDataChanged(false)
+                    }
+
                     else {
                         props.setShowSideBarPage(props.mode)
                         setConfirmDeleteModal(null)

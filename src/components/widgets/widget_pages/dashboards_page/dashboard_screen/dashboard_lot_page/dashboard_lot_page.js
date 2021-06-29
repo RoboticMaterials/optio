@@ -12,24 +12,26 @@ import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
 import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
 import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_modal'
 import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
+import DashboardLotInputBox from './dashboard_lot_input_box/dashboard_lot_input_box'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
-import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../../constants/lot_contants"
+import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants"
+import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
 import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations, getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Actions
-import { handlePostTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
+import { handlePostTaskQueue, putTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
 import { isObject } from "../../../../../../methods/utils/object_utils";
-import { putCard } from '../../../../../../redux/actions/card_actions'
+import { putCard, getCards } from '../../../../../../redux/actions/card_actions'
 
 const DashboardLotPage = (props) => {
 
@@ -61,9 +63,28 @@ const DashboardLotPage = (props) => {
     const [currentTask, setCurrentTask] = useState(null)
     const [isFinish, setIsFinish] = useState(false)
     const [showFinish, setShowFinish] = useState(false)
+    const [lotContainsInput, setLotContainsInput] = useState(false)
 
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
+    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchGetCards = () => dispatch(getCards())
+
+
+
+    // Used to show dashboard input
+    useEffect(() => {
+        let containsInput = false
+        currentLot.fields.forEach((field) => {
+            field.forEach((subField) => {
+                if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
+                    containsInput = true
+                }
+            })
+        })
+
+        setLotContainsInput(containsInput)
+    }, [currentLot])
 
     useEffect(() => {
         if (lotID) {
@@ -77,10 +98,7 @@ const DashboardLotPage = (props) => {
             }
             // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
             else if (!!warehouse) {
-                console.log('QQQQ current lot', currentLot)
-                console.log('QQQQ stationId', stationID)
                 const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
-                console.log('QQQQ returned route', returnedRoute)
                 setCurrentTask(returnedRoute)
             }
             else {
@@ -103,7 +121,6 @@ const DashboardLotPage = (props) => {
 
         }
     }, [lotID, cards])
-
 
 
     const onBack = () => {
@@ -198,98 +215,107 @@ const DashboardLotPage = (props) => {
 
         // extract lot attributes
         const {
-            bins,
             name: cardName,
-            processId,
             id: cardId,
         } = currentLot
 
         if (quantity && quantity > 0) {
-            // extract first station's bin and queue bin from bins
-            const {
-                [stationID]: currentStationBin,
-                ["FINISH"]: finishBin,
-                ...unalteredBins
-            } = bins || {}
 
-            const queueBinCount = finishBin?.count ? finishBin.count : 0
-            const currentStationBinCount = currentStationBin?.count ? currentStationBin.count : 0
-
-            // udpated currentLot will maintain all of the cards previous attributes with the stationId and routeId updated
-            let updatedCard = {
-                ...currentLot,                                // spread unaltered attributes
-                bins: {
-                    ...unalteredBins,                   // spread unaltered bins
-                    ["FINISH"]: {
-                        ...finishBin,              // spread unaltered attributes of station bin if it exists
-                        count: parseInt(queueBinCount) + parseInt(quantity)    // increment first station's count by the count of the queue
-                    }
+            // moving lot is handled through custom task
+            const custom = {
+                load: {
+                    station: stationID,
+                    instructions: "",
+                    position: null,
+                    sound: null,
                 },
+                unload: {
+                    station: "FINISH",
+                    instructions: "",
+                    position: null,
+                    sound: null,
+                },
+                handoff: true,
+                hil_response: null,
+                quantity: 1
             }
 
-            if (quantity < currentStationBinCount) {
-                updatedCard = {
-                    ...updatedCard,
-                    bins: {
-                        ...updatedCard.bins,
-                        [stationID]: {
-                            ...currentStationBin,
-                            count: parseInt(currentStationBinCount) - parseInt(quantity)
-                        }
-                    }
-                }
-            }
-
-            // send update action
-            const result = await onPutCard(updatedCard, cardId)
+            // first, post task queue
+            const result = await dispatchPostTaskQueue({ hil_response: null, tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
 
             // check if request was successful
             if (!(result instanceof Error)) {
+
+                const {
+                    _id,
+                    dashboardID,
+                    dashboard,
+                    ...rest
+                } = result || {}
+
+                // now must update task queue item to move the lot
+                setTimeout(async () => {
+
+                    await disptachPutTaskQueue(
+                        {
+                            ...rest,
+                            hil_response: true,
+                            lot_id: lotId,
+                            quantity
+                        }
+                        , result._id)
+                    await dispatchGetCards()
+                }, 1000)
+
                 requestSuccessStatus = true
                 message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
+                handleTaskAlert(
+                    ADD_TASK_ALERT_TYPE.FINISH_SUCCESS,
+                    "Lot Finished",
+                    message
+                )
             }
         }
 
         else {
             message = "Quantity must be greater than 0"
-        }
-
-        if (requestSuccessStatus) {
-            handleTaskAlert(
-                ADD_TASK_ALERT_TYPE.FINISH_SUCCESS,
-                "Lot has been finished",
-                message,
-            )
-        } else {
             handleTaskAlert(
                 ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-                "Finish failure",
-                message,
+                "Lot Failed",
+                message
             )
         }
-
     }
 
     return (
         <styled.LotContainer>
-            <styled.LotHeader>
-                <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
-            </styled.LotHeader>
-            <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
-            <DashboardLotFields
-                currentLot={currentLot}
-                stationID={stationID}
-                warehouse={!!warehouse}
-            />
-            <DashboardLotButtons
-                handleMove={(type) => onMove(type)}
-                handleCancel={() => onBack()}
-                isDeviceRoute={currentTask?.device_types?.length > 1}
-                isFinish={isFinish}
-                handleFinish={() => setShowFinish(true)}
-                route={currentTask}
-            />
+            <styled.LotBodyContainer>
+                <styled.LotHeader>
+                    <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+                </styled.LotHeader>
+                <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
 
+                <DashboardLotFields
+                    currentLot={currentLot}
+                    stationID={stationID}
+                    warehouse={!!warehouse}
+                />
+                {!!lotContainsInput &&
+                    <DashboardLotInputBox
+                        currentLot={currentLot}
+                    />
+                }
+            </styled.LotBodyContainer>
+            <styled.LotButtonContainer>
+                <DashboardLotButtons
+                    handleMove={(type) => onMove(type)}
+                    handleCancel={() => onBack()}
+                    isDeviceRoute={currentTask?.device_types?.length > 1}
+                    isFinish={isFinish}
+                    handleFinish={() => setShowFinish(true)}
+                    route={currentTask}
+                />
+            </styled.LotButtonContainer>
             {showFinish &&
                 renderFinishQuantity()
             }

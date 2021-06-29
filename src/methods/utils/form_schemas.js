@@ -545,6 +545,16 @@ export const templateMapperSchema = Yup.object().shape({
     )
 })
 
+export const selectLotQuantitySchema = Yup.object().shape({
+    items: Yup.array().of(
+        Yup.object().shape({
+            quantity: Yup.number()
+                .min(1, 'Must be at least 1.')
+                .required('Required.')
+        })
+    )
+})
+
 
 export const getCardSchema = (mode, availableBinItems) => {
     switch (mode) {
@@ -661,7 +671,7 @@ Yup.addMethod(Yup.string, 'greaterThan', function (input2Path, message) {
 
         const input2 = parent[input2Path]
 
-        // Take the Hour and minute 
+        // Take the Hour and minute
         const [beg1, end1] = input1.split(':')
         const [beg2, end2] = input2.split(':')
 
@@ -685,7 +695,7 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2Path, message) {
         const { parent, path, createError } = this
         const input2 = parent[input2Path]
 
-        // Take the Hour and minute 
+        // Take the Hour and minute
         const [beg1, end1] = input1.split(':')
         const [beg2, end2] = input2.split(':')
 
@@ -723,7 +733,6 @@ Yup.addMethod(Yup.number, 'lessThanInt', function (input2Path, message) {
 
 export const throughputSchema = Yup.object().shape({
     expectedOutput: Yup.number()
-        .required('Required')
         .nullable(),
     switch1: Yup.bool(),
     startOfShift: Yup.string()
