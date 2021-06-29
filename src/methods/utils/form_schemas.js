@@ -5,9 +5,9 @@ import { isObject } from "./object_utils";
 import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
-import {convertCardDate} from "./card_utils";
-import {isEqualCI, isString} from "./string_utils";
-import {FIELD_DATA_TYPES} from "../../constants/lot_contants";
+import { convertCardDate } from "./card_utils";
+import { isEqualCI, isString } from "./string_utils";
+import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -246,12 +246,12 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         const last = index.pop()
 
         index.forEach((currItem) => {
-            const parsedIndex = parseInt(currItem.replace(reg2,''))
-            for(let i = 0; i < parsedIndex; i++) {
+            const parsedIndex = parseInt(currItem.replace(reg2, ''))
+            for (let i = 0; i < parsedIndex; i++) {
                 megaIndex = megaIndex + arr[i].length
             }
         })
-        megaIndex = megaIndex + parseInt(last.replace(reg2,''))
+        megaIndex = megaIndex + parseInt(last.replace(reg2, ''))
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -264,7 +264,7 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         for (const currItem of arr.flat()) {
             if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
-                    if (isString(compareItem) && isString(mapper(currItem)) && isEqualCI(compareItem.trim(),mapper(currItem).trim())) {
+                    if (isString(compareItem) && isString(mapper(currItem)) && isEqualCI(compareItem.trim(), mapper(currItem).trim())) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
@@ -296,28 +296,28 @@ Yup.addMethod(Yup.object, "lotFieldRequired", function (message) {
             dataType
         } = item || {}
 
-        if(required) {
+        if (required) {
             switch (dataType) {
                 case FIELD_DATA_TYPES.DATE_RANGE: {
-                    if(!value || !isArray(value) || !(value[0] instanceof Date) || !(value[1]  instanceof Date)) {
+                    if (!value || !isArray(value) || !(value[0] instanceof Date) || !(value[1] instanceof Date)) {
                         return createError({ path: `${path}.value`, message })
                     }
                     break
                 }
                 case FIELD_DATA_TYPES.DATE: {
-                    if(!(value  instanceof Date)) return createError({ path: `${path}.value`, message })
+                    if (!(value instanceof Date)) return createError({ path: `${path}.value`, message })
                     break
                 }
                 case FIELD_DATA_TYPES.INTEGER: {
-                    if(!value) return createError({ path: `${path}.value`, message })
+                    if (!value) return createError({ path: `${path}.value`, message })
                     break
                 }
                 case FIELD_DATA_TYPES.STRING: {
-                    if(!value) return createError({ path: `${path}.value`, message })
+                    if (!value) return createError({ path: `${path}.value`, message })
                     break
                 }
                 default: {
-                    if(!value) return createError({ path: `${path}.value`, message })
+                    if (!value) return createError({ path: `${path}.value`, message })
                     break
                 }
             }
@@ -377,8 +377,8 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr, pathToOthers) {
             [pathToOthers]: others = []
         } = context || {}
 
-        for(const item of arr.concat(Object.values(others))) {
-            if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
+        for (const item of arr.concat(Object.values(others))) {
+            if (isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
     });
@@ -413,6 +413,11 @@ export const signUpSchema = Yup.object().shape({
     email: Yup.string()
         .email()
         .required('Please enter an email'),
+
+    accessCode: Yup.string()
+        .required('Please enter a access code')
+        .matches(/\b(Meier2021|Phunkshun2021|Demo2021)\b/, 'Must be a valid access code'),
+
     password: Yup.string()
         .required('Please enter a password')
         .matches(
