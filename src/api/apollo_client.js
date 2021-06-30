@@ -14,6 +14,7 @@ const customFetch = (uri, options) => {
 };
 
 const httpLink = createHttpLink({
+    // Okay, so I think this uri Var is something that was once commited, but not anymore
     uri: process.env.REACT_APP_GQL_API_ENDPOINT,
     fetch: customFetch
 });

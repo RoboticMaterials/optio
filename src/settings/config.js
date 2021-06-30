@@ -1,1 +1,1 @@
-export default { authenticationNeeded: false, UserPoolId: '', ClientId: ''}
+export default { authenticationNeeded: true, UserPoolId: '', ClientId: ''}
