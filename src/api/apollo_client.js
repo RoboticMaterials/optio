@@ -33,6 +33,8 @@ const errorLink = onError(({
     if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
+
+// Get the auth token from AWS
 const getAuthToken = () => {
     let token
 
