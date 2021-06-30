@@ -29,19 +29,16 @@ export const Container = styled.div`
   outline: none;
   user-select: none;
 
-  transition: all 0.2s ease;
-
   cursor: pointer;
 
   &:active{
         box-shadow: none;
-        filter: brightness(85%);
+        filter: brightness(100%);
         cursor: grabbing;
     }
 
   &:hover {
-    box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 1px 1px 7px 3px #b385ff;
   }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
@@ -64,15 +61,6 @@ const glowCss = css`
 
 const focusedCss = css`
 
-  background-color: ${props => LightenDarkenColor(props.theme.bg.primary, -10)};
-
-  &:active {
-    transform: translateY(-2px);
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-  }
 `
 
 const notSelectedCss = css`
