@@ -286,7 +286,7 @@ const ReportModal = (props) => {
                             />
 
                             {
-                                checkPermission(null, EDIT_REPORT_BUTTONS_REQUEST) &&
+                                checkPermission(null, EDIT_REPORT_BUTTONS_REQUEST) && !phoneView &&
                                 <Button
                                     primary
                                     schema={"dashboards"}
