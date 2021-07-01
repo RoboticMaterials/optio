@@ -56,6 +56,12 @@ const defaultState = {
 
     mapApps: {
         heatmap: true
+    },
+
+    emailNotifications: {
+        enabled: false,
+        emailAddress: '',
+        addresseeName: ''
     }
 }
 

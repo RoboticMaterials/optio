@@ -41,7 +41,7 @@ const App = () => {
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
-
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
