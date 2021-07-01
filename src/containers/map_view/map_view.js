@@ -1,6 +1,6 @@
 import React, { Component, useState, lazy, Suspense } from 'react'
 import { ReactDOM, Route } from 'react-dom'
-import {connect, useSelector} from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
 
@@ -15,7 +15,7 @@ import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
 import { getMap } from '../../redux/actions/map_actions'
-import {postSettings, putSettings} from '../../redux/actions/settings_actions'
+import { postSettings, putSettings } from '../../redux/actions/settings_actions'
 import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
@@ -44,18 +44,18 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
-import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
+import { getHasStartAndEnd, getUnloadPositionId } from "../../methods/utils/route_utils";
 const logger = log.getLogger("MapView")
 
-const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
-const ProcessPaths = lazy(()=> import('../../components/map/process_paths/process_paths'))
-const MiR100 = lazy(()=> import('../../components/map/amrs/mir100/mir100.js'))
-const Zones = lazy(()=> import('../../components/map/zones/zones'))
-const RightClickMenu = lazy(()=> import('../../components/map/right_click_menu/right_click_menu'))
-const TaskStatistics = lazy(()=> import('../../components/map/task_statistics/task_statistics'))
-const RouteConfirmation = lazy(()=> import('../../components/map/route_confirmation/route_confirmation'))
-const Widgets = lazy(()=> import('../../components/widgets/widgets'))
-const MapApps = lazy(()=> import('../../components/map/map_apps/map_apps'))
+const TaskPaths = lazy(() => import('../../components/map/task_paths/task_paths.js'))
+const ProcessPaths = lazy(() => import('../../components/map/process_paths/process_paths'))
+const MiR100 = lazy(() => import('../../components/map/amrs/mir100/mir100.js'))
+const Zones = lazy(() => import('../../components/map/zones/zones'))
+const RightClickMenu = lazy(() => import('../../components/map/right_click_menu/right_click_menu'))
+const TaskStatistics = lazy(() => import('../../components/map/task_statistics/task_statistics'))
+const RouteConfirmation = lazy(() => import('../../components/map/route_confirmation/route_confirmation'))
+const Widgets = lazy(() => import('../../components/widgets/widgets'))
+const MapApps = lazy(() => import('../../components/map/map_apps/map_apps'))
 
 export class MapView extends Component {
     constructor(props) {
@@ -121,32 +121,32 @@ export class MapView extends Component {
 
     checkForMapLoad = async () => {
 
-      var currentMap = this.props.maps.find(map => map.id === this.props.currentMapId)
+        var currentMap = this.props.maps.find(map => map.id === this.props.currentMapId)
 
-        console.log("currentMap",currentMap)
-        console.log("this.props.currentMapId",this.props.currentMapId)
-        console.log("this.props.maps",this.props.maps)
-        console.log("this.props.settings",this.props.settings)
-      if(!currentMap){
-          if(this.state.currentMap?.id !== this.props.maps[0]?.id) this.setState({currentMap: this.props.maps[0]})
+        console.log("currentMap", currentMap)
+        console.log("this.props.currentMapId", this.props.currentMapId)
+        console.log("this.props.maps", this.props.maps)
+        console.log("this.props.settings", this.props.settings)
+        if (!currentMap) {
+            if (this.state.currentMap?.id !== this.props.maps[0]?.id) this.setState({ currentMap: this.props.maps[0] })
 
-        const updatedSettings = {
-          ...this.props.settings,
-          currentMapId: this.props.maps[0].id,
-        }
-
-        if(this.props.currentMapId !== this.props.maps[0].id) {
-            if(this.props.settings.id) {
-                await this.props.dispatchPutSettings(updatedSettings)
+            const updatedSettings = {
+                ...this.props.settings,
+                currentMapId: this.props.maps[0].id,
             }
-            else {
-                await this.props.dispatchPostSettings(updatedSettings)
+
+            if (this.props.currentMapId !== this.props.maps[0].id) {
+                if (this.props.settings.id) {
+                    await this.props.dispatchPutSettings(updatedSettings)
+                }
+                else {
+                    await this.props.dispatchPostSettings(updatedSettings)
+                }
             }
         }
-      }
-      else{
-        this.setState({currentMap: currentMap})
-      }
+        else {
+            this.setState({ currentMap: currentMap })
+        }
     }
 
 
@@ -158,11 +158,11 @@ export class MapView extends Component {
         // }
         //this.checkForMapLoad() //test
 
-        if(this.props.currentMapId !== this.state.currentMap.id){
-          this.checkForMapLoad()
+        if (this.props.currentMapId !== this.state.currentMap.id) {
+            this.checkForMapLoad()
         }
-        if(prevProps.selectedTask !== this.props.selectedTask) {
-            this.setState({hasStartAndEnd: getHasStartAndEnd(this.props.selectedTask)})
+        if (prevProps.selectedTask !== this.props.selectedTask) {
+            this.setState({ hasStartAndEnd: getHasStartAndEnd(this.props.selectedTask) })
         }
 
         // If the map has been changed, recalculate the geometry and bind the zoom
@@ -603,25 +603,25 @@ export class MapView extends Component {
         const { hasStartAndEnd } = this.state
         if (this.state.currentMap == null) {
 
-           return (<></>)
-          }
+            return (<></>)
+        }
         const { translate, scale } = this.d3;
 
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
-                  <Suspense fallback = {<></>}>
-                    <MapApps />
-                  </Suspense>
+                    <Suspense fallback={<></>}>
+                        <MapApps />
+                    </Suspense>
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
 
                     {/* Right menu */}
                     {Object.keys(this.state.showRightClickMenu).length > 0 &&
-                      <Suspense fallback = {<></>}>
-                        <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} d3={this.d3} />
-                      </Suspense>
+                        <Suspense fallback={<></>}>
+                            <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} d3={this.d3} />
+                        </Suspense>
                     }
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
@@ -696,21 +696,21 @@ export class MapView extends Component {
                         </styled.MapGroup>
 
                         {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
-                          <Suspense fallback = {<></>}>
-                            <TaskPaths d3={this.d3} />
-                          </Suspense>
+                            <Suspense fallback={<></>}>
+                                <TaskPaths d3={this.d3} />
+                            </Suspense>
                         }
 
                         {!!this.props.selectedHoveringTask &&
-                          <Suspense fallback = {<></>}>
-                            <TaskPaths d3={this.d3} />
-                          </Suspense>
+                            <Suspense fallback={<></>}>
+                                <TaskPaths d3={this.d3} />
+                            </Suspense>
                         }
 
                         {!!this.props.selectedProcess &&
-                          <Suspense fallback = {<></>}>
-                            <ProcessPaths d3={this.d3} />
-                          </Suspense>
+                            <Suspense fallback={<></>}>
+                                <ProcessPaths d3={this.d3} />
+                            </Suspense>
                         }
 
                         <defs>
@@ -799,16 +799,12 @@ export class MapView extends Component {
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
                                             <>
                                                 {device.connected == true &&
-<<<<<<< HEAD
-                                                    <MiR100 key={device.id}
-=======
-                                                  <Suspense fallback = {<></>}>
-                                                    <MiR100 key={device._id}
->>>>>>> development
-                                                        device={device}
-                                                        d3={this.d3}
-                                                    />
-                                                  </Suspense>
+                                                    <Suspense fallback={<></>}>
+                                                        <MiR100 key={device._id}
+                                                            device={device}
+                                                            d3={this.d3}
+                                                        />
+                                                    </Suspense>
                                                 }
                                             </>
 
@@ -819,15 +815,15 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
-                      <Suspense fallback = {<></>}>
-                        <TaskStatistics d3={this.d3} />
-                      </Suspense>
+                        <Suspense fallback={<></>}>
+                            <TaskStatistics d3={this.d3} />
+                        </Suspense>
                     }
 
                     {!!this.props.showRouteConfirmation &&
-                      <Suspense fallback = {<></>}>
-                        <RouteConfirmation d3={this.d3} />
-                      </Suspense>
+                        <Suspense fallback={<></>}>
+                            <RouteConfirmation d3={this.d3} />
+                        </Suspense>
                     }
 
                     {!!this.props.devices &&
@@ -848,9 +844,9 @@ export class MapView extends Component {
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
-                      <Suspense fallback = {<></>}>
-                        <Widgets />
-                      </Suspense>
+                        <Suspense fallback={<></>}>
+                            <Widgets />
+                        </Suspense>
                     }
 
 
