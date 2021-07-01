@@ -169,8 +169,6 @@ const CardZone = ((props) => {
     useEffect(() => {
         // === Calculate preceding lead time based on cards in later stations
 
-        if (currentProcess.name !== '1') {return }
-
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
         processStations.unshift("QUEUE")
