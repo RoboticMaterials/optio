@@ -354,7 +354,7 @@ const CardZone = ((props) => {
             const leadSeconds = leadTimeSeconds - (leadDays * 86400);
             let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
             // leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
-            const formattedLeadTime = leadTime.format('lll') // Format lead time
+            const formattedLeadTime = !!leadTime ? leadTime.format('lll') : null // Format lead time
 
             return { ...card, leadTime: formattedLeadTime }
 
