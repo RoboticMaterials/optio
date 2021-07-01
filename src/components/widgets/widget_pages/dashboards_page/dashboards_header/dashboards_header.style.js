@@ -32,8 +32,6 @@ export const Title = styled.h2`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz1};
 
-
-
     user-select: none;
 
 
@@ -52,6 +50,12 @@ export const Title = styled.h2`
     @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
         font-size: ${props => props.theme.fontSize.sz2};
         max-width: 15rem;
+        text-overflow: ellipsis;
+    }
+
+    @media only screen and (max-width: ${props => props.theme.widthBreakpoint.mobileL}) {
+        font-size: ${props => props.theme.fontSize.sz2};
+        max-width: 10rem;
         text-overflow: ellipsis;
     }
 
@@ -111,6 +115,11 @@ export const LockIcon = styled.i`
     margin-top: 0rem;
     margin-left: 1rem;
 `
+export const Icon = styled.i`
+    font-size: 1.3rem;
+    color: blue;
+`
+
 
 export const SidebarButton = styled(AssignmentOutlinedIcon)`
     font-family: ${props => props.theme.font.primary};
