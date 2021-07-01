@@ -95,8 +95,6 @@ const CardZone = ((props) => {
             end: moment.duration(24, 'hours').asSeconds()
         })
 
-        console.log(details, breaks)
-
         return breaks;
 
     }
