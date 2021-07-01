@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 
 // styles
 import * as styled from "./report_button.style"
+import useWindowSize from '../../../../../../../hooks/useWindowSize'
 
 const ReportButton = (props) => {
 
@@ -21,6 +22,9 @@ const ReportButton = (props) => {
 		invert,
 		editing
 	} = props
+
+	const size = useWindowSize()
+	const phoneView = size.width < 500
 
 	return (
 		<styled.ButtonWidthContainer key={id} className={className}
@@ -38,8 +42,8 @@ const ReportButton = (props) => {
 				iconColor={color}
 
 				containerStyle={{
-					height: '4rem',
-					minHeight: "4rem",
+					height: phoneView ? '2rem' : '4rem',
+					minHeight: phoneView ? '2rem' : '4rem',
 					margin: '0.5rem auto',
 					flex: 1,
 					width: "unset",

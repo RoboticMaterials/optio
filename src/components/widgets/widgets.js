@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 // import components
-import WidgetPages from './widget_pages/widget_pages'
-import WidgetButton from './widget_button/widget_button'
+//import WidgetPages from './widget_pages/widget_pages'
+//import WidgetButton from './widget_button/widget_button'
 
 // import hooks
 import useWindowSize from '../../hooks/useWindowSize'
@@ -23,6 +23,9 @@ import { DeviceItemTypes } from '../../methods/utils/device_utils'
 
 import * as styled from './widgets.style'
 import { connect } from 'formik';
+
+const WidgetPages = lazy(() => import('./widget_pages/widget_pages'))
+const WidgetButton = lazy(() => import('./widget_button/widget_button'))
 
 const Widgets = (props) => {
     const size = useWindowSize()
@@ -172,7 +175,7 @@ const Widgets = (props) => {
                                         id={stationID}
                                         type={'statistics'}
                                         label={'Statistics'}
-                                        currentPage={widgetPage} 
+                                        currentPage={widgetPage}
                                         switcher={!!widgetPage}
                                     />
                                 </Wrapper>
@@ -326,7 +329,7 @@ const Widgets = (props) => {
     }, [selectedLocation, hoveringInfo])
 
     return (
-        <>
+        <Suspense fallback = {<></>}>
 
             {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
             {!widgetPage ?
@@ -349,7 +352,7 @@ const Widgets = (props) => {
                     widgetPage={widgetPage}
 
                     // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
-                    style={{ 
+                    style={{
                         opacity: !widgetPage && element === null ? '0' : '1',
                         height: `calc(${widgetRadius} * 2)`,
                         width: `calc(${widgetRadius} * 2)`,
@@ -374,7 +377,7 @@ const Widgets = (props) => {
 
 
                 </styled.WidgetLocationContainer>
-            
+
             :
 
             <>
@@ -386,7 +389,7 @@ const Widgets = (props) => {
             </>
         }
 
-        </>
+        </Suspense>
     )
 
     // return (

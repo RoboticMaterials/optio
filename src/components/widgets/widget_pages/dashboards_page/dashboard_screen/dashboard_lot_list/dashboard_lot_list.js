@@ -12,6 +12,7 @@ import SortFilterContainer from '../../../../../side_bar/content/cards/sort_filt
 // Import Utils
 import { getIsCardAtBin, getMatchesFilter } from '../../../../../../methods/utils/lot_utils'
 import { sortBy } from '../../../../../../methods/utils/card_utils'
+import useWindowSize from '../../../../../../hooks/useWindowSize'
 
 // Import Constants
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from '../../../../../../constants/lot_contants'
@@ -40,6 +41,9 @@ const DashboardLotList = () => {
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
+
+    const size = useWindowSize()
+    const phoneView = size.width < 500
 
     const station = stations[stationID]
 
@@ -73,9 +77,9 @@ const DashboardLotList = () => {
             const quantityAtStation = lot.bins[stationID].count
             const lotHasQuantityAlreadyAtStation = currTaskQueue?.quantity !== quantityAtStation
 
-            // If lot is in the task, 
+            // If lot is in the task,
             // lot does not have quantity at the station
-            // the device is driving to the next position or the device is at unload, 
+            // the device is driving to the next position or the device is at unload,
             // then dont show card on dashboard
             if (currLotIsInTaskQ && !lotHasQuantityAlreadyAtStation && (!!currTaskQueue?.next_position || deviceAtUnload)) {
                 return false
@@ -136,18 +140,20 @@ const DashboardLotList = () => {
 
     return (
         <styled.LotListContainer>
-            <SortFilterContainer
-                lotFilterValue={lotFilterValue}
-                sortMode={sortMode}
-                setSortMode={setSortMode}
-                sortDirection={sortDirection}
-                setSortDirection={setSortDirection}
-                shouldFocusLotFilter={shouldFocusLotFilter}
-                setLotFilterValue={setLotFilterValue}
-                selectedFilterOption={selectedFilterOption}
-                setSelectedFilterOption={setSelectedFilterOption}
-                containerStyle={{ justifyContent: 'center' }}
-            />
+            {!phoneView &&
+              <SortFilterContainer
+                  lotFilterValue={lotFilterValue}
+                  sortMode={sortMode}
+                  setSortMode={setSortMode}
+                  sortDirection={sortDirection}
+                  setSortDirection={setSortDirection}
+                  shouldFocusLotFilter={shouldFocusLotFilter}
+                  setLotFilterValue={setLotFilterValue}
+                  selectedFilterOption={selectedFilterOption}
+                  setSelectedFilterOption={setSelectedFilterOption}
+                  containerStyle={{ justifyContent: 'center' }}
+              />
+            }
             <styled.LotCardContainer>
                 {renderLotCards}
             </styled.LotCardContainer>

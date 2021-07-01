@@ -106,7 +106,7 @@ const DashboardLotPage = (props) => {
                 setCurrentTask(returnedRoute)
             }
 
-            // go back if lot has no items at this station (ex. just moved them all). 
+            // go back if lot has no items at this station (ex. just moved them all).
             // Dont go back though if the prevStation was a warehouse
             // Doesn't make sense to stay on this screen
             if (isObject(lot) && isObject(lot?.bins)) {

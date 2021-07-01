@@ -39,7 +39,7 @@ export const Title = styled.span`
     transform: translateX(-50%);
 
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz1};
+    font-size: ${props => props.phoneView ?  props.theme.fontSize.sz2 : props.theme.fontSize.sz1};
     font-weight: 500;
     color: ${props => props.theme.schema[props.schema].solid};
 `

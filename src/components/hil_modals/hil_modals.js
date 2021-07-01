@@ -22,6 +22,7 @@ import { isMobile } from "react-device-detect"
 
 // styles
 import * as styled from './hil_modals.style';
+import useWindowSize from '../../hooks/useWindowSize'
 
 // utils
 import { deepCopy } from '../../methods/utils/utils'
@@ -88,6 +89,9 @@ const HILModals = (props) => {
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
+
+    const size = useWindowSize()
+    const phoneView = size.width < 500
 
     const [task, setTask] = useState(null)
     const {
@@ -246,7 +250,7 @@ const HILModals = (props) => {
         // This is used to make the tap of the HIL button respond quickly
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
-        // If its a warehouse then go back 
+        // If its a warehouse then go back
         if (!!warehouse) {
             history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
         }
@@ -351,7 +355,7 @@ const HILModals = (props) => {
                 style={{
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "center"
+                    alignItems: "center",
                 }}
             >
                 <styled.SubtitleContainer>
@@ -437,7 +441,7 @@ const HILModals = (props) => {
                                     overflow: "auto",
                                     paddingTop: "1rem",
                                     justifyContent: "space-between",
-                                    flex: 1
+                                    flex: 1,
                                 }}
                             >
                                 {!!lotId &&
@@ -447,28 +451,33 @@ const HILModals = (props) => {
                                             <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
                                         </styled.SubtitleContainer>
 
-                                        <ScaleWrapper
-                                            scaleFactor={isMobile ? 0.75 : 1}
-                                        >
-                                            <LotContainer
-                                                showCustomFields={false}
-                                                lotId={lotId}
-                                                quantity={hilLoadUnload === 'unload' ? unloadQuantity : null}
-                                                binId={
-                                                    // If its a warehouse, the bin is going to be the previous station
-                                                    !!warehouse ?
-                                                        getPreviousWarehouseStation(processId, stationID)._id
-                                                        :
-                                                        hilLoadUnload === 'load' ?
-                                                            stationId || loadStationId
-                                                            :
-                                                            unloadStationId
+                                        {!phoneView ?
+                                          <ScaleWrapper
+                                              scaleFactor={isMobile ? 0.75 : 1}
+                                          >
+                                              <LotContainer
+                                                  showCustomFields={false}
+                                                  lotId={lotId}
+                                                  quantity={hilLoadUnload === 'unload' ? unloadQuantity : null}
+                                                  binId={
+                                                      // If its a warehouse, the bin is going to be the previous station
+                                                      !!warehouse ?
+                                                          getPreviousWarehouseStation(processId, stationID)._id
+                                                          :
+                                                          hilLoadUnload === 'load' ?
+                                                              stationId || loadStationId
+                                                              :
+                                                              unloadStationId
 
-                                                }
-                                                processId={processId}
-                                                containerStyle={{ margin: 0, padding: 0, width: "30rem" }}
-                                            />
-                                        </ScaleWrapper>
+                                                  }
+                                                  processId={processId}
+                                                  containerStyle={{ margin: 0, padding: 0, width: '100%' }}
+                                              />
+                                          </ScaleWrapper>
+                                          :
+                                          <styled.InfoText>{lot.name}</styled.InfoText>
+                                        }
+
                                     </styled.LotInfoContainer>
                                 }
 

@@ -13,7 +13,6 @@ import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_del
 import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
 import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
 import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
@@ -55,6 +54,7 @@ const ListView = (props) => {
     const dispatch = useDispatch()
     const history = useHistory()
     const params = useParams()
+
     const {
         dashboardID,
         editing,
@@ -66,6 +66,7 @@ const ListView = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1025
+    const phoneView = windowWidth < 500
 
     const positions = useSelector(state => state.positionsReducer.positions)
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -349,7 +350,7 @@ const ListView = (props) => {
                     }
 
 
-                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }}>{title}</styled.Title>
+                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }} phoneView = {phoneView}>{title}</styled.Title>
                     {handleTaskQueueStatus()}
 
                     {!!deviceEnabled &&

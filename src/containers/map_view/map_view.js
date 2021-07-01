@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useState, lazy, Suspense } from 'react'
 import { ReactDOM, Route } from 'react-dom'
 import {connect, useSelector} from 'react-redux';
 import moduleName from 'react'
@@ -23,21 +23,21 @@ import * as deviceActions from '../../redux/actions/devices_actions'
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 // Import Components
-import TaskPaths from '../../components/map/task_paths/task_paths.js'
-import ProcessPaths from '../../components/map/process_paths/process_paths'
-import MiR100 from '../../components/map/amrs/mir100/mir100.js'
-import Zones from '../../components/map/zones/zones'
-import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
-import TaskStatistics from '../../components/map/task_statistics/task_statistics'
-import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
-import Widgets from '../../components/widgets/widgets'
+//import TaskPaths from '../../components/map/task_paths/task_paths.js'
+//import ProcessPaths from '../../components/map/process_paths/process_paths'
+//import MiR100 from '../../components/map/amrs/mir100/mir100.js'
+//import Zones from '../../components/map/zones/zones'
+//import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
+//import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+//import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
+//import Widgets from '../../components/widgets/widgets'
 import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
 import HeatMap from '../../components/map/heatmap/heatmap'
 import RatsNest from '../../components/map/ratsnest/ratsnest'
-import MapApps from '../../components/map/map_apps/map_apps'
+//import MapApps from '../../components/map/map_apps/map_apps'
 
 // logging
 import log from "../../logger"
@@ -46,6 +46,16 @@ import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
 import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
 const logger = log.getLogger("MapView")
+
+const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
+const ProcessPaths = lazy(()=> import('../../components/map/process_paths/process_paths'))
+const MiR100 = lazy(()=> import('../../components/map/amrs/mir100/mir100.js'))
+const Zones = lazy(()=> import('../../components/map/zones/zones'))
+const RightClickMenu = lazy(()=> import('../../components/map/right_click_menu/right_click_menu'))
+const TaskStatistics = lazy(()=> import('../../components/map/task_statistics/task_statistics'))
+const RouteConfirmation = lazy(()=> import('../../components/map/route_confirmation/route_confirmation'))
+const Widgets = lazy(()=> import('../../components/widgets/widgets'))
+const MapApps = lazy(()=> import('../../components/map/map_apps/map_apps'))
 
 export class MapView extends Component {
     constructor(props) {
@@ -600,15 +610,18 @@ export class MapView extends Component {
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
-
+                  <Suspense fallback = {<></>}>
                     <MapApps />
+                  </Suspense>
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
 
                     {/* Right menu */}
                     {Object.keys(this.state.showRightClickMenu).length > 0 &&
+                      <Suspense fallback = {<></>}>
                         <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} d3={this.d3} />
+                      </Suspense>
                     }
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
@@ -683,15 +696,21 @@ export class MapView extends Component {
                         </styled.MapGroup>
 
                         {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
+                          <Suspense fallback = {<></>}>
                             <TaskPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         {!!this.props.selectedHoveringTask &&
+                          <Suspense fallback = {<></>}>
                             <TaskPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         {!!this.props.selectedProcess &&
+                          <Suspense fallback = {<></>}>
                             <ProcessPaths d3={this.d3} />
+                          </Suspense>
                         }
 
                         <defs>
@@ -716,7 +735,7 @@ export class MapView extends Component {
                                     <RatsNest map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
 
-                                
+
 
                                 <>{
                                     //// Render Locations
@@ -780,10 +799,16 @@ export class MapView extends Component {
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
                                             <>
                                                 {device.connected == true &&
+<<<<<<< HEAD
                                                     <MiR100 key={device.id}
+=======
+                                                  <Suspense fallback = {<></>}>
+                                                    <MiR100 key={device._id}
+>>>>>>> development
                                                         device={device}
                                                         d3={this.d3}
                                                     />
+                                                  </Suspense>
                                                 }
                                             </>
 
@@ -794,11 +819,15 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
+                      <Suspense fallback = {<></>}>
                         <TaskStatistics d3={this.d3} />
+                      </Suspense>
                     }
 
                     {!!this.props.showRouteConfirmation &&
+                      <Suspense fallback = {<></>}>
                         <RouteConfirmation d3={this.d3} />
+                      </Suspense>
                     }
 
                     {!!this.props.devices &&
@@ -819,7 +848,9 @@ export class MapView extends Component {
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
+                      <Suspense fallback = {<></>}>
                         <Widgets />
+                      </Suspense>
                     }
 
 

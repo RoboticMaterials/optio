@@ -1,13 +1,13 @@
-import React, {useEffect, useState, useRef, useContext, memo} from 'react';
+import React, {useEffect, useState, useRef, useContext, memo, lazy, Suspense} from 'react';
 
 // external functions
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
 // internal components
-import CardMenu from "./card_menu/card_menu";
-import CardZone from "./card_zone/card_zone";
-import SummaryZone from "./summary_zone/summary_zone";
+//import CardMenu from "./card_menu/card_menu";
+//import CardZone from "./card_zone/card_zone";
+//import SummaryZone from "./summary_zone/summary_zone";
 
 // actions
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
@@ -17,21 +17,30 @@ import * as styled from './cards.style'
 import Textbox from "../../../basic/textbox/textbox";
 import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-import ZoneHeader from "./zone_header/zone_header";
+//import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./lot_template_editor/template_form";
+//import LotCreatorForm from "./lot_template_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-import LotEditorContainer from "./card_editor/lot_editor_container";
-import SummaryHeader from "./summary_header/summary_header";
+//import LotEditorContainer from "./card_editor/lot_editor_container";
+//import SummaryHeader from "./summary_header/summary_header";
 import {immutableDelete} from "../../../../methods/utils/array_utils";
-import MultiSelectOptions from "./multi_select_options/multi_select_options";
+//import MultiSelectOptions from "./multi_select_options/multi_select_options";
 import {isEmpty} from "../../../../methods/utils/object_utils";
 import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
+
+const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
+const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
+const MultiSelectOptions = lazy(() => import("./multi_select_options/multi_select_options"))
+const CardMenu = lazy(() => import("./card_menu/card_menu"))
+const CardZone = lazy(() => import("./card_zone/card_zone"))
+const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
+const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
+const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
 
 const Cards = (props) => {
 
@@ -308,6 +317,7 @@ const Cards = (props) => {
     }
 
     return (
+      <Suspense fallback = {<></>}>
         <styled.Container>
             {showConfirmDeleteModal &&
             <DeleteMultipleLotsModal
@@ -418,6 +428,7 @@ const Cards = (props) => {
                 }
             </styled.Body>
         </styled.Container>
+        </Suspense>
     )
 }
 

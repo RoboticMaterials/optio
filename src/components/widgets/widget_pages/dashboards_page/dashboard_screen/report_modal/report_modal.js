@@ -30,6 +30,7 @@ import {
 import ReportButton from "./report_button/report_button";
 import {ThemeContext} from "styled-components";
 import ScrollContainer from "../../../../../basic/scroll_container/scroll_container";
+import useWindowSize from '../../../../../../hooks/useWindowSize'
 
 Modal.setAppElement('body');
 
@@ -58,6 +59,10 @@ const ReportModal = (props) => {
     const [submitting, setSubmitting] = useState(false)
     const [dragging, setDragging] = useState(null)
 
+    const size = useWindowSize()
+    const windowWidth = size.width
+    const phoneView = windowWidth < 500
+
     const formRef = useRef(null)	// gets access to form state
     const {
         current
@@ -75,6 +80,8 @@ const ReportModal = (props) => {
         setFieldValue = () => { },
         setStatus = () => { },
     } = current || {}
+
+
 
     useEffect(() => {
         setNoButtons(!isNonEmptyArray(dashboard?.report_buttons))
@@ -191,6 +198,7 @@ const ReportModal = (props) => {
                 </Button>
             </styled.Header>
 
+
             <styled.BodyContainer>
                 {(addingNew || sending) ?
                     <NewButtonForm
@@ -206,6 +214,7 @@ const ReportModal = (props) => {
                     :
                     <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
                         <styled.ContentContainer>
+                          {!phoneView &&
                             <styled.AddNewButtonContainer
                                 showBorder={!noButtons}
                             >
@@ -219,7 +228,7 @@ const ReportModal = (props) => {
                                 />
 
                             </styled.AddNewButtonContainer>
-
+                          }
                             {!noButtons &&
                                     <ScrollContainer>
                                     {editing ?
@@ -277,7 +286,7 @@ const ReportModal = (props) => {
                             />
 
                             {
-                                checkPermission(null, EDIT_REPORT_BUTTONS_REQUEST) &&
+                                checkPermission(null, EDIT_REPORT_BUTTONS_REQUEST) && !phoneView &&
                                 <Button
                                     primary
                                     schema={"dashboards"}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, memo } from 'react';
+import React, { useEffect, useState, useRef, useContext, memo, lazy, Suspense } from 'react';
 import { useLocation, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
@@ -7,9 +7,13 @@ import * as styled from './statistics.style'
 import { ThemeContext } from 'styled-components';
 
 // Import Components
-import StationColumns from './station_columns/station_columns'
-import Header from '../cards/summary_header/summary_header'
-import StatisticsHeader from './statistics_header/statistics_header'
+//import StationColumns from './station_columns/station_columns'
+//import Header from '../cards/summary_header/summary_header'
+//import StatisticsHeader from './statistics_header/statistics_header'
+
+const StationColumns = lazy(() => import('./station_columns/station_columns'))
+const Header = lazy(() => import('../cards/summary_header/summary_header'))
+const StatisticsHeader = lazy(() => import('./statistics_header/statistics_header'))
 
 const Statistics = () => {
 
@@ -95,6 +99,7 @@ const Statistics = () => {
     }
 
     return (
+      <Suspense fallback = {<></>}>
         <styled.Container>
             <Header
                 title={'Statistics Summary'}
@@ -118,6 +123,7 @@ const Statistics = () => {
                 {renderStationColumns()}
             </styled.StationColumnsContainer>
         </styled.Container>
+        </Suspense>
     )
 
 
