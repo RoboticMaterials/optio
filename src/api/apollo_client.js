@@ -37,6 +37,7 @@ const errorLink = onError(({
 
 // Get the auth token from AWS
 const getAuthToken = () => {
+    console.log('QQQQ herp')
     let token
 
     const poolData = {
@@ -59,16 +60,20 @@ const getAuthToken = () => {
             }
         });
     }
+    console.log('QQQQ token', token)
 
     return token
 }
 
+
+console.log('QQQQ here!!!!', process.env.REACT_APP_GQL_REALTIME_ENDPOINT)
 const wsLink = new WebSocketLink({
     uri: process.env.REACT_APP_GQL_REALTIME_ENDPOINT,
     options: {
         lazy: true,
         reconnect: true,
         connectionParams: async () => {
+            console.log('QQQQ hur')
             return {
                 headers: {
                     Authorization: getAuthToken(),
@@ -79,19 +84,21 @@ const wsLink = new WebSocketLink({
 
             }
         },
-        // connectionCallback: (error) => {
-        // 	//@ts-ignore
-        // 	if (error?.message === "Authentication Failure!") {
-        // 		//@ts-ignore
-        // 		//wsLink.subscriptionClient.close(false, false);
-        // 	}
-        // },
+        connectionCallback: (error) => {
+            console.log('QQQQ error', error)
+        	//@ts-ignore
+        	if (error?.message === "Authentication Failure!") {
+        		//@ts-ignore
+        		//wsLink.subscriptionClient.close(false, false);
+        	}
+        },
     },
 });
 
-console.log('wsLink', wsLink)
+console.log('QQQQ wsLink', wsLink)
 
 const authLink = setContext((_, { headers }) => {
+    console.log('QQQQ hur')
     // get the authentication token from local storage if it exists
 
     // return the headers to the context so httpLink can read them
@@ -116,7 +123,7 @@ const defaultOptions = {
 
 const wsInterceptor = new ApolloLink((operation, forward) => {
 
-    console.log('wsInterceptor', { operation, forward })
+    console.log('QQQQ wsInterceptor', { operation, forward })
     return forward(operation)
 });
 
@@ -124,15 +131,17 @@ const wsBranch = from[
     // wsInterceptor,
     wsLink
 ]
-
+console.log('QQQQ ws branch', wsBranch)
+console.log('QQQQ http link', httpLink)
 
 // header: Contains information relevant to the AWS AppSync endpoint and authorization. This is a base64 string encoded from a stringified JSON object. The JSON object content varies depending on the authorization mode.
 // payload: Base64 encoded string of payload.
 const splitWsHttpLink = split(
     ({ query }) => {
-
+        console.log('QQQQ link kind', query)
         const { kind, operation } = getMainDefinition(query);
-        console.log('link split ', { kind, operation, query })
+        console.log('QQQQ link kind', kind)
+        console.log('QQQQ link kind', operation)
         return kind === 'OperationDefinition' && operation === 'subscription';
     },
     wsBranch,

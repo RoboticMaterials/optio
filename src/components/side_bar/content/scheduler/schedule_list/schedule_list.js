@@ -11,7 +11,7 @@ import PlusButton from "../../../../basic/plus_button/plus_button";
 import ScheduleListItem from "./schedule_list_item/schedule_list_item";
 
 // import actions
-import { putSchedule } from '../../../../../redux/actions/schedule_actions';
+// import { putSchedule } from '../../../../../redux/actions/schedule_actions';
 
 // import utils
 import { clone_object } from '../../../../../methods/utils/utils';
@@ -79,7 +79,7 @@ const ScheduleList = (props) => {
             next_time: scheduleItem.next_time,
         }
 
-        dispatch(putSchedule(scheduleItem.id, submitItem))
+        // dispatch(putSchedule(scheduleItem.id, submitItem))
     }
 
     /*

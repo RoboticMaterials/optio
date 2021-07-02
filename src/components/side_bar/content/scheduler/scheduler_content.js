@@ -13,7 +13,7 @@ import * as styled from './scheduler_content.style'
 
 // logging
 import log from '../../../../logger.js'
-import {deleteSchedule} from "../../../../redux/actions/schedule_actions";
+// import {deleteSchedule} from "../../../../redux/actions/schedule_actions";
 const logger = log.getLogger("Schedule")
 
 const SchedulerContent = () => {
@@ -43,7 +43,7 @@ const SchedulerContent = () => {
 
         if (foundScheduleItem) {
             // dispatch action to make delete request to api and update redux
-            await dispatch(deleteSchedule(selectedScheduleId))
+            // await dispatch(deleteSchedule(selectedScheduleId))
         }
 
         setShowDeleteModal(false)

@@ -31,7 +31,7 @@ import { getScheduleItemTemplate } from "../../../../../methods/utils/schedules_
 import { getMinutesFromMoment } from "../../../../../methods/utils/time_utils"
 
 // actions
-import { postSchedule, putSchedule } from "../../../../../redux/actions/schedule_actions"
+// import { postSchedule, putSchedule } from "../../../../../redux/actions/schedule_actions"
 import { getTasks } from "../../../../../redux/actions/tasks_actions";
 
 // import styles
@@ -121,13 +121,13 @@ const CreateScheduleForm = (props) => {
         // update existing object - PUT request
         if (formMode === FORM_MODES.UPDATE) {
             // dispatch update action
-            dispatch(putSchedule(selectedScheduleId, submitItem))
+            // dispatch(putSchedule(selectedScheduleId, submitItem))
 
             // create new object - POST request
         } else if (formMode === FORM_MODES.CREATE) {
             // dispatch post action
-            const createdSchedule = await dispatch(postSchedule(submitItem))
-            setSelectedScheduleId(createdSchedule?.id) // set selected schedule id, which will update the form mode from create to update
+            // const createdSchedule = await dispatch(postSchedule(submitItem))
+            // setSelectedScheduleId(createdSchedule?.id) // set selected schedule id, which will update the form mode from create to update
         }
 
         // close form optionally
