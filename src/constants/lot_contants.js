@@ -58,7 +58,8 @@ export const FORM_BUTTON_TYPES = {
     SAVE: "SAVE",
     ADD: "ADD",
     ADD_AND_NEXT: "ADD_AND_NEXT",
-    MOVE_OK: "MOVE_OK"
+    MOVE_OK: "MOVE_OK",
+    ADD_AND_MOVE: 'AND_AND_MOVE'
 }
 
 export const BASIC_LOT_TEMPLATE_ID = "BASIC_LOT_TEMPLATE"

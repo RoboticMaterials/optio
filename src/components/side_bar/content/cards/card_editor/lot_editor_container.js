@@ -44,6 +44,10 @@ import {postLocalSettings} from "../../../../../redux/actions/local_actions";
 
 const LotEditorContainer = (props) => {
 
+    const {
+        merge
+    } = props
+
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
@@ -856,6 +860,7 @@ const LotEditorContainer = (props) => {
             <LotEditor
                 cardNames={cardNames}
                 lotTemplateName={lotTemplateName}
+                merge={merge}
                 onAddClick={() => {
                     /*
                     * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create

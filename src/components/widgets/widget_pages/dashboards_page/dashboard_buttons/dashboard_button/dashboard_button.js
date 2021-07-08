@@ -68,7 +68,7 @@ const DashboardButton = (props => {
                         <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z" />
                     </svg>
                     <style.IconContainer>
-                        <style.SchemaIcon className={iconClassName} color={color ? color : iconColor}/>
+                        <style.SchemaIcon style = {{position: 'absolute', left: '6rem'}} className={iconClassName} color={color ? color : iconColor}/>
                     </style.IconContainer>
                 </>
             }

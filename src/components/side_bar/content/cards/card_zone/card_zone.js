@@ -224,9 +224,11 @@ const CardZone = ((props) => {
         let cardsToBeMoved = [];
         let totalSimCards = pStationSimCards.reduce((acc, elem) => acc + elem.length, 0);
 
+        let itt=0
         while (totalSimCards > 0) {
 
             currSimTime += simStep
+            itt += 1;
 
             totalSimCards = 0;
             nextCardsToBeMoved = [];
@@ -247,7 +249,7 @@ const CardZone = ((props) => {
 
                         //// Since we moved a card, we now need to calculate the nextMoveTime for THAT next station
                         topCard = pStationSimCards[i + 1][0];
-                        stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
+                        stationCycleTime = deleteStationCycleTime[stations[processStations[i+1]]?._id] || 0;
                         // This is a little hacky, buuuut in the next itt we will subtract simStep so i added it back here to offset that.
                         stationTimesUntilMove[i + 1] = (topCard.qty * stationCycleTime) + simStep;
                     }
@@ -271,6 +273,7 @@ const CardZone = ((props) => {
                 }
 
                 //// Determine next column where card should be moved from (this determines sim step)
+                
                 if (stationTimesUntilMove[i] < minTimeUntilMove) {
                     minTimeUntilMove = stationTimesUntilMove[i];
                     nextCardsToBeMoved = [i];
