@@ -24,6 +24,7 @@ import { getBinQuantity, getIsCardAtBin } from "../../../../../methods/utils/lot
 import * as styled from './dashboards_header.style';
 
 const widthBreakPoint = 1000;
+const phoneViewBreakPoint = 500;
 
 const DashboardsHeader = (props) => {
 
@@ -49,7 +50,8 @@ const DashboardsHeader = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
-
+    const phoneView = windowWidth < phoneViewBreakPoint;
+    
     const name = currentDashboard.name.length > 0 ? currentDashboard.name : stations[currentDashboard.station].name
 
     useEffect(() => {
@@ -68,38 +70,75 @@ const DashboardsHeader = (props) => {
                         onClick={onBack}
                     />
                 }*/}
+                {!phoneView ?
+                  <>
+                    <Button
+                        schema="dashboards"
+                        onClick={() => {
+                            setShowOperationsMenu(true)
+                        }}
+                        disabled={showOperationsMenu}
+                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
+                    >
+                        Operations
+                    </Button>
+                    <Button
+                        schema="delete"
+                        onClick={() => {
+                            handleOperationSelected('report')
+                            setShowOperationsMenu(false)
+                        }}
+                        disabled={showOperationsMenu}
+                        style={{
+                            height: '3rem',
+                            boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            right: '1rem'
 
-                <Button
-                    schema="dashboards"
-                    onClick={() => {
-                        setShowOperationsMenu(true)
-                    }}
-                    disabled={showOperationsMenu}
-                    style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
-                >
-                    Operations
-                </Button>
-                <Button
-                    schema="delete"
-                    onClick={() => {
-                        handleOperationSelected('report')
-                        setShowOperationsMenu(false)
-                    }}
-                    disabled={showOperationsMenu}
-                    style={{ 
-                        height: '3rem', 
-                        boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        position: 'absolute',
-                        right: '1rem'
-                        
-                    }}
-                >
-                    Report
-                    {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
-                </Button>
+                        }}
+                    >
+                        Report
+                        {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
+                    </Button>
+                  </>
+                  :
+                  <>
+                    <Button
+                        schema="dashboards"
+                        onClick={() => {
+                            setShowOperationsMenu(true)
+                        }}
+                        disabled={showOperationsMenu}
+                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
+                    >
+                      <i class="fas fa-list" style = {{color: '#FFFFFF'}}></i>
+                    </Button>
+                    <Button
+                        schema="delete"
+                        onClick={() => {
+                            handleOperationSelected('report')
+                            setShowOperationsMenu(false)
+                        }}
+                        disabled={showOperationsMenu}
+                        style={{
+                            height: '3rem',
+                            boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            right: '1rem'
+
+                        }}
+                    >
+                      <i class="fas fa-exclamation" style = {{color: '#FFFFFF'}}></i>
+                    </Button>
+                  </>
+                }
+
 
                 <styled.Title>{name}</styled.Title>
                 {/* <styled.PaceContainer

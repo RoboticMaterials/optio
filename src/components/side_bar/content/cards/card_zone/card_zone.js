@@ -220,9 +220,11 @@ const CardZone = ((props) => {
         let cardsToBeMoved = [];
         let totalSimCards = pStationSimCards.reduce((acc, elem) => acc + elem.length, 0);
 
+        let itt=0
         while (totalSimCards > 0) {
 
             currSimTime += simStep
+            itt += 1;
 
             totalSimCards = 0;
             nextCardsToBeMoved = [];
@@ -243,7 +245,7 @@ const CardZone = ((props) => {
 
                         //// Since we moved a card, we now need to calculate the nextMoveTime for THAT next station
                         topCard = pStationSimCards[i + 1][0];
-                        stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
+                        stationCycleTime = deleteStationCycleTime[stations[processStations[i+1]]?._id] || 0;
                         // This is a little hacky, buuuut in the next itt we will subtract simStep so i added it back here to offset that.
                         stationTimesUntilMove[i + 1] = (topCard.qty * stationCycleTime) + simStep;
                     }
@@ -267,6 +269,7 @@ const CardZone = ((props) => {
                 }
 
                 //// Determine next column where card should be moved from (this determines sim step)
+                
                 if (stationTimesUntilMove[i] < minTimeUntilMove) {
                     minTimeUntilMove = stationTimesUntilMove[i];
                     nextCardsToBeMoved = [i];
@@ -350,7 +353,7 @@ const CardZone = ((props) => {
             const leadSeconds = leadTimeSeconds - (leadDays * 86400);
             let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
             // leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
-            const formattedLeadTime = leadTime.format('lll') // Format lead time
+            const formattedLeadTime = !!leadTime ? leadTime.format('lll') : null // Format lead time
 
             return { ...card, leadTime: formattedLeadTime }
 
