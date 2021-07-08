@@ -16,21 +16,23 @@ export const LotHeader = styled.div`
     ${commonCss.rowContainer}
     align-items: center;
     text-align: center;
-    justify-content: center;    
+    justify-content: center;
     height: fit-content;
 `
 
-export const LotTitle = styled.p`
+export const LotTitle = styled.h1`
     color: ${props => props.theme.bg.octonary};
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz1};
-
+    font-size: 1.8rem;
+    max-height: 2.5rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
     /* margin-bottom: 0;
     position: absolute;
     text-align: center;
-    left: 0; 
-    right: 0; 
-    margin-left: auto; 
+    left: 0;
+    right: 0;
+    margin-left: auto;
     margin-right: auto;  */
 
 `
@@ -62,7 +64,6 @@ export const LotBodyContainer = styled.div`
     flex-direction: column;
     /* flex: 6; */
     flex-grow: 1;
-    padding: 0rem 1rem;
+    padding: 0.5rem 1rem;
     z-index: 1;
 `
-
