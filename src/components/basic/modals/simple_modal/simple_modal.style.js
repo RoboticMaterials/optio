@@ -83,7 +83,7 @@ export const Container = styled(Modal)`
 
 	z-index: 50;
 
-	min-width: 30rem;
+	min-width: 15rem;
   max-width: 95%;
   min-height: 20rem;
   max-height: 90%;
@@ -170,7 +170,7 @@ export const BodyContainer = styled.div`
 	justify-content: space-between;
 	overflow: hidden;
 
-  
+
 
 	background: ${props => props.theme.bg.primary};
 `

@@ -32,6 +32,7 @@ import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/l
 import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
 import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import useWindowSize from '../../../../../../hooks/useWindowSize'
 
 Modal.setAppElement('body');
 
@@ -78,6 +79,10 @@ const KickOffModal = (props) => {
 
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
+
+    const size = useWindowSize()
+    const windowWidth = size.width
+    const phoneView = windowWidth < 500
 
     const onButtonClick = async (lot) => {
         setShowQuantitySelector(true)
@@ -373,7 +378,7 @@ const KickOffModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
             }}
         >
@@ -398,17 +403,20 @@ const KickOffModal = (props) => {
                     <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
 
                 </styled.HeaderMainContentContainer>
-                <SortFilterContainer
-                    lotFilterValue={lotFilterValue}
-                    sortMode={sortMode}
-                    setSortMode={setSortMode}
-                    sortDirection={sortDirection}
-                    setSortDirection={setSortDirection}
-                    shouldFocusLotFilter={shouldFocusLotFilter}
-                    setLotFilterValue={setLotFilterValue}
-                    selectedFilterOption={selectedFilterOption}
-                    setSelectedFilterOption={setSelectedFilterOption}
-                />
+                {!phoneView &&
+                  <SortFilterContainer
+                      lotFilterValue={lotFilterValue}
+                      sortMode={sortMode}
+                      setSortMode={setSortMode}
+                      sortDirection={sortDirection}
+                      setSortDirection={setSortDirection}
+                      shouldFocusLotFilter={shouldFocusLotFilter}
+                      setLotFilterValue={setLotFilterValue}
+                      selectedFilterOption={selectedFilterOption}
+                      setSelectedFilterOption={setSelectedFilterOption}
+                  />
+                }
+
 
 
             </styled.Header>
@@ -442,16 +450,19 @@ const KickOffModal = (props) => {
                                 label={"Close"}
                                 type="button"
                             /> */}
-                            <Button
-                                // tertiary
-                                // secondary
-                                schema={"dashboards"}
-                                // onClick={close}
-                                onClick={()=>setShowLotEditor(true)}
-                                label={"Create New Lot"}
-                                type="button"
-                                style={{minWidth: '12rem', minHeight: '3rem'}}
-                            />
+                            {!phoneView &&
+                              <Button
+                                  // tertiary
+                                  // secondary
+                                  schema={"dashboards"}
+                                  // onClick={close}
+                                  onClick={()=>setShowLotEditor(true)}
+                                  label={"Create New Lot"}
+                                  type="button"
+                                  style={{minWidth: '12rem', minHeight: '3rem'}}
+                              />
+                            }
+
                         </styled.ButtonsContainer>
                     </div>
             </styled.BodyContainer>

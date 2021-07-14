@@ -25,6 +25,9 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lo
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
 
+// Import API
+import { getStationCycleTime } from '../../../../../api/stations_api'
+
 
 const CardZone = ((props) => {
 
@@ -123,13 +126,14 @@ const CardZone = ((props) => {
     const deleteGetCycleTimes = async () => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
-        const body = { timespan: 'day', index: 0 }
-        const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
+        // const body = { timespan: 'day', index: 0 }
+        // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
         for (const ind in processStations) {
             const stationID = processStations[ind]
+
 
             const station = stations[stationID]
             if (!!station?.manual_cycle_time && !!station?.cycle_time) {
@@ -142,19 +146,11 @@ const CardZone = ((props) => {
                 }
             }
             else {
-                const response = await getStationAnalytics(stationID, body)
-                const throughput = response.throughPut
-                let sum = 0
-                throughput.forEach((dataPoint) => {
-                    if (!!dataPoint.null) {
-                        sum += dataPoint?.null
-                    }
-                })
-
+                const cycleTime = await getStationCycleTime(stationID)
                 stationCycleTimes =
                 {
                     ...stationCycleTimes,
-                    [stationID]: sum != 0 ? workingTime / sum : 0,
+                    [stationID]: cycleTime,
 
                 }
             }
@@ -224,9 +220,11 @@ const CardZone = ((props) => {
         let cardsToBeMoved = [];
         let totalSimCards = pStationSimCards.reduce((acc, elem) => acc + elem.length, 0);
 
+        let itt=0
         while (totalSimCards > 0) {
 
             currSimTime += simStep
+            itt += 1;
 
             totalSimCards = 0;
             nextCardsToBeMoved = [];
@@ -247,7 +245,7 @@ const CardZone = ((props) => {
 
                         //// Since we moved a card, we now need to calculate the nextMoveTime for THAT next station
                         topCard = pStationSimCards[i + 1][0];
-                        stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
+                        stationCycleTime = deleteStationCycleTime[stations[processStations[i+1]]?._id] || 0;
                         // This is a little hacky, buuuut in the next itt we will subtract simStep so i added it back here to offset that.
                         stationTimesUntilMove[i + 1] = (topCard.qty * stationCycleTime) + simStep;
                     }
@@ -271,6 +269,7 @@ const CardZone = ((props) => {
                 }
 
                 //// Determine next column where card should be moved from (this determines sim step)
+                
                 if (stationTimesUntilMove[i] < minTimeUntilMove) {
                     minTimeUntilMove = stationTimesUntilMove[i];
                     nextCardsToBeMoved = [i];
@@ -354,7 +353,7 @@ const CardZone = ((props) => {
             const leadSeconds = leadTimeSeconds - (leadDays * 86400);
             let leadTime = isNaN(leadTimeSeconds) ? null : moment().add(leadTimeSeconds, 'seconds'); // Lead time relative to now
             // leadTime = leadTime.minute() || leadTime.second() || leadTime.millisecond() ? leadTime.add(1, 'hour').startOf('hour') : leadTime.startOf('hour'); // Round up to hour
-            const formattedLeadTime = leadTime.format('lll') // Format lead time
+            const formattedLeadTime = !!leadTime ? leadTime.format('lll') : null // Format lead time
 
             return { ...card, leadTime: formattedLeadTime }
 
@@ -521,6 +520,7 @@ const CardZone = ((props) => {
                     route_id={route_id}
                     cards={cardsArr}
                     onCardClick={handleCardClick}
+                    autoCycleTime={deleteStationCycleTime[station_id]}
                 />
             )
         })

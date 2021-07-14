@@ -35,7 +35,7 @@ const SimpleModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
@@ -63,7 +63,7 @@ const SimpleModal = (props) => {
                             {FooterContent}
                             <styled.ButtonContainers>
                                 <Button
-                                    style={{minWidth: '10rem'}}
+                                    style={{minWidth: '5rem'}}
                                     secondary
                                     onClick={handleOnClick1}
                                     label={button_1_text}
@@ -71,7 +71,7 @@ const SimpleModal = (props) => {
                                     disabled={button_1_disabled}
                                 />
                                 <Button
-                                    style={{minWidth: '10rem'}}
+                                    style={{minWidth: '5rem'}}
                                     onClick={handleOnClick2}
                                     label={button_2_text}
                                     type="button"
