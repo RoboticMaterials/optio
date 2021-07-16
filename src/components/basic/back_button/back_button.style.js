@@ -26,7 +26,7 @@ export const BackButton = styled.button`
     min-width: 2rem;
     height: 2rem;
     min-height: 2rem;
-    
+
     margin: 0.3rem 0.5rem 0.3rem 0.5rem;
     padding: 0;
     border-radius: 0.35rem;
