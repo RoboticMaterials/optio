@@ -477,6 +477,7 @@ const EditLocation = (props) => {
                                         changed={() => handlePageDataChange()}
                                         textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
                                         placeholder='Enter Location Name'
+                                        focus={!values.locationName}
                                         type='text'
                                         label='Location Name'
                                         schema='locations'
