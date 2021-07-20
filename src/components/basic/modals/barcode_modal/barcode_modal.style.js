@@ -135,6 +135,16 @@ export const ListItemIcon = styled.i`
         cursor: pointer;
     }
 `
+export const PrintIcon = styled.i`
+    font-size: 1.6rem;
+    color: ${props =>props.theme.schema.locations.solid};
+
+    &:hover {
+        cursor: pointer;
+        color: ${props =>props.theme.schema.locations.solid};
+    }
+
+`
 
 export const Container = styled(Modal)`
 	outline: none !important;
