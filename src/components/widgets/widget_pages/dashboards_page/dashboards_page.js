@@ -179,8 +179,7 @@ const DashboardsPage = (props) => {
         <style.PageContainer >
             <DndProvider backend={HTML5Backend}>
                 <style.Container style={{ flexGrow: '1' }}>
-                    <DashboardScreen
-                    />
+                    <DashboardScreen />
                 </style.Container>
             </DndProvider>
         </style.PageContainer >

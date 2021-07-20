@@ -8,6 +8,7 @@ export const FlagButton = styled.button`
     list-style: none;
     font-size: 1.5rem;
     cursor: pointer !important;
+    z-index: 0;
 `
 
 export const FlagsContainer = styled.div`

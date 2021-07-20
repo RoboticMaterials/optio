@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 
 // components internal
 import Lot from "./lot"
@@ -34,32 +34,11 @@ const LotContainer = (props) => {
     const process = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
     const station = useSelector(state => { return state.stationsReducer.stations[binId] }) || {}
 
-    const [totalQuantity, setTotalQuantity] = useState(0)
-    const [count, setCount] = useState(0)
-    const [templateValues, setTemplateValues] = useState([])
-    const [processName, setProcessName] = useState("")
-    const [stationName, setStationName] = useState("")
-
-    useEffect(() => {
-        setProcessName(process.name)
-    }, [process])
-
-    useEffect(() => {
-        setStationName(station.name)
-    }, [station])
-
-    useEffect(() => {
-        setTemplateValues(getCustomFields(lotTemplateId, lot))
-    }, [lotTemplateId, lot])
-
-    useEffect(() => {
-        setTotalQuantity(getLotTotalQuantity({ bins }))
-    }, [bins])
-
-    useEffect(() => {
-        setCount(getBinQuantity({ bins }, binId))
-    }, [bins, binId])
-
+    const processName = useMemo(() => process.name, [process])
+    const stationName = useMemo(() => station.name, [station])
+    const templateValues = useMemo(() => getCustomFields(lotTemplateId, lot), [lotTemplateId, lot])
+    const totalQuantity = useMemo(() => getLotTotalQuantity({ bins }), [bins])
+    const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (
         <Lot

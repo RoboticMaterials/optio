@@ -1,10 +1,9 @@
 import * as styled from "./timeline_zone.style";
-import StationsColumn from "../station_column/station_column";
+
 import React, {useState} from "react";
 import {SortableContainer} from "react-sortable-hoc";
 import TimelineCard from "./timeline_card/timeline_card";
 import {useSelector} from "react-redux";
-import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "../zone_header/zone_header";
 
 const TimelineZone = SortableContainer((props) => {
