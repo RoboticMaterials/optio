@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import Modal from 'react-modal';
+import ReactToPrint from 'react-to-print'
 import {useDispatch, useSelector} from "react-redux";
 import { useHistory } from 'react-router-dom'
 
@@ -37,8 +38,14 @@ const BarcodeModal = (props) => {
     const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
     const [generated, setGenerated] = useState(false)
+    const componentRef = useRef(null)
+
     useEffect(() => {
-  	}, [])
+      if (!!componentRef.current) {
+        JsBarcode("#barcode", barcodeId)
+        setGenerated(true)
+      }
+  	}, [componentRef.current])
 
     return (
         <styled.Container
@@ -56,33 +63,25 @@ const BarcodeModal = (props) => {
             }}
         >
             <styled.Header>
-            <styled.Title
-                onClick = {()=>{
-                }}
-            >{title}
-            </styled.Title>
-                <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
+              {!!generated &&
+                <ReactToPrint
+                  trigger = {()=><styled.PrintIcon className = 'fas fa-print' style = {{paddingLeft: '1rem'}}/>}
+                  content = {() => componentRef.current}
+                />
+              }
+              <styled.Title
+                  onClick = {()=>{
+                  }}
+              >{title}
+              </styled.Title>
+              <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
             </styled.Header>
             <styled.BodyContainer generated = {generated}>
 
-                {!generated &&
-                  <Button
-                    schema={'lots'}
-                    type={"button"}
-                    style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-                    onClick={() => {
-                      JsBarcode("#barcode", barcodeId)
-                      setGenerated(true)
-                    }}
-                  >
-                  Load Barcode
-                  </Button>
-                }
-
-                <svg
-                  id = "barcode"
-                >
-                </svg>
+                  <svg
+                    id = "barcode"
+                    ref = {componentRef}
+                  />
 
             </styled.BodyContainer>
         </styled.Container>
