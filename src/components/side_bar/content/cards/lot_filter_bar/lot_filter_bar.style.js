@@ -70,6 +70,7 @@ export const ExpandableContainer = styled.div`
 
     display: flex;
     flex-direction: column;
+    z-index: 2;
 `
 
 export const RemoveIcon = styled.button`

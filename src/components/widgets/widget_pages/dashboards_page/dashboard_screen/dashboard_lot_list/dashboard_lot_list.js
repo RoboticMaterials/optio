@@ -121,17 +121,18 @@ const DashboardLotList = () => {
         let organizedCards = Object.values(cards)
                                 .filter(card => getIsCardAtBin(card, station?._id))
                                 .filter(card => onLotIsCurrentlyAtCart(card))
+                                .map(card => {
+                                    const {
+                                        bins = {},
+                                    } = card || {}
+                
+                                    const quantity = bins[stationID]?.count
+                                    return {...card, quantity}
+                                })
 
         if (!!dashboard.filters) {
             dashboard.filters.forEach(filter => {
-                organizedCards = organizedCards.filter(card => {
-                    const {
-                        bins = {},
-                    } = card || {}
-
-                    const count = bins[stationID]?.count
-                    return checkCardMatchesFilter({...card, quantity: count}, filter)
-                })
+                organizedCards = organizedCards.filter(card => checkCardMatchesFilter(card, filter))
             })
         }
 

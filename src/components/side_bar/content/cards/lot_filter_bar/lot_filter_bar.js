@@ -447,7 +447,7 @@ const LotFilterBar = (props) => {
                     <styled.ActiveContainer open={open}>
                         {renderActiveFilters}
                         <styled.ExpandContractIcon
-                            className={open ? "fas fa-chevron-down" : "fas fa-ellipsis-h"}
+                            className={open ? "fas fa-chevron-up" : "fas fa-ellipsis-h"}
                             onClick={() => setOpen(!open)}
                         />
                     </styled.ActiveContainer>

@@ -28,6 +28,7 @@ export const BarsContainer = styled.div`
   flex-wrap: wrap;
   
   width: 100%;
+  // justify-content: center;
 `
 
 export const columnCss = css`
