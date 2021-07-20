@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 // external components
 import Modal from 'react-modal';
@@ -202,7 +202,7 @@ const KickOffModal = (props) => {
     /*
     * renders an array of buttons for each kick off lot
     * */
-    const renderKickOffButtons = () => {
+    const renderKickOffButtons = useMemo(() => {
         return availableKickOffCards
             .filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
                 const {
@@ -254,7 +254,7 @@ const KickOffModal = (props) => {
                     />
                 )
             })
-    }
+    }, [availableKickOffCards, dashboard.filters, dashboard.sort, process])
 
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
