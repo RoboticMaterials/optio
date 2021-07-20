@@ -39,28 +39,20 @@ import MultiSelectOptions from "../multi_select_options/multi_select_options";
 const ZoneHeader = (props) => {
 
 	const {
-		selectedProcesses,
-		setSelectedProcesses,
 		sortDirection,
 		setSortDirection,
-		zone,
-		lotFilterValue,
-		setLotFilterValue,
 		setSortMode,
 		sortMode,
-		selectedFilterOption,
-		setSelectedFilterOption,
+
+		filters,
+		onAddFilter,
+		onRemoveFilter,
 
 		selectedLots,
 		onDeleteClick,
 		onMoveClick,
 		onClearClick,
 	} = props
-
-	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
-
-	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
-	const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
 	const [size, setSize] = useState({
 		width: undefined,
@@ -92,49 +84,6 @@ const ZoneHeader = (props) => {
 		}
 
 	}, [sizeRef, window.innerWidth])
-
-	useEffect(() => {
-		const templateFields = getAllTemplateFields()
-
-		let tempLotFilterOptions = [...Object.values(LOT_FILTER_OPTIONS)]
-		let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
-
-		templateFields.map((currTemplateField) => {
-			tempLotFilterOptions.push(currTemplateField)
-
-			const {
-				dataType,
-				label
-			} = currTemplateField
-
-			if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-				tempLotSortOptions.push({
-					...currTemplateField,
-					label: `${label} (start)`,
-					index: 0,
-					fieldName: label
-				})
-				tempLotSortOptions.push({
-					...currTemplateField,
-					label: `${label} (end)`,
-					index: 1,
-					fieldName: label
-				})
-			}
-			else {
-				tempLotSortOptions.push({
-					...currTemplateField,
-					fieldName: label
-				})
-			}
-
-
-
-		})
-
-		setLotFilterOptions(tempLotFilterOptions)
-		setLotSortOptions(tempLotSortOptions)
-	}, [lotTemplates])
 
 	const selectedSortOption =  SORT_OPTIONS.find((currOption) => currOption.sortMode === sortMode)
 
@@ -198,31 +147,31 @@ const ZoneHeader = (props) => {
 			} */}
 
 			<styled.OptionContainer>
-			<LotSortBar
-				sortMode={sortMode}
-				setSortMode={setSortMode}
-				sortDirection={sortDirection}
-				setSortDirection={setSortDirection}
-				columnCss={columnCss3}
-				containerCss={containerCss}
-				dropdownCss={dropdownCss}
-				valueCss={valueCss}
-			/>
+				<LotSortBar
+					sortMode={sortMode}
+					setSortMode={setSortMode}
+					sortDirection={sortDirection}
+					setSortDirection={setSortDirection}
+
+					columnCss={columnCss3}
+					containerCss={containerCss}
+					dropdownCss={dropdownCss}
+					valueCss={valueCss}
+				/>
 			</styled.OptionContainer>
 
 			<styled.OptionContainer>
-			<LotFilterBar
-				lotFilterValue={lotFilterValue}
-				setLotFilterValue={setLotFilterValue}
-				selectedFilterOption={selectedFilterOption}
-				setSelectedFilterOption={setSelectedFilterOption}
-				columnCss={columnCss3}
-				containerCss={containerCss}
-				// descriptionCss={descriptionCss}
-				dropdownCss={dropdownCss}
-				valueCss={valueCss}
-				reactDropdownSelectCss={reactDropdownSelectCss}
-			/>
+				<LotFilterBar
+					filters={filters}
+					onAddFilter={onAddFilter}
+					onRemoveFilter={onRemoveFilter}
+
+					columnCss={columnCss3}
+					containerCss={containerCss}
+					dropdownCss={dropdownCss}
+					valueCss={valueCss}
+				/>
+
 			</styled.OptionContainer>
 			</styled.SortFilterContainer>
 

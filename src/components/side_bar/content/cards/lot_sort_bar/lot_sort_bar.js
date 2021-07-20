@@ -26,6 +26,7 @@ const LotSortBar = (props) => {
 
     const {
         sortMode,
+        sortDirection,
         setSortMode,
         setSortDirection,
     } = props
@@ -33,10 +34,9 @@ const LotSortBar = (props) => {
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
 
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
-    const [open, setOpen] = useState(isMobile ? false : true)
 
     useEffect(() => {
-        const templateFields = getAllTemplateFields()
+        const templateFields = getAllTemplateFields(lotTemplates)
 
         let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
 
@@ -75,67 +75,56 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer
-            open={open}
-            style={{
-                padding: open ? ".25rem 1rem 0 1rem" : "1rem"
-            }}
-        >
+        <styled.ColumnContainer>
             <styled.Description
                 css={props.descriptionCss}
-                onClick={() => setOpen(!open)}
             >
-                <styled.ExpandContractIcon
-                    className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
-                    onClick={() => setOpen(!open)}
-                />
+                
                 Sort
             </styled.Description>
-            {open &&
-                <styled.ContentContainer>
-                    <styled.ItemContainer
-                        style={{
-                            flexWrap: "nowrap"
-                        }}
-                    >
-                        <styled.OptionContainer>
-                            <DropDownSearch
-                                valueCss={props.valueCss}
-                                options={lotSortOptions}
-                                onChange={(values) => {
-                                    // set sort mode
-                                    setSortMode(values[0])
-                                }}
-                                values={[sortMode]}
-                                labelField={"label"}
-                                valueField={"label"}
-                                schema={"lots"}
-                                style={{
-                                    borderTopRightRadius: 0,
-                                    borderBottomRightRadius: 0,
-                                    minWidth: "15rem",
-                                    maxWidth: "15rem",
-                                    background: themeContext.bg.tertiary
-                                }}
-                            />
-                            <RotateButton
-                                schema={"lots"}
-                                iconName1={"fas fa-arrow-up"}
-                                containerCss={styled.rotateButtonContainerCss}
-                                iconCss={styled.rotateButtonIconCss}
-                                onStateOne={() => {
-                                    // set sort direction
-                                    setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                                }}
-                                onStateTwo={() => {
-                                    // set sort direction
-                                    setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                                }}
-                            />
-                        </styled.OptionContainer>
-                    </styled.ItemContainer>
-                </styled.ContentContainer>
-            }
+            <styled.ContentContainer>
+                <styled.ItemContainer
+                    style={{
+                        flexWrap: "nowrap"
+                    }}
+                >
+                    <styled.OptionContainer>
+                        <DropDownSearch
+                            valueCss={props.valueCss}
+                            options={lotSortOptions}
+                            onChange={(values) => {
+                                // set sort mode
+                                setSortMode(values[0])
+                            }}
+                            values={[sortMode]}
+                            labelField={"label"}
+                            valueField={"label"}
+                            schema={"lots"}
+                            style={{
+                                borderTopRightRadius: 0,
+                                borderBottomRightRadius: 0,
+                                minWidth: "15rem",
+                                maxWidth: "15rem",
+                                background: themeContext.bg.tertiary
+                            }}
+                        />
+                        <RotateButton
+                            schema={"lots"}
+                            iconName1={"fas fa-arrow-up"}
+                            containerCss={styled.rotateButtonContainerCss}
+                            iconCss={styled.rotateButtonIconCss}
+                            onStateOne={() => {
+                                // set sort direction
+                                setSortDirection(SORT_DIRECTIONS.ASCENDING)
+                            }}
+                            onStateTwo={() => {
+                                // set sort direction
+                                setSortDirection(SORT_DIRECTIONS.DESCENDING)
+                            }}
+                        />
+                    </styled.OptionContainer>
+                </styled.ItemContainer>
+            </styled.ContentContainer>
         </styled.ColumnContainer>
     )
 }
