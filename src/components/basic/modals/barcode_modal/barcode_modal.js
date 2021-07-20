@@ -38,10 +38,14 @@ const BarcodeModal = (props) => {
     const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
     const [generated, setGenerated] = useState(false)
-    const componentRef = useRef()
+    const componentRef = useRef(null)
 
     useEffect(() => {
-  	}, [])
+      if (!!componentRef.current) {
+        JsBarcode("#barcode", barcodeId)
+        setGenerated(true)
+      }
+  	}, [componentRef.current])
 
     return (
         <styled.Container
@@ -63,7 +67,7 @@ const BarcodeModal = (props) => {
                 <ReactToPrint
                   trigger = {()=><styled.PrintIcon className = 'fas fa-print' style = {{paddingLeft: '1rem'}}/>}
                   content = {() => componentRef.current}
-                  />
+                />
               }
               <styled.Title
                   onClick = {()=>{
@@ -73,20 +77,6 @@ const BarcodeModal = (props) => {
               <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
             </styled.Header>
             <styled.BodyContainer generated = {generated}>
-
-                {!generated &&
-                  <Button
-                    schema={'lots'}
-                    type={"button"}
-                    style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-                    onClick={() => {
-                      JsBarcode("#barcode", barcodeId)
-                      setGenerated(true)
-                    }}
-                  >
-                  Load Barcode
-                  </Button>
-                }
 
                   <svg
                     id = "barcode"

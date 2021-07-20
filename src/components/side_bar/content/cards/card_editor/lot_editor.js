@@ -854,7 +854,7 @@ const FormComponent = (props) => {
 										dispatchShowBarcodeModal(true)
 									}}
 								>
-								Generate Barcode
+								Barcode
 								</Button>
 
 							</styled.SubHeader>
