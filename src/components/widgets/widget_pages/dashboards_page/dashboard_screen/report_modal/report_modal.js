@@ -1,9 +1,9 @@
 import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
+import { useSelector, useDispatch } from 'react-redux';
 
 // external components
 import { Formik } from "formik";
 import Modal from 'react-modal';
-import { useDispatch } from "react-redux";
 
 import { Container, Draggable } from 'react-smooth-dnd';
 
@@ -32,6 +32,10 @@ import {ThemeContext} from "styled-components";
 import ScrollContainer from "../../../../../basic/scroll_container/scroll_container";
 import useWindowSize from '../../../../../../hooks/useWindowSize'
 
+import * as emailjs from 'emailjs-com'
+import {init} from 'emailjs-com'
+init('user_nlG7klXmPKmiIS9WsYj6J')
+
 Modal.setAppElement('body');
 
 const ReportModal = (props) => {
@@ -59,6 +63,8 @@ const ReportModal = (props) => {
     const [submitting, setSubmitting] = useState(false)
     const [dragging, setDragging] = useState(null)
 
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const stations = useSelector(state=>state.stationsReducer.stations)
     const size = useWindowSize()
     const windowWidth = size.width
     const phoneView = windowWidth < 500
@@ -82,13 +88,25 @@ const ReportModal = (props) => {
     } = current || {}
 
 
-
     useEffect(() => {
         setNoButtons(!isNonEmptyArray(dashboard?.report_buttons))
         setReportButtons(dashboard?.report_buttons || [])
     }, [dashboard])
 
     const sendReport = async (button) => {
+
+      if(!!serverSettings.emailEnabled){
+          var emailData = {
+            email_address: serverSettings.emailAddress,
+            email_name: serverSettings.emailName,
+            station_name: stations[dashboard.station].name,
+            report_name: button.label
+          }
+
+          emailjs.send('service_d8om4yw', 'template_o5ru37v', emailData, 'user_nlG7klXmPKmiIS9WsYj6J')
+      }
+
+
         setSubmitting(true)
         const {
             _id,
