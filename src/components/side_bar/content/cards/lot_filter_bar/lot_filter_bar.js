@@ -78,6 +78,14 @@ const LotFilterBar = (props) => {
     const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates) || {}
     const processes = useSelector(state => Object.values(state.processesReducer.processes))
 
+    useEffect(() => {
+        document.addEventListener("keydown", () => setOpen(false), false);
+    
+        return () => {
+          document.removeEventListener("keydown", () => setOpen(false), false);
+        };
+      }, []);
+
     /*
         * This effect is used to set the filter options
         *
