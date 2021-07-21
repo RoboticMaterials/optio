@@ -127,7 +127,7 @@ export const checkCardMatchesFilter = (lot, filter) => {
     const lotFields = {}
     lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
     if (lot[fieldName] == null && (lotFields[fieldName] == null || 
-            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null)))
+            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName]?.value.length<2 || (lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null))))
         { return false; }
 
     switch (fieldName) {
