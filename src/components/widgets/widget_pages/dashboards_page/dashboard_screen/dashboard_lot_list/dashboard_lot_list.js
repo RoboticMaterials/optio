@@ -40,7 +40,9 @@ const DashboardLotList = () => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const routes = useSelector(state => state.tasksReducer.tasks)
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
-
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+    
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
 
     const size = useWindowSize()
@@ -168,7 +170,7 @@ const DashboardLotList = () => {
 
     return (
         <styled.LotListContainer>
-            {!phoneView &&
+            {(!phoneView && !(!!serverSettings?.hideFilterSortDashboards && !localSettings?.mapViewEnabled)) &&
               <SortFilterContainer
                   sortMode={dashboard?.sort?.direciton || LOT_FILTER_OPTIONS.name}
                   setSortMode={handleChangeSortMode}
