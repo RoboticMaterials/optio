@@ -126,8 +126,8 @@ export const checkCardMatchesFilter = (lot, filter) => {
     // Primarily filters if the key exists in the lot
     const lotFields = {}
     lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
-    if (lot[fieldName] == null && (lotFields[fieldName] == null || 
-            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName]?.value.length<2 || (lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null))))
+    if (lot[fieldName] == null && (lotFields[fieldName] == null || lotFields[fieldName].value == null ||
+            (lotFields[fieldName].dataType === 'DATE_RANGE' && Array.isArray(lotFields[fieldName].value) && (lotFields[fieldName].value.length < 2 || lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null))))
         { return false; }
 
     switch (fieldName) {
