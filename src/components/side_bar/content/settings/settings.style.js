@@ -48,7 +48,7 @@ export const RowContainer = styled.div`
     justify-content: space-between;
     padding-bottom: .5rem;
     margin-top: .5rem;
-    border-bottom: 1px solid white;
+    // border-bottom: 1px solid white;
 `
 
 export const ColumnContainer = styled.div`
@@ -73,6 +73,19 @@ export const ConnectionIcon = styled.i`
         props.className === 'fas fa-circle-notch fa-spin' ? 'yellow' :
         props.className === 'fas fa-times' ? 'red' : 'gray'
     };
+`
+
+export const IconContainer = styled.div`
+    flex-grow: 1;
+    justify-content: center;
+`
+
+export const LockUnlockIcon = styled.i`
+    color: ${props => props.theme.bg.quinary};
+    font-size: 2.5rem;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
 `
 
 export const ConnectionButton = styled.button`
