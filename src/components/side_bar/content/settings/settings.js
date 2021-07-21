@@ -552,8 +552,8 @@ const Settings = () => {
             {CurrentMap()}
             {TimeZone()}
             {LockUnlockAllDashboards()}
-            {EmailAddress()}
             {renderFilterSortSelection()}
+            {EmailAddress()}
             {renderShiftSettings()}
             {APIAddress()}
             {SignOut()}
