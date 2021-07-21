@@ -6,6 +6,7 @@ import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_sear
 import Textbox from "../../../../basic/textbox/textbox"
 import FlagButton from "./flag_button/flag_button"
 import CalendarPlaceholder from "../../../../basic/calendar_placeholder/calendar_placeholder"
+import NumberInput from '../../../../basic/number_input/number_input'
 
 // constants
 import { FIELD_DATA_TYPES, FLAG_OPTIONS, LOT_FILTER_OPTIONS } from "../../../../../constants/lot_contants"
@@ -17,6 +18,7 @@ import { ThemeContext } from "styled-components"
 import { isMobile } from "react-device-detect"
 
 // utils
+import { deepCopy } from '../../../../../methods/utils/utils'
 import { isArray } from "../../../../../methods/utils/array_utils"
 import { jsDateToString } from '../../../../../methods/utils/card_utils'
 import { stringifyFilter, getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
@@ -66,7 +68,7 @@ const LotFilterBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     const [open, setOpen] = useState(false);
-    const [newFilter, setNewFilter] = useState({});
+    const [canAddFilter, setCanAddFilter] = useState(false);
     const [selectedFilterKey, setSelectedFilterKey] = useState(null);
     const [selectedFilterOperator, setSelectedFilterOperator] = useState(null);
     const [selectedFilterOptions, setSelectedFilterOptions] = useState(null)
@@ -75,6 +77,14 @@ const LotFilterBar = (props) => {
     // redux state
     const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates) || {}
     const processes = useSelector(state => Object.values(state.processesReducer.processes))
+
+    useEffect(() => {
+        document.addEventListener("keydown", () => setOpen(false), false);
+    
+        return () => {
+          document.removeEventListener("keydown", () => setOpen(false), false);
+        };
+      }, []);
 
     /*
         * This effect is used to set the filter options
@@ -152,7 +162,6 @@ const LotFilterBar = (props) => {
 
     const onChangeOperatorOption = (values) => {
         setSelectedFilterOperator(values[0])
-        setSelectedFilterOptions(null)
     }
 
     const onChangeFilterOptions = (values) => {
@@ -184,13 +193,17 @@ const LotFilterBar = (props) => {
 
             case 'STRING':
                 setSelectedFilterOperator({label: 'contains', value: 'contains'})
+                setCanAddFilter(false)
                 return null;
 
             case 'INTEGER':
                 return (
                     <DropDownSearch
                         options={COMPARITOR_OPERATORS}
-                        onChange={onChangeOperatorOption}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
                         values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
                         labelField={"label"}
                         valueField={"value"}
@@ -205,13 +218,17 @@ const LotFilterBar = (props) => {
 
             case 'PROCESSES':
                 setSelectedFilterOperator({label: 'is', value: 'is'})
+                setCanAddFilter(false)
                 return null;
 
             case 'FLAGS':
                 return (
                     <DropDownSearch
                         options={SET_OPERATORS}
-                        onChange={onChangeOperatorOption}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
                         values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
                         labelField={"label"}
                         valueField={"value"}
@@ -229,7 +246,10 @@ const LotFilterBar = (props) => {
                 return (
                     <DropDownSearch
                         options={COMPARITOR_OPERATORS}
-                        onChange={onChangeOperatorOption}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
                         values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
                         labelField={"label"}
                         valueField={"value"}
@@ -256,7 +276,10 @@ const LotFilterBar = (props) => {
                 return (
                     <Textbox
                         placeholder='Contains'
-                        onChange={(e) => onChangeFilterOptions({text: e.target.value})}
+                        onChange={(e) => {
+                            onChangeFilterOptions({text: e.target.value})
+                            setCanAddFilter(true)
+                        }}
                         focus={true}
                         inputStyle={{
                             height: "2.2rem",
@@ -277,6 +300,7 @@ const LotFilterBar = (props) => {
                         placeholder='Number'
                         onChange={(e) => {
                             onChangeFilterOptions({num: parseFloat(e.target.value)})
+                            setCanAddFilter(true)
                         }}
                         focus={true}
                         inputStyle={{
@@ -297,7 +321,10 @@ const LotFilterBar = (props) => {
                     <DropDownSearch
                         multi={true}
                         options={processes}
-                        onChange={values => onChangeFilterOptions({processes: values})}
+                        onChange={values => {
+                            onChangeFilterOptions({processes: values})
+                            setCanAddFilter(true)
+                        }}
                         values={selectedFilterOptions?.processes || []}
                         labelField={"name"}
                         valueField={"_id"}
@@ -318,12 +345,15 @@ const LotFilterBar = (props) => {
                         options={Object.values(FLAG_OPTIONS)}
                         onChange={(values) => {
                             setSelectedFilterOptions({flags: values.map(val => val.id)})
+                            setCanAddFilter(true)
                         }}
                         onRemoveItem={(values) => {
                             setSelectedFilterOptions({flags: values.map(val => val.id)})
+                            setCanAddFilter(true)
                         }}
                         onClearAll={() => {
                             setSelectedFilterOptions({flags: []})
+                            setCanAddFilter(true)
                         }}
                         labelField={"id"}
                         valueField={"id"}
@@ -400,35 +430,64 @@ const LotFilterBar = (props) => {
                 )
 
             case "DATE": // Calendar Item
-                return (
-                    <CalendarPlaceholder
-                        schema={"lots"}
-                        containerStyle={{
-                            width: "8rem",
-                            height: "36px",
-                            boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
-                            backgroundColor: themeContext.bg.primary
-                        }}
-                        value={selectedFilterOptions?.date || null}
-                        onChange={val => onChangeFilterOptions({date: val})}
-                        usable={true}
-                    />
-                )
-
             case "DATE_RANGE":
                 return (
-                    <CalendarPlaceholder
-                        schema={"lots"}
-                        containerStyle={{
-                            width: "8rem",
-                            height: "36px",
-                            boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
-                            backgroundColor: themeContext.bg.primary
-                        }}
-                        value={selectedFilterOptions?.date || null}
-                        onChange={val => onChangeFilterOptions({date: val})}
-                        usable={true}
-                    />
+                    <>
+                    <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                            onClick={() => {
+                                onChangeFilterOptions({isRelative: false})
+                                setCanAddFilter(false)
+                            }}
+                            selected={!selectedFilterOptions?.isRelative}
+                        >
+                            Date
+                        </styled.DualSelectionButton>
+
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                            onClick={() => {
+                                onChangeFilterOptions({isRelative: true, relativeDays: 0})
+                                setCanAddFilter(true)
+                            }}
+                            selected={selectedFilterOptions?.isRelative}
+
+                        >
+                            Relative
+                    </styled.DualSelectionButton>
+                    </styled.RowContainer>
+                    {selectedFilterOptions?.isRelative ?
+                        <div style={{marginBottom: '0.5rem'}}>
+                            <styled.Description style={{width: '100%', justifyContent: 'center', display: 'flex'}}>Days relative to current date</styled.Description>
+                            <NumberInput 
+                                onPlusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays+1})}
+                                onMinusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays-1})}
+                                onInputChange={e => onChangeFilterOptions({...selectedFilterOptions, relativeDays: parseInt(e.target.value)})}
+                                inputStyle={{backgroundColor: themeContext.bg.primary, borderRadius: '0.4rem', height: '3rem', fontSize: '2rem'}}
+                                buttonStyle={{fontSize: '2.6rem'}}
+                                
+                                value={selectedFilterOptions.relativeDays}
+                            />
+                        </div>
+                        :
+                        <CalendarPlaceholder
+                            schema={"lots"}
+                            containerStyle={{
+                                width: "100%",
+                                height: "36px",
+                                boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
+                                backgroundColor: themeContext.bg.primary
+                            }}
+                            value={selectedFilterOptions?.date || null}
+                            onChange={val => {
+                                onChangeFilterOptions({date: val})
+                                setCanAddFilter(true)
+                            }}
+                            usable={true}
+                        />
+                    }
+                    </>
                 )
         }
 
@@ -443,7 +502,7 @@ const LotFilterBar = (props) => {
                 Filters
             </styled.Description>
             <styled.FiltersContainer>
-                <styled.ExpandableContainer>
+                <styled.ExpandableContainer open={open}>
                     <styled.ActiveContainer open={open}>
                         {renderActiveFilters}
                         <styled.ExpandContractIcon
@@ -480,7 +539,7 @@ const LotFilterBar = (props) => {
                                     {renderFilterOptionsSelector}
                                 </div>
                             }
-                            {!!selectedFilterOptions &&
+                            {canAddFilter &&
                                 <styled.AddFilterButton onClick={handleCreateNewFilter}>Add Filter</styled.AddFilterButton>
                             }
                         </styled.NewFilterContainer>

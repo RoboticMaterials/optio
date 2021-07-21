@@ -87,7 +87,7 @@ const SplashScreen = (props) => {
 
     return (
         <>
-            {/* When loading show an RM logo, if no api info, then show input to enter */}
+            {/* When loading show an Optio logo, if no api info, then show input to enter */}
             {!isApiLoaded ? apiError ?
                 <div style={{ width: '100%', height: '100%', paddingTop: '15%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                     <div style={{height: '15rem', overflow: 'hidden'}}>
