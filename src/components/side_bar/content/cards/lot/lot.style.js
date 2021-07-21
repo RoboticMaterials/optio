@@ -76,11 +76,13 @@ export const Row = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	padding: 0.5rem .25rem 0rem .25rem;
+	padding: 0.5rem .5rem 0rem .5rem;
   display: flex;
   flex-direction: column;
   flex: 1;
   justify-content: center;
+
+  ${props => !props.hasLeadTime && `margin-bottom: 0.5rem;`}
 `
 
 export const NameContainer = styled.div`
@@ -95,6 +97,7 @@ export const CardName = styled.span`
   font-weight: 600;
   font-size: 1.1rem;
   font-family: ${props => props.theme.font.primary};
+  flex-grow: 1;
 `
 
 export const LotNumber = styled.span`
@@ -104,12 +107,12 @@ export const LotNumber = styled.span`
   font-size: ${props => props.theme.fontSize.sz4};
   color: ${props => props.theme.bg.octonary};
   font-weight: 300;
-
+  height: 100%;
 
   background: ${props => props.theme.bg.secondary};
   border-radius: 1rem;
   width: fit-content;
-  padding: 0rem 0.7rem;
+  padding: 0.1rem 0.7rem;
   align-content: center;
   justify-content: center;
 `
@@ -163,9 +166,14 @@ export const HeaderBar = styled.div`
 	display: flex;
   flex-direction: column;
 
-  padding: 0.5rem 0.5rem;
+  padding: 0.2rem 0.5rem 0.1rem 0.5rem;
 `
 
+export const NameNumberContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+`
 
 
 
