@@ -108,7 +108,7 @@ export const MoreIcon = styled.i`
 `
 export const LockIcon = styled.i`
     position: absolute;
-    right: 8.5rem;
+    right: 13rem;
     font-size: 1.3rem;
     color: ${props => props.theme.bg.quinary};
     cursor: pointer;

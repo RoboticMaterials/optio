@@ -78,7 +78,7 @@ const DashboardsHeader = (props) => {
                             setShowOperationsMenu(true)
                         }}
                         disabled={showOperationsMenu}
-                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
+                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)', width: '10rem'}}
                     >
                         Operations
                     </Button>
@@ -96,7 +96,7 @@ const DashboardsHeader = (props) => {
                             justifyContent: 'center',
                             alignItems: 'center',
                             position: 'absolute',
-                            right: '1rem'
+                            right: '1rem', width: '10rem'
 
                         }}
                     >

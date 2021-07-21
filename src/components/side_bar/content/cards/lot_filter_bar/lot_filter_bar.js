@@ -79,10 +79,10 @@ const LotFilterBar = (props) => {
     const processes = useSelector(state => Object.values(state.processesReducer.processes))
 
     useEffect(() => {
-        document.addEventListener("keydown", () => setOpen(false), false);
+        document.addEventListener("keydown", (e) => e.keyCode === 27 && setOpen(false), false);
     
         return () => {
-          document.removeEventListener("keydown", () => setOpen(false), false);
+          document.removeEventListener("keydown", (e) => e.keyCode === 27 && setOpen(false), false);
         };
       }, []);
 
@@ -466,7 +466,6 @@ const LotFilterBar = (props) => {
                                 onInputChange={e => onChangeFilterOptions({...selectedFilterOptions, relativeDays: parseInt(e.target.value)})}
                                 inputStyle={{backgroundColor: themeContext.bg.primary, borderRadius: '0.4rem', height: '3rem', fontSize: '2rem'}}
                                 buttonStyle={{fontSize: '2.6rem'}}
-                                
                                 value={selectedFilterOptions.relativeDays}
                             />
                         </div>
