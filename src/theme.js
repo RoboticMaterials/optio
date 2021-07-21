@@ -27,8 +27,8 @@ export const theme = {
     main: {
         bg: light,
         fg: {
-            primary: '#798fd9',
-            secondary: '#FF4B4B', // RM RED
+            primary: '#2787e1',
+            secondary: '#F92644', // RM RED
             tertiary: '',
             quaternary: '',
             quinary: '',
@@ -147,7 +147,7 @@ export const theme = {
             },
             lots: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
-                solid: '#b385ff',
+                solid: '#ba8fff',
                 iconName: "fas fa-play"
             },
             merge: {
@@ -205,7 +205,7 @@ export const theme = {
             },
             delete: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
-                solid: '#e36868'
+                solid: '#ff4545'
             },
             warehouse: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',

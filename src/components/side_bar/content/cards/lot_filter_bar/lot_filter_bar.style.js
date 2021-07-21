@@ -117,7 +117,7 @@ export const ActiveFiltersContainer = styled.div`
 `
 
 export const ActiveFilter = styled.span`
-    background-color: ${props => LightenDarkenColor(props.theme.schema.lots.solid, 40)};
+    background-color: ${props => LightenDarkenColor(props.theme.schema.lots.solid, 0)};
     height: 1.5rem;
     border-radius: 0.75rem;
     padding: 0.3rem 0.6rem;
