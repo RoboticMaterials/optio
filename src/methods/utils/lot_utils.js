@@ -16,6 +16,7 @@ import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./a
 import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
 import { getProcessStations } from './processes_utils'
 import { getLoadStationId } from './route_utils'
+import { jsDateToString } from './card_utils'
 
 export const getDisplayName = (lotTemplate, fieldName, fallback) => {
     let returnVal
@@ -63,6 +64,121 @@ export const testFilterOption = (filterOptions, filterValue, testValue) => {
     }
 
     return false
+}
+
+export const stringifyFilter = (filter) => {
+    let fieldStr = filter.label;
+    let operatorStr = filter.operator;
+    let optionsStr;
+    switch (filter.dataType) {
+        case 'STRING':
+            optionsStr = "'" + filter.options.text + "'";
+            break;
+        case 'INTEGER':
+            optionsStr = filter.options.num;
+            break;
+        case 'PROCESSES':
+            fieldStr = 'Process' // Special case (since we actually use IDs)
+            optionsStr = filter.options.processes.map(p => p.name).join(' | ')
+            break;
+        case 'FLAGS':
+            optionsStr = '...'
+            break;
+        case 'DATE':
+        case 'DATE_RANGE':
+            if (filter.options.isRelative) {
+                optionsStr = 'today' + (filter.options.relativeDays < 0 ? '' : '+') + filter.options.relativeDays
+            } else {
+                optionsStr = jsDateToString(filter.options.date)
+            }
+            break;
+        default:
+            optionsStr = '?'
+            break;
+    }
+
+    return fieldStr + ' ' + operatorStr + ' ' + optionsStr;
+}
+
+const COMPARITOR_FUNCTIONS = {
+    '<': (a, b) => a < b,
+    '<=': (a, b) => a <= b,
+    '=': (a, b) => a === b,
+    '>=': (a, b) => a >= b,
+    '>': (a, b) => a > b
+}
+
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+export const checkCardMatchesFilter = (lot, filter) => {
+
+    const {
+        fieldName,
+        dataType,
+        operator,
+        options
+    } = filter;
+
+    // Primarily filters if the key exists in the lot
+    const lotFields = {}
+    lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
+    if (lot[fieldName] == null && (lotFields[fieldName] == null || 
+            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null)))
+        { return false; }
+
+    switch (fieldName) {
+
+        case 'name':
+            return lot.name.toLowerCase().includes(options.text.toLowerCase())
+        case 'flags':
+            switch (operator) {
+                case 'all':
+                    return options.flags.every(filterFlagId => lot[fieldName].includes(filterFlagId))
+                case 'any':
+                    return options.flags.some(filterFlagId => lot[fieldName].includes(filterFlagId))
+                case 'not_all':
+                    return !options.flags.every(filterFlagId => lot[fieldName].includes(filterFlagId))
+                case 'not_any':
+                    return !options.flags.some(filterFlagId => lot[fieldName].includes(filterFlagId))
+            }
+        case 'process_id':
+            return options.processes.map(p => p._id).includes(lot[fieldName])
+        case 'lotNumber':
+            return COMPARITOR_FUNCTIONS[operator](lot[fieldName], options.num)
+        case 'quantity':
+            return COMPARITOR_FUNCTIONS[operator](lot.quantity, options.num)
+        case 'totalQuantity':
+            return COMPARITOR_FUNCTIONS[operator](lot.totalQuantity, options.num)
+        default: // Any other fields
+            switch (dataType) {
+                case 'STRING':
+                    return lotFields[fieldName].value.toLowerCase().includes(options.text.toLowerCase())
+                case 'INTEGER':
+                    return COMPARITOR_FUNCTIONS[operator](lotFields[fieldName].value, options.num)
+                case 'DATE':
+                    if (options.isRelative) {
+                        let compareDate = new Date;
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value), compareDate.addDays(options.relativeDays))
+                    } else {
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value), new Date(options.date))
+                    }
+                case 'DATE_RANGE':
+                    console.log(lotFields[fieldName].value)
+                    if (options.isRelative) {
+                        let compareDate = new Date;
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value[filter.index]), compareDate.addDays(options.relativeDays))
+                    } else {
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value[filter.index]), new Date(options.date))
+                    }
+
+            }
+    }
+
+
 }
 
 export const getMatchesFilter = (lot, filterValue, filterMode) => {
@@ -290,9 +406,9 @@ export const getIsCardAtBin = ({ bins }, binId) => {
 }
 
 export const getCardsInBin = (cards, binId, processId) => {
-	return Object.values(cards).filter((card, ind) => {
-				return getIsCardAtBin(card, binId) && (!processId || card.process_id === processId)
-			})
+    return Object.values(cards).filter((card, ind) => {
+        return getIsCardAtBin(card, binId) && (!processId || card.process_id === processId)
+    })
 }
 
 export const getAllTemplateFields = () => {
@@ -483,41 +599,41 @@ export const getPreviousRouteForLot = (lot, stationID) => {
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 
-        let updatedLot = {...lot}
+    let updatedLot = { ...lot }
 
-            const oldBins = lot.bins ? lot.bins : {}
+    const oldBins = lot.bins ? lot.bins : {}
 
-            const {
-                [startBinId]: startBin,
-                [destinationBinId]: destinationBin,
-                ...remainingOldBins
-            } = oldBins || {}
+    const {
+        [startBinId]: startBin,
+        [destinationBinId]: destinationBin,
+        ...remainingOldBins
+    } = oldBins || {}
 
-            if(startBin) {
-                // handle updating lot
-                {
-                    const destinationBinQuantity = parseInt(destinationBin?.count || 0)
-                    const startBinQuantity = parseInt(startBin?.count || 0)
+    if (startBin) {
+        // handle updating lot
+        {
+            const destinationBinQuantity = parseInt(destinationBin?.count || 0)
+            const startBinQuantity = parseInt(startBin?.count || 0)
 
-                    if(quantity > startBinQuantity) return false
+            if (quantity > startBinQuantity) return false
 
-                    updatedLot = {
-                        ...updatedLot,
-                        bins: {
-                            ...remainingOldBins,
-                            [startBinId]: {
-                                ...startBin,
-                                count: startBinQuantity - quantity
-                            },
-                            [destinationBinId]: {
-                                ...destinationBin,
-                                count:  destinationBinQuantity + quantity
-                            }
-                        }
+            updatedLot = {
+                ...updatedLot,
+                bins: {
+                    ...remainingOldBins,
+                    [startBinId]: {
+                        ...startBin,
+                        count: startBinQuantity - quantity
+                    },
+                    [destinationBinId]: {
+                        ...destinationBin,
+                        count: destinationBinQuantity + quantity
                     }
                 }
             }
+        }
+    }
 
-            return updatedLot
-        // }
+    return updatedLot
+    // }
 }

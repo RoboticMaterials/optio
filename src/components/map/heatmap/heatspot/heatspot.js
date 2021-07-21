@@ -19,6 +19,7 @@ const HeatSpot = (props) => {
     }
 
     const spotSize = 30*Math.min(Math.max(1, wipRatio), 4)*d3Scale;
+    if (isNaN(spotSize)) {return null}
     
 
     return (

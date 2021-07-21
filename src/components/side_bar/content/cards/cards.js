@@ -14,24 +14,29 @@ import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_ac
 
 // styles
 import * as styled from './cards.style'
-import Textbox from "../../../basic/textbox/textbox";
 import { ThemeContext } from "styled-components";
+
+// Components
+import Textbox from "../../../basic/textbox/textbox";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-//import ZoneHeader from "./zone_header/zone_header";
-import {SORT_MODES} from "../../../../constants/common_contants";
-//import LotCreatorForm from "./lot_template_editor/template_form";
-import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
-import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-//import LotEditorContainer from "./card_editor/lot_editor_container";
-//import SummaryHeader from "./summary_header/summary_header";
-import {immutableDelete} from "../../../../methods/utils/array_utils";
-//import MultiSelectOptions from "./multi_select_options/multi_select_options";
-import {isEmpty} from "../../../../methods/utils/object_utils";
 import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
-import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
+
+// Constants
+import {SORT_MODES} from "../../../../constants/common_contants";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
+
+
+// Utils
+import {isEmpty} from "../../../../methods/utils/object_utils";
+import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
+import {immutableDelete} from "../../../../methods/utils/array_utils";
+import { deepCopy } from '../../../../methods/utils/utils'
+
+// Actions
+import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
 const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
 const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
@@ -41,6 +46,7 @@ const CardZone = lazy(() => import("./card_zone/card_zone"))
 const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
 const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
 const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
+
 
 const Cards = (props) => {
 
@@ -79,10 +85,23 @@ const Cards = (props) => {
         offsetLeft: undefined,
         offsetTop: undefined,
     })
-    const [lotFilterValue, setLotFilterValue] = useState('')
-    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+    // sorting
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+
+    // filtering
+    const [lotFilters, setLotFilters] = useState([])
+    const handleAddLotFilter = (filter) => {
+        let filtersCopy = deepCopy(lotFilters);
+        filtersCopy.push(filter);
+        setLotFilters(filtersCopy);
+    }
+    const handleRemoveLotFilter = (removeFilterID) => {
+        let filtersCopy = deepCopy(lotFilters);
+        filtersCopy = filtersCopy.filter(filter => filter._id !== removeFilterID)
+        setLotFilters(filtersCopy)
+    }
+
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(filteredProcesses) // array of {process} objects - the list of selected processes
 
@@ -359,14 +378,15 @@ const Cards = (props) => {
             />
             <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
                 <ZoneHeader
-                    lotFilterValue={lotFilterValue}
                     sortDirection={sortDirection}
                     setSortDirection={setSortDirection}
                     sortMode={sortMode}
                     setSortMode={setSortMode}
-                    setLotFilterValue={setLotFilterValue}
-                    selectedFilterOption={selectedFilterOption}
-                    setSelectedFilterOption={setSelectedFilterOption}
+
+                    filters={lotFilters}
+                    onAddFilter={handleAddLotFilter}
+                    onRemoveFilter={handleRemoveLotFilter}
+
                     selectedProcesses={selectedProcesses}
                     setSelectedProcesses={setSelectedProcesses}
                     zone={id}
@@ -394,11 +414,13 @@ const Cards = (props) => {
                             <SummaryZone
                                 setSelectedCards={setSelectedCards}
                                 selectedCards={selectedCards}
+                                selectedProcesses={selectedProcesses}
+
                                 sortMode={sortMode}
                                 sortDirection={sortDirection}
-                                selectedProcesses={selectedProcesses}
-                                lotFilterValue={lotFilterValue}
-                                selectedFilterOption={selectedFilterOption}
+                                
+                                lotFilters={lotFilters}
+                                
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
@@ -419,8 +441,8 @@ const Cards = (props) => {
                             showCardEditor={showCardEditor}
                             handleCardClick={handleCardClick}
                             processId={id}
-                            lotFilterValue={lotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
+
+                            lotFilters={lotFilters}
                             sortMode={sortMode}
                             sortDirection={sortDirection}
                         />

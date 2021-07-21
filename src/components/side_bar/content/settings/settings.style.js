@@ -17,6 +17,14 @@ export const SettingsContainer = styled.div`
     }
 `
 
+export const EmailContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 3rem;
+    background: ${props=>props.theme.bg.secondary};
+`
+
 export const SettingContainer = styled.div`
 
     width: 100%;

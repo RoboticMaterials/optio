@@ -1,33 +1,31 @@
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import React, { useState, useEffect, useMemo, useContext } from 'react'
+import { useSelector } from 'react-redux';
 
 // components internal
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search"
 import Textbox from "../../../../basic/textbox/textbox"
 import FlagButton from "./flag_button/flag_button"
 import CalendarPlaceholder from "../../../../basic/calendar_placeholder/calendar_placeholder"
+import NumberInput from '../../../../basic/number_input/number_input'
 
 // constants
-import {
-    FIELD_DATA_TYPES, FLAG_OPTIONS,
-    LOT_FILTER_OPTIONS,
-} from "../../../../../constants/lot_contants"
-import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants"
+import { FIELD_DATA_TYPES, FLAG_OPTIONS, LOT_FILTER_OPTIONS } from "../../../../../constants/lot_contants"
+import { BASIC_FIELD_DEFAULTS } from "../../../../../constants/form_constants"
 
 // functions external
 import PropTypes from 'prop-types'
-import {ThemeContext} from "styled-components"
-import {useSelector} from "react-redux"
+import { ThemeContext } from "styled-components"
 import { isMobile } from "react-device-detect"
 
 // utils
-import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils"
-import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils"
+import { deepCopy } from '../../../../../methods/utils/utils'
+import { isArray } from "../../../../../methods/utils/array_utils"
+import { jsDateToString } from '../../../../../methods/utils/card_utils'
+import { stringifyFilter, getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
 
 // styles
-import * as styled from "../zone_header/zone_header.style"
-import AdvancedCalendarPlaceholderButton
-    , {FILTER_DATE_OPTIONS} from "../../../../basic/advanced_calendar_placeholder_button/advanced_calendar_placeholder_button"
-import {newPositionTemplate} from "../../../../../constants/position_constants";
+import * as styled from "./lot_filter_bar.style"
+import { uuidv4 } from '../../../../../methods/utils/utils';
 
 const VALUE_MODES = {
     TEXT_BOX: "TEXT_BOX",
@@ -36,464 +34,529 @@ const VALUE_MODES = {
     FLAGS: "FLAGS"
 }
 
+const COMPARITOR_OPERATORS = [
+    {label: 'Less than', value: '<'},
+    {label: 'Less than or Equal to', value: '<='},
+    {label: 'Equal to', value: '='},
+    {label: 'Greater than or Equal to', value: '>='},
+    {label: 'Greater than', value: '>'},
+]
+
+const SET_OPERATORS = [
+    {label: 'Contains All', value: 'all'},
+    {label: 'Contains Any', value: 'any'},
+    {label: 'Does not Contain Any', value: 'not_any'},
+    {label: 'Does not Contain All', value: 'not_all'},
+]
+
+// Possible Options
+// name | StringField - Contains - TextField
+// process - Dropdown (processes)
+// flags - contains all | contains any | dn contain all | dn contain any - FlagDropdown 
+// SingleDate | DateRangeSingle - gt/lt/et/gte/lte | isBetween - DateField
+// NumField | quantity | initQuantity - gt/lt/et/gte/gle | isBetween - NumField
+
 const LotFilterBar = (props) => {
 
     const {
-        setLotFilterValue,
-        lotFilterValue,
-        selectedFilterOption,
-        setSelectedFilterOption,
-        shouldFocusLotFilter,
-    } = props
+        filters,
+        onAddFilter,
+        onRemoveFilter,
+    } = props;
 
     // theme
     const themeContext = useContext(ThemeContext)
 
+    const [open, setOpen] = useState(false);
+    const [canAddFilter, setCanAddFilter] = useState(false);
+    const [selectedFilterKey, setSelectedFilterKey] = useState(null);
+    const [selectedFilterOperator, setSelectedFilterOperator] = useState(null);
+    const [selectedFilterOptions, setSelectedFilterOptions] = useState(null)
+    const [lotFilterKeyOptions, setLotFilterKeyOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
+
     // redux state
-    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
+    const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates) || {}
+    const processes = useSelector(state => Object.values(state.processesReducer.processes))
 
-    // component state
-    const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
-    const [open, setOpen] = useState(isMobile ? shouldFocusLotFilter : true) // is filter options open ?
-    const [valueMode, setValueMode] = useState()      // used as var in switch statement to control what component to render for entering filter value (ex: use a textbox for strings, calendar picker for dates)
+    useEffect(() => {
+        document.addEventListener("keydown", () => setOpen(false), false);
+    
+        return () => {
+          document.removeEventListener("keydown", () => setOpen(false), false);
+        };
+      }, []);
 
     /*
-    * This effect is used to set valueMode based on the current selected filter option (name / date type)
-    * */
+        * This effect is used to set the filter options
+        *
+        * This is dependent on lotTemplates, as the available fields may change when a template does
+        * */
     useEffect(() => {
-        const {
-            label,
-            dataType
-        } = selectedFilterOption || {}
+        const templateFields = getAllTemplateFields(lotTemplates)
 
-
-        // for flags, use flags mode
-        if(label === LOT_FILTER_OPTIONS.flags.label) {
-            setValueMode(VALUE_MODES.FLAGS)
-        }
-
-        // for date range, use date range mode
-        else if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-            setValueMode((VALUE_MODES.DATE_RANGE))
-        }
-
-        // for date, use date mode
-        else if(dataType === FIELD_DATA_TYPES.DATE) {
-            setValueMode(VALUE_MODES.SINGLE_DATE)
-        }
-
-        // everything else, use a text box
-        else {
-          setValueMode(VALUE_MODES.TEXT_BOX)
-        }
-
-    }, [selectedFilterOption])
-
-    /*
-    * This effect is used to set the filter options
-    *
-    * This is dependent on lotTemplates, as the available fields may change when a template does
-    * */
-    useEffect(() => {
-        const templateFields = getAllTemplateFields()
-
-        let tempLotFilterOptions = [...Object.values(LOT_FILTER_OPTIONS)]
+        let tempLotFilterKeyOptions = [...Object.values(LOT_FILTER_OPTIONS)]
 
         templateFields.forEach((currTemplateField) => {
+
             const {
                 dataType,
                 label
             } = currTemplateField
 
-            tempLotFilterOptions.push(currTemplateField)
+            if (dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+                tempLotFilterKeyOptions.push({
+                    ...currTemplateField,
+                    label: `${label} (start)`,
+                    index: 0,
+                    fieldName: label
+                })
+                tempLotFilterKeyOptions.push({
+                    ...currTemplateField,
+                    label: `${label} (end)`,
+                    index: 1,
+                    fieldName: label
+                })
+            }
+            else {
+                tempLotFilterKeyOptions.push({
+                    ...currTemplateField,
+                    fieldName: label
+                })
+            }
         })
 
-        setLotFilterOptions(tempLotFilterOptions)
+        setLotFilterKeyOptions(tempLotFilterKeyOptions)
     }, [lotTemplates])
 
+    const renderActiveFilters = useMemo(() => {
+        return (
+            <styled.ActiveFiltersContainer>
+                {filters.map(filter => <styled.ActiveFilter>
+                    {stringifyFilter(filter)}
+                    <styled.RemoveIcon
+                        className={"fas fa-times"}
+                        onClick={() => onRemoveFilter(filter._id)}
+                    />
+                </styled.ActiveFilter>)}
+            </styled.ActiveFiltersContainer>
+        )
+        
+    }, [filters])
 
+    const onChangeFilterKey = (values) => {
+        // update filter value to appropriate default based on dataType
+        let newFilterValueType = null // null is suitable for most, use as default
+        switch(values[0].dataType) {
+            case FIELD_DATA_TYPES.DATE_RANGE:
+                newFilterValueType = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
+                break
+            case FIELD_DATA_TYPES.DATE:
+                newFilterValueType = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
+                break
+        }
+
+
+        setSelectedFilterKey(values[0])
+        setSelectedFilterOperator(null)
+    }
+
+    const onChangeOperatorOption = (values) => {
+        setSelectedFilterOperator(values[0])
+    }
+
+    const onChangeFilterOptions = (values) => {
+        setSelectedFilterOptions(values)
+    }
+
+    const handleCreateNewFilter = () => {
+
+        const newFilter = {
+            _id: uuidv4(),
+            ...selectedFilterKey,
+            operator: selectedFilterOperator.value,
+            options: selectedFilterOptions
+        }
+
+        onAddFilter(newFilter);
+        setSelectedFilterKey(null);
+        setSelectedFilterOperator(null);
+        setSelectedFilterOptions(null);
+        setOpen(false)
+        
+    }
+
+    const renderFilterOperatorSelector = useMemo(() => {
+
+        if (!selectedFilterKey) { return  null }
+
+        switch (selectedFilterKey.dataType) {
+
+            case 'STRING':
+                setSelectedFilterOperator({label: 'contains', value: 'contains'})
+                setCanAddFilter(false)
+                return null;
+
+            case 'INTEGER':
+                return (
+                    <DropDownSearch
+                        options={COMPARITOR_OPERATORS}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
+                        values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
+                        labelField={"label"}
+                        valueField={"value"}
+                        schema={"lots"}
+                        style={{
+                            overflow: 'visible',
+                            minWidth: '10rem',
+                            background: themeContext.bg.primary,
+                        }}
+                    />
+                )
+
+            case 'PROCESSES':
+                setSelectedFilterOperator({label: 'is', value: 'is'})
+                setCanAddFilter(false)
+                return null;
+
+            case 'FLAGS':
+                return (
+                    <DropDownSearch
+                        options={SET_OPERATORS}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
+                        values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
+                        labelField={"label"}
+                        valueField={"value"}
+                        schema={"lots"}
+                        style={{
+                            overflow: 'visible',
+                            minWidth: '10rem',
+                            background: themeContext.bg.primary,
+                        }}
+                    />
+                )
+
+            case 'DATE': // Calendar Items
+            case 'DATE_RANGE':
+                return (
+                    <DropDownSearch
+                        options={COMPARITOR_OPERATORS}
+                        onChange={(values) => {
+                            onChangeOperatorOption(values)
+                            setCanAddFilter(false)
+                        }}
+                        values={!!selectedFilterOperator ? [selectedFilterOperator] : []}
+                        labelField={"label"}
+                        valueField={"value"}
+                        schema={"lots"}
+                        style={{
+                            overflow: 'visible',
+                            minWidth: '10rem',
+                            background: themeContext.bg.primary,
+                        }}
+                    />
+                )
+            
+        }
+
+    }, [selectedFilterKey])
+
+    const renderFilterOptionsSelector = useMemo(() => {
+
+        if (!selectedFilterKey || !selectedFilterOperator) {return null}
+
+        switch (selectedFilterKey.dataType){
+
+            case 'STRING':
+                return (
+                    <Textbox
+                        placeholder='Contains'
+                        onChange={(e) => {
+                            onChangeFilterOptions({text: e.target.value})
+                            setCanAddFilter(true)
+                        }}
+                        focus={true}
+                        inputStyle={{
+                            height: "2.2rem",
+                            background: themeContext.bg.primary,
+                        }}
+                        style={{
+                            alignSelf: "stretch",
+                            flex: 1,
+                            minWidth: "5rem",
+                        }}
+                        schema={"lots"}
+                    />
+                )
+
+            case 'INTEGER':
+                return (
+                    <Textbox
+                        placeholder='Number'
+                        onChange={(e) => {
+                            onChangeFilterOptions({num: parseFloat(e.target.value)})
+                            setCanAddFilter(true)
+                        }}
+                        focus={true}
+                        inputStyle={{
+                            height: "2.2rem",
+                            background: themeContext.bg.primary,
+                        }}
+                        style={{
+                            alignSelf: "stretch",
+                            flex: 1,
+                            minWidth: "5rem"
+                        }}
+                        schema={"lots"}
+                    />
+                )
+
+            case "PROCESSES":
+                return (
+                    <DropDownSearch
+                        multi={true}
+                        options={processes}
+                        onChange={values => {
+                            onChangeFilterOptions({processes: values})
+                            setCanAddFilter(true)
+                        }}
+                        values={selectedFilterOptions?.processes || []}
+                        labelField={"name"}
+                        valueField={"_id"}
+                        schema={"lots"}
+                        style={{
+                            overflow: 'visible',
+                            minWidth: '15rem',
+                            marginBottom: '0.5rem',
+                            background: themeContext.bg.primary,
+                        }}
+                    />
+                )
+
+            case "FLAGS":
+                return (
+                    <DropDownSearch
+                        multi={true}
+                        options={Object.values(FLAG_OPTIONS)}
+                        onChange={(values) => {
+                            setSelectedFilterOptions({flags: values.map(val => val.id)})
+                            setCanAddFilter(true)
+                        }}
+                        onRemoveItem={(values) => {
+                            setSelectedFilterOptions({flags: values.map(val => val.id)})
+                            setCanAddFilter(true)
+                        }}
+                        onClearAll={() => {
+                            setSelectedFilterOptions({flags: []})
+                            setCanAddFilter(true)
+                        }}
+                        labelField={"id"}
+                        valueField={"id"}
+                        schema={"lots"}
+                        contentRenderer={({ props, state, methods }) => {
+
+                            const {
+                                values = []
+                            } = state || {}
+
+                            return (
+                                <styled.FlagsContainer style={{minWidth: '4rem', paddingRight: '1rem'}}>
+                                    {isArray(values) && values.map(currVal => {
+                                        const {
+                                            color: currColor,
+                                            id: currColorId
+                                        } = currVal || {}
+
+                                        return (
+                                            <styled.FlagButton
+                                                style={{
+                                                    margin: "0rem .1rem",
+                                                }}
+                                                key={currColorId}
+                                                type={"button"}
+                                                color={currColor}
+                                                onClick={(event) => {
+                                                    event.stopPropagation()
+                                                    methods.dropDown('open')
+                                                }}
+                                                schema={props.schema}
+                                                className="fas fa-square"
+                                            />
+                                        )
+                                    })}
+
+                                </styled.FlagsContainer>
+                            )
+                        }}
+                        itemRenderer={({ item, itemIndex, props, state, methods }) => {
+                            const {
+                                color: currColor,
+                                id: currColorId
+                            } = item
+
+                            const isSelected = methods.isSelected(item)
+
+                            return(
+                                <FlagButton
+                                    style={{
+                                        paddingTop: ".5rem",
+                                        paddingBottom: ".5rem",
+                                    }}
+                                    selected={isSelected}
+                                    key={currColorId}
+                                    type={"button"}
+                                    color={currColor}
+                                    role="option"
+                                    tabIndex="-1"
+                                    onClick={item.disabled ? undefined : () => methods.addItem(item)}
+                                    onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
+                                    schema={props.schema}
+                                    className={isSelected ? "fas fa-check-square" : "fas fa-square"}
+                                />
+                            )
+                        }}
+                        style={{
+                            minWidth: "10rem",
+                            flex: 1,
+                            background: themeContext.bg.primary,
+                            alignSelf: "stretch",
+                        }}
+                    />
+                )
+
+            case "DATE": // Calendar Item
+            case "DATE_RANGE":
+                return (
+                    <>
+                    <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                            onClick={() => {
+                                onChangeFilterOptions({isRelative: false})
+                                setCanAddFilter(false)
+                            }}
+                            selected={!selectedFilterOptions?.isRelative}
+                        >
+                            Date
+                        </styled.DualSelectionButton>
+
+                        <styled.DualSelectionButton
+                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                            onClick={() => {
+                                onChangeFilterOptions({isRelative: true, relativeDays: 0})
+                                setCanAddFilter(true)
+                            }}
+                            selected={selectedFilterOptions?.isRelative}
+
+                        >
+                            Relative
+                    </styled.DualSelectionButton>
+                    </styled.RowContainer>
+                    {selectedFilterOptions?.isRelative ?
+                        <div style={{marginBottom: '0.5rem'}}>
+                            <styled.Description style={{width: '100%', justifyContent: 'center', display: 'flex'}}>Days relative to current date</styled.Description>
+                            <NumberInput 
+                                onPlusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays+1})}
+                                onMinusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays-1})}
+                                onInputChange={e => onChangeFilterOptions({...selectedFilterOptions, relativeDays: parseInt(e.target.value)})}
+                                inputStyle={{backgroundColor: themeContext.bg.primary, borderRadius: '0.4rem', height: '3rem', fontSize: '2rem'}}
+                                buttonStyle={{fontSize: '2.6rem'}}
+                                
+                                value={selectedFilterOptions.relativeDays}
+                            />
+                        </div>
+                        :
+                        <CalendarPlaceholder
+                            schema={"lots"}
+                            containerStyle={{
+                                width: "100%",
+                                height: "36px",
+                                boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
+                                backgroundColor: themeContext.bg.primary
+                            }}
+                            value={selectedFilterOptions?.date || null}
+                            onChange={val => {
+                                onChangeFilterOptions({date: val})
+                                setCanAddFilter(true)
+                            }}
+                            usable={true}
+                        />
+                    }
+                    </>
+                )
+        }
+
+
+    })
 
     return (
-        <styled.ColumnContainer
-            open={open}
-            style={{
-                flex: (open && valueMode === VALUE_MODES.TEXT_BOX) && 1,
-                padding: open ? ".25rem 1rem 0 1rem" : "1rem",
-                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem"
-            }}
-        >
+        <styled.ColumnContainer>
             <styled.Description
                 css={props.descriptionCss}
-                onClick={()=>setOpen(!open)}
             >
-                <styled.ExpandContractIcon
-                    className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
-                    onClick={()=>setOpen(!open)}
-                />
-                Filter
+                Filters
             </styled.Description>
-
-            {/* only show content when open */}
-            {open &&
-            <styled.ContentContainer>
-                <styled.ItemContainer>
-                    <styled.OptionContainer>
-                        <DropDownSearch
-                            // reactDropdownSelectCss={props.reactDropdownSelectCss}
-                            // dropdownCss={props.dropdownCss}
-                            // valueCss={props.valueCss}
-                            options={lotFilterOptions}
-                            onChange={(values) => {
-                                // *** selected new option ***
-                                const newFilterOption = values[0]
-
-                                // updated selectedFilterOption
-                                setSelectedFilterOption(newFilterOption)
-                                const {
-                                    dataType
-                                } = newFilterOption
-
-                                // update filter value to appropriate default based on dataType
-
-                                let newFilterValue = null // null is suitable for most, use as default
-                                switch(dataType) {
-                                    case FIELD_DATA_TYPES.DATE_RANGE:
-                                        newFilterValue = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-                                        break
-                                    case FIELD_DATA_TYPES.DATE:
-                                        newFilterValue = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
-                                        break
-                                }
-                                setLotFilterValue(newFilterValue)
-                            }}
-                            values={[selectedFilterOption]}
-                            labelField={"label"}
-                            valueField={"label"}
-                            schema={"lots"}
-                            style={{
-                                minWidth: "15rem",
-                                maxWidth: "15rem",
-                                overflow: 'visible',
-                                background: themeContext.bg.tertiary,
-                            }}
-                            containerStyle={{
-                                marginRight: "1rem",
-                            }}
+            <styled.FiltersContainer>
+                <styled.ExpandableContainer open={open}>
+                    <styled.ActiveContainer open={open}>
+                        {renderActiveFilters}
+                        <styled.ExpandContractIcon
+                            className={open ? "fas fa-chevron-up" : "fas fa-ellipsis-h"}
+                            onClick={() => setOpen(!open)}
                         />
-                    </styled.OptionContainer>
-
-                    <styled.OptionContainer
-                    style={{flex:1}}>
-                        { // render different component for entering value depending on value type
-                            {
-                                [VALUE_MODES.FLAGS]:
-                                    <div
-                                        style={{flex: 3}}
-                                    >
-                                        <DropDownSearch
-                                            multi={true}
-                                            options={Object.values(FLAG_OPTIONS)}
-                                            onChange={(values) => {
-                                                setLotFilterValue(values)
-                                            }}
-                                            onRemoveItem={(values) => {
-                                                setLotFilterValue(values)
-                                            }}
-                                            onClearAll={() => {
-                                                setLotFilterValue([])
-                                            }}
-                                            labelField={"id"}
-                                            valueField={"id"}
-                                            schema={"lots"}
-                                            contentRenderer={({ props, state, methods }) => {
-
-                                                const {
-                                                    values = []
-                                                } = state || {}
-                                                const value = state.values[0]
-
-                                                return (
-                                                    <styled.FlagsContainer style={{minWidth: '4rem', paddingRight: '1rem'}}>
-                                                        {isArray(values) && values.map(currVal => {
-                                                            const {
-                                                                color: currColor,
-                                                                id: currColorId
-                                                            } = currVal || {}
-
-                                                            return (
-                                                                <styled.FlagButton
-                                                                    style={{
-                                                                        margin: "0rem .1rem",
-                                                                    }}
-                                                                    key={currColorId}
-                                                                    type={"button"}
-                                                                    color={currColor}
-                                                                    onClick={(event) => {
-                                                                        event.stopPropagation()
-                                                                        methods.dropDown('open')
-                                                                    }}
-                                                                    schema={props.schema}
-                                                                    className="fas fa-square"
-                                                                />
-                                                            )
-                                                        })}
-
-                                                    </styled.FlagsContainer>
-                                                )
-                                            }}
-                                            itemRenderer={({ item, itemIndex, props, state, methods }) => {
-                                                const {
-                                                    color: currColor,
-                                                    id: currColorId
-                                                } = item
-
-                                                const isSelected = methods.isSelected(item)
-
-                                                return(
-                                                    <FlagButton
-                                                        style={{
-                                                            paddingTop: ".5rem",
-                                                            paddingBottom: ".5rem",
-                                                        }}
-                                                        selected={isSelected}
-                                                        key={currColorId}
-                                                        type={"button"}
-                                                        color={currColor}
-                                                        role="option"
-                                                        tabIndex="-1"
-                                                        onClick={item.disabled ? undefined : () => methods.addItem(item)}
-                                                        onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
-                                                        schema={props.schema}
-                                                        className={isSelected ? "fas fa-check-square" : "fas fa-square"}
-                                                    />
-                                                )
-                                            }}
-                                            style={{
-                                                minWidth: "10rem",
-                                                flex: 1,
-                                                background: themeContext.bg.tertiary,
-                                                alignSelf: "stretch",
-                                            }}
-                                        />
-                                    </div>,
-
-                                [VALUE_MODES.TEXT_BOX]:
-                                    <Textbox
-                                        placeholder='Filter lots...'
-                                        onChange={(e) => {
-                                            setLotFilterValue(e.target.value)
-                                        }}
-                                        focus={shouldFocusLotFilter}
-                                        inputStyle={{
-                                            height: "100%",
-                                            background: themeContext.bg.tertiary,
-                                        }}
-                                        style={{
-                                            alignSelf: "stretch",
-                                            flex: 1,
-                                            minWidth: "5rem"
-                                            // width: "5rem"
-                                        }}
-                                        schema={"lots"}
-                                    />,
-                                [VALUE_MODES.DATE_RANGE]:
-                                    <CalendarPlaceholder
-                                        schema={"lots"}
-                                        PlaceholderButton={<AdvancedCalendarPlaceholderButton
-                                            filterValue={lotFilterValue}
-                                            onOptionClick={(index, option) => {
-												// this function toggles option in lotFilerValue at index
-
-                                                const {
-                                                    options: prevOptions = []
-                                                } = lotFilterValue[index] || {}
-
-                                                // spread current options
-                                                let newOptions = [...prevOptions]
-
-                                                // get index of new option (if it exists)
-                                                const optionIndex = prevOptions.indexOf(option)
-
-                                                // if it doesn't exist, add it
-                                                if(optionIndex === -1) {
-                                                    const equalsIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.EQUAL)
-                                                    if(equalsIndex !== -1) {
-                                                        /*
-                                                            if we are adding the "greater than" condition
-                                                                check if less than condition already exists
-                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
-                                                        */
-                                                        if(option === FILTER_DATE_OPTIONS.GREATER_THAN) {
-                                                            const lessThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.LESS_THAN)
-                                                            if(lessThanIndex !== -1) {
-                                                                newOptions = immutableDelete(newOptions, lessThanIndex)
-                                                            }
-                                                        }
-
-                                                        /*
-                                                            if we are adding the "less than" condition
-                                                                check if greater than condition already exists
-                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
-                                                         */
-                                                        else if(option === FILTER_DATE_OPTIONS.LESS_THAN) {
-                                                            const greaterThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.GREATER_THAN)
-                                                            if(greaterThanIndex !== -1) {
-                                                                newOptions = immutableDelete(newOptions, greaterThanIndex)
-                                                            }
-                                                        }
-                                                    }
-                                                    else {
-                                                        // if we are adding equals condition, and the current number of conditions is one less than the max, adding the equals will have all conditions, which does not filtering, so remove one
-                                                        if(prevOptions.length === Object.values(FILTER_DATE_OPTIONS).length - 1) {
-                                                            newOptions = immutableDelete(newOptions, 0)
-                                                        }
-                                                    }
-
-                                                    newOptions.push(option)
-                                                }
-                                                // if it does, remove it
-                                                else {
-                                                    newOptions = immutableDelete(newOptions, optionIndex)
-                                                }
-
-                                                // set filterValue with updated option
-                                                setLotFilterValue(immutableReplace(lotFilterValue, {
-                                                    ...lotFilterValue[index],
-                                                    options: newOptions
-                                                }, index))
-                                            }}
-                                        />}
-                                        minDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[0]?.value : null}
-                                        maxDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[1]?.value : null}
-                                        value={isNonEmptyArray(lotFilterValue) ? lotFilterValue.map((currValue) => currValue?.value) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE}
-                                        containerStyle={{
-                                            background: "transparent",
-                                            padding: "0",
-                                            margin: 0,
-                                        }}
-                                        onChange={(val) => {
-                                            // this function updates lot filter value
-
-                                            setLotFilterValue(val.map((currItem, currIndex) => {
-                                                const prevValue = isNonEmptyArray(lotFilterValue) ? lotFilterValue[currIndex] : {} // previous value
-                                                return {
-                                                    options: [FILTER_DATE_OPTIONS.EQUAL],   // default to use EQUALS option
-                                                    ...prevValue,                           // spread previous attributes
-                                                    value: currItem,                        // update value
-                                                }
-                                            }))
-                                        }}
-                                        usable={true}
-                                        selectRange={true}
-                                    />,
-                                [VALUE_MODES.SINGLE_DATE]:
-                                    <CalendarPlaceholder
-                                        schema={"lots"}
-                                        PlaceholderButton={<AdvancedCalendarPlaceholderButton
-                                            filterValue={lotFilterValue}
-                                            onOptionClick={(index, option) => {
-                                                // this function toggles option in lotFilerValue (index ignored since its single value)
-                                                const {
-                                                    options: prevOptions = []
-                                                } = lotFilterValue || {}
-
-                                                // spread prev options
-                                                let newOptions = [...prevOptions]
-
-                                                // get index of option (if it exists)
-                                                const optionIndex = prevOptions.indexOf(option)
-
-                                                // if it doesn't exist, add it
-                                                if(optionIndex === -1) {
-                                                    const equalsIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.EQUAL)
-                                                    if(equalsIndex !== -1) {
-                                                        /*
-                                                            if we are adding the "greater than" condition
-                                                                check if less than condition already exists
-                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
-                                                        */
-                                                        if(option === FILTER_DATE_OPTIONS.GREATER_THAN) {
-                                                            const lessThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.LESS_THAN)
-                                                            if(lessThanIndex !== -1) {
-                                                                newOptions = immutableDelete(newOptions, lessThanIndex)
-                                                            }
-                                                        }
-
-                                                        /*
-                                                            if we are adding the "less than" condition
-                                                                check if greater than condition already exists
-                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
-                                                         */
-                                                        else if(option === FILTER_DATE_OPTIONS.LESS_THAN) {
-                                                            const greaterThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.GREATER_THAN)
-                                                            if(greaterThanIndex !== -1) {
-                                                                newOptions = immutableDelete(newOptions, greaterThanIndex)
-                                                            }
-                                                        }
-                                                    }
-                                                    else {
-                                                        // if we are adding equals condition, and the current number of conditions is one less than the max, adding the equals will have all conditions, which does not filtering, so remove one
-                                                        if(prevOptions.length === Object.values(FILTER_DATE_OPTIONS).length - 1) {
-                                                            newOptions = immutableDelete(newOptions, 0)
-                                                        }
-                                                    }
-
-                                                    newOptions.push(option)
-                                                }
-
-                                                // if it does exist, remove it
-                                                else {
-                                                    newOptions = immutableDelete(newOptions, optionIndex)
-                                                }
-
-                                                // update filter value with updated options
-                                                setLotFilterValue({
-                                                    ...lotFilterValue,
-                                                    options: newOptions
-                                                })
-                                            }}
-                                        />}
-                                        containerStyle={{
-                                            width: "8rem",
-                                            height: "36px",
-                                            boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
-                                        }}
-                                        value={lotFilterValue?.value}
-                                        onChange={(val) => {
-                                            // update filer value
-                                            setLotFilterValue({
-                                                options: [FILTER_DATE_OPTIONS.EQUAL],   // by default, use EQUAL condition
-                                                ...lotFilterValue,                      // include previous attributes (also prevents overwriting conditions with the equal that was just added if conditions have already been set)
-                                                value: val,                             // set the actual value
-                                            })
-                                        }}
-                                        usable={true}
-                                    />
-                            }[valueMode] ||
-                            null
-                        }
-                    </styled.OptionContainer>
-                </styled.ItemContainer>
-            </styled.ContentContainer>
-            }
+                    </styled.ActiveContainer>
+                    
+                    {open && 
+                        <styled.NewFilterContainer>
+                            <styled.Description>New Filter</styled.Description>
+                            <DropDownSearch
+                                options={lotFilterKeyOptions}
+                                onChange={onChangeFilterKey}
+                                values={!!selectedFilterKey ? [selectedFilterKey] : []}
+                                labelField={"label"}
+                                valueField={"label"}
+                                schema={"lots"}
+                                
+                                style={{
+                                    overflow: 'visible',
+                                    minWidth: '15rem',
+                                    marginBottom: '0.5rem',
+                                    background: themeContext.bg.primary,
+                                }}
+                            />
+                            {!!selectedFilterKey && 
+                                <div style={{marginBottom: "0.5rem"}}>
+                                    {renderFilterOperatorSelector}
+                                </div>
+                            }
+                            {!!selectedFilterOperator && 
+                                <div style={{marginBottom: "0.5rem"}}>
+                                    {renderFilterOptionsSelector}
+                                </div>
+                            }
+                            {canAddFilter &&
+                                <styled.AddFilterButton onClick={handleCreateNewFilter}>Add Filter</styled.AddFilterButton>
+                            }
+                        </styled.NewFilterContainer>
+                    }
+                </styled.ExpandableContainer>
+            </styled.FiltersContainer>
         </styled.ColumnContainer>
     )
+    
 }
 
 LotFilterBar.propTypes = {
-    setLotFilterValue: PropTypes.func,
-    lotFilterValue: PropTypes.any,
-    selectedFilterOption: PropTypes.object,
-    setSelectedFilterOption: PropTypes.func,
-    shouldFocusLotFilter: PropTypes.bool,
+
 }
 
 LotFilterBar.defaultProps = {
-    setLotFilterValue: () => {},
-    lotFilterValue: null,
-    selectedFilterOption: () => {},
-    setSelectedFilterOption: () => {},
-    shouldFocusLotFilter: false,
+
 }
 
-export default LotFilterBar
+export default LotFilterBar;

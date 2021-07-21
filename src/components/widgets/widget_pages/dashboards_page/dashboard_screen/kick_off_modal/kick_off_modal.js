@@ -1,35 +1,28 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 // external components
 import Modal from 'react-modal';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // internal components
 import Button from "../../../../../basic/button/button";
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
-import {getCards, getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
+import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './kick_off_modal.style'
-import {useTheme} from "styled-components";
-import {getProcesses} from "../../../../../../redux/actions/processes_actions";
+import { useTheme } from "styled-components";
+import { getProcesses } from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
-import Textbox from "../../../../../basic/textbox/textbox";
-import {SORT_MODES} from "../../../../../../constants/common_contants";
-import {sortBy} from "../../../../../../methods/utils/card_utils";
+import { sortBy } from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
+import { checkCardMatchesFilter, getCustomFields, getLotTotalQuantity, getMatchesFilter } from "../../../../../../methods/utils/lot_utils";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
-import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
-import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
-import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
-import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
-import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
-import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
+import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
+import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
+import { getLotTemplates } from "../../../../../../redux/actions/lot_template_actions";
 import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
 import useWindowSize from '../../../../../../hooks/useWindowSize'
@@ -74,8 +67,6 @@ const KickOffModal = (props) => {
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
-    const [lotFilterValue, setLotFilterValue] = useState('')
-    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
 
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
@@ -124,7 +115,7 @@ const KickOffModal = (props) => {
             _id: cardId,
         } = card
 
-        if(quantity && quantity > 0) {
+        if (quantity && quantity > 0) {
 
             // get process of card
             const cardProcess = processes[process_id]
@@ -134,7 +125,7 @@ const KickOffModal = (props) => {
 
             // get id of first route
             var firstRouteId = null
-            if(processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
+            if (processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
 
             // get first route
             const firstRoute = routes[firstRouteId]
@@ -147,7 +138,7 @@ const KickOffModal = (props) => {
             } = firstRoute || {}
 
             // update card
-            if(firstRouteId && firstRoute && loadStation) {
+            if (firstRouteId && firstRoute && loadStation) {
 
                 // extract first station's bin and queue bin from bins
                 const {
@@ -173,12 +164,12 @@ const KickOffModal = (props) => {
                 }
 
                 // need to add queue bin back, but subtract moved quantity
-                if(quantity < queueBinCount) {
+                if (quantity < queueBinCount) {
                     updatedCard = {
                         ...updatedCard,
                         bins: {
                             ...updatedCard.bins,
-                            QUEUE:  {
+                            QUEUE: {
                                 ...queueBin,
                                 count: parseInt(queueBinCount) - parseInt(quantity)
                             }
@@ -192,14 +183,14 @@ const KickOffModal = (props) => {
 
 
                 // check if request was successful
-                if(!(result instanceof Error)) {
+                if (!(result instanceof Error)) {
                     requestSuccessStatus = true
                     message = cardName ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
                 }
-        }
+            }
         }
         else {
-           message = "Quantity must be greater than 0"
+            message = "Quantity must be greater than 0"
         }
 
         onSubmit(cardName, requestSuccessStatus, quantity, message)
@@ -211,21 +202,15 @@ const KickOffModal = (props) => {
     /*
     * renders an array of buttons for each kick off lot
     * */
-    const renderKickOffButtons = () => {
+    const renderKickOffButtons = useMemo(() => {
         return availableKickOffCards
-            .filter((currLot) => {
+            .filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
                 const {
-                    name: currLotName,
                     bins = {},
                 } = currLot || {}
-
-                const count = bins["QUEUE"]?.count || 0
-
-                return getMatchesFilter({
-                    ...currLot,
-                    quantity: count
-                }, lotFilterValue, selectedFilterOption)
-            })
+                const quantity = bins["QUEUE"]?.count || 0;
+                return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
+            }, true)) 
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
@@ -245,38 +230,38 @@ const KickOffModal = (props) => {
                 } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
-                const totalQuantity = getLotTotalQuantity({bins})
+                const totalQuantity = getLotTotalQuantity({ bins })
                 const templateValues = getCustomFields(lotTemplateId, currCard)
 
-                return(
-                        <Lot
-                            templateValues={templateValues}
-                            totalQuantity={totalQuantity}
-                            enableFlagSelector={false}
-                            lotNumber={lotNumber}
-                            processName={processName}
-                            flags={flags || []}
-                            name={name}
-                            start_date={start_date}
-                            end_date={end_date}
-                            count={count}
-                            id={lotId}
-                            index={cardIndex}
-                            onClick={()=>{
-                                onButtonClick(currCard)
-                            }}
-                            containerStyle={{marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto'}}
-                        />
+                return (
+                    <Lot
+                        templateValues={templateValues}
+                        totalQuantity={totalQuantity}
+                        enableFlagSelector={false}
+                        lotNumber={lotNumber}
+                        processName={processName}
+                        flags={flags || []}
+                        name={name}
+                        start_date={start_date}
+                        end_date={end_date}
+                        count={count}
+                        id={lotId}
+                        index={cardIndex}
+                        onClick={() => {
+                            onButtonClick(currCard)
+                        }}
+                        containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
+                    />
                 )
-        })
-    }
+            })
+    }, [availableKickOffCards, dashboard.filters, dashboard.sort, process])
 
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
         const processesResult = await dispatchGetProcesses()
         dispatchGetLotTemplates()
 
-        if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
+        if (!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
             setDidLoadData(true)
         }
     }
@@ -308,15 +293,15 @@ const KickOffModal = (props) => {
     useEffect(() => {
         let tempAvailableCards = []
 
-        if(kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
+        if (kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
             const currProcessCards = processCards[currProcessId]
 
             let filteredCards = []
-            if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
+            if (currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
                 // currCard.station_id === "QUEUE"
-                if(currCard.bins && currCard.bins["QUEUE"]) return true
+                if (currCard.bins && currCard.bins["QUEUE"]) return true
             }).map((currCard) => {
-                return{
+                return {
                     ...currCard,
                     count: currCard.bins["QUEUE"].count
                 }
@@ -325,7 +310,7 @@ const KickOffModal = (props) => {
         })
 
 
-        if(sortMode) {
+        if (sortMode) {
             sortBy(tempAvailableCards, sortMode, sortDirection)
         }
         setAvailableKickOffCards(tempAvailableCards)
@@ -340,13 +325,13 @@ const KickOffModal = (props) => {
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
-        if(availableKickOffCards.length >= 5 ) {
+        if (availableKickOffCards.length >= 5) {
             setShouldFocusLotFilter(true)
         }
     }, [availableKickOffCards.length])
 
-    if(showQuantitySelector) {
-        return(
+    if (showQuantitySelector) {
+        return (
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 maxValue={lotCount}
@@ -383,88 +368,90 @@ const KickOffModal = (props) => {
             }}
         >
             {showLotEditor &&
-            <LotEditorContainer
-                isOpen={true}
-                onAfterOpen={null}
-                processOptions={kickOffEnabledInfo}
-                showProcessSelector={true}
-                cardId={null}
-                processId={null}
-                // binId={null}
-                close={()=>{
-                    setShowLotEditor(false)
-                    // setSelectedCard(null)
-                }}
-            />
+                <LotEditorContainer
+                    isOpen={true}
+                    onAfterOpen={null}
+                    processOptions={kickOffEnabledInfo}
+                    showProcessSelector={true}
+                    cardId={null}
+                    processId={null}
+                    // binId={null}
+                    close={() => {
+                        setShowLotEditor(false)
+                        // setSelectedCard(null)
+                    }}
+                />
             }
             <styled.Header>
                 <styled.HeaderMainContentContainer>
                     <styled.Title>{title}</styled.Title>
-                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
+                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close} />
 
                 </styled.HeaderMainContentContainer>
-                {!phoneView &&
-                  <SortFilterContainer
-                      lotFilterValue={lotFilterValue}
-                      sortMode={sortMode}
-                      setSortMode={setSortMode}
-                      sortDirection={sortDirection}
-                      setSortDirection={setSortDirection}
-                      shouldFocusLotFilter={shouldFocusLotFilter}
-                      setLotFilterValue={setLotFilterValue}
-                      selectedFilterOption={selectedFilterOption}
-                      setSelectedFilterOption={setSelectedFilterOption}
-                  />
-                }
+                {/* {!phoneView &&
+                    <SortFilterContainer
+
+                        sortMode={dashboard?.sort?.direciton || LOT_FILTER_OPTIONS.name}
+                        setSortMode={handleChangeSortMode}
+                        sortDirection={dashboard?.sort?.direction || SORT_DIRECTIONS.ASCENDING}
+                        setSortDirection={handleChangeSortDirection}
+
+                        filters={dashboard.filters || []}
+                        onAddFilter={filter => handleAddFilter(filter)}
+                        onRemoveFilter={filterId => handleRemoveFilter(filterId)}
+
+                        containerStyle={{}}
+                    />
+                } */}
 
 
 
             </styled.Header>
 
             <styled.BodyContainer>
-                    <div style={{display: "flex", flexDirection: "column", overflow: "hidden"}}>
-                        <styled.ContentContainer>
-                            <styled.ReportButtonsContainer isButtons={isButtons}>
-                                {isButtons ?
-                                    renderKickOffButtons()
-                                    :
-                                    didLoadData ?
+                <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                    <styled.ContentContainer>
+                        <styled.ReportButtonsContainer isButtons={isButtons}>
+                            {isButtons ?
+                                renderKickOffButtons()
+                                :
+                                didLoadData ?
                                     <styled.NoButtonsText>There are currently no lots in the queue available for kick off.</styled.NoButtonsText>
-                                        :
-                                        <FadeLoader
-                                            css={styled.FadeLoaderCSS}
-                                            height={5}
-                                            width={3}
-                                            loading={true}
-                                        />
-                                }
+                                    :
+                                    <FadeLoader
+                                        css={styled.FadeLoaderCSS}
+                                        height={5}
+                                        width={3}
+                                        loading={true}
+                                    />
+                            }
 
-                            </styled.ReportButtonsContainer>
-                        </styled.ContentContainer>
+                        </styled.ReportButtonsContainer>
+                    </styled.ContentContainer>
 
-                        <styled.ButtonsContainer>
-                            {/* <Button
+                    <styled.ButtonsContainer>
+                        {/* <Button
                                 tertiary
                                 schema={"dashboards"}
                                 onClick={close}
                                 label={"Close"}
                                 type="button"
                             /> */}
-                            {!phoneView &&
-                              <Button
-                                  // tertiary
-                                  // secondary
-                                  schema={"dashboards"}
-                                  // onClick={close}
-                                  onClick={()=>setShowLotEditor(true)}
-                                  label={"Create New Lot"}
-                                  type="button"
-                                  style={{minWidth: '12rem', minHeight: '3rem'}}
-                              />
-                            }
+                        {!phoneView &&
+                            <Button
+                                // tertiary
+                                // secondary
+                                schema={"dashboards"}
+                                // onClick={close}
+                                onClick={() => setShowLotEditor(true)}
+                                label={"Create New Lot"}
+                                type="button"
+                                style={{ minWidth: '12rem', minHeight: '3rem' }}
+                            />
+                        }
 
-                        </styled.ButtonsContainer>
-                    </div>
+                    </styled.ButtonsContainer>
+                </div>
             </styled.BodyContainer>
         </styled.Container>
     );

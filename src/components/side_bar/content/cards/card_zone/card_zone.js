@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import PropTypes from "prop-types"
 
 // utils
-import { getLotTotalQuantity, getMatchesFilter, getCardsInBin } from "../../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
@@ -25,6 +25,9 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lo
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
 
+// Import API
+import { getStationCycleTime } from '../../../../../api/stations_api'
+
 
 const CardZone = ((props) => {
 
@@ -35,8 +38,7 @@ const CardZone = ((props) => {
         setShowCardEditor,
         showCardEditor,
         maxHeight,
-        lotFilterValue,
-        selectedFilterOption,
+        lotFilters,
         sortMode,
         sortDirection,
         selectedCards,
@@ -123,13 +125,14 @@ const CardZone = ((props) => {
     const deleteGetCycleTimes = async () => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
-        const body = { timespan: 'day', index: 0 }
-        const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
+        // const body = { timespan: 'day', index: 0 }
+        // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
         for (const ind in processStations) {
             const stationID = processStations[ind]
+
 
             const station = stations[stationID]
             if (!!station?.manual_cycle_time && !!station?.cycle_time) {
@@ -142,19 +145,11 @@ const CardZone = ((props) => {
                 }
             }
             else {
-                const response = await getStationAnalytics(stationID, body)
-                const throughput = response.throughPut
-                let sum = 0
-                throughput.forEach((dataPoint) => {
-                    if (!!dataPoint.null) {
-                        sum += dataPoint?.null
-                    }
-                })
-
+                const cycleTime = await getStationCycleTime(stationID)
                 stationCycleTimes =
                 {
                     ...stationCycleTimes,
-                    [stationID]: sum != 0 ? workingTime / sum : 0,
+                    [stationID]: cycleTime,
 
                 }
             }
@@ -425,7 +420,8 @@ const CardZone = ((props) => {
 
             const totalQuantity = getLotTotalQuantity(card)
 
-            const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
+            // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            const matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
 
             if (cardBins && matchesFilter) {
 
@@ -485,7 +481,7 @@ const CardZone = ((props) => {
         setCardsSorted(tempCardsSorted)
         setQueue(tempQueue)
         setFinished(tempFinished)
-    }, [bins, cards, lotFilterValue, selectedFilterOption, draggingBinId, draggingLotId])
+    }, [bins, cards, lotFilters, draggingBinId, draggingLotId])
 
     /*
     * Renders a {StationColumn} for each entry in {cardsSorted}
@@ -524,6 +520,7 @@ const CardZone = ((props) => {
                     route_id={route_id}
                     cards={cardsArr}
                     onCardClick={handleCardClick}
+                    autoCycleTime={deleteStationCycleTime[station_id]}
                 />
             )
         })
@@ -574,7 +571,7 @@ CardZone.propTypes = {
     handleCardClick: PropTypes.func,
     setShowCardEditor: PropTypes.func,
     processId: PropTypes.string,
-    lotFilterValue: PropTypes.any,
+    lotFilters: PropTypes.array,
     showCardEditor: PropTypes.bool,
     maxHeight: PropTypes.any
 }
@@ -586,8 +583,7 @@ CardZone.defaultProps = {
     setShowCardEditor: () => { },
     showCardEditor: false,
     maxHeight: null,
-    lotFilterValue: "",
-    selectedFilterOption: LOT_FILTER_OPTIONS.name,
+    lotFilters: [],
     sortMode: LOT_FILTER_OPTIONS.name,
     sortDirection: SORT_DIRECTIONS.ASCENDING,
 }

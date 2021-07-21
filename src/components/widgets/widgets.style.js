@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+export const EmptyDiv = styled.div``
+
 export const WidgetLocationContainer = styled.section`
     position: absolute;
 

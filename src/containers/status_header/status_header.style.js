@@ -42,9 +42,15 @@ export const RightContentContainer = styled.div`
 // ************************************
 export const Logo = styled.div`
     display: flex;
-    align-items: center;
     margin-left: ${props => props.windowWidth > props.widthBreakPoint ? '1rem' : '.4rem'};
+    margin-top: 0.7rem;
+    margin-bottom: 0.7rem;
 `;
+
+export const LogoImg = styled.img`
+    object-fit: contain;
+    height: 100%;  
+`
 
 export const LogoIcon = styled.i`
     font-size: 2.5rem;

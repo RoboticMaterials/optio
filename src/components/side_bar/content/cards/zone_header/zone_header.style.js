@@ -64,15 +64,12 @@ export const ColumnContainer = styled.div`
   display: flex;
   margin-right: 1rem;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-direction: column;
-  background: ${props => props.theme.bg.secondary};
+  // background: ${props => props.theme.bg.secondary};
   padding: .25rem 1rem 0 1rem;
   border-radius: .4rem;
-  
-  height: fit-content;
-  
-  
+  // height: fit-content;
   
   margin-bottom: 1rem;
   
@@ -109,7 +106,7 @@ export const OptionContainer = styled.div`
 	${flexItemCss};	// this element is used in flex-wrap containers - don't remove unless you adjust everything else accordingly...
 	align-self: stretch;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 `
 
 // the margin bottom is needed for flex-wrap spacing. Don't change unless you adjust everything else accordingly...

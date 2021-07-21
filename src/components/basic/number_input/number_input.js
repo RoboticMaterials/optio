@@ -1,10 +1,11 @@
-import React, {useRef} from "react"
+import React, {useRef, useContext} from "react"
 
 // functions external
 import PropTypes from 'prop-types'
 
 // styles
 import * as styled from './number_input.style'
+import { ThemeContext } from 'styled-components'
 
 export const NUMBER_INPUT_BUTTON_TYPES = {
 	PLUS: "PLUS",
@@ -20,7 +21,7 @@ const NumberInput = ({
 	hasError,
 	onInputChange,
 	inputDisabled,
-	themeContext,
+	// themeContext,
 	value,
 	plusDisabled,
 	inputCss,
@@ -39,7 +40,8 @@ const NumberInput = ({
 	const onWheel = () => {
 		inputRef?.current && inputRef.current.blur();
 	};
-
+	
+	const themeContext = useContext(ThemeContext);
 
 	return (
 		<styled.Container style={containerStyle}>

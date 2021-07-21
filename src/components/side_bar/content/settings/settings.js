@@ -64,6 +64,7 @@ const Settings = () => {
     } = mapReducer
 
     const [serverSettingsState, setServerSettingsState] = useState(serverSettings)
+    const [emailSettingsState, setEmailSettingsState] = useState(serverSettings.emailNotifications)
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
@@ -80,6 +81,7 @@ const Settings = () => {
      * */
     useEffect(() => {
         setServerSettingsState(serverSettings)
+        setEmailSettingsState(serverSettings.emailNotifications)
         dispatchGetLocalSettings()
 
     }, [])
@@ -323,19 +325,73 @@ const Settings = () => {
                         schema={"settings"}
                         onClick={() => setConfirmUnlock(true)}
                     >Unlock All Dashboards
-                </Button>
+                    </Button>
 
                     <Button
                         style={{ width: '100%', minHeight: '3rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmLock(true)}
                     >Lock All Dashboards
-                </Button>
+                    </Button>
                 </styled.RowContainer>
 
             </styled.SettingContainer>
         )
     }
+
+    const EmailAddress = () => {
+        return (
+            <styled.SettingContainer>
+                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                    <styled.SwitchContainerLabel>Enable Report Email Notifications </styled.SwitchContainerLabel>
+                    <Switch
+                        checked={!!serverSettingsState.emailEnabled ? serverSettingsState.emailEnabled : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                emailEnabled: !serverSettingsState.emailEnabled
+                            })
+                        }}
+                        onColor='red'
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.RowContainer>
+                {!!serverSettingsState.emailEnabled &&
+                    <styled.SettingContainer style={{ background: '#f0f0f5', padding: '.5rem', borderRadius: '0.5rem' }}>
+                        <styled.SwitchContainerLabel>Contact Name</styled.SwitchContainerLabel>
+                        <styled.RowContainer style={{ marginBottom: '.5rem' }}>
+                            <Textbox
+                                placeholder="Enter a contact name..."
+                                value={!!serverSettingsState.emailName ? serverSettingsState.emailName : ""}
+                                onChange={(event) => {
+                                    handleUpdateServerSettings({ emailName: event.target.value })
+                                }}
+                                style={{ width: '100%' }}
+                                inputStyle={{ background: 'white' }}
+                            />
+                        </styled.RowContainer>
+                        <styled.SwitchContainerLabel>Email Address</styled.SwitchContainerLabel>
+
+                        <styled.RowContainer>
+                            <Textbox
+                                placeholder="Enter an email address..."
+                                value={!!serverSettingsState.emailAddress ? serverSettingsState.emailAddress : ""}
+                                onChange={(event) => {
+                                    handleUpdateServerSettings({ emailAddress: event.target.value })
+                                }}
+                                style={{ width: '100%' }}
+                                inputStyle={{ background: 'white' }}
+                            />
+                        </styled.RowContainer>
+
+                    </styled.SettingContainer>
+                }
+
+            </styled.SettingContainer>
+        )
+    }
+
+
 
     const CurrentMap = () => {
 
@@ -372,7 +428,7 @@ const Settings = () => {
     const renderShiftSettings = () => {
         return (
             <>
-                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem'}}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
                     <styled.SwitchContainerLabel>Show Shift Settings</styled.SwitchContainerLabel>
 
                     <styled.ChevronIcon
@@ -393,6 +449,27 @@ const Settings = () => {
                     </styled.ShiftSettingsContainer>
                 }
             </>
+        )
+    }
+
+    const renderFilterSortSelection = () => {
+        return (
+            <styled.SettingContainer>
+                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filter and Sort Options on Dashboards </styled.SwitchContainerLabel>
+                    <Switch
+                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
+                            })
+                        }}
+                        onColor='red'
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.RowContainer>
+            </styled.SettingContainer>
         )
     }
 
@@ -475,8 +552,9 @@ const Settings = () => {
             {CurrentMap()}
             {TimeZone()}
             {LockUnlockAllDashboards()}
+            {renderFilterSortSelection()}
+            {EmailAddress()}
             {renderShiftSettings()}
-
             {APIAddress()}
             {SignOut()}
 
