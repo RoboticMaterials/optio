@@ -42,7 +42,6 @@ export const RightContentContainer = styled.div`
 // ************************************
 export const Logo = styled.div`
     display: flex;
-    align-items: center;
     margin-left: ${props => props.windowWidth > props.widthBreakPoint ? '1rem' : '.4rem'};
     margin-top: 0.7rem;
     margin-bottom: 0.7rem;
