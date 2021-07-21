@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Switch from 'react-ios-switch'
 import Textbox from '../../basic/textbox/textbox'
 import Button from '../../basic/button/button'
+import { ReactComponent as OptioLogo } from '../../../graphics/icons/optio.svg'
 
 // styles
 import * as styled from "./splash_screen.style"
@@ -89,7 +90,9 @@ const SplashScreen = (props) => {
             {/* When loading show an RM logo, if no api info, then show input to enter */}
             {!isApiLoaded ? apiError ?
                 <div style={{ width: '100%', height: '100%', paddingTop: '15%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem', marginBottom: '5rem', color: '#FF4B4B' }} />
+                    <div style={{height: '15rem', overflow: 'hidden'}}>
+                        <OptioLogo preserveAspectRatio="xMinYMid meet" height="100%" width="100%"/>
+                    </div>
 
                     <div style={{ width: '50%', minWidth: '20rem', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                         < p > Please Enter API IP</p>
@@ -121,7 +124,9 @@ const SplashScreen = (props) => {
 
                 :
                 <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: "center", flexDirection: "column" }}>
-                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem', margin: "3rem", color: '#FF4B4B' }} />
+                    <div style={{height: '15rem', overflow: 'hidden'}}>
+                        <OptioLogo preserveAspectRatio="xMinYMid meet" height="100%" width="100%"/>
+                    </div>
 
                     {/* <ToggleMapViewSwitch
                         checked={localSettings.localSettings.mapViewEnabled}
