@@ -67,7 +67,7 @@ export const testFilterOption = (filterOptions, filterValue, testValue) => {
 }
 
 export const stringifyFilter = (filter) => {
-    let fieldStr = filter.fieldName;
+    let fieldStr = filter.label;
     let operatorStr = filter.operator;
     let optionsStr;
     switch (filter.dataType) {
@@ -85,10 +85,12 @@ export const stringifyFilter = (filter) => {
             optionsStr = '...'
             break;
         case 'DATE':
-            optionsStr = jsDateToString(filter.options.date)
-            break;
         case 'DATE_RANGE':
-            optionsStr = jsDateToString(filter.options.date)
+            if (filter.options.isRelative) {
+                optionsStr = 'today' + (filter.options.relativeDays < 0 ? '' : '+') + filter.options.relativeDays
+            } else {
+                optionsStr = jsDateToString(filter.options.date)
+            }
             break;
         default:
             optionsStr = '?'
@@ -106,6 +108,12 @@ const COMPARITOR_FUNCTIONS = {
     '>': (a, b) => a > b
 }
 
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
 export const checkCardMatchesFilter = (lot, filter) => {
 
     const {
@@ -115,13 +123,13 @@ export const checkCardMatchesFilter = (lot, filter) => {
         options
     } = filter;
 
-    
-
     // Primarily filters if the key exists in the lot
     const lotFields = {}
     lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
-    if (lot[fieldName] == null && lotFields[fieldName] == null) { return false; }
-    
+    if (lot[fieldName] == null && (lotFields[fieldName] == null || 
+            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null)))
+        { return false; }
+
     switch (fieldName) {
 
         case 'name':
@@ -152,9 +160,21 @@ export const checkCardMatchesFilter = (lot, filter) => {
                 case 'INTEGER':
                     return COMPARITOR_FUNCTIONS[operator](lotFields[fieldName].value, options.num)
                 case 'DATE':
-                    return COMPARITOR_FUNCTIONS[operator](lotFields[fieldName].value, options.date)
+                    if (options.isRelative) {
+                        let compareDate = new Date;
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value), compareDate.addDays(options.relativeDays))
+                    } else {
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value), new Date(options.date))
+                    }
                 case 'DATE_RANGE':
-                    return COMPARITOR_FUNCTIONS[operator](lotFields[fieldName].value[filter.index], options.date)
+                    console.log(lotFields[fieldName].value)
+                    if (options.isRelative) {
+                        let compareDate = new Date;
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value[filter.index]), compareDate.addDays(options.relativeDays))
+                    } else {
+                        return COMPARITOR_FUNCTIONS[operator](new Date(lotFields[fieldName].value[filter.index]), new Date(options.date))
+                    }
+
             }
     }
 

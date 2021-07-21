@@ -233,15 +233,17 @@ const Lot = (props) => {
 
                 }
 
-                <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
+                <styled.NameNumberContainer>
+                    <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
 
-                {name &&
-                    <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
-                }
+                    {name &&
+                        <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
+                    }
+                </styled.NameNumberContainer>
 
             </styled.HeaderBar>
 
-            <styled.ContentContainer>
+            <styled.ContentContainer hasLeadTime={!!leadTime}>
                 <LotSimpleRow
                     label={"Quantity"}
                     value={`${count}/${totalQuantity}`}

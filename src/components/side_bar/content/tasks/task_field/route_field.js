@@ -826,16 +826,16 @@ const TaskField = (props) => {
 
                                     {isProcessRoute &&
                                         <>
-                                            <styled.Title style={{alignSelf: 'center' }}>Tracking Type</styled.Title>
-                                            <styled.RowContainer style={{ justifyContent: 'center' }}>
-                                                <styled.DualSelectionButton
-                                                    style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                                    onClick={() => {
-                                                        setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
-                                                    }}
-                                                    selected={values.track_quantity}
-                                                >
-                                                    Quantity
+                                        <styled.Title style={{alignSelf: 'center' }}>Tracking Type</styled.Title>
+                                        <styled.RowContainer style={{ justifyContent: 'center' }}>
+                                            <styled.DualSelectionButton
+                                                style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                                onClick={() => {
+                                                    setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
+                                                }}
+                                                selected={values.track_quantity}
+                                            >
+                                                Quantity
                                         </styled.DualSelectionButton>
 
                                                 <styled.DualSelectionButton

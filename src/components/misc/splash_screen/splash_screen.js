@@ -86,7 +86,7 @@ const SplashScreen = (props) => {
 
     return (
         <>
-            {/* When loading show an RM logo, if no api info, then show input to enter */}
+            {/* When loading show an Optio logo, if no api info, then show input to enter */}
             {!isApiLoaded ? apiError ?
                 <div style={{ width: '100%', height: '100%', paddingTop: '15%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                     <i className={'icon-rmLogo'} style={{ fontSize: '10rem', marginBottom: '5rem', color: '#FF4B4B' }} />
@@ -121,7 +121,7 @@ const SplashScreen = (props) => {
 
                 :
                 <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: "center", flexDirection: "column" }}>
-                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem', margin: "3rem", color: '#FF4B4B' }} />
+                    <i className={'icon-optioLogo'} style={{ fontSize: '10rem', margin: "3rem", color: '#FF4B4B' }} />
 
                     {/* <ToggleMapViewSwitch
                         checked={localSettings.localSettings.mapViewEnabled}
