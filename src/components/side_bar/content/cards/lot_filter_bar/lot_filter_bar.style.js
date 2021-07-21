@@ -47,6 +47,13 @@ export const ColumnContainer = styled.div`
   
 `
 
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+`
+
 export const Description = styled.span`
   color: ${props => props.theme.textColor};
   white-space: nowrap;
@@ -71,6 +78,8 @@ export const ExpandableContainer = styled.div`
     display: flex;
     flex-direction: column;
     z-index: 2;
+
+    ${props => props.open && `box-shadow: 0 0 6px 3px rgba(0,0,0,0.2)`}
 `
 
 export const RemoveIcon = styled.button`
@@ -150,4 +159,28 @@ export const AddFilterButton = styled.button`
     border-radius: 2rem;
     line-height: 2rem;
     box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
+`
+export const DualSelectionButton = styled.button`
+    font-size: 1rem;
+    width: 50%;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.secondary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
 `
