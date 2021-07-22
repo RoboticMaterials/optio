@@ -292,7 +292,6 @@ const FormComponent = (props) => {
     }
 
 
-
     useEffect(() => {
         if (!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
             const cardFieldsWithoutValue = values.fields.map((currRow) => {
@@ -320,7 +319,7 @@ const FormComponent = (props) => {
             setTemplateFieldsChanged(!isEquivalent)
             setCheckedCardAndTemplateFields(true)
         }
-    }, [templateFields, cardFields])
+    }, [templateFields, cardFields, lotTemplateId])
 
     const previousTemplateId = usePrevious(lotTemplateId)
 
@@ -845,7 +844,7 @@ const FormComponent = (props) => {
                                                 }
                                                 <ReactTooltip id={toolTipId} place='top' effect='solid'>
                                                     <div style={{maxWidth: '20rem'}}>
-                                                        When enabled, this lot's fields will always update when its template is changed.
+                                                        When sync is enabled, this lot's fields will automatically update when its template is changed.
                                                     </div>
                                                 </ReactTooltip>
                                             </>

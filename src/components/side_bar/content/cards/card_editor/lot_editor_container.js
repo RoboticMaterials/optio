@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 // actions
-import { postCard } from "../../../../../redux/actions/card_actions";
+import { postCard, putCard } from "../../../../../redux/actions/card_actions";
 
 // api
 import { getCardsCount } from "../../../../../api/cards_api";
@@ -52,6 +52,7 @@ const LotEditorContainer = (props) => {
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
+    const dispatchPutCard = async (card, cardId) => await dispatch(putCard(card, cardId))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchPutProcess = (process, processId) => dispatch(putProcesses(process, processId))
 
@@ -119,15 +120,13 @@ const LotEditorContainer = (props) => {
         setStatus = () => { },
     } = current || {}
 
-    console.log('0-00', lastLotTemplateId)
-
     /*
     * This effect is used to update the current predicted lotNumber on an interval
     * The lotNumber here is just used for display, the actual assigned lotNumber should be handled on the backend
     * */
     useEffect(() => {
         getCount()
-        handleSelectLotTemplate(lastLotTemplateId) // Initial Template
+        handleSelectLotTemplate(!!props.cardId ? card.lotTemplateId : lastLotTemplateId) // Initial Template
         let lotNumberTimer = setInterval(() => {
             getCount()
         }, 5000)
@@ -143,26 +142,37 @@ const LotEditorContainer = (props) => {
     }, [props.cardId])
 
     const handleSelectLotTemplate = (templateId) => {
+
+        let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
-        if (!templateId && isObject(card) && card?.lotTemplateId) {
-            templateId = card?.lotTemplateId
+        if (isObject(card) && card?.lotTemplateId) {
+            console.log('iscard', card?.lotTemplateId)
+            if (!!templateId && templateId !== card.lotTemplateId) {
+                console.log('updateCard', templateId)
+                dispatchPutCard({...card, lotTemplateId: templateId}, card._id)
+            } else {
+                console.log('takingCards', card.lotTemplateId)
+                newTemplateId = card?.lotTemplateId
+            }
         }
 
         // if the template wasn't found, default everything to use BASIC_LOT_TEMPLATE
         let template;
         if (!lotTemplates[templateId]) {
-            templateId = BASIC_LOT_TEMPLATE_ID
+            newTemplateId = BASIC_LOT_TEMPLATE_ID
             template = BASIC_LOT_TEMPLATE
         } else {
             template = lotTemplates[templateId]
         }
 
-        dispatchPutProcess({
-            ...process,
-            lastLotTemplateId: templateId
-        }, process._id)
+        if (!isObject(card)) { // If you're in editing mode, dont update lastUsedTemplateId
+            dispatchPutProcess({
+                ...process,
+                lastLotTemplateId: newTemplateId
+            }, process._id)
+        }
 
-        setLotTemplateId(templateId)
+        setLotTemplateId(newTemplateId)
         setLotTemplate(template)
     }
 
