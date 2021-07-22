@@ -766,7 +766,7 @@ export const SyncProblem = styled(SyncProblemIcon)`
 export const Sync = styled(SyncIcon)`
   ${iconButtonCss};
   ${commonClickableIcon};
-  color: ${props => props.sync ? "#00d6d0" : "#a9a9a9"};
+  color: ${props => props.sync ? "#00d6d0" : "#d1d1d1"};
   transition: all 2s ease;
 `
 
