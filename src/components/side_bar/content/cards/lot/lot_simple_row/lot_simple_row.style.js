@@ -8,8 +8,8 @@ export const Row = styled.div`
     display: flex;
     width: 100%;
     justify-content: space-between;
-    padding: .25rem 0 .25rem 0;
-  
+    height: 1.3rem;
+
   	${props => props.isLast && lastItemCss};
 `
 
@@ -17,6 +17,7 @@ export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 600;
     margin-right: 0.5rem;
+    line-height: 1.3rem;
     color:  ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
 `

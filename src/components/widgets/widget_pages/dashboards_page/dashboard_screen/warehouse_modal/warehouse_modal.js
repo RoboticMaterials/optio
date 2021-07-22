@@ -14,7 +14,7 @@ import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filt
 // Import Utils
 import { getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
 import { sortBy } from "../../../../../../methods/utils/card_utils";
-import { getCustomFields, getLotTotalQuantity, getMatchesFilter, getIsCardAtBin } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, getLotTotalQuantity, checkCardMatchesFilter, getIsCardAtBin } from "../../../../../../methods/utils/lot_utils";
 import { getStationProcesses } from '../../../../../../methods/utils/stations_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 
@@ -55,11 +55,6 @@ const WarehouseModal = (props) => {
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
 
-    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
-    const [lotFilterValue, setLotFilterValue] = useState('')
-    const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
-
     // Add warehouse to URL
     // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
@@ -82,10 +77,24 @@ const WarehouseModal = (props) => {
             if (!!station) warehouseStations.push(station)
         })
 
-        let sortedCards = Object.values(cards)
+        let organizedCards = Object.values(cards)
+            .map(card => {
+                const {
+                    bins = {},
+                } = card || {}
 
-        if (sortMode) {
-            sortBy(sortedCards, sortMode, sortDirection)
+                const quantity = bins[stationID]?.count
+                return {...card, quantity}
+            })
+
+        if (!!dashboard.filters) {
+            dashboard.filters.forEach(filter => {
+                organizedCards = organizedCards.filter(card => checkCardMatchesFilter(card, filter))
+            })
+        }
+
+        if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
+            sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
         }
 
 
@@ -96,22 +105,8 @@ const WarehouseModal = (props) => {
         // Goes through each warehouse that is infront to the station and renders cards
         return warehouseStations.map((warehouse) => {
             const warehouseID = warehouse?._id
-            return sortedCards
-                .filter((card, ind) =>
-                    getIsCardAtBin(card, warehouseID)
-                )
-                .filter((currLot) => {
-                    const {
-                        name: currLotName,
-                        bins = {},
-                    } = currLot || {}
-
-                    const count = bins[warehouseID]?.count
-                    return getMatchesFilter({
-                        ...currLot,
-                        quantity: count
-                    }, lotFilterValue, selectedFilterOption)
-                })
+            return organizedCards
+                .filter(card => getIsCardAtBin(card, warehouseID))
                 .map((currCard, cardIndex) => {
                     const {
                         _id: lotId,
@@ -187,7 +182,7 @@ const WarehouseModal = (props) => {
                     <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close} />
 
                 </styled.HeaderMainContentContainer>
-                <SortFilterContainer
+                {/* <SortFilterContainer
                     lotFilterValue={lotFilterValue}
                     sortMode={sortMode}
                     setSortMode={setSortMode}
@@ -197,7 +192,7 @@ const WarehouseModal = (props) => {
                     setLotFilterValue={setLotFilterValue}
                     selectedFilterOption={selectedFilterOption}
                     setSelectedFilterOption={setSelectedFilterOption}
-                />
+                /> */}
 
 
             </styled.Header>

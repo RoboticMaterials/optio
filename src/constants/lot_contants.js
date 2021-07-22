@@ -58,7 +58,8 @@ export const FORM_BUTTON_TYPES = {
     SAVE: "SAVE",
     ADD: "ADD",
     ADD_AND_NEXT: "ADD_AND_NEXT",
-    MOVE_OK: "MOVE_OK"
+    MOVE_OK: "MOVE_OK",
+    ADD_AND_MOVE: 'AND_AND_MOVE'
 }
 
 export const BASIC_LOT_TEMPLATE_ID = "BASIC_LOT_TEMPLATE"
@@ -262,18 +263,20 @@ export const SORT_DIRECTIONS = {
     }
 }
 
-
-
 export const LOT_FILTER_OPTIONS = {
-    name: { ...NAME_FIELD, primary: true },
-    flags: {
-        label: "Flags", primary: true
-    },
-    lotNumber: { ...LOT_NUMBER_FIELD, primary: true }
+    name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "INTEGER" },
+    flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
+    processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
+    quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},
+    totalQuantity: { label: "Total Quantity", fieldName: 'totalQuantity', primary: true, dataType: "INTEGER"},
 }
 
 export const LOT_SORT_OPTIONS = {
-    name: { ...NAME_FIELD, primary: true },
-    quantity: { ...COUNT_FIELD, primary: true, fieldName: "count" },
-    lotNumber: { ...LOT_NUMBER_FIELD, primary: true }
+    name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "INTEGER" },
+    flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
+    processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
+    quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},
+    totalQuantity: { label: "Total Quantity", fieldName: 'totalQuantity', primary: true, dataType: "INTEGER"},
 }

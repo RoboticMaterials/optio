@@ -27,7 +27,7 @@ import log, { disableAll } from '../../logger.js';
 import * as styled from './status_header.style'
 import { render } from '@testing-library/react';
 import { ThemeContext } from 'styled-components'
-
+import { ReactComponent as OptioLogo } from '../../graphics/icons/optioFull.svg'
 
 const StatusHeader = (props) => {
 
@@ -365,8 +365,9 @@ const StatusHeader = (props) => {
                         windowWidth={windowWidth}
                         widthBreakPoint={widthBreakPoint}
                     >
-                        <styled.LogoIcon className='icon-rmLogo' />
-                        <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+                        <div style={{height: '100%', overflow: 'hidden'}}>
+                            <OptioLogo preserveAspectRatio="xMinYMid meet" height="100%" width="100%"/>
+                        </div>
                     </styled.Logo>
                 }
             </styled.LeftContentContainer>

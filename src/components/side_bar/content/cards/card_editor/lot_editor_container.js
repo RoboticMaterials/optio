@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 // actions
-import { postCard } from "../../../../../redux/actions/card_actions";
+import { postCard, putCard } from "../../../../../redux/actions/card_actions";
 
 // api
 import { getCardsCount } from "../../../../../api/cards_api";
@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import usePrevious from "../../../../../hooks/usePrevious"
 
 // utils
-import {editLotSchema, uniqueNameSchema} from "../../../../../methods/utils/form_schemas";
+import { editLotSchema, uniqueNameSchema } from "../../../../../methods/utils/form_schemas";
 import { immutableReplace, immutableSet, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 import { convertPastePayloadToLot } from "../../../../../methods/utils/card_utils";
 import { isObject, pathStringToObject } from "../../../../../methods/utils/object_utils";
@@ -40,27 +40,35 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from "./lot_editor_container.style";
-import {postLocalSettings} from "../../../../../redux/actions/local_actions";
+import { postLocalSettings } from "../../../../../redux/actions/local_actions";
+import { putProcesses } from '../../../../../redux/actions/processes_actions';
 
 const LotEditorContainer = (props) => {
+
+    const {
+        merge
+    } = props
 
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
+    const dispatchPutCard = async (card, cardId) => await dispatch(putCard(card, cardId))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPutProcess = (process, processId) => dispatch(putProcesses(process, processId))
 
     // redux state
-    const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
+    // const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const cards = useSelector(state => { return state.cardsReducer.cards })
     const localReducer = useSelector(state => state.localReducer) || {}
+    const process = useSelector(state => state.processesReducer.processes)[props.processId]
     const {
         loaded: localSettingsLoaded,
         localSettings
     } = localReducer
     const {
         lastLotTemplateId = null
-    } = localSettings || {}
+    } = process || {}
 
     // component state
     const [mappedStatus, setMappedStatus] = useState([])						// array of form status objects
@@ -78,11 +86,13 @@ const LotEditorContainer = (props) => {
     const [showStatusList, setShowStatusList] = useState(false)				// bool - controls whether or not to show statusList
     const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])
+
+    const [lotTemplateId, setLotTemplateId] = useState(null)
     const [lotTemplate, setLotTemplate] = useState([])
     const {
         name: lotTemplateName = ""
     } = lotTemplate || {}
-    const [lotTemplateId, setLotTemplateId] = useState(null)
+
     const [card, setCard] = useState(cards[props.cardId] || null)
     const [collectionCount, setCollectionCount] = useState(null)
     const [lazyCreate, setLazyCreate] = useState(false)
@@ -116,6 +126,7 @@ const LotEditorContainer = (props) => {
     * */
     useEffect(() => {
         getCount()
+        handleSelectLotTemplate(!!props.cardId ? card.lotTemplateId : lastLotTemplateId) // Initial Template
         let lotNumberTimer = setInterval(() => {
             getCount()
         }, 5000)
@@ -130,50 +141,40 @@ const LotEditorContainer = (props) => {
         setCard(cards[props.cardId] || null)
     }, [props.cardId])
 
-    /*
-    * This effect is used to determine which lotTemplateId / lotTemplate to use
-    * */
-    useEffect(() => {
-        let tempLotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
+    const handleSelectLotTemplate = (templateId) => {
 
-        // if a template isn't provided by redux, check if card has template id
-        if (!tempLotTemplateId && isObject(card) && card?.lotTemplateId) {
-            tempLotTemplateId = card?.lotTemplateId
+        let newTemplateId = templateId;
+        // if a template isn't provided by process, check if card has template id
+        if (isObject(card) && card?.lotTemplateId) {
+            console.log('iscard', card?.lotTemplateId)
+            if (!!templateId && templateId !== card.lotTemplateId) {
+                console.log('updateCard', templateId)
+                dispatchPutCard({...card, lotTemplateId: templateId}, card._id)
+            } else {
+                console.log('takingCards', card.lotTemplateId)
+                newTemplateId = card?.lotTemplateId
+            }
         }
-
-        // if card also doesn't have template id, use lastLotTemplateId from localstorage
-        if (!tempLotTemplateId) tempLotTemplateId = lastLotTemplateId
-
-        // get lottemplate using id
-        let tempLotTemplate = lotTemplates[tempLotTemplateId]
 
         // if the template wasn't found, default everything to use BASIC_LOT_TEMPLATE
-        if (!lotTemplates[tempLotTemplateId]) {
-            tempLotTemplateId = BASIC_LOT_TEMPLATE_ID
-            tempLotTemplate = BASIC_LOT_TEMPLATE
+        let template;
+        if (!lotTemplates[templateId]) {
+            newTemplateId = BASIC_LOT_TEMPLATE_ID
+            template = BASIC_LOT_TEMPLATE
+        } else {
+            template = lotTemplates[templateId]
         }
 
-        setLotTemplateId(tempLotTemplateId)
-        setLotTemplate(tempLotTemplate)
-    }, [selectedLotTemplatesId, card, lotTemplates, lastLotTemplateId])
-
-
-    /*
-    * This effect is used to update localSettings with the last used lotTemplateId
-    * */
-    useEffect(() => {
-        // only post to local settings if localsettings have been loaded. Otherwise this could overwrite the stored localsettings with the initial (default) values
-        if(localSettingsLoaded && (lotTemplateId !== null) && (lastLotTemplateId !== lotTemplateId)) {
-            const {
-                localSettings
-            } = localReducer || {}
-
-            dispatchPostLocalSettings({
-                ...localSettings,
-                lastLotTemplateId: lotTemplateId,
-            })
+        if (!isObject(card)) { // If you're in editing mode, dont update lastUsedTemplateId
+            dispatchPutProcess({
+                ...process,
+                lastLotTemplateId: newTemplateId
+            }, process._id)
         }
-    }, [lotTemplateId, localSettingsLoaded, lastLotTemplateId])
+
+        setLotTemplateId(newTemplateId)
+        setLotTemplate(template)
+    }
 
 
     /*
@@ -187,9 +188,9 @@ const LotEditorContainer = (props) => {
     }, [lazyCreate])
 
     useEffect(() => {
-        if(!showStatusListLazy) {
+        if (!showStatusListLazy) {
             setShowStatusListLazy(null)
-            if(showStatusList) {
+            if (showStatusList) {
                 setShowStatusList(false)
             }
         }
@@ -351,7 +352,7 @@ const LotEditorContainer = (props) => {
                 _id: currLotId
             } = currCard || {}
 
-            tempCardNames.push({name, id: currLotId})
+            tempCardNames.push({ name, id: currLotId })
         })
 
         setCardNames(tempCardNames)
@@ -397,7 +398,7 @@ const LotEditorContainer = (props) => {
     * handles logic for creating a lot from mappedValues
     * */
     const createLot = async (index, cb) => {
-        if(!createdLot) setCreatedLot(true)
+        if (!createdLot) setCreatedLot(true)
         const values = mappedValues[index]
         if (values._id) return	// lot was already created, don't try creating it again
 
@@ -511,8 +512,8 @@ const LotEditorContainer = (props) => {
             }
         }
 
-        catch(err) {
-            console.error("create err",err)
+        catch (err) {
+            console.error("create err", err)
         }
     }
 
@@ -524,7 +525,7 @@ const LotEditorContainer = (props) => {
             uniqueNameSchema.validateSync({
                 name: values.name,
                 cardNames: cardNames,
-            }, {abortEarly: false})
+            }, { abortEarly: false })
 
             setMappedStatus((previous) => {
                 const previousStatus = previous[index] || {}
@@ -534,7 +535,7 @@ const LotEditorContainer = (props) => {
                 }, index)
             })
         }
-        catch(err) {
+        catch (err) {
             const {
                 inner = [],
                 // message
@@ -555,7 +556,7 @@ const LotEditorContainer = (props) => {
                     fieldName
                 } = value || {}
 
-                const errorObj = isObject(value) ? {[fieldName]: message} : pathStringToObject(path, ".", message)
+                const errorObj = isObject(value) ? { [fieldName]: message } : pathStringToObject(path, ".", message)
 
                 lotErrors = {
                     ...lotErrors,
@@ -610,7 +611,7 @@ const LotEditorContainer = (props) => {
             })
         }
 
-        catch(err) {
+        catch (err) {
             // oh no there was an error
             const {
                 inner = [],
@@ -632,7 +633,7 @@ const LotEditorContainer = (props) => {
                     fieldName
                 } = value || {}
 
-                const errorObj = isObject(value) ? {[fieldName]: message} : pathStringToObject(path, ".", message)
+                const errorObj = isObject(value) ? { [fieldName]: message } : pathStringToObject(path, ".", message)
 
                 lotErrors = {
                     ...lotErrors,
@@ -762,7 +763,7 @@ const LotEditorContainer = (props) => {
                         setSelectedIndex(null)
                         setMappedValues([])
 
-                        if(createdLot) {
+                        if (createdLot) {
                             props.close()
                         }
                     }}
@@ -856,6 +857,7 @@ const LotEditorContainer = (props) => {
             <LotEditor
                 cardNames={cardNames}
                 lotTemplateName={lotTemplateName}
+                merge={merge}
                 onAddClick={() => {
                     /*
                     * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create
@@ -876,6 +878,7 @@ const LotEditorContainer = (props) => {
                 collectionCount={parseInt((collectionCount + 1))}
                 lotTemplateId={lotTemplateId}
                 lotTemplate={lotTemplate}
+                onSelectLotTemplate={handleSelectLotTemplate}
                 showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}
                 hidden={showStatusList || showPasteMapper}
                 onShowCreateStatusClick={() => {

@@ -261,6 +261,38 @@ export const getProcessName = (processId) => {
     return name
 }
 
+export const getNextStationInProcess = (process, currentStationId) => {
+    const routes = store.getState().tasksReducer.tasks || {}
+    const stations = store.getState().stationsReducer.stations || {}
+    let nextStation
+    const processStations = getProcessStationsSorted(process, routes)
+    const currentStationIndex = processStations.findIndex((currItem) => {
+        if (isObject(currItem)) {
+            return currItem._id === currentStationId
+        }
+        else {
+            return currItem === currentStationId
+        }
+
+    })
+
+    // If the current index is the same as the length, then its the last station in the process, so take the first station
+    if (currentStationIndex === processStations.length - 1) {
+        nextStation = processStations[0]
+    }
+    // Else take the next station in the array
+    else {
+        nextStation = processStations[currentStationIndex + 1]
+    }
+
+    if (!isObject(nextStation)) {
+        return stations[nextStation]
+    }
+    else {
+        return nextStation
+    }
+}
+
 export const getPreviousRoute = (processRoutes, currentRouteId) => {
     const storeState = store.getState()
     const routes = storeState.tasksReducer.tasks
@@ -275,10 +307,11 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
         }
 
     })
-
+    // If the current route index is above 0 then find the route before
     if (currentRouteindex > 0) {
         previousRoute = processRoutes[currentRouteindex - 1]
     }
+    // Else its the the first route so ge the last route of the process,  
     else {
         previousRoute = processRoutes[processRoutes.length - 1]
     }
@@ -288,6 +321,39 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
     }
     else {
         return previousRoute
+    }
+
+}
+
+export const getNextRoute = (processRoutes, currentRouteId) => {
+    const storeState = store.getState()
+    const routes = storeState.tasksReducer.tasks
+    let nextRoute
+
+    const currentRouteindex = processRoutes.findIndex((currItem) => {
+        if (isObject(currItem)) {
+            return currItem._id === currentRouteId
+        }
+        else {
+            return currItem === currentRouteId
+        }
+
+    })
+
+    // If the current index is the same as the length, then its the last roue in the process, so take the first route
+    if (currentRouteindex === processRoutes.length - 1) {
+        nextRoute = processRoutes[0]
+    }
+    // Else take the next route in the array
+    else {
+        nextRoute = processRoutes[currentRouteindex + 1]
+    }
+
+    if (!isObject(nextRoute)) {
+        return routes[nextRoute]
+    }
+    else {
+        return nextRoute
     }
 
 }

@@ -1,58 +1,31 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 // external components
 import Modal from 'react-modal';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // internal components
 import Button from "../../../../../basic/button/button";
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
-import {getCards, getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
+import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './merge_modal.style'
-import {useTheme} from "styled-components";
-import {getProcesses} from "../../../../../../redux/actions/processes_actions";
-import FadeLoader from "react-spinners/FadeLoader";
-import Textbox from "../../../../../basic/textbox/textbox";
-import {SORT_MODES} from "../../../../../../constants/common_contants";
-import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import {
-    getBinQuantity,
-    getCustomFields,
-    getLotTotalQuantity,
-    getMatchesFilter, moveLot
+    moveLot
 } from "../../../../../../methods/utils/lot_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
-import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
-import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
-import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
-import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
-import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
-import {FINISH_BIN_ID, LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
-import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
+import { FINISH_BIN_ID, FORM_BUTTON_TYPES } from "../../../../../../constants/lot_contants";
 import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
-import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
-import PropTypes from "prop-types";
-import TextField from "../../../../../basic/form/text_field/text_field";
-import * as taskQueueActions from "../../../../../../redux/actions/task_queue_actions";
-import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
-import {CloseButton, LotListContainer} from "./merge_modal.style";
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
 // import {useSelectionContainer} from "react-drag-to-select";
 import BoxWrapper from "../../../../../basic/box_wrapper/box_wrapper";
-import {immutableDelete, immutableInsert, immutableReplace} from "../../../../../../methods/utils/array_utils";
-import HilButton from "../../../../../hil_modals/hil_button/hil_button";
-import FlexibleContainer from "../../../../../basic/flexible_container/flexible_container";
+import { immutableDelete, immutableInsert, immutableReplace } from "../../../../../../methods/utils/array_utils";
 import SelectLotQuantity from "./select_lot_quantity/select_lot_quantity";
 import MergeReview from "./merge_review/merge_review";
-import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
 import BackButton from "../../../../../basic/back_button/back_button";
-import {isShift} from "../../../../../../methods/utils/event_utils";
+import { isShift } from "../../../../../../methods/utils/event_utils";
 import useScrollInfo from "../../../../../../hooks/useScrollInfo";
 
 // Modal.setAppElement('body');
@@ -107,13 +80,13 @@ const MergeModal = (props) => {
         };
     }, [availableFinishProcesses]);
 
-    const  rectanglesIntersect = ({minX: minAx, minY: minAy, maxX: maxAx, maxY: maxAy}, {minX: minBx, minY: minBy, maxX: maxBx, maxY: maxBy} ) => {
-         const aLeftOfB = maxAx < minBx;
-         const aRightOfB = minAx > maxBx;
-         const aAboveB = minAy > maxBy;
-         const aBelowB = maxAy < minBy;
+    const rectanglesIntersect = ({ minX: minAx, minY: minAy, maxX: maxAx, maxY: maxAy }, { minX: minBx, minY: minBy, maxX: maxBx, maxY: maxBy }) => {
+        const aLeftOfB = maxAx < minBx;
+        const aRightOfB = minAx > maxBx;
+        const aAboveB = minAy > maxBy;
+        const aBelowB = maxAy < minBy;
 
-        return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
+        return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
     }
 
     const handleSelectionChange = useCallback((box) => {
@@ -134,7 +107,7 @@ const MergeModal = (props) => {
         let tempSelected = []
         let firstIsAdd = false
         lotPositions.forEach(((currPosition, currIndex) => {
-            const {offsetHeight, offsetLeft, offsetTop, offsetWidth} = currPosition || {}
+            const { offsetHeight, offsetLeft, offsetTop, offsetWidth } = currPosition || {}
 
             const reformattedPosition = {
                 minX: offsetLeft,
@@ -144,9 +117,9 @@ const MergeModal = (props) => {
             }
 
 
-            if(rectanglesIntersect(reformattedBox, reformattedPosition)) {
+            if (rectanglesIntersect(reformattedBox, reformattedPosition)) {
                 let itemIndex = selectedLots.indexOf(currIndex)
-                if(itemIndex !== -1 && currIndex === 0) {
+                if (itemIndex !== -1 && currIndex === 0) {
 
                 }
                 else {
@@ -157,18 +130,18 @@ const MergeModal = (props) => {
         }))
 
 
-        if(shift) {
+        if (shift) {
 
         }
         setSelectedLots(prevState => {
             // if(shift) {
-                return [...prevState.filter(item => tempSelected.indexOf(item) === -1), ...tempSelected]
+            return [...prevState.filter(item => tempSelected.indexOf(item) === -1), ...tempSelected]
             // }
             // else {
             //     return tempSelected
             // }
         })
-    },[lotPositions, shift, scrollInfo, scrollInfo?.y?.value])
+    }, [lotPositions, shift, scrollInfo, scrollInfo?.y?.value])
 
 
     // const { DragSelection } = useCallback(
@@ -203,7 +176,7 @@ const MergeModal = (props) => {
     // }, [DragSelection]);
 
     useEffect(() => {
-        switch(content) {
+        switch (content) {
             case CONTENT_OPTIONS.SELECTING_LOTS: {
                 setSubTitle('Select Lots to Merge')
                 break
@@ -227,11 +200,11 @@ const MergeModal = (props) => {
 
         }
 
-        return () => {};
+        return () => { };
     }, [content]);
 
     const onShift = useCallback((e) => {
-        if(isShift(e)) {
+        if (isShift(e)) {
             setShift(true)
         }
         else {
@@ -254,8 +227,8 @@ const MergeModal = (props) => {
 
 
 
-    const handleResize = ({offsetHeight, offsetLeft, offsetTop, offsetWidth}, index) => {
-        setLotPositions((prev) => immutableReplace(prev, {offsetHeight, offsetLeft, offsetTop, offsetWidth}, index))
+    const handleResize = ({ offsetHeight, offsetLeft, offsetTop, offsetWidth }, index) => {
+        setLotPositions((prev) => immutableReplace(prev, { offsetHeight, offsetLeft, offsetTop, offsetWidth }, index))
     }
 
     const renderLots = () => {
@@ -284,7 +257,7 @@ const MergeModal = (props) => {
                         onClick={() => {
                             const itemIndex = selectedLots.indexOf(ind)
                             let updated
-                            if(itemIndex !== -1) {
+                            if (itemIndex !== -1) {
                                 updated = immutableDelete(selectedLots, itemIndex)
                             }
                             else {
@@ -318,38 +291,38 @@ const MergeModal = (props) => {
             <styled.Header>
                 {content !== CONTENT_OPTIONS.SELECTING_LOTS &&
 
-                <BackButton
-                    containerStyle={{
-                        position: 'absolute',
-                        margin: 0,
-                        padding: 0
-                    }}
-                    onClick={() => {
-                        switch(content) {
-                            case CONTENT_OPTIONS.SELECTING_LOTS: {
-                                break
-                            }
-                            case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
-                                setContent(CONTENT_OPTIONS.SELECTING_LOTS)
-                                break
-                            }
-                            case CONTENT_OPTIONS.REVIEW: {
-                                setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
-                                break
-                            }
-                            case CONTENT_OPTIONS.CREATE_NEW_LOT: {
-                                break
-                            }
-                            default: {
-                                break
-                            }
+                    <BackButton
+                        containerStyle={{
+                            position: 'absolute',
+                            margin: 0,
+                            padding: 0
+                        }}
+                        onClick={() => {
+                            switch (content) {
+                                case CONTENT_OPTIONS.SELECTING_LOTS: {
+                                    break
+                                }
+                                case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
+                                    setContent(CONTENT_OPTIONS.SELECTING_LOTS)
+                                    break
+                                }
+                                case CONTENT_OPTIONS.REVIEW: {
+                                    setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
+                                    break
+                                }
+                                case CONTENT_OPTIONS.CREATE_NEW_LOT: {
+                                    break
+                                }
+                                default: {
+                                    break
+                                }
 
-                        }
-                    }}
-                />
+                            }
+                        }}
+                    />
                 }
 
-                <styled.Column style={{margin: 'auto'}}>
+                <styled.Column style={{ margin: 'auto' }}>
                     <styled.Title>Merge Lots</styled.Title>
                     <styled.SubTitle>{subTitle}</styled.SubTitle>
                 </styled.Column>
@@ -404,7 +377,7 @@ const MergeModal = (props) => {
                                 processOptions={availableKickOffProcesses}
                                 onSubmit={() => {
                                     quantityOptions.forEach(option => {
-                                        const {lotId, quantity} = option || {}
+                                        const { lotId, quantity } = option || {}
                                         const updatedLot = moveLot(cards[lotId], FINISH_BIN_ID, stationId, quantity)
                                         dispatchPutCard(updatedLot, lotId)
                                     })
@@ -414,9 +387,10 @@ const MergeModal = (props) => {
                                 onAfterOpen={null}
                                 cardId={null}
                                 processId={null}
-                                close={()=>{
+                                close={() => {
                                     setContent(CONTENT_OPTIONS.REVIEW)
                                 }}
+                                merge={true}
 
                             />,
 
@@ -427,22 +401,22 @@ const MergeModal = (props) => {
             </styled.BodyContainer>
 
             {content === CONTENT_OPTIONS.SELECTING_LOTS &&
-            <styled.Footer>
-                <Button
-                    disabled={!(selectedLots.length > 0)}
-                    onClick={() => {
-                        switch(content) {
-                            case CONTENT_OPTIONS.SELECTING_LOTS: {
-                                setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
-                            }
-                            case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
+                <styled.Footer>
+                    <Button
+                        disabled={!(selectedLots.length > 0)}
+                        onClick={() => {
+                            switch (content) {
+                                case CONTENT_OPTIONS.SELECTING_LOTS: {
+                                    setContent(CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES)
+                                }
+                                case CONTENT_OPTIONS.SELECTING_LOT_QUANTITIES: {
 
+                                }
                             }
-                        }
-                    }}
-                    label={'Select Quantities'}
-                />
-            </styled.Footer>
+                        }}
+                        label={'Select Quantities'}
+                    />
+                </styled.Footer>
             }
         </styled.Container>
     );

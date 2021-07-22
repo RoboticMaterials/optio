@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import PropTypes from "prop-types"
 
 // utils
-import { getLotTotalQuantity, getMatchesFilter, getCardsInBin } from "../../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
@@ -38,8 +38,7 @@ const CardZone = ((props) => {
         setShowCardEditor,
         showCardEditor,
         maxHeight,
-        lotFilterValue,
-        selectedFilterOption,
+        lotFilters,
         sortMode,
         sortDirection,
         selectedCards,
@@ -421,7 +420,8 @@ const CardZone = ((props) => {
 
             const totalQuantity = getLotTotalQuantity(card)
 
-            const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
+            // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            const matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
 
             if (cardBins && matchesFilter) {
 
@@ -481,7 +481,7 @@ const CardZone = ((props) => {
         setCardsSorted(tempCardsSorted)
         setQueue(tempQueue)
         setFinished(tempFinished)
-    }, [bins, cards, lotFilterValue, selectedFilterOption, draggingBinId, draggingLotId])
+    }, [bins, cards, lotFilters, draggingBinId, draggingLotId])
 
     /*
     * Renders a {StationColumn} for each entry in {cardsSorted}
@@ -571,7 +571,7 @@ CardZone.propTypes = {
     handleCardClick: PropTypes.func,
     setShowCardEditor: PropTypes.func,
     processId: PropTypes.string,
-    lotFilterValue: PropTypes.any,
+    lotFilters: PropTypes.array,
     showCardEditor: PropTypes.bool,
     maxHeight: PropTypes.any
 }
@@ -583,8 +583,7 @@ CardZone.defaultProps = {
     setShowCardEditor: () => { },
     showCardEditor: false,
     maxHeight: null,
-    lotFilterValue: "",
-    selectedFilterOption: LOT_FILTER_OPTIONS.name,
+    lotFilters: [],
     sortMode: LOT_FILTER_OPTIONS.name,
     sortDirection: SORT_DIRECTIONS.ASCENDING,
 }

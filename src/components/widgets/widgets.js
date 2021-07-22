@@ -139,7 +139,7 @@ const Widgets = (props) => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
         const device = devices[hoveringInfo.id]
 
-        const Wrapper = !!widgetPage ? React.Fragment : styled.WidgetButtonWrapper;
+        const Wrapper = !!widgetPage ? styled.EmptyDiv : styled.WidgetButtonWrapper;
 
         // If device only show dashboards
         if (!!device) {
