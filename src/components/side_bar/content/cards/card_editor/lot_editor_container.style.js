@@ -23,7 +23,8 @@ export const Container = styled(Modal)`
   max-width: 95%;
   max-height: 95%;
   
-   height: ${props => props.formEditor && "95%"};
+  // height: ${props => props.formEditor && "95%"};
+  height: 95%;
   
   color: ${props => props.theme.bg.octonary};
   
