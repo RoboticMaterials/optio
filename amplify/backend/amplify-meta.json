@@ -1,0 +1,62 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-optio-optio-163700-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-optio-163700-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-optio-163700-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-optio-optio-163700-deployment",
+      "UnauthRoleName": "amplify-optio-optio-163700-unauthRole",
+      "StackName": "amplify-optio-optio-163700",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-optio-163700/7f2ff3a0-ec06-11eb-8233-0a1409966064",
+      "AmplifyAppId": "d26yfneoqs4wpx"
+    }
+  },
+  "auth": {
+    "optioa1bc016d": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "lastPushTimeStamp": "2021-07-23T22:54:15.045Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-optio-optio-163700-deployment/amplify-cfn-templates/auth/optioa1bc016d-cloudformation-template.yml",
+        "logicalId": "authoptioa1bc016d"
+      },
+      "output": {
+        "UserPoolId": "us-east-2_8yT98FK77",
+        "AppClientIDWeb": "1h2hp9gll3e78jpvveq7m9j2ja",
+        "AppClientID": "1mm59eg31hb4iicksgqt5ulb0u",
+        "IdentityPoolId": "us-east-2:300786a6-b83d-4dc3-a69e-89884a101410",
+        "IdentityPoolName": "optioa1bc016d_identitypool_a1bc016d__optio",
+        "UserPoolName": "optioa1bc016d_userpool_a1bc016d"
+      },
+      "lastPushDirHash": "swWvy8u6DgUAB4AtEqNieG6ugp8="
+    },
+    "userPoolGroups": {
+      "service": "Cognito-UserPool-Groups",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "optioa1bc016d",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2021-07-23T22:54:15.045Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-optio-optio-163700-deployment/amplify-cfn-templates/auth/template.json",
+        "logicalId": "authuserPoolGroups"
+      },
+      "output": {
+        "OptioUsersGroupRole": "arn:aws:iam::571361296658:role/us-east-2_8yT98FK77-OptioUsersGroupRole"
+      },
+      "lastPushDirHash": "kAlOBRFEre1psDTz8ZMSFfYvit0="
+    }
+  }
+}
