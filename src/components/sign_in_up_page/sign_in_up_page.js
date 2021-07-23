@@ -92,41 +92,19 @@ const SignInUpPage = (props) => {
         // If the request is a sign in then run these functions
         if (signIn) {
 
-            // This is setting up the header for the sign in request
-            const authenticationData = {
-                Username: email,
-                Password: password,
-            };
+            let user = await Auth.signIn(email, password);
 
-            const authenticationDetails = new AuthenticationDetails(authenticationData)
+            // let userData = await checkForUserInDB(user.attributes)
 
-            const userData = {
-                Username: email,
-                Pool: userPool,
-            }
-
-            const cognitoUser = new CognitoUser(userData);
-
-            cognitoUser.authenticateUser(authenticationDetails, {
-
-                onSuccess: function (result) {
-                    dispatchPostLocalSettings({
-                        ...localReducer,
-                        authenticated: result.accessToken.payload.username,
-                        non_local_api_ip: window.location.hostname,
-                        non_local_api: true,
-                        refreshToken: true
-                    })
-
-
-                },
-
-                onFailure: function (err) {
-                    setErrorText(err.message)
-                    setLoading(false)
-                },
-
+            if (user){
+            dispatchPostLocalSettings({
+                ...localReducer,
+                authenticated: true,
             });
+        
+            history.push('/')
+            
+            ;}
         } else {
             if (password === confirmPassword) {
                 userPool.signUp(email, password, [{ Name: 'custom:organizationId', Value: organizationId }], null, (err, data) => {
