@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
-
 import { useHistory } from 'react-router-dom'
-
 import { useDispatch, useSelector } from 'react-redux'
-
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
-
 import { Formik, Form } from 'formik'
 
 // Import Utils
@@ -14,16 +10,16 @@ import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
 // Import Components
 import TextField from '../basic/form/text_field/text_field'
 import Textbox from '../basic/textbox/textbox'
-
-import * as styled from './sign_in_up_page.style'
-
-import { loaderCSS } from './sign_in_up_page.style'
-
 import PropagateLoader from "react-spinners/PropagateLoader";
+
+// Styles
+import * as styled from './sign_in_up_page.style'
+import { loaderCSS } from './sign_in_up_page.style'
 
 // Import actions
 import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
+// Other
 import configData from '../../settings/config'
 
 /**
@@ -62,10 +58,11 @@ const SignInUpPage = (props) => {
     } = props
 
     const [email, setEmail] = useState('')
-    const [accessCode, setAccessCode] = useState('')
+    const [organizationId, setOrganizationId] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [errorText, setErrorText] = useState('')
+    const [successText, setSuccessText] = useState('')
 
     const [capsLock, setCapsLock] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -75,11 +72,12 @@ const SignInUpPage = (props) => {
         props.onChange(event);
     }
 
-    const handleSubmit = (values) => {
+    const handleSubmit = async (values) => {
 
         const {
             email,
             password,
+            organizationId,
             confirmPassword
         } = values
 
@@ -131,7 +129,7 @@ const SignInUpPage = (props) => {
             });
         } else {
             if (password === confirmPassword) {
-                userPool.signUp(email, password, [], null, (err, data) => {
+                userPool.signUp(email, password, [{ Name: 'custom:organizationId', Value: organizationId }], null, (err, data) => {
                     if (err) {
                         if (err.message === 'Invalid version. Version should be 1') {
                             setErrorText('Invalid email. Please use a valid email.')
@@ -141,7 +139,7 @@ const SignInUpPage = (props) => {
                             setLoading(false)
                         }
                     } else {
-                        setErrorText('You have successfully signed up! Please check you email for a verification link.')
+                        setSuccessText('You have successfully signed up! Please check you email for a verification link.')
                         history.push('/')
                         handleSignInChange(true)
                         setLoading(false)
@@ -158,13 +156,13 @@ const SignInUpPage = (props) => {
         <Formik
             initialValues={{
                 email: email,
-                accessCode: accessCode,
+                organizationId: organizationId,
                 password: password,
                 confirmPassword: confirmPassword,
             }}
             initialTouched={{
                 email: true,
-                accessCode: true,
+                organizationId: true,
                 password: true,
                 confirmPassword: true,
             }}
@@ -213,6 +211,9 @@ const SignInUpPage = (props) => {
                             <styled.ErrorText>
                                 {errorText}
                             </styled.ErrorText>
+                            <styled.SuccessText>
+                                {successText}
+                            </styled.SuccessText>
                             <TextField
                                 name={"email"}
                                 placeholder='Enter Email'
@@ -226,8 +227,8 @@ const SignInUpPage = (props) => {
 
                             {!signIn &&
                                 <TextField
-                                    name={"accessCode"}
-                                    placeholder='Enter Access Code'
+                                    name={"organizationId"}
+                                    placeholder='Enter Organization ID'
                                     InputComponent={Textbox}
                                     style={{
                                         marginBottom: '.5rem',

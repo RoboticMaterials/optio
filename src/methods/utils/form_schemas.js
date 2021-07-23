@@ -414,9 +414,8 @@ export const signUpSchema = Yup.object().shape({
         .email()
         .required('Please enter an email'),
 
-    accessCode: Yup.string()
-        .required('Please enter a access code')
-        .matches(/\b(Meier2021|Phunkshun2021|Demo2021)\b/, 'Must be a valid access code'),
+    organizationId: Yup.string()
+        .required('Please enter an organization ID code'),
 
     password: Yup.string()
         .required('Please enter a password')

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment';
+import { gql, useQuery } from "@apollo/client"
+
 
 // functions external
 import { useDispatch, useSelector } from "react-redux";
@@ -10,12 +12,24 @@ import { getCardsInBin, getLotTotalQuantity } from '../../../methods/utils/lot_u
 import HeatSpot from './heatspot/heatspot';
 
 
+const LIST_ORGANIZATIONS = gql`
+    query listOrganizations {
+        listOrganizations {
+            id
+            name
+        }
+    }
+`
+
 const HeatMap = (props) => {
 
     const {
         map_id,
         d3Scale
     } = props;
+
+    const { loading, error, data } = useQuery(LIST_ORGANIZATIONS)
+    console.log('---', loading, error, data)
 
     const [stationWIPRatios, setStationWIPRatios] = useState({})
 

@@ -57,6 +57,7 @@ const RouteConfirmation = lazy(()=> import('../../components/map/route_confirmat
 const Widgets = lazy(()=> import('../../components/widgets/widgets'))
 const MapApps = lazy(()=> import('../../components/map/map_apps/map_apps'))
 
+
 export class MapView extends Component {
     constructor(props) {
         super(props)
@@ -99,6 +100,8 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
+
+        
 
 
 

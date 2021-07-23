@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.21",
     "@emotion/core": "^10.1.1",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
@@ -26,6 +27,7 @@
     "disable-browser-back-navigation": "^0.1.0",
     "emailjs-com": "^3.2.0",
     "formik": "^2.2.0",
+    "graphql": "^15.5.1",
     "jquery": "^3.5.1",
     "jsbarcode": "^3.11.4",
     "local-storage": "^2.0.0",
