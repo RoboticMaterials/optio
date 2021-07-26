@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches the stored UI snapshot 1`] = `
+<div
+  className="sc-bdnxRM buvdtd"
+>
+  <div
+    className="sc-hKFxyN hjidFM"
+  />
+  <div
+    className="sc-eCApnc kikrXR content-container"
+  >
+    <span
+      className="sc-gtsrHT gaJkdo title"
+    >
+      
+    </span>
+    <span
+      className="sc-dlnjwi fcRUjP status"
+    />
+  </div>
+  <div
+    className="sc-jSFjdj hdjpDT"
+  />
+</div>
+`;

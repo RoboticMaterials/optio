@@ -15,6 +15,7 @@ export const textStyle = css`
 export const Container = styled.div`
     width: 100%;
 
+
     padding-left: .5rem;
     padding-right: .5rem;
     padding-top: .5rem;
@@ -35,8 +36,8 @@ export const Container = styled.div`
     /* // ${getDebugStyle()}; */
 
     ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
-    
-    
+
+
 
 `
 
@@ -50,8 +51,6 @@ const notSelectedCss = css`
         filter: contrast(100%);
     }
 `
-
-
 
 
 export const Title = styled.span`
