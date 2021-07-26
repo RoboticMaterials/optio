@@ -1,0 +1,32 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-optio-dev-100840-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-optio-dev-100840-deployment",
+      "UnauthRoleName": "amplify-optio-dev-100840-unauthRole",
+      "StackName": "amplify-optio-dev-100840",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-dev-100840/bf35ca70-ee2b-11eb-92e7-029ed0884a82",
+      "AmplifyAppId": "dybd2ewsehfai"
+    }
+  },
+  "auth": {
+    "optiode45fff9": {
+      "service": "Cognito",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "output": {
+        "UserPoolId": "us-east-2_wO9LTxqpv",
+        "UserPoolName": "alpha-cdk-optio-pool",
+        "AppClientID": "1vv2q5pba26s8t46cfbobai93v",
+        "AppClientIDWeb": "1vv2q5pba26s8t46cfbobai93v",
+        "HostedUIDomain": "optio"
+      },
+      "lastPushTimeStamp": "2021-07-26T16:12:19.515Z"
+    }
+  }
+}

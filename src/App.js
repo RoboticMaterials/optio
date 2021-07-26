@@ -2,6 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Redirect,} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
+import { Auth } from 'aws-amplify'
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -68,7 +69,27 @@ const App = () => {
 
     useEffect(() => {
       handleLoadLocalData();
+      checkUser();
     }, [])
+
+    const checkUser = async () => {
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+            console.log("USER", user)
+            if (user) {
+                const fetchedSettings = await dispatchGetLocalSettings()
+
+                await dispatchPostLocalSettings({
+                    ...fetchedSettings,
+                    authenticated: true,
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            // setDidCheckAuth(true)
+        }
+    }
 
     const handleLoadLocalData = async () => {
       await dispatchGetLocalSettings()

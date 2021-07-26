@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment';
+import { gql, useQuery } from "@apollo/client"
+
 
 // functions external
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +18,7 @@ const HeatMap = (props) => {
         map_id,
         d3Scale
     } = props;
-
+    
     const [stationWIPRatios, setStationWIPRatios] = useState({})
 
     const cards = useSelector(state => state.cardsReducer.cards)

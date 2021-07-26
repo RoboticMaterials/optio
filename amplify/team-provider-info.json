@@ -1,0 +1,25 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-optio-dev-100840-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-optio-dev-100840-deployment",
+      "UnauthRoleName": "amplify-optio-dev-100840-unauthRole",
+      "StackName": "amplify-optio-dev-100840",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-dev-100840/bf35ca70-ee2b-11eb-92e7-029ed0884a82",
+      "AmplifyAppId": "dybd2ewsehfai"
+    },
+    "categories": {
+      "auth": {
+        "optiode45fff9": {
+          "userPoolId": "us-east-2_wO9LTxqpv",
+          "userPoolName": "alpha-cdk-optio-pool",
+          "webClientId": "1vv2q5pba26s8t46cfbobai93v",
+          "nativeClientId": "1vv2q5pba26s8t46cfbobai93v"
+        }
+      }
+    }
+  }
+}
