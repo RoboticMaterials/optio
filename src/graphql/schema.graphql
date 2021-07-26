@@ -1,0 +1,660 @@
+# Organization
+# User
+# Map
+# Process
+# Route
+# Station
+# Station Event
+# Report Event
+# Dashboard
+# Card
+# CardEvent
+# LotTemplate
+# Settings
+# Stats
+
+# special types for the stats returns
+type StationStatsData {
+  stationId: String!
+  organizationId: String!
+  date: String!
+  throughPut: AWSJSON!
+}
+type ReportStatsData {
+  date: String!
+  throughPut: AWSJSON!
+}
+
+
+# ----- Organization ----- #
+type Organization {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	name: String!
+	key: String!
+	users: [User!]!
+}
+input OrganizationInput {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	name: String!
+	key: String!
+	users: [UserInput!]!
+}
+input OrganizationUpdateInput {
+	# IDs
+	id: ID!
+	organizationId: ID
+	# Data
+	name: String
+	key: String
+	users: [UserUpdateInput!]
+}
+
+
+# ----- User ----- #
+type User {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	username: String!
+}
+input UserInput {
+	# Data
+	username: String!
+}
+input UserUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	username: String
+}
+
+
+# ----- Map ----- #
+type Map {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	name: String!
+	created_by: User
+	created_by_id: String
+	created_by_name: String
+	map: String!
+	origin_theta: Int
+	origin_x: Int
+	origin_y: Int
+	resolution: Float
+	stations: [Station!]!
+}
+input MapInput {
+	# Data
+	name: String!
+	created_by: UserInput
+	created_by_id: String
+	created_by_name: String
+	map: String!
+	origin_theta: Int!
+	origin_x: Int!
+	origin_y: Int!
+	resolution: Float!
+	stations: [StationInput!]!
+}
+input MapUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	name: String
+	created_by: UserUpdateInput
+	created_by_id: String
+	created_by_name: String
+	map: String
+	origin_theta: Int
+	origin_x: Int
+	origin_y: Int
+	resolution: Float
+	stations: [StationUpdateInput!]
+}
+
+
+# ----- Process ----- #
+type Process {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	mapId: ID!
+	# Data
+	name: String!
+	routes: [Route!]!
+	showSummary: Boolean
+	showStatistics: Boolean
+}
+input ProcessInput {
+	# IDs
+	mapId: ID!
+	# Data
+	name: String!
+	routes: [RouteInput!]!
+	showSummary: Boolean!
+	showStatistics: Boolean!
+}
+input ProcessUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	name: String
+	routes: [RouteUpdateInput!]
+	showSummary: Boolean
+	showStatistics: Boolean
+}
+
+
+# ----- Route ----- #
+union RouteNode = Station | Process
+input RouteNodeInput @oneField {
+	station: StationInput
+	process: ProcessInput
+}
+input RouteNodeUpdateInput @oneField {
+	station: StationUpdateInput
+	process: ProcessUpdateInput
+}
+
+type Route {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	processId: ID!
+	# Data
+	handoff: Boolean!
+	start: RouteNode!
+	end: RouteNode!
+	sku: Sku!
+	multiplier: Float!
+}
+input RouteInput {
+	# IDs
+	processId: ID!
+	# Data
+	handoff: Boolean!
+	start: RouteNodeInput!
+	end: RouteNodeInput!
+	sku: SkuInput!
+	multiplier: Float!
+}
+input RouteUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	handoff: Boolean
+	start: RouteNodeUpdateInput
+	end: RouteNodeUpdateInput
+	sku: SkuUpdateInput
+	multiplier: Float
+}
+
+
+# ----- Station ----- #
+type Station {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	mapId: String!
+	# Data
+	name: String!
+	type: String!
+	pos_x: Float!
+	pos_y: Float!
+	rotation: Float!
+	x: Float
+	y: Float
+	dashboards: [Dashboard!]!
+	cards: [Card!]!
+	stationEvents: [StationEvent!]!
+	reportEvents: [ReportEvent!]!
+}
+input StationInput {
+	mapId: String!
+	# Data
+	name: String!
+	type: String!
+	pos_x: Float!
+	pos_y: Float!
+	rotation: Float!
+	x: Float
+	y: Float
+	dashboards: [DashboardInput!]!
+	cards: [CardInput!]!
+	stationEvents: [StationEventInput!]!
+	reportEvents: [ReportEventInput!]!
+}
+input StationUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	name: String
+	type: String
+	pos_x: Float
+	pos_y: Float
+	rotation: Int
+	x: Float
+	y: Float
+	dashboards: [DashboardUpdateInput!]
+	cards: [CardUpdateInput!]
+	stationEvents: [StationEventUpdateInput!]
+	reportEvents: [ReportEventUpdateInput!]
+}
+
+# ----- Station Event ----- #
+type StationEvent {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	stationId: ID!
+	# Data
+	sku: Sku!
+	outgoing: Boolean!
+	quantity: Int!
+	time: AWSDateTime!
+}
+input StationEventInput {
+	stationId: ID!
+	# Data
+	sku: SkuInput!
+	outgoing: Boolean!
+	quantity: Int!
+	time: AWSDateTime!
+}
+input StationEventUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	sku: SkuUpdateInput
+	outgoing: Boolean!
+	quantity: Int!
+	time: AWSDateTime!
+}
+
+
+# ----- Report Event ----- #
+type ReportEvent {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	dashboardId: String!
+	# Data
+	date: AWSTimestamp!
+	reportButtonId: ID!
+}
+input ReportEventInput {
+	dashboardId: String!
+	# Data
+	date: AWSTimestamp!
+	reportButtonId: ID!
+}
+input ReportEventUpdateInput {
+	id: ID!
+	# Data
+	date: AWSTimestamp!
+	reportButtonId: ID
+}
+
+
+# ----- Dashboard ----- #
+type Dashboard {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	stationId: ID!
+	# Data
+	data: AWSJSON!
+}
+input DashboardInput {
+	stationId: ID!
+	# Data
+	data: AWSJSON!
+}
+input DashboardUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	data: AWSJSON
+}
+
+# ----- Card ----- #
+type Card {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	lotId: ID!
+	processId: ID!
+	stationId: ID!
+	# Data
+	name: String!
+	quantity: Int!
+	lotNumber: Int!
+	lotTemplate: LotTemplate!
+	lotQuantity: Int!
+	fields: AWSJSON!
+	flags: AWSJSON!
+	syncWithTemplate: Boolean!
+}
+input CardInput {
+	lotId: ID!
+	processId: ID!
+	stationId: ID!
+	# Data
+	name: String!
+	quantity: Int!
+	lotNumber: Int!
+	lotTemplate: LotTemplateInput!
+	lotQuantity: Int!
+	fields: AWSJSON!
+	flags: AWSJSON!
+	syncWithTemplate: Boolean!
+}
+input CardUpdateInput {
+	# IDs
+	id: ID!
+	processId: ID!
+	stationId: ID!
+	# Data
+	name: String
+	quantity: Int
+	lotNumber: Int
+	lotTemplate: LotTemplateUpdateInput
+	lotQuantity: Int
+	fields: AWSJSON
+	flags: AWSJSON
+	syncWithTemplate: Boolean
+}
+
+# ----- Card Event ----- #
+type CardEvent {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	cardId: ID!
+	userId: ID
+	username: String
+	# Data
+	delta: AWSJSON!
+}
+input CardEventInput {
+	# IDs
+	cardId: ID!
+	userId: ID
+	username: String
+	# Data
+	delta: AWSJSON!
+}
+input CardEventUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	delta: AWSJSON!
+}
+
+# ----- Lot Template ----- #
+type LotTemplate {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	name: String!
+	displayNames: AWSJSON!
+	fields: AWSJSON!
+}
+input LotTemplateInput {
+	# Data
+	name: String!
+	displayNames: AWSJSON!
+	fields: AWSJSON!
+}
+input LotTemplateUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	name: String
+	displayNames: AWSJSON
+	fields: AWSJSON
+}
+
+# ----- SKU ----- #
+type Sku {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	name: String!
+	sku: String!
+	description: String
+}
+input SkuInput {
+	# Data
+	name: String!
+	sku: String!
+	description: String
+}
+input SkuUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	name: String
+	sku: String
+	description: String
+}
+
+
+# ----- Settings ----- #
+type Settings {
+	# IDs
+	id: ID!
+	organizationId: ID!
+	# Data
+	accessToken: String
+	authenticated: Boolean
+	currentMapId: ID
+	loggers: AWSJSON
+	mapViewEnabled: Boolean
+	non_local_api: Boolean
+	non_local_api_ip: String
+	refreshToken: String
+	shiftDetails: AWSJSON
+	toggleDevOptions: Boolean
+	timezone: AWSJSON
+}
+input SettingsInput {
+	# Data
+	accessToken: String!
+	authenticated: Boolean!
+	currentMapId: ID!
+	loggers: AWSJSON!
+	mapViewEnabled: Boolean!
+	non_local_api: Boolean!
+	non_local_api_ip: String!
+	refreshToken: String!
+	shiftDetails: AWSJSON!
+	toggleDevOptions: Boolean!
+	timezone: AWSJSON!
+}
+input SettingsUpdateInput {
+	# IDs
+	id: ID!
+	# Data
+	accessToken: String
+	authenticated: Boolean
+	currentMapId: ID
+	loggers: AWSJSON
+	mapViewEnabled: Boolean
+	non_local_api: Boolean
+	non_local_api_ip: String
+	refreshToken: String
+	shiftDetails: AWSJSON
+	toggleDevOptions: Boolean
+	timezone: AWSJSON
+}
+
+
+type Query {
+	# Organization
+	listOrganizations: [Organization]
+	validateOrganizationId: Boolean
+	getOrganizationById(id: String!): Organization
+
+	# Users
+	listUsers: [User]
+	getUserById(id: String!): User
+
+	# Maps
+	listMaps: [Map]
+	getMapById(id: String!): Map
+
+	# Station
+	listStations: [Station]
+	getStationById(id: String!): Station
+
+	# Station Event
+	listStationEvents: [StationEvent]
+	getStationEventById(id: String!): StationEvent
+
+	# Route
+	listRoutes: [Route]
+	getRouteById(id: String!): Route
+
+	# Process
+	listProcesss: [Process]
+	getProcessById(id: String!): Process
+
+	# Lot
+	listCards: [Card]
+	getCardById(id: String!): Card
+
+	# CardEvent
+	listCardEvents: [CardEvent]
+	getCardEventById(id: String!): CardEvent
+
+	# LotTemplate
+	listLotTemplates: [LotTemplate]
+	getLotTemplateById(id: String!): LotTemplate
+
+	# Dashboard
+	listDashboards: [Dashboard]
+	getDashboardById(id: String!): Dashboard
+
+	# Report Event
+	listReportEvents: [ReportEvent]
+	getReportEventById(id: String!): ReportEvent
+
+	# Settings
+	listSettingss: Settings
+	getSettingsById(id: String!): Settings
+
+	# Stats
+	stationStatsLambda(stationId: ID!, timeSpan: String!, timeZone: String!, index: Int!, sortKey: String): StationStatsData
+	reportStatsLambda(stationId: ID!, timeSpan: String!, timeZone: String!, index: Int!): ReportStatsData
+}
+
+type Mutation {
+	# Organization 
+	createOrganization(input: OrganizationInput!): Organization
+	updateOrganization(input: OrganizationUpdateInput!): Organization
+  	deleteOrganization(id: ID!, organizationId: ID): Organization
+
+	# User 
+	createUser(input: UserInput!): User
+	updateUser(input: UserUpdateInput!): User
+	deleteUser(id: ID!, organizationId: ID): User
+
+	# Map
+	createMap(input: MapInput!): Map
+	updateMap(input: MapUpdateInput!): Map
+	deleteMap(id: ID!, organizationId: ID): Map
+
+	# Process
+	createProcess(input: ProcessInput!): Process
+	updateProcess(input: ProcessUpdateInput!): Process
+	deleteProcess(id: ID!, organizationId: ID): Process
+
+	# Routes
+	createRoute(input: RouteInput!): Route
+	updateRoute(input: RouteUpdateInput!): Route
+	deleteRoute(id: ID!, organizationId: ID): Route
+
+	# Station 
+	createStation(input: StationInput!): Station
+	updateStation(input: StationUpdateInput!): Station
+	deleteStation(id: ID!, organizationId: ID): Station
+
+	# Station Event
+	createStationEvent(input: StationEventInput!): StationEvent
+	updateStationEvent(input: StationEventUpdateInput!): StationEvent
+	deleteStationEvent(id: ID!, organizationId: ID): StationEvent
+
+	# ReportEvent
+	createReportEvent(input: ReportEventInput!): ReportEvent
+  	updateReportEvent(input: ReportEventInput!): ReportEvent
+	deleteReportEvent(id: ID!, organizationId: ID): ReportEvent
+
+	# Dashboard
+	createDashboard(input: DashboardInput!): Dashboard
+	updateDashboard(input: DashboardUpdateInput!): Dashboard
+	deleteDashboard(id: ID!, organizationId: ID): Dashboard
+
+	# Lot
+	createCard(input: CardInput!): Card
+	updateCard(input: CardUpdateInput!): Card
+	deleteCard(id: ID!, organizationId: ID): Card
+
+	# LotEvent
+	createCardEvent(input: CardEventInput!): CardEvent
+	updateCardEvent(input: CardEventUpdateInput!): CardEvent
+	deleteCardEvent(id: ID!, organizationId: ID): CardEvent
+
+	# Lot Template
+	createLotTemplate(input: LotTemplateInput!): LotTemplate
+	updateLotTemplate(input: LotTemplateUpdateInput!): LotTemplate
+	deleteLotTemplate(id: ID!, organizationId: ID): LotTemplate
+
+	# Sku
+	createSku(input: SkuInput!): Sku
+	updateSku(input: SkuUpdateInput!): Sku
+	deleteSku(id: ID!, organizationId: ID): Sku
+
+	# Settings
+	createSettings(input: SettingsInput!): Settings
+	updateSettings(input: SettingsUpdateInput!): Settings
+	deleteSettings(id: ID!, organizationId: ID): Settings
+
+	# Special Cases
+	createMapLambda(organizationId: String!): Map
+}
+
+type Subscription {
+	onDeltaDashboard: Dashboard
+		@aws_subscribe(mutations: ["createDashboard","updateDashboard"])
+
+	onDeltaSettings: Settings
+		@aws_subscribe(mutations: ["createSettings","updateSettings"])
+
+	onDeltaStation: Station
+		@aws_subscribe(mutations: ["createStation","updateStation"])
+
+	onDeltaRoute: Route
+		@aws_subscribe(mutations: ["createRoute","updateRoute"])
+
+	onDeltaProcess: Process
+		@aws_subscribe(mutations: ["createProcess","updateProcess"])
+
+	onDeltaCard: Card
+		@aws_subscribe(mutations: ["createCard","updateCard"])
+
+	onDeltaLotTemplate: LotTemplate
+		@aws_subscribe(mutations: ["createLotTemplate","updateLotTemplate"])
+}

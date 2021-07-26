@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { Auth } from 'aws-amplify'
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
 import { Formik, Form } from 'formik'
 
@@ -96,15 +97,14 @@ const SignInUpPage = (props) => {
 
             // let userData = await checkForUserInDB(user.attributes)
 
-            if (user){
-            dispatchPostLocalSettings({
-                ...localReducer,
-                authenticated: true,
-            });
-        
-            history.push('/')
-            
-            ;}
+            if (user) {
+                dispatchPostLocalSettings({
+                    ...localReducer,
+                    authenticated: true,
+                });
+                history.push('/');
+            }
+
         } else {
             if (password === confirmPassword) {
                 userPool.signUp(email, password, [{ Name: 'custom:organizationId', Value: organizationId }], null, (err, data) => {

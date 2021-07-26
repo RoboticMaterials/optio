@@ -9,10 +9,11 @@ import ForgotPassword from '../../components/forgotPassword/forgotPassword'
 import { ReactComponent as OptioLogo } from '../../graphics/icons/optioFull.svg'
 import { Link } from 'react-router-dom'
 import * as styled from './authentication.style'
+import { Auth } from 'aws-amplify'
 
 // Authentication
-import configData from '../../settings/config'
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+// import configData from '../../settings/config'
+// import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
@@ -62,39 +63,15 @@ const Authentication = (props) => {
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
         const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response => {
+        localSettingsPromise.then(async response => {
 
-            if (!configData.authenticationNeeded) {
+            const user = await Auth.getCurrentUser()
 
+            if (!!user) {
                 dispatchPostLocalSettings({
                     ...response,
-                    authenticated: 'no'
+                    authenticated: true,
                 })
-
-            } else {
-                var poolData = {
-                    UserPoolId: configData.UserPoolId,
-                    ClientId: configData.ClientId,
-                };
-
-                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-                var cognitoUser = userPool.getCurrentUser();
-
-                if (cognitoUser != null) {
-                    cognitoUser.getSession(function (err, session) {
-                        if (err) {
-                            alert(err.message || JSON.stringify(err));
-                            return;
-                        }
-
-                        if (session.isValid()) {
-                            dispatchPostLocalSettings({
-                                ...response,
-                                authenticated: true,
-                            })
-                        }
-                    });
-                }
             }
         })
     }

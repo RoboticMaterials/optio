@@ -1,32 +1,24 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-optio-dev-163000-authRole",
-      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-163000-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-163000-authRole",
+      "AuthRoleName": "amplify-optio-dev-100840-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-dev-100840-authRole",
       "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-optio-dev-163000-deployment",
-      "UnauthRoleName": "amplify-optio-dev-163000-unauthRole",
-      "StackName": "amplify-optio-dev-163000",
-      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-dev-163000/859fdc10-ec05-11eb-af0b-02ce7438bfbc",
-      "AmplifyAppId": "d26yfneoqs4wpx"
-    }
-  },
-  "optio": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-optio-optio-163700-authRole",
-      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-optio-163700-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-optio-optio-163700-authRole",
-      "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-optio-optio-163700-deployment",
-      "UnauthRoleName": "amplify-optio-optio-163700-unauthRole",
-      "StackName": "amplify-optio-optio-163700",
-      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-optio-163700/7f2ff3a0-ec06-11eb-8233-0a1409966064",
-      "AmplifyAppId": "d26yfneoqs4wpx"
+      "DeploymentBucketName": "amplify-optio-dev-100840-deployment",
+      "UnauthRoleName": "amplify-optio-dev-100840-unauthRole",
+      "StackName": "amplify-optio-dev-100840",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-optio-dev-100840/bf35ca70-ee2b-11eb-92e7-029ed0884a82",
+      "AmplifyAppId": "dybd2ewsehfai"
     },
     "categories": {
       "auth": {
-        "optioa1bc016d": {}
+        "optiode45fff9": {
+          "userPoolId": "us-east-2_wO9LTxqpv",
+          "userPoolName": "alpha-cdk-optio-pool",
+          "webClientId": "1vv2q5pba26s8t46cfbobai93v",
+          "nativeClientId": "1vv2q5pba26s8t46cfbobai93v"
+        }
       }
     }
   }
