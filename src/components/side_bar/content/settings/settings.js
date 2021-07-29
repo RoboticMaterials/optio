@@ -163,6 +163,7 @@ const Settings = () => {
 
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
+        console.log('run')
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
         await dispatchPostLocalSettings(localSettingsState)
         const serverChange = getIsEquivalent(serverSettingsState, serverSettings)

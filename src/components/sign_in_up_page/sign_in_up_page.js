@@ -20,8 +20,6 @@ import { loaderCSS } from './sign_in_up_page.style'
 // Import actions
 import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
-// Other
-import configData from '../../settings/config'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -38,20 +36,6 @@ const SignInUpPage = (props) => {
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
     const localReducer = useSelector(state => state.localReducer.localSettings)
-
-    // Check to see if we want authentication *** Dev ONLY ***
-    if (!configData.authenticationNeeded) {
-        const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response => {
-            dispatchPostLocalSettings({
-                ...response,
-                authenticated: 'no',
-                //non_local_api_ip: window.location.hostname,
-                //non_local_api: true,
-            })
-        })
-
-    }
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
@@ -82,14 +66,6 @@ const SignInUpPage = (props) => {
             confirmPassword
         } = values
 
-        // User pool data for AWS Cognito
-        const poolData = {
-            UserPoolId: configData.UserPoolId,
-            ClientId: configData.ClientId,
-        }
-
-        const userPool = new CognitoUserPool(poolData)
-
         // If the request is a sign in then run these functions
         if (signIn) {
 
@@ -107,22 +83,32 @@ const SignInUpPage = (props) => {
 
         } else {
             if (password === confirmPassword) {
-                userPool.signUp(email, password, [{ Name: 'custom:organizationId', Value: organizationId }], null, (err, data) => {
-                    if (err) {
-                        if (err.message === 'Invalid version. Version should be 1') {
-                            setErrorText('Invalid email. Please use a valid email.')
-                            setLoading(false)
-                        } else {
-                            setErrorText(err.message)
-                            setLoading(false)
+                
+                try {
+                    const { user } = await Auth.signUp({
+                        username: email,
+                        password,
+                        attributes: {
+                            email,
+                            'custom:organizationId': organizationId
                         }
+                    })
+
+                    setSuccessText('You have successfully signed up! Please check you email for a verification link.')
+                    setErrorText('')
+                    history.push('/')
+                    handleSignInChange(true)
+                    setLoading(false)
+                } catch (err) {
+                    if (err.message === 'Invalid version. Version should be 1') {
+                        setErrorText('Invalid email. Please use a valid email.')
+                        setLoading(false)
                     } else {
-                        setSuccessText('You have successfully signed up! Please check you email for a verification link.')
-                        history.push('/')
-                        handleSignInChange(true)
+                        setErrorText(err.message)
                         setLoading(false)
                     }
-                });
+                }
+
             } else {
                 setErrorText('Passwords must match!')
                 setLoading(false)

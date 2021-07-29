@@ -65,14 +65,22 @@ const Authentication = (props) => {
         const localSettingsPromise = dispatchGetLocalSettings()
         localSettingsPromise.then(async response => {
 
-            const user = await Auth.getCurrentUser()
+            try {
+                const user = await Auth.getCurrentUser()
 
-            if (!!user) {
+                if (!!user) {
+                    dispatchPostLocalSettings({
+                        ...response,
+                        authenticated: true,
+                    })
+                }
+            } catch {
                 dispatchPostLocalSettings({
                     ...response,
-                    authenticated: true,
+                    authenticated: false,
                 })
             }
+            
         })
     }
 
