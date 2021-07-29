@@ -34,6 +34,9 @@
     "formik": "^2.2.0",
     "graphql": "^15.5.1",
     "jquery": "^3.5.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "enzyme-to-json": "^3.6.2",
     "jsbarcode": "^3.11.4",
     "local-storage": "^2.0.0",
     "lodash": "^4.17.21",
@@ -87,7 +90,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
-    "@babel/preset-env": "^7.13.9",
+    "@babel/preset-env": "^7.14.8",
     "@babel/preset-react": "^7.12.13",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
@@ -104,7 +107,7 @@
     "pre-start": "node ./scripts/pre-start.js",
     "start": "node ./scripts/pre-start.js && PORT=80 react-scripts start",
     "build": "node ./scripts/pre-start.js && node ./scripts/postinstall.js && react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test --env=jsdom", "jest"
     "eject": "react-scripts eject",
     "postinstall": "node ./scripts/postinstall.js"
   },

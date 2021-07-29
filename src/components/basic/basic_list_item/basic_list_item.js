@@ -51,12 +51,13 @@ function BasicListItem(props) {
 				onClick={onClick}
 				onMouseEnter = {onMouseEnter}
 				onMouseLeave = {onMouseLeave}
+				className = 'content-container'
 			>
-				<Title css={titleCss}{...titleProps}>
+				<Title css={titleCss}{...titleProps} className = 'title'>
 					{title}
 				</Title>
 
-                <Status>
+                <Status className = 'status'>
                     {status}
                 </Status>
 			</ContentContainer>
