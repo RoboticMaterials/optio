@@ -519,8 +519,8 @@ const CardZone = ((props) => {
                     processId={processId}
                     route_id={route_id}
                     cards={cardsArr}
+                    stationCycleTime={deleteStationCycleTime[station_id] || 0}
                     onCardClick={handleCardClick}
-                    autoCycleTime={deleteStationCycleTime[station_id]}
                 />
             )
         })

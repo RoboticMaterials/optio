@@ -27,6 +27,7 @@ const StationsColumn = ((props) => {
         cards = [],
         processId,
         maxHeight,
+        stationCycleTime,
         sortMode,
         sortDirection,
         selectedCards,
@@ -47,15 +48,7 @@ const StationsColumn = ((props) => {
 
         let time = '00:00:00'
 
-        // If there is a manual time and its enable then use that time
-        if (!!stations[station_id]?.cycle_time && !!stations[station_id]?.manual_cycle_time) {
-            time = stations[station_id].cycle_time
-        }
-
-        // Else if there is a auto cycle time then use that
-        else if (!!autoCycleTime) {
-            time = convertSecondsToHHMMSS(autoCycleTime)
-        }
+        time = convertSecondsToHHMMSS(stationCycleTime)
 
         // Split the time up
         const splitVal = time.split(':')
@@ -101,9 +94,9 @@ const StationsColumn = ((props) => {
 
                 </styled.HeaderSection>
 
-                <styled.HeaderSection style={{ opacity: !stations[station_id]?.manual_cycle_time && '50%' }}>
-                    <styled.HeaderSectionTitle style={{ fontSize: '1rem' }}>
-                        Manual Cycle Time (HH:MM:SS)
+                <styled.HeaderSection style={{  }}>
+                    <styled.HeaderSectionTitle style={{ fontSize: '1rem', opacity: !stations[station_id]?.manual_cycle_time && '50%' }}>
+                        Cycle Time (HH:MM:SS)
                     </styled.HeaderSectionTitle>
 
                     <TimePicker
@@ -115,7 +108,7 @@ const StationsColumn = ((props) => {
                         }}
                         style={{ width: '5rem' }}
                         allowEmpty={false}
-                    // disabled={!stations[station_id]?.manual_cycle_time}
+                        disabled={!stations[station_id]?.manual_cycle_time}
                     />
                     {/* <Button
                         label={'Save'}
