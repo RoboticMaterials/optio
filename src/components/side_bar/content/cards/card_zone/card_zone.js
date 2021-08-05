@@ -201,6 +201,7 @@ const CardZone = ((props) => {
 
         }
 
+
         handleSetProcessWip(processWip)
         handleSetProductionRate(bottleneckCT)
         handleSetDPP(cumulativeCycleTime)

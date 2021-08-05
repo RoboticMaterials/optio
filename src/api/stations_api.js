@@ -238,6 +238,7 @@ export async function getStationAnalytics(id, timeSpan) {
 
 export async function getStationCycleTime(id) {
     try {
+        return 0
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + '/' + id + '/cycle_time',
@@ -249,7 +250,7 @@ export async function getStationCycleTime(id) {
             },
         });
         // Success 🎉
-        console.log('===', response.data)
+        console.log(response.data)
         return response.data;
 
 
