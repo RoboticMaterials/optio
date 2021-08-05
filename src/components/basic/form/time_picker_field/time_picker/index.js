@@ -3,6 +3,7 @@ import TimePicker from "./time_picker";
 import { hexToRGBA } from '../../../../../methods/utils/color_utils'
 
 const StyledTimePicker = styled(TimePicker)`
+
   & .rc-time-picker-panel-select-option-selected {
     background-color: ${props => props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.5) : hexToRGBA(props.theme.fg.red, 0.5)};
     font-weight: normal;
