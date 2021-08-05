@@ -171,10 +171,10 @@ const LotFilterBar = (props) => {
     const handleCreateNewFilter = () => {
 
         const newFilter = {
-            _id: uuidv4(),
             ...selectedFilterKey,
             operator: selectedFilterOperator.value,
-            options: selectedFilterOptions
+            options: selectedFilterOptions,
+            _id: uuidv4(),
         }
 
         onAddFilter(newFilter);
