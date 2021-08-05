@@ -101,22 +101,24 @@ const StationsColumn = ((props) => {
 
                 </styled.HeaderSection>
 
-                <styled.HeaderSection style={{ opacity: !stations[station_id]?.manual_cycle_time && '50%' }}>
+                <styled.HeaderSection style={{ opacity: !stations[station_id]?.manual_cycle_time && '50%', borderRight: '1px solid #666', borderRadius: '0 3px 3px 0'}}>
                     <styled.HeaderSectionTitle style={{ fontSize: '1rem' }}>
-                        Manual Cycle Time (HH:MM:SS)
+                        Cycle Time (HH:MM:SS)
                     </styled.HeaderSectionTitle>
 
-                    <TimePicker
-                        showHours={true}
-                        showMinutes={true}
-                        value={handleDisplayTime()}
-                        onChange={(val) => {
-                            handleSaveCycleTime(val.format('HH:mm:ss'))
-                        }}
-                        style={{ width: '5rem' }}
-                        allowEmpty={false}
-                    // disabled={!stations[station_id]?.manual_cycle_time}
-                    />
+                    {/* <div style={{width: '5rem'}}> */}
+                        <TimePicker
+                            showHours={true}
+                            showMinutes={true}
+                            value={handleDisplayTime()}
+                            onChange={(val) => {
+                                handleSaveCycleTime(val.format('HH:mm:ss'))
+                            }}
+                            style={{width: '5.5rem'}}
+                            allowEmpty={false}
+                        // disabled={!stations[station_id]?.manual_cycle_time}
+                        />
+                    {/* </div> */}
                     {/* <Button
                         label={'Save'}
                         secondary
