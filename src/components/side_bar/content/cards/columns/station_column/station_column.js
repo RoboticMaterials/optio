@@ -90,7 +90,7 @@ const StationsColumn = ((props) => {
                         <styled.QuantityText style={{ marginRight: '.25rem', display: 'flex', alignItems: 'center' }}>Auto</styled.QuantityText>
                         <Switch
                             onColor={theme.schema.lots.solid}
-                            style={{ transform: 'scale(0.8)' }}
+                            style={{ transform: 'scale(0.8)', cursor: 'pointer' }}
                             checked={!!stations[station_id]?.manual_cycle_time}
                             onChange={() => {
                                 handleEnableManualCycleTime()
@@ -114,9 +114,9 @@ const StationsColumn = ((props) => {
                         onChange={(val) => {
                             handleSaveCycleTime(val.format('HH:mm:ss'))
                         }}
-                        style={{ width: '5rem' }}
+                        style={{ width: '5rem', pointerEvents: !stations[station_id]?.manual_cycle_time ? 'none' : 'auto' }}
                         allowEmpty={false}
-                    // disabled={!stations[station_id]?.manual_cycle_time}
+                        // disabled={!stations[station_id]?.manual_cycle_time}
                     />
                     {/* <Button
                         label={'Save'}
