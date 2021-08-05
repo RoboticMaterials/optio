@@ -56,6 +56,13 @@ export const ZoneContainer = styled.div`
     }
 `
 
+export const ProcessHeader = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+`
+
 export const ProcessName = styled.h3`
     padding: 0;
     margin: 0;
@@ -71,6 +78,32 @@ export const ProcessName = styled.h3`
    display: -webkit-box;
    -webkit-line-clamp: 2; /* number of lines to show */
    -webkit-box-orient: vertical;
+`
+
+export const ProcessStat = styled.div`
+    font-size: ${props => props.theme.fontSize.sz4};
+    color: ${props => props.theme.bg.quinary};
+
+    display: flex;
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+   -webkit-line-clamp: 2; /* number of lines to show */
+   -webkit-box-orient: vertical;
+`
+
+export const Info = styled.i`
+    font-size: 0.6rem;
+    margin-right: 0.2rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+`
+
+export const ToolTipText = styled.div`
+    font-size: ${props => props.theme.fontSize.sz4};
+    text-align: left;
+    max-width: 20rem;
 `
 
 export const ColumnContainer = styled.div`

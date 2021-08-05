@@ -14,7 +14,7 @@ import PropTypes from "prop-types"
 import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
-import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
+import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds, convertSecondsToHHMMSS } from '../../../../../methods/utils/time_utils'
 
 // styles
 import * as styled from "./card_zone.style"
@@ -44,6 +44,10 @@ const CardZone = ((props) => {
         selectedCards,
         setSelectedCards,
         handleAddLotClick,
+
+        handleSetProcessWip,
+        handleSetProductionRate,
+        handleSetDPP
     } = props
 
     // redux state
@@ -117,7 +121,6 @@ const CardZone = ((props) => {
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
         deleteGetCycleTimes()
-
     }, [shiftDetails, allCards, stations])
 
     // This function calculates cycle time based on the throughput of that day
@@ -129,33 +132,28 @@ const CardZone = ((props) => {
         // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
-
         for (const ind in processStations) {
             const stationID = processStations[ind]
 
 
             const station = stations[stationID]
+            let cycleTime;
             if (!!station?.manual_cycle_time && !!station?.cycle_time) {
-                const seconds = convertHHMMSSStringToSeconds(station.cycle_time)
-                stationCycleTimes =
-                {
-                    ...stationCycleTimes,
-                    [stationID]: seconds,
-
-                }
+                cycleTime = convertHHMMSSStringToSeconds(station.cycle_time)
+            } else {
+                cycleTime = await convertHHMMSSStringToSeconds(convertSecondsToHHMMSS(getStationCycleTime(stationID)))
             }
-            else {
-                const cycleTime = await getStationCycleTime(stationID)
-                stationCycleTimes =
+
+            stationCycleTimes =
                 {
                     ...stationCycleTimes,
                     [stationID]: cycleTime,
 
                 }
-            }
 
 
         }
+
         setDeleteStationCycleTime(stationCycleTimes)
     }
 
@@ -175,10 +173,11 @@ const CardZone = ((props) => {
         // ================================================== //
         //// Simulate all card movements to determine lead time
 
-        // Gather cards in this process and organize them by station
+        // Gather cards in this process and organize them by station (also set process WIP)
         let i, stationCards, stationSimCards, stationCycleTime;
         let stationTimesUntilMove = new Array(processStations.length);
         let pStationSimCards = [];
+        let processWip = 0, bottleneckCT = 0, cumulativeCycleTime = 0;
         for (i = 0; i < processStations.length; i++) {
             stationCards = getCardsInBin(processCards || {}, processStations[i], processId)	// Get all cards in this station's bin
             stationSimCards = stationCards.map(card => ({
@@ -187,14 +186,25 @@ const CardZone = ((props) => {
             }));
             pStationSimCards.push(stationSimCards);
 
+            
+
+            stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
             if (stationSimCards.length) {
-                stationCycleTime = deleteStationCycleTime[stations[processStations[i]]?._id] || 0;
                 stationTimesUntilMove[i] = stationSimCards[0].qty * stationCycleTime;
             } else {
                 stationTimesUntilMove[i] = Infinity;
             }
 
+            processWip += stationSimCards.reduce((wip, card) => wip + card.qty, 0)  // Aggregate process quantity (process WIP)
+            bottleneckCT = Math.max(bottleneckCT, stationCycleTime)                 // Slowest cycle time of all stations in process
+            cumulativeCycleTime += stationCycleTime                                 // Summation of all cycle times in process
+
         }
+
+        handleSetProcessWip(processWip)
+        handleSetProductionRate(bottleneckCT)
+        handleSetDPP(cumulativeCycleTime)
+
 
         // Simulate card movements:
         //

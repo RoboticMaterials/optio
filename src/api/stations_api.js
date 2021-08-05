@@ -249,9 +249,8 @@ export async function getStationCycleTime(id) {
             },
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        console.log('===', response.data)
+        return response.data;
 
 
     } catch (error) {
