@@ -78,6 +78,7 @@ export const Container = styled(Modal)`
 	transform: translate(-50%, -50%);
 	right: auto;
 	bottom: auto;
+  padding-right: 1rem;
 
 	position: absolute;
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-
+import {useFilePicker} from 'use-file-picker'
 // actions
 import { postCard, putCard } from "../../../../../redux/actions/card_actions";
 
@@ -120,6 +120,15 @@ const LotEditorContainer = (props) => {
         setStatus = () => { },
     } = current || {}
 
+    const [
+      openFileSelector,
+      {filesContent, loading, plainFiles}
+    ] = useFilePicker({
+      multiple: false,
+      readAs: 'Text',
+      readFilesContent: true
+    })
+
     /*
     * This effect is used to update the current predicted lotNumber on an interval
     * The lotNumber here is just used for display, the actual assigned lotNumber should be handled on the backend
@@ -135,6 +144,72 @@ const LotEditorContainer = (props) => {
             clearInterval(lotNumberTimer)
         }
     }, [])
+
+    useEffect(() => {
+      if(!!filesContent[0]){
+        var XMLParser = require('react-xml-parser');
+        var xml = new XMLParser().parseFromString(filesContent[0].content);
+        var newXml = xml.getElementsByTagName('ViewItem')
+        var header = ""
+        var csv = ""
+
+        newXml[0].children.forEach((attribute, index, array) => {
+          if(index === (array.length-1)){
+            header += attribute.name
+          }
+          else{
+            header += attribute.name + '\t'
+          }
+        })
+
+        csv += header + '\n'
+
+        newXml.forEach((lot, index, array) => {
+          var row = ""
+          lot.children.forEach((child, index, array) => {
+            if(index===(array.length-1)){
+              row += child.value
+            }
+            else{
+              row += child.value + '\t'
+            }
+          })
+          if(index===(array.length-1)){
+            csv += row
+          }
+          else{
+            csv += row +'\n'
+          }
+        })
+
+        var rows = csv.split("\n");
+        let table = []
+
+        for (var y in rows) {
+
+            var cells = rows[y].split("\t")
+
+            for (const x in cells) {
+
+                if (table[x]) {
+                    table[x].push(cells[x])
+                }
+                else {
+                    table.push([cells[x]])
+                }
+            }
+        }
+        setPasteTable(table)	// set paste table
+
+        if (!disablePasteModal) {
+            setTimeout(() => {
+                setShowSimpleModal(true)
+            }, 0)
+        }
+      }
+        return () => {
+        }
+    }, [plainFiles.length])
 
     // when card id changes, update card
     useEffect(() => {
@@ -681,7 +756,6 @@ const LotEditorContainer = (props) => {
     * */
     const onPasteEvent = useCallback((e) => {
         const plainText = e.clipboardData.getData('text/plain')	// get clipboard data
-
         var rows = plainText.split("\n");
         let table = []
 
@@ -699,7 +773,6 @@ const LotEditorContainer = (props) => {
                 }
             }
         }
-
         setPasteTable(table)	// set paste table
 
         // need to call setShowSimpleModal with tiny delay in order to allow normal pasting
@@ -711,6 +784,10 @@ const LotEditorContainer = (props) => {
 
         return true
     }, [disablePasteModal])
+
+    const convertToCSV = () => {
+
+    }
 
     /*
     * callback function used in createLot when submit is called from inside lot editor
@@ -827,7 +904,7 @@ const LotEditorContainer = (props) => {
             {showSimpleModal &&
                 <SimpleModal
                     isOpen={true}
-                    title={"Paste Event Detected"}
+                    title={plainFiles.length === 1 ? 'Import Event Detected': "Paste Event Detected"}
                     onRequestClose={() => setShowSimpleModal(false)}
                     onCloseButtonClick={() => setShowSimpleModal(false)}
                     handleOnClick2={() => {
@@ -850,7 +927,11 @@ const LotEditorContainer = (props) => {
                     button_1_text={"No"}
 
                 >
-                    <styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
+                {plainFiles.length === 1 ?
+                  <styled.SimpleModalText>Are you sure you want to import this file?</styled.SimpleModalText>
+                  :
+                  <styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
+                }
                 </SimpleModal>
             }
 
@@ -885,6 +966,11 @@ const LotEditorContainer = (props) => {
                     setShowStatusList(true)
                     setSelectedIndex(null)
                 }}
+                onImportXML = {()=> {
+                  //convertToCSV()
+                  openFileSelector()
+                }}
+
 
                 disabledAddButton={(isArray(mappedValues) && mappedValues.length > 0)}
                 formRef={formRef}

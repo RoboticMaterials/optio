@@ -345,7 +345,7 @@ const PasteMapper = (props) => {
 												{/*<div>Field Names</div>*/}
 											</styled.ItemContainer>
 											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
-												
+
 												<styled.SelectButton
 													type={"button"}
 													onClick={(e) => {
@@ -366,7 +366,7 @@ const PasteMapper = (props) => {
 														onMinusClick(currIndex)
 													}}
 												/>
-												
+
 											</styled.ItemContainer>
 										</>
 									)
@@ -374,7 +374,7 @@ const PasteMapper = (props) => {
 								else {
 									return(
 										<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
-											
+
 											{/* <styled.SelectButton
 												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
 												type={"button"}
@@ -394,7 +394,7 @@ const PasteMapper = (props) => {
 													onMinusClick(currIndex)
 												}}
 											/>
-											
+
 										</styled.ItemContainer>
 									)
 								}
@@ -482,7 +482,7 @@ const PasteMapper = (props) => {
 												style={{minHeight: "4rem"}}
 											>
 												<styled.Receptacle></styled.Receptacle>
-												
+
 												<Draggable>
 													<styled.FieldNameTab>
 														{/* <styled.Trapezoid/> */}
@@ -529,7 +529,7 @@ const PasteMapper = (props) => {
 																textAlign: 'center',
 																textDecoration: 'none !important'
 															}}
-															
+
 															textboxContainerStyle={{
 																maxHeight: "2rem",
 															}}
