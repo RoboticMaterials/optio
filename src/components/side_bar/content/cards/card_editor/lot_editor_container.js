@@ -526,64 +526,105 @@ const LotEditorContainer = (props) => {
                     lotNumber: index //collectionCount + index
                 }
 
-                await dispatchPostCard(submitItem)
-                    .then((result) => {
-                        if (result) {
-                            // successfully POSTed
-                            const {
-                                _id = null
-                            } = result || {}
+                let workOrderNumber = ''
+                submitItem.fields.forEach((field) => {
+                  if(field[0].fieldName ==='Hey')
+                  workOrderNumber = field[0].value
+                })
 
-                            // update status, POST success
-                            setMappedStatus((previous) => {
-                                const previousStatus = previous[index] || {}
-                                return immutableSet(previous, {
-                                    ...previousStatus,
-                                    resourceStatus: {
-                                        message: `Successfully created lot!`,
-                                        code: FORM_STATUS.CREATE_SUCCESS
-                                    }
-                                }, index)
-                            })
+                //Not robust or optimal... fix after alpen call
+                let foundMerge  = false
+                let cardID = null
+                let lotItem = {}
+                
+                Object.values(cards).forEach((card) => {
+                  card.fields.forEach((field, index) => {
+                    if(field[0].value === workOrderNumber && !!workOrderNumber){
+                      foundMerge = true
 
-                            // update values (only difference should be ID added and maybe lotNumber was different
-                            setMappedValues((previous) => {
-                                return immutableSet(previous, {
-                                    ...result
-                                }, index)
-                            })
+                      var updatedField = {
+                        [0]: {...field[0], value: 'gotcha'}
+                      }
 
-                            // call callback if provided
-                            cb && cb(_id)
-                        }
+                      var updatedFields = {
+                        ...card.fields,
+                        [index]: [updatedField[0]]
+                      }
 
-                        else {
-                            // POST error, update status
-                            setMappedStatus((previous) => {
-                                const previousStatus = previous[index] || {}
-                                return immutableSet(previous, {
-                                    ...previousStatus,
-                                    resourceStatus: {
-                                        message: `Error creating lot.`,
-                                        code: FORM_STATUS.CREATE_ERROR
-                                    }
-                                }, index)
-                            })
-                        }
-                    })
-                    .catch((err) => {
+                     lotItem = {
+                        ...card,
+                        fields: [updatedFields[0]]
+                      }
+                     cardID = card._id
+                    }
+                  })
+                })
 
-                        setMappedStatus((previous) => {
-                            const previousStatus = previous[index] || {}
-                            return immutableSet(previous, {
-                                ...previousStatus,
-                                resourceStatus: {
-                                    message: `Error creating lot.`,
-                                    code: FORM_STATUS.CREATE_ERROR
-                                }
-                            }, index)
-                        })
-                    })
+                if(!!foundMerge){
+                  const result = await dispatchPutCard(lotItem,cardID)
+                  foundMerge = false
+                }
+                else{
+                  await dispatchPostCard(submitItem)
+                      .then((result) => {
+                          if (result) {
+                              // successfully POSTed
+                              const {
+                                  _id = null
+                              } = result || {}
+
+                              // update status, POST success
+                              setMappedStatus((previous) => {
+                                  const previousStatus = previous[index] || {}
+                                  return immutableSet(previous, {
+                                      ...previousStatus,
+                                      resourceStatus: {
+                                          message: `Successfully created lot!`,
+                                          code: FORM_STATUS.CREATE_SUCCESS
+                                      }
+                                  }, index)
+                              })
+
+                              // update values (only difference should be ID added and maybe lotNumber was different
+                              setMappedValues((previous) => {
+                                  return immutableSet(previous, {
+                                      ...result
+                                  }, index)
+                              })
+
+                              // call callback if provided
+                              cb && cb(_id)
+                          }
+
+                          else {
+                              // POST error, update status
+                              setMappedStatus((previous) => {
+                                  const previousStatus = previous[index] || {}
+                                  return immutableSet(previous, {
+                                      ...previousStatus,
+                                      resourceStatus: {
+                                          message: `Error creating lot.`,
+                                          code: FORM_STATUS.CREATE_ERROR
+                                      }
+                                  }, index)
+                              })
+                          }
+                      })
+                      .catch((err) => {
+
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Error creating lot.`,
+                                      code: FORM_STATUS.CREATE_ERROR
+                                  }
+                              }, index)
+                          })
+                      })
+                }
+
             }
         }
 
