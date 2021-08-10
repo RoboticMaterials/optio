@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import PropTypes from "prop-types"
 
 // utils
-import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
@@ -39,6 +39,8 @@ const CardZone = ((props) => {
         showCardEditor,
         maxHeight,
         lotFilters,
+        lotFilterValue,
+        selectedFilterOption,
         sortMode,
         sortDirection,
         selectedCards,
@@ -53,6 +55,7 @@ const CardZone = ((props) => {
     const stations = useSelector(state => { return state.stationsReducer.stations })
     const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
     const { shiftDetails } = useSelector(state => state.settingsReducer.settings)
+    const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
     const {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
@@ -126,7 +129,7 @@ const CardZone = ((props) => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
         // const body = { timespan: 'day', index: 0 }
-        // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
+        // const workingTime = convertShiftDetailsToWlotfiltervalueorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
@@ -210,7 +213,7 @@ const CardZone = ((props) => {
         //		   calculate timeUntilCardMove = time until card will move to next station (qty*cycleT)
         //         if timeUntilCardMove < nextSimStep, cardsToBeMoved = [card], nextSimStep = timeUntilCardMove
         //         else if timeUntilCardMove == nextSimStep, cardsToBeMoved.push(card)
-        //		currSimTime += nextSimStep		
+        //		currSimTime += nextSimStep
         //
 
         let currSimTime = 0;
@@ -268,7 +271,7 @@ const CardZone = ((props) => {
                 }
 
                 //// Determine next column where card should be moved from (this determines sim step)
-                
+
                 if (stationTimesUntilMove[i] < minTimeUntilMove) {
                     minTimeUntilMove = stationTimesUntilMove[i];
                     nextCardsToBeMoved = [i];
@@ -419,9 +422,15 @@ const CardZone = ((props) => {
             } = card
 
             const totalQuantity = getLotTotalQuantity(card)
-
             // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
-            const matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            var matchesFilter = false
+            if(!!multipleFilters){
+              matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            }
+            else{
+              matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
+            }
+
 
             if (cardBins && matchesFilter) {
 
@@ -481,7 +490,7 @@ const CardZone = ((props) => {
         setCardsSorted(tempCardsSorted)
         setQueue(tempQueue)
         setFinished(tempFinished)
-    }, [bins, cards, lotFilters, draggingBinId, draggingLotId])
+    }, [bins, cards, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
 
     /*
     * Renders a {StationColumn} for each entry in {cardsSorted}
@@ -572,6 +581,7 @@ CardZone.propTypes = {
     setShowCardEditor: PropTypes.func,
     processId: PropTypes.string,
     lotFilters: PropTypes.array,
+    lotFilterValue: PropTypes.any,
     showCardEditor: PropTypes.bool,
     maxHeight: PropTypes.any
 }
@@ -583,10 +593,11 @@ CardZone.defaultProps = {
     setShowCardEditor: () => { },
     showCardEditor: false,
     maxHeight: null,
+    lotFilterValue: "",
+    selectedFilterOption: LOT_FILTER_OPTIONS.name,
     lotFilters: [],
     sortMode: LOT_FILTER_OPTIONS.name,
     sortDirection: SORT_DIRECTIONS.ASCENDING,
 }
 
 export default memo(CardZone)
-

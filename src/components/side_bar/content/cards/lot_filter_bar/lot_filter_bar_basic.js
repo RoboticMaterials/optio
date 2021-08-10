@@ -36,7 +36,7 @@ const VALUE_MODES = {
     FLAGS: "FLAGS"
 }
 
-const LotFilterBar = (props) => {
+const LotFilterBarBasic = (props) => {
 
     const {
         setLotFilterValue,
@@ -480,7 +480,7 @@ const LotFilterBar = (props) => {
     )
 }
 
-LotFilterBar.propTypes = {
+LotFilterBarBasic.propTypes = {
     setLotFilterValue: PropTypes.func,
     lotFilterValue: PropTypes.any,
     selectedFilterOption: PropTypes.object,
@@ -488,7 +488,7 @@ LotFilterBar.propTypes = {
     shouldFocusLotFilter: PropTypes.bool,
 }
 
-LotFilterBar.defaultProps = {
+LotFilterBarBasic.defaultProps = {
     setLotFilterValue: () => {},
     lotFilterValue: null,
     selectedFilterOption: () => {},
@@ -496,4 +496,4 @@ LotFilterBar.defaultProps = {
     shouldFocusLotFilter: false,
 }
 
-export default LotFilterBar
+export default LotFilterBarBasic

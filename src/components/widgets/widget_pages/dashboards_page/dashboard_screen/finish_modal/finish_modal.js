@@ -75,7 +75,7 @@ const FinishModal = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
 
     const [selectedLot, setSelectedLot] = useState(lotSelected ? processCards[lotID] : null)
     const [lotCount, setLotCount] = useState(null)
@@ -373,6 +373,7 @@ const FinishModal = (props) => {
                     setLotFilterValue={setLotFilterValue}
                     selectedFilterOption={selectedFilterOption}
                     setSelectedFilterOption={setSelectedFilterOption}
+                    multipleFilters = {serverSettings.enableMultipleLotFilters}
                 />
             </styled.Header>
 
