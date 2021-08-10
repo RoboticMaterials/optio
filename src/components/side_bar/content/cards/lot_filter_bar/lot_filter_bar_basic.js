@@ -171,8 +171,8 @@ const LotFilterBarBasic = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "15rem",
-                                maxWidth: "15rem",
+                                minWidth: "12rem",
+                                maxWidth: "12rem",
                                 overflow: 'visible',
                                 background: themeContext.bg.tertiary,
                             }}
@@ -291,8 +291,8 @@ const LotFilterBarBasic = (props) => {
                                         style={{
                                             alignSelf: "stretch",
                                             flex: 1,
-                                            minWidth: "5rem"
-                                            // width: "5rem"
+                                            minWidth: "5rem",
+                                            maxWidth: "12rem"
                                         }}
                                         schema={"lots"}
                                     />,

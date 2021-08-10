@@ -7,8 +7,8 @@ export const Row = styled.div`
     display: flex;
     width: 100%;
     justify-content: space-between;
-	height: 1.3rem;
-	
+	  height: 1rem;
+
   	${props => props.isLast && lastItemCss};
 `
 
@@ -25,7 +25,7 @@ export const DatesContainer = styled.span`
 	align-items: center;
 	justify-content: center;
     width: fit-content;
-    
+
 `
 
 export const DateItem = styled.div`
@@ -34,11 +34,11 @@ export const DateItem = styled.div`
 	align-items: center;
 	justify-content: center;
 
-	
+
 	&:hover {
 		cursor: pointer;
 	}
-	
+
 `
 
 export const DateText = styled.span`

@@ -8,7 +8,7 @@ export const Row = styled.div`
     display: flex;
     width: 100%;
     justify-content: space-between;
-    height: 1.3rem;
+    height: 1.8rem;
 
   	${props => props.isLast && lastItemCss};
 `

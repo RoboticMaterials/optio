@@ -11,6 +11,7 @@ import {
     isMobile
 } from "react-device-detect";
 
+
 // external components
 import FadeLoader from "react-spinners/FadeLoader"
 import Popup from 'reactjs-popup';
@@ -104,6 +105,7 @@ const FormComponent = (props) => {
         bins,
         binId,
         setBinId,
+        onImportXML,
         close,
         isOpen,
         processId,
@@ -290,8 +292,6 @@ const FormComponent = (props) => {
 
         close()
     }
-
-
     useEffect(() => {
         if (!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
             const cardFieldsWithoutValue = values.fields.map((currRow) => {
@@ -789,6 +789,7 @@ const FormComponent = (props) => {
                             showFields={false}
                             onTemplateSelectClick={onSelectLotTemplate}
                             onTemplateEditClick={() => {
+                                dispatchSetSelectedLotTemplate(lotTemplateId)
                                 setShowLotTemplateEditor(true)
                             }}
                             onCloseClick={() => {
@@ -814,7 +815,7 @@ const FormComponent = (props) => {
                                                 color={themeContext.schema.lots.solid}
                                                 onClick={() => {
                                                     setShowTemplateSelector(true)
-                                                    // onSelectLotTemplate(lotTemplateId)
+                                                    //onSelectLotTemplate(lotTemplateId)
                                                 }}
                                             />
                                         </LabeledButton>
@@ -856,8 +857,8 @@ const FormComponent = (props) => {
                                         <styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
                                     </div>
 
-                                    
-                                    
+
+
                                 </styled.IconRow>
 
 
@@ -878,7 +879,17 @@ const FormComponent = (props) => {
                                     schema={'lots'}
                                     type={"button"}
                                     disabled={submitDisabled}
-                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
+                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0, position: 'absolute', right: '8rem' }}
+                                    onClick={onImportXML}
+                                >
+                                    Import xml file
+                                </Button>
+
+                                <Button
+                                    schema={'lots'}
+                                    type={"button"}
+                                    disabled={submitDisabled}
+                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0}}
                                     onClick={() => {
                                         dispatchShowBarcodeModal(true)
                                     }}
@@ -1212,6 +1223,7 @@ const LotEditor = (props) => {
         formRef,
         onValidate,
         onPasteIconClick,
+        onImportXML,
         cardNames,
         merge,
     } = props
@@ -1219,7 +1231,6 @@ const LotEditor = (props) => {
     // redux state
     const cards = useSelector(state => { return state.cardsReducer.cards })
     const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
-
     // actions
     const dispatch = useDispatch()
     const onPostCard = async (card) => await dispatch(postCard(card))
@@ -1596,6 +1607,7 @@ const LotEditor = (props) => {
                                     processId={processId}
                                     close={close}
                                     formMode={formMode}
+                                    onImportXML={onImportXML}
                                     showPasteIcon={showPasteIcon}
                                     {...formikProps}
                                     bins={bins}
