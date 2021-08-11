@@ -54,7 +54,7 @@ const LotFilterBarBasic = (props) => {
 
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
-    const [open, setOpen] = useState(isMobile ? shouldFocusLotFilter : true) // is filter options open ?
+    const [open, setOpen] = useState(true) // is filter options open ?
     const [valueMode, setValueMode] = useState()      // used as var in switch statement to control what component to render for entering filter value (ex: use a textbox for strings, calendar picker for dates)
 
     /*

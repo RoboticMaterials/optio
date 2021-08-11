@@ -38,6 +38,7 @@ const TemplateSelectorSidebar = (props) => {
     // actions
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
+    const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
@@ -51,7 +52,7 @@ const TemplateSelectorSidebar = (props) => {
 
             <style.ListContainer>
                 {!isMobile &&
-                    <Button 
+                    <Button
                         schema={'lots'}
                         secondary
                         onClick={() => {
@@ -72,6 +73,12 @@ const TemplateSelectorSidebar = (props) => {
                     onClick={() => {
                         onTemplateSelectClick(BASIC_LOT_TEMPLATE_ID)
                         isMobile && onCloseClick()
+                    }}
+                    onMouseEnter={() => {
+                      dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
+                    }}
+                    onMouseLeave={() => {
+                      dispatchSetSelectedLotTemplate(null)
                     }}
                 >
                     <style.TemplateIcon
@@ -101,13 +108,19 @@ const TemplateSelectorSidebar = (props) => {
                                 onTemplateSelectClick(currTemplateId)
                                 isMobile && onCloseClick()
                             }}
+                            onMouseEnter={() => {
+                              dispatchSetSelectedLotTemplate(currTemplateId)
+                            }}
+                            onMouseLeave={() => {
+                              dispatchSetSelectedLotTemplate(null)
+                            }}
                         >
                             <style.TemplateIcon
                                 // style={{marginRight: "5rem"}}
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
-                            
+
 
                            <style.TemplateName
                                isSelected={isSelected}

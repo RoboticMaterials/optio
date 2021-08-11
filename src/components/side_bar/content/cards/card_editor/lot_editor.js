@@ -789,7 +789,6 @@ const FormComponent = (props) => {
                             showFields={false}
                             onTemplateSelectClick={onSelectLotTemplate}
                             onTemplateEditClick={() => {
-                                dispatchSetSelectedLotTemplate(lotTemplateId)
                                 setShowLotTemplateEditor(true)
                             }}
                             onCloseClick={() => {
@@ -874,16 +873,6 @@ const FormComponent = (props) => {
                                         />
                                     </LabeledButton>
                                 }
-
-                                <Button
-                                    schema={'lots'}
-                                    type={"button"}
-                                    disabled={submitDisabled}
-                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0, position: 'absolute', right: '8rem' }}
-                                    onClick={onImportXML}
-                                >
-                                    Import xml file
-                                </Button>
 
                                 <Button
                                     schema={'lots'}

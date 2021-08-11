@@ -483,7 +483,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer>
                 <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Lot Filters </styled.SwitchContainerLabel>
+                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
                     <Switch
                         checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
                         onChange={() => {
