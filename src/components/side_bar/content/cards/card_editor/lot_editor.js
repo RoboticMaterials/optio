@@ -815,7 +815,7 @@ const FormComponent = (props) => {
                                                 color={themeContext.schema.lots.solid}
                                                 onClick={() => {
                                                     setShowTemplateSelector(true)
-                                                    // onSelectLotTemplate(lotTemplateId)
+                                                    //onSelectLotTemplate(lotTemplateId)
                                                 }}
                                             />
                                         </LabeledButton>
@@ -1231,7 +1231,6 @@ const LotEditor = (props) => {
     // redux state
     const cards = useSelector(state => { return state.cardsReducer.cards })
     const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
-
     // actions
     const dispatch = useDispatch()
     const onPostCard = async (card) => await dispatch(postCard(card))

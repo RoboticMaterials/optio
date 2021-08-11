@@ -479,6 +479,27 @@ const Settings = () => {
         )
     }
 
+    const renderFilterTypeToggle = () => {
+        return (
+            <styled.SettingContainer>
+                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
+                    <Switch
+                        checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.RowContainer>
+            </styled.SettingContainer>
+        )
+    }
+
     const SignOut = () => {
 
         const dispatch = useDispatch()
@@ -559,6 +580,7 @@ const Settings = () => {
             {TimeZone()}
             {LockUnlockAllDashboards()}
             {renderFilterSortSelection()}
+            {renderFilterTypeToggle()}
             {EmailAddress()}
             {renderShiftSettings()}
             {APIAddress()}

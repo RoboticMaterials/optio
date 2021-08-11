@@ -26,6 +26,8 @@ import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 import * as styled from './zone_header.style'
 import LotSortBar from "../lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
+import LotFilterBarBasic from '../lot_filter_bar/lot_filter_bar_basic'
+
 import {
 	columnCss, columnCss3,
 	containerCss,
@@ -44,6 +46,12 @@ const ZoneHeader = (props) => {
 		setSortMode,
 		sortMode,
 
+		lotFilterValue,
+		setLotFilterValue,
+		selectedFilterOption,
+		setSelectedFilterOption,
+		shouldFocusLotFilter,
+
 		filters,
 		onAddFilter,
 		onRemoveFilter,
@@ -52,6 +60,8 @@ const ZoneHeader = (props) => {
 		onDeleteClick,
 		onMoveClick,
 		onClearClick,
+
+
 	} = props
 
 	const [size, setSize] = useState({
@@ -92,7 +102,11 @@ const ZoneHeader = (props) => {
 	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) }) || []
 	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
 	const maps = useSelector(state => state.mapReducer.maps)
+	const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
 	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+
+	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
+	const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
 	return (
 		<styled.Container>
@@ -161,6 +175,7 @@ const ZoneHeader = (props) => {
 			</styled.OptionContainer>
 
 			<styled.OptionContainer>
+			{!!multipleFilters ?
 				<LotFilterBar
 					filters={filters}
 					onAddFilter={onAddFilter}
@@ -171,6 +186,24 @@ const ZoneHeader = (props) => {
 					dropdownCss={dropdownCss}
 					valueCss={valueCss}
 				/>
+				:
+				<LotFilterBarBasic
+					lotFilterValue={lotFilterValue}
+					columnCss={columnCss}
+					containerCss={containerCss}
+					descriptionCss={descriptionCss}
+					dropdownCss={dropdownCss}
+					valueCss={valueCss}
+					reactDropdownSelectCss={reactDropdownSelectCss}
+					setLotFilterValue={setLotFilterValue}
+					selectedFilterOption={selectedFilterOption}
+					setSelectedFilterOption={setSelectedFilterOption}
+					filters={filters}
+					onAddFilter={onAddFilter}
+					onRemoveFilter={onRemoveFilter}
+				/>
+			}
+
 
 			</styled.OptionContainer>
 			</styled.SortFilterContainer>

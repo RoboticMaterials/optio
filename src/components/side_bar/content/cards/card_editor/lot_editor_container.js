@@ -241,6 +241,7 @@ const LotEditorContainer = (props) => {
         }
 
         if (!isObject(card)) { // If you're in editing mode, dont update lastUsedTemplateId
+          if(!!process)
             dispatchPutProcess({
                 ...process,
                 lastLotTemplateId: newTemplateId

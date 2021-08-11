@@ -42,9 +42,9 @@ export const ColumnContainer = styled.div`
   padding: .25rem 1rem 0 1rem;
   border-radius: .4rem;
 //   height: fit-content;
-  
+
 //   margin-bottom: 1rem;
-  
+
 `
 
 export const RowContainer = styled.div`
@@ -62,7 +62,7 @@ export const Description = styled.span`
   margin-bottom: .25rem;
 `
 
-export const FiltersContainer = styled.div`   
+export const FiltersContainer = styled.div`
 
 `
 
@@ -100,7 +100,7 @@ export const ExpandContractIcon = styled.div`
 export const ActiveContainer = styled.div`
     display: flex;
     flex-direction: row;
-    padding: 0.5rem; 
+    padding: 0.5rem;
     min-width: 15rem;
     maxw-width: 25rem;
 
@@ -136,7 +136,7 @@ export const FlagsContainer = styled.div`
 	display: flex;
   overflow-x: auto;
   flex: 1;
-  
+
   ${scrollCss};
 `
 
@@ -146,7 +146,7 @@ const selectedCss = css`
 
 export const FlagButton = styled.button`
 	${iconButtonCss};
-	${commonClickableIcon};	
+	${commonClickableIcon};
 	${props => props.selected && selectedCss};
 `
 

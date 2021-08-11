@@ -36,7 +36,7 @@ const VALUE_MODES = {
     FLAGS: "FLAGS"
 }
 
-const LotFilterBar = (props) => {
+const LotFilterBarBasic = (props) => {
 
     const {
         setLotFilterValue,
@@ -54,7 +54,7 @@ const LotFilterBar = (props) => {
 
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
-    const [open, setOpen] = useState(isMobile ? shouldFocusLotFilter : true) // is filter options open ?
+    const [open, setOpen] = useState(true) // is filter options open ?
     const [valueMode, setValueMode] = useState()      // used as var in switch statement to control what component to render for entering filter value (ex: use a textbox for strings, calendar picker for dates)
 
     /*
@@ -171,8 +171,8 @@ const LotFilterBar = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "15rem",
-                                maxWidth: "15rem",
+                                minWidth: "12rem",
+                                maxWidth: "12rem",
                                 overflow: 'visible',
                                 background: themeContext.bg.tertiary,
                             }}
@@ -291,8 +291,8 @@ const LotFilterBar = (props) => {
                                         style={{
                                             alignSelf: "stretch",
                                             flex: 1,
-                                            minWidth: "5rem"
-                                            // width: "5rem"
+                                            minWidth: "5rem",
+                                            maxWidth: "12rem"
                                         }}
                                         schema={"lots"}
                                     />,
@@ -480,7 +480,7 @@ const LotFilterBar = (props) => {
     )
 }
 
-LotFilterBar.propTypes = {
+LotFilterBarBasic.propTypes = {
     setLotFilterValue: PropTypes.func,
     lotFilterValue: PropTypes.any,
     selectedFilterOption: PropTypes.object,
@@ -488,7 +488,7 @@ LotFilterBar.propTypes = {
     shouldFocusLotFilter: PropTypes.bool,
 }
 
-LotFilterBar.defaultProps = {
+LotFilterBarBasic.defaultProps = {
     setLotFilterValue: () => {},
     lotFilterValue: null,
     selectedFilterOption: () => {},
@@ -496,4 +496,4 @@ LotFilterBar.defaultProps = {
     shouldFocusLotFilter: false,
 }
 
-export default LotFilterBar
+export default LotFilterBarBasic

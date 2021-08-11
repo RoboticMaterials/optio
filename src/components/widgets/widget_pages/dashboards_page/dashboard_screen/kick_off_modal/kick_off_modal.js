@@ -67,6 +67,7 @@ const KickOffModal = (props) => {
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [selectedCard, setSelectedCard] = useState(null)
 
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
@@ -202,15 +203,16 @@ const KickOffModal = (props) => {
     /*
     * renders an array of buttons for each kick off lot
     * */
-    const renderKickOffButtons = useMemo(() => {
+    const renderKickOffButtons = () => {
         return availableKickOffCards
-            .filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
-                const {
-                    bins = {},
-                } = currLot || {}
-                const quantity = bins["QUEUE"]?.count || 0;
-                return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
-            }, true)) 
+            //.filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
+            //    const {
+            //        bins = {},
+            //    } = currLot || {}
+            //    const quantity = bins["QUEUE"]?.count || 0;
+            //    return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
+          //  }, true))
+
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
@@ -232,7 +234,6 @@ const KickOffModal = (props) => {
                 const count = bins["QUEUE"]?.count || 0
                 const totalQuantity = getLotTotalQuantity({ bins })
                 const templateValues = getCustomFields(lotTemplateId, currCard)
-
                 return (
                     <Lot
                         templateValues={templateValues}
@@ -254,7 +255,7 @@ const KickOffModal = (props) => {
                     />
                 )
             })
-    }, [availableKickOffCards, dashboard.filters, dashboard.sort, process])
+    }
 
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
@@ -437,18 +438,20 @@ const KickOffModal = (props) => {
                                 label={"Close"}
                                 type="button"
                             /> */}
-                        {!phoneView &&
-                            <Button
+                        {/*!phoneView &&
+                          <Button
                                 // tertiary
                                 // secondary
                                 schema={"dashboards"}
                                 // onClick={close}
-                                onClick={() => setShowLotEditor(true)}
+                                onClick={() => {
+                                  setShowLotEditor(true)
+                                }}
                                 label={"Create New Lot"}
                                 type="button"
                                 style={{ minWidth: '12rem', minHeight: '3rem' }}
                             />
-                        }
+                        */}
 
                     </styled.ButtonsContainer>
                 </div>
