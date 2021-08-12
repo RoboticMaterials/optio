@@ -10,6 +10,7 @@ const StatusListBody = (props) => {
 		data,
 		onItemClick,
 		onCreateClick,
+		onMergeClick,
 		displayNames,
 	} = props
 
@@ -39,6 +40,7 @@ const StatusListBody = (props) => {
 				<StatusListItem
 					displayNames={displayNames}
 					onCreateClick={onCreateClick}
+					onMergeClick={onMergeClick}
 					created={created}
 					key={currIndex}
 					index={currIndex}

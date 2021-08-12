@@ -47,6 +47,7 @@ const StatusListItem = (props) => {
 		showBottomBorer,
 		created,
 		onCreateClick,
+		onMergeClick,
 		displayNames
 	} = props
 
@@ -222,6 +223,15 @@ const StatusListItem = (props) => {
 					disabled={submitDisabled}
 					onClick={(e) => {
 						onCreateClick(index)
+					}}
+				/>
+
+				<Button
+					type={"button"}
+					label={"Merge"}
+					schema={"processes"}
+					onClick={(e) => {
+						onMergeClick(index)
 					}}
 				/>
 			</styled.StatusContainer>

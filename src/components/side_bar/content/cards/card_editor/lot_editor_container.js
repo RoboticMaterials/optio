@@ -527,45 +527,6 @@ const LotEditorContainer = (props) => {
                     lotNumber: index //collectionCount + index
                 }
 
-                let workOrderNumber = ''
-                submitItem.fields.forEach((field) => {
-                  if(field[0].fieldName ==='Hey')
-                  workOrderNumber = field[0].value
-                })
-
-                //Not robust or optimal... fix after alpen call
-                let foundMerge  = false
-                let cardID = null
-                let lotItem = {}
-                
-                Object.values(cards).forEach((card) => {
-                  card.fields.forEach((field, index) => {
-                    if(field[0].value === workOrderNumber && !!workOrderNumber){
-                      foundMerge = true
-
-                      var updatedField = {
-                        [0]: {...field[0], value: 'gotcha'}
-                      }
-
-                      var updatedFields = {
-                        ...card.fields,
-                        [index]: [updatedField[0]]
-                      }
-
-                     lotItem = {
-                        ...card,
-                        fields: [updatedFields[0]]
-                      }
-                     cardID = card._id
-                    }
-                  })
-                })
-
-                if(!!foundMerge){
-                  const result = await dispatchPutCard(lotItem,cardID)
-                  foundMerge = false
-                }
-                else{
                   await dispatchPostCard(submitItem)
                       .then((result) => {
                           if (result) {
@@ -624,8 +585,6 @@ const LotEditorContainer = (props) => {
                               }, index)
                           })
                       })
-                }
-
             }
         }
 
@@ -633,6 +592,87 @@ const LotEditorContainer = (props) => {
             console.error("create err", err)
         }
     }
+
+    const mergeLot = async (index, cb) => {
+        const values = mappedValues[index]
+        if (values._id) return	// lot was already created, don't try creating it again
+
+                const {
+                    name: newName,
+                    bins: newBins,
+                    processId: newProcessId,
+                    fields
+                } = values || {}
+
+                const submitItem = {
+                    name: newName,
+                    bins: newBins,
+                    process_id: newProcessId,
+                    lotTemplateId: lotTemplateId,
+                    fields,
+                    lotNumber: index //collectionCount + index
+                }
+
+                let workOrderNumber = ''
+                submitItem.fields.forEach((field) => {
+                  if(field[0].fieldName ==='WorkOrderNumber')
+                  workOrderNumber = field[0].value
+                })
+
+                //Not robust or optimal... fix after alpen call
+                let foundMerge  = false
+                let cardID = null
+                let spreadExisting = true
+                let lotItem = {}
+                var updatedFields = {}
+                Object.values(cards).forEach((card) => {
+                  card.fields.forEach((field, index) => {
+                    if(field[0].value == workOrderNumber && !!workOrderNumber){
+                      foundMerge = true
+                      cardID = card._id
+                      submitItem.fields.forEach((newField) => {
+                        card.fields.forEach((existingField,index) => {
+                          if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === ''){
+
+                              var updatedField = {
+                                ...existingField[0],
+                                value: newField[0].value
+                              }
+                            if(spreadExisting === true){
+                                updatedFields = {
+                                ...card.fields,
+                                [index]: [updatedField]
+                              }
+                              spreadExisting = false
+                            }
+                            else{
+                              updatedFields = {
+                                ...updatedFields,
+                                [index]: [updatedField]
+                              }
+                            }
+
+                            var fieldArray = []
+                            for(var i in updatedFields) {
+                              fieldArray.push(updatedFields[i])
+                            }
+
+                           lotItem = {
+                              ...card,
+                              fields: fieldArray
+                            }
+                          }
+                        })
+                      })
+                    }
+                  })
+              })
+
+            if(foundMerge === true){
+              const result = await dispatchPutCard(lotItem,cardID)
+              foundMerge = false
+            }
+        }
 
     /*
     * runs async validation for a lot and  updates its status
@@ -868,6 +908,7 @@ const LotEditorContainer = (props) => {
                         setShowStatusListLazy(false)
                     }}
                     onCreateClick={createLot}
+                    onMergeClick = {mergeLot}
                     onCreateAllClick={async () => {
                         for (let i = 0; i < mappedValues.length; i++) {
                             setPending(i)
