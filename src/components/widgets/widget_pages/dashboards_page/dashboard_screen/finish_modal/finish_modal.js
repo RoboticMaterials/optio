@@ -232,7 +232,7 @@ const FinishModal = (props) => {
 
                 const count = bins[stationId]?.count
                 const totalQuantity = getLotTotalQuantity({bins})
-                const templateValues = getCustomFields(lotTemplateId, currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard, dashboardID)
 
                 return (
                     <Lot
