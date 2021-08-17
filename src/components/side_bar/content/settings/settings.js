@@ -71,7 +71,8 @@ const Settings = () => {
     const [showShiftSettings, setShowShiftSettings] = useState(false)
     const [confirmUnlock, setConfirmUnlock] = useState(false)
     const [confirmLock, setConfirmLock] = useState(false)
-    const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [addTaskAlert, setAddTaskAlert] = useState(null)
+    const [saveDisabled, setSaveDisabled] = useState(true)
 
     const themeContext = useContext(ThemeContext);
 
@@ -79,6 +80,30 @@ const Settings = () => {
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
+    useEffect(() => {
+      var {
+        _id,
+        ...remainingServerSettings
+      } = serverSettings
+
+      var {
+        _id,
+        ...remainingServerSettingsState
+      } = serverSettingsState
+
+      const serverChange = !getIsEquivalent(remainingServerSettingsState, remainingServerSettings)
+      const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+      const localChange = !getIsEquivalent(localSettingsState, localSettings)
+
+
+      if(!!serverChange || !!mapChange || !!localChange){
+        setSaveDisabled(false)
+      }
+
+      else setSaveDisabled(true)
+
+    }, [serverSettingsState, mapSettingsState, localSettingsState])
+
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setEmailSettingsState(serverSettings.emailNotifications)
@@ -95,7 +120,9 @@ const Settings = () => {
         setLocalSettingsState(localSettings)
     }
     /**
-     * Handles updating settings on the server
+     * Handles updating settings on the server        const serverChange = getIsEquivalent(serverSettingsState, serverSettings)
+        const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+        const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
      * All devices that are connected to the server will have these settings
      */
     const handleUpdateServerSettings = (setting) => {
@@ -111,7 +138,9 @@ const Settings = () => {
         setServerSettingsState(updatedSettings)
 
     }
-
+        const serverChange = getIsEquivalent(serverSettingsState, serverSettings)
+        const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+        const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
     const handleLockUnlockDashboards = (locked) => {
 
         Object.values(dashboards).forEach((dashboard) => {
@@ -186,7 +215,6 @@ const Settings = () => {
         if (!localSettingsState.mapViewEnabled) {
             history.push(`/`)
         }
-
     }
 
     const TimeZone = () => {
@@ -227,7 +255,7 @@ const Settings = () => {
             <styled.SettingContainer >
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel>Show Developer Settings</styled.SwitchContainerLabel>
+                    <styled.SwitchContainerLabel>Show Advanced Settings</styled.SwitchContainerLabel>
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
@@ -285,6 +313,52 @@ const Settings = () => {
                                 style={{ marginRight: '1rem' }}
                             />
                         </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filtering on Mobile </styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Station Based Lot Display</styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        stationBasedLots: !serverSettingsState.stationBasedLots
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
                     </>
                     :
                     <></>
@@ -458,47 +532,6 @@ const Settings = () => {
         )
     }
 
-    const renderFilterSortSelection = () => {
-        return (
-            <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filter and Sort Options on Mobile Dashboards </styled.SwitchContainerLabel>
-                    <Switch
-                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
-                        onChange={() => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
-                            })
-                        }}
-                        onColor={themeContext.fg.primary}
-                        style={{ marginRight: '1rem', minWidth:'3rem' }}
-                    />
-                </styled.RowContainer>
-            </styled.SettingContainer>
-        )
-    }
-
-    const renderFilterTypeToggle = () => {
-        return (
-            <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
-                    <Switch
-                        checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
-                        onChange={() => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
-                            })
-                        }}
-                        onColor={themeContext.fg.primary}
-                        style={{ marginRight: '1rem', minWidth:'3rem' }}
-                    />
-                </styled.RowContainer>
-            </styled.SettingContainer>
-        )
-    }
 
     const SignOut = () => {
 
@@ -574,13 +607,11 @@ const Settings = () => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-            <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
+            <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
             {MapViewEnabled()}
             {CurrentMap()}
             {TimeZone()}
             {LockUnlockAllDashboards()}
-            {renderFilterSortSelection()}
-            {renderFilterTypeToggle()}
             {EmailAddress()}
             {renderShiftSettings()}
             {APIAddress()}

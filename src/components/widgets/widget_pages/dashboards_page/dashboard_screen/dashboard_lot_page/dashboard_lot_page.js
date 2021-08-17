@@ -13,7 +13,7 @@ import DashboardLotButtons from './dashboard_lot_buttons/dashboard_lot_buttons'
 import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_modal'
 import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
 import DashboardLotInputBox from './dashboard_lot_input_box/dashboard_lot_input_box'
-
+import Button from '../../../../../../components/basic/button/button'
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
@@ -64,7 +64,7 @@ const DashboardLotPage = (props) => {
     const [isFinish, setIsFinish] = useState(false)
     const [showFinish, setShowFinish] = useState(false)
     const [lotContainsInput, setLotContainsInput] = useState(false)
-
+    const [showTransferButton, setShowTransferButton] = useState(false)
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
@@ -122,6 +122,25 @@ const DashboardLotPage = (props) => {
         }
     }, [lotID, cards])
 
+    useEffect(() => {
+      transferLotShouldRender()
+    },[processes])
+
+
+
+    const transferLotShouldRender = () => {
+        Object.values(processes).forEach((process) => {
+          if(process._id!==processes[currentLot.process_id]._id){
+            const processStations = Object.keys(getProcessStations(process,routes))
+            for(const ind in processStations){
+              if(processStations[ind] === stationID){
+                setShowTransferButton(true)
+                break;
+              }
+            }
+          }
+        })
+      }
 
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
@@ -291,7 +310,16 @@ const DashboardLotPage = (props) => {
         <styled.LotContainer>
             <styled.LotBodyContainer>
                 <styled.LotHeader>
-                    <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+                  {!!showTransferButton &&
+                    <Button
+                      style = {{marginRight: '3rem', marginTop: '1.5rem', position: 'absolute', left: '1rem', height: '3rem', minWidth: '10rem'}}
+              				schema={"processes"}
+                      onClick = {()=>transferLotShouldRender()}
+              			>
+                    Transfer Lot
+              			</Button>
+                  }
+                  <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 </styled.LotHeader>
                 <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
 
