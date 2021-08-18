@@ -14,6 +14,7 @@ import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_m
 import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
 import DashboardLotInputBox from './dashboard_lot_input_box/dashboard_lot_input_box'
 import Button from '../../../../../../components/basic/button/button'
+import TransferLotModal from '../transfer_lot_modal/transfer_lot_modal'
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
 import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
@@ -65,12 +66,12 @@ const DashboardLotPage = (props) => {
     const [showFinish, setShowFinish] = useState(false)
     const [lotContainsInput, setLotContainsInput] = useState(false)
     const [showTransferButton, setShowTransferButton] = useState(false)
+    const [showTransferLotModal, setShowTransferLotModal] = useState(false)
+    const [processTransferOptions, setProcessTransferOptions] = useState([])
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchGetCards = () => dispatch(getCards())
-
-
 
     // Used to show dashboard input
     useEffect(() => {
@@ -129,17 +130,19 @@ const DashboardLotPage = (props) => {
 
 
     const transferLotShouldRender = () => {
+      const proc = []
         Object.values(processes).forEach((process) => {
           if(process._id!==processes[currentLot.process_id]._id){
             const processStations = Object.keys(getProcessStations(process,routes))
             for(const ind in processStations){
               if(processStations[ind] === stationID){
+                proc.push([process])
                 setShowTransferButton(true)
-                break;
               }
             }
           }
         })
+        setProcessTransferOptions(proc)
       }
 
     const onBack = () => {
@@ -225,6 +228,18 @@ const DashboardLotPage = (props) => {
                 button_1_text={"Cancel"}
             />
         )
+    }
+
+    const renderTransferLotModal = () => {
+
+      return (
+        <TransferLotModal
+          isOpen = {true}
+          close = {()=>setShowTransferLotModal(false)}
+          options = {processTransferOptions}
+          lot = {currentLot}
+        />
+      )
     }
 
     const onFinish = async (quantity) => {
@@ -314,7 +329,7 @@ const DashboardLotPage = (props) => {
                     <Button
                       style = {{marginRight: '3rem', marginTop: '1.5rem', position: 'absolute', left: '1rem', height: '3rem', minWidth: '10rem'}}
               				schema={"processes"}
-                      onClick = {()=>transferLotShouldRender()}
+                      onClick = {()=>setShowTransferLotModal(true)}
               			>
                     Transfer Lot
               			</Button>
@@ -346,6 +361,9 @@ const DashboardLotPage = (props) => {
             </styled.LotButtonContainer>
             {showFinish &&
                 renderFinishQuantity()
+            }
+            {showTransferLotModal &&
+              renderTransferLotModal()
             }
         </styled.LotContainer>
     )
