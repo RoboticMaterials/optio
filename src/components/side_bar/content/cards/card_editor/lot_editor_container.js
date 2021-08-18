@@ -126,7 +126,8 @@ const LotEditorContainer = (props) => {
     ] = useFilePicker({
       multiple: false,
       readAs: 'Text',
-      readFilesContent: true
+      readFilesContent: true,
+      accept: '.xml'
     })
 
     /*
@@ -153,60 +154,129 @@ const LotEditorContainer = (props) => {
         var header = ""
         var csv = ""
 
-        newXml[0].children.forEach((attribute, index, array) => {
-          if(index === (array.length-1)){
-            header += attribute.name
-          }
-          else{
-            header += attribute.name + '\t'
-          }
-        })
+        console.log(xml.getElementsByTagName('Row').length)
+        if(xml.getElementsByTagName('Row').length!==0){
+          newXml = xml.getElementsByTagName('Row')
+          var fieldName = ''
+          var fieldValue = ''
+          let inches = /&quot;/gi
+          let ampersand = /&amp;/gi
+          let sendIt = false
+          let inViewItems = false
+          let inViewItem = false
+          let row = ''
 
-        csv += header + '\n'
+          for (const index in newXml){
+            let data = newXml[index].children[0].children[0].value
 
-        newXml.forEach((lot, index, array) => {
-          var row = ""
-          lot.children.forEach((child, index, array) => {
-            if(index===(array.length-1)){
-              row += child.value
+            fieldName = data.replace( /(^.*\&lt;|&gt;.*$)/g, '')
+            fieldName = fieldName.replace('/', '')
+
+            let string1 = '&lt;' + fieldName + '&gt;'
+            let string2 = '&lt;/' + fieldName + '&gt;'
+
+            if(fieldName === 'ViewItem' && sendIt === true) break;
+
+            if(!!sendIt){
+              header+= fieldName + '\t'
+            }
+
+            if(fieldName === 'ViewItem' && sendIt=== false) sendIt = true
+          }
+          csv+=header + '\n'
+
+          for (const index in newXml){
+
+            let data = newXml[index].children[0].children[0].value
+
+            fieldName = data.replace( /(^.*\&lt;|&gt;.*$)/g, '')
+            fieldName = fieldName.replace('/', '')
+
+            let string1 = '&lt;' + fieldName + '&gt;'
+            let string2 = '&lt;/' + fieldName + '&gt;'
+
+            fieldValue = data.replace(string1, '')
+            fieldValue = fieldValue.replace(string2, '')
+            fieldValue = fieldValue.replace(inches, '"')
+            fieldValue = fieldValue.replace(ampersand, '&')
+
+            if(fieldName === 'ViewItems' && inViewItems === true) break;
+            if(fieldName === 'ViewItems' && inViewItems=== false) {
+              inViewItems = true
+            }
+
+            if(!!inViewItem && !!inViewItems){
+              if(fieldName === 'ViewItem'){
+                csv+= row +'\n'
+                row = ''
+              }
+            else{
+              row += fieldValue + '\t'
+            }
+          }
+          if(fieldName === 'ViewItem'){
+            inViewItem = !inViewItem
+          }
+        }
+        csv = csv.replace(/^\s+|\s+$/g, "") //get rid of trailing spaces
+      }
+        else if(!!xml.getElementsByTagName('ViewItem').length!==0){
+          newXml[0].children.forEach((attribute, index, array) => {
+            if(index === (array.length-1)){
+              header += attribute.name
             }
             else{
-              row += child.value + '\t'
+              header += attribute.name + '\t'
             }
           })
-          if(index===(array.length-1)){
-            csv += row
-          }
-          else{
-            csv += row +'\n'
-          }
-        })
 
-        var rows = csv.split("\n");
-        let table = []
+          csv += header + '\n'
 
-        for (var y in rows) {
-
-            var cells = rows[y].split("\t")
-
-            for (const x in cells) {
-
-                if (table[x]) {
-                    table[x].push(cells[x])
-                }
-                else {
-                    table.push([cells[x]])
-                }
+          newXml.forEach((lot, index, array) => {
+            var row = ""
+            lot.children.forEach((child, index, array) => {
+              if(index===(array.length-1)){
+                row += child.value
+              }
+              else{
+                row += child.value + '\t'
+              }
+            })
+            if(index===(array.length-1)){
+              csv += row
             }
+            else{
+              csv += row +'\n'
+            }
+          })
         }
-        setPasteTable(table)	// set paste table
 
-        if (!disablePasteModal) {
-            setTimeout(() => {
-                setShowSimpleModal(true)
-            }, 0)
+          var rows = csv.split("\n");
+          let table = []
+
+          for (var y in rows) {
+
+              var cells = rows[y].split("\t")
+
+              for (const x in cells) {
+
+                  if (table[x]) {
+                      table[x].push(cells[x])
+                  }
+                  else {
+                      table.push([cells[x]])
+                  }
+              }
+          }
+          setPasteTable(table)	// set paste table
+
+          if (!disablePasteModal) {
+              setTimeout(() => {
+                  setShowSimpleModal(true)
+              }, 0)
+          }
         }
-      }
+
         return () => {
         }
     }, [plainFiles.length])
