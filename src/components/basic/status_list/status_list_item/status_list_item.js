@@ -232,7 +232,7 @@ const StatusListItem = (props) => {
 					type={"button"}
 					label={"Merge"}
 					schema={"processes"}
-					disabled = {mergeDisabled(index)}
+					disabled = {mergeDisabled(index) || resourceCode === FORM_STATUS.CREATE_SUCCESS || resourceCode === FORM_STATUS.MERGE_SUCCESS}
 					onClick={(e) => {
 						onMergeClick(index)
 					}}
