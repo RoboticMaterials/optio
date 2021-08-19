@@ -269,7 +269,6 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-
                         <styled.RowContainer>
                             <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
                             <Switch
@@ -285,6 +284,52 @@ const Settings = () => {
                                 style={{ marginRight: '1rem' }}
                             />
                         </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filtering on Mobile </styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
+                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Station Based Lot Display</styled.SwitchContainerLabel>
+                            <Switch
+                                checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
+                                onChange={() => {
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        stationBasedLots: !serverSettingsState.stationBasedLots
+                                    })
+                                }}
+                                onColor={themeContext.fg.primary}
+                                style={{ marginRight: '1rem', minWidth:'3rem' }}
+                            />
+                        </styled.RowContainer>
+
                     </>
                     :
                     <></>
@@ -458,47 +503,6 @@ const Settings = () => {
         )
     }
 
-    const renderFilterSortSelection = () => {
-        return (
-            <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filter and Sort Options on Mobile Dashboards </styled.SwitchContainerLabel>
-                    <Switch
-                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
-                        onChange={() => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
-                            })
-                        }}
-                        onColor={themeContext.fg.primary}
-                        style={{ marginRight: '1rem', minWidth:'3rem' }}
-                    />
-                </styled.RowContainer>
-            </styled.SettingContainer>
-        )
-    }
-
-    const renderFilterTypeToggle = () => {
-        return (
-            <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
-                    <Switch
-                        checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
-                        onChange={() => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
-                            })
-                        }}
-                        onColor={themeContext.fg.primary}
-                        style={{ marginRight: '1rem', minWidth:'3rem' }}
-                    />
-                </styled.RowContainer>
-            </styled.SettingContainer>
-        )
-    }
 
     const SignOut = () => {
 
@@ -579,8 +583,6 @@ const Settings = () => {
             {CurrentMap()}
             {TimeZone()}
             {LockUnlockAllDashboards()}
-            {renderFilterSortSelection()}
-            {renderFilterTypeToggle()}
             {EmailAddress()}
             {renderShiftSettings()}
             {APIAddress()}

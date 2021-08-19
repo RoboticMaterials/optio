@@ -1,4 +1,5 @@
 import { isObject } from "./object_utils";
+import {useParams} from 'react-router-dom'
 import {
     BASIC_LOT_TEMPLATE,
     BASIC_LOT_TEMPLATE_ID, BIN_IDS,
@@ -17,6 +18,7 @@ import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
 import { getProcessStations } from './processes_utils'
 import { getLoadStationId } from './route_utils'
 import { jsDateToString } from './card_utils'
+
 
 export const getDisplayName = (lotTemplate, fieldName, fallback) => {
     let returnVal
@@ -473,9 +475,12 @@ export const getAllTemplateFields = () => {
 * Returns array of lots custom fields
 * Each field field includes dataType, fieldName, and value
 * */
-export const getCustomFields = (lotTemplateId, lot, includeNonPreview) => {
+export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
     const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+    const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
+    const dashboards = store.getState().dashboardsReducer.dashboards || {}
+    const currentDashboard = dashboards[dashboardID]
 
     let customFieldValues = []
 
@@ -484,27 +489,45 @@ export const getCustomFields = (lotTemplateId, lot, includeNonPreview) => {
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
 
-    // loop through fields and get relevant data
-    if (isArray(fields)) {
-        fields.flat().forEach((currField) => {
-            const {
-                dataType,
-                fieldName,
-                showInPreview,
-                _id
-            } = currField
+    if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
+      Object.values(currentDashboard.fields).forEach((field) =>{
 
-            // if includeNonPreview, add all.
-            // otherwise, only add if lot has showInPreview set to true
-            if (includeNonPreview || (!includeNonPreview && showInPreview)) {
-                customFieldValues.push({
+        const {
+          fieldName,
+          dataType,
+          _id
+        } = field
+
+        customFieldValues.push({
+          dataType,
+          fieldName,
+          value: getLotField('_id', _id, lot)?.value
+          })
+        })
+      }
+      else{
+        // loop through fields and get relevant data
+        if (isArray(fields)) {
+            fields.flat().forEach((currField) => {
+                const {
                     dataType,
                     fieldName,
-                    value: syncWithTemplate ? getLotField("_id", _id, lot)?.value : currField?.value,
-                })
-            }
-        })
-    }
+                    showInPreview,
+                    _id
+                } = currField
+
+                  // if includeNonPreview, add all.
+                  // otherwise, only add if lot has showInPreview set to true
+                  if (includeNonPreview || (!includeNonPreview && showInPreview)) {
+                      customFieldValues.push({
+                          dataType,
+                          fieldName,
+                          value: syncWithTemplate ? getLotField("_id", _id, lot)?.value : currField?.value,
+                      })
+                  }
+            })
+        }
+      }
 
     return customFieldValues
 }

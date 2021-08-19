@@ -198,6 +198,9 @@ export const FORM_STATUS = {
     WAITING: 7,
     CANCELLED: 8,
     NOT_STARTED: 9,
+    MERGE_START: 10,
+    MERGE_SUCCESS: 11,
+    MERGE_ERROR: 12,
 }
 
 

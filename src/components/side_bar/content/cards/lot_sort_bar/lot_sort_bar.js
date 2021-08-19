@@ -32,7 +32,6 @@ const LotSortBar = (props) => {
     } = props
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
-
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
     useEffect(() => {
@@ -79,7 +78,7 @@ const LotSortBar = (props) => {
             <styled.Description
                 css={props.descriptionCss}
             >
-                
+
                 Sort
             </styled.Description>
             <styled.ContentContainer>

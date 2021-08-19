@@ -292,6 +292,7 @@ const FormComponent = (props) => {
 
         close()
     }
+
     useEffect(() => {
         if (!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
             const cardFieldsWithoutValue = values.fields.map((currRow) => {
@@ -873,6 +874,16 @@ const FormComponent = (props) => {
                                         />
                                     </LabeledButton>
                                 }
+
+                                <Button
+                                    schema={'lots'}
+                                    type={"button"}
+                                    disabled={submitDisabled}
+                                    style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0, position: 'absolute', right: '8rem' }}
+                                    onClick={onImportXML}
+                                >
+                                    Import xml file
+                                </Button>
 
                                 <Button
                                     schema={'lots'}
