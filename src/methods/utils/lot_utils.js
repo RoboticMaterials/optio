@@ -489,7 +489,7 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
 
-    if(!!stationBasedLots && !!currentDashboard){
+    if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
       Object.values(currentDashboard.fields).forEach((field) =>{
 
         const {

@@ -18,7 +18,8 @@ const StatusList = (props) => {
 		onCreateClick,
 		onMergeClick,
 		onCreateAllClick,
-		displayNames
+		displayNames,
+		mergeDisabled,
 	} = props
 
 	return (
@@ -33,6 +34,8 @@ const StatusList = (props) => {
 				data={data}
 				onCreateClick={onCreateClick}
 				onMergeClick = {onMergeClick}
+				mergeDisabled = {mergeDisabled}
+
 			/>
 
 			<StatusListFooter

@@ -12,6 +12,7 @@ const StatusListBody = (props) => {
 		onCreateClick,
 		onMergeClick,
 		displayNames,
+		mergeDisabled,
 	} = props
 
 	const renderData = () => {
@@ -41,6 +42,7 @@ const StatusListBody = (props) => {
 					displayNames={displayNames}
 					onCreateClick={onCreateClick}
 					onMergeClick={onMergeClick}
+					mergeDisabled = {mergeDisabled}
 					created={created}
 					key={currIndex}
 					index={currIndex}

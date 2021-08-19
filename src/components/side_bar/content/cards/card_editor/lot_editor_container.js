@@ -154,7 +154,6 @@ const LotEditorContainer = (props) => {
         var header = ""
         var csv = ""
 
-        console.log(xml.getElementsByTagName('Row').length)
         if(xml.getElementsByTagName('Row').length!==0){
           newXml = xml.getElementsByTagName('Row')
           var fieldName = ''
@@ -183,7 +182,7 @@ const LotEditorContainer = (props) => {
 
             if(fieldName === 'ViewItem' && sendIt=== false) sendIt = true
           }
-          csv+=header + '\n'
+          csv+=header + 'AssemblyQuantity' + '\n'
 
           for (const index in newXml){
 
@@ -207,7 +206,7 @@ const LotEditorContainer = (props) => {
 
             if(!!inViewItem && !!inViewItems){
               if(fieldName === 'ViewItem'){
-                csv+= row +'\n'
+                csv+= row + "1" + '\n'
                 row = ''
               }
             else{
@@ -222,31 +221,21 @@ const LotEditorContainer = (props) => {
       }
         else if(!!xml.getElementsByTagName('ViewItem').length!==0){
           newXml[0].children.forEach((attribute, index, array) => {
-            if(index === (array.length-1)){
-              header += attribute.name
-            }
-            else{
               header += attribute.name + '\t'
-            }
           })
 
-          csv += header + '\n'
+          csv += header + 'AssemblyQuantity' + '\n'
 
           newXml.forEach((lot, index, array) => {
             var row = ""
             lot.children.forEach((child, index, array) => {
-              if(index===(array.length-1)){
-                row += child.value
-              }
-              else{
                 row += child.value + '\t'
-              }
             })
             if(index===(array.length-1)){
-              csv += row
+              csv += row + "1"
             }
             else{
-              csv += row +'\n'
+              csv += row + "1" + '\n'
             }
           })
         }
@@ -663,6 +652,34 @@ const LotEditorContainer = (props) => {
         }
     }
 
+    const mergeDisabled = (index) => {
+      const values = mappedValues[index]
+      let foundMatch = false
+      if (values._id) return	// lot was already created, don't try creating it again
+
+              const {
+                  name: newName,
+                  bins: newBins,
+                  processId: newProcessId,
+                  fields
+              } = values || {}
+
+              const submitItem = {
+                  name: newName,
+                  bins: newBins,
+                  process_id: newProcessId,
+                  lotTemplateId: lotTemplateId,
+                  fields,
+                  lotNumber: index //collectionCount + index
+              }
+
+
+          Object.values(cards).forEach((card) => {
+            if(card.name === submitItem.name) foundMatch = true
+          })
+
+      return !foundMatch
+    }
     const mergeLot = async (index, cb) => {
         const values = mappedValues[index]
         if (values._id) return	// lot was already created, don't try creating it again
@@ -684,63 +701,140 @@ const LotEditorContainer = (props) => {
                 }
 
                 let workOrderNumber = ''
+                let lotName = ''
                 submitItem.fields.forEach((field) => {
+                  lotName = submitItem.name
                   if(field[0].fieldName ==='WorkOrderNumber')
                   workOrderNumber = field[0].value
                 })
 
                 //Not robust or optimal... fix after alpen call
                 let foundMerge  = false
+                let foundMergeField = false
                 let cardID = null
                 let spreadExisting = true
                 let lotItem = {}
                 var updatedFields = {}
                 Object.values(cards).forEach((card) => {
-                  card.fields.forEach((field, index) => {
-                    if(field[0].value == workOrderNumber && !!workOrderNumber){
-                      foundMerge = true
-                      cardID = card._id
-                      submitItem.fields.forEach((newField) => {
-                        card.fields.forEach((existingField,index) => {
-                          if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === ''){
-
-                              var updatedField = {
-                                ...existingField[0],
-                                value: newField[0].value
+                  if(!!card.fields){
+                    card.fields.forEach((field, index) => {
+                      if((field[0].value == workOrderNumber && !!workOrderNumber) || card.name === lotName){
+                        foundMerge = true
+                        cardID = card._id
+                        submitItem.fields.forEach((newField) => {
+                          card.fields.forEach((existingField,index) => {
+                            if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === ''){
+                                foundMergeField = true
+                                var updatedField = {
+                                  ...existingField[0],
+                                  value: newField[0].value
+                                }
+                              if(spreadExisting === true){
+                                  updatedFields = {
+                                  ...card.fields,
+                                  [index]: [updatedField]
+                                }
+                                spreadExisting = false
                               }
-                            if(spreadExisting === true){
+                              else{
                                 updatedFields = {
-                                ...card.fields,
-                                [index]: [updatedField]
+                                  ...updatedFields,
+                                  [index]: [updatedField]
+                                }
                               }
-                              spreadExisting = false
-                            }
-                            else{
-                              updatedFields = {
-                                ...updatedFields,
-                                [index]: [updatedField]
+
+                              var fieldArray = []
+                              for(var i in updatedFields) {
+                                fieldArray.push(updatedFields[i])
+                              }
+
+                             lotItem = {
+                                ...card,
+                                fields: fieldArray
                               }
                             }
-
-                            var fieldArray = []
-                            for(var i in updatedFields) {
-                              fieldArray.push(updatedFields[i])
-                            }
-
-                           lotItem = {
-                              ...card,
-                              fields: fieldArray
-                            }
-                          }
+                          })
                         })
-                      })
-                    }
-                  })
+                      }
+                    })
+                  }
               })
 
-            if(foundMerge === true){
-              const result = await dispatchPutCard(lotItem,cardID)
+            if(!!foundMerge && !!foundMergeField){
+            //  const result = await dispatchPutCard(lotItem,cardID)
               foundMerge = false
+              foundMergeField = false
+
+              await dispatchPutCard(lotItem, cardID)
+                  .then((result) => {
+                      if (result) {
+                          // successfully POSTed
+                          const {
+                              _id = null
+                          } = result || {}
+
+                          // update status, POST success
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Successfully merged lot!`,
+                                      code: FORM_STATUS.MERGE_SUCCESS
+                                  }
+                              }, index)
+                          })
+
+                          // update values (only difference should be ID added and maybe lotNumber was different
+                          setMappedValues((previous) => {
+                              return immutableSet(previous, {
+                                  ...result
+                              }, index)
+                          })
+
+                          // call callback if provided
+                          cb && cb(_id)
+                      }
+
+                      else {
+                          // POST error, update status
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Error merging lot.`,
+                                      code: FORM_STATUS.MERGE_ERROR
+                                  }
+                              }, index)
+                          })
+                      }
+                  })
+                  .catch((err) => {
+
+                      setMappedStatus((previous) => {
+                          const previousStatus = previous[index] || {}
+                          return immutableSet(previous, {
+                              ...previousStatus,
+                              resourceStatus: {
+                                  message: `Error merging lot.`,
+                                  code: FORM_STATUS.MERGE_ERROR
+                              }
+                          }, index)
+                      })
+                  })
+            }
+            else{
+              setMappedStatus((previous) => {
+                  const previousStatus = previous[index] || {}
+                  return immutableSet(previous, {
+                      ...previousStatus,
+                      resourceStatus: {
+                          message: `No Mergeable Fields Found!`,
+                          code: FORM_STATUS.MERGE_ERROR
+                      }
+                  }, index)
+              })
             }
         }
 
@@ -979,6 +1073,7 @@ const LotEditorContainer = (props) => {
                     }}
                     onCreateClick={createLot}
                     onMergeClick = {mergeLot}
+                    mergeDisabled = {mergeDisabled}
                     onCreateAllClick={async () => {
                         for (let i = 0; i < mappedValues.length; i++) {
                             setPending(i)

@@ -48,6 +48,7 @@ const StatusListItem = (props) => {
 		created,
 		onCreateClick,
 		onMergeClick,
+		mergeDisabled,
 		displayNames
 	} = props
 
@@ -108,6 +109,7 @@ const StatusListItem = (props) => {
 	}, [warnings])
 
 	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
+
 
 	const renderErrorTooltip = (mappedErrors) => {
 
@@ -230,6 +232,7 @@ const StatusListItem = (props) => {
 					type={"button"}
 					label={"Merge"}
 					schema={"processes"}
+					disabled = {mergeDisabled(index)}
 					onClick={(e) => {
 						onMergeClick(index)
 					}}
