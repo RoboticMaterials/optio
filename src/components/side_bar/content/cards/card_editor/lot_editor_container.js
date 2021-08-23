@@ -144,7 +144,7 @@ const LotEditorContainer = (props) => {
         return () => {
             clearInterval(lotNumberTimer)
         }
-    }, [])
+    }, [lotTemplates])
 
     useEffect(() => {
       if(!!filesContent[0]){
@@ -153,6 +153,8 @@ const LotEditorContainer = (props) => {
         var newXml = xml.getElementsByTagName('ViewItem')
         var header = ""
         var csv = ""
+        let workOrderIndex = null
+        let lineNumberIndex = null
 
         if(xml.getElementsByTagName('Row').length!==0){
           newXml = xml.getElementsByTagName('Row')
@@ -220,8 +222,13 @@ const LotEditorContainer = (props) => {
         csv = csv.replace(/^\s+|\s+$/g, "") //get rid of trailing spaces
       }
         else if(!!xml.getElementsByTagName('ViewItem').length!==0){
+          let foundDuplicate = false
+
+
           newXml[0].children.forEach((attribute, index, array) => {
               header += attribute.name + '\t'
+              if(attribute.name === 'WorkOrderNumber') workOrderIndex = index
+              if(attribute.name === 'LineItemMasterNumber') lineNumberIndex = index
           })
 
           csv += header + 'AssemblyQuantity' + '\n'
@@ -238,32 +245,74 @@ const LotEditorContainer = (props) => {
               csv += row + "1" + '\n'
             }
           })
-        }
 
+        }
           var rows = csv.split("\n");
           let table = []
+          let dashedArray = []
+          let dashedLineArray = []
+
+          for(var y in rows){
+            var cells = rows[y].split("\t")
+            for(const x in cells){
+              if(!!workOrderIndex && x==workOrderIndex){
+                dashedArray.push(cells[x])
+              }
+              else if(!!lineNumberIndex && x==lineNumberIndex){
+                dashedLineArray.push(cells[x])
+              }
+            }
+          }
+          if(!!workOrderIndex && !!lineNumberIndex){
+            for(var i = 0; i<dashedArray.length; i++){
+              let duplicateCount = 1
+              for(var j = i+1; j<dashedArray.length; j++){
+                if (dashedArray[j] == dashedArray[i]){
+                  if(duplicateCount == 1){
+                    dashedArray[i]= dashedArray[i]+ '-' + (duplicateCount)
+                    dashedLineArray[i]= dashedLineArray[i]+ '-' + (duplicateCount)
+                  }
+                    dashedArray[j]= dashedArray[j]+ '-' + (duplicateCount+1)
+                    dashedLineArray[j]= dashedLineArray[j]+ '-' + (duplicateCount+1)
+                    duplicateCount++
+                }
+              }
+            }
+          }
+
 
           for (var y in rows) {
-
               var cells = rows[y].split("\t")
-
               for (const x in cells) {
-
+                if(!!workOrderIndex && x==workOrderIndex){
+                  if (table[x]) {
+                      table[x].push(dashedArray[y])
+                  }
+                  else {
+                      table.push([dashedArray[y]])
+                  }
+                }
+                else if(!!lineNumberIndex && x==lineNumberIndex){
+                  if (table[x]) {
+                      table[x].push(dashedLineArray[y])
+                  }
+                  else {
+                      table.push([dashedLineArray[y]])
+                  }
+                }
+                else{
                   if (table[x]) {
                       table[x].push(cells[x])
                   }
                   else {
                       table.push([cells[x]])
                   }
+                }
               }
           }
           setPasteTable(table)	// set paste table
+          setShowSimpleModal(true)
 
-          if (!disablePasteModal) {
-              setTimeout(() => {
-                  setShowSimpleModal(true)
-              }, 0)
-          }
         }
 
         return () => {
@@ -273,7 +322,7 @@ const LotEditorContainer = (props) => {
     // when card id changes, update card
     useEffect(() => {
         setCard(cards[props.cardId] || null)
-    }, [props.cardId])
+    }, [props.cardId, lotTemplates])
 
     const handleSelectLotTemplate = (templateId) => {
 
@@ -431,6 +480,7 @@ const LotEditorContainer = (props) => {
     * This is necessary in order to update initialValues when a lotTemplate is edited
     * */
     useEffect(() => {
+
         // get fields
         const {
             fields
@@ -723,7 +773,8 @@ const LotEditorContainer = (props) => {
                         cardID = card._id
                         submitItem.fields.forEach((newField) => {
                           card.fields.forEach((existingField,index) => {
-                            if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === ''){
+                            if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === '' && newField[0].value!==''){
+                                console.log(newField[0])
                                 foundMergeField = true
                                 var updatedField = {
                                   ...existingField[0],
@@ -1153,7 +1204,11 @@ const LotEditorContainer = (props) => {
                 <SimpleModal
                     isOpen={true}
                     title={plainFiles.length === 1 ? 'Import Event Detected': "Paste Event Detected"}
-                    onRequestClose={() => setShowSimpleModal(false)}
+                    onRequestClose={() => {
+                      setShowSimpleModal(false)
+                      setDisablePasteModal(true)
+                      setPasteTable([])
+                    }}
                     onCloseButtonClick={() => setShowSimpleModal(false)}
                     handleOnClick2={() => {
                         setShowPasteMapper(true)
@@ -1170,6 +1225,7 @@ const LotEditorContainer = (props) => {
                     handleOnClick1={() => {
                         setShowSimpleModal(false)
                         setDisablePasteModal(true)
+                        setPasteTable([])
                     }}
                     button_2_text={"Yes"}
                     button_1_text={"No"}

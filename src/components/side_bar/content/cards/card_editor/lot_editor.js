@@ -210,6 +210,35 @@ const FormComponent = (props) => {
         formikProps.validateForm()
     }, [])
 
+    useEffect(() => {
+        if (!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
+            const cardFieldsWithoutValue = values.fields.map((currRow) => {
+
+                return currRow.map((currField) => {
+                    const {
+                        value,
+                        ...rest
+                    } = currField || {}
+
+                    return {
+                        ...rest
+                    }
+                })
+            })
+
+            const isEquivalent = getIsEquivalent(templateFields, cardFieldsWithoutValue)
+
+            const ignoreSyncWarning = localReducer?.localSettings?.[IGNORE_LOT_SYNC_WARNING]?.[cardId]
+
+            if (!ignoreSyncWarning) {
+                setShowFieldModal(!isEquivalent)
+            }
+
+            setTemplateFieldsChanged(!isEquivalent)
+            setCheckedCardAndTemplateFields(true)
+        }
+    }, [templateFields, cardFields, lotTemplateId, lotTemplate])
+
     /*
     * handles when enter key is pressed
     *
@@ -293,34 +322,7 @@ const FormComponent = (props) => {
         close()
     }
 
-    useEffect(() => {
-        if (!checkedCardAndTemplateFields && (formMode !== FORM_MODES.CREATE) && !values.syncWithTemplate) {
-            const cardFieldsWithoutValue = values.fields.map((currRow) => {
 
-                return currRow.map((currField) => {
-                    const {
-                        value,
-                        ...rest
-                    } = currField || {}
-
-                    return {
-                        ...rest
-                    }
-                })
-            })
-
-            const isEquivalent = getIsEquivalent(templateFields, cardFieldsWithoutValue)
-
-            const ignoreSyncWarning = localReducer?.localSettings?.[IGNORE_LOT_SYNC_WARNING]?.[cardId]
-
-            if (!ignoreSyncWarning) {
-                setShowFieldModal(!isEquivalent)
-            }
-
-            setTemplateFieldsChanged(!isEquivalent)
-            setCheckedCardAndTemplateFields(true)
-        }
-    }, [templateFields, cardFields, lotTemplateId])
 
     const previousTemplateId = usePrevious(lotTemplateId)
 
@@ -1330,16 +1332,14 @@ const LotEditor = (props) => {
     }, [card, lotTemplate, lotTemplateId, collectionCount])
 
     useEffect(() => {
-        dispatchGetLotTemplates()
         dispatchSetSelectedLotTemplate(null)
+        dispatchGetLotTemplates()
 
         // return () => {
         // 	close()
         // }
 
     }, [])
-
-
 
     if (loaded) {
         return (
