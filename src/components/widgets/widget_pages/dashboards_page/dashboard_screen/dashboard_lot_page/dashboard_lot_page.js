@@ -72,7 +72,6 @@ const DashboardLotPage = (props) => {
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchGetCards = () => dispatch(getCards())
-
     // Used to show dashboard input
     useEffect(() => {
         let containsInput = false
@@ -86,6 +85,10 @@ const DashboardLotPage = (props) => {
 
         setLotContainsInput(containsInput)
     }, [currentLot])
+
+    useEffect(() => {
+      setIsFinish(false)
+    }, [cards])
 
     useEffect(() => {
         if (lotID) {
@@ -106,6 +109,8 @@ const DashboardLotPage = (props) => {
                 const returnedRoute = getCurrentRouteForLot(currentLot, stationID)
                 setCurrentTask(returnedRoute)
             }
+
+
 
             // go back if lot has no items at this station (ex. just moved them all).
             // Dont go back though if the prevStation was a warehouse

@@ -424,7 +424,7 @@ const CardZone = ((props) => {
                 ...rest
             } = card
 
-            const totalQuantity = getLotTotalQuantity(card)
+            const totalQuantity = getLotTotalQuantity(card, card)
             // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
             var matchesFilter = false
             if(!!multipleFilters){

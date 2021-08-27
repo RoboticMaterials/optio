@@ -30,7 +30,7 @@ const DashboardLotFields = (props) => {
     // If its a warehouse then use station before this one
     const count = !!warehouse ? getBinQuantity(currentLot, getPreviousWarehouseStation(currentLot.process_id, stationID)._id) : getBinQuantity(currentLot, stationID)
 
-    const totalQuantity = getLotTotalQuantity(currentLot)
+    const totalQuantity = getLotTotalQuantity(currentLot, currentLot)
     const processName = processes[currentLot.process_id]?.name
 
     const renderLotFields = useMemo(() => {

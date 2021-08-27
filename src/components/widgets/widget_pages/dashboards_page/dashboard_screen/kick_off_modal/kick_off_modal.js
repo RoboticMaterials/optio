@@ -232,7 +232,7 @@ const KickOffModal = (props) => {
                 } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
-                const totalQuantity = getLotTotalQuantity({ bins })
+                const totalQuantity = getLotTotalQuantity({ bins }, currCard)
                 const templateValues = getCustomFields(lotTemplateId, currCard)
                 return (
                     <Lot

@@ -45,10 +45,8 @@ export const ListItem = styled.div`
     padding: 0rem 1rem;
 
     border-radius: 0.5rem;
-    border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};
 
-    box-shadow: ${props => props.theme.cardShadow};
     cursor: pointer;
 
     &:hover {
