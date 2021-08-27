@@ -8,22 +8,10 @@ import {useSelector} from "react-redux";
 /**
  * Creates a default route based on store state
  */
-export const generateDefaultRoute = (obj) => {
-    const storeState = store.getState()
-    const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-
-    const currentMapId = storeState.settingsReducer.settings.currentMapId
-    const maps = storeState.mapReducer.maps
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-
+export const generateDefaultRoute = (processId) => {
     return {
         ...defaultTask,
-        device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-        handoff: true,
-        map_id: currentMap._id,
-        load: {...defaultTask.load},
-        unload: {...defaultTask.unload},
-        obj: obj? obj : null,
+        processId,
         _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
@@ -234,20 +222,32 @@ export const isStationInRoutes = (routes, stationId) => {
         if(containsStation) return containsStation
 
             const {
-                load,
-                unload
+                start,
+                end
             } = currRoute || {}
 
-        const {
-            station: loadStationId
-        } = load || {}
-
-        const {
-            station: unloadStationId
-        } = unload || {}
-
-        if((loadStationId === stationId) || (unloadStationId === stationId)) containsStation = true
+        if((start === stationId) || (end === stationId)) {
+            return true;
+        }
     }
 
-    return containsStation
+    return false;
+}
+
+export const isStationStartRoute = (routes, stationId) => {
+
+    for (const currRoute of routes) {
+        if (currRoute.end === stationId) return false;
+    }
+    return true;
+
+}
+
+export const isStationEndRoute = (routes, stationId) => {
+
+    for (const currRoute of routes) {
+        if (currRoute.start === stationId) return false;
+    }
+    return true;
+
 }

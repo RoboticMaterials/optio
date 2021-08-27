@@ -250,6 +250,7 @@ const NumberField = (props) => {
 					color={themeContext.bad}
 					ContainerComponent={styled.IconContainerComponent}
 				/>}
+				{...props}
 
 			/>
 	)

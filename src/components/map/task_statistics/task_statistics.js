@@ -39,6 +39,8 @@ const TaskStatistics = (props) => {
 
     const location = useLocation()
 
+    const locations = { ...stations, ...positions }
+
     useEffect(() => {
         onGetTasksAnalysis()
 
@@ -52,8 +54,8 @@ const TaskStatistics = (props) => {
 
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
-        const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
-        const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
+        const startPos = locations[task.load]
+        const endPos = locations[task.unload]
         const routeProcesses = getRouteProcesses(task._id)
 
 

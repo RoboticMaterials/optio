@@ -683,13 +683,7 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask && (hasStartAndEnd || this.props.editingTask) &&
-                          <Suspense fallback = {<></>}>
-                            <TaskPaths d3={this.d3} />
-                          </Suspense>
-                        }
-
-                        {!!this.props.selectedHoveringTask &&
+                        {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
                           <Suspense fallback = {<></>}>
                             <TaskPaths d3={this.d3} />
                           </Suspense>
@@ -802,17 +796,17 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
+                    {/* {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
                       <Suspense fallback = {<></>}>
                         <TaskStatistics d3={this.d3} />
                       </Suspense>
-                    }
+                    } */}
 
-                    {!!this.props.showRouteConfirmation &&
+                    {/* {!!this.props.showRouteConfirmation &&
                       <Suspense fallback = {<></>}>
                         <RouteConfirmation d3={this.d3} />
                       </Suspense>
-                    }
+                    } */}
 
                     {!!this.props.devices &&
                         Object.values(this.props.devices).map((device) => {

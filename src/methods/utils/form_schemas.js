@@ -626,13 +626,13 @@ export const routeSchema = Yup.object().shape({
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
-    obj: Yup.object().shape({
-        name: Yup.string()
-            .required('Please enter a name.'),
-    }).nullable(),
-    track_quantity: Yup.bool().required('Please select whether to use quantities or fractions.'),
-    load: routeStationSchema, //.required("Required."),
-    unload: routeStationSchema//.required("Required."),
+    part: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+
+    load: Yup.string().required('Select a load location'),
+    unload: Yup.string().required('Select an unload location')
 })
 
 export const hilModalSchema = Yup.object().shape({
@@ -642,6 +642,26 @@ export const hilModalSchema = Yup.object().shape({
 
 export const routesSchema = Yup.array().of(
     routeSchema
+).test(
+    'doRoutesConverge',
+    'All routes of the process must converge at a single station.',
+    (routes) => {
+        let loadStations = routes.map(route => route.load);
+        let unloadStations = routes.map(route => route.unload);
+
+        let numTerminalStations = 0;
+        for (var i=0; i<unloadStations.length; i++) {
+            const unloadStationA = unloadStations[i];
+
+            if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
+                if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
+                    numTerminalStations += 1;
+                }
+            }
+        }
+
+        return numTerminalStations === 1;
+    }
 )
 
 export const processSchema = Yup.object().shape({
@@ -650,7 +670,6 @@ export const processSchema = Yup.object().shape({
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
     routes: routesSchema,
-    newRoute: routeSchema.nullable(),
 
 })
 

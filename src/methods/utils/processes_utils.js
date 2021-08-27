@@ -15,6 +15,8 @@ import { isArray, isNonEmptyArray } from "./array_utils";
  */
 export const isBrokenProcess = (routes) => {
 
+    return false;
+
     // can't be broken if there is only 1 route
     if (routes.length > 1) {
         // Loops through and
@@ -455,5 +457,93 @@ export const getPreviousWarehouseStation = (processID, stationID) => {
     }
 }
 
+/***
+ * All processes must end in single stations. This function returns binary whether or not that is true for 
+ * a given set of routes
+ */
+export const doRoutesConverge = (routes) => {
+    let loadStations = routes.map(route => route.load);
+    let unloadStations = routes.map(route => route.unload);
 
+    let numTerminalStations = 0;
+    for (var unloadStation of unloadStations) {
+        if (loadStations.find(loadStation => loadStation === unloadStation) === undefined) {
+            numTerminalStations += 1;
+        }
+    }
+
+    return numTerminalStations === 1;
+}
+
+const findProcessStartNodes = (routes) => {
+    let loadStations = routes.map(route => route.load);
+    let unloadStations = routes.map(route => route.unload);
+
+    let startNodes = [];
+    for (var loadStation of loadStations) {
+        if (unloadStations.find(unloadStation => unloadStation === loadStation) === undefined) {
+            startNodes.push(loadStation)
+        }
+    }
+
+    return startNodes;
+}
+
+const getNodeIncoming = (node, routes) => {
+    return routes.filter(route => route.unload === node)
+}
+
+const getNodeOutgoing = (node, routes) => {
+    return routes.filter(route => route.load === node)
+}
+
+const removeRoute = (id, routes) => {
+    let removeIdx = routes.findIndex(route => route._id === id);
+    routes.splice(removeIdx, 1);
+    return routes;
+}
+
+const traverseProcessGraph = (node, routes, flattenedStations, stations) => {
+    console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
+
+    if (node === null) {
+        
+        let startNodes = findProcessStartNodes(routes);
+        if (startNodes.length === 1) {
+            flattenedStations = traverseProcessGraph(startNode, routes, deepCopy(flattenedStations), stations)
+        } else {
+            for (var startNode of startNodes) {
+                console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
+                flattenedStations.push([traverseProcessGraph(startNode, routes, [], stations)])
+            }
+        }
+
+    } else {
+
+        let incomingRoutes = getNodeIncoming(node, routes)
+        let outgoingRoutes = getNodeOutgoing(node, routes)
+        if (incomingRoutes.length > 1) {
+            return flattenedStations;
+        } else if (outgoingRoutes.length === 1) {
+            flattenedStations.push(stations[node].name)
+            routes = removeRoute(outgoingRoutes[0]._id, routes)
+            flattenedStations = traverseProcessGraph(outgoingRoutes[0].unload, routes, deepCopy(flattenedStations), stations)
+        } else {
+            flattenedStations.push(stations[node].name)
+            for (var outgoingRoute of outgoingRoutes) {
+                console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
+                routes = removeRoute(outgoingRoute._id, routes)
+                flattenedStations.push([traverseProcessGraph(outgoingRoute.unload, routes, [], stations)])
+            }
+        }
+    }
+
+    return flattenedStations;
+}
+
+export const flattenProcessStations = (routes, stations) => {
+
+    return traverseProcessGraph(null, routes, [], stations)
+
+}
 

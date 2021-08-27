@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useEffect, useContext, useMemop } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
@@ -46,7 +46,9 @@ const LoadUnloadFields = (props) => {
     let humanLocation = false
     const mirEnabled = isMiRTask(selectedTask)
 
-    if ((!!stations[selectedTask.load.position] && stations[selectedTask.load.position].type === 'human') || (!!stations[selectedTask.unload.position] && stations[selectedTask.unload.position].type === 'human')) {
+    console.log(selectedTask, stations[selectedTask.load],stations[selectedTask.unload])
+
+    if (!!stations[selectedTask.load] && !!stations[selectedTask.unload]) {
         humanLocation = true
 
         if (!isOnlyHumanTask(selectedTask)) {
@@ -62,6 +64,7 @@ const LoadUnloadFields = (props) => {
             device_types: [DEVICE_CONSTANTS.HUMAN, DEVICE_CONSTANTS.MIR_100],
         })
     }
+    
 
     return (
         <>
@@ -121,7 +124,7 @@ const LoadUnloadFields = (props) => {
 
                         <TimePickerField
                             mapInput={(value) => {
-                                if (value) {
+                                if (value && typeof value === String) {
                                     const splitVal = value.split(':')
                                     return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
                                 }
@@ -136,8 +139,8 @@ const LoadUnloadFields = (props) => {
                             className="xxx"
                             autocomplete={"off"}
                             allowEmpty={false}
-                            defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                            defaultOpenValue={!!selectedTask.timeout ? moment().set({ 'minute': selectedTask.timeout.split(':')[0], 'second': selectedTask.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                            defaultValue={!!selectedTask.timeout ? moment().set({ 'minute': selectedTask.timeout.split(':')[0], 'second': selectedTask.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                             onChange={(time) => {
                                 dispatchSetSelectedTask({
                                     ...selectedTask,

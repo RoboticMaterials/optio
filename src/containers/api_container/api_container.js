@@ -435,6 +435,7 @@ const ApiContainer = (props) => {
         await onGetDashboards();
         await onGetCards()
         await onGetProcesses()
+        await onGetTasks();
 
         /*
         * For now, this MUST come last.

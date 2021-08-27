@@ -59,7 +59,7 @@ const LocationSvg = (props) => {
             transform={`translate(${location.x},${location.y}) rotate(${-location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             {((settings.mapApps.labels || isSelected) && hoveringInfo?.id !== location?._id) && 
-                <text y={-16} fontSize="0.7em" dominant-baseline="middle" text-anchor="middle">{location.name}</text>
+                <text y={-16} fontSize="0.7em" dominantBaseline="middle" textAnchor="middle">{location.name}</text>
             }
             <defs>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react"
+import React, { useEffect, useState, memo, useMemo } from "react"
 import moment from 'moment';
 
 // components internal
@@ -13,7 +13,7 @@ import PropTypes from "prop-types"
 // utils
 import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
-import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
+import { getProcessStationsSorted, flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
 
 // styles
@@ -112,6 +112,26 @@ const CardZone = ((props) => {
         }
         return date;
     }
+
+    useEffect(() => {
+        const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
+        let flattenedProcessStationIds = flattenProcessStations(processRoutes, stations)
+        console.log(flattenedProcessStationIds)
+
+        const convertIdToName = (layer) => {
+            console.log(layer)
+            if (typeof layer == 'string') {
+                return stations[layer].name;
+            } else {
+                let layers = []
+                for (var l of layer) {
+                    layers.push(convertIdToName(l));
+                }
+            }
+        }
+        // console.log(flattenedProcessStationIds)
+        // console.log(convertIdToName(flattenedProcessStationIds))
+    }, [])
 
     // Useeffect for cycle times
     // Stations are a dependency because that is where the manual cycle time is stored
@@ -487,7 +507,7 @@ const CardZone = ((props) => {
     * Renders a {StationColumn} for each entry in {cardsSorted}
     *
     * */
-    const renderStationColumns = () => {
+    const renderStationColumns = useMemo(() => {
 
         // loop through each entry in {cardsSorted} and return a {StationsColumn}
         return Object.values(cardsSorted).map((obj, index) => {
@@ -524,7 +544,7 @@ const CardZone = ((props) => {
                 />
             )
         })
-    }
+    }, [cardsSorted, stations, routes])
 
     return (
         <styled.Container style={{ background: 'white' }}>
@@ -545,7 +565,7 @@ const CardZone = ((props) => {
                 onAddLotClick={() => handleAddLotClick(processId)}
             />
 
-            {renderStationColumns()}
+            {renderStationColumns}
 
             <FinishColumn
                 setSelectedCards={setSelectedCards}
