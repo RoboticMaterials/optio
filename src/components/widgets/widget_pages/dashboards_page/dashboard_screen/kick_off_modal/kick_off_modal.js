@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 // external components
 import Modal from 'react-modal';
 import { useDispatch, useSelector } from "react-redux";
+import {useParams} from 'react-router-dom'
 
 // internal components
 import Button from "../../../../../basic/button/button";
@@ -38,6 +39,12 @@ const KickOffModal = (props) => {
         dashboard,
         onSubmit
     } = props
+
+    const params = useParams()
+
+    const {
+      dashboardID
+    } = params
 
     // get current buttons, default to empty array
     const dashboardId = dashboard?._id?.$oid
@@ -233,7 +240,7 @@ const KickOffModal = (props) => {
 
                 const count = bins["QUEUE"]?.count || 0
                 const totalQuantity = getLotTotalQuantity({ bins }, currCard)
-                const templateValues = getCustomFields(lotTemplateId, currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard, dashboardID)
                 return (
                     <Lot
                         templateValues={templateValues}

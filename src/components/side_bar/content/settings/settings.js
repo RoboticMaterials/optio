@@ -297,7 +297,6 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-
                         <styled.RowContainer>
                             <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
                             <Switch

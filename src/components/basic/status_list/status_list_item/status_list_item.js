@@ -47,6 +47,8 @@ const StatusListItem = (props) => {
 		showBottomBorer,
 		created,
 		onCreateClick,
+		onMergeClick,
+		mergeDisabled,
 		displayNames
 	} = props
 
@@ -107,6 +109,7 @@ const StatusListItem = (props) => {
 	}, [warnings])
 
 	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
+
 
 	const renderErrorTooltip = (mappedErrors) => {
 
@@ -222,6 +225,16 @@ const StatusListItem = (props) => {
 					disabled={submitDisabled}
 					onClick={(e) => {
 						onCreateClick(index)
+					}}
+				/>
+
+				<Button
+					type={"button"}
+					label={"Merge"}
+					schema={"processes"}
+					disabled = {mergeDisabled(index) || resourceCode === FORM_STATUS.CREATE_SUCCESS || resourceCode === FORM_STATUS.MERGE_SUCCESS}
+					onClick={(e) => {
+						onMergeClick(index)
 					}}
 				/>
 			</styled.StatusContainer>

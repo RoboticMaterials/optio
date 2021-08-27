@@ -7,7 +7,7 @@ import Lot from "./lot"
 import PropTypes from 'prop-types'
 
 import { useSelector } from "react-redux"
-
+import {useParams} from 'react-router-dom'
 // utils
 import { getBinQuantity, getCustomFields, getLotTotalQuantity } from "../../../../../methods/utils/lot_utils"
 
@@ -21,6 +21,11 @@ const LotContainer = (props) => {
         quantity,
         ...rest
     } = props
+
+    const params = useParams()
+    const {
+      dashboardID
+    } = params
 
     const lot = useSelector(state => { return state.cardsReducer.cards[lotId] }) || {}
     const {
@@ -36,8 +41,8 @@ const LotContainer = (props) => {
 
     const processName = useMemo(() => process.name, [process])
     const stationName = useMemo(() => station.name, [station])
-    const templateValues = useMemo(() => getCustomFields(lotTemplateId, lot), [lotTemplateId, lot])
     const totalQuantity = useMemo(() => getLotTotalQuantity({ bins }, lot), [bins])
+    const templateValues = useMemo(() => getCustomFields(lotTemplateId, lot, dashboardID), [lotTemplateId, lot, dashboardID])
     const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (
