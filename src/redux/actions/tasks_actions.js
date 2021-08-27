@@ -3,6 +3,10 @@ import {
     GET_TASKS_SUCCESS,
     GET_TASKS_FAILURE,
 
+    GET_TASK_STARTED,
+    GET_TASK_SUCCESS,
+    GET_TASK_FAILURE,
+
     POST_TASK_STARTED,
     POST_TASK_SUCCESS,
     POST_TASK_FAILURE,
@@ -60,9 +64,8 @@ export const getTasks = () => {
             const tasks = await api.getTasks();
 
             const normalizedTasks = {}
-            tasks.map((task) => {
+            tasks.forEach((task) => {
                 normalizedTasks[task._id] = task
-                return task
             })
 
             return onSuccess(normalizedTasks);
@@ -84,7 +87,7 @@ export const getTasks = () => {
 //       dispatch({ type: GET_TASK_STARTED });
 //     }
 //     function onSuccess(response) {
-//       dispatch({ type: GET_TASK_SUCCESS, payload: response });
+//       dispatch({ type: GET_TASK_SUCCESS, payload: {id: task_id, task: response} });
 //       return response;
 //     }
 //     function onError(error) {
@@ -122,12 +125,10 @@ export const postTask = (task) => {
 
         try {
             onStart();
-            if(!!task.new){
-                delete task.new
-            }
-            if(task.changed) {
-                delete task.changed
-            }
+            delete task.new
+            delete task.isNew
+            delete task.changed
+
             const newTask = await api.postTask(task);
             return onSuccess(newTask);
         } catch (error) {
@@ -156,12 +157,8 @@ export const putTask = (task, ID) => {
         try {
             onStart();
             let taskCopy = deepCopy(task)
-            if(!!taskCopy.new){
-                delete taskCopy.new
-            }
-            if(taskCopy.changed) {
-                delete taskCopy.changed
-            }
+            delete taskCopy.new
+            delete taskCopy.changed
             // delete taskCopy._id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)

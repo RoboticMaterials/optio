@@ -202,6 +202,10 @@ export const setSelectedProcess = (process) => {
     return { type: 'SET_SELECTED_PROCESS', payload: process }
 }
 
+export const setProcessAttributes = (id, attr) => {
+    return { type: 'SET_PROCESS_ATTRIBUTES', payload: { id, attr } }
+}
+
 export const editingProcess = (bool) => {
     return { type: EDITING_PROCESS, payload: bool }
 }

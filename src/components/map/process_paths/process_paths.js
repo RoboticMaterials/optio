@@ -30,21 +30,11 @@ const ProcessPaths = (props) => {
 
                 if(routeId === selectedRouteId) return false    // selected route is shown separately, so don't double dip
 
-                const {
-                    position: loadPosition,
-                    station: loadStation
-                } = load || {}
-
-                const {
-                    position: unloadPosition,
-                    station: unloadStation
-                } = unload || {}
-
                 /*
                 * if we aren't editing a task, and it's missing load / unload don't show it.
                 * If we are a task, but its not this one, and this one is missine load / unload, don't show it
                 * */
-                if((!(editingTask) || (editingTask && selectedRouteId !== routeId)) && (!(loadPosition || loadStation) || !(unloadPosition || unloadStation))) return false
+                if((!(editingTask) || (editingTask && selectedRouteId !== routeId)) && (load === null || unload === null)) return false
                 return true
              })
             .map((route, ind) => {

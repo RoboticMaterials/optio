@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import Actions
 import { setTaskAttributes } from '../../../redux/actions/tasks_actions'
-import {getLoadPositionId, getUnloadPositionId} from "../../../methods/utils/route_utils";
+import { getLoadPositionId, getUnloadPositionId } from "../../../methods/utils/route_utils";
 
 export default function TaskPaths(props) {
 
@@ -24,11 +24,9 @@ export default function TaskPaths(props) {
     if (!!route) {
         selectedTask = route
     }
-    else if (!!selectedHoveringTask){
-      selectedTask = selectedHoveringTask
-    }
-
-    else {
+    else if (!!selectedHoveringTask) {
+        selectedTask = selectedHoveringTask
+    } else {
         selectedTask = selectedTaskReducer
     }
 
@@ -36,8 +34,9 @@ export default function TaskPaths(props) {
     const stateRef = useRef()
     stateRef.current = selectedTask
 
-    const loadPositionId = getLoadPositionId(selectedTask)
-    const unloadPositionId = getUnloadPositionId(selectedTask)
+    const loadPositionId = selectedTask?.load
+    const unloadPositionId = selectedTask?.unload
+    
 
     const [mousePos] = useState({ x: 0, y: 0 })
 
@@ -56,28 +55,17 @@ export default function TaskPaths(props) {
     // A callback that will set the load position to null when you press escape
     const [exitTaskPath] = useState(() => e => {
         if (e.key == 'Escape') {
-            let load = stateRef.current.load
-            load.position = null
-            load.station = null
-            dispatch(setTaskAttributes(stateRef.current._id, { load }))
+            dispatch(setTaskAttributes(stateRef.current._id, { load: null }))
         }
     })
 
     // Set the start and end position if they exist
     useEffect(() => {
-      if(!!selectedTask){
-        const loadPositionId = getLoadPositionId(selectedTask)
-        const unloadPositionId = getUnloadPositionId(selectedTask)
-      }
-      else{
-        const loadPositionId = getLoadPositionId(selectedHoveringTask)
-        const unloadPositionId = getUnloadPositionId(selectedHoveringTask)
-      }
-        if (selectedTask !== null || selectedHoveringTask!==null) {
+        if (selectedTask !== null || selectedHoveringTask !== null) {
             if (loadPositionId !== null) {
                 // Check to see if its a station or position
                 const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
-                if(startPos) {
+                if (startPos) {
                     setX1(startPos.x)
                     setY1(startPos.y)
                 }
@@ -85,7 +73,7 @@ export default function TaskPaths(props) {
             if (unloadPositionId !== null) {
                 // Check to see if its a station or position
                 const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
-                if(endPos) {
+                if (endPos) {
                     setX2(endPos.x)
                     setY2(endPos.y)
                 }
@@ -95,8 +83,6 @@ export default function TaskPaths(props) {
 
     // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
     useEffect(() => {
-        const loadPositionId = getLoadPositionId(selectedTask)
-        const unloadPositionId = getUnloadPositionId(selectedTask)
 
         if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
             setX2(x1)

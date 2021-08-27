@@ -1,7 +1,7 @@
+import React, {useEffect, useRef, useState} from 'react'
 import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
-import React, {useEffect, useRef} from "react";
 import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
@@ -15,12 +15,14 @@ import {
 	deleteProcess, deleteProcessClean,
 	postProcesses,
 	putProcesses,
-	setSelectedProcess
+	setSelectedProcess,
+	setProcessAttributes
 } from "../../../../../redux/actions/processes_actions";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+import { doRoutesConverge } from '../../../../../methods/utils/processes_utils';
 
 const ProcessForm = (props) => {
 
@@ -39,10 +41,8 @@ const ProcessForm = (props) => {
 			initialValues = {}
 	} = current || {}
 
-	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-
-
 	const dispatch = useDispatch()
+	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -51,6 +51,7 @@ const ProcessForm = (props) => {
 	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+	const dispatchSetProcessAttributes = async (id, attr) => await dispatch(setProcessAttributes(id, attr))
 	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
@@ -65,6 +66,8 @@ const ProcessForm = (props) => {
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
+	const [processCopy, setProcessCopy] = useState(selectedProcess)	// Initial process, used when changes are not to be saved (onBack)
+	
 	useEffect(() => {
 		return () => {
 			dispatchSetSelectedTask(null)
@@ -74,12 +77,10 @@ const ProcessForm = (props) => {
 
 	useEffect(() => {
 		var {
-			newRoute,
 			...remainingInitialValues
 		} = initialValues
 
 		var {
-			newRoute,
 			changed,
 			...remainingValues
 		} = values
@@ -99,22 +100,22 @@ const ProcessForm = (props) => {
 
 		// extract some values
 		const {
-			newRoute,
 			changed,
 			...remainingValues
 		} = values
 
-		// perform any updates for routes
-		for (const currRoute of remainingValues.routes) {
-			await dispatchSaveFormRoute(currRoute)
-			cleanRoute(currRoute)
-		}
+		// // perform any updates for routes
+		// for (const currRoute of remainingValues.routes) {
+		// 	await dispatchSaveFormRoute(currRoute)
+		// 	cleanRoute(currRoute)
+		// }
 
 		dispatchSetSelectedTask(null) // clear selected task
 		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute._id)
 
 		// if new, POST
 		if (remainingValues.new) {
+			delete remainingValues.new
 			await dispatchPostProcess({
 				...remainingValues,
 				routes: mappedRoutes,
@@ -149,6 +150,7 @@ const ProcessForm = (props) => {
 	const handleBack = async () => {
 		// clear selectedTask, selectedProcess, and set toggleEditing to false
 		await dispatchSetSelectedTask(null)
+		await dispatchSetProcessAttributes(selectedProcess._id, processCopy)
 		dispatchSetSelectedProcess(null)
 		toggleEditingProcess(false)
 	}
@@ -208,29 +210,13 @@ const ProcessForm = (props) => {
 	}
 
 	const handleInitialRoutes = () => {
+		// If process already has routes
 		if(selectedProcess && selectedProcess.routes && Array.isArray(selectedProcess.routes)) {
-			let prevObj = null
-
-			return selectedProcess.routes
-				.filter((currRouteItem) => {
-					return isObject(isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem])
-				})
-				.map((currRouteItem) => {
-
-				const route = isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem]
-
-				const obj = handleDefaultObj(route.obj, prevObj)
-				prevObj = obj
-
-				return {
-					...route,
-					obj
-				}
-			})
+			return selectedProcess.routes.map(routeId => tasks[routeId]);
 		}
 
 		// otherwise initialize to empty array
-		return []
+		return [];
 
 	}
 
@@ -240,14 +226,12 @@ const ProcessForm = (props) => {
 			initialValues={{
 				name: selectedProcess ? selectedProcess.name : "",
 				routes: handleInitialRoutes(),
-				broken: selectedProcess ? selectedProcess.broken : false,
 				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
+				broken: selectedProcess ? selectedProcess.broken : false,
 				new: selectedProcess.new,
-				newRoute: null,
 				map_id: currentMap._id,
 				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
-
 			}}
 
 			// validation control
@@ -302,9 +286,6 @@ const ProcessForm = (props) => {
 
 							// reset changed to false
 							setFieldValue("changed", false)
-
-
-							// resetForm()
 
 						}}
 						onBack={handleBack}

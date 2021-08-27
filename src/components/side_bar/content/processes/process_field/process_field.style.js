@@ -46,6 +46,20 @@ export const Title = styled.h1`
     user-select: none;
 `
 
+export const HelpText = styled.h3`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bg.quinary};
+    text-align: center;
+`
+
+export const ErrorText = styled.h3`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bad};
+    text-align: center;
+`
+
 export const InfoText = styled.span`
   font-family: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
