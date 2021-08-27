@@ -50,6 +50,9 @@ const CardZone = ((props) => {
 
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
+    const showFinish = currentProcess.showFinish === undefined ? true: currentProcess.showFinish
+    const showQueue = currentProcess.showQueue === undefined ? true: currentProcess.showQueue
+
     const routes = useSelector(state => { return state.tasksReducer.tasks })
     const allCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations })
@@ -75,7 +78,7 @@ const CardZone = ((props) => {
 
     // const [cardsSorted, setCardsSorted] = useState({})
     // const [queue, setQueue] = useState([])
-    // const [finished, setFinished] = useState([])
+    // const [finished, setFinished] = useState([])hideQueueFinish
 
     // ============================== LEAD TIME ESTIMATION ====================================== //
     const convertShiftDetails = (details) => {
@@ -421,7 +424,7 @@ const CardZone = ((props) => {
                 ...rest
             } = card
 
-            const totalQuantity = getLotTotalQuantity(card)
+            const totalQuantity = getLotTotalQuantity(card, card)
             // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
             var matchesFilter = false
             if(!!multipleFilters){
@@ -537,25 +540,31 @@ const CardZone = ((props) => {
 
     return (
         <styled.Container style={{ background: 'white' }}>
-            <LotQueue
-                setSelectedCards={setSelectedCards}
-                selectedCards={selectedCards}
-                key={"QUEUE"}
-                sortMode={sortMode}
-                sortDirection={sortDirection}
-                maxHeight={maxHeight}
-                station_id={"QUEUE"}
-                setShowCardEditor={setShowCardEditor}
-                showCardEditor={showCardEditor}
-                stationName={"Queue"}
-                processId={processId}
-                cards={queue}
-                onCardClick={handleCardClick}
-                onAddLotClick={() => handleAddLotClick(processId)}
-            />
+          <>
+          {!!showQueue &&
+              <LotQueue
+                  setSelectedCards={setSelectedCards}
+                  selectedCards={selectedCards}
+                  key={"QUEUE"}
+                  sortMode={sortMode}
+                  sortDirection={sortDirection}
+                  maxHeight={maxHeight}
+                  station_id={"QUEUE"}
+                  setShowCardEditor={setShowCardEditor}
+                  showCardEditor={showCardEditor}
+                  stationName={"Queue"}
+                  processId={processId}
+                  cards={queue}
+                  onCardClick={handleCardClick}
+                  onAddLotClick={() => handleAddLotClick(processId)}
+              />
+            }
+            </>
 
             {renderStationColumns()}
 
+            <>
+            {!!showFinish &&
             <FinishColumn
                 setSelectedCards={setSelectedCards}
                 selectedCards={selectedCards}
@@ -571,6 +580,8 @@ const CardZone = ((props) => {
                 cards={finished}
                 onCardClick={handleCardClick}
             />
+          }
+          </>
         </styled.Container>
     )
 })

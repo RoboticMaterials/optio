@@ -764,7 +764,7 @@ export const ProcessField = (props) => {
 
                 </styled.RowContainer>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem"}}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: ".7rem"}}>
                   <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Statistics</styled.Title>
 
                   <Switch
@@ -772,6 +772,32 @@ export const ProcessField = (props) => {
                       checked={values.showStatistics}
                       onChange={() => {
                         setFieldValue("showStatistics", !values.showStatistics )
+                      }}
+                  />
+
+                </styled.RowContainer>
+
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: ".7rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Queue Column</styled.Title>
+
+                  <Switch
+                      onColor='#FF4B4B'
+                      checked={values.showQueue}
+                      onChange={() => {
+                        setFieldValue("showQueue", !values.showQueue)
+                      }}
+                  />
+
+                </styled.RowContainer>
+
+                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: ".7rem"}}>
+                  <styled.Title style = {{fontSize: "1rem", paddingTop: "0.4rem"}}>Show Finish Column</styled.Title>
+
+                  <Switch
+                      onColor='#FF4B4B'
+                      checked={values.showFinish}
+                      onChange={() => {
+                        setFieldValue("showFinish", !values.showFinish)
                       }}
                   />
 

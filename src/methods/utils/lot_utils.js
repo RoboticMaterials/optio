@@ -376,20 +376,28 @@ export const formatLotNumber = (lotNumber) => {
         ``
 }
 
-export const getLotTotalQuantity = ({ bins }) => {
-    let totalQuantity = 0
+export const getLotTotalQuantity = ({ bins }, lot) => {
 
-    if (isObject(bins)) {
-        Object.values(bins).forEach(currBin => {
-            const {
-                count
-            } = currBin || {}
-
-            totalQuantity = totalQuantity + parseInt(count)
-        })
+    if(!!lot && !!lot.multipleProcesses && !!lot.totalQuantity){
+      return lot.totalQuantity
     }
 
-    return totalQuantity
+    else{
+      let totalQuantity = 0
+
+      if (isObject(bins)) {
+          Object.values(bins).forEach(currBin => {
+              const {
+                  count
+              } = currBin || {}
+
+              totalQuantity = totalQuantity + parseInt(count)
+          })
+      }
+
+      return totalQuantity
+    }
+
 }
 
 export const getBinQuantity = ({ bins }, binId) => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import { useSelector } from 'react-redux';
 
 import * as styled from './location_svg.style'
@@ -7,6 +7,7 @@ import * as styled from './location_svg.style'
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
 import PropTypes from "prop-types";
+import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
 
 const LocationSvg = (props) => {
 
@@ -37,28 +38,33 @@ const LocationSvg = (props) => {
     }
 
     const settings = useSelector(state => state.settingsReducer.settings)
-
+    const [colour, setColour] = useState(color)
     const ellipsis = (text) => {
 
     }
+    useEffect(() => {
+      setColour(color)
 
+    }, [color])
     return (
         <styled.WorkstationGroup
             id={rd3tClassName}
             className={rd3tClassName}
-            style={{ fill: color, stroke: color }}
+            style={{ fill: colour, stroke: colour }}
             onMouseEnter={() => {
                 handleMouseEnter()
+                if(!!isSelected) setColour(LightenDarkenColor('#5c6fff', -50))
             }}
             onMouseDown={() => {
                 handleMouseDown()
             }}
             onMouseLeave={() => {
                 handleMouseLeave()
+                setColour(color)
             }}
             transform={`translate(${location.x},${location.y}) rotate(${-location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
-            {((settings.mapApps.labels || isSelected) && hoveringInfo?.id !== location?._id) && 
+            {((settings.mapApps.labels || isSelected) && hoveringInfo?.id !== location?._id) &&
                 <text y={-16} fontSize="0.7em" dominant-baseline="middle" text-anchor="middle">{location.name}</text>
             }
             <defs>
@@ -85,7 +91,7 @@ const LocationSvg = (props) => {
 
             </defs>
 
-            <g
+        {/*   <g
                 className={`${rd3tClassName}-rot`}
                 onMouseLeave={() => {
                     handleMouseLeave()
@@ -106,6 +112,7 @@ const LocationSvg = (props) => {
                     </>
                 }
             </g>
+            */}
 
             <styled.TranslateGroup
                 className={`${rd3tClassName}-trans`}

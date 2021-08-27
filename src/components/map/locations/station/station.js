@@ -376,7 +376,7 @@ function Station(props) {
                 handleRotating={onRotating}
 
             >
-                
+
             </LocationSvg>
 
             <h1 style={{position: 'absolute', left: '50%', top: '50%'}}>Hello</h1>
