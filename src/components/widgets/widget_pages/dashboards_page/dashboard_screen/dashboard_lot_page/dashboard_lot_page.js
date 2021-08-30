@@ -161,7 +161,7 @@ const DashboardLotPage = (props) => {
             custom,
         } = currentTask || {}
 
-        const Id = currentTask._id
+        const Id = currentTask?._id
 
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
