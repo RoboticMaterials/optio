@@ -61,42 +61,55 @@ const WarehouseModal = (props) => {
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [showTransferLotModal, setShowTransferLotModal] = useState(false)
     const [processTransferOptions, setProcessTransferOptions] = useState([])
+    const [currentLot, setCurrentLot] = useState(null)
+    const isWarehouse = true
 
     // Add warehouse to URL
     // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
+        setCurrentLot(cards[lotID])
         warehouseProcessTransfer(lotID)
         history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
-        close()
     }
 
     const warehouseProcessTransfer = async(lotID) => {
       const proc = []
         Object.values(processes).forEach((process) => {
-          if(process._id!==processes[cards[lotID].process_id]._id){
+        //  if(process._id!==processes[cards[lotID].process_id]._id){
             const processStations = Object.keys(getProcessStations(process,routes))
             for(const ind in processStations){
               if(processStations[ind] === stationID){
                 proc.push([process])
               }
             }
-          }
+        //  }
         })
-        const newProcess = proc[0][0]
-        const currCard = cards[lotID]
-
-        const updatedCard = {
-          ...currCard,
-          process_id: newProcess._id,
-          processName: newProcess.name
+        if(proc.length>1){
+          setProcessTransferOptions(proc)
+          setShowTransferLotModal(true)
         }
+        else if(proc[0][0]._id !== cards[lotID]?.process_id){
+          const newProcess = proc[0][0]
+          const currCard = cards[lotID]
 
-        setProcessTransferOptions(proc)
+          const updatedCard = {
+            ...currCard,
+            process_id: newProcess._id,
+            processName: newProcess.name
+          }
+          console.log(updatedCard)
 
-        await dispatchPutCard(updatedCard, updatedCard._id)
+          await dispatchPutCard(updatedCard, updatedCard._id)
+          close()
+        }
+        else{
+          close()
+        }
       }
+
+
     /*
 * renders an array of buttons for each kick off lot
 * */
@@ -198,6 +211,19 @@ const WarehouseModal = (props) => {
 
 
     return (
+      <>
+        {!!showTransferLotModal &&
+          <TransferLotModal
+            isOpen = {true}
+            close = {()=>{
+              setShowTransferLotModal(false)
+              close()
+            }}
+            options = {processTransferOptions}
+            lot = {currentLot}
+            warehouse = {isWarehouse}
+          />
+        }
         <styled.Container
             isOpen={isOpen}
             contentLabel="Kick Off Modal"
@@ -233,8 +259,8 @@ const WarehouseModal = (props) => {
             <styled.ContentContainer>
                 {renderAvailableLots}
             </styled.ContentContainer>
-
         </styled.Container>
+        </>
     )
 }
 

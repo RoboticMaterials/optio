@@ -22,8 +22,10 @@ const TransferLotModal = (props) => {
         isOpen,
         close,
         options,
-        lot
+        lot,
+        warehouse,
     } = props
+
     const params = useParams()
     const dispatch = useDispatch()
     const history = useHistory()
@@ -48,11 +50,20 @@ const TransferLotModal = (props) => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
     }
 
+    const handleWarehouseTransfer = async(process) =>{
+        const updatedCard = {
+          ...lot,
+          process_id: process[0]._id,
+          processName: process[0].name,
+        }
+        await dispatchPutCard(updatedCard, updatedCard._id)
+        close()
+      }
+
     const handleTransferLot = async(process, quantity) => {
 
       let remainingCount = lot.bins[stationID].count - quantity
       let matchingCard = null
-
       if(!!lot.multipleProcesses){
         Object.values(cards).forEach((card)=>{
           if(card.process_id === process._id && card.lotNumber === lot.lotNumber){
@@ -72,7 +83,6 @@ const TransferLotModal = (props) => {
               }
             }
           }
-          console.log(updatedCard)
 
           onBack()
           await dispatchPutCard(updatedCard, matchingCard._id)
@@ -144,7 +154,6 @@ const TransferLotModal = (props) => {
             }
           }
         }
-        //console.log(updatedCard)
         await dispatchPutCard(updatedCard, lot._id)
 
         await dispatchPostCard(newCard)
@@ -172,8 +181,9 @@ const TransferLotModal = (props) => {
             <>
                 <styled.ListItem
                   onClick = {()=>{
-                    setShowQuantityModal(true)
-                    setSelectedProcess(process)
+                      setSelectedProcess(process)
+                      if(!!warehouse) handleWarehouseTransfer(process)
+                      else setShowQuantityModal(true)
                   }}
                 >
                   <styled.ListItemTitle>
@@ -243,7 +253,11 @@ const TransferLotModal = (props) => {
               }}
           >
               <styled.BodyContainer>
+                {!!warehouse ?
+                    <styled.Title schema={'processes'}>This station is part of multiple processes, please pick a process</styled.Title>
+                  :
                   <styled.Title schema={'processes'}>Select the Destination Process</styled.Title>
+                }
                   <styled.CloseButton
                       className={'fas fa-times'}
                       onClick={() => {close()}}
