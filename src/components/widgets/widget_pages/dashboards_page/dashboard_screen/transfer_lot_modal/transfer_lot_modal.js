@@ -73,7 +73,7 @@ const TransferLotModal = (props) => {
             ...lot.bins,
             [statID]: {
               ...lot.bins[statID],
-              count: quantity
+              count: !!lot.bins[statID]? lot.bins[statID].count + quantity : quantity
             },
             [posID]: {
               ...lot.bins[posID],
