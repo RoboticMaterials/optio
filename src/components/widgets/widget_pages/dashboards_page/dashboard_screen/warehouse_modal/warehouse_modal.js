@@ -71,44 +71,23 @@ const WarehouseModal = (props) => {
     const handleCardClicked = (lotID) => {
         setCurrentLot(cards[lotID])
         warehouseProcessTransfer(lotID)
-        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
+        //history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
     }
 
     const warehouseProcessTransfer = async(lotID) => {
       const proc = []
+      const currCard = cards[lotID]
         Object.values(processes).forEach((process) => {
-        //  if(process._id!==processes[cards[lotID].process_id]._id){
             const processStations = Object.keys(getProcessStations(process,routes))
             for(const ind in processStations){
               if(processStations[ind] === stationID){
                 proc.push([process])
               }
             }
-        //  }
         })
-        if(proc.length>1){
-          setProcessTransferOptions(proc)
-          setShowTransferLotModal(true)
-        }
-        else if(proc[0][0]._id !== cards[lotID]?.process_id){
-          const newProcess = proc[0][0]
-          const currCard = cards[lotID]
-
-          const updatedCard = {
-            ...currCard,
-            process_id: newProcess._id,
-            processName: newProcess.name
-          }
-          console.log(updatedCard)
-
-          await dispatchPutCard(updatedCard, updatedCard._id)
-          close()
-        }
-        else{
-          close()
-        }
+        setProcessTransferOptions(proc)
+        setShowTransferLotModal(true)
       }
-
 
     /*
 * renders an array of buttons for each kick off lot

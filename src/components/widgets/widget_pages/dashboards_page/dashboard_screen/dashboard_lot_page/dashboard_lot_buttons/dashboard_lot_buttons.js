@@ -26,6 +26,7 @@ const DashboardLotButtons = (props) => {
         isDeviceRoute,
         isFinish,
         handleFinish,
+        disabled
     } = props
 
     const renderMoveButton = () => {
@@ -83,7 +84,7 @@ const DashboardLotButtons = (props) => {
 
     const renderFinishButton = () => {
         const iconClassName = "fas fa-flag-checkered"
-        const color = '#90eaa8'
+        const color = !!disabled ? '#dedfe3': '#90eaa8'
         const textColor = '#1c933c'
 
         return (
@@ -96,6 +97,7 @@ const DashboardLotButtons = (props) => {
                 hoverable={false}
                 color={color}
                 titleStyle={{ color: textColor }}
+                disabled = {disabled}
             />
         )
     }
