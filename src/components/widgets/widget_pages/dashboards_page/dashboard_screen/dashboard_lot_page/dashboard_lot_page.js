@@ -362,6 +362,7 @@ const DashboardLotPage = (props) => {
                     isFinish={isFinish}
                     handleFinish={() => setShowFinish(true)}
                     route={currentTask}
+                    disabled = {!processes[cards[lotID]?.process_id]?.showFinish}
                 />
             </styled.LotButtonContainer>
             {showFinish &&

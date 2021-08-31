@@ -7,6 +7,8 @@ import * as styled from './transfer_lot_modal.style'
 import { putDashboard, getDashboards } from '../../../../../../redux/actions/dashboards_actions'
 import {putCard, postCard, deleteCard} from '../../../../../../redux/actions/card_actions'
 import {uuidv4} from '../../../../../../methods/utils/utils'
+import { getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
+
 
 // Import Components
 import Checkbox from '../../../../../../components/basic/checkbox/checkbox'
@@ -50,19 +52,11 @@ const TransferLotModal = (props) => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
     }
 
-    const handleWarehouseTransfer = async(process) =>{
-        const updatedCard = {
-          ...lot,
-          process_id: process[0]._id,
-          processName: process[0].name,
-        }
-        await dispatchPutCard(updatedCard, updatedCard._id)
-        close()
-      }
-
     const handleTransferLot = async(process, quantity) => {
 
-      let remainingCount = lot.bins[stationID].count - quantity
+      let posID = !!warehouse ? getPreviousWarehouseStation(process._id, stationID)?._id : stationID
+      let statID = stationID
+      let remainingCount = lot.bins[posID].count - quantity
       let matchingCard = null
       if(!!lot.multipleProcesses){
         Object.values(cards).forEach((card)=>{
@@ -72,104 +66,94 @@ const TransferLotModal = (props) => {
         })
       }
 
-      if(remainingCount == 0){
+      if(!!warehouse && lot.process_id == process._id){
+        const newCard = {
+          ...lot,
+          bins: {
+            ...lot.bins,
+            [statID]: {
+              ...lot.bins[statID],
+              count: quantity
+            },
+            [posID]: {
+              ...lot.bins[posID],
+              count: remainingCount
+            }
+          }
+        }
+        await dispatchPutCard(newCard, newCard._id)
+      }
+
+      else{
+        //add count to card in destination process, modify part of lot that is staying put
         if(!!matchingCard){
           const updatedCard = {
             ...matchingCard,
             bins: {
               ...matchingCard.bins,
-              [stationID]: {
-                count: !!matchingCard.bins[stationID]? matchingCard.bins[stationID].count + quantity : quantity
+              [statID]: {
+                count: !!matchingCard.bins[statID]? matchingCard.bins[statID].count + quantity : quantity
               }
             }
           }
-
-          onBack()
           await dispatchPutCard(updatedCard, matchingCard._id)
-          await dispatchDeleteCard(lot._id,lot.process_id)
+
+          const updatedExistingCard = {
+            ...lot,
+            bins: {
+              ...lot.bins,
+              [posID]: {
+                ...lot.bins[posID],
+                count: remainingCount
+              }
+            }
+          }
+          await dispatchPutCard(updatedExistingCard, lot._id)
+          onBack()
+
         }
         else{
-          const updatedCard = {
-            ...lot,
-            process_id: process._id,
-            processName: process.name,
-          }
-          await dispatchPutCard(updatedCard, lot._id)
-          onBack()
-        }
-      }
+            const updatedCard = {
+              ...lot,
+              multipleProcesses: true,
+              bins: {
+                ...lot.bins,
+                [posID]: {
+                  ...lot.bins[posID],
+                  count: remainingCount,
+                }
+              }
+            }
+            await dispatchPutCard(updatedCard, lot._id)
 
-      else{
-        const updatedCard = {
-          ...lot,
-          multipleProcesses: true,
-          bins: {
-            ...lot.bins,
-            [stationID]: {
-              ...lot.bins[stationID],
-              count: remainingCount,
+              const newCard = {
+                ...lot,
+                process_id: process._id,
+                multipleProcesses: true,
+                processName: process.name,
+                bins: {
+                  [statID]: {
+                    ...lot.bins[statID],
+                    count: quantity
+                  }
+                }
+              }
+
+              await dispatchPostCard(newCard)
+              .then((result) => {
+                const updatedPostedCard = {
+                  ...result,
+                  lotNumber: lot.lotNumber,
+                  multipleProcesses: true
+                }
+
+                dispatchPutCard(updatedPostedCard, result._id)
+                onBack()
+              })
             }
           }
+          close()
         }
-
-      if(!!matchingCard){
-        const updatedCard = {
-          ...matchingCard,
-          bins: {
-            ...matchingCard.bins,
-            [stationID]: {
-              count: !!matchingCard.bins[stationID]? matchingCard.bins[stationID].count + quantity : quantity
-            }
-          }
-        }
-
-        await dispatchPutCard(updatedCard, matchingCard._id)
-
-        const updatedExistingCard = {
-          ...lot,
-          bins: {
-            ...lot.bins,
-            [stationID]: {
-              ...lot.bins[stationID],
-              count: remainingCount
-            }
-          }
-        }
-        await dispatchPutCard(updatedExistingCard, lot._id)
-        onBack()
-
-
-
-      }
-      else{
-        const newCard = {
-          ...lot,
-          process_id: process._id,
-          multipleProcesses: true,
-          processName: process.name,
-          bins: {
-            [stationID]: {
-              ...lot.bins[stationID],
-              count: quantity
-            }
-          }
-        }
-        await dispatchPutCard(updatedCard, lot._id)
-
-        await dispatchPostCard(newCard)
-        .then((result) => {
-          const updatedPostedCard = {
-            ...result,
-            lotNumber: lot.lotNumber,
-            multipleProcesses: true
-          }
-
-          dispatchPutCard(updatedPostedCard, result._id)
-          onBack()
-        })
-      }
-    }
-  }
 
 
 
@@ -182,8 +166,7 @@ const TransferLotModal = (props) => {
                 <styled.ListItem
                   onClick = {()=>{
                       setSelectedProcess(process)
-                      if(!!warehouse) handleWarehouseTransfer(process)
-                      else setShowQuantityModal(true)
+                      setShowQuantityModal(true)
                   }}
                 >
                   <styled.ListItemTitle>
@@ -222,7 +205,7 @@ const TransferLotModal = (props) => {
         {!!showQuantityModal &&
           <QuantityModal
               //validationSchema={quantityOneSchema}
-              maxValue={!!lot.bins[stationID] ? lot.bins[stationID].count : 1}
+              maxValue={!!warehouse ? lot.bins[getPreviousWarehouseStation(selectedProcess[0]._id, stationID)?._id].count : !!lot.bins[stationID] ? lot.bins[stationID].count : 1}
               minValue={1}
               infoText={''}
               isOpen={true}
@@ -253,11 +236,7 @@ const TransferLotModal = (props) => {
               }}
           >
               <styled.BodyContainer>
-                {!!warehouse ?
-                    <styled.Title schema={'processes'}>This station is part of multiple processes, please pick a process</styled.Title>
-                  :
                   <styled.Title schema={'processes'}>Select the Destination Process</styled.Title>
-                }
                   <styled.CloseButton
                       className={'fas fa-times'}
                       onClick={() => {close()}}
