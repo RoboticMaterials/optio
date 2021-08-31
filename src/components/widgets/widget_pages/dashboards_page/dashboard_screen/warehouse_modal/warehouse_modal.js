@@ -80,7 +80,7 @@ const WarehouseModal = (props) => {
         Object.values(processes).forEach((process) => {
             const processStations = Object.keys(getProcessStations(process,routes))
             for(const ind in processStations){
-              if(processStations[ind] === stationID){
+              if(processStations[ind] === stationID && !!currCard.bins[getPreviousWarehouseStation(process._id, stationID)?._id]){
                 proc.push([process])
               }
             }
