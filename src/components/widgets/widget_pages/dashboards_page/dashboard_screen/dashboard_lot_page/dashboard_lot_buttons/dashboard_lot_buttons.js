@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 // Import Styles
@@ -19,6 +20,8 @@ import { DEVICE_CONSTANTS } from '../../../../../../../constants/device_constant
 // Rework
 const DashboardLotButtons = (props) => {
 
+  const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
+
     const {
         handleMove,
         handleCancel,
@@ -37,7 +40,7 @@ const DashboardLotButtons = (props) => {
 
         const error = null
         const buttonId = ''
-        if (isDeviceRoute) {
+        if (isDeviceRoute && deviceEnabled ) {
             return (
                 <DashboardSplitButton
                     color={color}
