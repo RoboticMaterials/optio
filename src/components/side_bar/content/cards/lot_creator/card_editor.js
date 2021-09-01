@@ -328,7 +328,7 @@ const CardEditor = (props) => {
 			<Formik
 				initialValues={{
 					name: card ? card.name : "",
-					bin: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
+					stationId: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
 					description: card ? card.description : "",
 					dates: card ? {
 						start: card.start_date,

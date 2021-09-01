@@ -113,26 +113,6 @@ const CardZone = ((props) => {
         return date;
     }
 
-    useEffect(() => {
-        const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
-        let flattenedProcessStationIds = flattenProcessStations(processRoutes, stations)
-        console.log(flattenedProcessStationIds)
-
-        const convertIdToName = (layer) => {
-            console.log(layer)
-            if (typeof layer == 'string') {
-                return stations[layer].name;
-            } else {
-                let layers = []
-                for (var l of layer) {
-                    layers.push(convertIdToName(l));
-                }
-            }
-        }
-        // console.log(flattenedProcessStationIds)
-        // console.log(convertIdToName(flattenedProcessStationIds))
-    }, [])
-
     // Useeffect for cycle times
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
@@ -509,42 +489,44 @@ const CardZone = ((props) => {
     * */
     const renderStationColumns = useMemo(() => {
 
-        // loop through each entry in {cardsSorted} and return a {StationsColumn}
-        return Object.values(cardsSorted).map((obj, index) => {
+        const renderRecursiveColumns = (node) => {
+            return ( 
+                <>
+                    {node.children.map(child => {
 
-            // extract attributes of current bin
-            const {
-                station_id,
-                route_id,
-                cards: cardsArr
-            } = obj
+                        if (typeof child === 'string') {
+                            return (
+                                <StationsColumn
+                                    setSelectedCards={setSelectedCards}
+                                    selectedCards={selectedCards}
+                                    sortMode={sortMode}
+                                    sortDirection={sortDirection}
+                                    maxHeight={maxHeight}
+                                    id={processId + "+" + child}
+                                    station_id={child}
+                                    stationName={stations[child].name}
+                                    processId={processId}
+                                    cards={[]}
+                                    onCardClick={handleCardClick}
+                                    autoCycleTime={deleteStationCycleTime[child]}
+                                />
+                            )
+                        } else {
+                            return (
+                                <styled.ColumnGroup>
+                                    {renderRecursiveColumns(child)}
+                                </styled.ColumnGroup>
+                            )
+                        }
 
-            // get current station attributes from {station_id} and redux state
-            const currStation = stations[station_id]
-            const {
-                name: stationName
-            } = currStation || {}
-
-            return (
-                <StationsColumn
-                    setSelectedCards={setSelectedCards}
-                    selectedCards={selectedCards}
-                    sortMode={sortMode}
-                    sortDirection={sortDirection}
-                    maxHeight={maxHeight}
-                    key={station_id + index}
-                    id={route_id + "+" + station_id}
-                    station_id={station_id}
-                    stationName={stationName}
-                    processId={processId}
-                    route_id={route_id}
-                    cards={cardsArr}
-                    onCardClick={handleCardClick}
-                    autoCycleTime={deleteStationCycleTime[station_id]}
-                />
+                    })}
+                </>
             )
-        })
-    }, [cardsSorted, stations, routes])
+        }
+
+        return renderRecursiveColumns(currentProcess.graph)
+
+    }, [cardsSorted, currentProcess])
 
     return (
         <styled.Container style={{ background: 'white' }}>

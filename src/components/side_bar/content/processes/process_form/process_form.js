@@ -22,7 +22,7 @@ import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
-import { doRoutesConverge } from '../../../../../methods/utils/processes_utils';
+import { flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 
 const ProcessForm = (props) => {
 
@@ -63,6 +63,7 @@ const ProcessForm = (props) => {
 	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
 	const maps = useSelector(state => state.mapReducer.maps)
 	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+	const stations = useSelector(state => state.stationsReducer.stations);
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 
@@ -120,6 +121,7 @@ const ProcessForm = (props) => {
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMap._id,
+				graph: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
 
@@ -129,6 +131,7 @@ const ProcessForm = (props) => {
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMap._id,
+				graph: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
 
