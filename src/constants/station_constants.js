@@ -10,17 +10,17 @@ export const StationTypes = {
      * Heads up, currently there are 2 different svg rectangles being used
      * One thats width is 200 and height is 320
      * One thats width is 378 and height 236
-     * 
+     *
      * Need to unify this and make all of them standard
      * Probably use the 200 by 320 since you don't need to add a 'y' offset to the svg
-     * 
+     *
      *  */
 
     warehouse: {
         svgPath:
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                 viewBox="0 0 400 400">
-            <path style={{fill:'none',strokeWidth:15,strokeMiterlimit:10}} d="M334.6,357.6h-260c-16.5,0-30-13.5-30-30v-260c0-16.5,13.5-30,30-30h260c16.5,0,30,13.5,30,30v260
+            <path style={{fill:'transparent',strokeWidth:15,strokeMiterlimit:10}} d="M334.6,357.6h-260c-16.5,0-30-13.5-30-30v-260c0-16.5,13.5-30,30-30h260c16.5,0,30,13.5,30,30v260
                 C364.6,344.1,351.1,357.6,334.6,357.6z"/>
             <g>
                 <path d="M224,127c5.1-2.2,9.2-3.9,9.2-3.9s4.1,1.8,9.1,4.1l24.9,11.1c5,2.2,13.3,2.5,18.5,0.6l24.6-9.2
