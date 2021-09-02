@@ -90,6 +90,7 @@ const EditLocation = (props) => {
 
     const [newName, setNewName] = useState('')
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
+    console.log(selectedLocation)
     const locations = { ...stations, ...positions }
     const LocationTypes = {
         ...StationTypes,
@@ -554,7 +555,7 @@ const EditLocation = (props) => {
 
 
                                     {/* Delete Location Button */}
-                                    <Button type={'button'} schema={'locations'} onClick={() => onSave(deepCopy(values.locationName))} >Save Location</Button>
+                                    <Button type={'button'} disabled = {!values.locationName} schema={'locations'} onClick={() => onSave(deepCopy(values.locationName))} >Save Location</Button>
                                     <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>

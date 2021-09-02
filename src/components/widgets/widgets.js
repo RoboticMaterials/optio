@@ -43,6 +43,7 @@ const Widgets = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingProcess = useSelector(state => state.processesReducer.editingProcess)
 
     const positions = useSelector(state => state.positionsReducer.positions)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
@@ -52,6 +53,7 @@ const Widgets = (props) => {
 
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
+    const widgetsLoaded = useSelector(state => state.widgetReducer.widgetsLoaded)
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
@@ -68,7 +70,6 @@ const Widgets = (props) => {
     const editing = editingStation ? editingStation : editingPosition
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
-
     const widgetRadius = useMemo(() => {
         return 2.5*Math.log(2*(hoveringInfo.scale + 1)) + 'rem';
     }, [hoveringInfo])
@@ -83,6 +84,9 @@ const Widgets = (props) => {
             onWidgetClose()
         }
     }, [])
+
+
+
 
     /**
      * Closes the widget
@@ -106,14 +110,9 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-
-
         history.push('/locations')
-
         dispatchShowSideBar(true)
 
-        onWidgetClose(true)
-        dispatchHoverStationInfo(null)
 
         if (!!selectedStation) {
             dispatchSetEditingStation(true)
@@ -130,7 +129,8 @@ const Widgets = (props) => {
 
         }
 
-
+          onWidgetClose(true)
+          dispatchHoverStationInfo(null)
     }
 
 
@@ -217,25 +217,24 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
-                        <Wrapper idx={0} numItems={2} radius={widgetRadius}>
-                            <WidgetButton
-                                id={stationID}
-                                type={'statistics'}
-                                label={'Statistics'}
-                                currentPage={widgetPage}
-                                switcher={!!widgetPage}
-                            />
-                        </Wrapper>
-
-                        <Wrapper idx={1} numItems={2} radius={widgetRadius}>
-                            <WidgetButton
-                                id={stationID}
-                                type={'dashboards'}
-                                label={'Dashboards'}
-                                currentPage={widgetPage}
-                                switcher={!!widgetPage}
-                            />
-                        </Wrapper>
+                    <Wrapper idx={1} numItems={2} radius={widgetRadius}>
+                        <WidgetButton
+                            id={stationID}
+                            type={'dashboards'}
+                            label={'Dashboards'}
+                            currentPage={widgetPage}
+                            switcher={!!widgetPage}
+                        />
+                    </Wrapper>
+                      <Wrapper idx={0} numItems={2} radius={widgetRadius}>
+                          <WidgetButton
+                              id={stationID}
+                              type={'statistics'}
+                              label={'Statistics'}
+                              currentPage={widgetPage}
+                              switcher={!!widgetPage}
+                          />
+                      </Wrapper>
                     </>
 
                 )
@@ -341,8 +340,11 @@ const Widgets = (props) => {
                     onMouseLeave={() => {
                         if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
                             onWidgetClose()
-                            dispatchSetSelectedStation(null)
-                            dispatchSetSelectedPosition(null)
+                            if(!editing){
+                              dispatchSetSelectedStation(null)
+                              dispatchSetSelectedPosition(null)
+                            }
+
                         }
                     }}
 
