@@ -90,7 +90,6 @@ const EditLocation = (props) => {
 
     const [newName, setNewName] = useState('')
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-    console.log(selectedLocation)
     const locations = { ...stations, ...positions }
     const LocationTypes = {
         ...StationTypes,
