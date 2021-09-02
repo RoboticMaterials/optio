@@ -43,6 +43,7 @@ const Widgets = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingProcess = useSelector(state => state.processesReducer.editingProcess)
 
     const positions = useSelector(state => state.positionsReducer.positions)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
@@ -81,6 +82,7 @@ const Widgets = (props) => {
         dispatchWidgetLoaded(true)
         return () => {
             onWidgetClose()
+            dispatchSetSelectedStation(null)
         }
     }, [])
 
@@ -217,25 +219,24 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
-                        <Wrapper idx={0} numItems={2} radius={widgetRadius}>
-                            <WidgetButton
-                                id={stationID}
-                                type={'statistics'}
-                                label={'Statistics'}
-                                currentPage={widgetPage}
-                                switcher={!!widgetPage}
-                            />
-                        </Wrapper>
-
-                        <Wrapper idx={1} numItems={2} radius={widgetRadius}>
-                            <WidgetButton
-                                id={stationID}
-                                type={'dashboards'}
-                                label={'Dashboards'}
-                                currentPage={widgetPage}
-                                switcher={!!widgetPage}
-                            />
-                        </Wrapper>
+                    <Wrapper idx={1} numItems={2} radius={widgetRadius}>
+                        <WidgetButton
+                            id={stationID}
+                            type={'dashboards'}
+                            label={'Dashboards'}
+                            currentPage={widgetPage}
+                            switcher={!!widgetPage}
+                        />
+                    </Wrapper>
+                      <Wrapper idx={0} numItems={2} radius={widgetRadius}>
+                          <WidgetButton
+                              id={stationID}
+                              type={'statistics'}
+                              label={'Statistics'}
+                              currentPage={widgetPage}
+                              switcher={!!widgetPage}
+                          />
+                      </Wrapper>
                     </>
 
                 )
