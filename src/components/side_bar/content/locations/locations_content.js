@@ -48,7 +48,6 @@ export default function LocationContent() {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
     const locations = {
         ...stations,
         ...positions

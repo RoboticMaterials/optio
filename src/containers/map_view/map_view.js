@@ -185,6 +185,12 @@ export class MapView extends Component {
         //     })
         //     this.props.onUpdateLocations(locations)
         // }
+
+
+
+          if(!this.props.editingStation && !this.props.hoveringInfo){
+            this.props.dispatchSetSelectedStation(null)
+          }
     }
 
 

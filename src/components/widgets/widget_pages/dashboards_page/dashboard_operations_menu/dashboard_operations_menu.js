@@ -209,7 +209,6 @@ const DashboardOperationsMenu = (props) => {
                 {stationBasedLots &&
                     renderFieldSelectorButton()
                 }
-                {renderRouteWithoutLotButton()}
                 {warehouseEnabled &&
                     renderWarehouseButton()
                 }

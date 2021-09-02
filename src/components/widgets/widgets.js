@@ -53,6 +53,7 @@ const Widgets = (props) => {
 
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
+    const widgetsLoaded = useSelector(state => state.widgetReducer.widgetsLoaded)
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
@@ -69,7 +70,6 @@ const Widgets = (props) => {
     const editing = editingStation ? editingStation : editingPosition
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
-
     const widgetRadius = useMemo(() => {
         return 2.5*Math.log(2*(hoveringInfo.scale + 1)) + 'rem';
     }, [hoveringInfo])
@@ -82,9 +82,11 @@ const Widgets = (props) => {
         dispatchWidgetLoaded(true)
         return () => {
             onWidgetClose()
-            dispatchSetSelectedStation(null)
         }
     }, [])
+
+
+
 
     /**
      * Closes the widget
@@ -108,14 +110,9 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-
-
         history.push('/locations')
-
         dispatchShowSideBar(true)
 
-        onWidgetClose(true)
-        dispatchHoverStationInfo(null)
 
         if (!!selectedStation) {
             dispatchSetEditingStation(true)
@@ -132,7 +129,8 @@ const Widgets = (props) => {
 
         }
 
-
+          onWidgetClose(true)
+          dispatchHoverStationInfo(null)
     }
 
 
@@ -342,8 +340,11 @@ const Widgets = (props) => {
                     onMouseLeave={() => {
                         if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
                             onWidgetClose()
-                            dispatchSetSelectedStation(null)
-                            dispatchSetSelectedPosition(null)
+                            if(!editing){
+                              dispatchSetSelectedStation(null)
+                              dispatchSetSelectedPosition(null)
+                            }
+
                         }
                     }}
 

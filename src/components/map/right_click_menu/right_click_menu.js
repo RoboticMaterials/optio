@@ -63,6 +63,8 @@ const RightClickMenu = (props) => {
     const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingProcess = useSelector(state => state.processesReducer.editingProcess)
     const history = useHistory()
 
 
@@ -110,7 +112,8 @@ const RightClickMenu = (props) => {
 
         const tempSelectedStation = {
             ...defaultAttributes,
-            ...attributes
+            ...attributes,
+            name: ""
         }
 
         dispatchEditingStation(true)
@@ -127,18 +130,25 @@ const RightClickMenu = (props) => {
     }
 
     return (
-        <styled.MenuContainer style={{ top: coords.y, left: coords.x }}>
-            {deviceEnabled ?
-                <>
-                    <styled.MenuButton disabled={disbaleStation} onClick={() => !disbaleStation && onAddStation()}>Add Station</styled.MenuButton>
-                    <styled.MenuButton disabled={disbaleStation} onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
-                </>
-                :
-                <styled.MenuButton onClick={onAddStation}>Add Station</styled.MenuButton>
+      <>
+        {!editingProcess && !editingStation ?
+          <styled.MenuContainer style={{ top: coords.y, left: coords.x }}>
+              {deviceEnabled ?
+                  <>
+                      <styled.MenuButton disabled={disbaleStation} onClick={() => !disbaleStation && onAddStation()}>Add Station</styled.MenuButton>
+                      <styled.MenuButton disabled={disbaleStation} onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
+                  </>
+                  :
+                  <styled.MenuButton onClick={onAddStation}>Add Station</styled.MenuButton>
 
-            }
+              }
 
-        </styled.MenuContainer>
+          </styled.MenuContainer>
+          :
+          <></>
+        }
+      </>
+
     )
 }
 
