@@ -372,10 +372,8 @@ const KickOffModal = (props) => {
                     isOpen={true}
                     onAfterOpen={null}
                     processOptions={kickOffEnabledInfo}
-                    showProcessSelector={true}
                     cardId={null}
                     processId={null}
-                    // binId={null}
                     close={() => {
                         setShowLotEditor(false)
                         // setSelectedCard(null)

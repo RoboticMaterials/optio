@@ -107,45 +107,6 @@ const CardEditor = (props) => {
 		}
 	}, [cardId])
 
-	// {
-	// 	name: "",
-	// 		route_id: matchingRoute._id,
-	// 	station_id: loadStationId,
-	// 	_id: currRouteId + "+" + loadStationId
-	// }
-	let dropdownOptions = [
-		{
-			name: "Queue",
-			route_id: "QUEUE",
-			station_id: "QUEUE",
-			_id: "QUEUE" + "+" + "QUEUE"
-		}
-	]
-
-	routeIds.forEach((currRouteId) => {
-		const matchingRoute = routes[currRouteId]
-		let loadStationId = matchingRoute?.load?.station
-		let unloadStationId = matchingRoute?.unload?.station
-
-		loadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[loadStationId]?.name,
-			route_id: matchingRoute._id,
-			station_id: loadStationId,
-			_id: currRouteId + "+" + loadStationId
-		})
-
-		unloadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[unloadStationId]?.name,
-			route_id: matchingRoute._id,
-			station_id: unloadStationId,
-			_id: currRouteId + "+" + unloadStationId
-		})
-
-	})
-
-
-
-
 	const [content, setContent] = useState(null)
 
 	const formMode = card ? FORM_MODES.UPDATE : FORM_MODES.CREATE
@@ -291,8 +252,6 @@ const CardEditor = (props) => {
 			const submitItem = {
 				name,
 				count,
-				// station_id: bin[0]?.station_id,
-				// route_id: bin[0]?.route_id,
 				station_id: "QUEUE",
 				route_id: "QUEUE",
 				description,
@@ -328,7 +287,11 @@ const CardEditor = (props) => {
 			<Formik
 				initialValues={{
 					name: card ? card.name : "",
+<<<<<<< Updated upstream
 					bin: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
+=======
+					stationId: card ? card.stationId : 'QUEUE',
+>>>>>>> Stashed changes
 					description: card ? card.description : "",
 					dates: card ? {
 						start: card.start_date,
@@ -375,57 +338,7 @@ const CardEditor = (props) => {
 					const touchedCount = Object.values(touched).reduce(touchedReducer, 0)
 
 					const submitDisabled = (errorCount > 0) || (touchedCount === 0) || isSubmitting
-
-					const renderMove = () => {
-						const {
-							count = 0
-						} = values
-
-						var list = [];
-						for (var i = 0; i <= count; i++) {
-							list.push({
-								value: i
-							});
-						}
-
-						return(
-							<styled.BodyContainer>
-								<styled.ContentHeader style={{}}>
-									<styled.ContentTitle>Move lot</styled.ContentTitle>
-								</styled.ContentHeader>
-
-								<div style={{height: "10rem"}}>
-									<DropDownSearchField
-										containerSyle={{flex: 1}}
-										pattern={null}
-										name="moveLocation"
-										labelField={'name'}
-										options={dropdownOptions}
-										valueField={"_id"}
-									/>
-								</div>
-
-								<div style={{height: "10rem"}}>
-									<DropDownSearchField
-										containerSyle={{flex: 1}}
-										pattern={null}
-										name="moveCount"
-										labelField={'value'}
-										options={list}
-										valueField={"value"}
-									/>
-								</div>
-
-
-								<Button
-									onClick={()=>setContent(null)}
-									schema={"processes"}
-								>
-									Ok
-								</Button>
-							</styled.BodyContainer>
-						)
-					}
+					
 					const renderCalendar = () => {
 						return(
 							<styled.BodyContainer>
@@ -777,9 +690,9 @@ const CardEditor = (props) => {
 							{(content === CONTENT.HISTORY) &&
 								renderHistory()
 							}
-							{(content === CONTENT.MOVE) &&
+							{/* {(content === CONTENT.MOVE) &&
 							renderMove()
-							}
+							} */}
 
 
 

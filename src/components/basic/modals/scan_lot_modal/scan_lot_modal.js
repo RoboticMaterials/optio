@@ -38,7 +38,7 @@ const ScanLotModal = (props) => {
       return Object.values(cards).map((card) => {
             if(card.lotNumber === id){
           return  Object.values(stations).map((station) => {
-                if(!!card.bins[station._id]){
+                if(card.station_id === station._id){
                   return (
                     <styled.ListItem
                       onClick={() => {

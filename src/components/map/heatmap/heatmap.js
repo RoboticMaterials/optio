@@ -46,7 +46,7 @@ const HeatMap = (props) => {
 
                 stationWIPAccumulator = 0;
                 stationCards.forEach((currLot) => {
-                    stationWIPAccumulator += currLot.bins[pStationId].count;
+                    stationWIPAccumulator += currLot.count;
                 })
                 stationWIP[pStationId] = stationWIPAccumulator; // NOTE: Dont update in the object until end (better performance)
                 totalProcessWIP += stationWIPAccumulator;

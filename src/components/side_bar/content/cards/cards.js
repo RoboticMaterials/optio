@@ -365,7 +365,6 @@ const Cards = (props) => {
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}
                 processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
                     onShowCardEditor(false)
                     setSelectedCard(null)
