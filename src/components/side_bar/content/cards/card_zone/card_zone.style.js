@@ -11,7 +11,7 @@ export const Container = styled.div`
 export const ColumnGroup = styled.div`
 display: flex;
 flex-direction: row;
-padding: 0.5rem 0rem;
-margin: 0 0.5rem;
-border: 1px solid lightgrey;
+padding: 1rem 0rem;
+margin: 0 1rem;
+// border: 1px solid lightgrey;
 `

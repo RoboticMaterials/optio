@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import * as styled from '../tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
@@ -71,6 +71,7 @@ const TaskField = (props) => {
 
         setFieldValue,
         setFieldTouched,
+        validateForm,
 
         onSave,
         onRemove,
@@ -95,11 +96,12 @@ const TaskField = (props) => {
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
 
-    const errors = (typeof formikErrors?.routes === 'object') && formikErrors?.routes || {}
+    const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
     
+    console.log(processRoutes)
+
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -123,7 +125,30 @@ const TaskField = (props) => {
             setFieldValue(`${fieldName}.name`, newName, false)
         }
 
+        validateForm()
+
     }, [editingRoute])
+
+    /**
+     * checks if there are other routes with the same load location. This meeds the load
+     * station is a diverging node and the user needs to decide whether its a split or choice.
+     */
+    const isDivergingRoute = useMemo(() => {
+        const isDiverging = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load) !== undefined
+        if (isDiverging && !!selectedRoute.divergeType) {
+            updateDivergingRoutes('split');
+        }
+        return isDiverging;
+    }, [processRoutes, selectedRoute])
+
+    const updateDivergingRoutes = (type) => {
+        const siblingRoutes = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load)
+        processRoutes.forEach((route, idx) => {
+            if (route.load === selectedRoute.load) {
+                setFieldValue(`routes[${idx}].divergeType`, type);
+            }
+        })
+    }
 
     return (
         <>
@@ -187,7 +212,7 @@ const TaskField = (props) => {
                         <styled.Title>Part Name</styled.Title>
                         <TextField
                             placeholder='Name of transported part'
-                            defaultValue={editingRoute.part}
+                            value={editingRoute.part}
                             schema={'routes'}
                             name={`${fieldName}.part`}
                             InputComponent={Textbox}
@@ -197,16 +222,46 @@ const TaskField = (props) => {
                             containerStyle={{marginBottom: '1rem'}}
                         />
 
-                        <styled.Title>In-Out Ratio</styled.Title>
-                        <NumberField
-                            minValue={1}
-                            maxValue={100}
-                            name={`${fieldName}.inOutRatio`}
 
-                            containerStyle={{width: '100%', marginTop: '1rem', display: 'flex', justifyContent: 'center'}}
-                            buttonStyle={{fontSize: '2.5rem'}}
-                            inputStyle={{height: '2.5rem', width: '5rem', fontSize: '1.4rem'}}
-                        />
+                        {isDivergingRoute &&
+                            <>
+                                <styled.Title style={{ alignSelf: 'center' }}>Diverging Type</styled.Title>
+                                <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem'}}>
+                                    <styled.DualSelectionButton
+                                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                        onClick={() => {
+                                            updateDivergingRoutes('split')
+                                        }}
+                                        selected={editingRoute.divergeType === 'split'}
+                                    >
+                                        Split
+                                    </styled.DualSelectionButton>
+
+                                    <styled.DualSelectionButton
+                                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                        onClick={() => {
+                                            updateDivergingRoutes('choice')
+                                        }}
+                                        selected={editingRoute.divergeType === 'choice'}
+
+                                    >
+                                        Choice
+                                    </styled.DualSelectionButton>
+
+                                </styled.RowContainer>
+                            </>
+                        }
+
+                    <styled.Title>In-Out Ratio</styled.Title>
+                    <NumberField
+                        minValue={1}
+                        maxValue={100}
+                        name={`${fieldName}.inOutRatio`}
+
+                        containerStyle={{width: '100%', marginTop: '0.5rem', display: 'flex', justifyContent: 'center'}}
+                        buttonStyle={{fontSize: '2.5rem'}}
+                        inputStyle={{height: '2.5rem', width: '5rem', fontSize: '1.4rem'}}
+                    />
                     </div>
 
 

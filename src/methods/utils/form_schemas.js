@@ -629,7 +629,7 @@ export const routeSchema = Yup.object().shape({
     part: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+        .required('Please enter a part name.'),
 
     load: Yup.string().required('Select a load location'),
     unload: Yup.string().required('Select an unload location')

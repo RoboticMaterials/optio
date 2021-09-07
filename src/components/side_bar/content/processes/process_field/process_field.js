@@ -105,11 +105,28 @@ export const ProcessField = (props) => {
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [routeCopy, setRouteCopy] = useState(null);
 
+    // Handles a new route being drawn on the map
     useEffect(() => {
-        if (!!selectedTask && values.routes.find(route => route._id === selectedTask._id) === undefined) {
+        if (selectedTask == null) {return}
+        const formikSelectedTask = values.routes.find(route => route._id === selectedTask._id);
+        if (!!selectedTask.unload && formikSelectedTask === undefined) {
             let processRoutesCopy = values.routes;
-            processRoutesCopy.push(selectedTask);
+
+            // Set the new route's partname to be that of the preceeding route.
+            const selectedTaskCopy = selectedTask
+            if (selectedTaskCopy.part === null) {
+                const preceedingRoutes = processRoutesCopy.filter(route => route._id !== selectedTask._id && route.unload === selectedTask.load)
+                for (var preceedingRoute of preceedingRoutes) {
+                    if (!!preceedingRoute.part) {
+                        selectedTaskCopy.part = preceedingRoute.part;
+                        break;
+                    }
+                }
+            }
+            
+            processRoutesCopy.push(selectedTaskCopy);
             setFieldValue('routes', processRoutesCopy)
+            dispatchSetProcessAttributes(selectedTask._id, {...selectedTaskCopy})
         }
     }, [selectedTask])
 
