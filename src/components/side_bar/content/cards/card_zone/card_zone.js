@@ -119,7 +119,6 @@ const CardZone = ((props) => {
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
         deleteGetCycleTimes()
-
     }, [shiftDetails, allCards, stations])
 
     // This function calculates cycle time based on the throughput of that day
@@ -379,14 +378,9 @@ const CardZone = ((props) => {
             const loadStationId = getLoadStationId(currRoute)
             const unloadStationId = getUnloadStationId(currRoute)
 
-            // only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
-            if (prevUnloadStationId !== loadStationId) {
-
-                // add entry in tempCardsSorted
-                tempBins[loadStationId] = {
-                    station_id: loadStationId,
-                    cards: []
-                }
+            tempBins[loadStationId] = {
+                station_id: loadStationId,
+                cards: []
             }
 
             // add entry in tempCardsSorted
@@ -422,7 +416,6 @@ const CardZone = ((props) => {
 
             const totalQuantity = getLotTotalQuantity(card)
 
-            // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
             const matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
 
             if (cardBins && matchesFilter) {
@@ -450,6 +443,7 @@ const CardZone = ((props) => {
                         cardId: _id,
                         processName
                     }
+
 
                     // if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin
                     if (bins[binId]) {
@@ -491,12 +485,16 @@ const CardZone = ((props) => {
     * */
     const renderStationColumns = useMemo(() => {
 
+
         const renderRecursiveColumns = (node) => {
-            return ( 
+            let columnContent, recursiveColumnContent;
+
+            columnContent = (
                 <>
                     {node.children.map(child => {
 
                         if (typeof child === 'string') {
+                            let childStationId = child;
                             return (
                                 <StationsColumn
                                     setSelectedCards={setSelectedCards}
@@ -504,19 +502,20 @@ const CardZone = ((props) => {
                                     sortMode={sortMode}
                                     sortDirection={sortDirection}
                                     maxHeight={maxHeight}
-                                    id={processId + "+" + child}
-                                    station_id={child}
-                                    stationName={stations[child].name}
+                                    id={processId + "+" + childStationId}
+                                    station_id={childStationId}
+                                    stationName={stations[childStationId].name}
                                     processId={processId}
-                                    cards={[]}
+                                    cards={cardsSorted[childStationId]?.cards || []}
                                     onCardClick={handleCardClick}
-                                    autoCycleTime={deleteStationCycleTime[child]}
+                                    autoCycleTime={deleteStationCycleTime[childStationId]}
                                 />
                             )
                         } else {
+                            recursiveColumnContent = renderRecursiveColumns(child);
                             return (
                                 <styled.ColumnGroup>
-                                    {renderRecursiveColumns(child)}
+                                    {recursiveColumnContent}
                                 </styled.ColumnGroup>
                             )
                         }
@@ -524,9 +523,11 @@ const CardZone = ((props) => {
                     })}
                 </>
             )
+
+            return columnContent
         }
 
-        return renderRecursiveColumns(currentProcess.graph)
+        return renderRecursiveColumns(currentProcess.graph, 0)
 
     }, [cardsSorted, currentProcess])
 

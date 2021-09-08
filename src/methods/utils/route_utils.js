@@ -95,19 +95,19 @@ export const isNextRouteViable = (currentRoute, nextRoute) => {
 }
 
 export const getUnloadStationId = (route) => {
-    return route?.unload?.station
+    return route?.unload
 }
 
 export const getUnloadPositionId = (route) => {
-    return route?.unload?.position
+    return route?.unload
 }
 
 export const getLoadStationId = (route) => {
-    return route?.load?.station
+    return route?.load
 }
 
 export const getLoadPositionId = (route) => {
-    return route?.load?.position
+    return route?.load
 }
 
 export const getRouteStart = (route) => {
