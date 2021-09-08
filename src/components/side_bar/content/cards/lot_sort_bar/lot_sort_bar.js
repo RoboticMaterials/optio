@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 // components internal
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search"
@@ -31,7 +32,14 @@ const LotSortBar = (props) => {
         setSortDirection,
     } = props
 
+    const params = useParams()
+
+    const {
+        dashboardID,
+    } = params || {}
+
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
+    const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
     useEffect(() => {
@@ -109,16 +117,17 @@ const LotSortBar = (props) => {
                         />
                         <RotateButton
                             schema={"lots"}
-                            iconName1={"fas fa-arrow-up"}
+                            state = {sortDirection.id}
+                            iconName1={'fas fa-arrow-up'}
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
                             onStateOne={() => {
                                 // set sort direction
-                                setSortDirection(SORT_DIRECTIONS.ASCENDING)
+                                  setSortDirection(SORT_DIRECTIONS.ASCENDING)
                             }}
                             onStateTwo={() => {
                                 // set sort direction
-                                setSortDirection(SORT_DIRECTIONS.DESCENDING)
+                                  setSortDirection(SORT_DIRECTIONS.DESCENDING)
                             }}
                         />
                     </styled.OptionContainer>

@@ -100,12 +100,14 @@ const LocationList = (props) => {
                     return (
                         <styled.ListItem
                             key={`li-${index}`}
-                            onClick={() => onLocationClick(item)}
+                            onClick={() => {
+                              onLocationClick(item)
+                            }}
                         // onMouseEnter={() => onMouseEnter(item)}
                         // onMouseLeave={() => onMouseLeave(item)}
                         >
                             <styled.ListItemRect>
-                                <styled.ListItemTitle schema={"locations"}>{!!name ? name : device_name}</styled.ListItemTitle>
+                                <styled.ListItemTitle schema={"locations"}>{locations[item._id]?.name + " Dashboard"}</styled.ListItemTitle>
                             </styled.ListItemRect>
 
                         </styled.ListItem>
