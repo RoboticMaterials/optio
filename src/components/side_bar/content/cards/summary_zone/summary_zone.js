@@ -40,34 +40,7 @@ const SummaryZone = ((props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const routes = useSelector(state => state.tasksReducer.tasks)
 
-    const renderProcessCycleTime = (process) => {
-        const processStations = Object.keys(getProcessStations(process, routes))
 
-        let totalCycleTime = moment().set({ 'hour': '00', 'minute': '00', 'second': '00' })
-        processStations.forEach((stationID) => {
-            const station = stations[stationID]
-            if (!!station.cycle_time) {
-                const splitVal = station.cycle_time.split(':')
-                totalCycleTime.add(parseInt(splitVal[0]), 'hours').add(parseInt(splitVal[1]), 'minutes').add(parseInt(splitVal[2]), 'seconds')
-
-            }
-        })
-        if (totalCycleTime.hour() > 0 || totalCycleTime.minute() > 0 || totalCycleTime.second() > 0) {
-
-            return (
-                <styled.ColumnContainer s>
-                    <styled.CycleTimeText style={{ fontWeight: 'bold' }}>Process Cycle Time:</styled.CycleTimeText>
-                    <styled.CycleTimeText>
-                        {totalCycleTime.format('HH:mm:ss')}
-                    </styled.CycleTimeText>
-                </styled.ColumnContainer>
-
-            )
-        }
-        else {
-            return
-        }
-    }
 
     /*
    * This function renders a CardZone for each process in {selectedProcesses}

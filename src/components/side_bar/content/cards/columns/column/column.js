@@ -10,6 +10,7 @@ import {
 
 // components external
 import { Draggable, Container } from 'react-smooth-dnd';
+import VisibilitySensor from 'react-visibility-sensor'
 
 // components internal
 import Lot from "../../lot/lot";
@@ -67,6 +68,7 @@ const Column = ((props) => {
 	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
+	const [vis, setVis] = useState(true)
 
 	// const [breaks, setBreaks] = useState([])
 	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
@@ -121,6 +123,11 @@ const Column = ((props) => {
 
 	const onMouseEnter = (event, lotId) => {
 		dispatchSetLotHovering(lotId)
+	}
+
+	const onChange = (isVisible) => {
+		setVis(isVisible)
+		console.log(isVisible)
 	}
 
 	const onMouseLeave = (event) => {
@@ -396,40 +403,46 @@ const Column = ((props) => {
 									style={{
 									}}
 								>
-									<LotContainer
-										glow={isLastSelected}
-										isFocused={isDragging || isHovering}
-										enableFlagSelector={true}
-										selectable={selectable}
-										isSelected={isSelected}
-										key={cardId}
-										// processName={processName}
-										totalQuantity={totalQuantity}
-										lotNumber={lotNumber}
-										name={name}
-										count={count}
-										leadTime={leadTime}
-										id={cardId}
-										flags={flags || []}
-										index={index}
-										lotId={cardId}
-										binId={station_id}
-										onClick={(e) => {
-											const payload = getBetweenSelected(cardId)
-											onCardClick(
-												e,
-												{
-													lotId: cardId,
-													processId: processId,
-													binId: station_id
-												},
-												payload
-											)
-										}}
-										containerStyle={{
-											marginBottom: "0.5rem",
-										}}
-									/>
+								<VisibilitySensor onChange = {onChange}>
+										{!!vis ?
+											<LotContainer
+												glow={isLastSelected}
+												isFocused={isDragging || isHovering}
+												enableFlagSelector={true}
+												selectable={selectable}
+												isSelected={isSelected}
+												key={cardId}
+												// processName={processName}
+												totalQuantity={totalQuantity}
+												lotNumber={lotNumber}
+												name={name}
+												count={count}
+												leadTime={leadTime}
+												id={cardId}
+												flags={flags || []}
+												index={index}
+												lotId={cardId}
+												binId={station_id}
+												onClick={(e) => {
+													const payload = getBetweenSelected(cardId)
+													onCardClick(
+														e,
+														{
+															lotId: cardId,
+															processId: processId,
+															binId: station_id
+														},
+														payload
+													)
+												}}
+												containerStyle={{
+													marginBottom: "0.5rem",
+												}}
+											/>
+											:
+											<></>
+										}
+									</VisibilitySensor>
 								</div>
 							</Draggable>
 						)
