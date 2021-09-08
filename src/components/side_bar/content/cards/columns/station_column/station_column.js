@@ -21,6 +21,7 @@ import { convertSecondsToHHMMSS } from '../../../../../../methods/utils/time_uti
 
 const StationsColumn = ((props) => {
     const {
+        id,
         station_id,
         stationName = "Unnamed",
         onCardClick,
@@ -144,6 +145,7 @@ const StationsColumn = ((props) => {
             maxWidth={"25rem"}
             sortMode={sortMode}
             maxHeight={maxHeight}
+            id={id}
             HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
                 if (isCollapsed) {
                     return (

@@ -503,47 +503,156 @@ const removeRoute = (id, routes) => {
     return routes;
 }
 
-const traverseProcessGraph = (node, routes, flattenedStations, stations) => {
-    console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
 
-    if (node === null) {
-        
-        let startNodes = findProcessStartNodes(routes);
-        if (startNodes.length === 1) {
-            flattenedStations = traverseProcessGraph(startNode, routes, deepCopy(flattenedStations), stations)
-        } else {
-            for (var startNode of startNodes) {
-                console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
-                flattenedStations.push([traverseProcessGraph(startNode, routes, [], stations)])
-            }
-        }
+// [[[A B] [C]] D [[E [F] [G] H] [I] J]
 
-    } else {
+// out = [
+//     {
+//         collapsed: false,
+//         children: [
+//             {
+//                 collapsed: false,
+//                 children: ['A', 'B']
+//             },
+//             ['C'],
+//         ],
+//     },
+//     'D',
+//     {
+//         collapsed: false,
+//         children: [
+//             {
+//                 collapsed: false,
+//                 children: [
+//                     'E',
+//                     ['F'],
+//                     ['G'],
+//                     'H'
+//                 ]   
+//             },
+//             'I'
+//         ]
+//     },
+//     'J'
+// ]
 
-        let incomingRoutes = getNodeIncoming(node, routes)
-        let outgoingRoutes = getNodeOutgoing(node, routes)
-        if (incomingRoutes.length > 1) {
-            return flattenedStations;
-        } else if (outgoingRoutes.length === 1) {
-            flattenedStations.push(stations[node].name)
-            routes = removeRoute(outgoingRoutes[0]._id, routes)
-            flattenedStations = traverseProcessGraph(outgoingRoutes[0].unload, routes, deepCopy(flattenedStations), stations)
-        } else {
-            flattenedStations.push(stations[node].name)
-            for (var outgoingRoute of outgoingRoutes) {
-                console.log(!!node ? stations[node].name : null, routes.length, flattenedStations)
-                routes = removeRoute(outgoingRoute._id, routes)
-                flattenedStations.push([traverseProcessGraph(outgoingRoute.unload, routes, [], stations)])
-            }
-        }
-    }
+// out = [
+//     {
+//         collapsed: false,
+//         children: [{
+//             collapsed: false,
+//             children: ['A', 'B']
+//         },
+//         {
+//             collapsed: false,
+//             children: ['C']
+//         }]
+//     },
+//     'D',
+//     {
+//         collapsed: false,
+//         children: [
+//             {
+//                 collapsed: false,
+//                 children: [
+//                     'E',
+//                     {
+//                         collapsed: false,
+//                         children: ['F']
+//                     },
+//                     {
+//                         collapsed: false,
+//                         children: ['G']
+//                     },
+//                     'H'
+//                 ]
+//             },
+//             'I'
+//         ]
+//     },
+//     'J'
+// ]
 
-    return flattenedStations;
+const newNode = () => {
+    return {
+        collapsed: false,
+        children: []
+    }   
 }
 
 export const flattenProcessStations = (routes, stations) => {
 
-    return traverseProcessGraph(null, routes, [], stations)
+    let mergeNode = null;
+
+    const traverseProcessGraph = (node, routes, flattenedStations, stations) => {
+    
+        if (node === null) {
+            // There are not any nodes currently in the flattened graph. Start by recursivly
+            // looping through and flattening from the start nodes (this is depth 0)
+            
+            let startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 1) {
+                flattenedStations = traverseProcessGraph(startNode, routes, deepCopy(flattenedStations), stations)
+            } else {
+                let newSubgraph = newNode();
+                for (var startNode of startNodes) {
+                    newSubgraph.children.push(traverseProcessGraph(startNode, routes, newNode(), stations))
+                }
+                if (newSubgraph.children.length) {
+                    flattenedStations.children.push(newSubgraph);
+                }
+                if (!!mergeNode) {
+                    const mergeNodeCopy = mergeNode;
+                    mergeNode = null;
+                    for (var route of getNodeIncoming(mergeNodeCopy, routes)) {
+                        routes = removeRoute(route._id, routes)
+                    }
+                    flattenedStations = traverseProcessGraph(mergeNodeCopy, routes, deepCopy(flattenedStations), stations)
+                }
+            }
+    
+        } else {
+            // This is a depth 1+ recursive search, so we have a node to start from
+    
+            let incomingRoutes = getNodeIncoming(node, routes)
+            let outgoingRoutes = getNodeOutgoing(node, routes)
+            if (incomingRoutes.length > 1) {
+                // This is a merge node, save this node, but halt recursion
+                mergeNode = node
+                return flattenedStations;
+            } else if (outgoingRoutes.length === 1) {
+                flattenedStations.children.push(node)
+                // routes = removeRoute(outgoingRoutes[0]._id, routes)
+                flattenedStations = traverseProcessGraph(outgoingRoutes[0].unload, routes, deepCopy(flattenedStations), stations)
+            } else {
+                flattenedStations.children.push(node)
+                let newSubgraph = newNode();
+                for (var outgoingRoute of outgoingRoutes) {
+                    // routes = removeRoute(outgoingRoute._id, routes)
+                    newSubgraph.children.push(traverseProcessGraph(outgoingRoute.unload, routes, newNode(), stations))
+                }
+                if (newSubgraph.children.length) {
+                    flattenedStations.children.push(newSubgraph);
+                }
+                
+
+                if (!!mergeNode) {
+                    const mergeNodeCopy = mergeNode;
+                    mergeNode = null;
+                    for (var route of getNodeIncoming(mergeNodeCopy, routes)) {
+                        routes = removeRoute(route._id, routes)
+                    }
+                    flattenedStations = traverseProcessGraph(mergeNodeCopy, routes, deepCopy(flattenedStations), stations)
+                }
+            }
+        }
+    
+        
+        
+        return flattenedStations;
+    }
+
+    return traverseProcessGraph(null, routes, newNode(), stations)
 
 }
 
