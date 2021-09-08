@@ -100,8 +100,6 @@ const TaskField = (props) => {
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     
-    console.log(processRoutes)
-
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -252,7 +250,7 @@ const TaskField = (props) => {
                             </>
                         }
 
-                    <styled.Title>In-Out Ratio</styled.Title>
+                    {/* <styled.Title>In-Out Ratio</styled.Title>
                     <NumberField
                         minValue={1}
                         maxValue={100}
@@ -261,7 +259,7 @@ const TaskField = (props) => {
                         containerStyle={{width: '100%', marginTop: '0.5rem', display: 'flex', justifyContent: 'center'}}
                         buttonStyle={{fontSize: '2.5rem'}}
                         inputStyle={{height: '2.5rem', width: '5rem', fontSize: '1.4rem'}}
-                    />
+                    /> */}
                     </div>
 
 

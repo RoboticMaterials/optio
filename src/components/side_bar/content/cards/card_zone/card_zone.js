@@ -526,7 +526,6 @@ const CardZone = ((props) => {
 
             return columnContent
         }
-
         return renderRecursiveColumns(currentProcess.graph, 0)
 
     }, [cardsSorted, currentProcess])
