@@ -13,6 +13,7 @@ const STATES = {
 const RotateButton = props => {
 	const {
 		iconName1,
+		state,
 		rotationTime,
 		onStateOne,
 		onStateTwo,
@@ -21,9 +22,9 @@ const RotateButton = props => {
 		schema
 	} = props
 
-	const [currentState, setCurrentState] = useState(STATES.STATE_ONE)	// rotation state
+	const [currentState, setCurrentState] = useState(state == 1 ? STATES.STATE_ONE : STATES.STATE_TWO)	// rotation state
 	const [rotate, setRotate] = useState(false)
-
+	const [call, setCall] = useState(false)
 
 	/*
 	* sets rotate when currentState changes and calls appropriate callback funcs

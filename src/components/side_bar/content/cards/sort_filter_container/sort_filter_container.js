@@ -32,7 +32,6 @@ const SortFilterContainer = (props) => {
 
     containerStyle,
 	} = props
-
 	return (
 		<BarsContainer style={containerStyle}>
 			{/*<styled.OptionContainer>*/}
