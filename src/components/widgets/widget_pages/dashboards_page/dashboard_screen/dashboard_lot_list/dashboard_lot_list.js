@@ -47,7 +47,7 @@ const DashboardLotList = () => {
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortDirection, setSortDirection] = useState(dashboard.sort.direction.iconClassName == 'fas fa-arrow-up' ? SORT_DIRECTIONS.ASCENDING : SORT_DIRECTIONS.DESCENDING)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()
@@ -177,7 +177,7 @@ const DashboardLotList = () => {
                                     const quantity = bins[stationID]?.count
                                     return {...card, quantity}
                                 })
-                                
+
         if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
             sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
           }
@@ -235,9 +235,9 @@ const DashboardLotList = () => {
                   selectedFilterOption={selectedFilterOption}
                   setSelectedFilterOption={setSelectedFilterOption}
                   multipleFilters = {serverSettings.enableMultipleLotFilters}
-                  sortMode={!!dashboard.sort.mode ? dashboard.sort.mode : LOT_FILTER_OPTIONS.name}
+                  sortMode={!!dashboard?.sort?.mode ? dashboard.sort.mode : LOT_FILTER_OPTIONS.name}
                   setSortMode={handleChangeSortMode}
-                  sortDirection={dashboard.sort.direction.id == 0 ? SORT_DIRECTIONS.DESCENDING : SORT_DIRECTIONS.ASCENDING}
+                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.DESCENDING : SORT_DIRECTIONS.ASCENDING}
                   setSortDirection={handleChangeSortDirection}
 
                   filters={dashboard.filters || []}
