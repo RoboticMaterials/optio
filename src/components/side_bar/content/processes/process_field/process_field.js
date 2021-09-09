@@ -132,6 +132,7 @@ export const ProcessField = (props) => {
 
     const handleSaveRoute = (routeId) => {
         const savingRoute = values.routes.find(route => route._id === routeId)
+        console.log(savingRoute)
         if (savingRoute.isNew) {
             dispatchPostRoute(savingRoute);
         } else {

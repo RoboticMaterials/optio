@@ -45,8 +45,8 @@ import { FORM_MODES } from "../../../../../constants/scheduler_constants";
 import {
     CONTENT,
     DEFAULT_COUNT_DISPLAY_NAME,
-    DEFAULT_NAME_DISPLAY_NAME, defaultBins,
-    FORM_BUTTON_TYPES, getDefaultBins, IGNORE_LOT_SYNC_WARNING, QUEUE_BIN_ID,
+    DEFAULT_NAME_DISPLAY_NAME,
+    FORM_BUTTON_TYPES, IGNORE_LOT_SYNC_WARNING, QUEUE_BIN_ID,
     SIDE_BAR_MODES
 } from "../../../../../constants/lot_contants";
 
@@ -100,9 +100,6 @@ const FormComponent = (props) => {
         setShowLotTemplateEditor,
         lotTemplate,
         lotTemplateId,
-        bins,
-        binId,
-        setBinId,
         close,
         isOpen,
         processId,
@@ -153,6 +150,7 @@ const FormComponent = (props) => {
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchShowBarcodeModal = (bool) => dispatch(showBarcodeModal(bool))
+
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
     const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
@@ -190,13 +188,7 @@ const FormComponent = (props) => {
         values: warningValues
     })
 
-    // derived state
-    const selectedBinName = stations[binId] ?
-        stations[binId].name :
-        binId === "QUEUE" ? "Queue" : "Finished"
-
     const processStationIds = getProcessStations(currentProcess, routes) // get object with all station's belonging to the current process as keys
-    const availableBins = !isEmpty(bins) ? Object.keys(bins) : ["QUEUE"]
 
     const errorCount = Object.keys(errors).length > 0 // get number of field errors
     const touchedCount = Object.values(touched).length // number of touched fields
@@ -258,34 +250,8 @@ const FormComponent = (props) => {
     /*
     *
     * */
-    const handleDeleteClick = async (selectedBin) => {
-        const {
-            [selectedBin]: currentBin,
-            ...remainingBins
-        } = bins
-
-        var submitItem = {
-            ...card,
-            bins: { ...remainingBins },
-        }
-
-        let requestSuccessStatus = false
-
-        // if there are no remaining bins, delete the card
-        if (isEmpty(remainingBins)) {
-            dispatchDeleteCard(cardId, processId)
-        }
-
-        // otherwise update the card to contain only the remaining bins
-        else {
-            const result = await dispatchPutCard(submitItem, cardId)
-
-            // check if request was successful
-            if (!(result instanceof Error)) {
-                requestSuccessStatus = true
-            }
-        }
-
+    const handleDeleteClick = async () => {
+        dispatchDeleteCard(cardId, processId)
         close()
     }
 
@@ -380,25 +346,16 @@ const FormComponent = (props) => {
         var buttonGroupNames = []
         var buttonGroupIds = []
 
-        // loop through availableBins. add name of each bin to buttonGroupNames, add id to buttonGroupIds
-        availableBins.forEach((currBinId) => {
-            if (stations[currBinId]) {
-                buttonGroupNames.push(stations[currBinId].name)
-                buttonGroupIds.push(currBinId)
-            }
+        processStationIds.forEach(id => {
+            buttonGroupNames.unshift(stations[id].name)
+            buttonGroupIds.unshift(id)
         })
 
-        // add queue to beginning of arrays
-        if (bins["QUEUE"]) {
-            buttonGroupNames.unshift("Queue")
-            buttonGroupIds.unshift("QUEUE")
-        }
+        buttonGroupNames.unshift("Queue")
+        buttonGroupIds.unshift("QUEUE")
 
-        // add finished to end of arrays
-        if (bins["FINISH"]) {
-            buttonGroupNames.push("Finished")
-            buttonGroupIds.push("FINISH")
-        }
+        buttonGroupNames.unshift("Finish")
+        buttonGroupIds.unshift("FINISH")
 
         return [buttonGroupNames, buttonGroupIds]
     }
@@ -420,61 +377,6 @@ const FormComponent = (props) => {
         }
 
     }, [])
-
-    /*
-    * Renders content for moving some or all of a lot from one bin to another
-    * */
-    const renderMoveContent = () => {
-
-        // get destination options for move
-        // the destination options include
-        const destinationOptions = [...Object.values(stations).filter((currStation) => {
-            if ((currStation._id !== binId) && processStationIds[currStation._id]) return true
-        })]
-        if (binId !== "QUEUE") destinationOptions.unshift({ name: "Queue", _id: "QUEUE" }) // add queue
-        if (binId !== "FINISH") destinationOptions.push({ name: "Finished", _id: "FINISH" }) // add finished
-
-        const maxValue = bins[binId]?.count || 0
-
-        return (
-            <styled.BodyContainer
-                minHeight={"20rem"}
-            >
-                <div>
-                    <styled.ContentHeader style={{ flexDirection: "column" }}>
-                        <styled.ContentTitle>Move lot</styled.ContentTitle>
-                        <div>
-                            <styled.InfoText style={{ marginRight: "1rem" }}>Current Station</styled.InfoText>
-                            <styled.InfoText schema={"lots"} highlight={true}>{selectedBinName}</styled.InfoText>
-                        </div>
-                    </styled.ContentHeader>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
-                        <styled.InfoText>Select Quantity to Move</styled.InfoText>
-                        <styled.InfoText style={{ marginBottom: "1rem" }}>{maxValue} Items Available</styled.InfoText>
-                        <NumberField
-                            maxValue={maxValue}
-                            minValue={1}
-                            name={"moveCount"}
-                        />
-                    </div>
-
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem" }}>
-                        <styled.InfoText style={{ marginBottom: "1rem" }}>Select Lot Destination</styled.InfoText>
-
-                        <DropDownSearchField
-                            containerSyle={{ minWidth: "35%" }}
-                            pattern={null}
-                            name="moveLocation"
-                            labelField={'name'}
-                            options={destinationOptions}
-                            valueField={"_id"}
-                            fixedHeight={false}
-                        />
-                    </div>
-                </div>
-            </styled.BodyContainer>
-        )
-    }
 
     // renders main content
     const renderMainContent = () => {
@@ -913,7 +815,7 @@ const FormComponent = (props) => {
                             renderHistory()
                         }
                         {(content === CONTENT.MOVE) &&
-                            renderMoveContent()
+                            // renderMoveContent()
                         }
 
                     </styled.ScrollContainer>
@@ -1174,6 +1076,9 @@ const buttonStyle = { marginBottom: '0rem', marginTop: 0 }
 const LotEditor = (props) => {
 
     const {
+        processId,
+
+
         isOpen,
         initialBin,
         onAddClick,
@@ -1186,7 +1091,7 @@ const LotEditor = (props) => {
         showPasteIcon,
         onSubmit,
         close,
-        processId,
+        
         processOptions,
         showProcessSelector,
         disabledAddButton,
@@ -1213,7 +1118,7 @@ const LotEditor = (props) => {
 
     // component state
     const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
-    const [binId, setBinId] = useState(props.binId || "QUEUE")
+    const [cardStationId, setCardStationId] = useState(props.stationId, 'QUEUE')
     const [content, setContent] = useState(null)
     const [loaded, setLoaded] = useState(false)
     const [formMode,] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
@@ -1224,11 +1129,6 @@ const LotEditor = (props) => {
     // get card object from redux by cardId
     const card = cards[cardId] || null
     const [lotNumber, setLotNumber] = useState((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
-
-    // extract card attributes
-    const {
-        bins = {}
-    } = card || {}
 
     /*
     *
@@ -1332,14 +1232,11 @@ const LotEditor = (props) => {
                         initialValues={{
                             _id: card ? card._id : null,
                             processId: processId,
+                            stationId: !!card ? card.stationId : 'QUEUE',
                             syncWithTemplate: card ? (card.syncWithTemplate || false) : false,
                             moveCount: card?.bins[binId]?.count || 0,
                             moveLocation: [],
                             name: card ? card.name : ``,
-                            bins: card && card.bins ?
-                                card.bins
-                                :
-                                getDefaultBins(initialBin),
                             fields: getFormCustomFields((useCardFields && !card?.syncWithTemplate) ? (card?.fields || []) : lotTemplate.fields, card?.fields ? card?.fields : null)
 
                         }}
@@ -1385,7 +1282,6 @@ const LotEditor = (props) => {
                                     name,
                                     changed,
                                     new: isNew,
-                                    bins,
                                     moveCount,
                                     moveLocation,
                                     processId: selectedProcessId,
@@ -1396,89 +1292,93 @@ const LotEditor = (props) => {
 
 
                                 if (content === CONTENT.MOVE) {
-                                    // moving card need to update count for correct bins
-                                    if (moveCount && moveLocation) {
 
-                                        var submitItem = {
-                                            name,
-                                            bins,
-                                            lotNumber,
-                                            flags: isObject(card) ? (card.flags || []) : [],
-                                            process_id: card.process_id,
-                                            lotTemplateId,
-                                            fields,
-                                            syncWithTemplate
-                                        }
+                                    throw {name : "NotImplementedError", message : "Unimplemented as part of lot refactor"}; 
 
-                                        /*
-                                        * if lot items are being moved to a different bin, the submitItem's bins key needs to be updated
-                                        * namely, the count field for the destination and origin bins needs to updated
-                                        *
-                                        * The destination bin's count should be incremented by the number of items being moved
-                                        * The current bin's count should be decremented by the number of items being moved
-                                        *
-                                        * */
 
-                                        // get count and location info for move from form values
-                                        const {
-                                            name: moveName,
-                                            _id: destinationBinId,
-                                        } = moveLocation[0]
+                                    // // moving card need to update count for correct bins
+                                    // if (moveCount && moveLocation) {
 
-                                        // extract destination, current, and remaining bins
-                                        const {
-                                            [destinationBinId]: destinationBin,
-                                            [binId]: currentBin,
-                                            ...unalteredBins
-                                        } = bins
+                                    //     var submitItem = {
+                                    //         name,
+                                    //         bins,
+                                    //         lotNumber,
+                                    //         flags: isObject(card) ? (card.flags || []) : [],
+                                    //         process_id: card.process_id,
+                                    //         lotTemplateId,
+                                    //         fields,
+                                    //         syncWithTemplate
+                                    //     }
 
-                                        // update counts of current and destination bins
-                                        const currentBinCount = parseInt(currentBin ? currentBin.count : 0) - moveCount
-                                        const destinationBinCount = parseInt(destinationBin ? destinationBin.count : 0) + moveCount
+                                    //     /*
+                                    //     * if lot items are being moved to a different bin, the submitItem's bins key needs to be updated
+                                    //     * namely, the count field for the destination and origin bins needs to updated
+                                    //     *
+                                    //     * The destination bin's count should be incremented by the number of items being moved
+                                    //     * The current bin's count should be decremented by the number of items being moved
+                                    //     *
+                                    //     * */
 
-                                        // update bins
-                                        var updatedBins
+                                    //     // get count and location info for move from form values
+                                    //     const {
+                                    //         name: moveName,
+                                    //         _id: destinationBinId,
+                                    //     } = moveLocation[0]
 
-                                        if (currentBinCount) {
-                                            // both the current bin and the destination bin have items, so update both lots and spread the remaining
+                                    //     // extract destination, current, and remaining bins
+                                    //     const {
+                                    //         [destinationBinId]: destinationBin,
+                                    //         [binId]: currentBin,
+                                    //         ...unalteredBins
+                                    //     } = bins
 
-                                            updatedBins = {
-                                                ...unalteredBins, 			// spread remaining bins
-                                                [destinationBinId]: {		// update destination bin's count, keep remaining attributes
-                                                    ...destinationBin,
-                                                    count: destinationBinCount
-                                                },
-                                                [binId]: {			// update current bin's count, keep remaining attributes
-                                                    ...currentBin,
-                                                    count: currentBinCount
-                                                }
-                                            }
-                                        }
+                                    //     // update counts of current and destination bins
+                                    //     const currentBinCount = parseInt(currentBin ? currentBin.count : 0) - moveCount
+                                    //     const destinationBinCount = parseInt(destinationBin ? destinationBin.count : 0) + moveCount
 
-                                        else {
-                                            // if currentBinCount is 0, the bin no longer has any items associated with the lot, so remove it
-                                            updatedBins = {
-                                                ...unalteredBins,
-                                                [destinationBinId]: {
-                                                    ...destinationBin,
-                                                    count: destinationBinCount
-                                                }
-                                            }
-                                        }
+                                    //     // update bins
+                                    //     var updatedBins
 
-                                        // update submit items bins
-                                        submitItem = {
-                                            ...submitItem,
-                                            bins: updatedBins,
-                                            fields,
-                                            syncWithTemplate
-                                            // fields
-                                        }
+                                    //     if (currentBinCount) {
+                                    //         // both the current bin and the destination bin have items, so update both lots and spread the remaining
 
-                                        // update card
-                                        requestResult = onPutCard(submitItem, values._id)
+                                    //         updatedBins = {
+                                    //             ...unalteredBins, 			// spread remaining bins
+                                    //             [destinationBinId]: {		// update destination bin's count, keep remaining attributes
+                                    //                 ...destinationBin,
+                                    //                 count: destinationBinCount
+                                    //             },
+                                    //             [binId]: {			// update current bin's count, keep remaining attributes
+                                    //                 ...currentBin,
+                                    //                 count: currentBinCount
+                                    //             }
+                                    //         }
+                                    //     }
 
-                                    }
+                                    //     else {
+                                    //         // if currentBinCount is 0, the bin no longer has any items associated with the lot, so remove it
+                                    //         updatedBins = {
+                                    //             ...unalteredBins,
+                                    //             [destinationBinId]: {
+                                    //                 ...destinationBin,
+                                    //                 count: destinationBinCount
+                                    //             }
+                                    //         }
+                                    //     }
+
+                                    //     // update submit items bins
+                                    //     submitItem = {
+                                    //         ...submitItem,
+                                    //         bins: updatedBins,
+                                    //         fields,
+                                    //         syncWithTemplate
+                                    //         // fields
+                                    //     }
+
+                                    //     // update card
+                                    //     requestResult = onPutCard(submitItem, values._id)
+
+                                    // }
                                 }
 
                                 else {
@@ -1487,9 +1387,9 @@ const LotEditor = (props) => {
 
                                         var submitItem = {
                                             name,
-                                            bins,
                                             flags: isObject(card) ? (card.flags || []) : [],
                                             process_id: isObject(card) ? (card.process_id || processId) : (processId),
+                                            station_id: isObject(card) ? card.station_id : 'QUEUE',
                                             lotTemplateId,
                                             lotNumber,
                                             fields,
@@ -1503,9 +1403,9 @@ const LotEditor = (props) => {
                                     else {
                                         const submitItem = {
                                             name,
-                                            bins,
                                             flags: [],
                                             process_id: processId ? processId : selectedProcessId,
+                                            station_id: isObject(card) ? card.station_id : 'QUEUE',
                                             lotTemplateId,
                                             lotNumber,
                                             fields,
@@ -1581,8 +1481,6 @@ const LotEditor = (props) => {
                                     formMode={formMode}
                                     showPasteIcon={showPasteIcon}
                                     {...formikProps}
-                                    bins={bins}
-                                    binId={binId}
                                     setBinId={setBinId}
                                     cardId={cardId}
                                     isOpen={isOpen}

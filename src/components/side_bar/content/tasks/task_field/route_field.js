@@ -127,26 +127,28 @@ const TaskField = (props) => {
 
     }, [editingRoute])
 
-    /**
-     * checks if there are other routes with the same load location. This meeds the load
-     * station is a diverging node and the user needs to decide whether its a split or choice.
+    /***
+     * Updates all sibling routes with the diverging type that has been selected
      */
-    const isDivergingRoute = useMemo(() => {
-        const isDiverging = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load) !== undefined
-        if (isDiverging && !!selectedRoute.divergeType) {
-            updateDivergingRoutes('split');
-        }
-        return isDiverging;
-    }, [processRoutes, selectedRoute])
-
     const updateDivergingRoutes = (type) => {
-        const siblingRoutes = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load)
         processRoutes.forEach((route, idx) => {
             if (route.load === selectedRoute.load) {
                 setFieldValue(`routes[${idx}].divergeType`, type);
             }
         })
     }
+
+    /**
+     * checks if there are other routes with the same load location. This meeds the load
+     * station is a diverging node and the user needs to decide whether its a split or choice.
+     */
+    const isDivergingRoute = useMemo(() => {
+        const isDiverging = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load) !== undefined
+        if (isDiverging && editingRoute.divergeType === undefined) {
+            updateDivergingRoutes('split');
+        }
+        return isDiverging;
+    }, [processRoutes, editingRoute])
 
     return (
         <>

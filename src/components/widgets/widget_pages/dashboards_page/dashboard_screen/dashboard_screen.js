@@ -72,6 +72,7 @@ const DashboardScreen = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
 
+
     const currentDashboard = dashboards[dashboardID]
     // actions
     const dispatch = useDispatch()

@@ -475,7 +475,7 @@ export const doRoutesConverge = (routes) => {
     return numTerminalStations === 1;
 }
 
-const findProcessStartNodes = (routes) => {
+export const findProcessStartNodes = (routes) => {
     let loadStations = routes.map(route => route.load);
     let unloadStations = routes.map(route => route.unload);
 
@@ -487,6 +487,18 @@ const findProcessStartNodes = (routes) => {
     }
 
     return startNodes;
+}
+
+export const findProcessEndNode = (routes) => {
+    let loadStations = routes.map(route => route.load);
+    let unloadStations = routes.map(route => route.unload);
+
+    for (var unloadStation of unloadStations) {
+        if (loadStations.find(loadStation => loadStation === unloadStation) === undefined) {
+            return unloadStation;
+        }
+    }
+    return null;
 }
 
 const getNodeIncoming = (node, routes) => {

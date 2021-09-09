@@ -203,6 +203,7 @@ const KickOffModal = (props) => {
     * renders an array of buttons for each kick off lot
     * */
     const renderKickOffButtons = useMemo(() => {
+        console.log('df', availableKickOffCards, dashboard.filters)
         return availableKickOffCards
             .filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
                 const {
@@ -411,7 +412,7 @@ const KickOffModal = (props) => {
                     <styled.ContentContainer>
                         <styled.ReportButtonsContainer isButtons={isButtons}>
                             {isButtons ?
-                                renderKickOffButtons()
+                                renderKickOffButtons
                                 :
                                 didLoadData ?
                                     <styled.NoButtonsText>There are currently no lots in the queue available for kick off.</styled.NoButtonsText>
