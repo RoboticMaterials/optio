@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState} from "react";
+import VisibilitySensor from 'react-visibility-sensor'
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -10,7 +11,6 @@ import {
 
 // components external
 import { Draggable, Container } from 'react-smooth-dnd';
-import VisibilitySensor from 'react-visibility-sensor'
 
 // components internal
 import Lot from "../../lot/lot";
@@ -389,53 +389,65 @@ const Column = ((props) => {
 
 
 							return (
-									<Draggable
-										key={cardId}
-										onMouseEnter={(event) => onMouseEnter(event, cardId)}
-										onMouseLeave={onMouseLeave}
-										style={{
-										}}
-									>
-										<div
-											style={{
-											}}
-										>
-											<LotContainer
-												glow={isLastSelected}
-												isFocused={isDragging || isHovering}
-												enableFlagSelector={true}
-												selectable={selectable}
-												isSelected={isSelected}
-												key={cardId}
-												// processName={processName}
-												totalQuantity={totalQuantity}
-												lotNumber={lotNumber}
-												name={name}
-												count={count}
-												leadTime={leadTime}
-												id={cardId}
-												flags={flags || []}
-												index={index}
-												lotId={cardId}
-												binId={station_id}
-												onClick={(e) => {
-													const payload = getBetweenSelected(cardId)
-													onCardClick(
-														e,
-														{
-															lotId: cardId,
-															processId: processId,
-															binId: station_id
-														},
-														payload
-													)
-												}}
-												containerStyle={{
-													marginBottom: "0.5rem",
-												}}
-											/>
-										</div>
-									</Draggable>
+								<VisibilitySensor partialVisibility = {true}>
+									{({isVisible}) =>
+										<>
+											{!!isVisible ?
+													<Draggable
+														key={cardId}
+														onMouseEnter={(event) => onMouseEnter(event, cardId)}
+														onMouseLeave={onMouseLeave}
+														style={{
+														}}
+													>
+														<div
+															style={{
+															}}
+														>
+															<LotContainer
+																glow={isLastSelected}
+																isFocused={isDragging || isHovering}
+																enableFlagSelector={true}
+																selectable={selectable}
+																isSelected={isSelected}
+																key={cardId}
+																// processName={processName}
+																totalQuantity={totalQuantity}
+																lotNumber={lotNumber}
+																name={name}
+																count={count}
+																leadTime={leadTime}
+																id={cardId}
+																flags={flags || []}
+																index={index}
+																lotId={cardId}
+																binId={station_id}
+																onClick={(e) => {
+																	const payload = getBetweenSelected(cardId)
+																	onCardClick(
+																		e,
+																		{
+																			lotId: cardId,
+																			processId: processId,
+																			binId: station_id
+																		},
+																		payload
+																	)
+																}}
+																containerStyle={{
+																	marginBottom: "0.5rem",
+																}}
+															/>
+														</div>
+													</Draggable>
+													:
+													<div style = {{height: '20rem', width: '80%'}}>
+													...Loading
+													</div>
+											}
+										</>
+									}
+								</VisibilitySensor>
 							)
 						})}
 

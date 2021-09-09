@@ -47,10 +47,6 @@ const LotContainer = (props) => {
     const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (
-      <VisibilitySensor partialVisibility = {true}>
-      {({isVisible}) =>
-      <>
-      {!!isVisible ?
         <Lot
             stationName={stationName}
             templateValues={templateValues}
@@ -70,14 +66,7 @@ const LotContainer = (props) => {
             {...rest}
             containerStyle={{ width: '80%', margin: '.5rem auto .5rem auto', ...containerStyle }}
         />
-        :
-        <div style = {{height: '20rem', width: '80%'}}>
-        ...Loading
-        </div>
-      }
-      </>
-      }
-      </VisibilitySensor>
+
     )
 }
 
