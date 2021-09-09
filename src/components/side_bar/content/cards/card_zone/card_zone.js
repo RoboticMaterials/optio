@@ -1,5 +1,6 @@
-import React, { useEffect, useState, memo } from "react"
+import React, { useEffect, useState, memo, useMemo } from "react"
 import moment from 'moment';
+
 
 // components internal
 import StationsColumn from "../columns/station_column/station_column"
@@ -122,7 +123,7 @@ const CardZone = ((props) => {
     // Useeffect for cycle times
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
-        deleteGetCycleTimes()
+        //deleteGetCycleTimes()
 
     }, [shiftDetails, allCards, stations])
 
@@ -499,7 +500,7 @@ const CardZone = ((props) => {
     * Renders a {StationColumn} for each entry in {cardsSorted}
     *
     * */
-    const renderStationColumns = () => {
+    const renderStationColumns = useMemo(() => {
 
         // loop through each entry in {cardsSorted} and return a {StationsColumn}
         return Object.values(cardsSorted).map((obj, index) => {
@@ -536,52 +537,58 @@ const CardZone = ((props) => {
                 />
             )
         })
-    }
+    },)
+
+    const renderFinishColumn = useMemo(() => {
+      if(!!showFinish){
+        return (
+          <FinishColumn
+              setSelectedCards={setSelectedCards}
+              selectedCards={selectedCards}
+              key={"FINISH"}
+              sortMode={sortMode}
+              sortDirection={sortDirection}
+              maxHeight={maxHeight}
+              station_id={"FINISH"}
+              setShowCardEditor={setShowCardEditor}
+              showCardEditor={showCardEditor}
+              stationName={"Finished"}
+              processId={processId}
+              cards={finished}
+              onCardClick={handleCardClick}
+          />
+        )
+      }
+    },)
+
+    const renderQueueColumn = useMemo(() => {
+      if(!!showQueue){
+        return (
+          <LotQueue
+              setSelectedCards={setSelectedCards}
+              selectedCards={selectedCards}
+              key={"QUEUE"}
+              sortMode={sortMode}
+              sortDirection={sortDirection}
+              maxHeight={maxHeight}
+              station_id={"QUEUE"}
+              setShowCardEditor={setShowCardEditor}
+              showCardEditor={showCardEditor}
+              stationName={"Queue"}
+              processId={processId}
+              cards={queue}
+              onCardClick={handleCardClick}
+              onAddLotClick={() => handleAddLotClick(processId)}
+          />
+        )
+      }
+    },)
 
     return (
         <styled.Container style={{ background: 'white' }}>
-          <>
-          {!!showQueue &&
-              <LotQueue
-                  setSelectedCards={setSelectedCards}
-                  selectedCards={selectedCards}
-                  key={"QUEUE"}
-                  sortMode={sortMode}
-                  sortDirection={sortDirection}
-                  maxHeight={maxHeight}
-                  station_id={"QUEUE"}
-                  setShowCardEditor={setShowCardEditor}
-                  showCardEditor={showCardEditor}
-                  stationName={"Queue"}
-                  processId={processId}
-                  cards={queue}
-                  onCardClick={handleCardClick}
-                  onAddLotClick={() => handleAddLotClick(processId)}
-              />
-            }
-            </>
-
-            {renderStationColumns()}
-
-            <>
-            {!!showFinish &&
-            <FinishColumn
-                setSelectedCards={setSelectedCards}
-                selectedCards={selectedCards}
-                key={"FINISH"}
-                sortMode={sortMode}
-                sortDirection={sortDirection}
-                maxHeight={maxHeight}
-                station_id={"FINISH"}
-                setShowCardEditor={setShowCardEditor}
-                showCardEditor={showCardEditor}
-                stationName={"Finished"}
-                processId={processId}
-                cards={finished}
-                onCardClick={handleCardClick}
-            />
-          }
-          </>
+            {renderQueueColumn}
+            {renderStationColumns}
+            {renderFinishColumn}
         </styled.Container>
     )
 })

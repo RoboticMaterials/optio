@@ -7,6 +7,7 @@ import PropTypes from "prop-types"
 
 // internal components
 import CardZone from "../card_zone/card_zone"
+import VisibilitySensor from 'react-visibility-sensor'
 
 // styles
 import * as styled from "./summary_zone.style"
@@ -40,34 +41,7 @@ const SummaryZone = ((props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const routes = useSelector(state => state.tasksReducer.tasks)
 
-    const renderProcessCycleTime = (process) => {
-        const processStations = Object.keys(getProcessStations(process, routes))
 
-        let totalCycleTime = moment().set({ 'hour': '00', 'minute': '00', 'second': '00' })
-        processStations.forEach((stationID) => {
-            const station = stations[stationID]
-            if (!!station.cycle_time) {
-                const splitVal = station.cycle_time.split(':')
-                totalCycleTime.add(parseInt(splitVal[0]), 'hours').add(parseInt(splitVal[1]), 'minutes').add(parseInt(splitVal[2]), 'seconds')
-
-            }
-        })
-        if (totalCycleTime.hour() > 0 || totalCycleTime.minute() > 0 || totalCycleTime.second() > 0) {
-
-            return (
-                <styled.ColumnContainer s>
-                    <styled.CycleTimeText style={{ fontWeight: 'bold' }}>Process Cycle Time:</styled.CycleTimeText>
-                    <styled.CycleTimeText>
-                        {totalCycleTime.format('HH:mm:ss')}
-                    </styled.CycleTimeText>
-                </styled.ColumnContainer>
-
-            )
-        }
-        else {
-            return
-        }
-    }
 
     /*
    * This function renders a CardZone for each process in {selectedProcesses}
@@ -91,36 +65,47 @@ const SummaryZone = ((props) => {
 				// return a CardZone wrapped with a styled container and any additional elements
 
 				return	(
-					<>
-						{!!currProcess.showSummary &&
-							<styled.ZoneContainer
-								key={processId}
-							>
-								<styled.ProcessName>{processName}</styled.ProcessName>
+          <VisibilitySensor partialVisibility = {true}>
+            {({isVisible}) =>
+              <>
+                {!!isVisible ?
+      					<>
+      						{!!currProcess.showSummary &&
+      							<styled.ZoneContainer
+      								key={processId}
+      							>
+      								<styled.ProcessName>{processName}</styled.ProcessName>
 
-								<CardZone
-									handleAddLotClick={handleAddLotClick}
-									setSelectedCards={setSelectedCards}
-									selectedCards={selectedCards}
-									sortMode={sortMode}
-                  lotFilterValue = {lotFilterValue}
-                  selectedFilterOption = {selectedFilterOption}
-									sortDirection={sortDirection}
-									lotFilters={lotFilters}
-									setShowCardEditor={setShowCardEditor}
-									showCardEditor={showCardEditor}
-									maxHeight={"50rem"}
-									processId={processId}
-									handleCardClick={handleCardClick}
-								/>
-							</styled.ZoneContainer>
-						}
-					</>
-
-				)
-			})
-		)
-	}
+      								<CardZone
+      									handleAddLotClick={handleAddLotClick}
+      									setSelectedCards={setSelectedCards}
+      									selectedCards={selectedCards}
+      									sortMode={sortMode}
+                        lotFilterValue = {lotFilterValue}
+                        selectedFilterOption = {selectedFilterOption}
+      									sortDirection={sortDirection}
+      									lotFilters={lotFilters}
+      									setShowCardEditor={setShowCardEditor}
+      									showCardEditor={showCardEditor}
+      									maxHeight={"50rem"}
+      									processId={processId}
+      									handleCardClick={handleCardClick}
+      								/>
+      							</styled.ZoneContainer>
+      						}
+      					</>
+                :
+                <div style = {{height: '20rem', width: '80%'}}>
+                ...Loading
+                </div>
+              }
+            </>
+          }
+        </VisibilitySensor>
+			)
+		})
+	)
+}
 
 	return(
 		<styled.Container >
