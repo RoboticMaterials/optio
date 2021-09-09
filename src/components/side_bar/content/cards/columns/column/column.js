@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState} from "react";
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -68,7 +68,7 @@ const Column = ((props) => {
 	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
-	const [vis, setVis] = useState(true)
+
 
 	// const [breaks, setBreaks] = useState([])
 	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
@@ -125,10 +125,6 @@ const Column = ((props) => {
 		dispatchSetLotHovering(lotId)
 	}
 
-	const onChange = (isVisible) => {
-		setVis(isVisible)
-		console.log(isVisible)
-	}
 
 	const onMouseLeave = (event) => {
 		dispatchSetLotHovering(null)
@@ -391,20 +387,21 @@ const Column = ((props) => {
 						// const isSelected = (draggingLotId !== null) ? () : ()
 						const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 
+
 						return (
-							<Draggable
-								key={cardId}
-								onMouseEnter={(event) => onMouseEnter(event, cardId)}
-								onMouseLeave={onMouseLeave}
-								style={{
-								}}
-							>
-								<div
+							<VisibilitySensor>
+							{({isVisible}) =>
+								<Draggable
+									key={cardId}
+									onMouseEnter={(event) => onMouseEnter(event, cardId)}
+									onMouseLeave={onMouseLeave}
 									style={{
 									}}
 								>
-								<VisibilitySensor onChange = {onChange}>
-										{!!vis ?
+									<div
+										style={{
+										}}
+									>
 											<LotContainer
 												glow={isLastSelected}
 												isFocused={isDragging || isHovering}
@@ -425,6 +422,7 @@ const Column = ((props) => {
 												binId={station_id}
 												onClick={(e) => {
 													const payload = getBetweenSelected(cardId)
+													console.log(isVisible)
 													onCardClick(
 														e,
 														{
@@ -439,12 +437,14 @@ const Column = ((props) => {
 													marginBottom: "0.5rem",
 												}}
 											/>
-											:
-											<></>
-										}
-									</VisibilitySensor>
-								</div>
-							</Draggable>
+											{isVisible &&
+												<h1>hi</h1>
+											}
+									</div>
+								</Draggable>
+						}
+						</VisibilitySensor>
+
 						)
 					})}
 
