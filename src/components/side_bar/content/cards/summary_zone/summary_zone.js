@@ -7,6 +7,7 @@ import PropTypes from "prop-types"
 
 // internal components
 import CardZone from "../card_zone/card_zone"
+import VisibilitySensor from 'react-visibility-sensor'
 
 // styles
 import * as styled from "./summary_zone.style"
@@ -64,36 +65,47 @@ const SummaryZone = ((props) => {
 				// return a CardZone wrapped with a styled container and any additional elements
 
 				return	(
-					<>
-						{!!currProcess.showSummary &&
-							<styled.ZoneContainer
-								key={processId}
-							>
-								<styled.ProcessName>{processName}</styled.ProcessName>
+          <VisibilitySensor partialVisibility = {true}>
+            {({isVisible}) =>
+              <>
+                {!!isVisible ?
+      					<>
+      						{!!currProcess.showSummary &&
+      							<styled.ZoneContainer
+      								key={processId}
+      							>
+      								<styled.ProcessName>{processName}</styled.ProcessName>
 
-								<CardZone
-									handleAddLotClick={handleAddLotClick}
-									setSelectedCards={setSelectedCards}
-									selectedCards={selectedCards}
-									sortMode={sortMode}
-                  lotFilterValue = {lotFilterValue}
-                  selectedFilterOption = {selectedFilterOption}
-									sortDirection={sortDirection}
-									lotFilters={lotFilters}
-									setShowCardEditor={setShowCardEditor}
-									showCardEditor={showCardEditor}
-									maxHeight={"50rem"}
-									processId={processId}
-									handleCardClick={handleCardClick}
-								/>
-							</styled.ZoneContainer>
-						}
-					</>
-
-				)
-			})
-		)
-	}
+      								<CardZone
+      									handleAddLotClick={handleAddLotClick}
+      									setSelectedCards={setSelectedCards}
+      									selectedCards={selectedCards}
+      									sortMode={sortMode}
+                        lotFilterValue = {lotFilterValue}
+                        selectedFilterOption = {selectedFilterOption}
+      									sortDirection={sortDirection}
+      									lotFilters={lotFilters}
+      									setShowCardEditor={setShowCardEditor}
+      									showCardEditor={showCardEditor}
+      									maxHeight={"50rem"}
+      									processId={processId}
+      									handleCardClick={handleCardClick}
+      								/>
+      							</styled.ZoneContainer>
+      						}
+      					</>
+                :
+                <div style = {{height: '20rem', width: '80%'}}>
+                ...Loading
+                </div>
+              }
+            </>
+          }
+        </VisibilitySensor>
+			)
+		})
+	)
+}
 
 	return(
 		<styled.Container >

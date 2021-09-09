@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 
 // components internal
 import Lot from "./lot"
+import VisibilitySensor from 'react-visibility-sensor'
 
 // functions external
 import PropTypes from 'prop-types'
@@ -46,6 +47,10 @@ const LotContainer = (props) => {
     const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (
+      <VisibilitySensor partialVisibility = {true}>
+      {({isVisible}) =>
+      <>
+      {!!isVisible ?
         <Lot
             stationName={stationName}
             templateValues={templateValues}
@@ -62,10 +67,17 @@ const LotContainer = (props) => {
             onClick={() => {
 
             }}
-
             {...rest}
             containerStyle={{ width: '80%', margin: '.5rem auto .5rem auto', ...containerStyle }}
         />
+        :
+        <div style = {{height: '20rem', width: '80%'}}>
+        ...Loading
+        </div>
+      }
+      </>
+      }
+      </VisibilitySensor>
     )
 }
 

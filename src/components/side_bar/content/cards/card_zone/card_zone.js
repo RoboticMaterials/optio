@@ -587,6 +587,8 @@ const CardZone = ((props) => {
     return (
         <styled.Container style={{ background: 'white' }}>
             {renderQueueColumn}
+            {renderStationColumns}
+            {renderFinishColumn}
         </styled.Container>
     )
 })
