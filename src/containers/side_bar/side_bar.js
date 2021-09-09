@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
+import VisibilitySensor from 'react-visibility-sensor'
 
 // Import Styles
 import * as styled from './side_bar.style'
@@ -477,6 +478,10 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
+              <VisibilitySensor onChange = {(isVisible)=>console.log(isVisible)} partialVisibility ={true}>
+              {({isVisible}) =>
+              <>
+              {!!isVisible ?
                 <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex", }} open={showSideBar}>
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
@@ -498,11 +503,18 @@ const SideBar = (props) => {
                         </DraggableCore>
                     </styled.SidebarContent>
                 </styled.SidebarWrapper>
+                :
+                <div style = {{height: '20rem', width: '80%'}}>
+                ...Loading
+                </div>
+              }
+              </>
+              }
+              </VisibilitySensor>
             }
         </>
+
     )
-
-
 }
 
 export default SideBar
