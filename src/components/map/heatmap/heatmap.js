@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 /// utils
 import { getProcessStationsSorted } from '../../../methods/utils/processes_utils';
-import { getCardsInBin, getLotTotalQuantity } from '../../../methods/utils/lot_utils';
+import { getBinQuantity, getCardsInBin, getLotTotalQuantity } from '../../../methods/utils/lot_utils';
 import HeatSpot from './heatspot/heatspot';
 
 
@@ -39,20 +39,14 @@ const HeatMap = (props) => {
 
             let totalProcessWIP = 0;    // Tracks total WIP in the process
             let stationWIP = {}         // Tracks WIP at each station in the process (by id)
-            let i, pStationId, stationCards, stationWIPAccumulator;
-            for (i=0; i<processStations.length; i++) { // Loop through each station in process to get mean WIP of the process
-                pStationId = processStations[i];
-                stationCards = getCardsInBin(cards, pStationId, process._id);
-
-                stationWIPAccumulator = 0;
-                stationCards.forEach((currLot) => {
-                    stationWIPAccumulator += currLot.count;
-                })
-                stationWIP[pStationId] = stationWIPAccumulator; // NOTE: Dont update in the object until end (better performance)
-                totalProcessWIP += stationWIPAccumulator;
+            let i, pStationId, stationsWithWip = 0;
+            for (pStationId of processStations) { // Loop through each station in process to get mean WIP of the process
+                stationWIP[pStationId] = Object.values(cards).filter(card => card.process_id === process._id).reduce((accumWIP, card) => accumWIP + getBinQuantity(card, pStationId), 0)
+                stationsWithWip += (stationWIP[pStationId] > 0) ? 1 : 0;
+                totalProcessWIP += stationWIP[pStationId];
             }
 
-            const meanProcessWIP = totalProcessWIP / processStations.length;    // The mean WIP at each station in this prcess
+            const meanProcessWIP = totalProcessWIP / stationsWithWip;    // The mean WIP at each station in this prcess
 
             // Loop through stations again to find WIP Ratio (stationWIP / meanProcessWIP)
             let WIPRatio;

@@ -218,9 +218,8 @@ export const getProcessStations = (process, routes) => {
             station: loadStationId
         } = load
 
-        // if unloadStationId and loadStationId exist, add to stationIds obj
-        if (loadStationId && index == 0) stationIds.push(loadStationId)
-        if (unloadStationId) stationIds.push(unloadStationId)
+        if (!stationIds.includes(currRoute.load)) {stationIds.push(currRoute.load)}
+        if (!stationIds.includes(currRoute.unload)) {stationIds.push(currRoute.unload)}
     })
 
     // return stationIds obj

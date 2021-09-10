@@ -133,6 +133,7 @@ const TaskField = (props) => {
     const updateDivergingRoutes = (type) => {
         processRoutes.forEach((route, idx) => {
             if (route.load === selectedRoute.load) {
+                console.log(values.routes[idx].name, 'updated to', type)
                 setFieldValue(`routes[${idx}].divergeType`, type);
             }
         })

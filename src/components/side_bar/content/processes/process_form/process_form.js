@@ -7,8 +7,9 @@ import uuid from 'uuid'
 import {
 	deleteRouteClean,
 	deleteTask,
-	putRouteClean,
-	putTask, saveFormRoute,
+	postTask,
+	putTask,
+	saveFormRoute,
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
@@ -47,8 +48,8 @@ const ProcessForm = (props) => {
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
 
-	const dispatchPostRouteClean = async (route) => await dispatch(taskActions.postRouteClean(route))
-	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
+	const dispatchPostRoute = async (route) => await dispatch(postTask(route))
+    const dispatchPutRoute = async (route) => await dispatch(putTask(route, route._id))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchSetProcessAttributes = async (id, attr) => await dispatch(setProcessAttributes(id, attr))
@@ -110,6 +111,14 @@ const ProcessForm = (props) => {
 		// 	await dispatchSaveFormRoute(currRoute)
 		// 	cleanRoute(currRoute)
 		// }
+
+		for (var savingRoute of remainingValues.routes) {
+			if (savingRoute.isNew) {
+				dispatchPostRoute(savingRoute);
+			} else {
+				dispatchPutRoute(savingRoute);
+			}
+		}
 
 		dispatchSetSelectedTask(null) // clear selected task
 		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute._id)
@@ -197,19 +206,6 @@ const ProcessForm = (props) => {
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
 		toggleEditingProcess(false)
-	}
-
-	const handleDefaultObj = (objId, prevObj) => {
-
-		if(isObject(objects[objId])) {
-			return objects[objId]
-		}
-		else if (prevObj) {
-			return prevObj
-		}
-		else {
-			return null
-		}
 	}
 
 	const handleInitialRoutes = () => {

@@ -138,7 +138,6 @@ const DashboardLotPage = (props) => {
 
     const onMoveClicked = () => {
         // Depending on if its a finish column, a single flow, or a split/choice
-        console.log(routeOptions)
         if (routeOptions.length === 0) {
             onMove('FINISH', moveQuantity);
         } else if (routeOptions.length === 1) {
@@ -152,8 +151,6 @@ const DashboardLotPage = (props) => {
 
     // Handles moving lot to next station
     const onMove = (moveStations, quantity) => {
-
-        console.log(moveStations, quantity)
 
         if (Array.isArray(moveStations)) { // Split node, duplicate card and send to all stations
             for (var toStationId of moveStations) {
@@ -184,12 +181,10 @@ const DashboardLotPage = (props) => {
                 currentLot.bins[stationID].count -= quantity;
             }
 
-            console.log(toStationId, stations)
             const stationName = toStationId === 'FINISH' ? 'Finish' : stations[toStationId].name;
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been moved to ${stationName}`)
         }
 
-        console.log(currentLot, lotID)
         dispatchPutCard(currentLot, lotID);
         onBack()
 
@@ -227,7 +222,7 @@ const DashboardLotPage = (props) => {
                 </styled.BodyContainer>
             </styled.ModalContainer>
         )
-    }, [routeOptions])
+    }, [routeOptions, showRouteSelector])
 
     const renderFinishQuantity = () => {
         const lotCount = currentLot?.bins[stationID]?.count

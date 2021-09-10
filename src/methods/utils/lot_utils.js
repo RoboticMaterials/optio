@@ -391,14 +391,7 @@ export const getLotTotalQuantity = ({ bins }) => {
 }
 
 export const getBinQuantity = ({ bins }, binId) => {
-    const {
-        [binId]: currentBin
-    } = bins || {}
-
-    const {
-        count
-    } = currentBin || {}
-    return count
+    return bins[binId]?.count || 0
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {

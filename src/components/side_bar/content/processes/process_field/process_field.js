@@ -23,6 +23,7 @@ import {
     deleteTask, 
     setSelectedTask,
     setSelectedHoveringTask,
+    setTaskAttributes,
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setProcessAttributes } from '../../../../../redux/actions/processes_actions'
 import { handlePostTaskQueue, postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -87,10 +88,9 @@ export const ProcessField = (props) => {
 
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
+    const dispatchSetTaskAttributes = async (id, attr) => await dispatch(setTaskAttributes(id, attr));
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
 
-    const dispatchPostRoute = async (route) => await dispatch(postTask(route))
-    const dispatchPutRoute = async (route) => await dispatch(putTask(route, route._id))
     const dispatchDeleteRoute = async (routeId) => await dispatch(deleteTask(routeId))
 
     const dispatchSetProcessAttributes = async (id, attr) => await dispatch(setProcessAttributes(id, attr))
@@ -131,15 +131,16 @@ export const ProcessField = (props) => {
     }, [selectedTask])
 
     const handleSaveRoute = (routeId) => {
+        // NOTE: We dont actually want to save a route until the process is saved
         const savingRoute = values.routes.find(route => route._id === routeId)
-        console.log(savingRoute)
-        if (savingRoute.isNew) {
-            dispatchPostRoute(savingRoute);
-        } else {
-            dispatchPutRoute(savingRoute);
-        }
+        // if (savingRoute.isNew) {
+        //     dispatchPostRoute(savingRoute);
+        // } else {
+        //     dispatchPutRoute(savingRoute);
+        // }
         dispatchSetSelectedTask(null);
-        dispatchSetProcessAttributes(selectedProcess._id, {routes: values.routes})
+        dispatchSetTaskAttributes(savingRoute._id, savingRoute);
+        dispatchSetProcessAttributes(selectedProcess._id, {routes: values.routes});
     }
 
     const handleRemoveRoute = (routeId) => {
