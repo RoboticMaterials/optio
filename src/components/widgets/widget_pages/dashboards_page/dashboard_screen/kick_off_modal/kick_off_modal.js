@@ -210,7 +210,7 @@ const KickOffModal = (props) => {
     /*
     * renders an array of buttons for each kick off lot
     * */
-    const renderKickOffButtons = useMemo(() => {
+    const renderKickOffButtons = () => {
         console.log('df', availableKickOffCards, dashboard.filters)
         return availableKickOffCards
             .filter(currLot => dashboard?.filters?.reduce((matchesAll, filter) => {
@@ -266,7 +266,7 @@ const KickOffModal = (props) => {
             })
     }
 
-    const loadData = async () => {
+    const loadData = async() => {
         const cardsResult = await dispatchGetCards()
         const processesResult = await dispatchGetProcesses()
         dispatchGetLotTemplates()

@@ -147,7 +147,7 @@ const DashboardLotPage = (props) => {
             }
           }
         })
-        setProcessTransferOptions(proc)
+        //setProcessTransferOptions(proc)
       }
 
     const onBack = () => {
@@ -382,7 +382,7 @@ const DashboardLotPage = (props) => {
                     setQuantity={setMoveQuantity}
                     maxQuantity={currentLot.bins[stationID]?.count}
                     minQuantity={1}
-                    route={currentTask}
+                    //route={currentTask}
                     disabled = {!processes[cards[lotID]?.process_id]?.showFinish}
                 />
             </styled.LotButtonContainer>

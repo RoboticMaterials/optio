@@ -385,18 +385,9 @@ export const getLotTotalQuantity = (card) => {
     if(!!card.dispersed){
 
     }
-    if (isObject(card.bins)) {
-        Object.values(card.bins).forEach(currBin => {
-            const {
-                count
-            } = currBin || {}
 
-
-    else{
-      let totalQuantity = 0
-
-      if (isObject(bins)) {
-          Object.values(bins).forEach(currBin => {
+      if (isObject(card.bins)) {
+          Object.values(card.bins).forEach(currBin => {
               const {
                   count
               } = currBin || {}
@@ -406,7 +397,6 @@ export const getLotTotalQuantity = (card) => {
       }
 
       return totalQuantity
-    }
 
 }
 
