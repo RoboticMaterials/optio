@@ -231,7 +231,7 @@ const FinishModal = (props) => {
                 } = process || {}
 
                 const count = bins[stationId]?.count
-                const totalQuantity = getLotTotalQuantity({bins})
+                const totalQuantity = getLotTotalQuantity(currCard)
                 const templateValues = getCustomFields(lotTemplateId, currCard)
 
                 return (

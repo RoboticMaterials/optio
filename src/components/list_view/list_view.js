@@ -33,11 +33,11 @@ import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 const SCREENS = {
     LOCATIONS: {
-        title: "Locations",
+        title: "Dashboards",
         schema: "locations"
     },
     SETTINGS: {
-        title: "Settings",
+        title: "",
         schema: "settings"
     },
     DASHBOARDS: {
@@ -306,14 +306,15 @@ const ListView = (props) => {
                               <>
                                 {!locked &&
                                   <BounceButton
-                                      color={"black"}
+                                      color={"white"}
                                       onClick={() => {
                                           setShowDashboards(false)
                                           history.push('/locations')
                                       }}
                                       containerStyle={{
-                                          width: "3rem",
-                                          height: "3rem",
+                                          color: "black",
+                                          width: "2.5rem",
+                                          height: "2.5rem",
                                           position: "relative"
                                       }}
                                   >
@@ -326,7 +327,7 @@ const ListView = (props) => {
                               </>
                                 :
                                 <BounceButton
-                                    color={"black"}
+                                    color={"blue"}
                                     onClick={() => {
                                         setShowSettings(!showSettings)
                                         if (showSettings) {
@@ -338,8 +339,9 @@ const ListView = (props) => {
                                     }}
                                     active={showSettings}
                                     containerStyle={{
-                                        width: "3rem",
-                                        height: "3rem",
+                                        background: 'white',
+                                        width: "2.5rem",
+                                        height: "2.5rem",
                                         position: "relative"
                                     }}
                                 >

@@ -209,7 +209,7 @@ const CardZone = ((props) => {
         //		   calculate timeUntilCardMove = time until card will move to next station (qty*cycleT)
         //         if timeUntilCardMove < nextSimStep, cardsToBeMoved = [card], nextSimStep = timeUntilCardMove
         //         else if timeUntilCardMove == nextSimStep, cardsToBeMoved.push(card)
-        //		currSimTime += nextSimStep		
+        //		currSimTime += nextSimStep
         //
 
         let currSimTime = 0;
@@ -267,7 +267,7 @@ const CardZone = ((props) => {
                 }
 
                 //// Determine next column where card should be moved from (this determines sim step)
-                
+
                 if (stationTimesUntilMove[i] < minTimeUntilMove) {
                     minTimeUntilMove = stationTimesUntilMove[i];
                     nextCardsToBeMoved = [i];
@@ -591,4 +591,3 @@ CardZone.defaultProps = {
 }
 
 export default memo(CardZone)
-

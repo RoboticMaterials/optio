@@ -211,7 +211,7 @@ const KickOffModal = (props) => {
                 } = currLot || {}
                 const quantity = bins["QUEUE"]?.count || 0;
                 return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
-            }, true)) 
+            }, true))
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
@@ -231,7 +231,7 @@ const KickOffModal = (props) => {
                 } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
-                const totalQuantity = getLotTotalQuantity({ bins })
+                const totalQuantity = getLotTotalQuantity(currCard)
                 const templateValues = getCustomFields(lotTemplateId, currCard)
 
                 return (

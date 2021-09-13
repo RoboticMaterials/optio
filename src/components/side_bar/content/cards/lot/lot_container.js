@@ -37,7 +37,7 @@ const LotContainer = (props) => {
     const processName = useMemo(() => process.name, [process])
     const stationName = useMemo(() => station.name, [station])
     const templateValues = useMemo(() => getCustomFields(lotTemplateId, lot), [lotTemplateId, lot])
-    const totalQuantity = useMemo(() => getLotTotalQuantity({ bins }), [bins])
+    const totalQuantity = useMemo(() => getLotTotalQuantity(lot), [lot])
     const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (

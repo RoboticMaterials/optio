@@ -68,6 +68,8 @@ export const theme = {
             }
         },
         cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
+        cardShadowBold: '0px 0px 8px 2px rgba(0,0,0,0.1)',
+
 
         font: {
             primary: 'Montserrat'

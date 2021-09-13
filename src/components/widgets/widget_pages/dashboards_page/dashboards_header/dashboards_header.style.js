@@ -18,7 +18,7 @@ export const Header = styled.div`
     width: 100%;
     /* margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem); */
 
-    height: 6rem;
+    height: 5rem;
 
     /* background: linear-gradient(180deg, rgba(114, 187, 255, 0.47) 0%, rgba(114, 187, 255, 0) 100%); */
 

@@ -133,7 +133,7 @@ const WarehouseModal = (props) => {
                     } = process || {}
 
                     const count = bins[warehouseID]?.count || 0
-                    const totalQuantity = getLotTotalQuantity({ bins })
+                    const totalQuantity = getLotTotalQuantity(currCard)
                     const templateValues = getCustomFields(lotTemplateId, currCard)
 
                     return (

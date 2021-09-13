@@ -61,7 +61,7 @@ const DashboardLotPage = (props) => {
 
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
 
-    
+
 
     // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
     // but dashboard lot page is still mounted
@@ -166,6 +166,9 @@ const DashboardLotPage = (props) => {
                 currentLot.bins[stationID].count -= quantity;
             }
 
+            //Add dispersed key to lot for totalQuantity Util
+            currentLot.dispersed = true
+
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been split between ${moveStations.map(stationId => stations[stationId].name).join(' & ')}`)
         } else { // Single-flow node, just send to the station
 
@@ -185,7 +188,7 @@ const DashboardLotPage = (props) => {
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been moved to ${stationName}`)
         }
 
-        dispatchPutCard(currentLot, lotID);
+        dispatchPutCard(currentLot, lotID)
         onBack()
 
     }
@@ -203,7 +206,7 @@ const DashboardLotPage = (props) => {
                     },
                 }}
             >
-                
+
                 <styled.BodyContainer>
                     <>
                     <styled.Title>Select the station to move this lot to</styled.Title>

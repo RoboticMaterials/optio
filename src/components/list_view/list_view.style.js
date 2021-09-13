@@ -3,7 +3,7 @@ import * as stylesh from '../../containers/status_header/status_header.style'
 import {LightenDarkenColor} from "../../methods/utils/color_utils";
 
 export const Container = styled.div`
-    background: ${props => props.theme.bg.secondary};
+    background: ${props => props.theme.bg.primary};
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -15,21 +15,31 @@ export const Container = styled.div`
 export const Icon = styled.i`
 	padding: 0;
 	margin: 0;
-	font-size: 1.5rem;
+	font-size: 1.3rem;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%,-50%);
+  color: ${props => props.theme.bg.quinary};
+`
+
+export const DashboardIcon = styled.i`
+	font-size: 1.3rem;
+  margin-left: 2rem;
+  color: ${props => props.theme.schema['dashboards'].solid};
+
 `
 
 
 export const Header = styled.div`
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 	width: 100%;
 	padding: 1rem;
 	align-items: center;
-  height: 5rem;
+  height: 4rem;
 	display: flex;
+  border-bottom: 2px solid ${props => props.theme.bg.tertiary};
+
     // box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.3);
 `
 
@@ -39,9 +49,9 @@ export const Title = styled.span`
     transform: translateX(-50%);
 
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.phoneView ?  props.theme.fontSize.sz2 : props.theme.fontSize.sz1};
+    font-size: ${props => props.phoneView ?  props.theme.fontSize.sz2 : props.theme.fontSize.sz2};
     font-weight: 500;
-    color: ${props => props.theme.schema[props.schema].solid};
+    color: ${props => props.theme.bg.quinary};
 `
 
 export const ListScrollContainer = styled.ul`
@@ -76,10 +86,10 @@ export const ListItemRect = styled.div`
     box-sizing: border-box;
 
     background-color: ${props => props.theme.bg.primary};
-    box-shadow: ${props => props.theme.cardShadow};
+    box-shadow: ${props => props.theme.cardShadowBold};
 
     &:hover {
-        background: ${props => LightenDarkenColor(props.theme.bg.primary, -10)};
+        background: ${props => LightenDarkenColor(props.theme.bg.primary, -5)};
     }
 
 `
@@ -94,20 +104,14 @@ export const ListItemTitle = styled.div`
     padding-right: 1rem;
 
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz4};
+    font-size: 1rem;
     font-weight: 500;
-    color: ${props => props.theme.bg.octonary};
+    color: ${props => props.theme.schema['dashboards'].solid};
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 
-    &:hover {
-        background: ${props => props.theme.schema[props.schema].gradient};
-        -webkit-text-fill-color: transparent;
-        -webkit-background-clip: text;
-        display:block;
-    }
 `
 
 export const PlayButton = styled(stylesh.PlayButton)`

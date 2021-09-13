@@ -200,6 +200,7 @@ export const putCard = (card, cardID) => async dispatch => {
 
     const callback = async () => {
         const response = await api.putCard(card, cardID);
+        console.log(response)
         // const normalizedSchedule = normalize(response, scheduleSchema);
         //
         return {

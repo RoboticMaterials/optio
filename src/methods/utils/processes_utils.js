@@ -6,10 +6,10 @@ import { useSelector } from "react-redux";
 import { isArray, isNonEmptyArray } from "./array_utils";
 
 /**
- * This function checks to see if a process is broken. 
+ * This function checks to see if a process is broken.
  * A process is broken because it has dissjointed routes, theres a gap between an unload station and a load station between 2 consecutive routes
- * 
- * 
+ *
+ *
  * @param {object} processRoutes Process to check and see if it is broken
  * @param {object} routes All routes
  */
@@ -41,13 +41,13 @@ export const isBrokenProcess = (routes) => {
 
 /**
  * This function returns true if the route you are deleting will break the Process
- * 
+ *
  * Currently the way it tells if it will break the process is to tell if its not the first or last route in a process
  * If it is the first or last route, then the process does not break
- * 
+ *
  * RETURNS FALSE IF DELETE DOES NOT BREAK PROCESS
  * It returns an int of where the break will be (int's are truthy)
- * 
+ *
  * @param {array} processRoutes Selected Process
  * @param {object} routeId Selected Route
  */
@@ -69,18 +69,18 @@ export const willRouteDeleteBreakProcess = (routes, routeId) => {
 
 /**
  * This checks to see if the route being added to the process will fix the broken process
- * 
+ *
  * The way it tells is by getting the route before the break and checks to see if the new route's load location is the route before breaks unload location.
  * If thats the case than we see if the route after break's load station is the new routes unload location.
- * 
+ *
  * If the new route's load and unload location fix the missing gap then it fixes that part of the broken process
- * 
+ *
  * Perform a check to see if there's still another part of the process is broken after fix
  * If it's fix then the process is not broken anymore, if not, update the break point
- * 
+ *
  * RETURNS FALSE IF THE PROCESS IS FIXED
  * It returns an int of where the new break is if it's still broken (int's are truthy)
- * 
+ *
  * @param {object} processRoutes Selected Process
  * @param {int} brokenIndex index of broken route
  * @param {object} route New Route
@@ -231,8 +231,8 @@ export const getProcessStations = (process, routes) => {
 /**
  * Gets all stations that belong to a process when editing that process
  * Editing a process has the actual object vs the id of the route inside it's routes array
- * @param {*} process 
- * @returns 
+ * @param {*} process
+ * @returns
  */
 export const getProcessStationsWhileEditing = (process) => {
     let stationIds = []
@@ -312,7 +312,7 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
     if (currentRouteindex > 0) {
         previousRoute = processRoutes[currentRouteindex - 1]
     }
-    // Else its the the first route so ge the last route of the process,  
+    // Else its the the first route so ge the last route of the process,
     else {
         previousRoute = processRoutes[processRoutes.length - 1]
     }
@@ -457,7 +457,7 @@ export const getPreviousWarehouseStation = (processID, stationID) => {
 }
 
 /***
- * All processes must end in single stations. This function returns binary whether or not that is true for 
+ * All processes must end in single stations. This function returns binary whether or not that is true for
  * a given set of routes
  */
 export const doRoutesConverge = (routes) => {
@@ -475,8 +475,8 @@ export const doRoutesConverge = (routes) => {
 }
 
 export const findProcessStartNodes = (routes) => {
-    let loadStations = routes.map(route => route.load);
-    let unloadStations = routes.map(route => route.unload);
+    let loadStations = routes.map(route => !!route ? route.load : {});
+    let unloadStations = routes.map(route => !!route ? route.unload : {});
 
     let startNodes = [];
     for (var loadStation of loadStations) {
@@ -489,8 +489,8 @@ export const findProcessStartNodes = (routes) => {
 }
 
 export const findProcessEndNode = (routes) => {
-    let loadStations = routes.map(route => route.load);
-    let unloadStations = routes.map(route => route.unload);
+    let loadStations = routes.map(route => !!route ? route.load: {});
+    let unloadStations = routes.map(route => !!route ? route.unload: {});
 
     for (var unloadStation of unloadStations) {
         if (loadStations.find(loadStation => loadStation === unloadStation) === undefined) {
@@ -518,20 +518,20 @@ const newNode = () => {
     return {
         collapsed: false,
         children: []
-    }   
+    }
 }
 
 export const flattenProcessStations = (routes) => {
-    
+
     console.log(routes)
     let mergeNode = null;
 
     const traverseProcessGraph = (node, routes, graph) => {
-    
+
         if (node === null) {
             // There are not any nodes currently in the flattened graph. Start by recursivly
             // looping through and flattening from the start nodes (this is depth 0)
-            
+
             let startNodes = findProcessStartNodes(routes);
             if (startNodes.length === 1) {
                 graph = traverseProcessGraph(startNodes[0], routes, deepCopy(graph))
@@ -552,10 +552,10 @@ export const flattenProcessStations = (routes) => {
                     graph = traverseProcessGraph(mergeNodeCopy, routes, deepCopy(graph) )
                 }
             }
-    
+
         } else {
             // This is a depth 1+ recursive search, so we have a node to start from
-    
+
             let incomingRoutes = getNodeIncoming(node, routes)
             let outgoingRoutes = getNodeOutgoing(node, routes)
             if (incomingRoutes.length > 1) {
@@ -574,7 +574,7 @@ export const flattenProcessStations = (routes) => {
                 if (newSubgraph.children.length) {
                     graph.children.push(newSubgraph);
                 }
-                
+
 
                 if (!!mergeNode) {
                     const mergeNodeCopy = mergeNode;
@@ -586,12 +586,11 @@ export const flattenProcessStations = (routes) => {
                 }
             }
         }
-    
-        
-        
+
+
+
         return graph;
     }
 
     return traverseProcessGraph(null, routes, newNode());
 }
-

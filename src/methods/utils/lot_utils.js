@@ -126,7 +126,7 @@ export const checkCardMatchesFilter = (lot, filter) => {
     // Primarily filters if the key exists in the lot
     const lotFields = {}
     lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
-    if (lot[fieldName] == null && (lotFields[fieldName] == null || 
+    if (lot[fieldName] == null && (lotFields[fieldName] == null ||
             (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null)))
         { return false; }
 
@@ -374,11 +374,16 @@ export const formatLotNumber = (lotNumber) => {
         ``
 }
 
-export const getLotTotalQuantity = ({ bins }) => {
+export const getLotTotalQuantity = (card) => {
+    const processes = store.getState().processesReducer.processes || {}
+    console.log(processes[card.process_id])
     let totalQuantity = 0
 
-    if (isObject(bins)) {
-        Object.values(bins).forEach(currBin => {
+    if(!!card.dispersed){
+
+    }
+    if (isObject(card.bins)) {
+        Object.values(card.bins).forEach(currBin => {
             const {
                 count
             } = currBin || {}
@@ -391,7 +396,10 @@ export const getLotTotalQuantity = ({ bins }) => {
 }
 
 export const getBinQuantity = ({ bins }, binId) => {
-    return bins[binId]?.count || 0
+    if(!!bins){
+      return bins[binId]?.count || 0
+    }
+    else return 0
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {
