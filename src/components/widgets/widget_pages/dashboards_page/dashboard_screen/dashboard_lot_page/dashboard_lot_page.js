@@ -65,8 +65,6 @@ const DashboardLotPage = (props) => {
     const [isFinish, setIsFinish] = useState(false)
     const [showFinish, setShowFinish] = useState(false)
     const [lotContainsInput, setLotContainsInput] = useState(false)
-    const [showTransferButton, setShowTransferButton] = useState(false)
-    const [showTransferLotModal, setShowTransferLotModal] = useState(false)
     const [processTransferOptions, setProcessTransferOptions] = useState([])
     const onPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
     const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
@@ -128,11 +126,6 @@ const DashboardLotPage = (props) => {
         }
     }, [lotID, cards])
 
-    useEffect(() => {
-      transferLotShouldRender()
-    },[processes])
-
-
 
     const transferLotShouldRender = () => {
       const proc = []
@@ -142,7 +135,7 @@ const DashboardLotPage = (props) => {
             for(const ind in processStations){
               if(processStations[ind] === stationID){
                 proc.push([process])
-                setShowTransferButton(true)
+                //setShowTransferButton(true)
               }
             }
           }
@@ -235,17 +228,6 @@ const DashboardLotPage = (props) => {
         )
     }
 
-    const renderTransferLotModal = () => {
-
-      return (
-        <TransferLotModal
-          isOpen = {true}
-          close = {()=>setShowTransferLotModal(false)}
-          options = {processTransferOptions}
-          lot = {currentLot}
-        />
-      )
-    }
 
     const onFinish = async (quantity) => {
 
@@ -330,15 +312,6 @@ const DashboardLotPage = (props) => {
         <styled.LotContainer>
             <styled.LotBodyContainer>
                 <styled.LotHeader>
-                  {!!showTransferButton &&
-                    <Button
-                      style = {{marginRight: '3rem', marginTop: '1.5rem', position: 'absolute', left: '1rem', height: '3rem', minWidth: '10rem'}}
-              				schema={"processes"}
-                      onClick = {()=>setShowTransferLotModal(true)}
-              			>
-                    Transfer Lot
-              			</Button>
-                  }
                   <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 </styled.LotHeader>
                 <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
@@ -368,9 +341,7 @@ const DashboardLotPage = (props) => {
             {showFinish &&
                 renderFinishQuantity()
             }
-            {showTransferLotModal &&
-              renderTransferLotModal()
-            }
+
         </styled.LotContainer>
     )
 
