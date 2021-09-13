@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-
+import {useFilePicker} from 'use-file-picker'
 // actions
-import { postCard } from "../../../../../redux/actions/card_actions";
+import { postCard, putCard } from "../../../../../redux/actions/card_actions";
 
 // api
 import { getCardsCount } from "../../../../../api/cards_api";
@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import usePrevious from "../../../../../hooks/usePrevious"
 
 // utils
-import {editLotSchema, uniqueNameSchema} from "../../../../../methods/utils/form_schemas";
+import { editLotSchema, uniqueNameSchema } from "../../../../../methods/utils/form_schemas";
 import { immutableReplace, immutableSet, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 import { convertPastePayloadToLot } from "../../../../../methods/utils/card_utils";
 import { isObject, pathStringToObject } from "../../../../../methods/utils/object_utils";
@@ -40,7 +40,8 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from "./lot_editor_container.style";
-import {postLocalSettings} from "../../../../../redux/actions/local_actions";
+import { postLocalSettings } from "../../../../../redux/actions/local_actions";
+import { putProcesses } from '../../../../../redux/actions/processes_actions';
 
 const LotEditorContainer = (props) => {
 
@@ -51,20 +52,23 @@ const LotEditorContainer = (props) => {
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
+    const dispatchPutCard = async (card, cardId) => await dispatch(putCard(card, cardId))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPutProcess = (process, processId) => dispatch(putProcesses(process, processId))
 
     // redux state
-    const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
+    // const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const cards = useSelector(state => { return state.cardsReducer.cards })
     const localReducer = useSelector(state => state.localReducer) || {}
+    const process = useSelector(state => state.processesReducer.processes)[props.processId]
     const {
         loaded: localSettingsLoaded,
         localSettings
     } = localReducer
     const {
         lastLotTemplateId = null
-    } = localSettings || {}
+    } = process || {}
 
     // component state
     const [mappedStatus, setMappedStatus] = useState([])						// array of form status objects
@@ -82,11 +86,13 @@ const LotEditorContainer = (props) => {
     const [showStatusList, setShowStatusList] = useState(false)				// bool - controls whether or not to show statusList
     const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])
+
+    const [lotTemplateId, setLotTemplateId] = useState(null)
     const [lotTemplate, setLotTemplate] = useState([])
     const {
         name: lotTemplateName = ""
     } = lotTemplate || {}
-    const [lotTemplateId, setLotTemplateId] = useState(null)
+
     const [card, setCard] = useState(cards[props.cardId] || null)
     const [collectionCount, setCollectionCount] = useState(null)
     const [lazyCreate, setLazyCreate] = useState(false)
@@ -114,12 +120,23 @@ const LotEditorContainer = (props) => {
         setStatus = () => { },
     } = current || {}
 
+    const [
+      openFileSelector,
+      {filesContent, loading, plainFiles}
+    ] = useFilePicker({
+      multiple: false,
+      readAs: 'Text',
+      readFilesContent: true,
+      accept: '.xml'
+    })
+
     /*
     * This effect is used to update the current predicted lotNumber on an interval
     * The lotNumber here is just used for display, the actual assigned lotNumber should be handled on the backend
     * */
     useEffect(() => {
         getCount()
+        handleSelectLotTemplate(!!props.cardId ? card.lotTemplateId : lastLotTemplateId) // Initial Template
         let lotNumberTimer = setInterval(() => {
             getCount()
         }, 5000)
@@ -129,55 +146,170 @@ const LotEditorContainer = (props) => {
         }
     }, [])
 
+    useEffect(() => {
+      if(!!filesContent[0]){
+        var XMLParser = require('react-xml-parser');
+        var xml = new XMLParser().parseFromString(filesContent[0].content);
+        var newXml = xml.getElementsByTagName('ViewItem')
+        var header = ""
+        var csv = ""
+
+        if(xml.getElementsByTagName('Row').length!==0){
+          newXml = xml.getElementsByTagName('Row')
+          var fieldName = ''
+          var fieldValue = ''
+          let inches = /&quot;/gi
+          let ampersand = /&amp;/gi
+          let sendIt = false
+          let inViewItems = false
+          let inViewItem = false
+          let row = ''
+
+          for (const index in newXml){
+            let data = newXml[index].children[0].children[0].value
+
+            fieldName = data.replace( /(^.*\&lt;|&gt;.*$)/g, '')
+            fieldName = fieldName.replace('/', '')
+
+            let string1 = '&lt;' + fieldName + '&gt;'
+            let string2 = '&lt;/' + fieldName + '&gt;'
+
+            if(fieldName === 'ViewItem' && sendIt === true) break;
+
+            if(!!sendIt){
+              header+= fieldName + '\t'
+            }
+
+            if(fieldName === 'ViewItem' && sendIt=== false) sendIt = true
+          }
+          csv+=header + 'AssemblyQuantity' + '\n'
+
+          for (const index in newXml){
+
+            let data = newXml[index].children[0].children[0].value
+
+            fieldName = data.replace( /(^.*\&lt;|&gt;.*$)/g, '')
+            fieldName = fieldName.replace('/', '')
+
+            let string1 = '&lt;' + fieldName + '&gt;'
+            let string2 = '&lt;/' + fieldName + '&gt;'
+
+            fieldValue = data.replace(string1, '')
+            fieldValue = fieldValue.replace(string2, '')
+            fieldValue = fieldValue.replace(inches, '"')
+            fieldValue = fieldValue.replace(ampersand, '&')
+
+            if(fieldName === 'ViewItems' && inViewItems === true) break;
+            if(fieldName === 'ViewItems' && inViewItems=== false) {
+              inViewItems = true
+            }
+
+            if(!!inViewItem && !!inViewItems){
+              if(fieldName === 'ViewItem'){
+                csv+= row + "1" + '\n'
+                row = ''
+              }
+            else{
+              row += fieldValue + '\t'
+            }
+          }
+          if(fieldName === 'ViewItem'){
+            inViewItem = !inViewItem
+          }
+        }
+        csv = csv.replace(/^\s+|\s+$/g, "") //get rid of trailing spaces
+      }
+        else if(!!xml.getElementsByTagName('ViewItem').length!==0){
+          newXml[0].children.forEach((attribute, index, array) => {
+              header += attribute.name + '\t'
+          })
+
+          csv += header + 'AssemblyQuantity' + '\n'
+
+          newXml.forEach((lot, index, array) => {
+            var row = ""
+            lot.children.forEach((child, index, array) => {
+                row += child.value + '\t'
+            })
+            if(index===(array.length-1)){
+              csv += row + "1"
+            }
+            else{
+              csv += row + "1" + '\n'
+            }
+          })
+        }
+
+          var rows = csv.split("\n");
+          let table = []
+
+          for (var y in rows) {
+
+              var cells = rows[y].split("\t")
+
+              for (const x in cells) {
+
+                  if (table[x]) {
+                      table[x].push(cells[x])
+                  }
+                  else {
+                      table.push([cells[x]])
+                  }
+              }
+          }
+          setPasteTable(table)	// set paste table
+
+          if (!disablePasteModal) {
+              setTimeout(() => {
+                  setShowSimpleModal(true)
+              }, 0)
+          }
+        }
+
+        return () => {
+        }
+    }, [plainFiles.length])
+
     // when card id changes, update card
     useEffect(() => {
         setCard(cards[props.cardId] || null)
     }, [props.cardId])
 
-    /*
-    * This effect is used to determine which lotTemplateId / lotTemplate to use
-    * */
-    useEffect(() => {
-        let tempLotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
+    const handleSelectLotTemplate = (templateId) => {
 
-        // if a template isn't provided by redux, check if card has template id
-        if (!tempLotTemplateId && isObject(card) && card?.lotTemplateId) {
-            tempLotTemplateId = card?.lotTemplateId
+        let newTemplateId = templateId;
+        // if a template isn't provided by process, check if card has template id
+        if (isObject(card) && card?.lotTemplateId) {
+            console.log('iscard', card?.lotTemplateId)
+            if (!!templateId && templateId !== card.lotTemplateId) {
+                console.log('updateCard', templateId)
+                dispatchPutCard({...card, lotTemplateId: templateId}, card._id)
+            } else {
+                console.log('takingCards', card.lotTemplateId)
+                newTemplateId = card?.lotTemplateId
+            }
         }
-
-        // if card also doesn't have template id, use lastLotTemplateId from localstorage
-        if (!tempLotTemplateId) tempLotTemplateId = lastLotTemplateId
-
-        // get lottemplate using id
-        let tempLotTemplate = lotTemplates[tempLotTemplateId]
 
         // if the template wasn't found, default everything to use BASIC_LOT_TEMPLATE
-        if (!lotTemplates[tempLotTemplateId]) {
-            tempLotTemplateId = BASIC_LOT_TEMPLATE_ID
-            tempLotTemplate = BASIC_LOT_TEMPLATE
+        let template;
+        if (!lotTemplates[templateId]) {
+            newTemplateId = BASIC_LOT_TEMPLATE_ID
+            template = BASIC_LOT_TEMPLATE
+        } else {
+            template = lotTemplates[templateId]
         }
 
-        setLotTemplateId(tempLotTemplateId)
-        setLotTemplate(tempLotTemplate)
-    }, [selectedLotTemplatesId, card, lotTemplates, lastLotTemplateId])
-
-
-    /*
-    * This effect is used to update localSettings with the last used lotTemplateId
-    * */
-    useEffect(() => {
-        // only post to local settings if localsettings have been loaded. Otherwise this could overwrite the stored localsettings with the initial (default) values
-        if(localSettingsLoaded && (lotTemplateId !== null) && (lastLotTemplateId !== lotTemplateId)) {
-            const {
-                localSettings
-            } = localReducer || {}
-
-            dispatchPostLocalSettings({
-                ...localSettings,
-                lastLotTemplateId: lotTemplateId,
-            })
+        if (!isObject(card)) { // If you're in editing mode, dont update lastUsedTemplateId
+          if(!!process)
+            dispatchPutProcess({
+                ...process,
+                lastLotTemplateId: newTemplateId
+            }, process._id)
         }
-    }, [lotTemplateId, localSettingsLoaded, lastLotTemplateId])
+
+        setLotTemplateId(newTemplateId)
+        setLotTemplate(template)
+    }
 
 
     /*
@@ -191,9 +323,9 @@ const LotEditorContainer = (props) => {
     }, [lazyCreate])
 
     useEffect(() => {
-        if(!showStatusListLazy) {
+        if (!showStatusListLazy) {
             setShowStatusListLazy(null)
-            if(showStatusList) {
+            if (showStatusList) {
                 setShowStatusList(false)
             }
         }
@@ -355,7 +487,7 @@ const LotEditorContainer = (props) => {
                 _id: currLotId
             } = currCard || {}
 
-            tempCardNames.push({name, id: currLotId})
+            tempCardNames.push({ name, id: currLotId })
         })
 
         setCardNames(tempCardNames)
@@ -401,7 +533,7 @@ const LotEditorContainer = (props) => {
     * handles logic for creating a lot from mappedValues
     * */
     const createLot = async (index, cb) => {
-        if(!createdLot) setCreatedLot(true)
+        if (!createdLot) setCreatedLot(true)
         const values = mappedValues[index]
         if (values._id) return	// lot was already created, don't try creating it again
 
@@ -454,71 +586,257 @@ const LotEditorContainer = (props) => {
                     lotNumber: index //collectionCount + index
                 }
 
-                await dispatchPostCard(submitItem)
-                    .then((result) => {
-                        if (result) {
-                            // successfully POSTed
-                            const {
-                                _id = null
-                            } = result || {}
+                  await dispatchPostCard(submitItem)
+                      .then((result) => {
+                          if (result) {
+                              // successfully POSTed
+                              const {
+                                  _id = null
+                              } = result || {}
 
-                            // update status, POST success
-                            setMappedStatus((previous) => {
-                                const previousStatus = previous[index] || {}
-                                return immutableSet(previous, {
-                                    ...previousStatus,
-                                    resourceStatus: {
-                                        message: `Successfully created lot!`,
-                                        code: FORM_STATUS.CREATE_SUCCESS
-                                    }
-                                }, index)
-                            })
+                              // update status, POST success
+                              setMappedStatus((previous) => {
+                                  const previousStatus = previous[index] || {}
+                                  return immutableSet(previous, {
+                                      ...previousStatus,
+                                      resourceStatus: {
+                                          message: `Successfully created lot!`,
+                                          code: FORM_STATUS.CREATE_SUCCESS
+                                      }
+                                  }, index)
+                              })
 
-                            // update values (only difference should be ID added and maybe lotNumber was different
-                            setMappedValues((previous) => {
-                                return immutableSet(previous, {
-                                    ...result
-                                }, index)
-                            })
+                              // update values (only difference should be ID added and maybe lotNumber was different
+                              setMappedValues((previous) => {
+                                  return immutableSet(previous, {
+                                      ...result
+                                  }, index)
+                              })
 
-                            // call callback if provided
-                            cb && cb(_id)
-                        }
+                              // call callback if provided
+                              cb && cb(_id)
+                          }
 
-                        else {
-                            // POST error, update status
-                            setMappedStatus((previous) => {
-                                const previousStatus = previous[index] || {}
-                                return immutableSet(previous, {
-                                    ...previousStatus,
-                                    resourceStatus: {
-                                        message: `Error creating lot.`,
-                                        code: FORM_STATUS.CREATE_ERROR
-                                    }
-                                }, index)
-                            })
-                        }
-                    })
-                    .catch((err) => {
+                          else {
+                              // POST error, update status
+                              setMappedStatus((previous) => {
+                                  const previousStatus = previous[index] || {}
+                                  return immutableSet(previous, {
+                                      ...previousStatus,
+                                      resourceStatus: {
+                                          message: `Error creating lot.`,
+                                          code: FORM_STATUS.CREATE_ERROR
+                                      }
+                                  }, index)
+                              })
+                          }
+                      })
+                      .catch((err) => {
 
-                        setMappedStatus((previous) => {
-                            const previousStatus = previous[index] || {}
-                            return immutableSet(previous, {
-                                ...previousStatus,
-                                resourceStatus: {
-                                    message: `Error creating lot.`,
-                                    code: FORM_STATUS.CREATE_ERROR
-                                }
-                            }, index)
-                        })
-                    })
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Error creating lot.`,
+                                      code: FORM_STATUS.CREATE_ERROR
+                                  }
+                              }, index)
+                          })
+                      })
             }
         }
 
-        catch(err) {
-            console.error("create err",err)
+        catch (err) {
+            console.error("create err", err)
         }
     }
+
+    const mergeDisabled = (index) => {
+      const values = mappedValues[index]
+      let foundMatch = false
+      if (values._id) return	// lot was already created, don't try creating it again
+
+              const {
+                  name: newName,
+                  bins: newBins,
+                  processId: newProcessId,
+                  fields
+              } = values || {}
+
+              const submitItem = {
+                  name: newName,
+                  bins: newBins,
+                  process_id: newProcessId,
+                  lotTemplateId: lotTemplateId,
+                  fields,
+                  lotNumber: index //collectionCount + index
+              }
+
+
+          Object.values(cards).forEach((card) => {
+            if(card.name === submitItem.name) foundMatch = true
+          })
+
+      return !foundMatch
+    }
+    const mergeLot = async (index, cb) => {
+        const values = mappedValues[index]
+        if (values._id) return	// lot was already created, don't try creating it again
+
+                const {
+                    name: newName,
+                    bins: newBins,
+                    processId: newProcessId,
+                    fields
+                } = values || {}
+
+                const submitItem = {
+                    name: newName,
+                    bins: newBins,
+                    process_id: newProcessId,
+                    lotTemplateId: lotTemplateId,
+                    fields,
+                    lotNumber: index //collectionCount + index
+                }
+
+                let workOrderNumber = ''
+                let lotName = ''
+                submitItem.fields.forEach((field) => {
+                  lotName = submitItem.name
+                  if(field[0].fieldName ==='WorkOrderNumber')
+                  workOrderNumber = field[0].value
+                })
+
+                //Not robust or optimal... fix after alpen call
+                let foundMerge  = false
+                let foundMergeField = false
+                let cardID = null
+                let spreadExisting = true
+                let lotItem = {}
+                var updatedFields = {}
+                Object.values(cards).forEach((card) => {
+                  if(!!card.fields){
+                    card.fields.forEach((field, index) => {
+                      if((field[0].value == workOrderNumber && !!workOrderNumber) || card.name === lotName){
+                        foundMerge = true
+                        cardID = card._id
+                        submitItem.fields.forEach((newField) => {
+                          card.fields.forEach((existingField,index) => {
+                            if(existingField[0].fieldName === newField[0].fieldName && existingField[0].value === ''){
+                                foundMergeField = true
+                                var updatedField = {
+                                  ...existingField[0],
+                                  value: newField[0].value
+                                }
+                              if(spreadExisting === true){
+                                  updatedFields = {
+                                  ...card.fields,
+                                  [index]: [updatedField]
+                                }
+                                spreadExisting = false
+                              }
+                              else{
+                                updatedFields = {
+                                  ...updatedFields,
+                                  [index]: [updatedField]
+                                }
+                              }
+
+                              var fieldArray = []
+                              for(var i in updatedFields) {
+                                fieldArray.push(updatedFields[i])
+                              }
+
+                             lotItem = {
+                                ...card,
+                                fields: fieldArray
+                              }
+                            }
+                          })
+                        })
+                      }
+                    })
+                  }
+              })
+
+            if(!!foundMerge && !!foundMergeField){
+            //  const result = await dispatchPutCard(lotItem,cardID)
+              foundMerge = false
+              foundMergeField = false
+
+              await dispatchPutCard(lotItem, cardID)
+                  .then((result) => {
+                      if (result) {
+                          // successfully POSTed
+                          const {
+                              _id = null
+                          } = result || {}
+
+                          // update status, POST success
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Successfully merged lot!`,
+                                      code: FORM_STATUS.MERGE_SUCCESS
+                                  }
+                              }, index)
+                          })
+
+                          // update values (only difference should be ID added and maybe lotNumber was different
+                          setMappedValues((previous) => {
+                              return immutableSet(previous, {
+                                  ...result
+                              }, index)
+                          })
+
+                          // call callback if provided
+                          cb && cb(_id)
+                      }
+
+                      else {
+                          // POST error, update status
+                          setMappedStatus((previous) => {
+                              const previousStatus = previous[index] || {}
+                              return immutableSet(previous, {
+                                  ...previousStatus,
+                                  resourceStatus: {
+                                      message: `Error merging lot.`,
+                                      code: FORM_STATUS.MERGE_ERROR
+                                  }
+                              }, index)
+                          })
+                      }
+                  })
+                  .catch((err) => {
+
+                      setMappedStatus((previous) => {
+                          const previousStatus = previous[index] || {}
+                          return immutableSet(previous, {
+                              ...previousStatus,
+                              resourceStatus: {
+                                  message: `Error merging lot.`,
+                                  code: FORM_STATUS.MERGE_ERROR
+                              }
+                          }, index)
+                      })
+                  })
+            }
+            else{
+              setMappedStatus((previous) => {
+                  const previousStatus = previous[index] || {}
+                  return immutableSet(previous, {
+                      ...previousStatus,
+                      resourceStatus: {
+                          message: `No Mergeable Fields Found!`,
+                          code: FORM_STATUS.MERGE_ERROR
+                      }
+                  }, index)
+              })
+            }
+        }
 
     /*
     * runs async validation for a lot and  updates its status
@@ -528,7 +846,7 @@ const LotEditorContainer = (props) => {
             uniqueNameSchema.validateSync({
                 name: values.name,
                 cardNames: cardNames,
-            }, {abortEarly: false})
+            }, { abortEarly: false })
 
             setMappedStatus((previous) => {
                 const previousStatus = previous[index] || {}
@@ -538,7 +856,7 @@ const LotEditorContainer = (props) => {
                 }, index)
             })
         }
-        catch(err) {
+        catch (err) {
             const {
                 inner = [],
                 // message
@@ -559,7 +877,7 @@ const LotEditorContainer = (props) => {
                     fieldName
                 } = value || {}
 
-                const errorObj = isObject(value) ? {[fieldName]: message} : pathStringToObject(path, ".", message)
+                const errorObj = isObject(value) ? { [fieldName]: message } : pathStringToObject(path, ".", message)
 
                 lotErrors = {
                     ...lotErrors,
@@ -614,7 +932,7 @@ const LotEditorContainer = (props) => {
             })
         }
 
-        catch(err) {
+        catch (err) {
             // oh no there was an error
             const {
                 inner = [],
@@ -636,7 +954,7 @@ const LotEditorContainer = (props) => {
                     fieldName
                 } = value || {}
 
-                const errorObj = isObject(value) ? {[fieldName]: message} : pathStringToObject(path, ".", message)
+                const errorObj = isObject(value) ? { [fieldName]: message } : pathStringToObject(path, ".", message)
 
                 lotErrors = {
                     ...lotErrors,
@@ -684,7 +1002,6 @@ const LotEditorContainer = (props) => {
     * */
     const onPasteEvent = useCallback((e) => {
         const plainText = e.clipboardData.getData('text/plain')	// get clipboard data
-
         var rows = plainText.split("\n");
         let table = []
 
@@ -702,7 +1019,6 @@ const LotEditorContainer = (props) => {
                 }
             }
         }
-
         setPasteTable(table)	// set paste table
 
         // need to call setShowSimpleModal with tiny delay in order to allow normal pasting
@@ -714,6 +1030,10 @@ const LotEditorContainer = (props) => {
 
         return true
     }, [disablePasteModal])
+
+    const convertToCSV = () => {
+
+    }
 
     /*
     * callback function used in createLot when submit is called from inside lot editor
@@ -752,6 +1072,8 @@ const LotEditorContainer = (props) => {
                         setShowStatusListLazy(false)
                     }}
                     onCreateClick={createLot}
+                    onMergeClick = {mergeLot}
+                    mergeDisabled = {mergeDisabled}
                     onCreateAllClick={async () => {
                         for (let i = 0; i < mappedValues.length; i++) {
                             setPending(i)
@@ -766,7 +1088,7 @@ const LotEditorContainer = (props) => {
                         setSelectedIndex(null)
                         setMappedValues([])
 
-                        if(createdLot) {
+                        if (createdLot) {
                             props.close()
                         }
                     }}
@@ -830,7 +1152,7 @@ const LotEditorContainer = (props) => {
             {showSimpleModal &&
                 <SimpleModal
                     isOpen={true}
-                    title={"Paste Event Detected"}
+                    title={plainFiles.length === 1 ? 'Import Event Detected': "Paste Event Detected"}
                     onRequestClose={() => setShowSimpleModal(false)}
                     onCloseButtonClick={() => setShowSimpleModal(false)}
                     handleOnClick2={() => {
@@ -853,7 +1175,11 @@ const LotEditorContainer = (props) => {
                     button_1_text={"No"}
 
                 >
-                    <styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
+                {plainFiles.length === 1 ?
+                  <styled.SimpleModalText>Are you sure you want to import this file?</styled.SimpleModalText>
+                  :
+                  <styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
+                }
                 </SimpleModal>
             }
 
@@ -881,12 +1207,18 @@ const LotEditorContainer = (props) => {
                 collectionCount={parseInt((collectionCount + 1))}
                 lotTemplateId={lotTemplateId}
                 lotTemplate={lotTemplate}
+                onSelectLotTemplate={handleSelectLotTemplate}
                 showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}
                 hidden={showStatusList || showPasteMapper}
                 onShowCreateStatusClick={() => {
                     setShowStatusList(true)
                     setSelectedIndex(null)
                 }}
+                onImportXML = {()=> {
+                  //convertToCSV()
+                  openFileSelector()
+                }}
+
 
                 disabledAddButton={(isArray(mappedValues) && mappedValues.length > 0)}
                 formRef={formRef}

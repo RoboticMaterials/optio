@@ -14,6 +14,7 @@ import QuantityModal from '../../../../../basic/modals/quantity_modal/quantity_m
 import LotFlags from '../../../../../side_bar/content/cards/lot/lot_flags/lot_flags'
 import DashboardLotInputBox from './dashboard_lot_input_box/dashboard_lot_input_box'
 import ContentListItem from '../../../../../side_bar/content/content_list/content_list_item/content_list_item';
+import Button from '../../../../../../components/basic/button/button'
 
 // constants
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../../constants/dashboard_constants";
@@ -132,6 +133,23 @@ const DashboardLotPage = (props) => {
     // }, [lotID, cards])
 
 
+
+    const transferLotShouldRender = () => {
+      const proc = []
+        Object.values(processes).forEach((process) => {
+          if(process._id!==processes[currentLot.process_id]._id){
+            const processStations = Object.keys(getProcessStations(process,routes))
+            for(const ind in processStations){
+              if(processStations[ind] === stationID){
+                proc.push([process])
+                //setShowTransferButton(true)
+              }
+            }
+          }
+        })
+        setProcessTransferOptions(proc)
+      }
+
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
     }
@@ -158,6 +176,7 @@ const DashboardLotPage = (props) => {
                     count: quantity
                 }
             }
+
 
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
             if (quantity === currentLot.bins[stationID].count) {
@@ -253,6 +272,7 @@ const DashboardLotPage = (props) => {
         )
     }
 
+
     const onFinish = async (quantity) => {
 
         let requestSuccessStatus = false
@@ -337,7 +357,7 @@ const DashboardLotPage = (props) => {
             {renderRouteSelectorModal}
             <styled.LotBodyContainer>
                 <styled.LotHeader>
-                    <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+                  <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
                 </styled.LotHeader>
                 <LotFlags flags={currentLot?.flags} containerStyle={{ alignSelf: 'center' }} />
 
@@ -357,18 +377,19 @@ const DashboardLotPage = (props) => {
                     handleMoveClicked={() => onMoveClicked()}
                     handleCancel={() => onBack()}
                     handleFinish={() => setShowFinish(true)}
-
                     isFinish={routeOptions.length === 0}
-
                     quantity={moveQuantity}
                     setQuantity={setMoveQuantity}
                     maxQuantity={currentLot.bins[stationID]?.count}
                     minQuantity={1}
+                    route={currentTask}
+                    disabled = {!processes[cards[lotID]?.process_id]?.showFinish}
                 />
             </styled.LotButtonContainer>
             {showFinish &&
                 renderFinishQuantity()
             }
+
         </styled.LotContainer>
     )
 

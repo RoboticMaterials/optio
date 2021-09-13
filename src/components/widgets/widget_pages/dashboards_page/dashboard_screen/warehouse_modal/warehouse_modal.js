@@ -10,6 +10,7 @@ import Modal from 'react-modal';
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import TransferLotModal from '../transfer_lot_modal/transfer_lot_modal'
 
 // Import Utils
 import { getPreviousWarehouseStation } from '../../../../../../methods/utils/processes_utils'
@@ -26,6 +27,7 @@ import { SORT_MODES } from "../../../../../../constants/common_contants";
 import { getLotTemplates } from "../../../../../../redux/actions/lot_template_actions";
 import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
 import { getProcesses } from "../../../../../../redux/actions/processes_actions";
+import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
 
 Modal.setAppElement('body');
 
@@ -49,20 +51,41 @@ const WarehouseModal = (props) => {
     const history = useHistory()
 
     const dispatch = useDispatch()
+    const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const cards = useSelector(state => state.cardsReducer.cards)
+    const stations = useSelector(state=>state.stationsReducer.stations)
+    const routes = useSelector(state => state.tasksReducer.tasks)
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
+    const [currentLot, setCurrentLot] = useState(null)
+    const isWarehouse = true
 
     // Add warehouse to URL
     // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
-        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
-        close()
+        setCurrentLot(cards[lotID])
+      //  warehouseProcessTransfer(lotID)
+        //history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
     }
+
+    const warehouseProcessTransfer = async(lotID) => {
+      const proc = []
+      const currCard = cards[lotID]
+        Object.values(processes).forEach((process) => {
+            const processStations = Object.keys(getProcessStations(process,routes))
+            for(const ind in processStations){
+              if(processStations[ind] === stationID && !!currCard.bins[getPreviousWarehouseStation(process._id, stationID)?._id]){
+                proc.push([process])
+              }
+            }
+        })
+        //setProcessTransferOptions(proc)
+        //setShowTransferLotModal(true)
+      }
 
     /*
 * renders an array of buttons for each kick off lot
@@ -136,6 +159,7 @@ const WarehouseModal = (props) => {
                     const totalQuantity = getLotTotalQuantity(currCard)
                     const templateValues = getCustomFields(lotTemplateId, currCard)
 
+
                     return (
                         <Lot
                             templateValues={templateValues}
@@ -165,6 +189,7 @@ const WarehouseModal = (props) => {
 
 
     return (
+      <>
         <styled.Container
             isOpen={isOpen}
             contentLabel="Kick Off Modal"
@@ -200,8 +225,8 @@ const WarehouseModal = (props) => {
             <styled.ContentContainer>
                 {renderAvailableLots}
             </styled.ContentContainer>
-
         </styled.Container>
+        </>
     )
 }
 

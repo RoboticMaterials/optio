@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 // Import Styles
 import * as styled from './dashboard_lot_buttons.style'
@@ -16,16 +17,18 @@ import NumberInput from '../../../../../../basic/number_input/number_input';
 // Rework
 const DashboardLotButtons = (props) => {
 
+  const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
+
     const {
         handleMoveClicked,
         handleCancel,
-        
         isFinish,
-
         quantity,
         setQuantity,
         maxQuantity,
         minQuantity,
+        handleFinish,
+        disabled
     } = props
 
 
@@ -59,11 +62,12 @@ const DashboardLotButtons = (props) => {
             />
             </>
         )
+
     }
 
     const renderFinishButton = () => {
         const iconClassName = "fas fa-flag-checkered"
-        const color = '#90eaa8'
+        const color = !!disabled ? '#dedfe3': '#90eaa8'
         const textColor = '#1c933c'
 
         return (
@@ -76,6 +80,7 @@ const DashboardLotButtons = (props) => {
                 hoverable={false}
                 color={color}
                 titleStyle={{ color: textColor }}
+                disabled = {disabled}
             />
         )
     }

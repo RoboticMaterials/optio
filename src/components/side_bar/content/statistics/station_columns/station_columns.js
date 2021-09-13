@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
+import VisibilitySensor from 'react-visibility-sensor'
 
 // Import Styles
 import * as styled from './station_columns.style'
@@ -33,6 +34,10 @@ const StationColumns = (props) => {
         const processStations = getProcessStations(processes[processId], routes)
         return Object.keys(processStations).map((stationId) => {
             return (
+              <VisibilitySensor partialVisibility = {true}>
+                {({isVisible}) =>
+                  <>
+                    {!!isVisible ?
                 <StationColumn
                     key={stationId}
                     dateIndex={dateIndex}
@@ -43,6 +48,14 @@ const StationColumns = (props) => {
                     dataLoading={loading => dataLoading(loading)}
                     sortLevel={sortLevel}
                 />
+                :
+                <div style = {{height: '20rem', width: '80%'}}>
+                ...Loading
+                </div>
+            }
+          </>
+        }
+      </VisibilitySensor>
             )
         })
 

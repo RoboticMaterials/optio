@@ -11,7 +11,7 @@ import SortFilterContainer from '../../../../../side_bar/content/cards/sort_filt
 
 // Import Utils
 import { deepCopy } from '../../../../../../methods/utils/utils'
-import { getIsCardAtBin, checkCardMatchesFilter } from '../../../../../../methods/utils/lot_utils'
+import { getIsCardAtBin, checkCardMatchesFilter, getMatchesFilter } from '../../../../../../methods/utils/lot_utils'
 import { sortBy } from '../../../../../../methods/utils/card_utils'
 import useWindowSize from '../../../../../../hooks/useWindowSize'
 
@@ -42,9 +42,14 @@ const DashboardLotList = () => {
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
 
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
+    const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()
     const phoneView = size.width < 500
 
@@ -120,6 +125,7 @@ const DashboardLotList = () => {
 
     const renderLotCards = useMemo(() => {
 
+      if(!!serverSettings.enableMultipleLotFilters){
         let organizedCards = Object.values(cards)
                                 .filter(card => getIsCardAtBin(card, station?._id))
                                 .filter(card => onLotIsCurrentlyAtCart(card))
@@ -127,16 +133,10 @@ const DashboardLotList = () => {
                                     const {
                                         bins = {},
                                     } = card || {}
-                
+
                                     const quantity = bins[stationID]?.count
                                     return {...card, quantity}
                                 })
-
-        if (!!dashboard.filters) {
-            dashboard.filters.forEach(filter => {
-                organizedCards = organizedCards.filter(card => checkCardMatchesFilter(card, filter))
-            })
-        }
 
         if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
             sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
@@ -164,19 +164,82 @@ const DashboardLotList = () => {
                 />
             )
         })
+      }
+      else{
+        let organizedCards = Object.values(cards)
+                                .filter(card => getIsCardAtBin(card, station?._id))
+                                .filter(card => onLotIsCurrentlyAtCart(card))
+                                .map(card => {
+                                    const {
+                                        bins = {},
+                                    } = card || {}
 
-        
-    }, [cards, dashboard.filters, dashboard.sortBy])
+                                    const quantity = bins[stationID]?.count
+                                    return {...card, quantity}
+                                })
+
+        if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
+            sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
+          }
+
+          return organizedCards
+              .filter((card, ind) => {
+                  return getIsCardAtBin(card, station?._id)
+              })
+              .filter((currLot) => { return onLotIsCurrentlyAtCart(currLot) })
+              .filter((currLot) => {
+                  const {
+                      name: currLotName,
+                      bins = {},
+                  } = currLot || {}
+
+                  const count = bins[stationID]?.count
+                  return getMatchesFilter({
+                      ...currLot,
+                      quantity: count
+                  }, lotFilterValue, selectedFilterOption)
+              })
+              .map((card, ind) => {
+
+                  const {
+                      _id: currCardId,
+                      process_id: currCardProcessId
+                  } = card || {}
+
+                  return (
+                      <LotContainer
+                          lotId={currCardId}
+                          binId={stationID}
+                          enableFlagSelector={false}
+                          key={currCardId}
+                          onClick={() => {
+                              handleCardClicked(currCardId)
+                          }}
+                          containerStyle={{
+                              margin: ".5rem",
+                          }}
+                      />
+                  )
+              })
+          }
+
+    }, [cards, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
 
     return (
         <styled.LotListContainer>
             {(!phoneView && !(!!serverSettings?.hideFilterSortDashboards && !localSettings?.mapViewEnabled)) &&
               <SortFilterContainer
-                  sortMode={dashboard?.sort?.direciton || LOT_FILTER_OPTIONS.name}
+                  lotFilterValue={lotFilterValue}
+                  shouldFocusLotFilter={shouldFocusLotFilter}
+                  setLotFilterValue={setLotFilterValue}
+                  selectedFilterOption={selectedFilterOption}
+                  setSelectedFilterOption={setSelectedFilterOption}
+                  multipleFilters = {serverSettings.enableMultipleLotFilters}
+                  sortMode={!!dashboard?.sort?.mode ? dashboard.sort.mode : LOT_FILTER_OPTIONS.name}
                   setSortMode={handleChangeSortMode}
-                  sortDirection={dashboard?.sort?.direction || SORT_DIRECTIONS.ASCENDING}
+                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.DESCENDING : SORT_DIRECTIONS.ASCENDING}
                   setSortDirection={handleChangeSortDirection}
-                  
+
                   filters={dashboard.filters || []}
                   onAddFilter={filter => handleAddFilter(filter)}
                   onRemoveFilter={filterId => handleRemoveFilter(filterId)}
@@ -189,8 +252,6 @@ const DashboardLotList = () => {
             </styled.LotCardContainer>
         </styled.LotListContainer>
     )
-
-
 }
 
 export default DashboardLotList

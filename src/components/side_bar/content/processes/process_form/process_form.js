@@ -67,9 +67,8 @@ const ProcessForm = (props) => {
 	const stations = useSelector(state => state.stationsReducer.stations);
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
-
 	const [processCopy, setProcessCopy] = useState(selectedProcess)	// Initial process, used when changes are not to be saved (onBack)
-	
+
 	useEffect(() => {
 		return () => {
 			dispatchSetSelectedTask(null)
@@ -231,6 +230,8 @@ const ProcessForm = (props) => {
 				map_id: currentMap._id,
 				showSummary: selectedProcess.new ? true: selectedProcess.showSummary,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
+				showQueue: selectedProcess.new || selectedProcess.showQueue === undefined ? true: selectedProcess.showQueue,
+				showFinish: selectedProcess.new || selectedProcess.showFinish === undefined ? true: selectedProcess.showFinish,
 			}}
 
 			// validation control
@@ -273,7 +274,6 @@ const ProcessForm = (props) => {
 					values,
 					initialValues,
 				} = formikProps
-
 
 				return(
 					<ProcessField

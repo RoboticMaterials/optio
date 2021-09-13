@@ -139,7 +139,6 @@ export const getProcessCards = (processId) =>  async (dispatch) => {
 // create
 // ******************************
 export const postCard = (card) =>  async dispatch => {
-
     const callback = async () => {
         const createdCard = await api.postCard(card);
         // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);

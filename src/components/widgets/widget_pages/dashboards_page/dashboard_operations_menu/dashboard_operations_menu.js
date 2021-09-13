@@ -35,6 +35,7 @@ const DashboardOperationsMenu = (props) => {
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
     const availablFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
     const processes = useSelector(state => state.processesReducer.processes)
+    const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
     const [warehouseEnabled, setWarehouseEnabled] = useState(false)
 
 
@@ -83,6 +84,24 @@ const DashboardOperationsMenu = (props) => {
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={() => handleOperationSelected('taskQueue')}
+                containerStyle={{}}
+                hoverable={true}
+                color={iconColor}
+                svgColor={theme.main.bg.secondary}
+            />
+        )
+    }
+
+    const renderFieldSelectorButton = () => {
+        const schema = theme.main.schema.fields
+        const iconClassName = schema?.iconName
+        const iconColor = schema?.solid
+        return (
+            <DashboardButton
+                title={'Select Displayed Lot Fields'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={() => handleOperationSelected('fieldSelect')}
                 containerStyle={{}}
                 hoverable={true}
                 color={iconColor}
@@ -151,6 +170,9 @@ const DashboardOperationsMenu = (props) => {
                 {/* {renderReportButton()} */}
                 {renderTaskQueueButton()}
 
+                {stationBasedLots &&
+                    renderFieldSelectorButton()
+                }
                 {warehouseEnabled &&
                     renderWarehouseButton()
                 }

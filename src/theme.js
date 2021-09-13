@@ -134,6 +134,11 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 118, 33, 0.95) 100%)',
                 solid: '#ffbf1f'
             },
+            fields: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 118, 33, 0.95) 100%)',
+                solid: '#ffbf1f',
+                iconName: "fas fa-book"
+            },
             tasks: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',

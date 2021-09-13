@@ -89,6 +89,9 @@ const Cards = (props) => {
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
 
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+
     // filtering
     const [lotFilters, setLotFilters] = useState([])
     const handleAddLotFilter = (filter) => {
@@ -377,6 +380,15 @@ const Cards = (props) => {
             />
             <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
                 <ZoneHeader
+                    lotFilterValue={lotFilterValue}
+                    sortDirection={sortDirection}
+                    setSortDirection={setSortDirection}
+                    sortMode={sortMode}
+                    setSortMode={setSortMode}
+                    setLotFilterValue={setLotFilterValue}
+                    selectedFilterOption={selectedFilterOption}
+                    setSelectedFilterOption={setSelectedFilterOption}
+
                     sortDirection={sortDirection}
                     setSortDirection={setSortDirection}
                     sortMode={sortMode}
@@ -417,13 +429,17 @@ const Cards = (props) => {
 
                                 sortMode={sortMode}
                                 sortDirection={sortDirection}
-                                
+
                                 lotFilters={lotFilters}
-                                
+
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
                                 handleAddLotClick={handleAddLotClick}
+
+                                selectedProcesses={selectedProcesses}
+                                lotFilterValue={lotFilterValue}
+                                selectedFilterOption={selectedFilterOption}
                             />,
                         'timeline':
                             <div
@@ -440,6 +456,9 @@ const Cards = (props) => {
                             showCardEditor={showCardEditor}
                             handleCardClick={handleCardClick}
                             processId={id}
+                            setLotFilterValue={setLotFilterValue}
+                            lotFilterValue={lotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
 
                             lotFilters={lotFilters}
                             sortMode={sortMode}

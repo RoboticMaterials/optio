@@ -12,6 +12,7 @@ import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actio
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 import { getDataStream } from '../../redux/actions/data_stream_actions'
+import { getLotTemplates } from '../../redux/actions/lot_template_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
@@ -55,7 +56,7 @@ const ApiContainer = (props) => {
     const onGetTasks = async () => await dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
-
+    const onGetLotTemplates = () => dispatch(getLotTemplates())
     const dispatchGetDataStream = () => dispatch(getDataStream())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
@@ -324,6 +325,7 @@ const ApiContainer = (props) => {
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
         const cards = onGetCards()
+        const lotTemplates = onGetLotTemplates()
 
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()

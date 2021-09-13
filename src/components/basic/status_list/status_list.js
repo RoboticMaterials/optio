@@ -16,8 +16,10 @@ const StatusList = (props) => {
 		onCanceleClick,
 		onShowMapperClick,
 		onCreateClick,
+		onMergeClick,
 		onCreateAllClick,
-		displayNames
+		displayNames,
+		mergeDisabled,
 	} = props
 
 	return (
@@ -31,6 +33,9 @@ const StatusList = (props) => {
 				onItemClick={onItemClick}
 				data={data}
 				onCreateClick={onCreateClick}
+				onMergeClick = {onMergeClick}
+				mergeDisabled = {mergeDisabled}
+
 			/>
 
 			<StatusListFooter

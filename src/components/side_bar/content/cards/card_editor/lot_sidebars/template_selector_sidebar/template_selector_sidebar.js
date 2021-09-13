@@ -26,19 +26,11 @@ const TemplateSelectorSidebar = (props) => {
     const {
         showFields,
         onTemplateEditClick,
+        onTemplateSelectClick,
         selectedLotTemplatesId,
         minWidth,
         onCloseClick,
     } = props
-
-
-    /*
-    * Tests sidebar width to  determine if styling should be for small or large width
-    * Returns true if width is less than breakpoint, and false otherwise
-    * */
-    const testSize = (width) => {
-        return width < 500
-    }
 
     // theme
     const themeContext = useContext(ThemeContext);
@@ -51,11 +43,7 @@ const TemplateSelectorSidebar = (props) => {
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
-    const [width, setWidth] = useState(
-        isMobile ? window.innerWidth :
-        window.innerWidth < 2000 ? 450 : 450
-    ); // used for tracking sidebar dimensions
-    const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
+    const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions
 
     const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name); // used for tracking sidebar dimensions
 
@@ -64,11 +52,11 @@ const TemplateSelectorSidebar = (props) => {
 
             <style.ListContainer>
                 {!isMobile &&
-                    <Button 
+                    <Button
                         schema={'lots'}
                         secondary
                         onClick={() => {
-                            dispatchSetSelectedLotTemplate(null)
+                            onTemplateSelectClick(null)
                             onTemplateEditClick(null)
                         }}
                         style={{
@@ -83,8 +71,14 @@ const TemplateSelectorSidebar = (props) => {
                 <style.LotTemplateButton
                     isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
                     onClick={() => {
-                        dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
+                        onTemplateSelectClick(BASIC_LOT_TEMPLATE_ID)
                         isMobile && onCloseClick()
+                    }}
+                    onMouseEnter={() => {
+                      dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
+                    }}
+                    onMouseLeave={() => {
+                      dispatchSetSelectedLotTemplate(null)
                     }}
                 >
                     <style.TemplateIcon
@@ -111,8 +105,14 @@ const TemplateSelectorSidebar = (props) => {
                             key={currTemplateId}
                             isSelected={isSelected}
                             onClick={() => {
-                                dispatchSetSelectedLotTemplate(currTemplateId)
+                                onTemplateSelectClick(currTemplateId)
                                 isMobile && onCloseClick()
+                            }}
+                            onMouseEnter={() => {
+                              dispatchSetSelectedLotTemplate(currTemplateId)
+                            }}
+                            onMouseLeave={() => {
+                              dispatchSetSelectedLotTemplate(null)
                             }}
                         >
                             <style.TemplateIcon
@@ -120,7 +120,7 @@ const TemplateSelectorSidebar = (props) => {
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
-                            
+
 
                            <style.TemplateName
                                isSelected={isSelected}
@@ -130,7 +130,7 @@ const TemplateSelectorSidebar = (props) => {
                                 <style.EditTemplateIcon
                                     isSelected={isSelected}
                                     onClick={()=>{
-                                        dispatchSetSelectedLotTemplate(currTemplateId)
+                                        onTemplateSelectClick(currTemplateId)
                                         onTemplateEditClick(null)
                                     }}
                                     type={"button"}
@@ -146,27 +146,14 @@ const TemplateSelectorSidebar = (props) => {
 
     const handleDrag = (e, ui) => {
         setWidth(width + ui.deltaX)
-        setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
     }
 
     return (
             <style.SidebarContent
                 key="sidebar-content"
-                style={{ width: width, minWidth: minWidth }}
+                style={{ width: width, minWidth: 350 }}
             >
-                <style.Container>
-                    {getTemplateButtons()}
-                    {/* <style.FooterContainer
-                        style={{justifyContent: "center"}}
-                    >
-                        <Button
-                            onClick={onCloseClick}
-                            schema={"lots"}
-                            type={"button"}
-                            label={"Close"}
-                        />
-                    </style.FooterContainer> */}
-                </style.Container>
+                {getTemplateButtons()}
 
                 <DraggableCore key="handle" onDrag={handleDrag} >
                     <style.ResizeBar>
@@ -194,7 +181,7 @@ TemplateSelectorSidebar.defaultProps = {
     onTemplateClick: () => {},
     onTemplateEditClick: () => {},
     onCloseClick: () => {},
-    minWidth: 450
+    minWidth: 400
 };
 
 export default TemplateSelectorSidebar

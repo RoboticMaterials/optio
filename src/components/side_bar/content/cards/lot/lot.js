@@ -78,7 +78,6 @@ const Lot = (props) => {
                     fieldName,
                     value
                 } = currItem
-
                 const key = `${fieldName}+dataType`
 
                 const isLast = currIndex === arr.length - 1

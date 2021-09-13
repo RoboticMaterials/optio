@@ -281,7 +281,6 @@ export const ProcessField = (props) => {
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem" }}>
                     <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Show Statistics</styled.Title>
-
                     <Switch
                         onColor={themeContext.fg.primary}
                         checked={values.showStatistics}
@@ -292,8 +291,6 @@ export const ProcessField = (props) => {
 
                 </styled.RowContainer>
                 <styled.Title schema={'processes'} style={{ marginTop: "1rem", marginBottom: "1rem" }}>Routes</styled.Title>
-                
-
                 {selectedTask === null &&
                     <>
                         <styled.HelpText>Click a station on the map to start a route</styled.HelpText>

@@ -16,6 +16,7 @@ import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import TaskQueueModal from './task_queue_modal/task_queue_modal'
+import FieldSelectModal from './field_select_modal/field_select_modal'
 import WarehouseModal from './warehouse_modal/warehouse_modal'
 import RouteModal from './route_modal/route_modal'
 
@@ -223,6 +224,7 @@ const DashboardScreen = (props) => {
             //         close={() => setSelectedOperation(null)}
             //     />
             // }
+
             case 'kickOff':
                 return (
                     <KickOffModal
@@ -270,6 +272,15 @@ const DashboardScreen = (props) => {
             case 'taskQueue':
                 return (
                     <TaskQueueModal
+                        isOpen={true}
+                        close={() => setSelectedOperation(null)}
+
+                    />
+                )
+
+            case 'fieldSelect':
+                return (
+                    <FieldSelectModal
                         isOpen={true}
                         close={() => setSelectedOperation(null)}
 

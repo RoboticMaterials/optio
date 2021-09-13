@@ -70,9 +70,7 @@ export const LotTemplateButton = styled.div`
 
   display: flex;
   align-items: center;
-  width: auto;
   height: 3rem;
-  text-overflow: ellipsis;
   justify-content:  flex-start;
   background: transparent;
   padding: 0rem 1rem;
@@ -88,7 +86,7 @@ export const LotTemplateButton = styled.div`
   margin-bottom: 1rem;
 `
 export const TemplateIcon = styled.div`
-	font-size: 1.6rem;
+	  font-size: 1.6rem;
   	position: relative;
   	color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
     margin-right: 1rem;
@@ -113,6 +111,10 @@ export const TemplateName = styled.span`
   color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
   flex-grow: 1;
   user-select: none;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   
 	//color: black;
   //position: absolute;
@@ -194,6 +196,8 @@ export const SidebarContent = styled.div`
 
     // border-right: 8px solid ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
     overflow: hidden;
+    margin-left:0.5rem;
+    margin-right: 0.5rem;
 `
 
 export const ResizeBar = styled.div`

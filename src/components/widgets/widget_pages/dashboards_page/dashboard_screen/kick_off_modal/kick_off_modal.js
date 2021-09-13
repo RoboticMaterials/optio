@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 // external components
 import Modal from 'react-modal';
 import { useDispatch, useSelector } from "react-redux";
+import {useParams} from 'react-router-dom'
 
 // internal components
 import Button from "../../../../../basic/button/button";
@@ -39,6 +40,12 @@ const KickOffModal = (props) => {
         onSubmit
     } = props
 
+    const params = useParams()
+
+    const {
+      dashboardID
+    } = params
+
     // get current buttons, default to empty array
     const dashboardId = dashboard?._id?.$oid
 
@@ -67,6 +74,7 @@ const KickOffModal = (props) => {
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [selectedCard, setSelectedCard] = useState(null)
 
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
@@ -212,6 +220,7 @@ const KickOffModal = (props) => {
                 const quantity = bins["QUEUE"]?.count || 0;
                 return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
             }, true) || true)
+
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
@@ -255,7 +264,7 @@ const KickOffModal = (props) => {
                     />
                 )
             })
-    }, [availableKickOffCards, dashboard.filters, dashboard.sort, process])
+    }
 
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
@@ -436,18 +445,20 @@ const KickOffModal = (props) => {
                                 label={"Close"}
                                 type="button"
                             /> */}
-                        {!phoneView &&
-                            <Button
+                        {/*!phoneView &&
+                          <Button
                                 // tertiary
                                 // secondary
                                 schema={"dashboards"}
                                 // onClick={close}
-                                onClick={() => setShowLotEditor(true)}
+                                onClick={() => {
+                                  setShowLotEditor(true)
+                                }}
                                 label={"Create New Lot"}
                                 type="button"
                                 style={{ minWidth: '12rem', minHeight: '3rem' }}
                             />
-                        }
+                        */}
 
                     </styled.ButtonsContainer>
                 </div>

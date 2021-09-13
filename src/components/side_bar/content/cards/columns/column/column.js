@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState} from "react";
+import VisibilitySensor from 'react-visibility-sensor'
 
 // actions
 import { putCard } from "../../../../../../redux/actions/card_actions";
@@ -68,6 +69,7 @@ const Column = ((props) => {
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
 
+
 	// const [breaks, setBreaks] = useState([])
 	// const [bottlneckCycleTime, setBottleneckCycleTime] = useState(0);
 	// const [precedingQuantity, setPrecedingQuantity] = useState(0);
@@ -122,6 +124,7 @@ const Column = ((props) => {
 	const onMouseEnter = (event, lotId) => {
 		dispatchSetLotHovering(lotId)
 	}
+
 
 	const onMouseLeave = (event) => {
 		dispatchSetLotHovering(null)
@@ -304,140 +307,152 @@ const Column = ((props) => {
 
 	const renderCards = () => {
 		return (
-			<styled.BodyContainer
-				dragEnter={dragEnter}
-			>
-				<Container
-					onDrop={async (DropResult) => {
-						await handleDrop(DropResult)
-						setDragEnter(false)
-					}}
-					shouldAcceptDrop={shouldAcceptDrop}
-					getGhostParent={() => document.body}
-					onDragStart={(dragStartParams, b, c) => {
-						const {
-							isSource,
-							payload,
-							willAcceptDrop
-						} = dragStartParams
-
-						if (isSource) {
-							const {
-								binId,
-								cardId
-							} = payload
-
-							dispatchSetDraggingLotId(cardId)
-						}
-					}}
-					onDragEnd={(dragEndParams) => {
-						const {
-							isSource,
-						} = dragEndParams
-
-						if (isSource) {
-							dispatchSetDraggingLotId(null)
-						}
-					}}
-					onDragEnter={() => {
-						setDragEnter(true)
-					}}
-					onDragLeave={() => {
-						setDragEnter(false)
-					}}
-					onDropReady={(dropResult) => { }}
-					groupName="process-cards"
-					getChildPayload={index =>
-						cards[index]
-					}
-					style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem" }}
+				<styled.BodyContainer
+					dragEnter={dragEnter}
 				>
-					{cards.map((card, index) => {
-						const {
-							_id,
-							count = 0,
-							leadTime,
-							name,
-							object_id,
-							cardId,
-							flags,
-							lotNumber,
-							totalQuantity,
-							processName,
-							lotTemplateId,
-							...rest
-						} = card
+					<Container
+						onDrop={async (DropResult) => {
+							await handleDrop(DropResult)
+							setDragEnter(false)
+						}}
+						shouldAcceptDrop={shouldAcceptDrop}
+						getGhostParent={() => document.body}
+						onDragStart={(dragStartParams, b, c) => {
+							const {
+								isSource,
+								payload,
+								willAcceptDrop
+							} = dragStartParams
 
-						// console.log(lotNumber, leadTime)
+							if (isSource) {
+								const {
+									binId,
+									cardId
+								} = payload
 
-						// const templateValues = getCustomFields(lotTemplateId, card)
+								dispatchSetDraggingLotId(cardId)
+							}
+						}}
+						onDragEnd={(dragEndParams) => {
+							const {
+								isSource,
+							} = dragEndParams
 
-						// const lotName = lots[lot_id] ? lots[lot_id].name : null
-						// const objectName = objects[object_id] ? objects[object_id].name : null
+							if (isSource) {
+								dispatchSetDraggingLotId(null)
+							}
+						}}
+						onDragEnter={() => {
+							setDragEnter(true)
+						}}
+						onDragLeave={() => {
+							setDragEnter(false)
+						}}
+						onDropReady={(dropResult) => { }}
+						groupName="process-cards"
+						getChildPayload={index =>
+							cards[index]
+						}
+						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem" }}
+					>
+						{cards.map((card, index) => {
+							const {
+								_id,
+								count = 0,
+								leadTime,
+								name,
+								object_id,
+								cardId,
+								flags,
+								lotNumber,
+								totalQuantity,
+								processName,
+								lotTemplateId,
+								...rest
+							} = card
 
-						const isSelected = getIsSelected(cardId, station_id)
-						const isDragging = draggingLotId === cardId
-						const isHovering = hoveringLotId === cardId
+							// console.log(lotNumber, leadTime)
 
-						const isLastSelected = getIsLastSelected(cardId)
+							// const templateValues = getCustomFields(lotTemplateId, card)
 
-						// const isSelected = (draggingLotId !== null) ? () : ()
-						const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
+							// const lotName = lots[lot_id] ? lots[lot_id].name : null
+							// const objectName = objects[object_id] ? objects[object_id].name : null
 
-						return (
-							<Draggable
-								key={cardId}
-								onMouseEnter={(event) => onMouseEnter(event, cardId)}
-								onMouseLeave={onMouseLeave}
-								style={{
-								}}
-							>
-								<div
-									style={{
-									}}
-								>
-									<LotContainer
-										glow={isLastSelected}
-										isFocused={isDragging || isHovering}
-										enableFlagSelector={true}
-										selectable={selectable}
-										isSelected={isSelected}
-										key={cardId}
-										// processName={processName}
-										totalQuantity={totalQuantity}
-										lotNumber={lotNumber}
-										name={name}
-										count={count}
-										leadTime={leadTime}
-										id={cardId}
-										flags={flags || []}
-										index={index}
-										lotId={cardId}
-										binId={station_id}
-										onClick={(e) => {
-											const payload = getBetweenSelected(cardId)
-											onCardClick(
-												e,
-												{
-													lotId: cardId,
-													processId: processId,
-													binId: station_id
-												},
-												payload
-											)
-										}}
-										containerStyle={{
-											marginBottom: "0.5rem",
-										}}
-									/>
-								</div>
-							</Draggable>
-						)
-					})}
+							const isSelected = getIsSelected(cardId, station_id)
+							const isDragging = draggingLotId === cardId
+							const isHovering = hoveringLotId === cardId
 
-				</Container>
-			</styled.BodyContainer>
+							const isLastSelected = getIsLastSelected(cardId)
 
+							// const isSelected = (draggingLotId !== null) ? () : ()
+							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
+
+
+							return (
+								<VisibilitySensor partialVisibility = {true}>
+									{({isVisible}) =>
+										<>
+											{!!isVisible ?
+													<Draggable
+														key={cardId}
+														onMouseEnter={(event) => onMouseEnter(event, cardId)}
+														onMouseLeave={onMouseLeave}
+														style={{
+														}}
+													>
+														<div
+															style={{
+															}}
+														>
+															<LotContainer
+																glow={isLastSelected}
+																isFocused={isDragging || isHovering}
+																enableFlagSelector={true}
+																selectable={selectable}
+																isSelected={isSelected}
+																key={cardId}
+																// processName={processName}
+																totalQuantity={totalQuantity}
+																lotNumber={lotNumber}
+																name={name}
+																count={count}
+																leadTime={leadTime}
+																id={cardId}
+																flags={flags || []}
+																index={index}
+																lotId={cardId}
+																binId={station_id}
+																onClick={(e) => {
+																	const payload = getBetweenSelected(cardId)
+																	onCardClick(
+																		e,
+																		{
+																			lotId: cardId,
+																			processId: processId,
+																			binId: station_id
+																		},
+																		payload
+																	)
+																}}
+																containerStyle={{
+																	marginBottom: "0.5rem",
+																}}
+															/>
+														</div>
+													</Draggable>
+													:
+													<div style = {{height: '20rem', width: '80%'}}>
+													...Loading
+													</div>
+											}
+										</>
+									}
+								</VisibilitySensor>
+							)
+						})}
+
+					</Container>
+				</styled.BodyContainer>
 		)
 	}
 

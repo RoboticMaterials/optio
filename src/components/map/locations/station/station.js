@@ -54,6 +54,7 @@ function Station(props) {
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingProcess = useSelector(state => state.processesReducer.editingProcess)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -319,7 +320,7 @@ function Station(props) {
 
     const onMouseEnter = () => {
         // Only allow hovering if there is no selected task and mouse is not down on the map
-        if (!hoveringInfo && selectedTask === null && !station.temp && !mouseDown) {
+        if (!hoveringInfo && selectedTask === null && !station.temp && !mouseDown && !editingProcess) {
             setHovering(true)
 
             if (!editing() && !rotating && !translating && !selectedStation && !selectedTask && !selectedProcess) {
@@ -368,7 +369,7 @@ function Station(props) {
                 handleRotating={onRotating}
 
             >
-                
+
             </LocationSvg>
 
             <DragEntityProto

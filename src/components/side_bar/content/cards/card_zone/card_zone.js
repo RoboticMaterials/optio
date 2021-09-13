@@ -1,6 +1,7 @@
 import React, { useEffect, useState, memo, useMemo } from "react"
 import moment from 'moment';
 
+
 // components internal
 import StationsColumn from "../columns/station_column/station_column"
 import LotQueue from "../columns/lot_queue/lot_queue"
@@ -11,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux"
 import PropTypes from "prop-types"
 
 // utils
-import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter } from "../../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 import { getProcessStationsSorted, flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
@@ -39,6 +40,8 @@ const CardZone = ((props) => {
         showCardEditor,
         maxHeight,
         lotFilters,
+        lotFilterValue,
+        selectedFilterOption,
         sortMode,
         sortDirection,
         selectedCards,
@@ -48,11 +51,15 @@ const CardZone = ((props) => {
 
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
+    const showFinish = currentProcess.showFinish === undefined ? true: currentProcess.showFinish
+    const showQueue = currentProcess.showQueue === undefined ? true: currentProcess.showQueue
+
     const routes = useSelector(state => { return state.tasksReducer.tasks })
     const allCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations })
     const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
     const { shiftDetails } = useSelector(state => state.settingsReducer.settings)
+    const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
     const {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
@@ -72,7 +79,7 @@ const CardZone = ((props) => {
 
     // const [cardsSorted, setCardsSorted] = useState({})
     // const [queue, setQueue] = useState([])
-    // const [finished, setFinished] = useState([])
+    // const [finished, setFinished] = useState([])hideQueueFinish
 
     // ============================== LEAD TIME ESTIMATION ====================================== //
     const convertShiftDetails = (details) => {
@@ -116,7 +123,7 @@ const CardZone = ((props) => {
     // Useeffect for cycle times
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
-        deleteGetCycleTimes()
+        //deleteGetCycleTimes()
     }, [shiftDetails, allCards, stations])
 
     // This function calculates cycle time based on the throughput of that day
@@ -125,7 +132,7 @@ const CardZone = ((props) => {
         // Get stations in this process
         let processStations = getProcessStationsSorted(currentProcess, routes);
         // const body = { timespan: 'day', index: 0 }
-        // const workingTime = convertShiftDetailsToWorkingTime(shiftDetails)
+        // const workingTime = convertShiftDetailsToWlotfiltervalueorkingTime(shiftDetails)
 
         let stationCycleTimes = {}
 
@@ -413,8 +420,14 @@ const CardZone = ((props) => {
             } = card
 
             const totalQuantity = getLotTotalQuantity(card)
-
-            const matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            var matchesFilter = false
+            if(!!multipleFilters){
+              matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(card, filter), true)
+            }
+            else{
+              matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
+            }
 
             if (cardBins && matchesFilter) {
 
@@ -475,15 +488,13 @@ const CardZone = ((props) => {
         setCardsSorted(tempCardsSorted)
         setQueue(tempQueue)
         setFinished(tempFinished)
-    }, [bins, cards, lotFilters, draggingBinId, draggingLotId])
+    }, [bins, cards, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
 
     /*
     * Renders a {StationColumn} for each entry in {cardsSorted}
     *
     * */
     const renderStationColumns = useMemo(() => {
-
-
         const renderRecursiveColumns = (node) => {
             let columnContent, recursiveColumnContent;
 
@@ -517,7 +528,6 @@ const CardZone = ((props) => {
                                 </styled.ColumnGroup>
                             )
                         }
-
                     })}
                 </>
             )
@@ -574,6 +584,7 @@ CardZone.propTypes = {
     setShowCardEditor: PropTypes.func,
     processId: PropTypes.string,
     lotFilters: PropTypes.array,
+    lotFilterValue: PropTypes.any,
     showCardEditor: PropTypes.bool,
     maxHeight: PropTypes.any
 }
@@ -585,6 +596,8 @@ CardZone.defaultProps = {
     setShowCardEditor: () => { },
     showCardEditor: false,
     maxHeight: null,
+    lotFilterValue: "",
+    selectedFilterOption: LOT_FILTER_OPTIONS.name,
     lotFilters: [],
     sortMode: LOT_FILTER_OPTIONS.name,
     sortDirection: SORT_DIRECTIONS.ASCENDING,

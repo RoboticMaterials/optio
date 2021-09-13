@@ -11,6 +11,7 @@ import {
 	valueCss
 } from "../lot_bars.style";
 import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
+import LotFilterBarBasic from '../lot_filter_bar/lot_filter_bar_basic'
 import * as styled from "../zone_header/zone_header.style";
 
 const SortFilterContainer = (props) => {
@@ -19,14 +20,18 @@ const SortFilterContainer = (props) => {
 		setSortMode,
 		sortDirection,
 		setSortDirection,
-		
+		shouldFocusLotFilter,
+		setLotFilterValue,
+		selectedFilterOption,
+		setSelectedFilterOption,
+		lotFilterValue,
+		multipleFilters,
 		filters,
 		onAddFilter,
 		onRemoveFilter,
 
-        containerStyle,
+    containerStyle,
 	} = props
-
 	return (
 		<BarsContainer style={containerStyle}>
 			{/*<styled.OptionContainer>*/}
@@ -39,11 +44,32 @@ const SortFilterContainer = (props) => {
 			{/*</styled.OptionContainer>*/}
 
 			{/*<styled.OptionContainer>*/}
-			<LotFilterBar
-				filters={filters}
-				onAddFilter={onAddFilter}
-				onRemoveFilter={onRemoveFilter}
-			/>
+			{!!multipleFilters ?
+				<LotFilterBar
+					filters={filters}
+					onAddFilter={onAddFilter}
+					onRemoveFilter={onRemoveFilter}
+				/>
+				:
+				<LotFilterBarBasic
+					lotFilterValue={lotFilterValue}
+					columnCss={columnCss}
+					containerCss={containerCss}
+					descriptionCss={descriptionCss}
+					dropdownCss={dropdownCss}
+					valueCss={valueCss}
+					reactDropdownSelectCss={reactDropdownSelectCss}
+					shouldFocusLotFilter={shouldFocusLotFilter}
+					setLotFilterValue={setLotFilterValue}
+					selectedFilterOption={selectedFilterOption}
+					setSelectedFilterOption={setSelectedFilterOption}
+					filters={filters}
+					onAddFilter={onAddFilter}
+					onRemoveFilter={onRemoveFilter}
+				/>
+			}
+
+
 			{/*</styled.OptionContainer>*/}
 		</BarsContainer>
 	);

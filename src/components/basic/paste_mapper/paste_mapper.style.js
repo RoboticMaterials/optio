@@ -62,7 +62,7 @@ export const Body = styled.div`
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    // padding: 1rem;
+    padding-right: 1rem;
 `
 
 export const Footer = styled.div`
@@ -88,7 +88,7 @@ export const Title = styled.div`
     flex-direction: column;
     font-size: ${props => props.theme.fontSize.sz2};
     font-weight: ${props => props.theme.fontWeight.bold};
-	
+
 `
 export const TitleText = styled.span`
 
@@ -98,7 +98,7 @@ export const SectionBreak = styled.hr`
     border-top: 2px solid ${props => props.theme.bg.secondary};
     width: 100%;
     margin: 0;
-    
+
 `
 
 
@@ -109,12 +109,12 @@ export const TableContainer = styled.div`
     overflow: auto;
     flex: 1;
 
-    
+
 
     ${scrollCss};
 
-    
-    
+
+
 `
 export const Table = styled.div`
     width: fit-content;
@@ -143,7 +143,7 @@ export const Row = styled.div`
 `
 
 export const cellCss = css`
-    
+
 `
 
 export const FieldNameTab = styled.div`
@@ -200,7 +200,7 @@ export const ReceptacleInner = styled.div`
         box-shadow: inset 0 1px 4px 1px rgba(0, 0, 0, 0.1);
         `
     }
-    
+
 `
 
 export const ItemContainer = styled.div`
@@ -211,24 +211,24 @@ export const ItemContainer = styled.div`
     border-right: 1px solid ${props => props.theme.bg.quaternary};
     // border-top: 1px solid ${props => props.theme.bg.quaternary};
     border-bottom: 1px solid ${props => props.theme.bg.quaternary};
-    
+
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     min-height: 2rem;
     max-height: 2rem;
-    
-    
-    
-    
-    
+
+
+
+
+
     background: ${props => props.selected && LightenDarkenColor(props.theme.fg.primary, 50)}
 `
 
 export const Cell = styled.div`
-   
+
     overflow: auto;
     ::-webkit-scrollbar {
         display: none;
@@ -250,7 +250,7 @@ export const ContentContainer = styled.div`
     align-self: stretch;
     padding: 1rem 0;
     min-height: fit-content;
-    
+
 `
 
 export const FieldNamesContainer = styled.div`
@@ -336,13 +336,13 @@ export const SelectButton = styled.button`
     margin-right: .5rem;
     font-size: 1.5rem;
     color: ${props => props.color};
-    
+
     &:hover {
-            
+
     }
-    
+
     &:active {
-    
+
     }
 `
 
@@ -357,7 +357,7 @@ export const buttonViewCss = css`
     padding-left: .5rem;
     padding-right: .5rem;
     background: ${props => props.theme.bg.senary};
-  
+
     &:hover {
       cursor: pointer;
     }
@@ -371,17 +371,17 @@ export const buttonViewSelectedCss = css`
 export const buttonCss = css`
 	margin: 0;
 	padding: 0;
-	
+
 	&:focus{
 	}
-	
+
 	&:active{
 	}
-	
+
 	&:hover{
 		cursor: default;
 	}
-	
+
 `
 
 export const buttonGroupContainerCss = css`
@@ -390,5 +390,5 @@ export const buttonGroupContainerCss = css`
 	align-self: center;
 	padding: 0;
 	margin: 0;
-	
+
 `

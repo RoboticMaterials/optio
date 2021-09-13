@@ -2,12 +2,13 @@ import React, { useEffect, useState, useMemo } from 'react'
 
 // components internal
 import Lot from "./lot"
+import VisibilitySensor from 'react-visibility-sensor'
 
 // functions external
 import PropTypes from 'prop-types'
 
 import { useSelector } from "react-redux"
-
+import {useParams} from 'react-router-dom'
 // utils
 import { getBinQuantity, getCustomFields, getLotTotalQuantity } from "../../../../../methods/utils/lot_utils"
 
@@ -21,6 +22,11 @@ const LotContainer = (props) => {
         quantity,
         ...rest
     } = props
+
+    const params = useParams()
+    const {
+      dashboardID
+    } = params
 
     const lot = useSelector(state => { return state.cardsReducer.cards[lotId] }) || {}
     const {
@@ -38,6 +44,7 @@ const LotContainer = (props) => {
     const stationName = useMemo(() => station.name, [station])
     const templateValues = useMemo(() => getCustomFields(lotTemplateId, lot), [lotTemplateId, lot])
     const totalQuantity = useMemo(() => getLotTotalQuantity(lot), [lot])
+
     const count = useMemo(() => getBinQuantity({ bins }, binId), [bins, binId])
 
     return (
@@ -57,10 +64,10 @@ const LotContainer = (props) => {
             onClick={() => {
 
             }}
-
             {...rest}
             containerStyle={{ width: '80%', margin: '.5rem auto .5rem auto', ...containerStyle }}
         />
+
     )
 }
 

@@ -624,7 +624,7 @@ const routeStationSchema = lazy(obj => {
 export const routeSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
+        .max(75, '75 character maximum.')
         .required('Please enter a name.'),
     part: Yup.string()
         .min(1, '1 character minimum.')
