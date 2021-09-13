@@ -59,8 +59,6 @@ const WarehouseModal = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks)
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [showTransferLotModal, setShowTransferLotModal] = useState(false)
-    const [processTransferOptions, setProcessTransferOptions] = useState([])
     const [currentLot, setCurrentLot] = useState(null)
     const isWarehouse = true
 
@@ -70,7 +68,7 @@ const WarehouseModal = (props) => {
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
         setCurrentLot(cards[lotID])
-        warehouseProcessTransfer(lotID)
+      //  warehouseProcessTransfer(lotID)
         //history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
     }
 
@@ -85,8 +83,8 @@ const WarehouseModal = (props) => {
               }
             }
         })
-        setProcessTransferOptions(proc)
-        setShowTransferLotModal(true)
+        //setProcessTransferOptions(proc)
+        //setShowTransferLotModal(true)
       }
 
     /*
@@ -191,18 +189,6 @@ const WarehouseModal = (props) => {
 
     return (
       <>
-        {!!showTransferLotModal &&
-          <TransferLotModal
-            isOpen = {true}
-            close = {()=>{
-              setShowTransferLotModal(false)
-              close()
-            }}
-            options = {processTransferOptions}
-            lot = {currentLot}
-            warehouse = {isWarehouse}
-          />
-        }
         <styled.Container
             isOpen={isOpen}
             contentLabel="Kick Off Modal"
