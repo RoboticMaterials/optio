@@ -376,7 +376,6 @@ export const formatLotNumber = (lotNumber) => {
 
 export const getLotTotalQuantity = (card) => {
     const processes = store.getState().processesReducer.processes || {}
-    console.log(processes[card.process_id])
     let totalQuantity = 0
 
     if(!!card.dispersed){

@@ -205,13 +205,13 @@ const KickOffModal = (props) => {
     const renderKickOffButtons = useMemo(() => {
         console.log('df', availableKickOffCards, dashboard.filters)
         return availableKickOffCards
-            .filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
+            .filter(currLot => dashboard?.filters?.reduce((matchesAll, filter) => {
                 const {
                     bins = {},
                 } = currLot || {}
                 const quantity = bins["QUEUE"]?.count || 0;
                 return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
-            }, true))
+            }, true) || true)
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
