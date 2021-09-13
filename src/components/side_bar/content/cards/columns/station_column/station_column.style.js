@@ -129,10 +129,11 @@ export const BodyContainer = styled.div`
 
 export const HeaderSection = styled.div`
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
     align-items: center;
     width:100%;
     justify-content: space-between;
+    overflow: hidden;
     align-content: center;
     margin: 0.2rem 0;
     /* position: absolute; */

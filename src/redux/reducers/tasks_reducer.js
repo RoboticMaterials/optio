@@ -4,6 +4,11 @@ import {
     GET_TASKS_SUCCESS,
     GET_TASKS_FAILURE,
 
+    // GET_TASK,
+    // GET_TASK_STARTED,
+    // GET_TASK_SUCCESS,
+    // GET_TASK_FAILURE,
+
     POST_TASK,
     POST_TASK_STARTED,
     POST_TASK_SUCCESS,
@@ -71,7 +76,6 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case GET_TASKS_SUCCESS:
-            tasksCopy = deepCopy(action.payload)
             return {
                 ...state,
                 tasks: action.payload,
@@ -83,6 +87,34 @@ export default function tasksReducer(state = defaultState, action) {
                 error: action.payload,
                 pending: false
             });
+
+        // ======================================== //
+        //                                          //
+        //              Get Task               //
+        //                                          //
+        // ======================================== //
+        // case GET_TASK:
+        //     break;
+
+        // case GET_TASK_STARTED:
+        //     return Object.assign({}, state, {
+        //         pending: true
+        //     });
+
+        // case GET_TASK_SUCCESS:
+        //     tasksCopy = deepCopy(state.tasks)
+        //     tasksCopy[action.payload.id] = action.payload.task
+        //     return {
+        //         ...state,
+        //         tasks: tasksCopy,
+        //         pending: false
+        //     }
+
+        // case GET_TASK_FAILURE:
+        //     return Object.assign({}, state, {
+        //         error: action.payload,
+        //         pending: false
+        //     });
 
         // ======================================== //
         //                                          //
@@ -305,8 +337,14 @@ export default function tasksReducer(state = defaultState, action) {
             }
 
         case SET_SELECTED_TASK:
+            let tasksCopy = state.tasks;
+            if (action.payload.task !== null && state.tasks[action.payload.task._id] === undefined) {
+                tasksCopy[action.payload.task._id] = action.payload.task
+            }
+
             return {
                 ...state,
+                tasks: tasksCopy,
                 selectedTask: action.payload.task
             }
 
@@ -334,17 +372,18 @@ export default function tasksReducer(state = defaultState, action) {
                 showRouteConfirmation: action.payload,
             }
 
-            case SET_ROUTE_CONFIRMATION_LOCATION:
-                return {
-                    ...state,
-                    routeConfirmationLocation: action.payload,
-                }
+        case SET_ROUTE_CONFIRMATION_LOCATION:
+            return {
+                ...state,
+                routeConfirmationLocation: action.payload,
+            }
 
-            case AUTO_ADD_ROUTE:
-                return {
-                    ...state,
-                    autoAddRoute: action.payload,
-                }
+        case AUTO_ADD_ROUTE:
+            return {
+                ...state,
+                autoAddRoute: action.payload,
+            }
+            
         default:
             return state;
     }

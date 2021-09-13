@@ -210,15 +210,16 @@ const KickOffModal = (props) => {
     /*
     * renders an array of buttons for each kick off lot
     * */
-    const renderKickOffButtons = () => {
+    const renderKickOffButtons = useMemo(() => {
+        console.log('df', availableKickOffCards, dashboard.filters)
         return availableKickOffCards
-            //.filter(currLot => dashboard.filters?.reduce((matchesAll, filter) => {
-            //    const {
-            //        bins = {},
-            //    } = currLot || {}
-            //    const quantity = bins["QUEUE"]?.count || 0;
-            //    return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
-          //  }, true))
+            .filter(currLot => dashboard?.filters?.reduce((matchesAll, filter) => {
+                const {
+                    bins = {},
+                } = currLot || {}
+                const quantity = bins["QUEUE"]?.count || 0;
+                return matchesAll && checkCardMatchesFilter({ ...currLot, quantity }, filter)
+            }, true) || true)
 
             .map((currCard, cardIndex) => {
                 const {
@@ -239,8 +240,9 @@ const KickOffModal = (props) => {
                 } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
-                const totalQuantity = getLotTotalQuantity({ bins }, currCard)
-                const templateValues = getCustomFields(lotTemplateId, currCard, dashboardID)
+                const totalQuantity = getLotTotalQuantity(currCard)
+                const templateValues = getCustomFields(lotTemplateId, currCard)
+
                 return (
                     <Lot
                         templateValues={templateValues}
@@ -380,10 +382,8 @@ const KickOffModal = (props) => {
                     isOpen={true}
                     onAfterOpen={null}
                     processOptions={kickOffEnabledInfo}
-                    showProcessSelector={true}
                     cardId={null}
                     processId={null}
-                    // binId={null}
                     close={() => {
                         setShowLotEditor(false)
                         // setSelectedCard(null)
@@ -421,7 +421,7 @@ const KickOffModal = (props) => {
                     <styled.ContentContainer>
                         <styled.ReportButtonsContainer isButtons={isButtons}>
                             {isButtons ?
-                                renderKickOffButtons()
+                                renderKickOffButtons
                                 :
                                 didLoadData ?
                                     <styled.NoButtonsText>There are currently no lots in the queue available for kick off.</styled.NoButtonsText>

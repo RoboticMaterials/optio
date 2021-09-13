@@ -17,28 +17,31 @@ export const ROUTE_TYPES = {
 /*
 * NOTE: DO NOT GENERATE ID HERE, OTHERWISE IT WILL ONLY BE GENERATED ONCE ON LOAD AND NEW TASKS WILL ALL HAVE THE SAME ID
 * */
+// export const defaultTask = {
+//     name: '',
+//     obj: null,
+//     type: ROUTE_TYPES.PUSH,
+//     quantity: 1,
+//     device_types: [],
+//     handoff: true,
+//     track_quantity: true,
+//     map_id: null,
+//     new: true,
+//     processes: [],
+// }
+
 export const defaultTask = {
+    processId: null,
     name: '',
-    obj: null,
-    type: ROUTE_TYPES.PUSH,
-    quantity: 1,
-    device_types: [],
     handoff: true,
-    track_quantity: true,
-    map_id: null,
-    new: true,
-    processes: [],
-    load: {
-        position: null,
-        station: null,
-        sound: null,
-        instructions: 'Move',
-        timeout: '09:00'
-    },
-    unload: {
-        position: null,
-        station: null,
-        sound: null,
-        instructions: 'Unload'
-    },
+    type: ROUTE_TYPES.PUSH,
+
+    part: null,
+    inOutRatio: 1,
+    
+    load: null,
+    unload: null,
+    timeout: '09:00',
+
+    isNew: true
 }

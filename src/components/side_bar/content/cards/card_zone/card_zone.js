@@ -14,7 +14,7 @@ import PropTypes from "prop-types"
 // utils
 import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
-import { getProcessStationsSorted } from '../../../../../methods/utils/processes_utils';
+import { getProcessStationsSorted, flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
 
 // styles
@@ -124,7 +124,6 @@ const CardZone = ((props) => {
     // Stations are a dependency because that is where the manual cycle time is stored
     useEffect(() => {
         //deleteGetCycleTimes()
-
     }, [shiftDetails, allCards, stations])
 
     // This function calculates cycle time based on the throughput of that day
@@ -384,14 +383,9 @@ const CardZone = ((props) => {
             const loadStationId = getLoadStationId(currRoute)
             const unloadStationId = getUnloadStationId(currRoute)
 
-            // only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
-            if (prevUnloadStationId !== loadStationId) {
-
-                // add entry in tempCardsSorted
-                tempBins[loadStationId] = {
-                    station_id: loadStationId,
-                    cards: []
-                }
+            tempBins[loadStationId] = {
+                station_id: loadStationId,
+                cards: []
             }
 
             // add entry in tempCardsSorted
@@ -425,7 +419,7 @@ const CardZone = ((props) => {
                 ...rest
             } = card
 
-            const totalQuantity = getLotTotalQuantity(card, card)
+            const totalQuantity = getLotTotalQuantity(card)
             // const matchesFilter = lotFilters.reduce((filter, matchesAll) => matchesAll && checkCardMatchesFilter(card, filter), true)
             var matchesFilter = false
             if(!!multipleFilters){
@@ -434,7 +428,6 @@ const CardZone = ((props) => {
             else{
               matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
             }
-
 
             if (cardBins && matchesFilter) {
 
@@ -461,6 +454,7 @@ const CardZone = ((props) => {
                         cardId: _id,
                         processName
                     }
+
 
                     // if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin
                     if (bins[binId]) {
@@ -501,94 +495,85 @@ const CardZone = ((props) => {
     *
     * */
     const renderStationColumns = useMemo(() => {
+        const renderRecursiveColumns = (node) => {
+            let columnContent, recursiveColumnContent;
 
-        // loop through each entry in {cardsSorted} and return a {StationsColumn}
-        return Object.values(cardsSorted).map((obj, index) => {
+            columnContent = (
+                <>
+                    {node.children.map(child => {
 
-            // extract attributes of current bin
-            const {
-                station_id,
-                route_id,
-                cards: cardsArr
-            } = obj
-
-            // get current station attributes from {station_id} and redux state
-            const currStation = stations[station_id]
-            const {
-                name: stationName
-            } = currStation || {}
-
-            return (
-                <StationsColumn
-                    setSelectedCards={setSelectedCards}
-                    selectedCards={selectedCards}
-                    sortMode={sortMode}
-                    sortDirection={sortDirection}
-                    maxHeight={maxHeight}
-                    key={station_id + index}
-                    id={route_id + "+" + station_id}
-                    station_id={station_id}
-                    stationName={stationName}
-                    processId={processId}
-                    route_id={route_id}
-                    cards={cardsArr}
-                    onCardClick={handleCardClick}
-                    autoCycleTime={deleteStationCycleTime[station_id]}
-                />
+                        if (typeof child === 'string') {
+                            let childStationId = child;
+                            return (
+                                <StationsColumn
+                                    setSelectedCards={setSelectedCards}
+                                    selectedCards={selectedCards}
+                                    sortMode={sortMode}
+                                    sortDirection={sortDirection}
+                                    maxHeight={maxHeight}
+                                    id={processId + "+" + childStationId}
+                                    station_id={childStationId}
+                                    stationName={stations[childStationId].name}
+                                    processId={processId}
+                                    cards={cardsSorted[childStationId]?.cards || []}
+                                    onCardClick={handleCardClick}
+                                    autoCycleTime={deleteStationCycleTime[childStationId]}
+                                />
+                            )
+                        } else {
+                            recursiveColumnContent = renderRecursiveColumns(child);
+                            return (
+                                <styled.ColumnGroup>
+                                    {recursiveColumnContent}
+                                </styled.ColumnGroup>
+                            )
+                        }
+                    })}
+                </>
             )
-        })
-    },)
 
-    const renderFinishColumn = useMemo(() => {
-      if(!!showFinish){
-        return (
-          <FinishColumn
-              setSelectedCards={setSelectedCards}
-              selectedCards={selectedCards}
-              key={"FINISH"}
-              sortMode={sortMode}
-              sortDirection={sortDirection}
-              maxHeight={maxHeight}
-              station_id={"FINISH"}
-              setShowCardEditor={setShowCardEditor}
-              showCardEditor={showCardEditor}
-              stationName={"Finished"}
-              processId={processId}
-              cards={finished}
-              onCardClick={handleCardClick}
-          />
-        )
-      }
-    },)
+            return columnContent
+        }
+        return renderRecursiveColumns(currentProcess.graph, 0)
 
-    const renderQueueColumn = useMemo(() => {
-      if(!!showQueue){
-        return (
-          <LotQueue
-              setSelectedCards={setSelectedCards}
-              selectedCards={selectedCards}
-              key={"QUEUE"}
-              sortMode={sortMode}
-              sortDirection={sortDirection}
-              maxHeight={maxHeight}
-              station_id={"QUEUE"}
-              setShowCardEditor={setShowCardEditor}
-              showCardEditor={showCardEditor}
-              stationName={"Queue"}
-              processId={processId}
-              cards={queue}
-              onCardClick={handleCardClick}
-              onAddLotClick={() => handleAddLotClick(processId)}
-          />
-        )
-      }
-    },)
+    }, [cardsSorted, currentProcess])
 
     return (
         <styled.Container style={{ background: 'white' }}>
-            {renderQueueColumn}
+            <LotQueue
+                setSelectedCards={setSelectedCards}
+                selectedCards={selectedCards}
+                key={"QUEUE"}
+                sortMode={sortMode}
+                sortDirection={sortDirection}
+                maxHeight={maxHeight}
+                station_id={"QUEUE"}
+                setShowCardEditor={setShowCardEditor}
+                showCardEditor={showCardEditor}
+                stationName={"Queue"}
+                processId={processId}
+                cards={queue}
+                onCardClick={handleCardClick}
+                onAddLotClick={() => handleAddLotClick(processId)}
+            />
+
             {renderStationColumns}
-            {renderFinishColumn}
+
+            <FinishColumn
+                setSelectedCards={setSelectedCards}
+                selectedCards={selectedCards}
+                key={"FINISH"}
+                sortMode={sortMode}
+                sortDirection={sortDirection}
+                maxHeight={maxHeight}
+                station_id={"FINISH"}
+                setShowCardEditor={setShowCardEditor}
+                showCardEditor={showCardEditor}
+                stationName={"Finished"}
+                processId={processId}
+                cards={finished}
+                onCardClick={handleCardClick}
+            />
         </styled.Container>
     )
 })

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-
 // Import Styles
 import * as styled from './dashboard_lot_buttons.style'
 import { theme } from "../../../../../../../theme";
@@ -9,9 +8,7 @@ import { theme } from "../../../../../../../theme";
 // Import Components
 import DashboardButton from '../../../dashboard_buttons/dashboard_button/dashboard_button'
 import DashboardSplitButton from '../../../dashboard_buttons/dashboard_split_button/dashboard_split_button'
-
-// Import Constants
-import { DEVICE_CONSTANTS } from '../../../../../../../constants/device_constants'
+import NumberInput from '../../../../../../basic/number_input/number_input';
 
 // Renders that buttons at the footer of the dashboard screen
 // IE:
@@ -23,14 +20,17 @@ const DashboardLotButtons = (props) => {
   const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
 
     const {
-        handleMove,
+        handleMoveClicked,
         handleCancel,
-        handleScrap,
-        isDeviceRoute,
         isFinish,
+        quantity,
+        setQuantity,
+        maxQuantity,
+        minQuantity,
         handleFinish,
         disabled
     } = props
+
 
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
@@ -39,50 +39,30 @@ const DashboardLotButtons = (props) => {
         const iconColor = theme.main.bg.octonary
 
         const error = null
-        const buttonId = ''
-        if (isDeviceRoute && deviceEnabled ) {
-            return (
-                <DashboardSplitButton
-                    color={color}
-                    containerStyle={{ background: color }}
-                    titleStyle={{ color: textColor }}
-                    iconColor={iconColor}
+        
+        return (
+            <>
 
-                    title={'Move'}
-                    iconClassName={iconClassName}
-                    clickable={true}
-                    onClick={(props) => {
-                        handleMove(props)
-                    }}
-                    hoverable={false}
-                    // taskID={taskID}
-                    // disabled={disabled}
-                    // containerCss={style.ButtonContainerCss}
-                    error={error}
-                />
-            )
-        }
-        else {
-            return (
-                <DashboardButton
-                    color={color}
-                    containerStyle={{ background: color }}
-                    titleStyle={{ color: textColor }}
-                    iconColor={iconColor}
+            <DashboardButton
+                color={color}
+                containerStyle={{ background: color }}
+                titleStyle={{ color: textColor }}
+                iconColor={iconColor}
 
-                    title={'Move'}
-                    iconColor={"black"}
-                    iconClassName={iconClassName}
-                    onClick={() => handleMove(DEVICE_CONSTANTS.HUMAN)}
+                title={'Move'}
+                iconColor={"black"}
+                iconClassName={iconClassName}
+                onClick={handleMoveClicked}
 
-                    hoverable={false}
-                    // taskID={taskID}
-                    disabled={false}
-                    // containerCss={style.ButtonContainerCss}
-                    error={error}
-                />
-            )
-        }
+                hoverable={false}
+                // taskID={taskID}
+                disabled={false}
+                // containerCss={style.ButtonContainerCss}
+                error={error}
+            />
+            </>
+        )
+
     }
 
     const renderFinishButton = () => {
@@ -95,7 +75,7 @@ const DashboardLotButtons = (props) => {
                 title={'Finish'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                onClick={handleFinish}
+                onClick={handleMoveClicked}
                 containerStyle={{ background: color }}
                 hoverable={false}
                 color={color}
@@ -128,6 +108,18 @@ const DashboardLotButtons = (props) => {
 
     return (
         <styled.ButtonContainer>
+            
+            <NumberInput
+                minValue={minQuantity}
+                maxValue={maxQuantity}
+                
+                value={quantity}
+                onMinusClick={() => setQuantity(quantity - 1)}
+                onPlusClick={() => setQuantity(quantity + 1)}
+                onInputChange={(input) => setQuantity(input)}
+
+                containerStyle={{marginBottom: '1rem', marginTop: '1rem'}}
+            />
             {isFinish ?
                 renderFinishButton()
                 :

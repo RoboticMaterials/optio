@@ -22,6 +22,7 @@ import {
 } from '../types/processes_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import { isObject } from "../../methods/utils/object_utils";
 
 const defaultState = {
     // processes: {'qqq':{
@@ -179,6 +180,44 @@ const processesReducer = (state = defaultState, action) => {
                 selectedProcess: action.payload
 
             }
+
+        case 'SET_PROCESS_ATTRIBUTES': {
+            var newState
+
+            if (isObject(state.selectedProcess) && state.selectedProcess._id === action.payload.id) {
+                newState = {
+                    ...state,
+                    processes: state.processes[action.payload.id] ?
+                        {
+                            ...state.processes,
+                            [action.payload.id]: { ...state.processes[action.payload.id], ...action.payload.attr },
+                        }
+                        :
+                        {
+                            ...state.processes
+                        },
+                    selectedProcess: {
+                        ...state.selectedProcess,
+                        ...action.payload.attr
+                    }
+                }
+            } else {
+                newState = {
+                    ...state,
+                    processes: state.processes[action.payload.id] ? {
+                        ...state.processes,
+                        [action.payload.id]: { ...state.processes[action.payload.id], ...action.payload.attr },
+                    }
+                        :
+                        {
+                            ...state.processes
+                        }
+                }
+            }
+
+            return newState
+
+        }
 
         case EDITING_PROCESS:
             return {

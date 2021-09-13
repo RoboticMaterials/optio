@@ -128,8 +128,10 @@ export const checkCardMatchesFilter = (lot, filter) => {
     // Primarily filters if the key exists in the lot
     const lotFields = {}
     lot.fields.forEach(fieldArr => fieldArr.forEach(field => lotFields[field.fieldName] = field));
-    if (lot[fieldName] == null && (lotFields[fieldName] == null || lotFields[fieldName].value == null ||
-            (lotFields[fieldName].dataType === 'DATE_RANGE' && Array.isArray(lotFields[fieldName].value) && (lotFields[fieldName].value.length < 2 || lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null))))
+    if (lot[fieldName] == null && (lotFields[fieldName] == null ||
+            (lotFields[fieldName].dataType === 'DATE_RANGE' && lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null)))
+    //if (lot[fieldName] == null && (lotFields[fieldName] == null || lotFields[fieldName].value == null ||
+      //      (lotFields[fieldName].dataType === 'DATE_RANGE' && Array.isArray(lotFields[fieldName].value) && (lotFields[fieldName].value.length < 2 || lotFields[fieldName].value[0] == null || lotFields[fieldName].value[1] == null))))
         { return false; }
 
     switch (fieldName) {
@@ -376,11 +378,19 @@ export const formatLotNumber = (lotNumber) => {
         ``
 }
 
-export const getLotTotalQuantity = ({ bins }, lot) => {
+export const getLotTotalQuantity = (card) => {
+    const processes = store.getState().processesReducer.processes || {}
+    let totalQuantity = 0
 
-    if(!!lot && !!lot.multipleProcesses && !!lot.totalQuantity){
-      return lot.totalQuantity
+    if(!!card.dispersed){
+
     }
+    if (isObject(card.bins)) {
+        Object.values(card.bins).forEach(currBin => {
+            const {
+                count
+            } = currBin || {}
+
 
     else{
       let totalQuantity = 0
@@ -401,14 +411,10 @@ export const getLotTotalQuantity = ({ bins }, lot) => {
 }
 
 export const getBinQuantity = ({ bins }, binId) => {
-    const {
-        [binId]: currentBin
-    } = bins || {}
-
-    const {
-        count
-    } = currentBin || {}
-    return count
+    if(!!bins){
+      return bins[binId]?.count || 0
+    }
+    else return 0
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {

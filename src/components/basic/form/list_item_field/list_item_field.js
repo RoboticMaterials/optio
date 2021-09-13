@@ -55,7 +55,7 @@ const ListItemField = (props) => {
 		>
 		<styled.ListItem
 			edited={edited}
-			error={hasError}
+			// error={hasError}
 			isNew={isNew || unsaved}
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
@@ -82,7 +82,7 @@ const ListItemField = (props) => {
 
 			<styled.ListItemIconContainer>
 
-				{hasError ?
+				{/* {hasError ?
 					<ErrorTooltip
 						visible={hasError}
 						text={errorMessage}
@@ -110,7 +110,7 @@ const ListItemField = (props) => {
 							color={theme.main.warn}
 							ContainerComponent={ErrorTooltipContainerComponent}
 						/>
-				}
+				} */}
 
 				<styled.ListItemIcon
 					className='fas fa-edit'

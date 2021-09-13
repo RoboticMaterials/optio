@@ -531,6 +531,27 @@ const Settings = () => {
         )
     }
 
+    const renderFilterSortSelection = () => {
+        return (
+            <styled.SettingContainer>
+                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
+                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filter and Sort Options on Mobile Dashboards </styled.SwitchContainerLabel>
+                    <Switch
+                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.RowContainer>
+            </styled.SettingContainer>
+        )
+    }
+
 
     const SignOut = () => {
 

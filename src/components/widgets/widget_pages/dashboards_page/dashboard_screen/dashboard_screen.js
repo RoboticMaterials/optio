@@ -73,6 +73,7 @@ const DashboardScreen = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
 
+
     const currentDashboard = dashboards[dashboardID]
     // actions
     const dispatch = useDispatch()
@@ -214,17 +215,16 @@ const DashboardScreen = (props) => {
                     />
                 )
 
+            // case 'merge': {
+            //     return <MergeModal
+            //         dashboardId={dashboardID}
+            //         isOpen={true}
+            //         stationId={stationID}
+            //         title={"Merge Lots"}
+            //         close={() => setSelectedOperation(null)}
+            //     />
+            // }
 
-
-            case 'merge': {
-                return <MergeModal
-                    dashboardId={dashboardID}
-                    isOpen={true}
-                    stationId={stationID}
-                    title={"Merge Lots"}
-                    close={() => setSelectedOperation(null)}
-                />
-            }
             case 'kickOff':
                 return (
                     <KickOffModal
