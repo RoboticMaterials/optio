@@ -6,6 +6,7 @@ import { useParams, useHistory } from 'react-router-dom'
 import * as styled from './dashboard_lot_page.style'
 
 // Import Basic Components
+import { uuidv4 } from '../../../../../../methods/utils/utils';
 
 // Import Components
 import DashboardLotFields from './dashboard_lot_fields/dashboard_lot_fields'
@@ -72,6 +73,7 @@ const DashboardLotPage = (props) => {
                                     .filter(route => route.load === stationID)
                                 ).current
 
+
     const [showFinish, setShowFinish] = useState(false)
     const [lotContainsInput, setLotContainsInput] = useState(false)
     const [showRouteSelector, setShowRouteSelector] = useState(false)
@@ -134,21 +136,86 @@ const DashboardLotPage = (props) => {
 
 
 
-    const transferLotShouldRender = () => {
-      const proc = []
-        Object.values(processes).forEach((process) => {
-          if(process._id!==processes[currentLot.process_id]._id){
-            const processStations = Object.keys(getProcessStations(process,routes))
-            for(const ind in processStations){
-              if(processStations[ind] === stationID){
-                proc.push([process])
-                //setShowTransferButton(true)
+
+      //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
+      //If multiple routes merge into a station the parts at the station are kept track of at that bin
+      //If one type of part doesn't exist yet none of that lot can be moved along
+      //Otherwise, assuming 1 to 1 ratio the type of part with smallest count limits the amount of the lot that is available to move
+      const handleNextStationsLot = (destinationId, quantity) => {
+
+        const mergingRoutes = processes[currentLot.process_id].routes
+                              .map(routeId => routes[routeId])
+                              .filter(route => route.unload === destinationId)
+
+
+        if(mergingRoutes.length>1){ //If multiple routes merge into station, keep track of parts at the station
+            let countQuantity = currentLot.totalQuantity //Initialize count at totalquantity
+            let part = ""
+            for(const ind in mergingRoutes){
+              let currPartQty = mergingRoutes[ind].part
+              if(mergingRoutes[ind].load === stationID){ //Found the route that we are currently transferring parts along
+                if(!!currentLot.bins[destinationId]){  // Bin exists, add parts to station
+                  let existingQuantity = !!currentLot.bins[destinationId][currPartQty] ? currentLot.bins[destinationId][currPartQty] : 0
+                  currentLot.bins[destinationId] = {
+                    ...currentLot.bins[destinationId],
+                    [currPartQty]: existingQuantity +=quantity
+                  }
+
+                  for(const count in mergingRoutes){
+                     part = mergingRoutes[count].part
+                    //If part exists at station and it's count is less than other parts,  limit available lot quantity to that part quantity
+                    if(!!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part]){
+                      countQuantity = currentLot.bins[destinationId][part]<countQuantity ? currentLot.bins[destinationId][part] : countQuantity
+                    }
+                    //If one of the parts doesnt exist yet at station set count to 0 (none of that lot will be available to move if a part is completely missing)
+                    else{
+                      countQuantity = 0
+                    }
+                  }
+                  //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
+                  currentLot.bins[destinationId].count = countQuantity
+                }
+                else{//Nothing exists at station yet, creat bin, add parts to bin
+                  currentLot.bins[destinationId] = {
+                    [currPartQty]: quantity,
+                    count: 0
+                  }
+                }
               }
             }
           }
-        })
-        //setProcessTransferOptions(proc)
-      }
+
+          else{ // Only one route enters station, don't worry about tracking parts at the station
+            let totalQuantity = !!currentLot.bins[destinationId]?.count ? currentLot.bins[destinationId].count + quantity : quantity
+            currentLot.bins[destinationId] = {
+                count: totalQuantity
+            }
+          }
+        }
+
+        const handleCurrentStationLot = (quantity) => {
+
+          const mergingRoutes = processes[currentLot.process_id].routes
+                                .map(routeId => routes[routeId])
+                                .filter(route => route.unload === stationID)
+
+          if(mergingRoutes.length>1){//subtract quantity from both count and the parts at the station
+                for(const ind in currentLot.bins[stationID]){
+                  if(currentLot.bins[stationID][ind]-quantity < 1){
+                      delete currentLot.bins[stationID][ind]
+                  }
+                  else currentLot.bins[stationID][ind] -= quantity
+                }
+              }
+          else{
+            if (quantity === currentLot.bins[stationID].count) {
+                delete currentLot.bins[stationID];
+            } else {
+                currentLot.bins[stationID].count -= quantity;
+            }
+          }
+        }
+
 
     const onBack = () => {
         history.push(`/locations/${stationID}/dashboards/${dashboardID}`)
@@ -169,47 +236,28 @@ const DashboardLotPage = (props) => {
 
     // Handles moving lot to next station
     const onMove = (moveStations, quantity) => {
-
         if (Array.isArray(moveStations)) { // Split node, duplicate card and send to all stations
             for (var toStationId of moveStations) {
-                currentLot.bins[toStationId] = {
-                    count: quantity
-                }
+              handleNextStationsLot(toStationId, quantity)
             }
-
-
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
-            if (quantity === currentLot.bins[stationID].count) {
-                delete currentLot.bins[stationID];
-            } else {
-                currentLot.bins[stationID].count -= quantity;
-            }
+            handleCurrentStationLot(quantity)
 
             //Add dispersed key to lot for totalQuantity Util
-            currentLot.dispersed = true
-
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been split between ${moveStations.map(stationId => stations[stationId].name).join(' & ')}`)
-        } else { // Single-flow node, just send to the station
-
+        }
+        else { // Single-flow node, just send to the station
             const toStationId = moveStations;
-            currentLot.bins[toStationId] = {
-                count: quantity
-            }
+            handleNextStationsLot(toStationId, quantity)
 
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
-            if (quantity === currentLot.bins[stationID].count) {
-                delete currentLot.bins[stationID];
-            } else {
-                currentLot.bins[stationID].count -= quantity;
-            }
+            handleCurrentStationLot(quantity)
 
             const stationName = toStationId === 'FINISH' ? 'Finish' : stations[toStationId].name;
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been moved to ${stationName}`)
         }
-
         dispatchPutCard(currentLot, lotID)
         onBack()
-
     }
 
     const renderRouteSelectorModal = useMemo(() => {

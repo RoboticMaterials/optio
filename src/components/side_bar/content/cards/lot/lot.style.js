@@ -14,7 +14,7 @@ export const Container = styled.div`
   justify-content: space-between;
   // overflow: hidden;
 
-  background: ${props => props.theme.bg.primary};
+  background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.secondary};
   border-radius: 0.4rem;
   color: ${props => props.theme.bg.octonary};
 
@@ -30,7 +30,7 @@ export const Container = styled.div`
   user-select: none;
 
   cursor: pointer;
-
+  pointer-events: ${props => !!props.disabled ? 'none' : 'auto'};
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -40,6 +40,7 @@ export const Container = styled.div`
   &:hover {
     box-shadow: 1px 1px 7px 3px #b385ff;
   }
+
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
 
@@ -74,6 +75,40 @@ export const Row = styled.div`
     justify-content: space-between;
     padding: .25rem 0 .25rem 0;
 `
+export const PartsRow = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    padding: .25rem 0 .25rem 0;
+`
+
+export const PartContainer = styled.div`
+    display: flex;
+    height: 1rem;
+    max-width: 9rem;
+    min-width: 5rem;
+    margin-left: .2rem;
+    margin-top: .5rem;
+
+    justify-content: center;
+
+    background: ${props=>props.theme.schema['objects'].solid};
+    border-radius: 0.2rem;
+    color: ${props => props.theme.bg.octonary};
+
+`
+export const PartName = styled.span`
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: .65rem;
+  font-family: ${props => props.theme.font.primary};
+  justify-content: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+`
+
 
 export const ContentContainer = styled.div`
 	padding: 0.5rem .5rem 0rem .5rem;

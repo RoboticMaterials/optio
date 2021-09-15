@@ -35,7 +35,6 @@ const StationsColumn = ((props) => {
         autoCycleTime
     } = props
 
-
     const dispatch = useDispatch()
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
 

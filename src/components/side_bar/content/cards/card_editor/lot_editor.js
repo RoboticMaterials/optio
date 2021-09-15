@@ -1504,6 +1504,7 @@ const LotEditor = (props) => {
                                         }
 
                                         // update card
+
                                         requestResult = onPutCard(submitItem, values._id)
 
                                     }
@@ -1524,6 +1525,7 @@ const LotEditor = (props) => {
                                             syncWithTemplate
                                         }
 
+
                                         requestResult = onPutCard(submitItem, values._id)
                                     }
 
@@ -1537,11 +1539,11 @@ const LotEditor = (props) => {
                                             lotTemplateId,
                                             lotNumber,
                                             fields,
+                                            totalQuantity: bins['QUEUE']?.count,
                                             syncWithTemplate
                                         }
 
                                         requestResult = await onPostCard(submitItem)
-
                                         if (!(requestResult instanceof Error)) {
                                             const {
                                                 _id = null

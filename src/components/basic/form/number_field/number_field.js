@@ -41,7 +41,6 @@ const NumberField = (props) => {
 		value: fieldValue,
 		name: fieldName
 	} = field
-
 	const timeoutRef = useRef(null)
 
 	const [longPressing, setLongPressing] = useState(false)	// is button being long pressed??

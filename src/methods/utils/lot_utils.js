@@ -379,24 +379,8 @@ export const formatLotNumber = (lotNumber) => {
 }
 
 export const getLotTotalQuantity = (card) => {
-    const processes = store.getState().processesReducer.processes || {}
-    let totalQuantity = 0
 
-    if(!!card.dispersed){
-
-    }
-
-      if (isObject(card.bins)) {
-          Object.values(card.bins).forEach(currBin => {
-              const {
-                  count
-              } = currBin || {}
-
-              totalQuantity = totalQuantity + parseInt(count)
-          })
-      }
-
-      return totalQuantity
+      return card.totalQuantity
 
 }
 
@@ -408,6 +392,11 @@ export const getBinQuantity = ({ bins }, binId) => {
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {
+  if(!!bins){
+    for(const i in bins[binId]){
+      if(!!bins[binId][i] && i!== 'count') return true
+    }
+  }
     return !!getBinQuantity({ bins }, binId)
 }
 
