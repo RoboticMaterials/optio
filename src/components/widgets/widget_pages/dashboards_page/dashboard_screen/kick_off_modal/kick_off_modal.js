@@ -190,6 +190,7 @@ const KickOffModal = (props) => {
 
                 return (
                     <Lot
+                        renderParts = {false}
                         templateValues={templateValues}
                         totalQuantity={totalQuantity}
                         enableFlagSelector={false}

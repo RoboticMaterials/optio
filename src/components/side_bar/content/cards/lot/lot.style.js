@@ -85,7 +85,7 @@ export const PartsRow = styled.div`
 export const PartContainer = styled.div`
     display: flex;
     height: 1rem;
-    max-width: 9rem;
+    max-width: 14rem;
     min-width: 5rem;
     margin-left: .2rem;
     margin-top: .5rem;
@@ -99,7 +99,6 @@ export const PartContainer = styled.div`
 `
 export const PartName = styled.span`
   display: flex;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: .65rem;
