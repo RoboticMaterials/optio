@@ -131,6 +131,7 @@ const CardEditor = (props) => {
 			moveCount,
 			moveLocation
 		} = values
+		console.log(count)
 
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
@@ -248,7 +249,6 @@ const CardEditor = (props) => {
 			const {
 				_id: lotId
 			} = createdLot
-
 			const submitItem = {
 				name,
 				count,
@@ -259,7 +259,8 @@ const CardEditor = (props) => {
 				process_id: processId,
 				start_date: start,
 				end_date: end,
-				lot_id: lotId
+				lot_id: lotId,
+				totalQuantity: count
 			}
 
 			onPostCard(submitItem)
@@ -277,7 +278,7 @@ const CardEditor = (props) => {
 			style={{
 				overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
 				content: {
 
@@ -335,7 +336,7 @@ const CardEditor = (props) => {
 					const touchedCount = Object.values(touched).reduce(touchedReducer, 0)
 
 					const submitDisabled = (errorCount > 0) || (touchedCount === 0) || isSubmitting
-					
+
 					const renderCalendar = () => {
 						return(
 							<styled.BodyContainer>

@@ -39,7 +39,7 @@ const DashboardLotButtons = (props) => {
         const iconColor = theme.main.bg.octonary
 
         const error = null
-        
+
         return (
             <>
 
@@ -108,11 +108,13 @@ const DashboardLotButtons = (props) => {
 
     return (
         <styled.ButtonContainer>
-            
+          <styled.QuantityText>The maximum quantity is {maxQuantity}</styled.QuantityText>
+
             <NumberInput
                 minValue={minQuantity}
                 maxValue={maxQuantity}
-                
+                plusDisabled = {quantity===maxQuantity? true:false}
+                minusDisabled = {quantity===1? true:false}
                 value={quantity}
                 onMinusClick={() => setQuantity(quantity - 1)}
                 onPlusClick={() => setQuantity(quantity + 1)}

@@ -53,6 +53,7 @@ const Column = ((props) => {
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
+	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
 
 	// console.log(shiftDetails)
 
@@ -117,9 +118,29 @@ const Column = ((props) => {
 		} = payload
 
 		if (oldProcessId !== processId) return false
-		// if(binId === station_id) return false
-		return true
+	 	if(binId === station_id) return false
+		for(const ind in processes[oldProcessId].routes){
+			let route = routes[processes[oldProcessId]?.routes[ind]]
+			if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
+				return true
+			}
+			else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split route and routes arent merging into current station
+				const mergingRoutes = processes[oldProcessId].routes
+															.map(routeId => routes[routeId])
+															.filter(route => route.unload === binId)
+
+				if(mergingRoutes.length === 1) return true
+			}
+			//Make this more restrictive, allows to drag from q and to Finish
+			else if(binId==="QUEUE" || station_id==='QUEUE' || station_id === "FINISH" || binId === "FINISH") {
+				return true
+			}
+		}
+
+		return false
+
 	}
+
 
 	const onMouseEnter = (event, lotId) => {
 		dispatchSetLotHovering(lotId)
@@ -148,6 +169,7 @@ const Column = ((props) => {
 
 	const getLastSelectedIndex = () => {
 		let addedIndex = -1
+
 		for (var i = selectedCards.length - 1; i >= 0; i--) {
 			const currLot = selectedCards[i]
 			const {
@@ -353,7 +375,7 @@ const Column = ((props) => {
 						getChildPayload={index =>
 							cards[index]
 						}
-						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem" }}
+						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem"}}
 					>
 						{cards.map((card, index) => {
 							const {

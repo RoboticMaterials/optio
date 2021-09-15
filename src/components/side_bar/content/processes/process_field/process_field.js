@@ -12,15 +12,16 @@ import ContentHeader from '../../content_header/content_header'
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
+import SwitchField from "../../../../basic/form/switch_field/switch_field";
 
 import Switch from 'react-ios-switch'
 
 
 // Import actions
 import {
-    postTask, 
-    putTask, 
-    deleteTask, 
+    postTask,
+    putTask,
+    deleteTask,
     setSelectedTask,
     setSelectedHoveringTask,
     setTaskAttributes,
@@ -85,7 +86,6 @@ export const ProcessField = (props) => {
     }) // get number of field errors
     const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting || !values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
     const dispatchSetTaskAttributes = async (id, attr) => await dispatch(setTaskAttributes(id, attr));
@@ -123,7 +123,7 @@ export const ProcessField = (props) => {
                     }
                 }
             }
-            
+
             processRoutesCopy.push(selectedTaskCopy);
             setFieldValue('routes', processRoutesCopy)
             dispatchSetProcessAttributes(selectedTask._id, {...selectedTaskCopy})
@@ -269,9 +269,10 @@ export const ProcessField = (props) => {
                 <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem" }}>
                     <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Show in Summary View</styled.Title>
 
-                    <Switch
-                        onColor={themeContext.fg.primary}
+                    <SwitchField
+                        onColor={'#ffbf1f'}
                         checked={values.showSummary}
+                        name = {'showSummary'}
                         onChange={() => {
                             setFieldValue("showSummary", !values.showSummary)
                         }}
@@ -281,9 +282,10 @@ export const ProcessField = (props) => {
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem" }}>
                     <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Show Statistics</styled.Title>
-                    <Switch
-                        onColor={themeContext.fg.primary}
+                    <SwitchField
+                    onColor={'#ffbf1f'}
                         checked={values.showStatistics}
+                        name = {'showStatistics'}
                         onChange={() => {
                             setFieldValue("showStatistics", !values.showStatistics)
                         }}
@@ -315,7 +317,7 @@ export const ProcessField = (props) => {
                         <styled.ColumnContainer>
                             <Button
                                 schema={'processes'}
-                                disabled={!!selectedTask || submitDisabled}
+                                disabled={!!selectedTask ||!!submitDisabled}
                                 onClick={() => {
                                     onSave(values, true)
                                 }}

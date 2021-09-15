@@ -47,6 +47,9 @@ const Lot = (props) => {
         flags,
         processName,
         showCustomFields,
+        lotDisabled,
+        getParts,
+        isDashboard
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -151,14 +154,20 @@ const Lot = (props) => {
 
     const renderFlags = () => {
         return (
+          <styled.PartsRow>
             <LotFlags
                 flags={flags}
             />
+            {!!isDashboard &&
+              getParts()
+            }
+            </styled.PartsRow>
         )
     }
 
     return (
         <styled.Container
+            disabled = {lotDisabled}
             glow={glow}
             isFocused={isFocused}
             highlight={highlight}
@@ -240,6 +249,7 @@ const Lot = (props) => {
                     }
                 </styled.NameNumberContainer>
 
+
             </styled.HeaderBar>
 
             <styled.ContentContainer hasLeadTime={!!leadTime}>
@@ -281,6 +291,7 @@ Lot.propTypes = {
     selectable: PropTypes.bool,
     isFocused: PropTypes.bool,
     showCustomFields: PropTypes.bool,
+    disabled: PropTypes.bool,
 }
 
 // Specifies the default values for props:
@@ -296,6 +307,7 @@ Lot.defaultProps = {
     glow: false,
     stationName: "",
     showCustomFields: true,
+    disabled: false,
 }
 
 export default Lot

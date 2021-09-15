@@ -32,6 +32,7 @@ const NumberField = (props) => {
 	const {
 		maxValue,
 		minValue,
+		disabled,
 		...rest
 	} = props
 
@@ -41,7 +42,6 @@ const NumberField = (props) => {
 		value: fieldValue,
 		name: fieldName
 	} = field
-
 	const timeoutRef = useRef(null)
 
 	const [longPressing, setLongPressing] = useState(false)	// is button being long pressed??
@@ -208,7 +208,7 @@ const NumberField = (props) => {
 				inputCss={hasError ? styled.errorCss : null}
 				themeContext={themeContext}
 				// onMinusClick={handleMinusClick}
-				minusDisabled={!(fieldValue > minValue)}
+				minusDisabled={!(fieldValue > minValue) || !!disabled}
 				hasError={hasError}
 				onInputChange={(e) => {
 
@@ -242,7 +242,7 @@ const NumberField = (props) => {
 
 				}}
 				value={longPressing ? valueState : fieldValue}
-				plusDisabled={(maxValue) && !(fieldValue < maxValue)}
+				plusDisabled={(maxValue) && !(fieldValue < maxValue) || !!disabled}
 				// onPlusClick={handlePlusClick}
 				inputChildren={<ErrorTooltip
 					visible={hasError && !focused}
@@ -260,12 +260,14 @@ const NumberField = (props) => {
 NumberField.propTypes = {
 	maxValue: PropTypes.number,
 	minValue: PropTypes.number,
+	disabled: PropTypes.bool,
 }
 
 // Specifies the default values for props:
 NumberField.defaultProps = {
 	maxValue: null,
 	minValue: null,
+	disabled: false,
 }
 
 export default NumberField

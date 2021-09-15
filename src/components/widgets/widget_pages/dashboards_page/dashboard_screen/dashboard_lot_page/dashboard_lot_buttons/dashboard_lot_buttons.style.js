@@ -11,3 +11,14 @@ export const ButtonContainer = styled.div`
     align-items: center;
 `
 
+export const QuantityText = styled.span`
+  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  font-family: ${props => props.theme.font.primary};
+  justify-content: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.5rem;
+`
