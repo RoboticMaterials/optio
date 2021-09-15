@@ -40,7 +40,7 @@ const NumberInput = ({
 	const onWheel = () => {
 		inputRef?.current && inputRef.current.blur();
 	};
-	
+
 	const themeContext = useContext(ThemeContext);
 
 	return (

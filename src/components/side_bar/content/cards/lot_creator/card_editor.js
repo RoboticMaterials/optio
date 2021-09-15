@@ -131,6 +131,7 @@ const CardEditor = (props) => {
 			moveCount,
 			moveLocation
 		} = values
+		console.log(count)
 
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null

@@ -86,7 +86,6 @@ const ProcessForm = (props) => {
 			...remainingValues
 		} = values
 
-
 		if(JSON.stringify(remainingInitialValues)!==JSON.stringify(remainingValues)){
 			dispatchPageDataChanged(true)
 		}

@@ -99,7 +99,7 @@ const TaskField = (props) => {
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-    
+
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -112,7 +112,7 @@ const TaskField = (props) => {
 
         // Update the name if the load/unload has changed ONLY if the name is a default name
         const prevLoadName = stations[prevLoadStationId]?.name || ""
-        const prevUnloadName = stations[prevUnloadStationId]?.name || "" 
+        const prevUnloadName = stations[prevUnloadStationId]?.name || ""
         const prevName = buildDefaultRouteName(prevLoadName, prevUnloadName)
 
         const loadName = stations[editingRoute.load]?.name || ""

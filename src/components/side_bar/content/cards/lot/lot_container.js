@@ -77,6 +77,7 @@ const LotContainer = (props) => {
         <Lot
             getParts = {getParts}
             lotDisabled = {count < 1 && !!isDashboard}
+            isDashboard = {!!isDashboard}
             stationName={stationName}
             templateValues={templateValues}
             totalQuantity={totalQuantity}

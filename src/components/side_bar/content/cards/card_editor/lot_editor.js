@@ -518,6 +518,7 @@ const FormComponent = (props) => {
                         <styled.ObjectInfoContainer>
                             <styled.ObjectLabel>{getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)}</styled.ObjectLabel>
                             <NumberField
+                                disabled = {Object.keys(bins).length <2 ? false : true}
                                 minValue={1}
                                 name={`bins.${binId}.count`}
                             />
@@ -1019,7 +1020,7 @@ const FormComponent = (props) => {
                                                     style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
                                                     onClick={onAddClick}
                                                 >
-                                                    Add
+                                                    Create Lot
                                                 </Button>
                                             }
                                             {!disabledAddButton &&
@@ -1032,12 +1033,12 @@ const FormComponent = (props) => {
                                                         onSubmit(values, FORM_BUTTON_TYPES.ADD)
                                                     }}
                                                 >
-                                                    {!!merge ? 'Merge' : 'Add'}
+                                                    {!!merge ? 'Merge' : 'Create Lot'}
                                                 </Button>
                                             }
 
                                             {!disabledAddButton && !merge &&
-                                                <Button
+                                                  <Button
                                                     schema={'lots'}
                                                     type={"button"}
                                                     secondary
@@ -1072,7 +1073,7 @@ const FormComponent = (props) => {
                                         :
                                         <>
 
-                                            <Button
+                                              <Button
                                                 schema={'lots'}
                                                 type={"button"}
                                                 disabled={submitDisabled}
@@ -1085,7 +1086,7 @@ const FormComponent = (props) => {
                                                 Save Lot
                                             </Button>
 
-                                            <Button
+                                          {/*  <Button
                                                 schema={'lots'}
                                                 type={"button"}
                                                 style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
@@ -1095,7 +1096,7 @@ const FormComponent = (props) => {
                                                 secondary
                                             >
                                                 Move Lot
-                                            </Button>
+                                            </Button>*/}
                                             <Button
                                                 schema={'delete'}
                                                 style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
@@ -1514,6 +1515,11 @@ const LotEditor = (props) => {
                                     // update (PUT)
                                     if (values._id) {
 
+                                      let binName = ""
+                                      for(const ind in bins){
+                                        binName = ind
+                                      }
+
                                         var submitItem = {
                                             name,
                                             bins,
@@ -1522,7 +1528,9 @@ const LotEditor = (props) => {
                                             lotTemplateId,
                                             lotNumber,
                                             fields,
-                                            syncWithTemplate
+                                            syncWithTemplate,
+                                            totalQuantity: Object.keys(bins).length === 1 ? bins[binName].count : card.totalQuantity
+
                                         }
 
 

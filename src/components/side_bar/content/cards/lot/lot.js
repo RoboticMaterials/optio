@@ -49,7 +49,7 @@ const Lot = (props) => {
         showCustomFields,
         lotDisabled,
         getParts,
-        renderParts
+        isDashboard
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -158,7 +158,7 @@ const Lot = (props) => {
             <LotFlags
                 flags={flags}
             />
-            {!!renderParts &&
+            {!!isDashboard &&
               getParts()
             }
             </styled.PartsRow>
@@ -292,12 +292,10 @@ Lot.propTypes = {
     isFocused: PropTypes.bool,
     showCustomFields: PropTypes.bool,
     disabled: PropTypes.bool,
-    renderParts: PropTypes.bool,
 }
 
 // Specifies the default values for props:
 Lot.defaultProps = {
-    renderParts: true,
     isSelected: false,
     isFocused: false,
     selectable: false,
