@@ -68,21 +68,22 @@ const TaskField = (props) => {
     const {
         values,
         errors: formikErrors,
-
         setFieldValue,
         setFieldTouched,
         validateForm,
-
+        formikProps,
+        touched,
+        setTouched,
         onSave,
         onRemove,
         onBack
     } = props
-
+    
     const { routes: processRoutes } = values;
 
     const [confirmExitModal, setConfirmExitModal] = useState(false)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false)
-
+    const [enableSave, setEnableSave] = useState(false)
     const { tasks: routes, selectedTask: selectedRoute } = useSelector(state => state.tasksReducer)
     const { stations } = useSelector(state => state.stationsReducer)
 
@@ -98,8 +99,7 @@ const TaskField = (props) => {
 
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
-    const submitDisabled = ((errorCount > 0))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
+    const submitDisabled = (((errorCount > 0) || !enableSave ) && !editingRoute.isNew)// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -126,6 +126,27 @@ const TaskField = (props) => {
         validateForm()
 
     }, [editingRoute])
+    useEffect(() => {
+        setTouched({})
+    }, [])
+
+    useEffect(() => {
+      let route = {}
+      for(const ind in values.routes){
+        if(values.routes[ind]._id === selectedRoute._id){
+          route = values.routes[ind]
+        }
+      }
+
+      if (JSON.stringify(selectedRoute) !== JSON.stringify(route)) {
+          setEnableSave(true)
+          console.log('settrue')
+      }
+      else {
+          setEnableSave(false)
+      }
+    }, [values])
+
 
     /***
      * Updates all sibling routes with the diverging type that has been selected
@@ -186,7 +207,7 @@ const TaskField = (props) => {
                         content={'tasks'}
                         mode={'create'}
                         onClickBack={() => {
-                            if (JSON.stringify(selectedRoute) !== JSON.stringify(values)) {
+                            if (!!enableSave) {
                                 setConfirmExitModal(true)
                             }
                             else {
@@ -273,13 +294,13 @@ const TaskField = (props) => {
                             onClick={async () => {
                                 await onSave(selectedRoute._id)
                             }}
-                        >{(editingRoute.isNew ? 'Add' : 'Save')} Route</Button>
+                        >{(editingRoute.isNew ? 'Create' : 'Save')} Route</Button>
 
 
                         {/* Remove Task From Process Button */}
                         <Button
                             schema={'error'}
-                            disabled={!!selectedRoute && !selectedRoute.isNew}
+                            disabled={!!selectedRoute && !!selectedRoute.isNew}
                             secondary
                             onClick={() => {
                                 onRemove(selectedRoute._id)
