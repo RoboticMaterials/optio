@@ -93,10 +93,10 @@ const TaskField = (props) => {
     const onEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
 
-
     const editingIdx = processRoutes.findIndex(route => route._id === selectedRoute._id)
     const editingRoute = processRoutes[editingIdx]
     const fieldName = `routes[${editingIdx}]`
+    const editedRoute = values.routes[editingIdx]
 
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
@@ -151,6 +151,19 @@ const TaskField = (props) => {
       }
     }, [values])
 
+    useEffect(() => {
+
+      for(const ind in values.routes){
+        if(values.routes[ind]._id === selectedRoute?._id){
+          if(selectedRoute.unload!== values.routes[ind].unload || selectedRoute.load!==values.routes[ind].load){
+            setFieldValue(`routes[${ind}].unload`, selectedRoute.unload);
+            setFieldValue(`routes[${ind}].load`, selectedRoute.load);
+          }
+        }
+      }
+
+    }, [selectedRoute])
+
 
     /***
      * Updates all sibling routes with the diverging type that has been selected
@@ -197,6 +210,8 @@ const TaskField = (props) => {
         onEditing(false)
         dispatchSetSelectedTask(null)
         dispatchSetEditingValues(values)
+        setFieldValue(`routes[${editingIdx}].isNew`, false);
+
     }
 
 
@@ -321,7 +336,7 @@ const TaskField = (props) => {
                         {/* Remove Task From Process Button */}
                         <Button
                             schema={'error'}
-                            disabled={!!selectedRoute && !!selectedRoute.isNew}
+                            disabled={!!editedRoute.isNew}
                             secondary
                             onClick={() => {
                                 onRemoveRoute(selectedRoute._id)
