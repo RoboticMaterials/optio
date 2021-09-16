@@ -36,7 +36,7 @@ export default function TaskPaths(props) {
 
     const loadPositionId = selectedTask?.load
     const unloadPositionId = selectedTask?.unload
-    
+
 
     const [mousePos] = useState({ x: 0, y: 0 })
 

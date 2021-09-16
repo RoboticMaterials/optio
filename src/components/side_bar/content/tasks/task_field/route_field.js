@@ -78,6 +78,7 @@ const TaskField = (props) => {
         routeCopy
     } = props
 
+    console.log(values.routes)
     const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -120,16 +121,18 @@ const TaskField = (props) => {
         const loadName = stations[editingRoute.load]?.name || ""
         const unloadName = stations[editingRoute.unload]?.name || ""
         const newName = buildDefaultRouteName(loadName, unloadName)
+        const partName = buildDefaultRouteName(loadName, unloadName)
+
 
         if ((editingRoute.name === prevName) || !editingRoute.name) {
             setFieldValue(`${fieldName}.name`, newName, false)
         }
 
+
         validateForm()
 
     }, [editingRoute])
     useEffect(() => {
-
         setTouched({})
     }, [])
 
@@ -140,8 +143,7 @@ const TaskField = (props) => {
           route = values.routes[ind]
         }
       }
-
-      if (JSON.stringify(selectedRoute) !== JSON.stringify(route)) {
+      if (JSON.stringify(routeCopy) !== JSON.stringify(route)) {
           setEnableSave(true)
       }
       else {
@@ -180,7 +182,9 @@ const TaskField = (props) => {
         const updatedRoutes = []
         for(const ind in values.routes){
           if(values.routes[ind]._id === id){
-            updatedRoutes.push(routeCopy)
+            if(!!routeCopy){
+              updatedRoutes.push(routeCopy)
+            }
           }
           else updatedRoutes.push(values.routes[ind])
         }
@@ -192,7 +196,7 @@ const TaskField = (props) => {
     const onSaveRoute =() => {
         onEditing(false)
         dispatchSetSelectedTask(null)
-        dispatchSetEditingValues({values})
+        dispatchSetEditingValues(values)
     }
 
 
@@ -224,6 +228,13 @@ const TaskField = (props) => {
                        }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
+                        }}
+                    />
+                    <ContentHeader
+                        content={'tasks'}
+                        mode={'create'}
+                        onClickBack={() => {
+                            onRouteBack(selectedRoute._id)
                         }}
                     />
                     <div style={{ margin: '0.5rem 0.5rem 2rem 0' }}>
@@ -304,7 +315,7 @@ const TaskField = (props) => {
                             onClick={() => {
                                 onSaveRoute()
                             }}
-                        >{(editingRoute.isNew ? 'Create' : 'Save')} Route</Button>
+                        >{(editingRoute.isNew ? 'Add' : 'Update')} Route</Button>
 
 
                         {/* Remove Task From Process Button */}

@@ -129,15 +129,6 @@ export const ProcessField = (props) => {
         }
     }, [selectedTask])
 
-    const handleSaveRoute = (routeId) => {
-        // NOTE: We dont actually want to save a route until the process is saved
-        const savingRoute = values.routes.find(route => route._id === routeId)
-
-
-        dispatchSetSelectedTask(null);
-        dispatchSetTaskAttributes(savingRoute._id, savingRoute);
-        dispatchSetProcessAttributes(selectedProcess._id, {routes: values.routes});
-    }
 
     // Maps through the list of existing routes
     const renderRoutes = (routes) => {
@@ -249,7 +240,6 @@ export const ProcessField = (props) => {
                 {!!selectedTask && values.routes.find(route => route._id === selectedTask._id) !== undefined ?
                     <TaskField
                         {...formikProps}
-                        onSave={handleSaveRoute}
                         routeCopy = {routeCopy}
                     />
                     :

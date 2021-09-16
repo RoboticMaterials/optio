@@ -83,7 +83,6 @@ const TaskForm = (props) => {
 
 			// enableReinitialize={true} // leave false, otherwise values may be reset when new data is fetched
 			onSubmit={async (values, formikHelpers) => {
-				console.log('here')
 				const {
 					setSubmitting,
 					setTouched,

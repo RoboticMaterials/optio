@@ -200,7 +200,6 @@ export const updateProcesses = (processes, d3) => {
 }
 
 export const setEditingValues = (process) => {
-    console.log(process)
     return { type: 'SET_EDITING_VALUES', payload: process}
 }
 
