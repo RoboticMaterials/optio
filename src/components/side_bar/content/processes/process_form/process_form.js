@@ -17,7 +17,8 @@ import {
 	postProcesses,
 	putProcesses,
 	setSelectedProcess,
-	setProcessAttributes
+	setProcessAttributes,
+	setEditingValues
 } from "../../../../../redux/actions/processes_actions";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
@@ -57,6 +58,8 @@ const ProcessForm = (props) => {
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+	const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
+
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -73,6 +76,7 @@ const ProcessForm = (props) => {
 		return () => {
 			dispatchSetSelectedTask(null)
 			dispatchSetSelectedProcess(null)
+			dispatchSetEditingValues(null)
 		}
 	}, []);
 

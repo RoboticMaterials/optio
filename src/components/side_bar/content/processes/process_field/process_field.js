@@ -85,7 +85,7 @@ export const ProcessField = (props) => {
         if (!isEmpty(currError)) errorCount++
     }) // get number of field errors
     const touchedCount = Object.values(touched).length // number of touched fields
-    const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting || !values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    const submitDisabled = ((errorCount > 0)|| isSubmitting || !values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
     const dispatchSetTaskAttributes = async (id, attr) => await dispatch(setTaskAttributes(id, attr));
@@ -104,7 +104,6 @@ export const ProcessField = (props) => {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [routeCopy, setRouteCopy] = useState(null);
-
     // Handles a new route being drawn on the map
     useEffect(() => {
         if (selectedTask == null) {return}
@@ -129,44 +128,6 @@ export const ProcessField = (props) => {
             dispatchSetProcessAttributes(selectedTask._id, {...selectedTaskCopy})
         }
     }, [selectedTask])
-
-    const handleSaveRoute = (routeId) => {
-        // NOTE: We dont actually want to save a route until the process is saved
-        const savingRoute = values.routes.find(route => route._id === routeId)
-        // if (savingRoute.isNew) {
-        //     dispatchPostRoute(savingRoute);
-        // } else {
-        //     dispatchPutRoute(savingRoute);
-        // }
-        dispatchSetSelectedTask(null);
-        dispatchSetTaskAttributes(savingRoute._id, savingRoute);
-        dispatchSetProcessAttributes(selectedProcess._id, {routes: values.routes});
-    }
-
-    const handleRemoveRoute = (routeId) => {
-        const processRoutes = values.routes;
-        const deleteIdx = processRoutes.findIndex(route => route._id === routeId);
-        processRoutes.splice(deleteIdx, 1);
-        setFieldValue("routes", processRoutes);
-
-        dispatchDeleteRoute(routeId);
-        dispatchSetSelectedTask(null);
-        dispatchSetProcessAttributes(selectedProcess._id, {routes: processRoutes})
-    }
-
-    const handleRouteBack = async (routeId) => {
-        const processRoutes = values.routes;
-        const editedIdx = processRoutes.findIndex(route => route._id === routeId);
-        if (tasks[routeId] === undefined) {
-            processRoutes.splice(editedIdx, 1);
-        } else {
-            processRoutes[editedIdx] = routeCopy;
-            setRouteCopy(null)
-        }
-        setFieldValue("routes", processRoutes);
-        dispatchSetSelectedTask(null);
-        dispatchSetProcessAttributes(selectedProcess._id, {routes: processRoutes})
-    }
 
 
     // Maps through the list of existing routes
@@ -266,37 +227,10 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem" }}>
-                    <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Show in Summary View</styled.Title>
-
-                    <SwitchField
-                        onColor={'#ffbf1f'}
-                        checked={values.showSummary}
-                        name = {'showSummary'}
-                        onChange={() => {
-                            setFieldValue("showSummary", !values.showSummary)
-                        }}
-                    />
-
-                </styled.RowContainer>
-
-                <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: "2rem" }}>
-                    <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Show Statistics</styled.Title>
-                    <SwitchField
-                    onColor={'#ffbf1f'}
-                        checked={values.showStatistics}
-                        name = {'showStatistics'}
-                        onChange={() => {
-                            setFieldValue("showStatistics", !values.showStatistics)
-                        }}
-                    />
-
-                </styled.RowContainer>
-                <styled.Title schema={'processes'} style={{ marginTop: "1rem", marginBottom: "1rem" }}>Routes</styled.Title>
+                <styled.Title schema={'processes'} style={{ marginTop: "2rem", marginBottom: "1rem" }}>Routes</styled.Title>
                 {selectedTask === null &&
                     <>
                         <styled.HelpText>Click a station on the map to start a route</styled.HelpText>
-                        {renderRoutes(values.routes)}
                         {typeof errors.routes === 'string' &&
                             <styled.ErrorText>{errors.routes}</styled.ErrorText>
                         }
@@ -306,37 +240,38 @@ export const ProcessField = (props) => {
                 {!!selectedTask && values.routes.find(route => route._id === selectedTask._id) !== undefined ?
                     <TaskField
                         {...formikProps}
-                        onSave={handleSaveRoute}
-                        onRemove={handleRemoveRoute}
-                        onBack={handleRouteBack}
+                        routeCopy = {routeCopy}
                     />
                     :
-                    <styled.ContentContainer>
+                    <>
+                      {renderRoutes(values.routes)}
+                      <styled.ContentContainer>
 
-                        {/* Save/Delete Buttons */}
-                        <styled.ColumnContainer>
-                            <Button
-                                schema={'processes'}
-                                disabled={!!selectedTask ||!!submitDisabled}
-                                onClick={() => {
-                                    onSave(values, true)
-                                }}
-                            >
-                                Save Process
-                            </Button>
+                          {/* Save/Delete Buttons */}
+                          <styled.ColumnContainer>
+                              <Button
+                                  schema={'processes'}
+                                  disabled={!!selectedTask ||!!submitDisabled}
+                                  onClick={() => {
+                                      onSave(values, true)
+                                  }}
+                              >
+                                  Save Process
+                              </Button>
 
-                            <Button
-                                schema={'error'}
-                                disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                                secondary
-                                onClick={() => {
-                                    setConfirmDeleteModal(true)
-                                }}
-                            >
-                                Delete Process
-                            </Button>
-                        </styled.ColumnContainer>
-                    </styled.ContentContainer>
+                              <Button
+                                  schema={'error'}
+                                  disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                                  secondary
+                                  onClick={() => {
+                                      setConfirmDeleteModal(true)
+                                  }}
+                              >
+                                  Delete Process
+                              </Button>
+                          </styled.ColumnContainer>
+                      </styled.ContentContainer>
+                    </>
                 }
 
             </styled.Container>

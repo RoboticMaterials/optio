@@ -3,6 +3,7 @@ import {routeSchema} from "../../../../../methods/utils/form_schemas";
 import React, {useEffect, useRef} from "react";
 import TaskField from "../task_field/route_field";
 import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
+import {setEditingValues} from "../../../../../redux/actions/processes_actions";
 import {useDispatch, useSelector} from "react-redux";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
@@ -21,7 +22,6 @@ const TaskForm = (props) => {
 	const {
 			current
 	} = formRef || {}
-
 	const {
 			values = {},
 			initialValues = {}
@@ -34,7 +34,6 @@ const TaskForm = (props) => {
 	const dispatchDeleteRouteClean = async (routeId) => await dispatch(taskActions.deleteRouteClean(routeId))
 	const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
-
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
@@ -64,6 +63,8 @@ const TaskForm = (props) => {
 	}
 
 	const handleDelete = async (routeId) => {
+
+
 		await dispatchDeleteRouteClean(routeId)
 		onEditing(false)
 		dispatchSetSelectedTask(null)
@@ -82,7 +83,6 @@ const TaskForm = (props) => {
 
 			// enableReinitialize={true} // leave false, otherwise values may be reset when new data is fetched
 			onSubmit={async (values, formikHelpers) => {
-
 				const {
 					setSubmitting,
 					setTouched,
@@ -117,7 +117,7 @@ const TaskForm = (props) => {
 						isTransportTask={true}
 						toggleEditing={toggleEditing}
 						isProcessTask={null}
-						onSave={submitForm}
+						onSave={null}
 						onBackClick={handleBackClick}
 						onRemove={handleDelete}
 						{...remainingProps}
