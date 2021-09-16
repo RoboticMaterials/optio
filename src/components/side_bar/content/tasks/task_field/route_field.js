@@ -102,7 +102,7 @@ const TaskField = (props) => {
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
-    const submitDisabled = ((errorCount > 0) || (!enableSave && !editingRoute.isNew))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    const submitDisabled = ((errorCount > 0) || (!enableSave))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -210,7 +210,7 @@ const TaskField = (props) => {
         onEditing(false)
         dispatchSetSelectedTask(null)
         dispatchSetEditingValues(values)
-        setFieldValue(`routes[${editingIdx}].isNew`, false);
+
 
     }
 
@@ -330,13 +330,13 @@ const TaskField = (props) => {
                             onClick={() => {
                                 onSaveRoute()
                             }}
-                        >{(editingRoute.isNew ? 'Add' : 'Update')} Route</Button>
+                        >Add Route</Button>
 
 
                         {/* Remove Task From Process Button */}
                         <Button
                             schema={'error'}
-                            disabled={!!editedRoute.isNew}
+                            disabled={false}
                             secondary
                             onClick={() => {
                                 onRemoveRoute(selectedRoute._id)
