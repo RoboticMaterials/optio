@@ -119,7 +119,7 @@ const TaskForm = (props) => {
 						isProcessTask={null}
 						onSave={submitForm}
 						onBackClick={handleBackClick}
-						onRemove={null}
+						onRemove={handleDelete}
 						{...remainingProps}
 					/>
 				)
