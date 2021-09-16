@@ -36,11 +36,12 @@ import { getPreviousRoute, willRouteAdditionFixProcess } from '../../../../../me
 // Import actions
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
-import { setFixingProcess } from '../../../../../redux/actions/processes_actions'
+import { setFixingProcess, setEditingValues } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedHoveringTask, editingTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
+
+import { setSelectedHoveringTask, editingTask, setSelectedTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
 import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
@@ -60,7 +61,6 @@ import useChange from "../../../../basic/form/useChange";
 import { removeTask } from "../../../../../redux/actions/tasks_actions";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import usePrevious from "../../../../../hooks/usePrevious";
-import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskField = (props) => {
@@ -75,13 +75,12 @@ const TaskField = (props) => {
         touched,
         setTouched,
         onSave,
-        onRemove,
-        onBack
+        routeCopy
     } = props
-    
-    const { routes: processRoutes } = values;
 
+    const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false)
     const [enableSave, setEnableSave] = useState(false)
     const { tasks: routes, selectedTask: selectedRoute } = useSelector(state => state.tasksReducer)
@@ -89,6 +88,10 @@ const TaskField = (props) => {
 
     const dispatch = useDispatch()
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
+    const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+    const onEditing = async (props) => await dispatch(editingTask(props))
+    const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
+
 
     const editingIdx = processRoutes.findIndex(route => route._id === selectedRoute._id)
     const editingRoute = processRoutes[editingIdx]
@@ -96,10 +99,9 @@ const TaskField = (props) => {
 
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
-
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
-    const submitDisabled = (((errorCount > 0) || !enableSave ) && !editingRoute.isNew)// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    const submitDisabled = ((errorCount > 0) || (!enableSave && !editingRoute.isNew))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -127,6 +129,7 @@ const TaskField = (props) => {
 
     }, [editingRoute])
     useEffect(() => {
+
         setTouched({})
     }, [])
 
@@ -140,7 +143,6 @@ const TaskField = (props) => {
 
       if (JSON.stringify(selectedRoute) !== JSON.stringify(route)) {
           setEnableSave(true)
-          console.log('settrue')
       }
       else {
           setEnableSave(false)
@@ -159,6 +161,40 @@ const TaskField = (props) => {
             }
         })
     }
+
+    const onRemoveRoute = (id) => {
+      const updatedRoutes = []
+      for(const ind in values.routes){
+        if(values.routes[ind]._id !== id){
+          updatedRoutes.push(values.routes[ind])
+        }
+      }
+      dispatchSetSelectedTask(null)
+      onEditing(false)
+      setFieldValue(`routes`, updatedRoutes);
+      dispatchSetEditingValues({...values, routes: updatedRoutes})
+
+    }
+
+    const onRouteBack = async (id) => {
+        const updatedRoutes = []
+        for(const ind in values.routes){
+          if(values.routes[ind]._id === id){
+            updatedRoutes.push(routeCopy)
+          }
+          else updatedRoutes.push(values.routes[ind])
+        }
+        onEditing(false)
+        dispatchSetSelectedTask(null)
+        setFieldValue(`routes`, updatedRoutes)
+    }
+
+    const onSaveRoute =() => {
+        onEditing(false)
+        dispatchSetSelectedTask(null)
+        dispatchSetEditingValues({values})
+    }
+
 
     /**
      * checks if there are other routes with the same load location. This meeds the load
@@ -184,39 +220,12 @@ const TaskField = (props) => {
                         button_2_text={"No"}
                         handleClose={() => setConfirmExitModal(null)}
                         handleOnClick1={() => {
-                            onBack(selectedRoute._id)
-                        }}
+                          onRouteBack(selectedRoute._id)
+                       }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
                         }}
                     />
-
-                    <ConfirmDeleteModal
-                        isOpen={!!confirmDeleteModal}
-                        title={`Are you sure you want to delete this Route?`}
-                        button_1_text={"Yes"}
-                        handleOnClick1={() => {
-                            onRemove(selectedRoute._id)
-                        }}
-                        button_2_text={"No"}
-                        handleOnClick2={() => setConfirmDeleteModal(null)}
-                        handleClose={() => setConfirmDeleteModal(null)}
-                    />
-
-                    <ContentHeader
-                        content={'tasks'}
-                        mode={'create'}
-                        onClickBack={() => {
-                            if (!!enableSave) {
-                                setConfirmExitModal(true)
-                            }
-                            else {
-                                onBack(selectedRoute._id)
-                            }
-                        }}
-                    />
-
-
                     <div style={{ margin: '0.5rem 0.5rem 2rem 0' }}>
                         <styled.Title>Route Name</styled.Title>
                         <TextField
@@ -289,10 +298,11 @@ const TaskField = (props) => {
 
                     <>
                         <Button
+                            type = {'button'}
                             schema={'tasks'}
                             disabled={submitDisabled}
-                            onClick={async () => {
-                                await onSave(selectedRoute._id)
+                            onClick={() => {
+                                onSaveRoute()
                             }}
                         >{(editingRoute.isNew ? 'Create' : 'Save')} Route</Button>
 
@@ -303,7 +313,7 @@ const TaskField = (props) => {
                             disabled={!!selectedRoute && !!selectedRoute.isNew}
                             secondary
                             onClick={() => {
-                                onRemove(selectedRoute._id)
+                                onRemoveRoute(selectedRoute._id)
                             }}
                         >
                             Remove Route

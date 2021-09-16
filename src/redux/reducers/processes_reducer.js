@@ -19,6 +19,7 @@ import {
     DELETE_PROCESSES_SUCCESS,
     DELETE_PROCESSES_FAILURE,
     EDITING_PROCESS,
+    SET_EDITING_VALUES,
 } from '../types/processes_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -223,6 +224,12 @@ const processesReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 editingProcess: action.payload,
+            }
+
+        case SET_EDITING_VALUES:
+            return {
+                ...state,
+                editingValues: action.payload,
             }
 
         case 'SET_FIXING_PROCESS':

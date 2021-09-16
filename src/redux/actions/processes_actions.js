@@ -21,6 +21,7 @@ import {
     DELETE_PROCESSES_SUCCESS,
     DELETE_PROCESSES_FAILURE,
     EDITING_PROCESS,
+    SET_EDITING_VALUES,
 } from '../types/processes_types'
 
 import * as api from '../../api/processes_api'
@@ -196,6 +197,11 @@ export const removeRouteFromAllProcesses = (routeId) => {
 
 export const updateProcesses = (processes, d3) => {
     return { type: 'UPDATE_PROCESSES', payload: { processes, d3 } }
+}
+
+export const setEditingValues = (process) => {
+    console.log(process)
+    return { type: 'SET_EDITING_VALUES', payload: process}
 }
 
 export const setSelectedProcess = (process) => {

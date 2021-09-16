@@ -13,10 +13,12 @@ const ProcessPaths = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const editingTask = useSelector(state => state.tasksReducer.editingTask)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
-
+    const editingProcess = useSelector(state => state.processesReducer.editingProcess)
+    const editingValues = useSelector(state => state.processesReducer.editingValues)
     // Maps through all the associated routes with the process and displays them
     const handleTaskPaths = () => {
-        return selectedProcess.routes
+        const currProcess = !!(editingProcess && editingValues) ? editingValues : selectedProcess
+        return currProcess.routes
             .filter((route) => {
                 const {
                     load,
