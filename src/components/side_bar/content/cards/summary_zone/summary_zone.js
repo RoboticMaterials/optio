@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react"
+import React, { useState, memo, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 
@@ -13,7 +13,7 @@ import VisibilitySensor from 'react-visibility-sensor'
 import * as styled from "./summary_zone.style"
 
 // Import Utils
-import { getProcessStations } from '../../../../../methods/utils/processes_utils'
+import { getProcessStations, isLotWhole } from '../../../../../methods/utils/processes_utils'
 
 /*
 * This component renders a CardZone for a list of processes
@@ -40,7 +40,6 @@ const SummaryZone = ((props) => {
     } = props
     const stations = useSelector(state => state.stationsReducer.stations)
     const routes = useSelector(state => state.tasksReducer.tasks)
-
 
 
     /*

@@ -500,6 +500,93 @@ export const findProcessEndNode = (routes) => {
     return null;
 }
 
+/**
+ * Looks through the incoming routes and determines if all incoming parts are satisfied. 
+ * If the parts are satisfied, then the worker can move the lot along, otherwise they
+ * need to wait until all parts come in. This gets complicated because you have to 
+ * backpropogate through the graph to determine if a part was diverged as a split or
+ * a choice.
+ * 
+ * Basic Algorithm:
+ * Starting at the start nodes, recurse through the graph. When you reach a diverging
+ * node, the returned value becomes an array where the first value is 'AND' or 'OR' 
+ * depending on whether it is a split or choice node. As you continue to traverse, 
+ * if you come to a converging node, those two paths will reach the same station 
+ * (ex: ['AND', 'Station3', 'Station3']) which can be collapsed simply into 'Station3'.
+ * once you reach the desired station, stop traversing. 
+ * 
+ * @param {array} routes 
+ * @param {ID} stationId 
+ */
+export const witchcraft = (stationId, process, routes) => {
+
+    
+
+    const processRoutes = process.routes.map(routeId => routes[routeId])
+
+
+    let startingExpression;
+    const startNodes = findProcessStartNodes(processRoutes);
+    if (startNodes.length === 1) {
+        startingExpression = [null, startNodes[0]];
+    } else if (process.startDivergeType === 'split') {
+        startingExpression = ['AND', ...startNodes];
+    } else if (process.startDivergeType === 'choice') {
+        startingExpression = ['OR', ...startNodes];
+    }
+
+    // const recursivePrint = (element) => {
+    //     if (Array.isArray(element)) {
+    //         let elemCopy = JSON.parse(JSON.stringify(element))
+    //         for (var i=1; i<element.length; i++) {
+    //             elemCopy[i] = recursivePrint(element[i]);
+    //         }
+    //         return elemCopy
+    //     } else {
+    //         return stations[element].name
+    //     }
+    // }
+
+    let node, outgoingRoutes, nextNodes;
+    const recursiveExpand = (sExpression) => {
+        
+        let sExpressionCopy = deepCopy(sExpression);
+        for (var entryIdx = 1; entryIdx < sExpression.length; entryIdx++) {
+            
+            node = sExpression[entryIdx];
+            outgoingRoutes = getNodeOutgoing(node, processRoutes);
+            if (outgoingRoutes.length === 0) {
+                return node;
+            } else if (outgoingRoutes.length === 1 && outgoingRoutes[0].unload !== stationId) {
+                // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
+                // This null is removed before the expression is returned \/
+                sExpressionCopy[entryIdx] = recursiveExpand([null, outgoingRoutes[0].unload]);
+            } else {
+                nextNodes = outgoingRoutes.map(route => route.unload);
+                if (!nextNodes.includes(stationId)) {
+                    if (outgoingRoutes.some(route => route.divergeType === 'split')) {
+                        sExpressionCopy[entryIdx] = recursiveExpand(['AND', ...nextNodes])
+                    } else {
+                        sExpressionCopy[entryIdx] = recursiveExpand(['OR', ...nextNodes])
+                    }
+                }
+            }
+        }
+
+        if (sExpressionCopy[0] === null || sExpressionCopy.every((element, idx) => idx === 0 || JSON.stringify(element) === JSON.stringify(sExpressionCopy[1]))) {
+            // If all the elements of an AND or OR are the same, then collapse it into a single node
+            return sExpressionCopy[1]
+        } else {
+            return sExpressionCopy
+        }        
+    }
+
+    return recursiveExpand(startingExpression)
+
+
+}
+
+
 const getNodeIncoming = (node, routes) => {
     return routes.filter(route => route.unload === node)
 }
