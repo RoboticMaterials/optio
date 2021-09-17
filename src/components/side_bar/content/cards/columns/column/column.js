@@ -24,7 +24,8 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleMoveLotToMergeStation } from "../../../../../../methods/utils/lot_utils";
+import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -117,6 +118,10 @@ const Column = ((props) => {
 			...remainingPayload
 		} = payload
 
+		const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
+		let startNodes = findProcessStartNodes(processRoutes)
+		let endNode = findProcessEndNode(processRoutes)
+
 		if (oldProcessId !== processId) return false
 	 	if(binId === station_id) return false
 		for(const ind in processes[oldProcessId].routes){
@@ -124,16 +129,28 @@ const Column = ((props) => {
 			if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
 				return true
 			}
-			else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split route and routes arent merging into current station
+			else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split/merge route and routes arent merging into current station
 				const mergingRoutes = processes[oldProcessId].routes
 															.map(routeId => routes[routeId])
 															.filter(route => route.unload === binId)
 
-				if(mergingRoutes.length === 1) return true
+				const previousMergingRoutes = processes[oldProcessId].routes
+															.map(routeId => routes[routeId])
+															.filter(route => route.unload === station_id)
+
+				if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
 			}
 			//Make this more restrictive, allows to drag from q and to Finish
-			else if(binId==="QUEUE" || station_id==='QUEUE' || station_id === "FINISH" || binId === "FINISH") {
-				return true
+			else if(binId==="QUEUE") {
+				for(const ind in startNodes){
+					if(station_id===startNodes[ind]) return true
+				}
+			}
+
+			else if(station_id==="FINISH") {
+				for(const ind in startNodes){
+					if(binId===endNode) return true
+				}
 			}
 		}
 
@@ -263,61 +280,84 @@ const Column = ((props) => {
 						// already contains items in bin
 						if (oldBins[station_id] && movedBin) {
 
-							// handle updating lot
-							{
-								const oldCount = parseInt(oldBins[station_id]?.count || 0)
-								const movedCount = parseInt(movedBin?.count || 0)
+							const movedCount = parseInt(movedBin?.count || 0)
+							const mergingRoutes = processes[droppedCard.process_id].routes
+			                              .map(routeId => routes[routeId])
+			                              .filter(route => route.unload === station_id)
 
-								await dispatchPutCard({
-									...remainingPayload,
-									bins: {
-										...remainingOldBins,
-										[station_id]: {
-											...oldBins[station_id],
-											count: oldCount + movedCount
-										}
-									}
-								}, cardId)
+
+							if(mergingRoutes.length > 1){
+								const updatedLot = handleMoveLotToMergeStation(droppedCard,binId,station_id, movedCount)
+								dispatchPutCard(updatedLot, updatedLot._id)
 							}
+							else{
+								// handle updating lot
+								{
+									const oldCount = parseInt(oldBins[station_id]?.count || 0)
+									const movedCount = parseInt(movedBin?.count || 0)
 
-							// handle updating selectedLots
-							{
-								// current action is to remove lot from selectedLots if it is merged
-								const existingIndex = getSelectedIndex(cardId, binId)
-								if (existingIndex !== -1) {
-									setSelectedCards(immutableDelete(selectedCards, existingIndex))
+
+									await dispatchPutCard({
+										...remainingPayload,
+										bins: {
+											...remainingOldBins,
+											[station_id]: {
+												...oldBins[station_id],
+												count: oldCount + movedCount
+											}
+										}
+									}, cardId)
+								}
+
+								// handle updating selectedLots
+								{
+									// current action is to remove lot from selectedLots if it is merged
+									const existingIndex = getSelectedIndex(cardId, binId)
+									if (existingIndex !== -1) {
+										setSelectedCards(immutableDelete(selectedCards, existingIndex))
+									}
 								}
 							}
-
 						}
 
 						// no items in bin
 						else {
-							// update lot
-							{
-								const a = await dispatchPutCard({
-									...remainingPayload,
-									bins: {
-										...remainingOldBins,
-										[station_id]: {
-											...movedBin,
-										}
-									}
-								}, cardId)
-							}
+							const movedCount = parseInt(movedBin?.count || 0)
+							const mergingRoutes = processes[droppedCard.process_id].routes
+			                              .map(routeId => routes[routeId])
+			                              .filter(route => route.unload === station_id)
 
-							// update selectedLots
-							{
-								// current action is to remove lot from selectedLots if it is merged
-								const existingIndex = getSelectedIndex(cardId, binId)
-								if (existingIndex !== -1) {
-									setSelectedCards(immutableReplace(selectedCards, {
-										...selectedCards[existingIndex],
-										binId: station_id
-									}, existingIndex))
+
+							if(mergingRoutes.length > 1){
+								const updatedLot = handleMoveLotToMergeStation(droppedCard,binId,station_id, movedCount)
+								dispatchPutCard(updatedLot, updatedLot._id)
+							}
+							// update lot
+							else{
+								{
+									const a = await dispatchPutCard({
+										...remainingPayload,
+										bins: {
+											...remainingOldBins,
+											[station_id]: {
+												...movedBin,
+											}
+										}
+									}, cardId)
+								}
+
+								// update selectedLots
+								{
+									// current action is to remove lot from selectedLots if it is merged
+									const existingIndex = getSelectedIndex(cardId, binId)
+									if (existingIndex !== -1) {
+										setSelectedCards(immutableReplace(selectedCards, {
+											...selectedCards[existingIndex],
+											binId: station_id
+										}, existingIndex))
+									}
 								}
 							}
-
 						}
 					}
 				}

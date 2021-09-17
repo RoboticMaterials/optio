@@ -24,7 +24,7 @@ import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants"
 import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot, handleMoveLotToMergeStation } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import { getProcessStations } from '../../../../../../methods/utils/processes_utils'

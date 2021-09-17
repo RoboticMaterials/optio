@@ -612,6 +612,75 @@ export const getPreviousRouteForLot = (lot, stationID) => {
     return prevRoute
 }
 
+export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quantity) => {
+
+    const processes = store.getState().processesReducer.processes || {}
+    const routes = store.getState().tasksReducer.tasks || {}
+
+    const mergingRoutes = processes[lot.process_id].routes
+                          .map(routeId => routes[routeId])
+                          .filter(route => route.unload === nextStation)
+
+    if(mergingRoutes.length > 1){ //Same as in dashboardLotPage... move to UTILS!!!!!
+      let countQuantity = lot.totalQuantity //Initialize count at totalquantity
+      let part = ""
+      for(const ind in mergingRoutes){
+        let currPartQty = mergingRoutes[ind].part
+        if(mergingRoutes[ind].load === currStation){ //Found the route that we are currently transferring parts along
+          if(!!lot.bins[nextStation]){  // Bin exists, add parts to station
+            let existingQuantity = !!lot.bins[nextStation][currPartQty] ? lot.bins[nextStation][currPartQty] : 0
+            lot.bins[nextStation] = {
+              ...lot.bins[nextStation],
+              [currPartQty]: existingQuantity += quantity
+            }
+
+            for(const count in mergingRoutes){
+               part = mergingRoutes[count].part
+              //If part exists at station and it's count is less than other parts,  limit available lot quantity to that part quantity
+              if(!!lot.bins[nextStation] && !!lot.bins[nextStation][part]){
+                countQuantity = lot.bins[nextStation][part]<countQuantity ? lot.bins[nextStation][part] : countQuantity
+              }
+              //If one of the parts doesnt exist yet at station set count to 0 (none of that lot will be available to move if a part is completely missing)
+              else{
+                countQuantity = 0
+              }
+            }
+            //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
+            lot.bins[nextStation].count = countQuantity
+          }
+          else{//Nothing exists at station yet, creat bin, add parts to bin
+            lot.bins[nextStation] = {
+              [currPartQty]: quantity,
+              count: 0
+            }
+          }
+        }
+      }
+      //Handle updating Lot at merge station when part of lot is moved forward
+      const currMergingRoutes = processes[lot.process_id].routes
+                            .map(routeId => routes[routeId])
+                            .filter(route => route.unload === currStation)
+
+      if(currMergingRoutes.length>1){//subtract quantity from both count and the parts at the station
+            for(const ind in lot.bins[currStation]){
+              if(lot.bins[currStation][ind]-quantity < 1){
+                  delete lot.bins[currStation][ind]
+              }
+              else lot.bins[currStation][ind] -= quantity
+            }
+          }
+      else{
+        if (quantity === lot.bins[currStation].count) {
+            delete lot.bins[currStation];
+        } else {
+            lot.bins[currStation].count -= quantity;
+        }
+      }
+
+      return lot
+    }
+}
+
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 

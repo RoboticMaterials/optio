@@ -383,7 +383,7 @@ export default function tasksReducer(state = defaultState, action) {
                 ...state,
                 autoAddRoute: action.payload,
             }
-            
+
         default:
             return state;
     }
