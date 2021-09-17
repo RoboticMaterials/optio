@@ -172,11 +172,11 @@ export const ProcessField = (props) => {
     })
 
     const handleSaveRoute = async (route) => {
-        
+
         let routesCopy = [...values.routes]
         if (route._id) { // If the route already exists
             // make copy of routes and insert new route
-            
+
             let insertIndex = routesCopy.findIndex(currRoute => currRoute._id === route._id)
             routesCopy.splice(insertIndex, 0, route)
         } else {
@@ -410,7 +410,7 @@ export const ProcessField = (props) => {
     }
 
     const handleAddRoute = () => {
-        
+
         dispatchSetSelectedTask(generateDefaultRoute(selectedProcess._id))
 
     }
@@ -549,9 +549,9 @@ export const ProcessField = (props) => {
 
                     <Switch
                         onColor='#FF4B4B'
-                        checked={values.showSummary}
+                        checked={values.disperseKickoff}
                         onChange={() => {
-                            setFieldValue("showSummary", !values.showSummary)
+                            setFieldValue("disperseKickoff", !values.disperseKickoff)
                         }}
                     />
 

@@ -20,6 +20,7 @@ import FadeLoader from "react-spinners/FadeLoader";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import { checkCardMatchesFilter, getCustomFields, getLotTotalQuantity, getMatchesFilter } from "../../../../../../methods/utils/lot_utils";
+import { findProcessStartNodes } from "../../../../../../methods/utils/processes_utils";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
@@ -112,36 +113,55 @@ const KickOffModal = (props) => {
     * */
 
     const moveLot = async (card, quantity) => {
+      const disperseKickoff = processes[card.process_id].disperseKickoff
 
       let requestSuccessStatus = false
       let message
+      let updatedCard = card
 
       if(!!card && quantity > 0){
-        let kickoffStationQuantity = !!card.bins[stationId]? card.bins[stationId].count : 0
-        let updatedCard = {
-            ...card,
-            bins: {
-                ...card.bins,
-                ['QUEUE']: {
-                    ...card.bins['QUEUE'],
-                    count:  parseInt(card.bins['QUEUE']?.count)-parseInt(quantity)
-                },
-                [stationId]: {
-                    ...card.bins[stationId],
-                    count: parseInt(quantity) + parseInt(kickoffStationQuantity)
+        if(!!disperseKickoff){
+          const processRoutes = processes[card.process_id].routes.map(routeId => routes[routeId])
+          const kickoffStations = findProcessStartNodes(processRoutes)
+          for(var station in kickoffStations){
+            let totalQuantity = !!updatedCard.bins[kickoffStations[station]]?.count ? updatedCard.bins[kickoffStations[station]].count + quantity : quantity
+            updatedCard.bins[kickoffStations[station]] = {
+                count: totalQuantity
+            }
+          }
+          if (quantity === updatedCard.bins['QUEUE'].count) {
+              delete updatedCard.bins['QUEUE'];
+          } else {
+              updatedCard.bins['QUEUE'].count -= quantity;
+          }
+        }
+        else{
+          let kickoffStationQuantity = !!card.bins[stationId]? card.bins[stationId].count : 0
+           updatedCard = {
+              ...card,
+              bins: {
+                  ...card.bins,
+                  ['QUEUE']: {
+                      ...card.bins['QUEUE'],
+                      count:  parseInt(card.bins['QUEUE']?.count)-parseInt(quantity)
+                  },
+                  [stationId]: {
+                      ...card.bins[stationId],
+                      count: parseInt(quantity) + parseInt(kickoffStationQuantity)
+                    }
                   }
                 }
+
+                if(updatedCard.bins['QUEUE'].count === 0) delete updatedCard.bins['QUEUE']
               }
 
-              if(updatedCard.bins['QUEUE'].count === 0) delete updatedCard.bins['QUEUE']
+                const result = await onPutCard(updatedCard, updatedCard._id)
 
-              const result = await onPutCard(updatedCard, updatedCard._id)
-
-              // check if request was successful
-              if (!(result instanceof Error)) {
-                  requestSuccessStatus = true
-                  message = card.name ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${card.name}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
-              }
+                 //check if request was successful
+                if (!(result instanceof Error)) {
+                    requestSuccessStatus = true
+                    message = card.name ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${card.name}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
+                }
             }
             else {
                 message = "Quantity must be greater than 0"
@@ -151,7 +171,6 @@ const KickOffModal = (props) => {
             setSubmitting(false)
             close()
           }
-
 
     /*
     * renders an array of buttons for each kick off lot

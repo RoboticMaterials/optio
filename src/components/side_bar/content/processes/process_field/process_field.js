@@ -37,7 +37,7 @@ import {
     getLoadStationDashboard, autoGenerateRoute,
     getRouteProcesses
 } from "../../../../../methods/utils/route_utils";
-import { isBrokenProcess, willRouteAdditionFixProcess, willRouteDeleteBreakProcess } from "../../../../../methods/utils/processes_utils";
+import { isBrokenProcess, findProcessStartNodes, willRouteAdditionFixProcess, willRouteDeleteBreakProcess } from "../../../../../methods/utils/processes_utils";
 import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
 
@@ -97,7 +97,10 @@ export const ProcessField = (props) => {
 
     const { tasks, selectedTask } = useSelector(state => state.tasksReducer)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const routes = useSelector(state => state.tasksReducer.tasks)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+    const processRoutes = selectedProcess.routes.map(routeId => routes[routeId])
+    const startNodes = findProcessStartNodes(processRoutes)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
     // State definitions
@@ -226,6 +229,20 @@ export const ProcessField = (props) => {
                         textboxContainerStyle={{ border: "none" }}
                     />
                 </div>
+                {startNodes.length>1 &&
+                  <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem" }}>
+                      <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Disperse kickoff lots</styled.Title>
+
+                      <Switch
+                          onColor={'#ffbf1f'}
+                          checked={values.disperseKickoff}
+                          onChange={() => {
+                              setFieldValue("disperseKickoff", !values.disperseKickoff)
+                          }}
+                      />
+
+                  </styled.RowContainer>
+                }
 
                 <styled.Title schema={'processes'} style={{ marginTop: "2rem", marginBottom: "1rem" }}>Routes</styled.Title>
                 {selectedTask === null &&
