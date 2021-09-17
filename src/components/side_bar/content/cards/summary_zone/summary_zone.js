@@ -70,7 +70,6 @@ const SummaryZone = ((props) => {
               <>
                 {!!isVisible ?
       					<>
-      						{!!currProcess.showSummary &&
       							<styled.ZoneContainer
       								key={processId}
       							>
@@ -92,7 +91,6 @@ const SummaryZone = ((props) => {
       									handleCardClick={handleCardClick}
       								/>
       							</styled.ZoneContainer>
-      						}
       					</>
                 :
                 <div style = {{height: '20rem', width: '80%'}}>

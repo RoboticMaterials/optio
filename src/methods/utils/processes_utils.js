@@ -480,7 +480,7 @@ export const findProcessStartNodes = (routes) => {
 
     let startNodes = [];
     for (var loadStation of loadStations) {
-        if (unloadStations.find(unloadStation => unloadStation === loadStation) === undefined) {
+        if (unloadStations.find(unloadStation => unloadStation === loadStation) === undefined && !startNodes.includes(loadStation)) {
             startNodes.push(loadStation)
         }
     }
