@@ -140,7 +140,7 @@ const DashboardLotPage = (props) => {
       //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
       //If multiple routes merge into a station the parts at the station are kept track of at that bin
       //If one type of part doesn't exist yet none of that lot can be moved along
-      //Otherwise, assuming 1 to 1 ratio the type of part with smallest count limits the amount of the lot that is available to move
+      //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
       const handleNextStationsLot = (destinationId, quantity) => {
 
         const mergingRoutes = processes[currentLot.process_id].routes

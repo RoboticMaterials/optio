@@ -621,7 +621,6 @@ export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quant
                           .map(routeId => routes[routeId])
                           .filter(route => route.unload === nextStation)
 
-    if(mergingRoutes.length > 1){ //Same as in dashboardLotPage... move to UTILS!!!!!
       let countQuantity = lot.totalQuantity //Initialize count at totalquantity
       let part = ""
       for(const ind in mergingRoutes){
@@ -656,31 +655,28 @@ export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quant
           }
         }
       }
+      return lot
+}
+
+export const handleMoveLotFromMergeStation = (lot, currStation, nextStation, quantity) => {
+
+    const processes = store.getState().processesReducer.processes || {}
+    const routes = store.getState().tasksReducer.tasks || {}
+
       //Handle updating Lot at merge station when part of lot is moved forward
       const currMergingRoutes = processes[lot.process_id].routes
                             .map(routeId => routes[routeId])
                             .filter(route => route.unload === currStation)
 
-      if(currMergingRoutes.length>1){//subtract quantity from both count and the parts at the station
             for(const ind in lot.bins[currStation]){
               if(lot.bins[currStation][ind]-quantity < 1){
                   delete lot.bins[currStation][ind]
               }
               else lot.bins[currStation][ind] -= quantity
             }
-          }
-      else{
-        if (quantity === lot.bins[currStation].count) {
-            delete lot.bins[currStation];
-        } else {
-            lot.bins[currStation].count -= quantity;
-        }
-      }
 
       return lot
-    }
 }
-
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 
