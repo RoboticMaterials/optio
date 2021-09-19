@@ -37,6 +37,8 @@ const DashboardOperationsMenu = (props) => {
     const processes = useSelector(state => state.processesReducer.processes)
     const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
     const [warehouseEnabled, setWarehouseEnabled] = useState(false)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
+
 
     const ref = useRef() // ref for useOnClickOutside
     useOnClickOutside(ref, () => { handleCloseMenu() }) // calls onClickOutside when click outside of element

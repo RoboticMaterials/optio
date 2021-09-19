@@ -99,7 +99,7 @@ export const ProcessField = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const routes = useSelector(state => state.tasksReducer.tasks)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const processRoutes = selectedProcess.routes.map(routeId => routes[routeId])
+    const processRoutes = values.routes.map(routeId => routes[routeId])
     const startNodes = findProcessStartNodes(processRoutes)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
