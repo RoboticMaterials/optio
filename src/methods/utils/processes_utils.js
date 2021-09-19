@@ -442,19 +442,19 @@ export const getPreviousWarehouseStation = (processID, stationID) => {
     const process = storeState.processesReducer.processes[processID] || {}
     const stations = storeState.stationsReducer.stations || {}
 
+    let warehouse = null
+    for(const ind in process.routes){
+        let loadStation = stations[routes[process.routes[ind]].load]
+        let unloadStation = stations[routes[process.routes[ind]].unload]
 
-    const processStations = Object.keys(getProcessStations(process, routes))
-    const currStationIndex = processStations.findIndex(el => el === stationID)
-    const warehouseID = processStations[currStationIndex - 1]
-    const warehouse = stations[warehouseID]
+        if(unloadStation._id === stationID && loadStation.type === 'warehouse'){
+          warehouse = loadStation
+        }
+      }
 
-    if (!!warehouse && warehouse?.type === 'warehouse') {
-        return warehouse
+      if(!!warehouse) return warehouse
+      else return false
     }
-    else {
-        return false
-    }
-}
 
 /***
  * All processes must end in single stations. This function returns binary whether or not that is true for

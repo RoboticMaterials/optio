@@ -60,6 +60,9 @@ const WarehouseModal = (props) => {
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [currentLot, setCurrentLot] = useState(null)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
+    const [warehouse, setWarehouse] = useState({})
+    const [lotCount, setLotCount] = useState(null)
     const isWarehouse = true
 
     // Add warehouse to URL
@@ -67,9 +70,20 @@ const WarehouseModal = (props) => {
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID) => {
-        setCurrentLot(cards[lotID])
-      //  warehouseProcessTransfer(lotID)
-        //history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
+      // extract card attributes
+      const {
+          bins,
+      } = cards[lotID]
+
+      // extract first station's bin and queue bin from bins
+      const {
+          [warehouse?._id]: queueBin,
+      } = bins || {}
+
+      const queueBinCount = queueBin?.count ? queueBin.count : 0
+
+      setLotCount(queueBinCount)
+      setCurrentLot(cards[lotID])
     }
 
     const warehouseProcessTransfer = async(lotID) => {
@@ -97,6 +111,7 @@ const WarehouseModal = (props) => {
         const warehouseStations = []
         stationProcesses.forEach((processID) => {
             const station = getPreviousWarehouseStation(processID, stationID)
+            setWarehouse(station)
             if (!!station) warehouseStations.push(station)
         })
 
@@ -190,6 +205,7 @@ const WarehouseModal = (props) => {
 
     return (
       <>
+
         <styled.Container
             isOpen={isOpen}
             contentLabel="Kick Off Modal"

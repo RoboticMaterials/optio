@@ -295,14 +295,13 @@ const Column = ((props) => {
 							}
 							else{
 									const oldCount = parseInt(oldBins[station_id]?.count || 0)
-									const movedCount = parseInt(movedBin?.count || 0)
 
 									updatedLot = {
 										...droppedCard,
 										bins: {
-											...remainingOldBins,
+											...droppedCard.bins,
 											[station_id]: {
-												...oldBins[station_id],
+												...droppedCard.bins[station_id],
 												count: oldCount + movedCount
 											}
 										}
@@ -314,9 +313,8 @@ const Column = ((props) => {
 								updatedLot = handleMoveLotFromMergeStation(updatedLot,binId,station_id, movedCount)
 								}
 							else{
-								const movedCount = parseInt(movedBin?.count || 0)
-								//if (movedCount === updatedLot.bins[binId].count) delete updatedLot.bins[binId]
-				        //else updatedLot.bins[binId].count -= movedCount
+								if (movedCount === updatedLot.bins[binId].count) delete updatedLot.bins[binId]
+				        else updatedLot.bins[binId].count -= movedCount
 							}
 						dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)

@@ -663,20 +663,20 @@ export const handleMoveLotFromMergeStation = (lot, currStation, nextStation, qua
     const processes = store.getState().processesReducer.processes || {}
     const routes = store.getState().tasksReducer.tasks || {}
 
-      //Handle updating Lot at merge station when part of lot is moved forward
-      const currMergingRoutes = processes[lot.process_id].routes
-                            .map(routeId => routes[routeId])
-                            .filter(route => route.unload === currStation)
+    for(const ind in lot.bins[currStation]){
+        if(lot.bins[currStation][ind]-quantity < 1){
+          if(ind === 'count'){
+            lot.bins[currStation][ind] = 0
+          }
+          else delete lot.bins[currStation][ind]
+        }
+        else lot.bins[currStation][ind] -= quantity
 
-            for(const ind in lot.bins[currStation]){
-              if(lot.bins[currStation][ind]-quantity < 1){
-                  delete lot.bins[currStation][ind]
-              }
-              else lot.bins[currStation][ind] -= quantity
-            }
+        if(Object.keys(lot.bins[currStation]).length===1) delete lot.bins[currStation]
+    }
 
       return lot
-}
+    }
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 
