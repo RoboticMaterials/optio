@@ -15,7 +15,7 @@ import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_pl
 // Import external utils
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
 import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations } from './processes_utils'
+import { getProcessStations, witchcraft } from './processes_utils'
 import { getLoadStationId } from './route_utils'
 import { jsDateToString } from './card_utils'
 
@@ -611,15 +611,103 @@ export const getPreviousRouteForLot = (lot, stationID) => {
     }
     return prevRoute
 }
+export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinationId, quantity, stationID) => {
+
+  let countQuantity = currentLot.totalQuantity //Initialize count at totalquantity
+  let completeParts = currentLot.totalQuantity
+  let totalCompleteParts = 0
+  let currBinCount = currentLot.bins[destinationId]?.count
+  let bestQty = 0
+  let part = ""
+
+  for(const ind in iDs){
+    let option = iDs[ind]
+    for(const requirement in option){
+       for(const idx in mergingRoutes){
+         if(mergingRoutes[idx].load === option[requirement] && option.includes(stationID)){
+              part = mergingRoutes[idx].part
+              const existingPartQty = !!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part] ? currentLot.bins[destinationId][part] :  0
+              countQuantity = existingPartQty<countQuantity ? option.length ===1 ? existingPartQty : existingPartQty :  countQuantity
+              completeParts = 0
+          }
+
+          if(mergingRoutes[idx].load === option[requirement] && !option.includes(stationID)){
+               part = mergingRoutes[idx].part
+               const existingPartQty = !!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part] ? currentLot.bins[destinationId][part] :  0
+               completeParts = existingPartQty<completeParts ? existingPartQty : completeParts
+           }
+        }
+       }
+       if(option.includes(stationID)){
+         if(countQuantity>bestQty) bestQty = countQuantity
+       }
+        totalCompleteParts+=completeParts
+        completeParts = currentLot.totalQuantity
+     }
+     //console.log(totalCompleteParts)
+     //console.log(bestQty)
+     return totalCompleteParts + bestQty
+
+}
 
 export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quantity) => {
 
     const processes = store.getState().processesReducer.processes || {}
     const routes = store.getState().tasksReducer.tasks || {}
 
+    let iDs = []
+    let option = 0
+    let requirement = 0
+    let allAreOptions = true
+    let allAreRequired = true
+
     const mergingRoutes = processes[lot.process_id].routes
                           .map(routeId => routes[routeId])
                           .filter(route => route.unload === nextStation)
+
+
+    let wizardry = witchcraft(nextStation, processes[lot.process_id], routes).flat()
+
+      iDs.push([])
+      for(const wands in wizardry){
+        let statID = wizardry[wands]
+        if(statID !== 'OR' && statID!=='AND'){
+          iDs[option].push(statID)
+        }
+        else if(statID === 'AND'){
+          option += 1
+          iDs.push([])
+        }
+        else if(statID === "OR"){
+          allAreRequired = false
+        }
+      }
+
+      //Probably better way to do this but if you never run into an and all the ids give are options
+      if(!!allAreOptions && !allAreRequired){
+        option = 0
+        iDs = []
+        for(const potion in wizardry){
+          let dumbledore = wizardry[potion]
+          if(dumbledore!== 'OR'){
+            iDs.push([])
+            iDs[option].push(dumbledore)
+            option+=1
+          }
+        }
+      }
+
+      //Fix this crap later
+      else if(!allAreOptions && !!allAreRequired){
+        iDs = []
+        iDs.push([])
+        for(const potion in wizardry){
+          let dumbledore = wizardry[potion]
+          if(dumbledore!== 'AND'){
+            iDs[0].push(dumbledore)
+          }
+        }
+      }
 
       let countQuantity = lot.totalQuantity //Initialize count at totalquantity
       let part = ""
@@ -633,25 +721,16 @@ export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quant
               [currPartQty]: existingQuantity += quantity
             }
 
-            for(const count in mergingRoutes){
-               part = mergingRoutes[count].part
-              //If part exists at station and it's count is less than other parts,  limit available lot quantity to that part quantity
-              if(!!lot.bins[nextStation] && !!lot.bins[nextStation][part]){
-                countQuantity = lot.bins[nextStation][part]<countQuantity ? lot.bins[nextStation][part] : countQuantity
-              }
-              //If one of the parts doesnt exist yet at station set count to 0 (none of that lot will be available to move if a part is completely missing)
-              else{
-                countQuantity = 0
-              }
-            }
+
             //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
-            lot.bins[nextStation].count = countQuantity
+            lot.bins[nextStation].count = handleMergedLotQuantity(iDs, mergingRoutes, lot, nextStation, quantity, currStation)
           }
           else{//Nothing exists at station yet, creat bin, add parts to bin
             lot.bins[nextStation] = {
               [currPartQty]: quantity,
-              count: 0
             }
+            lot.bins[nextStation].count = handleMergedLotQuantity(iDs, mergingRoutes, lot, nextStation, quantity, currStation)
+
           }
         }
       }

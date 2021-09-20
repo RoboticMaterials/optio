@@ -501,26 +501,26 @@ export const findProcessEndNode = (routes) => {
 }
 
 /**
- * Looks through the incoming routes and determines if all incoming parts are satisfied. 
+ * Looks through the incoming routes and determines if all incoming parts are satisfied.
  * If the parts are satisfied, then the worker can move the lot along, otherwise they
- * need to wait until all parts come in. This gets complicated because you have to 
+ * need to wait until all parts come in. This gets complicated because you have to
  * backpropogate through the graph to determine if a part was diverged as a split or
  * a choice.
- * 
+ *
  * Basic Algorithm:
  * Starting at the start nodes, recurse through the graph. When you reach a diverging
- * node, the returned value becomes an array where the first value is 'AND' or 'OR' 
- * depending on whether it is a split or choice node. As you continue to traverse, 
- * if you come to a converging node, those two paths will reach the same station 
+ * node, the returned value becomes an array where the first value is 'AND' or 'OR'
+ * depending on whether it is a split or choice node. As you continue to traverse,
+ * if you come to a converging node, those two paths will reach the same station
  * (ex: ['AND', 'Station3', 'Station3']) which can be collapsed simply into 'Station3'.
- * once you reach the desired station, stop traversing. 
- * 
- * @param {array} routes 
- * @param {ID} stationId 
+ * once you reach the desired station, stop traversing.
+ *
+ * @param {array} routes
+ * @param {ID} stationId
  */
 export const witchcraft = (stationId, process, routes) => {
 
-    
+
 
     const processRoutes = process.routes.map(routeId => routes[routeId])
 
@@ -549,10 +549,10 @@ export const witchcraft = (stationId, process, routes) => {
 
     let node, outgoingRoutes, nextNodes;
     const recursiveExpand = (sExpression) => {
-        
+
         let sExpressionCopy = deepCopy(sExpression);
         for (var entryIdx = 1; entryIdx < sExpression.length; entryIdx++) {
-            
+
             node = sExpression[entryIdx];
             outgoingRoutes = getNodeOutgoing(node, processRoutes);
             if (outgoingRoutes.length === 0) {
@@ -578,7 +578,7 @@ export const witchcraft = (stationId, process, routes) => {
             return sExpressionCopy[1]
         } else {
             return sExpressionCopy
-        }        
+        }
     }
 
     return recursiveExpand(startingExpression)
