@@ -24,13 +24,12 @@ import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants"
 import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
-import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot, handleMoveLotToMergeStation } from '../../../../../../methods/utils/lot_utils'
+import { getBinQuantity, getCurrentRouteForLot, getPreviousRouteForLot, handleMoveLotToMergeStation, handleMergedLotQuantity } from '../../../../../../methods/utils/lot_utils'
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
-import { getProcessStations } from '../../../../../../methods/utils/processes_utils'
+import { getProcessStations, witchcraft } from '../../../../../../methods/utils/processes_utils'
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from '../../../../../../methods/utils/utils'
-
 // Import Actions
 import { handlePostTaskQueue, putTaskQueue } from '../../../../../../redux/actions/task_queue_actions'
 import { isObject } from "../../../../../../methods/utils/object_utils";
@@ -137,18 +136,68 @@ const DashboardLotPage = (props) => {
 
 
 
+
       //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
       //If multiple routes merge into a station the parts at the station are kept track of at that bin
       //If one type of part doesn't exist yet none of that lot can be moved along
       //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
       const handleNextStationsLot = (destinationId, quantity) => {
 
+        let iDs = []
+        let option = 0
+        let requirement = 0
+        let allAreOptions = true
+        let allAreRequired = true
+
         const mergingRoutes = processes[currentLot.process_id].routes
                               .map(routeId => routes[routeId])
                               .filter(route => route.unload === destinationId)
 
-
         if(mergingRoutes.length>1){ //If multiple routes merge into station, keep track of parts at the station
+
+          let wizardry = witchcraft(destinationId, processes[currentLot.process_id], routes).flat()
+            iDs.push([])
+            for(const wands in wizardry){
+              let statID = wizardry[wands]
+              if(statID !== 'OR' && statID!=='AND'){
+                iDs[option].push(statID)
+              }
+              else if(statID === 'AND'){
+                allAreOptions = false
+                option += 1
+                iDs.push([])
+              }
+              else if(statID === "OR"){
+                allAreRequired = false
+              }
+
+            }
+          //Probably better way to do this but if you never run into an and all the ids give are options
+          if(!!allAreOptions && !allAreRequired){
+            option = 0
+            iDs = []
+            for(const potion in wizardry){
+              let dumbledore = wizardry[potion]
+              if(dumbledore!== 'OR'){
+                iDs.push([])
+                iDs[option].push(dumbledore)
+                option+=1
+              }
+            }
+          }
+
+          //Fix this crap later
+          else if(!allAreOptions && !!allAreRequired){
+            iDs = []
+            iDs.push([])
+            for(const potion in wizardry){
+              let dumbledore = wizardry[potion]
+              if(dumbledore!== 'AND'){
+                iDs[0].push(dumbledore)
+              }
+            }
+          }
+
             let countQuantity = currentLot.totalQuantity //Initialize count at totalquantity
             let part = ""
             for(const ind in mergingRoutes){
@@ -161,25 +210,14 @@ const DashboardLotPage = (props) => {
                     [currPartQty]: existingQuantity +=quantity
                   }
 
-                  for(const count in mergingRoutes){
-                     part = mergingRoutes[count].part
-                    //If part exists at station and it's count is less than other parts,  limit available lot quantity to that part quantity
-                    if(!!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part]){
-                      countQuantity = currentLot.bins[destinationId][part]<countQuantity ? currentLot.bins[destinationId][part] : countQuantity
-                    }
-                    //If one of the parts doesnt exist yet at station set count to 0 (none of that lot will be available to move if a part is completely missing)
-                    else{
-                      countQuantity = 0
-                    }
-                  }
                   //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
-                  currentLot.bins[destinationId].count = countQuantity
+                  currentLot.bins[destinationId].count = handleMergedLotQuantity(iDs, mergingRoutes, currentLot, destinationId, quantity, stationID)
                 }
                 else{//Nothing exists at station yet, creat bin, add parts to bin
                   currentLot.bins[destinationId] = {
                     [currPartQty]: quantity,
-                    count: 0
                   }
+                currentLot.bins[destinationId].count = handleMergedLotQuantity(iDs, mergingRoutes, currentLot, destinationId, quantity, stationID)
                 }
               }
             }
@@ -242,6 +280,7 @@ const DashboardLotPage = (props) => {
             }
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
             handleCurrentStationLot(quantity)
+
 
             //Add dispersed key to lot for totalQuantity Util
             handleTaskAlert("LOT_MOVED", "Lot Moved", `Lot has been split between ${moveStations.map(stationId => stations[stationId].name).join(' & ')}`)

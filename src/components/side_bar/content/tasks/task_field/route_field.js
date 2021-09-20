@@ -78,7 +78,6 @@ const TaskField = (props) => {
         routeCopy
     } = props
 
-    console.log(values.routes)
     const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
