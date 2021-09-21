@@ -166,6 +166,13 @@ export const DirectionText = styled.h3`
     text-align: center;
 `
 
+export const ErrorText = styled.h3`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bad};
+    text-align: center;
+`
+
 export const DualSelectionButton = styled.button`
     font-size: 1rem;
     width: 50%;

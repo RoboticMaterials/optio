@@ -26,7 +26,7 @@ import LotSimpleRow from "./lot_simple_row/lot_simple_row";
 import LotDateRow from "./lot_date_row/lot_date_row";
 import LotFlags from './lot_flags/lot_flags'
 
-const Lot = (props) => {
+const PartialLot = (props) => {
     const {
         name,
         glow,
@@ -282,7 +282,7 @@ const Lot = (props) => {
 }
 
 // Specifies propTypes
-Lot.propTypes = {
+PartialLot.propTypes = {
     isSelected: PropTypes.bool,
     selectable: PropTypes.bool,
     isFocused: PropTypes.bool,
@@ -291,7 +291,7 @@ Lot.propTypes = {
 }
 
 // Specifies the default values for props:
-Lot.defaultProps = {
+PartialLot.defaultProps = {
     isSelected: false,
     isFocused: false,
     selectable: false,
@@ -306,4 +306,4 @@ Lot.defaultProps = {
     disabled: false,
 }
 
-export default Lot
+export default PartialLot

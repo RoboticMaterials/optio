@@ -86,6 +86,8 @@ const TaskField = (props) => {
     const { tasks: routes, selectedTask: selectedRoute } = useSelector(state => state.tasksReducer)
     const { stations } = useSelector(state => state.stationsReducer)
 
+    const [initialNameSet, setInitialNameSet] = useState(false)
+
     const dispatch = useDispatch()
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
@@ -99,6 +101,7 @@ const TaskField = (props) => {
 
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
+
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0) || (!enableSave))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
@@ -123,8 +126,9 @@ const TaskField = (props) => {
         const partName = buildDefaultRouteName(loadName, unloadName)
 
 
-        if ((editingRoute.name === prevName) || !editingRoute.name) {
+        if ((editingRoute.name === prevName) || (!editingRoute.name && !initialNameSet)) {
             setFieldValue(`${fieldName}.name`, newName, false)
+            setInitialNameSet(true)
         }
 
 
