@@ -409,6 +409,30 @@ Yup.addMethod(Yup.string, "uniqueByPath", function (message, arrPath) {
     });
 });
 
+// Checks for unique values of an array of objects
+Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
+    return this.test('unique', message, function (value) {
+      if (!value || !value[propertyName]) {
+        return true;
+      }
+  
+      const { path } = this;
+      const options = [...this.parent];
+      const currentIndex = options.indexOf(value);
+  
+      const subOptions = options.slice(0, currentIndex);
+  
+      if (subOptions.some((option) => option[propertyName] === value[propertyName])) {
+        throw this.createError({
+          path: `${path}.${propertyName}`,
+          message,
+        });
+      }
+  
+      return true;
+    });
+  });
+
 export const signUpSchema = Yup.object().shape({
     email: Yup.string()
         .email()
@@ -630,10 +654,10 @@ export const routeSchema = Yup.object().shape({
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a part name.'),
-
     load: Yup.string().required('Select a load location'),
     unload: Yup.string().required('Select an unload location')
-})
+})//.uniqueProperty('part', 'Route part names must be unique')
+
 
 export const hilModalSchema = Yup.object().shape({
     quantity: Yup.number()
@@ -642,9 +666,10 @@ export const hilModalSchema = Yup.object().shape({
 
 export const routesSchema = Yup.array().of(
     routeSchema
-).test(
+)
+.test(
     'doRoutesConverge',
-    'All routes of the process must converge at a single station.',
+    'All routes of the process must converge at a single station',
     (routes) => {
         let loadStations = routes.map(route => route.load);
         let unloadStations = routes.map(route => route.unload);

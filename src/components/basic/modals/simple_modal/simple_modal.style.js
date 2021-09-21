@@ -78,13 +78,13 @@ export const Container = styled(Modal)`
 	transform: translate(-50%, -50%);
 	right: auto;
 	bottom: auto;
-  padding-right: 1rem;
+  // padding-right: 1rem;
 
 	position: absolute;
 
 	z-index: 50;
 
-	min-width: 15rem;
+	min-width: 30rem;
   max-width: 95%;
   min-height: 20rem;
   max-height: 90%;

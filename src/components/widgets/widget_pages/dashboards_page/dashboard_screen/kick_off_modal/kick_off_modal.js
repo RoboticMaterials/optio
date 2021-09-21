@@ -113,64 +113,62 @@ const KickOffModal = (props) => {
     * */
 
     const moveLot = async (card, quantity) => {
-      const disperseKickoff = processes[card.process_id].disperseKickoff
+        const startDivergeType = processes[card.process_id].startDivergeType
 
-      let requestSuccessStatus = false
-      let message
-      let updatedCard = card
+        let requestSuccessStatus = false
+        let message
+        let updatedCard = card
 
-      if(!!card && quantity > 0){
-        if(!!disperseKickoff){
-          const processRoutes = processes[card.process_id].routes.map(routeId => routes[routeId])
-          const kickoffStations = findProcessStartNodes(processRoutes)
-          for(var station in kickoffStations){
-            let totalQuantity = !!updatedCard.bins[kickoffStations[station]]?.count ? updatedCard.bins[kickoffStations[station]].count + quantity : quantity
-            updatedCard.bins[kickoffStations[station]] = {
-                count: totalQuantity
+        if(!!card && quantity > 0){ // Make sure the card is real
+            if(startDivergeType === undefined || startDivergeType === 'split'){
+            const processRoutes = processes[card.process_id].routes.map(routeId => routes[routeId])
+            const kickoffStations = findProcessStartNodes(processRoutes)
+            for(var station in kickoffStations){
+                let totalQuantity = !!updatedCard.bins[kickoffStations[station]]?.count ? updatedCard.bins[kickoffStations[station]].count + quantity : quantity
+                updatedCard.bins[kickoffStations[station]] = {
+                    count: totalQuantity
+                }
             }
-          }
-          if (quantity === updatedCard.bins['QUEUE'].count) {
-              delete updatedCard.bins['QUEUE'];
-          } else {
-              updatedCard.bins['QUEUE'].count -= quantity;
-          }
-        }
-        else{
-          let kickoffStationQuantity = !!card.bins[stationId]? card.bins[stationId].count : 0
-           updatedCard = {
-              ...card,
-              bins: {
-                  ...card.bins,
-                  ['QUEUE']: {
-                      ...card.bins['QUEUE'],
-                      count:  parseInt(card.bins['QUEUE']?.count)-parseInt(quantity)
-                  },
-                  [stationId]: {
-                      ...card.bins[stationId],
-                      count: parseInt(quantity) + parseInt(kickoffStationQuantity)
+            if (quantity === updatedCard.bins['QUEUE'].count) {
+                delete updatedCard.bins['QUEUE'];
+            } else {
+                updatedCard.bins['QUEUE'].count -= quantity;
+            }
+            } else {
+            let kickoffStationQuantity = !!card.bins[stationId]? card.bins[stationId].count : 0
+            updatedCard = {
+                ...card,
+                bins: {
+                    ...card.bins,
+                    ['QUEUE']: {
+                        ...card.bins['QUEUE'],
+                        count:  parseInt(card.bins['QUEUE']?.count)-parseInt(quantity)
+                    },
+                    [stationId]: {
+                        ...card.bins[stationId],
+                        count: parseInt(quantity) + parseInt(kickoffStationQuantity)
                     }
-                  }
+                    }
                 }
 
                 if(updatedCard.bins['QUEUE'].count === 0) delete updatedCard.bins['QUEUE']
-              }
-
-                const result = await onPutCard(updatedCard, updatedCard._id)
-
-                 //check if request was successful
-                if (!(result instanceof Error)) {
-                    requestSuccessStatus = true
-                    message = card.name ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${card.name}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
-                }
-            }
-            else {
-                message = "Quantity must be greater than 0"
             }
 
-            onSubmit(card.name, requestSuccessStatus, quantity, message)
-            setSubmitting(false)
-            close()
-          }
+            const result = await onPutCard(updatedCard, updatedCard._id)
+
+                //check if request was successful
+            if (!(result instanceof Error)) {
+                requestSuccessStatus = true
+                message = card.name ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${card.name}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
+            }
+        } else {
+            message = "Quantity must be greater than 0"
+        }
+
+        onSubmit(card.name, requestSuccessStatus, quantity, message)
+        setSubmitting(false)
+        close()
+    }
 
     /*
     * renders an array of buttons for each kick off lot
@@ -313,7 +311,7 @@ const KickOffModal = (props) => {
                 minValue={1}
                 infoText={`${lotCount} items available.`}
                 isOpen={true}
-                title={"Select Quantity"}
+                title={"Select Kickoff Quantity"}
                 onRequestClose={() => setShowQuantitySelector(false)}
                 onCloseButtonClick={() => setShowQuantitySelector(false)}
                 handleOnClick1={(quantity) => {

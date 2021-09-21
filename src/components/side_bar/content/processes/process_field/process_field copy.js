@@ -549,9 +549,9 @@ export const ProcessField = (props) => {
 
                     <Switch
                         onColor='#FF4B4B'
-                        checked={values.disperseKickoff}
+                        checked={values.startDivergeType}
                         onChange={() => {
-                            setFieldValue("disperseKickoff", !values.disperseKickoff)
+                            setFieldValue("startDivergeType", !values.startDivergeType)
                         }}
                     />
 

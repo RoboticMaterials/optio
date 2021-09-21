@@ -14,7 +14,8 @@ export const Container = styled.div`
   justify-content: space-between;
   // overflow: hidden;
 
-  background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.secondary};
+  background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
+  ${props => props.disabled && 'opacity: 0.7;'}
   border-radius: 0.4rem;
   color: ${props => props.theme.bg.octonary};
 
@@ -66,6 +67,14 @@ const focusedCss = css`
 
 const notSelectedCss = css`
   // filter: contrast(50%);
+`
+
+export const LotFamilyContainer = styled.div`
+${commonCss.rowContainer}
+flex-wrap: wrap;
+justify-content: center;
+width: 100%;
+overflow: auto;
 `
 
 export const Row = styled.div`

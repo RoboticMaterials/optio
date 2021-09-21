@@ -616,24 +616,23 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
   let countQuantity = currentLot.totalQuantity //Initialize count at totalquantity
   let completeParts = currentLot.totalQuantity
   let totalCompleteParts = 0
-  let currBinCount = currentLot.bins[destinationId]?.count
   let bestQty = 0
-  let part = ""
+  let traveledRouteId = ""
+  let existingPartQty = 0;
 
   for(const ind in iDs){
     let option = iDs[ind]
     for(const requirement in option){
        for(const idx in mergingRoutes){
+        traveledRouteId = mergingRoutes[idx]._id
+        existingPartQty = !!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][traveledRouteId] ? currentLot.bins[destinationId][traveledRouteId] :  0
+
          if(mergingRoutes[idx].load === option[requirement] && option.includes(stationID)){
-              part = mergingRoutes[idx].part
-              const existingPartQty = !!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part] ? currentLot.bins[destinationId][part] :  0
               countQuantity = existingPartQty<countQuantity ? option.length ===1 ? existingPartQty : existingPartQty :  countQuantity
               completeParts = 0
           }
 
           if(mergingRoutes[idx].load === option[requirement] && !option.includes(stationID)){
-               part = mergingRoutes[idx].part
-               const existingPartQty = !!currentLot.bins[destinationId] && !!currentLot.bins[destinationId][part] ? currentLot.bins[destinationId][part] :  0
                completeParts = existingPartQty<completeParts ? existingPartQty : completeParts
            }
         }
@@ -641,7 +640,7 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
        if(option.includes(stationID)){
          if(countQuantity>bestQty) bestQty = countQuantity
        }
-        totalCompleteParts+=completeParts
+        totalCompleteParts += completeParts
         completeParts = currentLot.totalQuantity
      }
      //console.log(totalCompleteParts)

@@ -99,10 +99,15 @@ export const ProcessField = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const routes = useSelector(state => state.tasksReducer.tasks)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const processRoutes = values.routes.map(routeId => values.routes[routeId])
-    const startNodes = findProcessStartNodes(processRoutes)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
+    const startNodes = useMemo(() => findProcessStartNodes(values.routes), [values.routes])
+    useEffect(() => {
+        if (startNodes.length > 1 && !values.startDivergeType) {
+            setFieldValue('startDivergeType', 'split')
+        }
+    }, [startNodes])
+    
     // State definitions
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
@@ -229,19 +234,34 @@ export const ProcessField = (props) => {
                         textboxContainerStyle={{ border: "none" }}
                     />
                 </div>
-                {startNodes.length>1 &&
-                  <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginTop: "2.5rem", marginBottom: ".7rem" }}>
-                      <styled.Title style={{ fontSize: "1rem", paddingTop: "0.4rem" }}>Disperse kickoff lots</styled.Title>
+                {!selectedTask && startNodes.length>1 &&
+                    <div style={{marginTop: '2.5rem'}}>
+                        <styled.Title style={{ alignSelf: 'center' }}>Kickoff Diverging Type</styled.Title>
+                        <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: ".7rem" }}>
+                                
+                            <styled.DualSelectionButton
+                                style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                onClick={() => {
+                                    setFieldValue("startDivergeType", 'split')
+                                }}
+                                selected={values.startDivergeType === 'split'}
+                            >
+                                Split
+                            </styled.DualSelectionButton>
 
-                      <Switch
-                          onColor={'#ffbf1f'}
-                          checked={values.disperseKickoff}
-                          onChange={() => {
-                              setFieldValue("disperseKickoff", !values.disperseKickoff)
-                          }}
-                      />
+                            <styled.DualSelectionButton
+                                style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                onClick={() => {
+                                    setFieldValue("startDivergeType", 'choice')
+                                }}
+                                selected={values.startDivergeType === 'choice'}
 
-                  </styled.RowContainer>
+                            >
+                                Choice
+                            </styled.DualSelectionButton>
+
+                        </styled.RowContainer>
+                    </div>
                 }
 
                 <styled.Title schema={'processes'} style={{ marginTop: "2rem", marginBottom: "1rem" }}>Routes</styled.Title>
