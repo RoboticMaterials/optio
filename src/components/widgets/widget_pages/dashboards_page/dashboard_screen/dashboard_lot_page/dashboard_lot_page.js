@@ -32,13 +32,13 @@ import {
   getCurrentRouteForLot,
   getPreviousRouteForLot,
   handleMoveLotToMergeStation,
-  handleMergedLotQuantity,
+  handleMergedLotBin,
 } from "../../../../../../methods/utils/lot_utils";
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import {
   getProcessStations,
-  witchcraft,
+  handleMergeExpression,
 } from "../../../../../../methods/utils/processes_utils";
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from "../../../../../../methods/utils/utils";
@@ -60,9 +60,10 @@ const DashboardLotPage = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { stationID, dashboardID, subPage, lotID, warehouse } = params || {};
+  const { stationID, dashboardID, lotID, warehouseID } = params || {};
 
-  const tasks = useSelector((state) => state.tasksReducer.tasks);
+  
+
   const cards = useSelector((state) => state.cardsReducer.cards);
   const taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
   const routes = useSelector((state) => state.tasksReducer.tasks);
@@ -73,20 +74,25 @@ const DashboardLotPage = (props) => {
     return state.dashboardsReducer.finishEnabledDashboards[dashboardID];
   });
 
+  const loadStationID = useMemo(() => {
+      return !!warehouseID ? warehouseID : stationID
+  }, [warehouseID, stationID])
+
+
   // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
   // but dashboard lot page is still mounted
   const currentLot = useRef(cards[lotID]).current;
   const routeOptions = useRef(
-    processes[currentLot.process_id].routes
-      .map((routeId) => routes[routeId])
-      .filter((route) => route.load === stationID)
+    Object.values(routes)
+      // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
+      .filter((route) => route.load === loadStationID && (route.processId === currentLot.process_id || route.unload === stationID)) 
   ).current;
 
   const [showFinish, setShowFinish] = useState(false);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
   const [moveQuantity, setMoveQuantity] = useState(
-    currentLot.bins[stationID]?.count
+    currentLot.bins[loadStationID]?.count
   );
 
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
@@ -109,42 +115,6 @@ const DashboardLotPage = (props) => {
     setLotContainsInput(containsInput);
   }, [currentLot]);
 
-  // useEffect(() => {
-  //     if (lotID) {
-  //         const lot = cards[lotID]
-  //         setCurrentLot(lot)
-  //         const processStations = Object.keys(getProcessStations(processes[currentLot.process_id], routes))
-
-  //         // If its the last station in the process, then the only option is to finish the lot
-  //         if (processStations[processStations.length - 1] === stationID && !warehouse) {
-  //             setIsFinish(true)
-  //         }
-  //         // If the URL has warehouse, then the task is the previous route (the route that goes from warehouse to current station)
-  //         else if (!!warehouse) {
-  //             const returnedRoute = getPreviousRouteForLot(currentLot, stationID)
-  //             setCurrentTask(returnedRoute)
-  //         }
-  //         else {
-  //             const returnedRoute = getCurrentRouteForLot(currentLot, stationID)
-  //             setCurrentTask(returnedRoute)
-  //         }
-
-  //         // go back if lot has no items at this station (ex. just moved them all).
-  //         // Dont go back though if the prevStation was a warehouse
-  //         // Doesn't make sense to stay on this screen
-  //         if (isObject(lot) && isObject(lot?.bins)) {
-  //             const quantity = getBinQuantity(lot, stationID)
-  //             if ((!quantity || (quantity <= 0)) && !warehouse) {
-  //                 onBack()
-  //             }
-  //         }
-  //     }
-
-  //     return () => {
-
-  //     }
-  // }, [lotID, cards])
-
   //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
   //If multiple routes merge into a station the parts at the station are kept track of at that bin
   //If one type of part doesn't exist yet none of that lot can be moved along
@@ -163,91 +133,29 @@ const DashboardLotPage = (props) => {
     if (mergingRoutes.length > 1) {
       //If multiple routes merge into station, keep track of parts at the station
 
-      let wizardry = witchcraft(
-        destinationId,
-        processes[currentLot.process_id],
-        routes
-      ).flat();
-      iDs.push([]);
-      for (const wands in wizardry) {
-        let statID = wizardry[wands];
-        if (statID !== "OR" && statID !== "AND") {
-          iDs[option].push(statID);
-        } else if (statID === "AND") {
-          allAreOptions = false;
-          option += 1;
-          iDs.push([]);
-        } else if (statID === "OR") {
-          allAreRequired = false;
-        }
-      }
-      //Probably better way to do this but if you never run into an and all the ids give are options
-      if (!!allAreOptions && !allAreRequired) {
-        option = 0;
-        iDs = [];
-        for (const potion in wizardry) {
-          let dumbledore = wizardry[potion];
-          if (dumbledore !== "OR") {
-            iDs.push([]);
-            iDs[option].push(dumbledore);
-            option += 1;
-          }
-        }
-      }
+        let mergingExpression = handleMergeExpression(destinationId, processes[currentLot.process_id], routes)
 
-      //Fix this crap later
-      else if (!allAreOptions && !!allAreRequired) {
-        iDs = [];
-        iDs.push([]);
-        for (const potion in wizardry) {
-          let dumbledore = wizardry[potion];
-          if (dumbledore !== "AND") {
-            iDs[0].push(dumbledore);
-          }
-        }
-      }
+        let tempBin, currentBin = currentLot.bins[destinationId];
+        let traveledRoute = mergingRoutes.find(route => route.load === loadStationID)
+        if (!!currentBin) { 
+            // The Bin for the destination already exists, update quantities
 
-      for (const ind in mergingRoutes) {
-        const traveledRouteId = mergingRoutes[ind]._id;
-
-        if (mergingRoutes[ind].load === stationID) {
-            //Found the route that we are currently transferring parts along
-
-            if (!!currentLot.bins[destinationId]) {
-                const currentBin = currentLot.bins[destinationId];
-
-                let existingQuantity = !!currentBin[traveledRouteId] ? currentBin[traveledRouteId] : 0;
-                currentLot.bins[destinationId] = {
-                    ...currentBin,
-                    [traveledRouteId]: (existingQuantity += quantity)
-                }
-
-                //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
-                currentLot.bins[destinationId].count = handleMergedLotQuantity(
-                    iDs,
-                    mergingRoutes,
-                    currentLot,
-                    destinationId,
-                    quantity,
-                    stationID
-                );
-
-            } else {
-                //Nothing exists at station yet, create bin, add parts to bin
-                currentLot.bins[destinationId] = {
-                    [traveledRouteId]: quantity,
-                };
-                currentLot.bins[destinationId].count = handleMergedLotQuantity(
-                    iDs,
-                    mergingRoutes,
-                    currentLot,
-                    destinationId,
-                    quantity,
-                    stationID
-                );
+            let existingQuantity = !!currentBin[traveledRoute._id] ? currentBin[traveledRoute._id] : 0;
+            tempBin = {
+                ...currentLot.bins[destinationId],
+                [traveledRoute._id]: (existingQuantity += quantity)
             }
+
+            currentLot.bins[destinationId] = handleMergedLotBin(tempBin, mergingExpression);
+        } else { // The Bin for the destination does not exist, create is here
+
+            tempBin = {
+                [traveledRoute._id]: quantity,
+            }
+
+            currentLot.bins[destinationId] = handleMergedLotBin(tempBin, mergingExpression);
         }
-      }
+
     } else {
       // Only one route enters station, don't worry about tracking parts at the station
       let totalQuantity = !!currentLot.bins[destinationId]?.count
@@ -257,25 +165,26 @@ const DashboardLotPage = (props) => {
         count: totalQuantity,
       };
     }
+
   };
 
   const handleCurrentStationLot = (quantity) => {
     const mergingRoutes = processes[currentLot.process_id].routes
       .map((routeId) => routes[routeId])
-      .filter((route) => route.unload === stationID);
+      .filter((route) => route.unload === loadStationID);
 
     if (mergingRoutes.length > 1) {
       //subtract quantity from both count and the parts at the station
-      for (const ind in currentLot.bins[stationID]) {
-        if (currentLot.bins[stationID][ind] - quantity < 1) {
-          delete currentLot.bins[stationID][ind];
-        } else currentLot.bins[stationID][ind] -= quantity;
+      for (const ind in currentLot.bins[loadStationID]) {
+        if (currentLot.bins[loadStationID][ind] - quantity < 1) {
+          delete currentLot.bins[loadStationID][ind];
+        } else currentLot.bins[loadStationID][ind] -= quantity;
       }
     } else {
-      if (quantity === currentLot.bins[stationID].count) {
-        delete currentLot.bins[stationID];
+      if (quantity === currentLot.bins[loadStationID].count) {
+        delete currentLot.bins[loadStationID];
       } else {
-        currentLot.bins[stationID].count -= quantity;
+        currentLot.bins[loadStationID].count -= quantity;
       }
     }
   };
@@ -378,7 +287,7 @@ const DashboardLotPage = (props) => {
   }, [routeOptions, showRouteSelector]);
 
   const renderFinishQuantity = () => {
-    const lotCount = currentLot?.bins[stationID]?.count;
+    const lotCount = currentLot?.bins[loadStationID]?.count;
 
     return (
       <QuantityModal
@@ -433,7 +342,7 @@ const DashboardLotPage = (props) => {
       // first, post task queue
       const result = await dispatchPostTaskQueue({
         hil_response: null,
-        tasks,
+        routes,
         deviceType: DEVICE_CONSTANTS.HUMAN,
         taskQueue,
         Id: CUSTOM_TASK_ID,
@@ -480,6 +389,7 @@ const DashboardLotPage = (props) => {
     }
   };
 
+
   return (
     <styled.LotContainer>
       {renderRouteSelectorModal}
@@ -495,7 +405,7 @@ const DashboardLotPage = (props) => {
         <DashboardLotFields
           currentLot={currentLot}
           stationID={stationID}
-          warehouse={!!warehouse}
+          warehouse={!!warehouseID}
         />
         {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} />}
       </styled.LotBodyContainer>

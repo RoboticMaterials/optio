@@ -297,17 +297,6 @@ const DashboardScreen = (props) => {
                         dashboard={currentDashboard}
                         stationID={stationID}
                         process={process}
-                        onSubmit={(name, success, quantity, message) => {
-                            // set alert
-                            setAddTaskAlert({
-                                type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
-                                label: success ? "Lot Moved To Station" : "Lot Move Failed",
-                                message: message
-                            })
-
-                            // clear alert
-                            setTimeout(() => setAddTaskAlert(null), 1800)
-                        }}
                     />
                 )
 

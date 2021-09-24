@@ -13,7 +13,7 @@ import { useParams, useHistory } from "react-router-dom";
 import {
   getBinQuantity,
   getCustomFields,
-  getLotTotalQuantity,
+  safelyDeconstructBin,
 } from "../../../../../methods/utils/lot_utils";
 import * as styled from "./lot.style";
 
@@ -62,95 +62,68 @@ const LotContainer = (props) => {
     [lotTemplateId, lot]
   );
 
+  if (!(binId in bins)) { return null }
   const { count, ...partials } = bins[binId];
 
-  console.log("LOT", lot);
-
-  if (!!partials) {
-    return (
+  return (
       <styled.LotFamilyContainer>
-        <Lot
-          lotDisabled={count < 1 && !!isDashboard}
-          isDashboard={!!isDashboard}
-          stationName={stationName}
-          templateValues={templateValues}
-          totalQuantity={totalQuantity}
-          lotNumber={lotNumber}
-          processName={processName}
-          flags={flags || []}
-          enableFlagSelector={enableFlagSelector}
-          name={name}
-          count={count}
-          id={lotId}
-          isSelected={false}
-          selectable={false}
-          onClick={() => {}}
-          {...rest}
-          containerStyle={{
-            width: "80%",
-            margin: ".5rem auto .5rem auto",
-            ...containerStyle,
-          }}
-        />
-        {Object.entries(partials).map(([routeId, quantity]) => (
-            <>
-            {count < quantity &&
+            {count > 0 &&
                 <Lot
-                    lotDisabled={true}
+                    lotDisabled={count < 1 && !!isDashboard}
                     isDashboard={!!isDashboard}
-
-                    processName={processName}
                     stationName={stationName}
                     templateValues={templateValues}
-                    totalQuantity={totalQuantity - count}
+                    totalQuantity={totalQuantity}
                     lotNumber={lotNumber}
+                    processName={processName}
                     flags={flags || []}
                     enableFlagSelector={enableFlagSelector}
-                    name={name + ` (${routes[routeId]?.part})`}
-                    count={quantity - count}
+                    name={name}
+                    count={count}
                     id={lotId}
                     isSelected={false}
                     selectable={false}
                     onClick={() => {}}
                     {...rest}
                     containerStyle={{
-                    width: "80%",
-                    margin: ".5rem auto .5rem auto",
-                    ...containerStyle,
+                        width: "80%",
+                        margin: ".5rem auto .5rem auto",
+                        ...containerStyle,
                     }}
                 />
             }
-            </>
-        ))}
+            {Object.entries(partials).map(([routeId, quantity]) => (
+                <>
+                    {count < quantity &&
+                        <Lot
+                            lotDisabled={true}
+                            isDashboard={!!isDashboard}
+
+                            processName={processName}
+                            stationName={stationName}
+                            templateValues={templateValues}
+                            totalQuantity={totalQuantity - count}
+                            lotNumber={lotNumber}
+                            flags={flags || []}
+                            enableFlagSelector={enableFlagSelector}
+                            name={name + ` (${routes[routeId]?.part})`}
+                            count={quantity - count}
+                            id={lotId}
+                            isSelected={false}
+                            selectable={false}
+                            onClick={() => {}}
+                            {...rest}
+                            containerStyle={{
+                            width: "80%",
+                            margin: ".5rem auto .5rem auto",
+                            ...containerStyle,
+                            }}
+                        />
+                    }
+                </>
+            ))}
       </styled.LotFamilyContainer>
-    );
-  } else {
-    return (
-      <Lot
-        lotDisabled={count < 1 && !!isDashboard}
-        isDashboard={!!isDashboard}
-        stationName={stationName}
-        templateValues={templateValues}
-        totalQuantity={totalQuantity}
-        lotNumber={lotNumber}
-        processName={processName}
-        flags={flags || []}
-        enableFlagSelector={enableFlagSelector}
-        name={name}
-        count={count}
-        id={lotId}
-        isSelected={false}
-        selectable={false}
-        onClick={() => {}}
-        {...rest}
-        containerStyle={{
-          width: "80%",
-          margin: ".5rem auto .5rem auto",
-          ...containerStyle,
-        }}
-      />
-    );
-  }
+  )
 };
 
 LotContainer.propTypes = {

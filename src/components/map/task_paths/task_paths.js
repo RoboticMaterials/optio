@@ -42,8 +42,8 @@ export default function TaskPaths(props) {
 
     const [x1, setX1] = useState(0)
     const [y1, setY1] = useState(0)
-    const [x2, setX2] = useState(0)
-    const [y2, setY2] = useState(0)
+    const [x2, setX2] = useState(null)
+    const [y2, setY2] = useState(null)
 
     // To be able to remove the event listener, we need to reference the same function.
     // Therefore we save the function in the state
@@ -66,27 +66,26 @@ export default function TaskPaths(props) {
                 // Check to see if its a station or position
                 const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
                 if (startPos) {
-                    setX1(startPos.x)
-                    setY1(startPos.y)
+                    setX1(startPos.x);
+                    setY1(startPos.y);
                 }
-            }
-            if (unloadPositionId !== null) {
-                // Check to see if its a station or position
-                const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
-                if (endPos) {
-                    setX2(endPos.x)
-                    setY2(endPos.y)
+
+                if (unloadPositionId === null) {
+                    setX2(startPos.x);
+                    setY2(startPos.y);
+                } else {
+                    // Check to see if its a station or position
+                    const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
+                    if (endPos) {
+                        setX2(endPos.x)
+                        setY2(endPos.y)
+                    }
                 }
             }
         }
-    })
 
-    // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
-    useEffect(() => {
-
+        // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
         if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
-            setX2(x1)
-            setY2(y1)
             window.addEventListener('mousemove', lockToMouse, false)
             window.addEventListener('keydown', exitTaskPath)
         } else {
@@ -98,17 +97,13 @@ export default function TaskPaths(props) {
             window.removeEventListener('mousemove', lockToMouse, false)
             window.removeEventListener('keydown', exitTaskPath)
         }
-    }, [selectedTask])
+
+    }, [selectedTask, selectedHoveringTask])
+
+    
+
 
     if (selectedTask !== null && loadPositionId != null) {
-        const startPos = positions[loadPositionId]
-
-        let endPos
-        if (unloadPositionId !== null) { // The task has a start AND end position
-            endPos = positions[unloadPositionId]
-        } else { // Task has a start position but no end position (instead snap to mouse position)
-            endPos = mousePos
-        }
 
         const lineLen = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
         const lineRot = Math.atan2((y2 - y1), (x2 - x1))
@@ -137,12 +132,12 @@ export default function TaskPaths(props) {
                     </defs>
 
                     <line x1={`${x1}`} y1={`${y1}`}
-                        x2={`${x2}`} y2={`${y2}`}
+                        x2={`${!!x2 ? x2 : x1}`} y2={`${!!y2 ? y2 : y1}`}
                         strokeWidth={`${props.d3.scale * 8}`} stroke={primaryColor}
                         strokeLinecap="round"
                     />
                     <line x1={`${x1}`} y1={`${y1}`}
-                        x2={`${x2}`} y2={`${y2}`}
+                        x2={`${!!x2 ? x2 : x1}`} y2={`${!!y2 ? y2 : y1}`}
                         strokeWidth={`${props.d3.scale * 6}`} stroke={secondaryColor}
                         strokeLinecap="round"
                     />

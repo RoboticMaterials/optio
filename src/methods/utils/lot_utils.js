@@ -15,7 +15,7 @@ import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_pl
 // Import external utils
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
 import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations, witchcraft } from './processes_utils'
+import { getProcessStations, handleMergeExpression } from './processes_utils'
 import { getLoadStationId } from './route_utils'
 import { jsDateToString } from './card_utils'
 
@@ -385,10 +385,25 @@ export const getLotTotalQuantity = (card) => {
 }
 
 export const getBinQuantity = ({ bins }, binId) => {
-    if(!!bins){
-      return bins[binId]?.count || 0
+    if(!!bins && !!bins[binId]){
+        return  Object.values(bins[binId]).reduce((pv, cv) => pv + cv, 0);
     }
     else return 0
+}
+
+// If the count doesnt exist things break. This allows us to avoid that error
+export const safelyDeconstructBin = (bins, binId) => {
+    const test = {count: 2}
+    const { count, ...b} = test
+    console.log("A", count, b)
+
+
+    if(!!bins && !!bins[binId] && ('count' in bins[binId])){
+        const { count, ...partials } = bins[binId]
+        console.log(bins[binId], count, partials)
+      return {count, ...partials}
+    }
+    else return {count: 0}
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {
@@ -649,6 +664,50 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
 
 }
 
+/** Davis
+ * Given the bin at a destination, this function determines the ~actual~ quantity of parts at the station based on the expression
+ * that describes the required inputs (based on splits and merges).
+ * 
+ * @param {object} bins The current bins
+ * @param {array} mergeExpression This is the expression output from the handleMergeExpression function from process_utils. It
+ * contains the "AND" "OR" boolean expressions that describe the required input routes to count as a part
+ */
+export const handleMergedLotBin = (bin, mergeExpression) => {
+
+    const recursiveConditionalQuantities = (subExpression) => {
+        // Since the expression can have nested elements, this function needs to be recursive
+
+        if (Array.isArray(subExpression)) {
+            if (subExpression[0] === 'AND') {
+                let count = Math.max(...Object.values(bin));
+                for (var i=1; i<subExpression.length; i++) {
+                    // If its an AND, its the minimum of all the quantities of the incoming routes
+                    count = Math.min(count, recursiveConditionalQuantities(subExpression[i]));
+                }
+                return count
+            } else if (subExpression[0] === 'OR') {
+                let count = 0
+                for (var i=1; i<subExpression.length; i++) {
+                    // If its an OR, we actually want the SUM of all the quantities of the station options
+                    count += recursiveConditionalQuantities(subExpression[i])
+                }
+                return count
+            }
+            
+        } else {
+            console.log(subExpression, subExpression in bin ? bin[subExpression] : 0)
+            return subExpression in bin ? bin[subExpression] : 0;
+        }
+
+    }
+
+    return {
+        ...bin,
+        count: recursiveConditionalQuantities(mergeExpression)
+    }
+
+}
+
 export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quantity) => {
 
     const processes = store.getState().processesReducer.processes || {}
@@ -665,7 +724,7 @@ export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quant
                           .filter(route => route.unload === nextStation)
 
 
-    let wizardry = witchcraft(nextStation, processes[lot.process_id], routes).flat()
+    let wizardry = handleMergeExpression(nextStation, processes[lot.process_id], routes).flat()
 
       iDs.push([])
       for(const wands in wizardry){
