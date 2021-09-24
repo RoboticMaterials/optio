@@ -38,7 +38,6 @@ const WarehouseModal = (props) => {
         title,
         close,
         dashboard,
-        onSubmit,
         stationID
     } = props
 
@@ -69,8 +68,8 @@ const WarehouseModal = (props) => {
     // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
     // There would be no way to tell which one is which
-    const handleCardClicked = (lotID) => {
-          history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/warehouse`)
+    const handleCardClicked = (lotID, warehouseID) => {
+          history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/${warehouseID}`)
           close()
     }
 
@@ -178,7 +177,7 @@ const WarehouseModal = (props) => {
                             id={lotId}
                             index={cardIndex}
                             onClick={() => {
-                                handleCardClicked(lotId)
+                                handleCardClicked(lotId, warehouseID)
                             }}
                             containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
                         />

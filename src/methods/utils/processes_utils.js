@@ -518,70 +518,81 @@ export const findProcessEndNode = (routes) => {
  * @param {array} routes
  * @param {ID} stationId
  */
-export const witchcraft = (stationId, process, routes) => {
-
-
+export const handleMergeExpression = (stationId, process, routes) => {
 
     const processRoutes = process.routes.map(routeId => routes[routeId])
 
-
-    let startingExpression;
-    const startNodes = findProcessStartNodes(processRoutes);
-    if (startNodes.length === 1) {
-        startingExpression = [null, startNodes[0]];
-    } else if (process.startDivergeType === 'split') {
-        startingExpression = ['AND', ...startNodes];
-    } else if (process.startDivergeType === 'choice') {
-        startingExpression = ['OR', ...startNodes];
-    }
-
-    // const recursivePrint = (element) => {
-    //     if (Array.isArray(element)) {
-    //         let elemCopy = JSON.parse(JSON.stringify(element))
-    //         for (var i=1; i<element.length; i++) {
-    //             elemCopy[i] = recursivePrint(element[i]);
-    //         }
-    //         return elemCopy
-    //     } else {
-    //         return stations[element].name
-    //     }
-    // }
-
-    let node, outgoingRoutes, nextNodes;
+    let node, outgoingRoutes, nextRoutes, routeId;
     const recursiveExpand = (sExpression) => {
+
+        console.log(sExpression.map((el, idx) => idx==0 ? el : routes[el].name))
 
         let sExpressionCopy = deepCopy(sExpression);
         for (var entryIdx = 1; entryIdx < sExpression.length; entryIdx++) {
 
-            node = sExpression[entryIdx];
+            routeId = sExpression[entryIdx]
+            node = routes[routeId].unload;
             outgoingRoutes = getNodeOutgoing(node, processRoutes);
-            if (outgoingRoutes.length === 0) {
-                return node;
-            } else if (outgoingRoutes.length === 1 && outgoingRoutes[0].unload !== stationId) {
+            if (node === stationId) {
+                sExpressionCopy[entryIdx] = routeId
+            } else if (outgoingRoutes.length === 0) {
+                sExpressionCopy[entryIdx] = null;
+            } else if (outgoingRoutes.length === 1) {
                 // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
                 // This null is removed before the expression is returned \/
-                sExpressionCopy[entryIdx] = recursiveExpand([null, outgoingRoutes[0].unload]);
+                sExpressionCopy[entryIdx] = recursiveExpand([null, outgoingRoutes[0]._id]);
             } else {
-                nextNodes = outgoingRoutes.map(route => route.unload);
-                if (!nextNodes.includes(stationId)) {
-                    if (outgoingRoutes.some(route => route.divergeType === 'split')) {
-                        sExpressionCopy[entryIdx] = recursiveExpand(['AND', ...nextNodes])
-                    } else {
-                        sExpressionCopy[entryIdx] = recursiveExpand(['OR', ...nextNodes])
-                    }
+                nextRoutes = outgoingRoutes.map(route => route._id);
+                if (outgoingRoutes.some(route => route.divergeType === 'split')) {
+                    sExpressionCopy[entryIdx] = recursiveExpand(['AND', ...nextRoutes])
+                } else {
+                    sExpressionCopy[entryIdx] = recursiveExpand(['OR', ...nextRoutes])
                 }
             }
         }
 
-        if (sExpressionCopy[0] === null || sExpressionCopy.every((element, idx) => idx === 0 || JSON.stringify(element) === JSON.stringify(sExpressionCopy[1]))) {
-            // If all the elements of an AND or OR are the same, then collapse it into a single node
-            return sExpressionCopy[1]
+        if (sExpressionCopy[0] === null) {
+            return sExpressionCopy[1];
         } else {
-            return sExpressionCopy
+            sExpressionCopy = sExpressionCopy.filter(el => el !== null);
+
+            if (sExpression.length < 2) {
+                return null;
+            } else if (sExpressionCopy.every((element, idx) => idx === 0 || JSON.stringify(element) === JSON.stringify(sExpressionCopy[1]))) {
+                return sExpressionCopy[1];
+            } else {
+                return sExpressionCopy;
+            }
         }
     }
 
-    return recursiveExpand(startingExpression)
+    const startNodes = findProcessStartNodes(processRoutes);
+    let startRouteExpression = process.startDivergeType === 'split' ? ['AND'] : ['OR']
+    for (var startNode of startNodes) {
+        outgoingRoutes = getNodeOutgoing(startNode, processRoutes);
+        if (outgoingRoutes.length === 1) {
+            // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
+            // This null is removed before the expression is returned \/
+            startRouteExpression.push(recursiveExpand([null, outgoingRoutes[0]._id]));
+        } else {
+            nextRoutes = outgoingRoutes.map(route => route._id);
+            if (outgoingRoutes.some(route => route.divergeType === 'split')) {
+                startRouteExpression.push(recursiveExpand(['AND', ...nextRoutes]));
+            } else {
+                startRouteExpression.push(recursiveExpand(['OR', ...nextRoutes]));
+            }
+        }
+    }
+
+    console.log(startRouteExpression)
+
+    startRouteExpression = startRouteExpression.filter(el => el !== null);
+    if (startRouteExpression.every((element, idx) => idx === 0 || JSON.stringify(element) === JSON.stringify(startRouteExpression[1]))) {
+        // If all the elements of an AND or OR are the same, then collapse it into a single node
+        return startRouteExpression[1];
+    } else {
+        return startRouteExpression;
+    }
 
 
 }

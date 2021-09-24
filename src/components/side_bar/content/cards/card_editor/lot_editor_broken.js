@@ -706,7 +706,7 @@ const FormComponent = (props) => {
                             <styled.SubHeader>
                                 <styled.IconRow>
                                     <LabeledButton
-                                        label={"Select Template"}
+                                        label={"Select Product Group"}
                                     >
                                         <styled.TemplateButton
                                             type={"button"}
@@ -720,7 +720,7 @@ const FormComponent = (props) => {
                                     </LabeledButton>
 
                                     <div>
-                                        <styled.ContentTitle>Selected Template: </styled.ContentTitle>
+                                        <styled.ContentTitle>Selected Product Group: </styled.ContentTitle>
                                         <styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
                                     </div>
 

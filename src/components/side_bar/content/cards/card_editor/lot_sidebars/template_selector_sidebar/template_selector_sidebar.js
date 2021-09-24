@@ -65,7 +65,7 @@ const TemplateSelectorSidebar = (props) => {
                         }}
                     >
                         <i style={{marginRight: '1rem'}} className="fa fa-plus" aria-hidden="true"/>
-                        Create New Template
+                        Create Product Group
                     </Button>
                 }
                 <style.LotTemplateButton

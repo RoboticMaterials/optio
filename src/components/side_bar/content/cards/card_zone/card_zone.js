@@ -77,6 +77,26 @@ const CardZone = ((props) => {
         name: processName = ""
     } = currentProcess || {}
 
+    const doesProcessEndInWarehouse = useMemo(() => {
+        const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
+
+        let loadStations = processRoutes.map(route => route.load);
+        let unloadStations = processRoutes.map(route => route.unload);
+
+        for (var i=0; i<unloadStations.length; i++) {
+            const unloadStationA = unloadStations[i];
+
+            
+            if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
+                if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
+                    return stations[unloadStationA].type === 'warehouse'
+                }
+            }
+        }
+
+        return false;
+    }, [currentProcess.routes, stations])
+
     // const [cardsSorted, setCardsSorted] = useState({})
     // const [queue, setQueue] = useState([])
     // const [finished, setFinished] = useState([])hideQueueFinish
@@ -559,21 +579,23 @@ const CardZone = ((props) => {
 
             {renderStationColumns}
 
-            <FinishColumn
-                setSelectedCards={setSelectedCards}
-                selectedCards={selectedCards}
-                key={"FINISH"}
-                sortMode={sortMode}
-                sortDirection={sortDirection}
-                maxHeight={maxHeight}
-                station_id={"FINISH"}
-                setShowCardEditor={setShowCardEditor}
-                showCardEditor={showCardEditor}
-                stationName={"Finished"}
-                processId={processId}
-                cards={finished}
-                onCardClick={handleCardClick}
-            />
+            {!doesProcessEndInWarehouse && 
+                <FinishColumn
+                    setSelectedCards={setSelectedCards}
+                    selectedCards={selectedCards}
+                    key={"FINISH"}
+                    sortMode={sortMode}
+                    sortDirection={sortDirection}
+                    maxHeight={maxHeight}
+                    station_id={"FINISH"}
+                    setShowCardEditor={setShowCardEditor}
+                    showCardEditor={showCardEditor}
+                    stationName={"Finished"}
+                    processId={processId}
+                    cards={finished}
+                    onCardClick={handleCardClick}
+                />
+            }
         </styled.Container>
     )
 })

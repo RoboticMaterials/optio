@@ -854,7 +854,7 @@ const FormComponent = (props) => {
                                     </LabeledButton>
 
                                     <div>
-                                        <styled.ContentTitle>Selected Template: </styled.ContentTitle>
+                                        <styled.ContentTitle>Selected Product Group: </styled.ContentTitle>
                                         <styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
                                     </div>
 

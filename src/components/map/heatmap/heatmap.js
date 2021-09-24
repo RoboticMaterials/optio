@@ -55,7 +55,7 @@ const HeatMap = (props) => {
                 WIPRatio = stationWIP[pStationId] / meanProcessWIP;
 
                 if (pStationId in WIPBuildupRatios) {
-                    WIPBuildupRatios[pStationId] = Math.max(WIPRatio, WIPBuildupRatios[pStationId]) // Only care about the max of all the WIP ratios at the station
+                    WIPBuildupRatios[pStationId] = WIPRatio + WIPBuildupRatios[pStationId] // Take the sum of WIP ratios for every process that goes through the station
                 } else if (WIPRatio > 0) {
                     WIPBuildupRatios[pStationId] = WIPRatio;
                 }
