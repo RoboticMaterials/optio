@@ -37,7 +37,7 @@ const DashboardButton = (props => {
         iconColor,
         iconClassName,
         svgColor,
-        invert,
+        invert,  
     } = props
 
     const theme = useContext(ThemeContext);

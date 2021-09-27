@@ -28,9 +28,11 @@ const DashboardLotButtons = (props) => {
         maxQuantity,
         minQuantity,
         handleFinish,
-        disabled
+        onInputChange,
+        disabled,
+        onKeyPress,
+        onBlur,
     } = props
-
 
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
@@ -56,7 +58,7 @@ const DashboardLotButtons = (props) => {
 
                 hoverable={false}
                 // taskID={taskID}
-                disabled={false}
+                disabled={disabled}
                 // containerCss={style.ButtonContainerCss}
                 error={error}
             />
@@ -115,12 +117,14 @@ const DashboardLotButtons = (props) => {
                 maxValue={maxQuantity}
                 plusDisabled = {quantity===maxQuantity? true:false}
                 minusDisabled = {quantity===1? true:false}
-                value={quantity}
-                onMinusClick={() => setQuantity(quantity - 1)}
-                onPlusClick={() => setQuantity(quantity + 1)}
-                onInputChange={(input) => setQuantity(input)}
-
+                value={!!Number.isInteger(parseInt(quantity)) ? quantity: null}
+                onMinusClick={() => setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)}
+                onPlusClick={() => {
+                  setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
+                }}
                 containerStyle={{marginBottom: '1rem', marginTop: '1rem'}}
+                onInputChange = {onInputChange}
+                onBlur = {onBlur}
             />
             {isFinish ?
                 renderFinishButton()

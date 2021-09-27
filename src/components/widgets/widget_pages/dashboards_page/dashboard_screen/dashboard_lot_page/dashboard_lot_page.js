@@ -71,7 +71,6 @@ const DashboardLotPage = (props) => {
   const dashboards = useSelector((state) => state.dashboardsReducer.dashboards);
   const taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
   const routes = useSelector((state) => state.tasksReducer.tasks);
-  console.log(routes)
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
 
@@ -108,7 +107,6 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(
     currentLot.bins[loadStationID]?.count
   );
-
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchPostTaskQueue = (props) => dispatch(handlePostTaskQueue(props));
   const disptachPutTaskQueue = async (item, id) =>
@@ -216,6 +214,22 @@ const DashboardLotPage = (props) => {
       }
     }
   };
+
+  const handleTypedQty = (e) => {
+    let arr = Array.from(String(moveQuantity), Number)
+    if(!!arr[0]){
+      if(e.nativeEvent.inputType === 'deleteContentBackward') arr.splice(-1)
+      else arr.push(e.nativeEvent.data)
+      setMoveQuantity(parseInt(arr.join('')))
+    }
+    else{
+      if(e.nativeEvent.inputType !== 'deleteContentBackward'){
+        arr = []
+        arr.push(e.nativeEvent.data)
+        setMoveQuantity(parseInt(arr.join('')))
+      }
+    }
+  }
 
   const onBack = () => {
     history.push(`/locations/${stationID}/dashboards/${dashboardID}`);
@@ -503,11 +517,18 @@ const DashboardLotPage = (props) => {
           handleFinish={() => setShowFinish(true)}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}
+          onInputChange = {(e) =>{
+            handleTypedQty(e)
+          }}
           setQuantity={setMoveQuantity}
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
           //route={currentTask}
-          disabled={!processes[cards[lotID]?.process_id]?.showFinish}
+          disabled={!moveQuantity || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
+          onBlur = {()=> {
+            if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
+            if(moveQuantity>currentLot.bins[stationID]?.count) setMoveQuantity(currentLot.bins[stationID].count)
+          }}
         />
       </styled.LotButtonContainer>
       {showFinish && renderFinishQuantity()}

@@ -103,7 +103,6 @@ const ProcessForm = (props) => {
 	const handleDeleteRemovedRoutes = (processRoutes) => {
 
 		Object.values(tasks).forEach((task) => {
-			console.log(task)
 			const found = !!processRoutes.find((route) => route === task._id)
 			if(!found && task.processId===selectedProcess._id) dispatchDeleteTask(task._id)
 		})
