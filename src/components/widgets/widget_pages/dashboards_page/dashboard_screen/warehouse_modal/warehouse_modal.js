@@ -38,6 +38,7 @@ const WarehouseModal = (props) => {
         title,
         close,
         dashboard,
+        onCardClicked,
         stationID
     } = props
 
@@ -69,8 +70,13 @@ const WarehouseModal = (props) => {
     // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
     // There would be no way to tell which one is which
     const handleCardClicked = (lotID, warehouseID) => {
-          history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/${warehouseID}`)
-          close()
+        if (!!onCardClicked) {
+            onCardClicked(lotID, warehouseID);
+        } else {
+            history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/${warehouseID}`)
+        }
+          
+        close()
     }
 
     const warehouseProcessTransfer = async(lotID) => {
@@ -128,7 +134,7 @@ const WarehouseModal = (props) => {
         let warehouseCards = []
 
         // Goes through each warehouse that is infront to the station and renders cards
-        return warehouseStations.map((warehouse) => {
+        const warehouseRenderCards = warehouseStations.map((warehouse) => {
             const warehouseID = warehouse?._id
             return organizedCards
                 .filter(card => getIsCardAtBin(card, warehouseID))
@@ -186,6 +192,14 @@ const WarehouseModal = (props) => {
 
         })
 
+        if (warehouseRenderCards.every(nested => nested.length > 0)) {
+            return warehouseRenderCards;
+        } else {
+            return (
+                <styled.NoCardsLabel>No Lots in Warehouse</styled.NoCardsLabel>
+            )
+        }
+
 
     }, [cards])
 
@@ -195,7 +209,7 @@ const WarehouseModal = (props) => {
 
         <styled.Container
             isOpen={isOpen}
-            contentLabel="Kick Off Modal"
+            contentLabel="Warehouse Modal"
             onRequestClose={close}
             style={{
                 overlay: {
@@ -206,7 +220,7 @@ const WarehouseModal = (props) => {
         >
             <styled.Header>
                 <styled.HeaderMainContentContainer>
-                    <styled.Title>{title}</styled.Title>
+                    <styled.Title>{stations[warehouse?._id]?.name || 'Warehouse'}</styled.Title>
                     <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close} />
 
                 </styled.HeaderMainContentContainer>

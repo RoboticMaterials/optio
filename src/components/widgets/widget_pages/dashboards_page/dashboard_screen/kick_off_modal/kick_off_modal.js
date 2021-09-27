@@ -62,6 +62,7 @@ const KickOffModal = (props) => {
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
     const processCards = useSelector(state => { return state.cardsReducer.processCards })
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
+    const stations = useSelector(state => state.stationsReducer.stations) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
@@ -122,7 +123,7 @@ const KickOffModal = (props) => {
         if(!!card && quantity > 0){ // Make sure the card is real
             if(startDivergeType === undefined || startDivergeType === 'split'){
             const processRoutes = processes[card.process_id].routes.map(routeId => routes[routeId])
-            const kickoffStations = findProcessStartNodes(processRoutes)
+            const kickoffStations = findProcessStartNodes(processRoutes).filter(kickoffStation => stations[kickoffStation]?.type !== 'warehouse')
             for(var station in kickoffStations){
                 let totalQuantity = !!updatedCard.bins[kickoffStations[station]]?.count ? updatedCard.bins[kickoffStations[station]].count + quantity : quantity
                 updatedCard.bins[kickoffStations[station]] = {

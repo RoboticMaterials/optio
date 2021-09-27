@@ -19,6 +19,13 @@ export const HeaderMainContentContainer = styled.div`
   flex: 1;
 `
 
+export const NoCardsLabel = styled.div`
+  justify-content: center;
+  color: ${props => props.theme.bg.quinary};
+  font-size: ${props => props.theme.fontSize.sz2};
+  margin-top: 2rem;
+`
+
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -42,7 +49,7 @@ export const Title = styled.h2`
   align-items: center;
   font-size: ${props => props.theme.fontSize.sz2};
   font-weight: ${props => props.theme.fontWeight.bold};
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
   flex-grow: 1;
 `;
 
