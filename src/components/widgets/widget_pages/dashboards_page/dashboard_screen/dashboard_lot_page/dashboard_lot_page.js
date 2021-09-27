@@ -71,6 +71,7 @@ const DashboardLotPage = (props) => {
   const dashboards = useSelector((state) => state.dashboardsReducer.dashboards);
   const taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
   const routes = useSelector((state) => state.tasksReducer.tasks);
+  console.log(routes)
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
 
@@ -86,7 +87,6 @@ const DashboardLotPage = (props) => {
   // but dashboard lot page is still mounted
   const currentLot = useRef(cards[lotID]).current;
   const currentProcess = useRef(processes[currentLot.process_id]).current;
-
   const routeOptions = useRef(
     Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
@@ -101,7 +101,6 @@ const DashboardLotPage = (props) => {
           routeOptions.findIndex((option) => option.unload === route.unload) === idx
       )
   ).current;
-
   const [showFinish, setShowFinish] = useState(false);
   const [showWarehouseModal, setShowWarehouseModal] = useState(false);
   const [lotContainsInput, setLotContainsInput] = useState(false);
@@ -162,12 +161,12 @@ const DashboardLotPage = (props) => {
       if (!!currentBin) {
         // The Bin for the destination already exists, update quantities
 
-        let existingQuantity = !!currentBin[traveledRoute._id]
-          ? currentBin[traveledRoute._id]
+        let existingQuantity = !!currentBin[traveledRoute?._id]
+          ? currentBin[traveledRoute?._id]
           : 0;
         tempBin = {
           ...currentLot.bins[destinationId],
-          [traveledRoute._id]: (existingQuantity += quantity),
+          [traveledRoute?._id]: (existingQuantity += quantity),
         };
 
         currentLot.bins[destinationId] = handleMergedLotBin(
@@ -178,7 +177,7 @@ const DashboardLotPage = (props) => {
         // The Bin for the destination does not exist, create is here
 
         tempBin = {
-          [traveledRoute._id]: quantity,
+          [traveledRoute?._id]: quantity,
         };
 
         currentLot.bins[destinationId] = handleMergedLotBin(
@@ -287,8 +286,8 @@ const DashboardLotPage = (props) => {
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
     const processStartNodes = findProcessStartNodes(processRoutes);
 
-    console.log(processStartNodes.map(id => stations[id]?.name), processRoutes
-      .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse'))
+    //console.log(processStartNodes.map(id => stations[id]?.name), processRoutes
+    //  .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse'))
 
     return processRoutes
       .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse')

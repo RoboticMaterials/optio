@@ -107,7 +107,8 @@ export const ProcessField = (props) => {
             setFieldValue('startDivergeType', 'split')
         }
     }, [startNodes])
-    
+
+
     // State definitions
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
@@ -238,7 +239,7 @@ export const ProcessField = (props) => {
                     <div style={{marginTop: '2.5rem'}}>
                         <styled.Title style={{ alignSelf: 'center' }}>Kickoff Diverging Type</styled.Title>
                         <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: "solid #b8b9bf 0.1rem", paddingBottom: "0.5rem", marginBottom: ".7rem" }}>
-                                
+
                             <styled.DualSelectionButton
                                 style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                 onClick={() => {
