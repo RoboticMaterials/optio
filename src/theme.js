@@ -216,7 +216,7 @@ export const theme = {
             },
             warehouse: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',
-                solid: '#5c6fff',
+                solid: '#85b6ff',
                 iconName: 'fas fa-box',
             },
         }

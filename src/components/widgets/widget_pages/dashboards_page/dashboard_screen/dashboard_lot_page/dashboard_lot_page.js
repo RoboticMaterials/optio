@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 
 // Import styles
+import { ThemeContext } from "styled-components";
 import * as styled from "./dashboard_lot_page.style";
 
 // Import Basic Components
@@ -11,7 +12,9 @@ import { uuidv4 } from "../../../../../../methods/utils/utils";
 // Import Components
 import DashboardLotFields from "./dashboard_lot_fields/dashboard_lot_fields";
 import DashboardLotButtons from "./dashboard_lot_buttons/dashboard_lot_buttons";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
+import WarehouseModal from "../warehouse_modal/warehouse_modal";
 import LotFlags from "../../../../../side_bar/content/cards/lot/lot_flags/lot_flags";
 import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_box";
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
@@ -37,7 +40,7 @@ import {
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import {
-  getProcessStations,
+  findProcessStartNodes,
   handleMergeExpression,
 } from "../../../../../../methods/utils/processes_utils";
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
@@ -60,11 +63,12 @@ const DashboardLotPage = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const theme = useContext(ThemeContext);
+
   const { stationID, dashboardID, lotID, warehouseID } = params || {};
 
-  
-
   const cards = useSelector((state) => state.cardsReducer.cards);
+  const dashboards = useSelector((state) => state.dashboardsReducer.dashboards);
   const taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
   const routes = useSelector((state) => state.tasksReducer.tasks);
   const processes = useSelector((state) => state.processesReducer.processes);
@@ -75,20 +79,31 @@ const DashboardLotPage = (props) => {
   });
 
   const loadStationID = useMemo(() => {
-      return !!warehouseID ? warehouseID : stationID
-  }, [warehouseID, stationID])
-
+    return !!warehouseID ? warehouseID : stationID;
+  }, [warehouseID, stationID]);
 
   // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
   // but dashboard lot page is still mounted
   const currentLot = useRef(cards[lotID]).current;
+  const currentProcess = useRef(processes[currentLot.process_id]).current;
+
   const routeOptions = useRef(
     Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
-      .filter((route) => route.load === loadStationID && (route.processId === currentLot.process_id || route.unload === stationID)) 
+      .filter(
+        (route) =>
+          route.load === loadStationID &&
+          (route.processId === currentLot.process_id ||
+            route.unload === stationID)
+      )
+      .filter(
+        (route, idx, routeOptions) =>
+          routeOptions.findIndex((option) => option.unload === route.unload) === idx
+      )
   ).current;
 
   const [showFinish, setShowFinish] = useState(false);
+  const [showWarehouseModal, setShowWarehouseModal] = useState(false);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
   const [moveQuantity, setMoveQuantity] = useState(
@@ -133,29 +148,44 @@ const DashboardLotPage = (props) => {
     if (mergingRoutes.length > 1) {
       //If multiple routes merge into station, keep track of parts at the station
 
-        let mergingExpression = handleMergeExpression(destinationId, processes[currentLot.process_id], routes)
+      let mergingExpression = handleMergeExpression(
+        destinationId,
+        processes[currentLot.process_id],
+        routes
+      );
 
-        let tempBin, currentBin = currentLot.bins[destinationId];
-        let traveledRoute = mergingRoutes.find(route => route.load === loadStationID)
-        if (!!currentBin) { 
-            // The Bin for the destination already exists, update quantities
+      let tempBin,
+        currentBin = currentLot.bins[destinationId];
+      let traveledRoute = mergingRoutes.find(
+        (route) => route.load === loadStationID
+      );
+      if (!!currentBin) {
+        // The Bin for the destination already exists, update quantities
 
-            let existingQuantity = !!currentBin[traveledRoute._id] ? currentBin[traveledRoute._id] : 0;
-            tempBin = {
-                ...currentLot.bins[destinationId],
-                [traveledRoute._id]: (existingQuantity += quantity)
-            }
+        let existingQuantity = !!currentBin[traveledRoute._id]
+          ? currentBin[traveledRoute._id]
+          : 0;
+        tempBin = {
+          ...currentLot.bins[destinationId],
+          [traveledRoute._id]: (existingQuantity += quantity),
+        };
 
-            currentLot.bins[destinationId] = handleMergedLotBin(tempBin, mergingExpression);
-        } else { // The Bin for the destination does not exist, create is here
+        currentLot.bins[destinationId] = handleMergedLotBin(
+          tempBin,
+          mergingExpression
+        );
+      } else {
+        // The Bin for the destination does not exist, create is here
 
-            tempBin = {
-                [traveledRoute._id]: quantity,
-            }
+        tempBin = {
+          [traveledRoute._id]: quantity,
+        };
 
-            currentLot.bins[destinationId] = handleMergedLotBin(tempBin, mergingExpression);
-        }
-
+        currentLot.bins[destinationId] = handleMergedLotBin(
+          tempBin,
+          mergingExpression
+        );
+      }
     } else {
       // Only one route enters station, don't worry about tracking parts at the station
       let totalQuantity = !!currentLot.bins[destinationId]?.count
@@ -165,7 +195,6 @@ const DashboardLotPage = (props) => {
         count: totalQuantity,
       };
     }
-
   };
 
   const handleCurrentStationLot = (quantity) => {
@@ -246,6 +275,44 @@ const DashboardLotPage = (props) => {
     dispatchPutCard(currentLot, lotID);
     onBack();
   };
+
+  const onMergeWarehouseLot = (lotID, warehouseID) => {
+
+
+
+  };
+
+  const renderChildCards = useMemo(() => {
+
+    const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
+    const processStartNodes = findProcessStartNodes(processRoutes);
+
+    console.log(processStartNodes.map(id => stations[id]?.name), processRoutes
+      .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse'))
+
+    return processRoutes
+      .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse')
+      .map(mergeRoute => {
+        if (!!currentLot.children && !!currentLot.children[mergeRoute._id]) {
+          const childLot = cards[currentLot.children[mergeRoute._id]?.lotID];
+          return (
+            <DashboardLotFields
+              currentLot={childLot}
+              stationID={stationID}
+              warehouse={!!warehouseID}
+            />
+          )
+        } else {
+          return (
+            <styled.EmptyChildLot>
+              <styled.PlusSymbol className='far fa-plus-square' />
+              {stations[mergeRoute.load]?.name}
+            </styled.EmptyChildLot>
+          )
+        }
+      })
+
+  }, [currentProcess, routes]);
 
   const renderRouteSelectorModal = useMemo(() => {
     return (
@@ -389,9 +456,20 @@ const DashboardLotPage = (props) => {
     }
   };
 
-
   return (
     <styled.LotContainer>
+      {showWarehouseModal && (
+        <WarehouseModal
+          isOpen={showWarehouseModal}
+          title={"Warehouse"}
+          close={() => setShowWarehouseModal(false)}
+          dashboard={{}}
+          stationID={stationID}
+          onCardClicked={(lotID, warehouseID) =>
+            onMergeWarehouseLot(lotID, warehouseID)
+          }
+        />
+      )}
       {renderRouteSelectorModal}
       <styled.LotBodyContainer>
         <styled.LotHeader>
@@ -408,6 +486,16 @@ const DashboardLotPage = (props) => {
           warehouse={!!warehouseID}
         />
         {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} />}
+        <div
+          style={{
+            width: "95%",
+            maxWidth: "50rem",
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+        >
+          {renderChildCards}
+        </div>
       </styled.LotBodyContainer>
       <styled.LotButtonContainer>
         <DashboardLotButtons

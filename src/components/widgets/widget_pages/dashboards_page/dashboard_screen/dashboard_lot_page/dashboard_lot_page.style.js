@@ -109,3 +109,38 @@ export const LotBodyContainer = styled.div`
     padding: 0.5rem 1rem;
     z-index: 1;
 `
+
+export const EmptyChildLot = styled.div`
+    width: 100%;
+    border: 0.2rem solid ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.tertiary};
+    border-radius: 0.4rem;
+
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 0.6rem 1rem;
+
+    color: ${props => props.theme.bg.quaternary};
+    font-size: ${props => props.theme.fontSize.sz2};
+    font-weight: 800;
+`
+
+export const PlusSymbol = styled.i`
+	width: 2rem;
+    height: 2rem;
+
+	color: ${props => props.theme.bg.quaternary};
+	font-size: 2.5rem;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0.5rem;
+
+    :focus {
+      outline: 0;
+    }
+`

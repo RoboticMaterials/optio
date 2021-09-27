@@ -13,17 +13,16 @@ export const ModalContainerCSS = styled(Modal)`
 	position: absolute;
 	z-index: 500;
 
-	width: 30rem;
+	width: 60rem;
 	min-width: 15rem;
     max-width: 95%;
-    width: ${isMobile && "95%"};
 
 	height: 95%;
 	color: ${props => props.theme.bg.octonary};
     background-color: rgba(0, 0, 0, 0.4);
 	display: flex;
 	flex-direction: column;
-	border-radius: 1rem;
+	border-radius: 0.4rem;
 	overflow: hidden;
 `
 
