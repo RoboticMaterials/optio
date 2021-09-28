@@ -99,7 +99,7 @@ const DashboardLotPage = (props) => {
           routeOptions.findIndex((option) => option.unload === route.unload) === idx
       )
   ).current;
-  
+
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
@@ -151,7 +151,7 @@ const DashboardLotPage = (props) => {
 
     if (Array.isArray(moveStations)) {
       // Split node, duplicate card and send to all stations
-      
+
       for (var toStationId of moveStations) {
         currentLot.bins = handleNextStationBins(currentLot.bins, quantity, loadStationID, toStationId, process, routes, stations)
       }
@@ -211,6 +211,22 @@ const DashboardLotPage = (props) => {
 
   };
 
+  const handleTypedQty = (e) => {
+    let arr = Array.from(String(moveQuantity), Number)
+    if(!!arr[0]){
+      if(e.nativeEvent.inputType === 'deleteContentBackward') arr.splice(-1)
+      else arr.push(e.nativeEvent.data)
+      setMoveQuantity(parseInt(arr.join('')))
+    }
+    else{
+      if(e.nativeEvent.inputType !== 'deleteContentBackward'){
+        arr = []
+        arr.push(e.nativeEvent.data)
+        setMoveQuantity(parseInt(arr.join('')))
+      }
+    }
+  }
+
   const renderChildCards = useMemo(() => {
 
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
@@ -224,7 +240,7 @@ const DashboardLotPage = (props) => {
 
         if (!!child) {
           return (
-            <ChildLotFields 
+            <ChildLotFields
               child={child}
             />
           )

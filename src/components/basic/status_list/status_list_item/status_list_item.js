@@ -228,7 +228,7 @@ const StatusListItem = (props) => {
 					}}
 				/>
 
-				<Button
+			{/*	<Button
 					type={"button"}
 					label={"Merge"}
 					schema={"processes"}
@@ -236,7 +236,7 @@ const StatusListItem = (props) => {
 					onClick={(e) => {
 						onMergeClick(index)
 					}}
-				/>
+				/> */}
 			</styled.StatusContainer>
 
 			<styled.ColumnWrapper>
