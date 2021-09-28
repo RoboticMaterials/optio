@@ -150,11 +150,11 @@ const LotEditorContainer = (props) => {
       if(!!filesContent[0]){
         var XMLParser = require('react-xml-parser');
         var xml = new XMLParser().parseFromString(filesContent[0].content);
-        var newXml = xml.getElementsByTagName('ViewItem')
+        var newXml = xml.getElementsByTagName('row')
         var header = ""
         var csv = ""
 
-        if(xml.getElementsByTagName('Row').length!==0){
+        if(xml.getElementsByTagName('Roww').length!==0){
           newXml = xml.getElementsByTagName('Row')
           var fieldName = ''
           var fieldValue = ''
@@ -219,12 +219,12 @@ const LotEditorContainer = (props) => {
         }
         csv = csv.replace(/^\s+|\s+$/g, "") //get rid of trailing spaces
       }
-        else if(!!xml.getElementsByTagName('ViewItem').length!==0){
+        else if(!!xml.getElementsByTagName('row').length!==0){
           newXml[0].children.forEach((attribute, index, array) => {
               header += attribute.name + '\t'
           })
 
-          csv += header + 'AssemblyQuantity' + '\n'
+          csv += header + '\n'
 
           newXml.forEach((lot, index, array) => {
             var row = ""
@@ -232,10 +232,10 @@ const LotEditorContainer = (props) => {
                 row += child.value + '\t'
             })
             if(index===(array.length-1)){
-              csv += row + "1"
+              csv += row
             }
             else{
-              csv += row + "1" + '\n'
+              csv += row + '\n'
             }
           })
         }
@@ -576,14 +576,15 @@ const LotEditorContainer = (props) => {
                     processId: newProcessId,
                     fields
                 } = values || {}
-
+                
                 const submitItem = {
                     name: newName,
                     bins: newBins,
                     process_id: newProcessId,
                     lotTemplateId: lotTemplateId,
                     fields,
-                    lotNumber: index //collectionCount + index
+                    lotNumber: index, //collectionCount + index
+                    totalQuantity: newBins['QUEUE']?.count
                 }
 
                   await dispatchPostCard(submitItem)
