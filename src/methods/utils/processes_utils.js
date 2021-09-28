@@ -474,13 +474,18 @@ export const doRoutesConverge = (routes) => {
     return numTerminalStations === 1;
 }
 
-export const findProcessStartNodes = (routes) => {
-    let loadStations = routes.map(route => !!route ? route.load : {});
-    let unloadStations = routes.map(route => !!route ? route.unload : {});
+export const findProcessStartNodes = (processRoutes, stations) => {
+    let loadStations = processRoutes.map(route => !!route ? route.load : {});
+    let unloadStations = processRoutes.map(route => !!route ? route.unload : {});
 
     let startNodes = [];
     for (var loadStation of loadStations) {
         if (unloadStations.find(unloadStation => unloadStation === loadStation) === undefined && !startNodes.includes(loadStation)) {
+            if (stations[loadStation]?.type === 'warehouse') {
+                // This recursive thing eliminates start warehouse nodes
+                const newRoutes = processRoutes.filter(route => route.load !== loadStation)
+                return findProcessStartNodes(newRoutes, stations)
+            }
             startNodes.push(loadStation)
         }
     }
@@ -564,7 +569,7 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
         }
     }
 
-    const startNodes = findProcessStartNodes(processRoutes).filter(nodeId => stations[nodeId].type !== 'warehouse'); // Dont consider warehouses start nodes
+    const startNodes = findProcessStartNodes(processRoutes, stations) // Dont consider warehouses start nodes
     let startRouteExpression = process.startDivergeType === 'split' ? ['AND'] : ['OR']
     for (var startNode of startNodes) {
         outgoingRoutes = getNodeOutgoing(startNode, processRoutes);
@@ -594,12 +599,16 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
 }
 
 
-export const getNodeIncoming = (node, routes) => {
-    return routes.filter(route => route.unload === node)
+export const getNodeIncoming = (node, processRoutes) => {
+    return processRoutes.filter(route => route.unload === node)
 }
 
-export const getNodeOutgoing = (node, routes) => {
-    return routes.filter(route => route.load === node)
+export const getNodeOutgoing = (node, processRoutes) => {
+    return processRoutes.filter(route => route.load === node)
+}
+
+export const isNodeStartWarehouse = (node, processRoutes, stations) => {
+    return stations[node]?.type === 'warehouse' && getNodeIncoming(node, processRoutes).length === 0
 }
 
 const removeRoute = (id, routes) => {
@@ -626,7 +635,7 @@ export const flattenProcessStations = (originalRoutes, stations) => {
             // There are not any nodes currently in the flattened graph. Start by recursivly
             // looping through and flattening from the start nodes (this is depth 0)
 
-            let startNodes = findProcessStartNodes(routes);
+            let startNodes = findProcessStartNodes(routes, stations);
             if (startNodes.length === 1) {
                 graph = traverseProcessGraph(startNodes[0], routes, deepCopy(graph))
             } else {

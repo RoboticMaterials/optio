@@ -162,9 +162,10 @@ const DashboardLotPage = (props) => {
       handleTaskAlert(
         "LOT_MOVED",
         "Lot Moved",
-        `Lot has been split between ${moveStations
-          .map((stationId) => stations[stationId].name)
-          .join(" & ")}`
+        `${quantity} parts from ${currentLot.name} 
+          have been split between ${moveStations
+            .map((stationId) => stations[stationId].name)
+            .join(" & ")}`
       );
     } else {
       // Single-flow node, just send to the station
@@ -179,7 +180,7 @@ const DashboardLotPage = (props) => {
       handleTaskAlert(
         "LOT_MOVED",
         "Lot Moved",
-        `Lot has been moved to ${stationName}`
+        `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
       );
     }
     dispatchPutCard(currentLot, lotID);
@@ -230,7 +231,7 @@ const DashboardLotPage = (props) => {
   const renderChildCards = useMemo(() => {
 
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
-    const processStartNodes = findProcessStartNodes(processRoutes);
+    const processStartNodes = findProcessStartNodes(processRoutes, stations);
 
 
     return processRoutes

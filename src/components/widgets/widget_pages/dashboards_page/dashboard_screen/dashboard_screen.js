@@ -266,8 +266,8 @@ const DashboardScreen = (props) => {
                 return (
                     <KickOffModal
                         isOpen={true}
-                        stationId={stationID}
-                        processId={selectedOperation.processID}
+                        stationID={stationID}
+                        processID={selectedOperation.processID}
                         title={"Kick Off"}
                         close={() => setSelectedOperation(null)}
                         dashboard={currentDashboard}
