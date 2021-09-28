@@ -34,6 +34,7 @@ import {
     putDashboard,
     putDashboardAttributes
 } from '../../../../../redux/actions/dashboards_actions'
+import { putCard } from '../../../../../redux/actions/card_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
 import { getTasks } from '../../../../../redux/actions/tasks_actions'
@@ -45,7 +46,9 @@ import * as style from './dashboard_screen.style'
 import log from "../../../../../logger";
 import MergeModal from "./merge_modal/merge_modal";
 
-
+// Utils
+import { getNodeOutgoing } from '../../../../../methods/utils/processes_utils';
+import { handleNextStationBins, handleCurrentStationBins } from '../../../../../methods/utils/lot_utils';
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -65,28 +68,19 @@ const DashboardScreen = (props) => {
     // redux state
     // const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardID] })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-    const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
-    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardID] })
-    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardID] })
+    const routes = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
-
+    const lots = useSelector(state => state.cardsReducer.cards)
+    const processes = useSelector(state => state.processesReducer.processes)
 
     const currentDashboard = dashboards[dashboardID]
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
-    const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
-    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
-    const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
-    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
-    const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
-    const dispatchGetTasks = async () => await dispatch(getTasks())
+    const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -190,8 +184,60 @@ const DashboardScreen = (props) => {
         return setTimeout(() => setAddTaskAlert(null), 2500)
     }
 
+    const handleWarehousePull = (pullLotID, quantity) => {
+
+        const warehouseID = selectedOperation.warehouseID;
+        const pullLot = lots[pullLotID];
+        const process = processes[pullLot.process_id];
+        const processRoutes = process.routes.map(routeId => routes[routeId]);
+
+        const warehouseOutgoingRoutes = getNodeOutgoing(warehouseID, processRoutes)
+        let moveStations;
+        if (warehouseOutgoingRoutes.length === 1 || warehouseOutgoingRoutes.some(route => route.divergeType === 'choice')) {
+            moveStations = stationID
+        } else {
+            moveStations = warehouseOutgoingRoutes.map(route => route.unload);
+        }
+
+        if (Array.isArray(moveStations)) {
+            // Split node, duplicate card and send to all stations
+            for (var toStationId of moveStations) {
+                pullLot.bins = handleNextStationBins(pullLot.bins, quantity, warehouseID, toStationId, process, routes, stations)
+            }
+            // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
+            pullLot.bins = handleCurrentStationBins(pullLot.bins, quantity, warehouseID, process, routes)
+      
+            //Add dispersed key to lot for totalQuantity Util
+            setAddTaskAlert({
+              type: "LOT_MOVED",
+              label: "Lot Moved",
+              message:`Lot has been split between ${moveStations
+                .map((stationId) => stations[stationId].name)
+                .join(" & ")}`
+              });
+            setTimeout(() => setAddTaskAlert(null), 1800)
+          } else {
+            // Single-flow node, just send to the station
+            const toStationId = moveStations;
+            pullLot.bins = handleNextStationBins(pullLot.bins, quantity, warehouseID, toStationId, process, routes, stations)
+      
+            // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
+            pullLot.bins = handleCurrentStationBins(pullLot.bins, quantity, warehouseID, process, routes)
+      
+            const stationName = stations[toStationId].name;
+            setAddTaskAlert({
+              type: "LOT_MOVED",
+              label: "Lot Moved",
+              message:`Lot has been moved to ${stationName}`
+            });
+            setTimeout(() => setAddTaskAlert(null), 1800)
+          }
+          dispatchPutCard(pullLot, pullLotID);
+          setSelectedOperation(null);
+    }
+
     const renderModal = () => {
-        switch (selectedOperation) {
+        switch (selectedOperation.operation) {
             case 'report':
                 return (
                     <ReportModal
@@ -215,21 +261,12 @@ const DashboardScreen = (props) => {
                     />
                 )
 
-            // case 'merge': {
-            //     return <MergeModal
-            //         dashboardId={dashboardID}
-            //         isOpen={true}
-            //         stationId={stationID}
-            //         title={"Merge Lots"}
-            //         close={() => setSelectedOperation(null)}
-            //     />
-            // }
-
-            case 'kickOff':
+            case 'kickoff':
                 return (
                     <KickOffModal
                         isOpen={true}
                         stationId={stationID}
+                        processId={selectedOperation.processID}
                         title={"Kick Off"}
                         close={() => setSelectedOperation(null)}
                         dashboard={currentDashboard}
@@ -247,74 +284,17 @@ const DashboardScreen = (props) => {
                     />
                 )
 
-            case 'finish':
-                return (
-                    <FinishModal
-                        isOpen={true}
-                        stationId={stationID}
-                        title={"Finish"}
-                        close={() => setSelectedOperation(null)}
-                        dashboard={currentDashboard}
-                        onSubmit={(name, success, quantity, message) => {
-                            // set alert
-                            setAddTaskAlert({
-                                type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-                                label: success ? "Finish Successful" : "Finish Failed",
-                                message: message
-                            })
-
-                            // clear alert
-                            setTimeout(() => setAddTaskAlert(null), 1800)
-                        }}
-                    />
-                )
-
-            case 'taskQueue':
-                return (
-                    <TaskQueueModal
-                        isOpen={true}
-                        close={() => setSelectedOperation(null)}
-
-                    />
-                )
-
-            case 'fieldSelect':
-                return (
-                    <FieldSelectModal
-                        isOpen={true}
-                        close={() => setSelectedOperation(null)}
-
-                    />
-                )
-
             case 'warehouse':
                 return (
                     <WarehouseModal
                         isOpen={true}
-                        stationId={stationID}
                         title={"Warehouse"}
                         close={() => setSelectedOperation(null)}
                         dashboard={currentDashboard}
                         stationID={stationID}
+                        warehouseID={selectedOperation.warehouseID}
                         process={process}
-                    />
-                )
-
-            case 'route':
-                return (
-                    <RouteModal
-                        isOpen={true}
-                        close={() => setSelectedOperation(null)}
-                        handleTaskAlert={(type, label, message) => {
-                            setAddTaskAlert({
-                                type: type,
-                                label: label,
-                                message: message,
-                            })
-
-                            // clear alert after timeout
-                            return setTimeout(() => setAddTaskAlert(null), 1800)
-                        }}
+                        onSubmit={handleWarehousePull}
                     />
                 )
 

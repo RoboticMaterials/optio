@@ -61,46 +61,54 @@ export default function TaskPaths(props) {
 
     // Set the start and end position if they exist
     useEffect(() => {
-        if (selectedTask !== null || selectedHoveringTask !== null) {
-            if (loadPositionId !== null) {
-                // Check to see if its a station or position
-                const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
-                if (startPos) {
-                    setX1(startPos.x);
-                    setY1(startPos.y);
-                }
-
-                if (unloadPositionId === null) {
-                    setX2(startPos.x);
-                    setY2(startPos.y);
-                } else {
-                    // Check to see if its a station or position
-                    const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
-                    if (endPos) {
-                        setX2(endPos.x)
-                        setY2(endPos.y)
-                    }
-                }
-            }
+        if(!!selectedTask){
+          const loadPositionId = getLoadPositionId(selectedTask)
+          const unloadPositionId = getUnloadPositionId(selectedTask)
         }
-
-        // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
-        if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
-            window.addEventListener('mousemove', lockToMouse, false)
-            window.addEventListener('keydown', exitTaskPath)
-        } else {
-            window.removeEventListener('mousemove', lockToMouse, false)
-            window.removeEventListener('keydown', exitTaskPath)
+        else{
+          const loadPositionId = getLoadPositionId(selectedHoveringTask)
+          const unloadPositionId = getUnloadPositionId(selectedHoveringTask)
         }
-
-        return () => {
-            window.removeEventListener('mousemove', lockToMouse, false)
-            window.removeEventListener('keydown', exitTaskPath)
-        }
-
-    }, [selectedTask, selectedHoveringTask])
-
-    
+          if (selectedTask !== null || selectedHoveringTask!==null) {
+              if (loadPositionId !== null) {
+                  // Check to see if its a station or position
+                  const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
+                  if(startPos) {
+                      setX1(startPos.x)
+                      setY1(startPos.y)
+                  }
+              }
+              if (unloadPositionId !== null) {
+                  // Check to see if its a station or position
+                  const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
+                  if(endPos) {
+                      setX2(endPos.x)
+                      setY2(endPos.y)
+                  }
+              }
+          }
+      })
+  
+      // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
+      useEffect(() => {
+          const loadPositionId = getLoadPositionId(selectedTask)
+          const unloadPositionId = getUnloadPositionId(selectedTask)
+  
+          if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
+              setX2(x1)
+              setY2(y1)
+              window.addEventListener('mousemove', lockToMouse, false)
+              window.addEventListener('keydown', exitTaskPath)
+          } else {
+              window.removeEventListener('mousemove', lockToMouse, false)
+              window.removeEventListener('keydown', exitTaskPath)
+          }
+  
+          return () => {
+              window.removeEventListener('mousemove', lockToMouse, false)
+              window.removeEventListener('keydown', exitTaskPath)
+          }
+      }, [selectedTask])
 
 
     if (selectedTask !== null && loadPositionId != null) {

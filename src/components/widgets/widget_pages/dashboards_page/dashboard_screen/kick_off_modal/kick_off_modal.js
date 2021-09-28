@@ -304,8 +304,9 @@ const KickOffModal = (props) => {
         }
     }, [availableKickOffCards.length])
 
-    if (showQuantitySelector) {
-        return (
+    return (
+        <>
+        {showQuantitySelector && 
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 maxValue={lotCount}
@@ -325,12 +326,10 @@ const KickOffModal = (props) => {
 
                 }}
                 button_1_text={"Cancel"}
-                button_2_text={"Confirm"}
+                button_2_text={"Kick Off"}
             />
-        )
-    }
+        }
 
-    return (
         <styled.Container
             isOpen={isOpen}
             contentLabel="Kick Off Modal"
@@ -429,6 +428,7 @@ const KickOffModal = (props) => {
                 </div>
             </styled.BodyContainer>
         </styled.Container>
+    </>
     );
 };
 

@@ -27,7 +27,6 @@ const DashboardLotButtons = (props) => {
         setQuantity,
         maxQuantity,
         minQuantity,
-        handleFinish,
         disabled
     } = props
 

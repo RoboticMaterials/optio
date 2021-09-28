@@ -76,10 +76,10 @@ const NumberInput = ({
 						return false
 					}}
 					onWheel={onWheel}
-					onMouseWheel={(e) => {
-						e.preventDefault()
-						return false
-					}}
+					// onMouseWheel={(e) => {
+					// 	e.preventDefault()
+					// 	return false
+					// }}
 				>
 				</styled.Input>
 				{inputChildren}

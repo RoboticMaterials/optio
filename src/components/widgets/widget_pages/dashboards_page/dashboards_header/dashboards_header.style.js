@@ -167,6 +167,21 @@ export const RowContainer = styled.div`
     transition: height 0.5s;
 `
 
+export const MenuContainer = styled.div`
+display: flex;
+flex-direction: column;
+width: 90%;
+max-width: 50rem;
+height: fit-content;
+padding: .5rem;
+box-shadow: ${props => props.theme.cardShadow};
+background: ${props => props.theme.bg.primary};
+border-radius: .5rem;
+z-index: 1000;
+position: absolute;
+top: 5rem;
+`
+
 export const ColumnContainer = styled.div`
     display: flex;
     flex-direction: column;
