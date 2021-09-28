@@ -65,7 +65,7 @@ const DashboardsPage = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
-    const cards = useSelector(state => state.cardsReducer.cards)
+    const stations = useSelector(state => state.stationsReducer.stations);
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
 
@@ -110,7 +110,7 @@ const DashboardsPage = (props) => {
 
                 const processRoutes = currProcess.routes.map(routeId => routes[routeId])
 
-                let processStartNodes = findProcessStartNodes(processRoutes);
+                let processStartNodes = findProcessStartNodes(processRoutes, stations);
                 let processEndNode = findProcessEndNode(processRoutes);
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list

@@ -44,7 +44,6 @@ export const Title = styled.h2`
   align-items: center;
   font-size: ${props => props.theme.fontSize.sz2};
   font-weight: ${props => props.theme.fontWeight.bold};
-  margin-bottom: 1rem;
   flex-grow: 1;
 `;
 
@@ -65,7 +64,6 @@ export const ContentContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	margin-bottom: 1rem;
 	align-items: center;
   justify-content: center;
 `

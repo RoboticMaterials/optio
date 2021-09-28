@@ -101,7 +101,7 @@ export const ProcessField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
-    const startNodes = useMemo(() => findProcessStartNodes(values.routes), [values.routes])
+    const startNodes = useMemo(() => findProcessStartNodes(values.routes, stations), [values.routes])
     useEffect(() => {
         if (startNodes.length > 1 && !values.startDivergeType) {
             setFieldValue('startDivergeType', 'split')

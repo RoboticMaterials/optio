@@ -8,7 +8,6 @@ import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constan
 import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
-import { findProcessStartNodes } from './processes_utils';
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
