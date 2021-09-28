@@ -232,6 +232,7 @@ const DashboardScreen = (props) => {
             });
             setTimeout(() => setAddTaskAlert(null), 1800)
           }
+          
           dispatchPutCard(pullLot, pullLotID);
           setSelectedOperation(null);
     }
