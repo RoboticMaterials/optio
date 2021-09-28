@@ -97,6 +97,11 @@ export async function deleteProcess(ID) {
 }
 
 export async function postProcesses(process) {
+
+    const currDate = new Date()
+    process.created_at = currDate.toString();
+    process.last_edited = currDate.toString();
+
     try {
         const response = await axios({
             method: 'POST',
@@ -147,6 +152,10 @@ export async function postProcesses(process) {
 }
 
 export async function putProcesses(process, ID) {
+
+    const currDate = new Date()
+    process.last_edited = currDate.toString();
+
     try {
         const response = await axios({
             method: 'PUT',

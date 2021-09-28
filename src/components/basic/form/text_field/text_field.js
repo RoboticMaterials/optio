@@ -30,6 +30,7 @@ const TextField = ({
     containerStyle,
     FieldContainer,
     mapInput,
+    autoFocus,
     mapOutput,
     inputProps,
 
@@ -68,6 +69,7 @@ const TextField = ({
                 <InputContainer>
                     <InputComponent
                         className='form-control'
+                        autofocus={true}
                         {...field}
                         {...inputProps}
                         {...props}
