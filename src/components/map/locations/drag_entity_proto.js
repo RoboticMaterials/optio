@@ -149,13 +149,11 @@ const DragEntityProto = (props) => {
                     }
                 })
                 .on("drag", function (d, i) {
-                    console.log('in')
                     if (isSelected) {
                         translate(d3.event, mainElement)
                     }
                 })
                 .on("dragend", async () => {
-                    console.log('out', originalTranslation, deltaTranslation)
                     if (isSelected) {
                         if (deltaTranslation.length === 2) {
                             handleTranslateEnd({ x: originalTranslation[0] + deltaTranslation[0], y: originalTranslation[1] + deltaTranslation[1] })
