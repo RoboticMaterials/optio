@@ -102,7 +102,7 @@ const LotContainer = (props) => {
                             processName={processName}
                             stationName={stationName}
                             templateValues={templateValues}
-                            totalQuantity={totalQuantity - count}
+                            totalQuantity={totalQuantity}
                             lotNumber={lotNumber}
                             flags={flags || []}
                             enableFlagSelector={enableFlagSelector}

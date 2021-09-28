@@ -855,3 +855,90 @@ export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
     return updatedLot
     // }
 }
+
+  //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
+  //If multiple routes merge into a station the parts at the station are kept track of at that bin
+  //If one type of part doesn't exist yet none of that lot can be moved along
+  //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
+export const handleNextStationBins = (bins, quantity, loadStationId, unloadStationId, process, routes, stations) => {
+
+    const mergingRoutes = process.routes
+      .map((routeId) => routes[routeId])
+      .filter((route) => route.unload === unloadStationId);
+
+    if (mergingRoutes.length > 1) {
+      //If multiple routes merge into station, keep track of parts at the station
+
+      let mergingExpression = handleMergeExpression(
+        unloadStationId,
+        process,
+        routes,
+        stations
+      );
+
+      let tempBin,
+        currentBin = bins[unloadStationId];
+      let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
+      if (!!currentBin) {
+        // The Bin for the destination already exists, update quantities
+
+        let existingQuantity = !!currentBin[traveledRoute._id]
+          ? currentBin[traveledRoute._id]
+          : 0;
+        tempBin = {
+          ...bins[unloadStationId],
+          [traveledRoute._id]: (existingQuantity += quantity),
+        };
+
+        bins[unloadStationId] = handleMergedLotBin(
+          tempBin,
+          mergingExpression
+        );
+      } else {
+        // The Bin for the destination does not exist, create is here
+
+        tempBin = {
+          [traveledRoute._id]: quantity,
+        };
+
+        bins[unloadStationId] = handleMergedLotBin(
+          tempBin,
+          mergingExpression
+        );
+      }
+    } else {
+      // Only one route enters station, don't worry about tracking parts at the station
+      let totalQuantity = !!bins[unloadStationId]?.count
+        ? bins[unloadStationId].count + quantity
+        : quantity;
+      bins[unloadStationId] = {
+        count: totalQuantity,
+      };
+    }
+
+    return bins;
+  };
+
+
+export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {
+    const mergingRoutes = process.routes
+      .map((routeId) => routes[routeId])
+      .filter((route) => route.unload === loadStationId);
+
+    if (mergingRoutes.length > 1) {
+      //subtract quantity from both count and the parts at the station
+      for (const ind in bins[loadStationId]) {
+        if (bins[loadStationId][ind] - quantity < 1) {
+          delete bins[loadStationId][ind];
+        } else bins[loadStationId][ind] -= quantity;
+      }
+    } else {
+      if (quantity === bins[loadStationId].count) {
+        delete bins[loadStationId];
+      } else {
+        bins[loadStationId].count -= quantity;
+      }
+    }
+
+    return bins;
+  };

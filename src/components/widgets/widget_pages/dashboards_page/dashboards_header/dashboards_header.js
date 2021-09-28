@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useContext, useRef } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -11,17 +11,23 @@ import ReactTooltip from "react-tooltip";
 
 // Import Components
 import DashboardOperationsMenu from '../dashboard_operations_menu/dashboard_operations_menu'
+import DashboardButton from '../dashboard_buttons/dashboard_button/dashboard_button'
 
 import uuid from 'uuid'
 
+
+
 // hooks internal
 import useWindowSize from '../../../../../hooks/useWindowSize';
+import useOnClickOutside from '../../../../../hooks/useOnClickOutside'
 
 // utils
 import { getBinQuantity, getIsCardAtBin } from "../../../../../methods/utils/lot_utils";
+import { getNodeIncoming, getNodeOutgoing } from '../../../../../methods/utils/processes_utils';
 
 // styles
 import * as styled from './dashboards_header.style';
+import { ThemeContext } from 'styled-components'
 
 const widthBreakPoint = 1000;
 const phoneViewBreakPoint = 500;
@@ -40,7 +46,11 @@ const DashboardsHeader = (props) => {
         handleTaskAlert,
     } = props
 
-    const stations = useSelector(state => state.stationsReducer.stations)
+    const theme = useContext(ThemeContext);
+
+    const processes = useSelector(state => state.processesReducer.processes);
+    const stations = useSelector(state => state.stationsReducer.stations);
+    const routes = useSelector(state => state.tasksReducer.tasks);
 
     const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
     const [showOperationsMenu, setShowOperationsMenu] = useState(false)
@@ -54,22 +64,77 @@ const DashboardsHeader = (props) => {
 
     const name = stations[currentDashboard.station]?.name
 
-    useEffect(() => {
-        return () => {
+    const menuRef = useRef() // ref for useOnClickOutside
+    useOnClickOutside(menuRef, () => { setShowOperationsMenu(false) }) // calls onClickOutside when click outside of element
 
-        }
-    }, [])
+    const renderPullButtons = useMemo(() => {
+
+        let pullButtons = [];
+        Object.values(processes).forEach(process => {
+
+            const processRoutes = process.routes.map(routeId => routes[routeId]);
+            const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes);
+            const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
+
+            if (outgoingRoutes.length === 0) {
+                return;
+            } else if (incomingRoutes.length === 0) {
+                pullButtons.push({
+                    type: 'kickoff',
+                    processID: process._id
+                });
+            } else {
+
+                incomingRoutes
+                    .filter(route => stations[route.load]?.type === 'warehouse')
+                    .forEach(route => {
+                        if (getNodeIncoming(route.load, processRoutes).length > 0) { // Cannot pull from start warehouses, must merge them into another lot
+                            pullButtons.push({
+                                type: 'warehouse',
+                                warehouseID: route.load
+                            })
+                        }
+                    })
+                
+
+            }
+
+        });
+
+        return pullButtons.map(pullBtn => {
+
+            const btnLabel = pullBtn.type === 'kickoff' ? `Kick Off ${processes[pullBtn.processID]?.name}` : `${stations[pullBtn.warehouseID]?.name}`
+
+            const schema = pullBtn.type === 'kickoff' ? theme.schema.kick_off : theme.schema.warehouse
+            const iconClassName = schema?.iconName
+            const iconColor = schema?.solid
+
+
+            return (
+                <DashboardButton
+                    title={btnLabel}
+                    iconColor={"black"}
+                    iconClassName={iconClassName}
+                    onClick={() => {
+                        const { type, ...meta }  = pullBtn;
+                        handleOperationSelected({operation: type, ...meta})}
+                    }
+                    containerStyle={{}}
+                    hoverable={true}
+                    color={iconColor}
+                    svgColor={theme.bg.secondary}
+                />
+            )
+
+        })
+
+    }, [processes, routes, stations, currentDashboard.station])
 
     return (
         <styled.ColumnContainer>
 
             <styled.Header>
 
-                { /*  {showBackButton &&
-                    <BackButton styled={{ order: '1' }} containerStyle={{}}
-                        onClick={onBack}
-                    />
-                }*/}
                 {!phoneView ?
                   <>
                     <Button
@@ -80,12 +145,12 @@ const DashboardsHeader = (props) => {
                         disabled={showOperationsMenu}
                         style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
                     >
-                        Operations
+                        Pull
                     </Button>
                     <Button
                         schema="delete"
                         onClick={() => {
-                            handleOperationSelected('report')
+                            handleOperationSelected({operation: 'report'})
                             setShowOperationsMenu(false)
                         }}
                         disabled={showOperationsMenu}
@@ -172,14 +237,17 @@ const DashboardsHeader = (props) => {
 
 
                 {showOperationsMenu &&
-                    <DashboardOperationsMenu
-                        handleCloseMenu={() => { setShowOperationsMenu(false) }}
-                        handleOperationSelected={(op) => {
-                            handleOperationSelected(op)
-                            setShowOperationsMenu(false)
-                        }}
-                        handleTaskAlert={handleTaskAlert}
-                    />
+                    // <DashboardOperationsMenu
+                    //     handleCloseMenu={() => { setShowOperationsMenu(false) }}
+                    //     handleOperationSelected={(op) => {
+                    //         handleOperationSelected(op)
+                    //         setShowOperationsMenu(false)
+                    //     }}
+                    //     handleTaskAlert={handleTaskAlert}
+                    // />
+                    <styled.MenuContainer ref={menuRef}>
+                    {renderPullButtons}
+                    </styled.MenuContainer>
                 }
 
                 {/* {showEditButton && !mobileMode &&
