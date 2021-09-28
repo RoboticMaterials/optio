@@ -13,7 +13,7 @@ import LotDateRow from '../../../../../../side_bar/content/cards/lot/lot_date_ro
 import { FIELD_DATA_TYPES } from "../../../../../../../constants/lot_contants"
 
 // Import Utils
-import { getCustomFields, getLotTotalQuantity, getBinQuantity } from '../../../../../../../methods/utils/lot_utils'
+import { getCustomFields, getLotTotalQuantity, getBinCount } from '../../../../../../../methods/utils/lot_utils'
 import { getPreviousWarehouseStation } from '../../../../../../../methods/utils/processes_utils'
 
 
@@ -34,7 +34,7 @@ const DashboardLotFields = (props) => {
     const processes = useSelector(state => state.processesReducer.processes)
 
     // If its a warehouse then use station before this one
-    const count = !!warehouse ? getBinQuantity(currentLot, getPreviousWarehouseStation(currentLot.process_id, stationID)._id) : getBinQuantity(currentLot, stationID)
+    const count = !!warehouse ? getBinCount(currentLot, getPreviousWarehouseStation(currentLot.process_id, stationID)._id) : getBinCount(currentLot, stationID)
 
     const totalQuantity = getLotTotalQuantity(currentLot, currentLot)
     const processName = processes[currentLot.process_id]?.name
