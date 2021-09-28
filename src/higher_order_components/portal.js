@@ -10,7 +10,7 @@ const Portal = (props) => {
 	} = props
 
 	const mount = document.getElementById(mountElement);
-	const el = document.createElement("div");
+	const el = useRef(document.createElement("div")).current;
 
 	useEffect(() => {
 		mount && mount.appendChild(el);

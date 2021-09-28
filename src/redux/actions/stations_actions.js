@@ -185,8 +185,8 @@ export const deleteStation = (ID) => {
 
         try {
             onStart();
-            const station = await dispatch(onDeleteStation(ID))
-            const removeStation = await api.deleteStation(station._id);
+            const station = dispatch(onDeleteStation(ID))
+            const removeStation = await api.deleteStation(ID);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -305,13 +305,13 @@ const onDeleteStation = (id) => {
                 await dispatch(deleteDashboard(dashboard))
             })
 
-            // Sees if any tasks are associated with the position and delete them
-            const tasks = tasksState.tasks
-            Object.values(tasks).filter(task => {
-                return task.load.station === station._id || task.unload.station === station._id
-            }).forEach(async relevantTask => {
-                await dispatch(deleteTask(relevantTask._id))
-            })
+            // // Sees if any tasks are associated with the position and delete them
+            // const tasks = tasksState.tasks
+            // Object.values(tasks).filter(task => {
+            //     return task.load.station === station._id || task.unload.station === station._id
+            // }).forEach(async relevantTask => {
+            //     await dispatch(deleteTask(relevantTask._id))
+            // })
 
 
         }

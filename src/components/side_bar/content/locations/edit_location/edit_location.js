@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
 import * as styled from './edit_location.style'
 import { Formik, Form } from 'formik'
+import ReactTooltip from "react-tooltip";
+import Portal from '../../../../../higher_order_components/portal'
 
 // Import Components
 import LocationButton from './location_button/location_button'
@@ -76,6 +78,8 @@ const EditLocation = (props) => {
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const processes = useSelector(state => state.processesReducer.processes)
+    const routes = useSelector(state => state.tasksReducer.tasks)
 
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
@@ -107,6 +111,24 @@ const EditLocation = (props) => {
         }
     }, [])
 
+    const cantDeleteReason = useMemo(() => {
+
+        if (selectedLocation === null || !!selectedLocation.new) {
+            return 'New Stations cannot be deleted.'
+        } else if (!!selectedLocation) {
+            for (var process of Object.values(processes)) {
+                for (var routeId of process.routes) {
+                    const route = routes[routeId]
+                    if (route.load === selectedLocation._id || route.unload === selectedLocation._id) {
+                        return `This station is used in process ${process.name}. If you wish to delete this station either remove it from the process or delete the process.`
+                    }
+                }
+            }
+        }
+
+        return null;
+
+    }, [selectedLocation, processes, routes])
 
     // These 2 useEffects use refs for onBack()
     // Since onback is called in the return statement of the usseffect that runs when the component mounts, it keeps in memory the current state on load (redux, useState, etc...)
@@ -428,7 +450,6 @@ const EditLocation = (props) => {
                     }}
                     initialTouched={{
                         locationName: false,
-
                     }}
                     validateOnChange={true}
                     validateOnMount={true}
@@ -474,6 +495,7 @@ const EditLocation = (props) => {
 
                                     <TextField
                                         name={"locationName"}
+                                        autoFocus={true}
                                         changed={() => handlePageDataChange()}
                                         textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
                                         placeholder='Enter Location Name'
@@ -554,8 +576,20 @@ const EditLocation = (props) => {
 
 
                                     {/* Delete Location Button */}
-                                    <Button type={'button'} disabled = {!values.locationName} schema={'locations'} onClick={() => onSave(deepCopy(values.locationName))} >Save Location</Button>
-                                    <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                    <Button type={'button'} disabled = {!values.locationName} schema={'locations'} onClick={() => onSave(deepCopy(values.locationName))}>Save Location</Button>
+
+                                    <div style={{display: 'flex', flexDirection: 'column'}} data-tip data-for={'delete-tooltip'}>
+                                        <Button schema={'locations'} secondary disabled={cantDeleteReason !== null} onClick={() => setConfirmDeleteModal(true)}>Delete</Button>
+                                    </div>
+
+                                    {cantDeleteReason !== null &&
+                                        <Portal>
+                                            <ReactTooltip id={'delete-tooltip'} effect={'solid'} place={'right'}>
+                                                {cantDeleteReason}
+                                            </ReactTooltip>
+                                        </Portal>
+                                    }
+
                                 </styled.ContentContainer>
                             </Form>
                         )
