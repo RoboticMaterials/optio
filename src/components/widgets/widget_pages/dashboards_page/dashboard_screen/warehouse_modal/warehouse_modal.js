@@ -35,177 +35,96 @@ const WarehouseModal = (props) => {
 
     const {
         isOpen,
-        title,
         close,
         dashboard,
-        onCardClicked,
+        onSubmit,
+
+        warehouseID,
         stationID
-    } = props
+    } = props;
 
-    const params = useParams()
-    const {
-        dashboardID,
-        subPage,
-    } = params || {}
-
-    const history = useHistory()
-
-    const dispatch = useDispatch()
-    const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+    const [selectedLot, setSelectedLot] = useState(null);
 
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const cards = useSelector(state => state.cardsReducer.cards)
     const stations = useSelector(state=>state.stationsReducer.stations)
-    const routes = useSelector(state => state.tasksReducer.tasks)
-
-    const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
-    const [currentLot, setCurrentLot] = useState(null)
-    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
-    const [warehouse, setWarehouse] = useState({})
-    const [lotCount, setLotCount] = useState(null)
-    const isWarehouse = true
-
-    // Add warehouse to URL
-    // The reason why you need to do this is that there is no other way to tell if the lot is at a warehouse
-    // IE: you refresh the page and only the lotID is there, but the lot is split into the current station and the warehouse before
-    // There would be no way to tell which one is which
-    const handleCardClicked = (lotID, warehouseID) => {
-        if (!!onCardClicked) {
-            onCardClicked(lotID, warehouseID);
-        } else {
-            history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}/${warehouseID}`)
-        }
-          
-        close()
-    }
-
-    const warehouseProcessTransfer = async(lotID) => {
-      const proc = []
-      const currCard = cards[lotID]
-        Object.values(processes).forEach((process) => {
-            const processStations = Object.keys(getProcessStations(process,routes))
-            for(const ind in processStations){
-              if(processStations[ind] === stationID && !!currCard.bins[getPreviousWarehouseStation(process._id, stationID)?._id]){
-                proc.push([process])
-              }
-            }
-        })
-        //setProcessTransferOptions(proc)
-        //setShowTransferLotModal(true)
-      }
 
     /*
 * renders an array of buttons for each kick off lot
 * */
     const renderAvailableLots = useMemo(() => {
 
-        const stationProcesses = getStationProcesses(stationID)
+        // Finds all cards at the warehouse, and maps them to something with quantity (to use in rendering)
+        let availableLots = Object.values(cards)
+            .filter(lot => getIsCardAtBin(lot, warehouseID))
+            .map(lot => ({...lot, quantity: lot.bins[warehouseID]?.count}))
 
-        const warehouseStations = []
-        stationProcesses.forEach((processID) => {
-            const station = getPreviousWarehouseStation(processID, stationID)
-            setWarehouse(station)
-            if (!!station) warehouseStations.push(station)
-        })
-
-        let organizedCards = Object.values(cards)
-            .map(card => {
-                const {
-                    bins = {},
-                } = card || {}
-
-                const quantity = bins[stationID]?.count
-                return {...card, quantity}
-            })
-
+        // Applies dashboard filters
         if (!!dashboard.filters) {
             dashboard.filters.forEach(filter => {
-                organizedCards = organizedCards.filter(card => checkCardMatchesFilter(card, filter))
+                availableLots = availableLots.filter(lot => checkCardMatchesFilter(lot, filter))
             })
         }
 
+        // Sorts Cards
         if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
-            sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
+            sortBy(availableLots, dashboard.sort.mode, dashboard.sort.direction)
         }
 
+        // Maps cards to rendering
+        if (availableLots.length > 0) {
+            return availableLots.map((lot, idx) => {
 
-        // This array is all the IDs of the cards being shown
-        // This fixes an issue with 2 processes going from the same warehouse into the same station (this would show all those cards twice)
-        let warehouseCards = []
+                const templateValues = getCustomFields(lot.lotTemplateId, lot);
+                const processName = processes[lot.process_id]?.name;
 
-        // Goes through each warehouse that is infront to the station and renders cards
-        const warehouseRenderCards = warehouseStations.map((warehouse) => {
-            const warehouseID = warehouse?._id
-            return organizedCards
-                .filter(card => getIsCardAtBin(card, warehouseID))
-                .map((currCard, cardIndex) => {
-                    const {
-                        _id: lotId,
-                        name,
-                        start_date,
-                        end_date,
-                        bins = {},
-                        flags,
-                        lotNumber,
-                        process_id: processId,
-                        lotTemplateId
-                    } = currCard
+                return (
+                    <Lot
+                        templateValues={templateValues}
+                        totalQuantity={lot.totalQuantity}
+                        enableFlagSelector={false}
+                        lotNumber={lot.lotNumber}
+                        processName={processName}
+                        flags={lot?.flags || []}
+                        name={lot.name}
+                        start_date={lot.start_date}
+                        end_date={lot.end_date}
+                        count={lot.bins[warehouseID]?.count || 0}
+                        id={lot._id}
+                        index={idx}
+                        onClick={() => setSelectedLot(lot)}
+                        containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
+                    />
+                )
 
-                    // If the card is alwready being displayed, then dont show
-                    if (warehouseCards.includes(lotId)) {
-                        return
-                    } else {
-                        warehouseCards.push(lotId)
-                    }
-
-                    const process = processes[processId]
-                    const {
-                        name: processName
-                    } = process || {}
-
-                    const count = bins[warehouseID]?.count || 0
-                    const totalQuantity = getLotTotalQuantity(currCard)
-                    const templateValues = getCustomFields(lotTemplateId, currCard)
-
-
-                    return (
-                        <Lot
-                            templateValues={templateValues}
-                            totalQuantity={totalQuantity}
-                            enableFlagSelector={false}
-                            lotNumber={lotNumber}
-                            processName={processName}
-                            flags={flags || []}
-                            name={name}
-                            start_date={start_date}
-                            end_date={end_date}
-                            count={count}
-                            id={lotId}
-                            index={cardIndex}
-                            onClick={() => {
-                                handleCardClicked(lotId, warehouseID)
-                            }}
-                            containerStyle={{ marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto' }}
-                        />
-                    )
-                })
-
-        })
-
-        if (warehouseRenderCards.every(nested => nested.length > 0)) {
-            return warehouseRenderCards;
+            })
         } else {
             return (
                 <styled.NoCardsLabel>No Lots in Warehouse</styled.NoCardsLabel>
             )
         }
 
-
-    }, [cards])
+    }, [cards, warehouseID])
 
 
     return (
       <>
+        {!!selectedLot && 
+            <QuantityModal
+                validationSchema={quantityOneSchema}
+                maxValue={selectedLot.bins[warehouseID]?.count || 0}
+                minValue={1}
+                infoText={`${selectedLot.bins[warehouseID]?.count || 0} items available.`}
+                isOpen={!!selectedLot}
+                title={"Select Merge Quantity"}
+                onRequestClose={() => setSelectedLot(null)}
+                onCloseButtonClick={() => {}}
+                handleOnClick1={(quantity) => {setSelectedLot(null)}}
+                handleOnClick2={(quantity) => {setSelectedLot(null); onSubmit(selectedLot._id, quantity)}}
+                button_1_text={"Cancel"}
+                button_2_text={"Merge"}
+            />
+        }
 
         <styled.Container
             isOpen={isOpen}
@@ -220,7 +139,7 @@ const WarehouseModal = (props) => {
         >
             <styled.Header>
                 <styled.HeaderMainContentContainer>
-                    <styled.Title>{stations[warehouse?._id]?.name || 'Warehouse'}</styled.Title>
+                    <styled.Title>{stations[warehouseID]?.name || 'Warehouse'}</styled.Title>
                     <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close} />
 
                 </styled.HeaderMainContentContainer>

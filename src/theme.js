@@ -166,8 +166,8 @@ export const theme = {
                 solid: "#54AAFF",
             },
             kick_off: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#a3ff9b',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
+                solid: '#1fed89',
                 iconName: "fas fa-play"
             },
             finish: {
@@ -214,6 +214,7 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
                 solid: '#ff4545'
             },
+
             warehouse: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',
                 solid: '#85b6ff',

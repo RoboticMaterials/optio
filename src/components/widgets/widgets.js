@@ -216,14 +216,14 @@ const Widgets = (props) => {
             } else if (location.type === 'warehouse') {
                 return (
                     <>
-                      <Wrapper idx={0} numItems={1} radius={widgetRadius}>
-                          <WidgetButton
+                      <Wrapper idx={0} numItems={2} radius={widgetRadius}>
+                          {/* <WidgetButton
                               id={stationID}
                               type={'statistics'}
                               label={'Statistics'}
                               currentPage={widgetPage}
                               switcher={!!widgetPage}
-                          />
+                          /> */}
                       </Wrapper>
                     </>
 

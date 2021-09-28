@@ -518,14 +518,12 @@ export const findProcessEndNode = (routes) => {
  * @param {array} routes
  * @param {ID} stationId
  */
-export const handleMergeExpression = (stationId, process, routes) => {
+export const handleMergeExpression = (stationId, process, routes, stations) => {
 
     const processRoutes = process.routes.map(routeId => routes[routeId])
 
     let node, outgoingRoutes, nextRoutes, routeId;
     const recursiveExpand = (sExpression) => {
-
-        console.log(sExpression.map((el, idx) => idx==0 ? el : routes[el].name))
 
         let sExpressionCopy = deepCopy(sExpression);
         for (var entryIdx = 1; entryIdx < sExpression.length; entryIdx++) {
@@ -566,7 +564,7 @@ export const handleMergeExpression = (stationId, process, routes) => {
         }
     }
 
-    const startNodes = findProcessStartNodes(processRoutes);
+    const startNodes = findProcessStartNodes(processRoutes).filter(nodeId => stations[nodeId].type !== 'warehouse'); // Dont consider warehouses start nodes
     let startRouteExpression = process.startDivergeType === 'split' ? ['AND'] : ['OR']
     for (var startNode of startNodes) {
         outgoingRoutes = getNodeOutgoing(startNode, processRoutes);
@@ -596,11 +594,11 @@ export const handleMergeExpression = (stationId, process, routes) => {
 }
 
 
-const getNodeIncoming = (node, routes) => {
+export const getNodeIncoming = (node, routes) => {
     return routes.filter(route => route.unload === node)
 }
 
-const getNodeOutgoing = (node, routes) => {
+export const getNodeOutgoing = (node, routes) => {
     return routes.filter(route => route.load === node)
 }
 
