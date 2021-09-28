@@ -2,6 +2,7 @@ import React, {useRef, useContext} from "react"
 
 // functions external
 import PropTypes from 'prop-types'
+import {isObject} from "../../../methods/utils/object_utils";
 
 // styles
 import * as styled from './number_input.style'
@@ -25,6 +26,7 @@ const NumberInput = ({
 	value,
 	plusDisabled,
 	inputCss,
+	onKeyPress,
 	longPlusPressEvent,
 	longMinusPressEvent,
 	usable,

@@ -59,7 +59,7 @@ const ProcessForm = (props) => {
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 	const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
-
+	const dispatchDeleteTask = (id) => dispatch(deleteTask(id))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -100,8 +100,15 @@ const ProcessForm = (props) => {
 
 	}, [values])
 
-	const handleSave = async (values, close) => {
+	const handleDeleteRemovedRoutes = (processRoutes) => {
 
+		Object.values(tasks).forEach((task) => {
+			const found = !!processRoutes.find((route) => route === task._id)
+			if(!found && task.processId===selectedProcess._id) dispatchDeleteTask(task._id)
+		})
+	}
+
+	const handleSave = async (values, close) => {
 		// extract some values
 		const {
 			changed,
@@ -151,6 +158,7 @@ const ProcessForm = (props) => {
 			dispatchSetSelectedProcess(null)
 			toggleEditingProcess(false)
 		}
+		handleDeleteRemovedRoutes(mappedRoutes)
 	}
 
 	// remove keys from route that shouldn't be saved

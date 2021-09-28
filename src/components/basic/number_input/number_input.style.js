@@ -6,7 +6,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  
+
 `
 
 const inputCss = css`
@@ -29,7 +29,7 @@ const inputCss = css`
   color: ${props => props.theme.bg.octonary};
   background: ${props => props.theme.bg.tertiary};
   border: none;
-  
+
   //-webkit-appearance: none !important;
   &:focus{
     outline: 0 !important;
@@ -54,13 +54,13 @@ const inputCss = css`
 
 export const Input = styled.input`
   ${inputCss};
-  
+
   read-only: true;
 `
 
 export const FakeInput = styled.div`
   // background: ${props => props.theme.bg.secondary};
-  
+
   ${inputCss};
 `
 
@@ -72,7 +72,7 @@ const buttonCss = css`
   border: none;
   outline: none !important;
 
-  
+
 `
 const usableCss = css`
   &:hover {

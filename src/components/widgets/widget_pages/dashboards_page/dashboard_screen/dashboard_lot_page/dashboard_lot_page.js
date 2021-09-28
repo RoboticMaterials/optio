@@ -85,7 +85,6 @@ const DashboardLotPage = (props) => {
   // but dashboard lot page is still mounted
   const currentLot = useRef(cards[lotID]).current;
   const currentProcess = useRef(processes[currentLot.process_id]).current;
-
   const routeOptions = useRef(
     Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
@@ -100,13 +99,14 @@ const DashboardLotPage = (props) => {
           routeOptions.findIndex((option) => option.unload === route.unload) === idx
       )
   ).current;
-
+  
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
   const [moveQuantity, setMoveQuantity] = useState(
     currentLot.bins[loadStationID]?.count
   );
+
 
   // Used to show dashboard input
   useEffect(() => {
@@ -121,6 +121,7 @@ const DashboardLotPage = (props) => {
 
     setLotContainsInput(containsInput);
   }, [currentLot]);
+
 
   const onBack = () => {
     history.push(`/locations/${stationID}/dashboards/${dashboardID}`);
@@ -214,6 +215,7 @@ const DashboardLotPage = (props) => {
 
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
     const processStartNodes = findProcessStartNodes(processRoutes);
+
 
     return processRoutes
       .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse')
@@ -325,11 +327,18 @@ const DashboardLotPage = (props) => {
           handleCancel={() => onBack()}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}
+          onInputChange = {(e) =>{
+            handleTypedQty(e)
+          }}
           setQuantity={setMoveQuantity}
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
           //route={currentTask}
-          disabled={!processes[cards[lotID]?.process_id]?.showFinish}
+          disabled={!moveQuantity || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
+          onBlur = {()=> {
+            if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
+            if(moveQuantity>currentLot.bins[stationID]?.count) setMoveQuantity(currentLot.bins[stationID].count)
+          }}
         />
       </styled.LotButtonContainer>
     </styled.LotContainer>

@@ -6,16 +6,15 @@ import { borderGlowCss, ContainerCss, conditionTextCss } from "../dashboard_butt
 
 export const Container = styled.button`
     ${ContainerCss};
-    
+
     // flex layout
     flex-direction: row;
-    
-    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary, -50)}; 
-    height: 4rem; 
-    // line-height: 4rem; 
-    margin-bottom: 1rem; 
-    min-width: 80%;
 
+    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary, -50)};
+    height: 4rem;
+    // line-height: 4rem;
+    margin-bottom: 1rem;
+    min-width: 80%;
     padding: 0;
     padding-left: 0.5rem;
 

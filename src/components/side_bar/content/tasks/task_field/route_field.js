@@ -41,7 +41,7 @@ import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
 
-import { setSelectedHoveringTask, editingTask, setSelectedTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedHoveringTask, editingTask, setSelectedTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean, deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
 import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
@@ -90,6 +90,7 @@ const TaskField = (props) => {
 
     const dispatch = useDispatch()
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
+    const dispatchDeleteTask = async (routeId) => await dispatch(deleteTask(routeId))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
@@ -191,7 +192,6 @@ const TaskField = (props) => {
       onEditing(false)
       setFieldValue(`routes`, updatedRoutes);
       dispatchSetEditingValues({...values, routes: updatedRoutes})
-
     }
 
     const onRouteBack = async (id) => {
