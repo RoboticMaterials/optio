@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ import useOnClickOutside from '../../../../../hooks/useOnClickOutside'
 
 // utils
 import { getBinQuantity, getIsCardAtBin } from "../../../../../methods/utils/lot_utils";
-import { getNodeIncoming, getNodeOutgoing } from '../../../../../methods/utils/processes_utils';
+import { getNodeIncoming, getNodeOutgoing, isNodeStartWarehouse } from '../../../../../methods/utils/processes_utils';
 
 // styles
 import * as styled from './dashboards_header.style';
@@ -55,7 +55,7 @@ const DashboardsHeader = (props) => {
     const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
     const [showOperationsMenu, setShowOperationsMenu] = useState(false)
 
-    const [color, setColor] = useState('#5294ff')
+    const [pullButtons, setPullButtons] = useState([])
 
     const size = useWindowSize()
     const windowWidth = size.width
@@ -67,19 +67,20 @@ const DashboardsHeader = (props) => {
     const menuRef = useRef() // ref for useOnClickOutside
     useOnClickOutside(menuRef, () => { setShowOperationsMenu(false) }) // calls onClickOutside when click outside of element
 
-    const renderPullButtons = useMemo(() => {
+    useEffect(() => {
 
-        let pullButtons = [];
+        let tempPullButtons = [];
         Object.values(processes).forEach(process => {
 
             const processRoutes = process.routes.map(routeId => routes[routeId]);
-            const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes);
+            const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes)
+                .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
 
             if (outgoingRoutes.length === 0) {
                 return;
             } else if (incomingRoutes.length === 0) {
-                pullButtons.push({
+                tempPullButtons.push({
                     type: 'kickoff',
                     processID: process._id
                 });
@@ -89,7 +90,7 @@ const DashboardsHeader = (props) => {
                     .filter(route => stations[route.load]?.type === 'warehouse')
                     .forEach(route => {
                         if (getNodeIncoming(route.load, processRoutes).length > 0) { // Cannot pull from start warehouses, must merge them into another lot
-                            pullButtons.push({
+                            tempPullButtons.push({
                                 type: 'warehouse',
                                 warehouseID: route.load
                             })
@@ -100,6 +101,12 @@ const DashboardsHeader = (props) => {
             }
 
         });
+
+        setPullButtons(tempPullButtons)
+
+    }, [processes, routes, stations, currentDashboard.station])
+
+    const renderPullButtons = useMemo(() => {
 
         return pullButtons.map(pullBtn => {
 
@@ -128,7 +135,7 @@ const DashboardsHeader = (props) => {
 
         })
 
-    }, [processes, routes, stations, currentDashboard.station])
+    }, [pullButtons])
 
     return (
         <styled.ColumnContainer>
@@ -137,16 +144,18 @@ const DashboardsHeader = (props) => {
 
                 {!phoneView ?
                   <>
-                    <Button
-                        schema="dashboards"
-                        onClick={() => {
-                            setShowOperationsMenu(true)
-                        }}
-                        disabled={showOperationsMenu}
-                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
-                    >
-                        Pull
-                    </Button>
+                    {pullButtons.length > 0 && 
+                        <Button
+                            schema="warehouse"
+                            onClick={() => {
+                                setShowOperationsMenu(true)
+                            }}
+                            disabled={showOperationsMenu}
+                            style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
+                        >
+                            Pull
+                        </Button>
+                    }
                     <Button
                         schema="delete"
                         onClick={() => {

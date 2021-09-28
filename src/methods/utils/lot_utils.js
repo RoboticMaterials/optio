@@ -391,6 +391,16 @@ export const getBinQuantity = ({ bins }, binId) => {
     else return 0
 }
 
+export const getBinCount = ({ bins }, binId) => {
+
+    if (!!bins && !!bins[binId]) {
+        return bins[binId]?.count || 0;
+    } else {
+        return 0
+    }
+
+}
+
 // If the count doesnt exist things break. This allows us to avoid that error
 export const safelyDeconstructBin = (bins, binId) => {
     const test = {count: 2}
@@ -407,12 +417,7 @@ export const safelyDeconstructBin = (bins, binId) => {
 }
 
 export const getIsCardAtBin = ({ bins }, binId) => {
-  if(!!bins){
-    for(const i in bins[binId]){
-      if(!!bins[binId][i] && i!== 'count') return true
-    }
-  }
-    return !!getBinQuantity({ bins }, binId)
+    return getBinQuantity({ bins }, binId) > 0
 }
 
 export const getCardsInBin = (cards, binId, processId) => {

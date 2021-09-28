@@ -64,11 +64,11 @@ const LotContainer = (props) => {
   );
 
   if (!(binId in bins)) { return null }
-  const { count, ...partials } = bins[binId];
+  const { count=0, ...partials } = bins[binId] || {};
 
   return (
       <styled.LotFamilyContainer>
-            {(count > 0 || (count>=0 && !isDashboard)) &&
+            {((!!count && count > 0) || (!!count && count>=0 && !isDashboard)) &&
                 <Lot
                     lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                     isDashboard={!!isDashboard}
