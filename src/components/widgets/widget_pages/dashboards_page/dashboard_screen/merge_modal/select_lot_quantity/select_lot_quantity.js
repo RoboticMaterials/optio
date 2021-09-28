@@ -5,7 +5,7 @@ import {FINISH_BIN_ID} from "../../../../../../../constants/lot_contants";
 import NumberField from "../../../../../../basic/form/number_field/number_field";
 import {Formik} from "formik";
 import * as styled from './select_lot_quantity.style'
-import {getBinQuantity} from "../../../../../../../methods/utils/lot_utils";
+import {getBinCount} from "../../../../../../../methods/utils/lot_utils";
 import Button from "../../../../../../basic/button/button";
 import PageSelector from "../../../../../../basic/page_selector/page_selector";
 import {selectLotQuantitySchema} from "../../../../../../../methods/utils/form_schemas";
@@ -38,7 +38,7 @@ const SelectLotQuantity = (props) => {
 		let tempCurrentLot = selectedLots[currentLotIndex]
 		setCurrentLot(tempCurrentLot)
 
-		setMaxQuantity(getBinQuantity(tempCurrentLot, stationId))
+		setMaxQuantity(getBinCount(tempCurrentLot, stationId))
 		return () => {};
 	}, [selectedLots, currentLotIndex]);
 
@@ -65,7 +65,7 @@ const SelectLotQuantity = (props) => {
 						enableFlagSelector={false}
 						containerStyle={{marginBottom: '1rem'}}
 						onClick={() => {
-							const maxQuanttiy = getBinQuantity(currentLot, stationId)
+							const maxQuanttiy = getBinCount(currentLot, stationId)
 							setFieldValue(`items[${currentLotIndex}].quantity`, maxQuanttiy)
 						}}
 					/>
