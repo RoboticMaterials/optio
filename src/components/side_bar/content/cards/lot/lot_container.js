@@ -23,6 +23,7 @@ const LotContainer = (props) => {
     binId,
     enableFlagSelector,
     containerStyle,
+    isPartial,
     // quantity,
     ...rest
   } = props;
@@ -67,9 +68,9 @@ const LotContainer = (props) => {
 
   return (
       <styled.LotFamilyContainer>
-            {count > 0 &&
+            {(count > 0 || (count>=0 && !isDashboard)) &&
                 <Lot
-                    lotDisabled={count < 1 && !!isDashboard}
+                    lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                     isDashboard={!!isDashboard}
                     stationName={stationName}
                     templateValues={templateValues}
@@ -94,11 +95,10 @@ const LotContainer = (props) => {
             }
             {Object.entries(partials).map(([routeId, quantity]) => (
                 <>
-                    {count < quantity &&
+                    {count < quantity && !!isDashboard &&
                         <Lot
                             lotDisabled={true}
                             isDashboard={!!isDashboard}
-
                             processName={processName}
                             stationName={stationName}
                             templateValues={templateValues}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState} from "react";
+import { useParams, useHistory } from "react-router-dom";
 import VisibilitySensor from 'react-visibility-sensor'
 
 // actions
@@ -24,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -50,12 +51,15 @@ const Column = ((props) => {
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
-
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
 
+
+	const history = useHistory();
+  const pageName = history.location.pathname;
+  const isDashboard = !!pageName.includes("/locations");
 	// console.log(shiftDetails)
 
 	// actions
@@ -278,44 +282,10 @@ const Column = ((props) => {
 					} = oldBins || {}
 
 					if (movedBin) {
-							let updatedLot = {}
-							const movedCount = parseInt(movedBin?.count || 0)
-							const mergingRoutesNextNode = processes[droppedCard.process_id].routes
-			                              .map(routeId => routes[routeId])
-			                              .filter(route => route.unload === station_id)
+						let updatedLot = droppedCard
+						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, station_id, processes[updatedLot.process_id], routes, stations)
+						updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, processes[updatedLot.process_id], routes)
 
-				      const mergingRoutesCurrentNode = processes[droppedCard.process_id].routes
-				                            .map(routeId => routes[routeId])
-				                            .filter(route => route.unload === binId)
-
-
-							//Handle updating lot bin at next node
-							if(mergingRoutesNextNode.length > 1){
-							  updatedLot = handleMoveLotToMergeStation(droppedCard,binId,station_id, movedCount)
-							}
-							else{
-									const oldCount = parseInt(oldBins[station_id]?.count || 0)
-
-									updatedLot = {
-										...droppedCard,
-										bins: {
-											...droppedCard.bins,
-											[station_id]: {
-												...droppedCard.bins[station_id],
-												count: oldCount + movedCount
-											}
-										}
-									}
-								}
-
-							//Handle updated lot bin at current node
-							if(mergingRoutesCurrentNode.length>1){
-								updatedLot = handleMoveLotFromMergeStation(updatedLot,binId,station_id, movedCount)
-								}
-							else{
-								if (movedCount === updatedLot.bins[binId].count) delete updatedLot.bins[binId]
-				        else updatedLot.bins[binId].count -= movedCount
-							}
 						dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)
 				}
@@ -390,6 +360,7 @@ const Column = ((props) => {
 								...rest
 							} = card
 
+
 							// console.log(lotNumber, leadTime)
 
 							// const templateValues = getCustomFields(lotTemplateId, card)
@@ -405,69 +376,135 @@ const Column = ((props) => {
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
-
-
-							return (
-								<VisibilitySensor partialVisibility = {true}>
-									{({isVisible}) =>
-										<>
-											{!!isVisible ?
-													<Draggable
-														key={cardId}
-														onMouseEnter={(event) => onMouseEnter(event, cardId)}
-														onMouseLeave={onMouseLeave}
-														style={{
-														}}
-													>
-														<div
+							if(!!reduxCards[card.cardId].bins[card.binId] && Object.keys(reduxCards[card.cardId]?.bins[card.binId])?.length>1){
+								const partBins = reduxCards[card.cardId].bins[card.binId]
+								return (
+									Object.keys(partBins).map((part) => {
+										const isPartial = part !== 'count' ? true : false
+										return (
+											<>
+												{(partBins[part]>partBins['count'] || (part === 'count' && partBins['count']>0)) &&
+														<Draggable
+															key={cardId}
+															onMouseEnter={(event) => onMouseEnter(event, cardId)}
+															onMouseLeave={onMouseLeave}
 															style={{
 															}}
 														>
-															<LotContainer
-																glow={isLastSelected}
-																isFocused={isDragging || isHovering}
-																enableFlagSelector={true}
-																selectable={selectable}
-																isSelected={isSelected}
-																key={cardId}
-																// processName={processName}
-																totalQuantity={totalQuantity}
-																lotNumber={lotNumber}
-																name={name}
-																count={count}
-																leadTime={leadTime}
-																id={cardId}
-																flags={flags || []}
-																index={index}
-																lotId={cardId}
-																binId={station_id}
-																onClick={(e) => {
-																	const payload = getBetweenSelected(cardId)
-																	onCardClick(
-																		e,
-																		{
-																			lotId: cardId,
-																			processId: processId,
-																			binId: station_id
-																		},
-																		payload
-																	)
+															<div
+																style={{
 																}}
-																containerStyle={{
-																	marginBottom: "0.5rem",
+															>
+																<LotContainer
+																	isPartial = {isPartial}
+																	glow={isLastSelected}
+																	isFocused={isDragging || isHovering}
+																	enableFlagSelector={true}
+																	selectable={selectable}
+																	isSelected={isSelected}
+																	key={cardId}
+																	// processName={processName}
+																	totalQuantity={totalQuantity}
+																	lotNumber={lotNumber}
+																	name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																	count={isPartial ? partBins[part] - partBins['count'] : count}
+																	leadTime={leadTime}
+																	id={cardId}
+																	flags={flags || []}
+																	index={index}
+																	lotId={cardId}
+																	binId={station_id}
+																	onClick={(e) => {
+																		const payload = getBetweenSelected(cardId)
+																		onCardClick(
+																			e,
+																			{
+																				lotId: cardId,
+																				processId: processId,
+																				binId: station_id
+																			},
+																			payload
+																		)
+																	}}
+																	containerStyle={{
+																		marginBottom: "0.5rem",
+																	}}
+																/>
+															</div>
+														</Draggable>
+
+												}
+											</>
+										)
+									})
+								)
+							}
+
+							else{
+								return (
+									<VisibilitySensor partialVisibility = {true}>
+										{({isVisible}) =>
+											<>
+												{!!isVisible ?
+														<Draggable
+															key={cardId}
+															onMouseEnter={(event) => onMouseEnter(event, cardId)}
+															onMouseLeave={onMouseLeave}
+															style={{
+															}}
+														>
+															<div
+																style={{
 																}}
-															/>
+															>
+																<LotContainer
+																	glow={isLastSelected}
+																	isFocused={isDragging || isHovering}
+																	enableFlagSelector={true}
+																	selectable={selectable}
+																	isSelected={isSelected}
+																	key={cardId}
+																	// processName={processName}
+																	totalQuantity={totalQuantity}
+																	lotNumber={lotNumber}
+																	name={name}
+																	count={count}
+																	leadTime={leadTime}
+																	id={cardId}
+																	flags={flags || []}
+																	index={index}
+																	lotId={cardId}
+																	binId={station_id}
+																	onClick={(e) => {
+																		const payload = getBetweenSelected(cardId)
+																		onCardClick(
+																			e,
+																			{
+																				lotId: cardId,
+																				processId: processId,
+																				binId: station_id
+																			},
+																			payload
+																		)
+																	}}
+																	containerStyle={{
+																		marginBottom: "0.5rem",
+																	}}
+																/>
+
+
+															</div>
+														</Draggable>
+														:
+														<div style = {{height: '20rem', width: '80%'}}>
+														...Loading
 														</div>
-													</Draggable>
-													:
-													<div style = {{height: '20rem', width: '80%'}}>
-													...Loading
-													</div>
-											}
-										</>
-									}
-								</VisibilitySensor>
-							)
+												}
+											</>
+										}
+									</VisibilitySensor>
+								)
+							}
 						})}
 
 					</Container>

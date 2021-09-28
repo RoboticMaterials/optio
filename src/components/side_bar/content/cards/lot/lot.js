@@ -52,7 +52,6 @@ const Lot = (props) => {
     } = props
 
     const themeContext = useContext(ThemeContext)
-
     // actions
     const dispatch = useDispatch()
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
@@ -164,6 +163,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            isDashboard = {isDashboard}
             glow={glow}
             isFocused={isFocused}
             highlight={highlight}

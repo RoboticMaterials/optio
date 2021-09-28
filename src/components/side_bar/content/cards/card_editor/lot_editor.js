@@ -263,6 +263,8 @@ const FormComponent = (props) => {
     *
     * */
     const handleDeleteClick = async (selectedBin) => {
+        console.log(bins[selectedBin])
+        console.log(card)
         const {
             [selectedBin]: currentBin,
             ...remainingBins
@@ -282,15 +284,15 @@ const FormComponent = (props) => {
 
         // otherwise update the card to contain only the remaining bins
         else {
-            const result = await dispatchPutCard(submitItem, cardId)
+            //const result = await dispatchPutCard(submitItem, cardId)
 
             // check if request was successful
-            if (!(result instanceof Error)) {
-                requestSuccessStatus = true
-            }
+            //if (!(result instanceof Error)) {
+            //    requestSuccessStatus = true
+            //}
         }
 
-        close()
+        //close()
     }
 
     useEffect(() => {
