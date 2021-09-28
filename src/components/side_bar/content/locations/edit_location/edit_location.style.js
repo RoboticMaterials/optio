@@ -26,7 +26,7 @@ export const LocationTypeContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 8rem;
+    width: 100%;
 
 `
 

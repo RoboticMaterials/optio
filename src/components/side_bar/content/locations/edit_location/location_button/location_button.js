@@ -11,9 +11,11 @@ const LocationButton = (props) => {
     const {
         type,
         isSelected,
-        handleAddLocation,
+        onDragStart,
+        onClick,
         schema,
         locationAdded,
+        disableDrag,
     } = props
 
     const LocationTypes = {
@@ -53,7 +55,7 @@ const LocationButton = (props) => {
     }
 
     return (
-        <Draggable disabled={!!locationAdded} ref={dragRef} key={`location-button-drag-ref-${type}`} onStart={() => handleAddLocation(type)} onDrag={handleDrag} onStop={handleDragStop} axis="none" position={{x, y}}>
+        <Draggable disabled={!!locationAdded} ref={dragRef} key={`location-button-drag-ref-${type}`} onMouseDown={() => onClick(type)} onStart={() => !disableDrag && onDragStart(type)} onDrag={handleDrag} onStop={handleDragStop} axis="none" position={{x, y}}>
             <styled.LocationTypeButton
                 isSelected={!!isSelected && isSelected === type}
                 isNotSelected={!!isSelected && isSelected !== type}
@@ -65,6 +67,7 @@ const LocationButton = (props) => {
                     <styled.LocationTypeGraphic
 
                         fill={LocationTypes[type].color}
+                        isSelected={!!isSelected && isSelected === type}
                         isNotSelected={!!isSelected && isSelected !== type}
                         stroke={LocationTypes[type].color}
                         id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"
@@ -76,6 +79,10 @@ const LocationButton = (props) => {
 
     )
 
+}
+
+LocationButton.defaultProps = {
+    disableDrag: false
 }
 
 export default LocationButton

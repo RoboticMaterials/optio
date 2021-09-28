@@ -17,14 +17,14 @@ export const LocationTypeButton = styled.div`
     width: 6rem;
     border-radius: 0.5rem;
 
-    background: ${props => props.isSelected ? `transparent` : props.isNotSelected ? 'lightgray' : props.theme.bg.secondary};
+    background: ${props => props.isSelected ? `#ebecf0` : props.isNotSelected ? 'lightgray' : '#f5f5f7'};
 
     margin: 0.5rem;
     position: relative;
     opacity: 0.999;
     z-index:  ${props => props.isSelected && 10};
 
-    box-shadow: ${props => props.isSelected ? `none` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
+    box-shadow: ${props => props.isSelected ? `inset 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
 
     ${props => !props.isSelected &&
     `    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;

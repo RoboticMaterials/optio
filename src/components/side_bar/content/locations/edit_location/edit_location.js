@@ -293,9 +293,13 @@ const EditLocation = (props) => {
         }
     }
 
-    const onRemoveTempLocation = async () => {
+    const onChangeLocationType = async (type) => {
+        if (!!selectedLocation) {
+            dispatchSetStationAttributes(selectedLocation._id, { type });
+        }
+    }
 
-        console.log("deleteLoc")
+    const onRemoveTempLocation = async () => {
 
         // Station
         if (!!selectedLocation && selectedLocation.temp) {
@@ -387,28 +391,17 @@ const EditLocation = (props) => {
     }
 
 
-    const renderStationButtons = () => {
+    const renderStationButtons = (onClick, onDrag, disableDrag) => {
         // If there is a type selected and its not the button type, that means this type has not been selected so gray everything out
         const types = ['human', 'warehouse']
 
         return types.map((type, i) => {
             const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
-                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} onClick={onClick} onDragStart={onDrag} disableDrag={disableDrag}/>
             )
         })
 
-    }
-
-    const renderPositionButtons = () => {
-        const types = ['cart_position', 'shelf_position']
-
-        return types.map((type, i) => {
-            const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type === type) ? selectedPosition.type : false;
-            return (
-                <LocationButton key={`pos_button_${i}`} schema={'position'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
-            )
-        })
     }
 
     return (
@@ -417,7 +410,7 @@ const EditLocation = (props) => {
 
                 <ConfirmDeleteModal
                     isOpen={!!confirmDeleteModal}
-                    title={"Are you sure you want to delete this Location?"}
+                    title={"WARNING! All historical data for this location will also be deleted. Are you sure you want to delete this Location?"}
                     button_1_text={"Yes"}
                     handleOnClick1={() => {
                         onDelete()
@@ -515,38 +508,20 @@ const EditLocation = (props) => {
                                     <styled.DefaultTypesContainer>
 
                                         {!selectedLocation || selectedLocation.temp ?
-                                            <>
-                                                <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
-                                                    <styled.Label schema={'locations'}>Stations</styled.Label>
-                                                    <styled.LocationButtonConatiner>
-                                                        {renderStationButtons()}
-                                                    </styled.LocationButtonConatiner>
-                                                </styled.LocationTypeContainer>
-
-                                                {deviceEnabled &&
-                                                    <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
-                                                        <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
-                                                        <styled.LocationButtonConatiner>
-                                                            {renderPositionButtons()}
-                                                        </styled.LocationButtonConatiner>
-
-                                                        {/* <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
-                                                    <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
-                                                    <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
-                                                </styled.LocationButtonSubtitleContainer> */}
-
-                                                    </styled.LocationTypeContainer>
-                                                }
-                                            </>
+                                            <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
+                                                <styled.Label schema={'locations'}>Location Type</styled.Label>
+                                                <styled.LocationButtonConatiner>
+                                                    {renderStationButtons(()=>{}, onAddLocation)}
+                                                </styled.LocationButtonConatiner>
+                                            </styled.LocationTypeContainer>
 
                                             :
-                                            <LocationButton
-                                                type={selectedLocation['type']}
-                                                isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
-                                                locationAdded={true}
-                                                handleAddLocation={() => null}
-
-                                            />
+                                            <styled.LocationTypeContainer onMouseUp={onRemoveTempLocation}>
+                                                <styled.Label schema={'locations'}>Location Type</styled.Label>
+                                                <styled.LocationButtonConatiner>
+                                                    {renderStationButtons(onChangeLocationType, ()=>{}, true)}
+                                                </styled.LocationButtonConatiner>
+                                            </styled.LocationTypeContainer>
 
                                         }
 
