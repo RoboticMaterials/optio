@@ -68,7 +68,7 @@ const LotContainer = (props) => {
 
   return (
       <styled.LotFamilyContainer>
-            {((!!count && count > 0) || (!!count && count>=0 && !isDashboard)) &&
+            {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
                 <Lot
                     lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                     isDashboard={!!isDashboard}

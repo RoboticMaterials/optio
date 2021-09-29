@@ -162,7 +162,7 @@ const DashboardLotPage = (props) => {
       handleTaskAlert(
         "LOT_MOVED",
         "Lot Moved",
-        `${quantity} parts from ${currentLot.name} 
+        `${quantity} parts from ${currentLot.name}
           have been split between ${moveStations
             .map((stationId) => stations[stationId].name)
             .join(" & ")}`
