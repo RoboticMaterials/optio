@@ -24,6 +24,7 @@ const LotContainer = (props) => {
     enableFlagSelector,
     containerStyle,
     isPartial,
+    onDeleteDisabledLot,
     // quantity,
     ...rest
   } = props;
@@ -71,6 +72,7 @@ const LotContainer = (props) => {
             {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
                 <Lot
                     lotDisabled={(count < 1 && !!isDashboard) || isPartial}
+                    onDeleteDisabledLot = {onDeleteDisabledLot}
                     isDashboard={!!isDashboard}
                     stationName={stationName}
                     templateValues={templateValues}

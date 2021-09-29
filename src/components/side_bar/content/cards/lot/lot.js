@@ -48,7 +48,8 @@ const Lot = (props) => {
         processName,
         showCustomFields,
         lotDisabled,
-        isDashboard
+        isDashboard,
+        onDeleteDisabledLot,
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -156,6 +157,16 @@ const Lot = (props) => {
             <LotFlags
                 flags={flags}
             />
+            {!!lotDisabled && !isDashboard &&
+              <styled.PartContainer
+                onClick = {onDeleteDisabledLot}
+              >
+                <styled.PartName>
+                  Delete Parts
+                </styled.PartName>
+              </styled.PartContainer>
+            }
+
             </styled.PartsRow>
         )
     }

@@ -86,7 +86,7 @@ const CardZone = ((props) => {
         for (var i=0; i<unloadStations.length; i++) {
             const unloadStationA = unloadStations[i];
 
-            
+
             if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
                 if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
                     return stations[unloadStationA].type === 'warehouse'
@@ -579,7 +579,7 @@ const CardZone = ((props) => {
 
             {renderStationColumns}
 
-            {!doesProcessEndInWarehouse && 
+            {!doesProcessEndInWarehouse &&
                 <FinishColumn
                     setSelectedCards={setSelectedCards}
                     selectedCards={selectedCards}

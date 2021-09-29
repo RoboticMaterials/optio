@@ -55,8 +55,6 @@ const Column = ((props) => {
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
-
-
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -74,7 +72,7 @@ const Column = ((props) => {
 	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
-
+	const [enableFlags, setEnableFlags] = useState(true)
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -174,6 +172,23 @@ const Column = ((props) => {
 
 	const onMouseLeave = (event) => {
 		dispatchSetLotHovering(null)
+	}
+
+	const handleDeleteDisabledLot = (card, binId, partId) => {
+			let currLot = reduxCards[card.cardId]
+			let currBin = currLot.bins[binId]
+
+			delete currBin[partId]
+
+			let submitLot = {
+				...currLot,
+				bins: {
+					...currLot.bins,
+					[binId]: currBin
+				}
+			}
+			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
+			dispatchPutCard(submitLot, submitLot._id)
 	}
 
 	const getSelectedIndex = (lotId, binId) => {
@@ -408,9 +423,12 @@ const Column = ((props) => {
 															>
 																<LotContainer
 																	isPartial = {isPartial}
+																	onDeleteDisabledLot = {() => {
+																		handleDeleteDisabledLot(card, card.binId, part)
+																	}}
 																	glow={isLastSelected}
 																	isFocused={isDragging || isHovering}
-																	enableFlagSelector={true}
+																	enableFlagSelector={enableFlags}
 																	selectable={selectable}
 																	isSelected={isSelected}
 																	key={cardId}
