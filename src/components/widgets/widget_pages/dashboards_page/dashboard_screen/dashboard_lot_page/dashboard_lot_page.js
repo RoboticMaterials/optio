@@ -245,7 +245,7 @@ const DashboardLotPage = (props) => {
   const renderChildCards = useMemo(() => {
 
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
-    const processStartNodes = findProcessStartNodes(processRoutes, stations);
+    const processStartNodes = findProcessStartNodes(processRoutes);
 
 
     return processRoutes

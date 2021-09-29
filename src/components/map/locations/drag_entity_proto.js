@@ -143,6 +143,7 @@ const DragEntityProto = (props) => {
         rectElement.call(
             d3.behavior.drag()
                 .on("dragstart", () => {
+                    originalTranslation = [location.x, location.y]
                     if (isSelected) {
                         handleDisableDrag()
                     }
@@ -154,8 +155,10 @@ const DragEntityProto = (props) => {
                 })
                 .on("dragend", async () => {
                     if (isSelected) {
-                        handleTranslateEnd({ x: originalTranslation[0] + deltaTranslation[0], y: originalTranslation[1] + deltaTranslation[1] })
-                        translateEnd()
+                        if (deltaTranslation.length === 2) {
+                            handleTranslateEnd({ x: originalTranslation[0] + deltaTranslation[0], y: originalTranslation[1] + deltaTranslation[1] })
+                            translateEnd()
+                        }
                         handleEnableDrag()
                         setTranslating(false)
                     }

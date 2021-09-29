@@ -124,12 +124,14 @@ export const ProcessField = (props) => {
             const selectedTaskCopy = selectedTask
             if (selectedTaskCopy.part === null) {
                 const preceedingRoutes = processRoutesCopy.filter(route => route._id !== selectedTask._id && route.unload === selectedTask.load)
+                let defaultName = values.name;
                 for (var preceedingRoute of preceedingRoutes) {
                     if (!!preceedingRoute.part) {
-                        selectedTaskCopy.part = preceedingRoute.part;
+                        defaultName = preceedingRoute.part;
                         break;
                     }
                 }
+                selectedTaskCopy.part = defaultName;
             }
 
             processRoutesCopy.push(selectedTaskCopy);
@@ -190,7 +192,7 @@ export const ProcessField = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
-                title={"Are you sure you want to delete this process?"}
+                title={"WARNING! All lots currently in this process will be deleted forever. Are you sure you want to delete this process?"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}

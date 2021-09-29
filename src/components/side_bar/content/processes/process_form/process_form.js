@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
-import {processSchema} from "../../../../../methods/utils/form_schemas";
+import {getProcessSchema} from "../../../../../methods/utils/form_schemas";
 import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
@@ -246,7 +246,7 @@ const ProcessForm = (props) => {
 			}}
 
 			// validation control
-			validationSchema={processSchema}
+			validationSchema={getProcessSchema(stations)}
 			innerRef = {formRef}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched

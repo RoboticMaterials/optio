@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 // Import Styles
 import * as styled from './content_list.style'
@@ -7,6 +8,7 @@ import * as styled from './content_list.style'
 // Import Components
 import ContentHeader from '../content_header/content_header'
 import ContentListItem from './content_list_item/content_list_item'
+import Portal from '../../../../higher_order_components/portal'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
@@ -46,12 +48,40 @@ export default function ContentList(props) {
         }
     }, [schema])
 
+    const SortToggle = React.forwardRef(({ children, onClick }, ref) => (
+        <styled.SortToggle
+            href=""
+            ref={ref}
+            onClick={e => {
+            e.preventDefault();
+            onClick(e);
+            }}
+        >
+            {children}
+        </styled.SortToggle>
+    ))
+
     return (
         <styled.Container>
 
             {!hideHeader &&
                 <ContentHeader content={props.schema} onClickAdd={props.onPlus} />
             }
+        {/* <styled.SortContainer>
+            
+                <Dropdown>
+                    <Dropdown.Toggle as={SortToggle} id="dropdown-custom-components">
+                    Sort
+                    </Dropdown.Toggle>
+
+                    
+                        <Dropdown.Menu>
+                            <Dropdown.Item eventKey="1">Red</Dropdown.Item>
+                            <Dropdown.Item eventKey="2">Blue</Dropdown.Item>
+                            <Dropdown.Item eventKey="3">Orange</Dropdown.Item>
+                        </Dropdown.Menu>
+                </Dropdown>
+        </styled.SortContainer> */}
 
             <styled.List>
                 {elements.map((element, ind) => {
