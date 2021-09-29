@@ -124,3 +124,14 @@ export const ListItemIconContainer = styled.div`
 export const ErrorContainer = styled.div`
 	position: relative;
 `
+
+export const SortToggle = styled.div`
+    font-size: 1rem;
+    color: ${props => props.theme.bg.quinary};
+    cursor: pointer;
+`
+export const SortContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+`

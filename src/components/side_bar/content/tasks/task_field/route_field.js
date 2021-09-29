@@ -106,6 +106,8 @@ const TaskField = (props) => {
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0) || (!enableSave))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    console.log(errors)
+    
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -323,6 +325,8 @@ const TaskField = (props) => {
                         inputStyle={{height: '2.5rem', width: '5rem', fontSize: '1.4rem'}}
                     /> */}
                     </div>
+
+                    <styled.ErrorText>{Array.isArray(errors) && typeof errors[errors.length-1] === 'string' && errors[errors.length-1]}</styled.ErrorText>
 
 
                     <>
