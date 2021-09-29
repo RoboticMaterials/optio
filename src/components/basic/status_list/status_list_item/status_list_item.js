@@ -280,7 +280,7 @@ const StatusListItem = (props) => {
 					}
 				</styled.StatusContainer>
 
-				<styled.EditButton
+				{/*	<styled.EditButton
 					color={themeContext.bg.quaternary}
 					type={"button"}
 					onClick={(e) => {
@@ -289,7 +289,7 @@ const StatusListItem = (props) => {
 						onEditClick(item)
 					}}
 					className="fas fa-edit"
-				/>
+				/>  */}
 			</styled.ColumnWrapper>
 
 		</styled.Container>

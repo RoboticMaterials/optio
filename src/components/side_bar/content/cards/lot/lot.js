@@ -48,11 +48,11 @@ const Lot = (props) => {
         processName,
         showCustomFields,
         lotDisabled,
-        isDashboard
+        isDashboard,
+        onDeleteDisabledLot,
     } = props
 
     const themeContext = useContext(ThemeContext)
-
     // actions
     const dispatch = useDispatch()
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
@@ -157,6 +157,16 @@ const Lot = (props) => {
             <LotFlags
                 flags={flags}
             />
+            {!!lotDisabled && !isDashboard &&
+              <styled.PartContainer
+                onClick = {onDeleteDisabledLot}
+              >
+                <styled.PartName>
+                  Delete Parts
+                </styled.PartName>
+              </styled.PartContainer>
+            }
+
             </styled.PartsRow>
         )
     }
@@ -164,6 +174,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            isDashboard = {isDashboard}
             glow={glow}
             isFocused={isFocused}
             highlight={highlight}

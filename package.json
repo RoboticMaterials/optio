@@ -41,6 +41,7 @@
     "ramda": "^0.27.1",
     "rc-time-picker": "^3.7.3",
     "react-bootstrap": "^1.6.4",
+    "react-bootstrap-dropdown": "^0.3.0",
     "react-calendar": "^3.3.1",
     "react-click-n-hold": "^1.0.7",
     "react-color": "^2.19.3",

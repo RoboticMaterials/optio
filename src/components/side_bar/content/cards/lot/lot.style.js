@@ -39,7 +39,7 @@ export const Container = styled.div`
     }
 
   &:hover {
-    box-shadow: 1px 1px 7px 3px #b385ff;
+    box-shadow: ${props => props.disabled ? '0px 1px 4px 0px rgba(0, 0, 0, 0.3)' : '1px 1px 7px 3px #b385ff'};
   }
 
 
@@ -87,30 +87,37 @@ export const Row = styled.div`
 export const PartsRow = styled.div`
     display: flex;
     width: 100%;
-    justify-content: start;
+    justify-content: space-between;
     padding: .25rem 0 .25rem 0;
 `
 
 export const PartContainer = styled.div`
     display: flex;
-    height: 1rem;
+    height: 1.4rem;
     max-width: 14rem;
     min-width: 5rem;
     margin-left: .2rem;
-    margin-top: .5rem;
+    margin-top: .2rem;
 
     justify-content: center;
+    z-index: 5000;
+    pointer-events: auto;
+    background: #F92644;
+    border-radius: 0.8rem;
+    color: ${props => props.theme.bg.primary};
 
-    background: ${props=>props.theme.schema['objects'].solid};
-    border-radius: 0.2rem;
-    color: ${props => props.theme.bg.octonary};
+    &:hover {
+      cursor: pointer;
+      background: #ff4545;
 
+    }
 `
+
 export const PartName = styled.span`
   display: flex;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: .65rem;
+  font-size: .9rem;
   font-family: ${props => props.theme.font.primary};
   justify-content: center;
   padding-left: 0.5rem;
