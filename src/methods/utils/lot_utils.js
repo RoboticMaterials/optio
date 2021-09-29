@@ -672,7 +672,7 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
 /** Davis
  * Given the bin at a destination, this function determines the ~actual~ quantity of parts at the station based on the expression
  * that describes the required inputs (based on splits and merges).
- * 
+ *
  * @param {object} bins The current bins
  * @param {array} mergeExpression This is the expression output from the handleMergeExpression function from process_utils. It
  * contains the "AND" "OR" boolean expressions that describe the required input routes to count as a part
@@ -698,7 +698,7 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
                 }
                 return count
             }
-            
+
         } else {
             console.log(subExpression, subExpression in bin ? bin[subExpression] : 0)
             return subExpression in bin ? bin[subExpression] : 0;

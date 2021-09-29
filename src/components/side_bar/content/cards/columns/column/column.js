@@ -122,7 +122,7 @@ const Column = ((props) => {
 				...remainingPayload
 			} = payload
 
-			const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
+			const processRoutes = processes[oldProcessId]?.routes.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
 
@@ -274,6 +274,7 @@ const Column = ((props) => {
 	}
 
 	const handleDrop = async (dropResult) => {
+		console.log('here')
 		const { removedIndex, addedIndex, payload, element } = dropResult || {}
 
 		if (payload === null) { //  No new button, only reorder

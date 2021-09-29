@@ -23,7 +23,8 @@ import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confi
 import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
-
+//import CardZone from './card_zone/card_zone'
+import LotEditorContainer from './card_editor/lot_editor_container'
 // Constants
 import {SORT_MODES} from "../../../../constants/common_contants";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
@@ -45,7 +46,7 @@ const CardMenu = lazy(() => import("./card_menu/card_menu"))
 const CardZone = lazy(() => import("./card_zone/card_zone"))
 const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
 const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
-const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
+//const LotEditorContainer = lazy(() => import("./card_editor/lot_editor_container"))
 
 
 const Cards = (props) => {

@@ -188,7 +188,7 @@ const DashboardLotPage = (props) => {
           count: 0
         }
       }
-      
+
       const stationName =
         toStationId === "FINISH" ? "Finish" : stations[toStationId].name;
       handleTaskAlert(
@@ -197,7 +197,8 @@ const DashboardLotPage = (props) => {
         `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
       );
     }
-    dispatchPutCard(currentLot, lotID);
+    console.log(currentLot)
+    //dispatchPutCard(currentLot, lotID);
     onBack();
   };
 

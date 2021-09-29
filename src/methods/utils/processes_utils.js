@@ -470,10 +470,10 @@ export const findProcessStartNodes = (processRoutes, stations) => {
       startNodes.push(loadStation);
     }
   }
-
   if (
     stations !== undefined &&
-    startNodes.every((nodeId) => stations[nodeId].type === "warehouse")
+    startNodes !== undefined &&
+    startNodes.every((nodeId) => stations[nodeId]?.type === "warehouse")
   ) {
     const newRoutes = deepCopy(processRoutes).filter((route) =>
       !startNodes.some((node) => node === route.load)
@@ -571,7 +571,7 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
     }
   };
 
-  const startNodes = findProcessStartNodes(processRoutes, null); // Dont consider warehouses start nodes
+  const startNodes = findProcessStartNodes(processRoutes, stations); // Dont consider warehouses start nodes
   let startRouteExpression =
     process.startDivergeType === "split" ? ["AND"] : ["OR"];
   for (var startNode of startNodes) {
@@ -643,7 +643,7 @@ export const flattenProcessStations = (originalProcessRoutes, stations) => {
     let incomingRoutes = getNodeIncoming(node, processRoutes);
     let outgoingRoutes = getNodeOutgoing(node, processRoutes);
 
-    
+
 
     if (outgoingRoutes.length > 1) {
       if (verbose) console.log(stations[node].name, 'MERGE')
@@ -688,7 +688,7 @@ export const flattenProcessStations = (originalProcessRoutes, stations) => {
       }
       if (newSubgraph.children.length > 0) {
         graph.children.unshift(newSubgraph);
-      } 
+      }
 
       if (verbose) console.log(stations[node].name, 'OUT')
 
