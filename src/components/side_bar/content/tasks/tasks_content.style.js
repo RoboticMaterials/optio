@@ -35,6 +35,7 @@ export const Title = styled.h1`
     user-select: none;
 `
 
+
 export const TaskContainer = styled.div`
     background-color: ${props => props.theme.bg.secondary};
     border-radius: 0.4rem;

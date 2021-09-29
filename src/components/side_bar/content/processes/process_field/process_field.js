@@ -124,12 +124,14 @@ export const ProcessField = (props) => {
             const selectedTaskCopy = selectedTask
             if (selectedTaskCopy.part === null) {
                 const preceedingRoutes = processRoutesCopy.filter(route => route._id !== selectedTask._id && route.unload === selectedTask.load)
+                let defaultName = values.name;
                 for (var preceedingRoute of preceedingRoutes) {
                     if (!!preceedingRoute.part) {
-                        selectedTaskCopy.part = preceedingRoute.part;
+                        defaultName = preceedingRoute.part;
                         break;
                     }
                 }
+                selectedTaskCopy.part = defaultName;
             }
 
             processRoutesCopy.push(selectedTaskCopy);
