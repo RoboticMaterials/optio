@@ -263,36 +263,66 @@ const FormComponent = (props) => {
     *
     * */
     const handleDeleteClick = async (selectedBin) => {
-        console.log(bins[selectedBin])
-        console.log(card)
-        const {
-            [selectedBin]: currentBin,
-            ...remainingBins
-        } = bins
 
-        var submitItem = {
+        let submitItem = {}
+        let newBins = {}
+
+        if(!!bins[selectedBin] && Object.values(bins[selectedBin]).length>1){
+          let partsBin = bins[selectedBin]
+          let qty = partsBin['count']
+          for(const ind in partsBin){
+            let newCount = partsBin[ind]-qty
+            if(newCount===0 && ind!=='count') delete partsBin[ind]
+            else partsBin[ind] = newCount
+          }
+
+            newBins = {
+            ...bins,
+            [selectedBin]: partsBin
+          }
+
+          if(Object.values(partsBin).length===1 && partsBin['count'] === 0){
+            delete newBins[selectedBin]
+          }
+
+          submitItem = {
             ...card,
-            bins: { ...remainingBins },
+            bins: newBins
+          }
+        }
+        else{
+          const {
+              [selectedBin]: currentBin,
+              ...remainingBins
+          } = bins
+
+          newBins = remainingBins
+
+          submitItem = {
+              ...card,
+              bins: { ...newBins },
+          }
         }
 
         let requestSuccessStatus = false
 
         // if there are no remaining bins, delete the card
-        if (isEmpty(remainingBins)) {
+        if (isEmpty(newBins)) {
             dispatchDeleteCard(cardId, processId)
         }
 
         // otherwise update the card to contain only the remaining bins
         else {
-            //const result = await dispatchPutCard(submitItem, cardId)
+          console.log(submitItem)
+            const result = await dispatchPutCard(submitItem, cardId)
 
             // check if request was successful
-            //if (!(result instanceof Error)) {
-            //    requestSuccessStatus = true
-            //}
+            if (!(result instanceof Error)) {
+                requestSuccessStatus = true
+            }
         }
 
-        //close()
+        close()
     }
 
     useEffect(() => {

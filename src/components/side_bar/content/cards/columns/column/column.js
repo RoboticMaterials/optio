@@ -385,7 +385,7 @@ const Column = ((props) => {
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
-							if(!!reduxCards[card.cardId].bins[card.binId]){
+							if(!!reduxCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxCards[card.cardId].bins[card.binId]
 
 								return (

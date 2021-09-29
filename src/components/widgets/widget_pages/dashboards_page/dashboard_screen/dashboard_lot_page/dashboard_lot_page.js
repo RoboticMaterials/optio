@@ -158,6 +158,13 @@ const DashboardLotPage = (props) => {
       // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
       currentLot.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
 
+      if(!!currentLot.bins[loadStationID] && !currentLot.bins[loadStationID]['count']){
+        currentLot.bins[loadStationID] = {
+          ...currentLot.bins[loadStationID],
+          count: 0
+        }
+      }
+
       //Add dispersed key to lot for totalQuantity Util
       handleTaskAlert(
         "LOT_MOVED",
@@ -175,6 +182,13 @@ const DashboardLotPage = (props) => {
       // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
       currentLot.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
 
+      if(!!currentLot.bins[loadStationID] && !currentLot.bins[loadStationID]['count']){
+        currentLot.bins[loadStationID] = {
+          ...currentLot.bins[loadStationID],
+          count: 0
+        }
+      }
+      
       const stationName =
         toStationId === "FINISH" ? "Finish" : stations[toStationId].name;
       handleTaskAlert(
