@@ -39,6 +39,8 @@ const WarehouseModal = (props) => {
         dashboard,
         onSubmit,
 
+        initialQuantity,
+
         warehouseID,
         stationID
     } = props;
@@ -112,11 +114,12 @@ const WarehouseModal = (props) => {
         {!!selectedLot && 
             <QuantityModal
                 validationSchema={quantityOneSchema}
+                initialValue={initialQuantity}
                 maxValue={selectedLot.bins[warehouseID]?.count || 0}
                 minValue={1}
                 infoText={`${selectedLot.bins[warehouseID]?.count || 0} items available.`}
                 isOpen={!!selectedLot}
-                title={"Select Merge Quantity"}
+                title={"Select Quantity"}
                 onRequestClose={() => setSelectedLot(null)}
                 onCloseButtonClick={() => {}}
                 handleOnClick1={(quantity) => {setSelectedLot(null)}}

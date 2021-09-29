@@ -11,6 +11,7 @@ import {getSubmitDisabled} from "../../../../methods/utils/form_utils";
 
 const QuantityModal = (props) => {
 	const {
+		initialValue,
 		maxValue,
 		minValue,
 		handleOnClick2,
@@ -21,7 +22,7 @@ const QuantityModal = (props) => {
 	return (
 		<Formik
 			initialValues={{
-				quantity: maxValue
+				quantity: !!initialValue ? initialValue : maxValue
 			}}
 			validationSchema={validationSchema}
 			validateOnChange={true}

@@ -571,7 +571,7 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
     }
   };
 
-  const startNodes = findProcessStartNodes(processRoutes, null); // Dont consider warehouses start nodes
+  const startNodes = findProcessStartNodes(processRoutes, stations); // Dont consider warehouses start nodes
   let startRouteExpression =
     process.startDivergeType === "split" ? ["AND"] : ["OR"];
   for (var startNode of startNodes) {

@@ -223,6 +223,7 @@ const DashboardLotPage = (props) => {
       mergeLot.bins[openWarehouse].count -= quantity;
     }
     dispatchPutCard(mergeLot, mergeLotID);
+    setOpenWarehouse(null)
 
   };
 
@@ -322,6 +323,7 @@ const DashboardLotPage = (props) => {
           dashboard={{}}
           warehouseID={openWarehouse}
           stationID={stationID}
+          initialQuantity={currentLot.bins[stationID]?.count}
           onSubmit={handleMergeWarehouseLot}
         />
       )}
