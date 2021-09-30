@@ -114,7 +114,6 @@ export const Header = styled.div`
 	align-items: center;
 	padding: 0;
 	margin: 0;
-	max-height: 5rem;
 	background: ${props => props.theme.bg.primary};
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
