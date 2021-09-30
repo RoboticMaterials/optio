@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
 import DashboardDevicePage from './dashboard_device_page/dashboard_device_page'
 
 // Import Modals
+import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal"
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
@@ -49,6 +50,7 @@ import MergeModal from "./merge_modal/merge_modal";
 // Utils
 import { getNodeOutgoing } from '../../../../../methods/utils/processes_utils';
 import { handleNextStationBins, handleCurrentStationBins } from '../../../../../methods/utils/lot_utils';
+import styled from 'styled-components';
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -97,6 +99,9 @@ const DashboardScreen = (props) => {
     const [selectedOperation, setSelectedOperation] = useState(null)
     const [isDevice, setIsDevice] = useState(false)
 
+    const [showUndoModal, setShowUndoModal] = useState(null)
+    const undoHandlers = useRef([]).current
+
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -134,32 +139,6 @@ const DashboardScreen = (props) => {
         }
     }, [editing])
 
-    // Commented out for now
-    // Used for unloading human routes
-    // But we removed that ability as of now
-    // // Posts HIL Success to API
-    // const handleHilSuccess = async (item) => {
-
-    //     let newItem = {
-    //         ...item,
-    //         hil_response: true,
-    //         // quantity: quantity,
-    //     }
-
-    //     const ID = deepCopy(item._id)
-
-    //     delete newItem._id
-    //     delete newItem.dashboard
-
-    //     // This is used to make the tap of the HIL button respond quickly
-    //     // TODO: This may not be necessary here
-    //     onHILResponse(ID)
-    //     setTimeout(() => onHILResponse(''), 2000)
-
-    //     await onPutTaskQueue(newItem, ID)
-
-    // }
-
     const handleToggleLock = async () => {
 
         if (!!currentDashboard.locked) {
@@ -182,6 +161,19 @@ const DashboardScreen = (props) => {
         dispatchPutDashboard(updatedDashboard, currentDashboard._id?.$oid)
 
         return setTimeout(() => setAddTaskAlert(null), 2500)
+    }
+
+    /**
+     * Undo's are stored as a FIFO stack, where each time the undo is called, it pops the top function from
+     * the stack. This way you can go back more than once (if you merge and then move).
+     * NOTE: Undos only persist at the dashboard level, exiting the dashboard will clear the undos.
+     * TODO: The problem with this is that you can undo stuff that succeeding stations might have done.
+     * This could be fixed if we also kept track of the time the undo function was pushed and the last edited
+     * date of the card.
+     * @param {Object} handler {message, function}
+     */
+    const handlePushUndoHandler = (handler) => {
+        undoHandlers.push(handler)
     }
 
     const handleWarehousePull = (pullLotID, quantity) => {
@@ -315,6 +307,25 @@ const DashboardScreen = (props) => {
                 !!selectedOperation && renderModal()
             }
 
+            {showUndoModal && 
+                <SimpleModal
+                    isOpen={showUndoModal}
+                    title={'Confirm Undo'}
+                    onRequestClose={() => setShowUndoModal(false)}
+                    onCloseButtonClick={() => setShowUndoModal(false)}
+                    handleOnClick1={() => setShowUndoModal(false)}
+                    handleOnClick2={() => {
+                        setShowUndoModal(false)
+
+                        const { handler } = undoHandlers.pop()
+                        handler();
+                    }}
+                    button_1_text={'Cancel'}
+                    button_2_text={'Confirm'}
+                    content={undoHandlers[undoHandlers.length-1].message}
+                />
+            }
+
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
@@ -338,6 +349,8 @@ const DashboardScreen = (props) => {
 
             />
 
+            <style.UndoIcon className="fas fa-undo" disabled={undoHandlers.length === 0} onClick={() => setShowUndoModal(true)}/>
+
             {isDevice ?
                 <DashboardDevicePage
                     handleTaskAlert={() => {
@@ -349,6 +362,7 @@ const DashboardScreen = (props) => {
                     <DashboardLotList />
                     :
                     <DashboardLotPage
+                        pushUndoHandler={handlePushUndoHandler}
                         handleTaskAlert={(type, label, message) => {
                             setAddTaskAlert({
                                 type: type,

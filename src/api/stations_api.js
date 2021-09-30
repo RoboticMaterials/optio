@@ -97,10 +97,6 @@ export async function deleteStation(ID) {
 
 export async function postStation(station) {
 
-    const currDate = new Date()
-    station.created_at = currDate.toString();
-    station.last_edited = currDate.toString();
-
     try {
 
         const response = await axios({
@@ -149,9 +145,6 @@ export async function postStation(station) {
 }
 
 export async function putStation(station, ID) {
-
-    const currDate = new Date()
-    station.last_edited = currDate.toString();
 
     try {
         const response = await axios({

@@ -54,7 +54,10 @@ import {
 } from "../../../../../../redux/actions/card_actions";
 
 const DashboardLotPage = (props) => {
-  const { handleTaskAlert } = props;
+  const { 
+    handleTaskAlert, 
+    pushUndoHandler
+  } = props;
 
   const params = useParams();
   const history = useHistory();
@@ -83,29 +86,30 @@ const DashboardLotPage = (props) => {
 
   // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
   // but dashboard lot page is still mounted
-  const currentLot = useRef(cards[lotID]).current;
-  const currentProcess = useRef(processes[currentLot.process_id]).current;
-  const routeOptions = useRef(
-    Object.values(routes)
+  const currentLot = useRef(cards[lotID]).current
+  const currentProcess = useRef(processes[currentLot?.process_id]).current
+  const routeOptions = useMemo(() => {
+    return Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
       .filter(
         (route) =>
           route.load === loadStationID &&
-          (route.processId === currentLot.process_id ||
+          (route.processId === currentLot?.process_id ||
             route.unload === stationID)
       )
       .filter(
         (route, idx, routeOptions) =>
           routeOptions.findIndex((option) => option.unload === route.unload) === idx
       )
-  ).current;
+    }, [routes, loadStationID, currentLot, stationID])
 
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
   const [moveQuantity, setMoveQuantity] = useState(
-    currentLot.bins[loadStationID]?.count
+    currentLot?.bins[loadStationID]?.count
   );
+  const [localLotChildren, setLocalLotChildren] = useState([])
 
 
   // Used to show dashboard input
@@ -145,6 +149,16 @@ const DashboardLotPage = (props) => {
 
   // Handles moving lot to next station
   const onMove = (moveStations, quantity) => {
+
+    const currentLotCopy = deepCopy(currentLot);
+    pushUndoHandler({
+      message: `Are you sure you want to undo the move of ${currentLotCopy?.name} from ${stations[loadStationID]?.name}?`,
+      handler: () => {
+        dispatchPutCard(currentLotCopy, currentLotCopy._id);
+      }
+    })
+
+    currentLot.children = [...currentLot?.children || [], ...localLotChildren];
 
     const process = processes[currentLot.process_id];
     const processRoutes = process.routes.map(routeId => routes[routeId])
@@ -203,20 +217,29 @@ const DashboardLotPage = (props) => {
 
   const handleMergeWarehouseLot = (mergeLotID, quantity) => {
 
-    // Add this lot to the card children
-    let lotChildren = currentLot?.children || [];
-    lotChildren.push({
+    const mergeLot = cards[mergeLotID]
+
+    const localLotChildrenCopy = deepCopy(localLotChildren);
+    const mergeLotCopy = deepCopy(mergeLot);
+    pushUndoHandler({
+      message: `Are you sure you want to unmerge ${mergeLot?.name} from ${currentLot?.name}?`,
+      handler: () => {
+        dispatchPutCard(mergeLotCopy, mergeLotCopy._id)
+        setLocalLotChildren(localLotChildrenCopy)
+      }
+    })
+
+    const localLotChildrenCopy2 = deepCopy(localLotChildren);
+    localLotChildrenCopy2.push({
       lotID: mergeLotID,
       fromStationID: openWarehouse,
       mergeStationID: stationID,
       mergedQuantity: quantity
     })
-    currentLot.children = lotChildren;
-    dispatchPutCard(currentLot, lotID);
-
+    setLocalLotChildren(localLotChildrenCopy2)
 
     // Remove the quantity from the original merge lot
-    const mergeLot = cards[mergeLotID]
+    
     if (mergeLot.bins[openWarehouse].count - quantity < 1) {
       delete mergeLot.bins[openWarehouse];
     } else {
@@ -248,11 +271,10 @@ const DashboardLotPage = (props) => {
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
     const processStartNodes = findProcessStartNodes(processRoutes);
 
-
     return processRoutes
       .filter(route => processStartNodes.includes(route.load) && route.unload === stationID && stations[route.load]?.type === 'warehouse')
       .map(mergeRoute => {
-        const child = !!currentLot.children && currentLot.children.find(child => child.fromStationID === mergeRoute.load) || null
+        const child = localLotChildren.find(child => child.fromStationID === mergeRoute.load) || null
 
         if (!!child) {
           return (
@@ -272,7 +294,7 @@ const DashboardLotPage = (props) => {
         }
       })
 
-  }, [currentProcess, routes]);
+  }, [currentProcess, routes, currentLot]);
 
   const renderRouteSelectorModal = useMemo(() => {
     return (
