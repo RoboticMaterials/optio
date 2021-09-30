@@ -714,7 +714,8 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
 
 }
 
-export const handleCurrentPathQuantity = (lot, station) => {
+export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
+
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
 
@@ -765,8 +766,22 @@ export const handleCurrentPathQuantity = (lot, station) => {
       }
     }
 
-    console.log(iDs)
-    return 2
+  //Determine count for that path
+  let minCount = count
+  for(const ind in iDs){
+    if(iDs[ind].includes(routeId)){
+      if(Object.keys(iDs[ind]).length === 1){
+          return count
+      }
+      else{
+        for(const idx in iDs[ind]){
+          let partId = iDs[ind][idx]
+          minCount = !!lot.bins[station][partId] ? lot.bins[station][partId]<minCount ? lot.bins[station][partId] : minCount : 0
+        }
+        return minCount
+      }
+    }
+  }
 }
 
 

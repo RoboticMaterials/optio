@@ -181,9 +181,6 @@ const DashboardLotPage = (props) => {
       // Single-flow node, just send to the station
       const toStationId = moveStations;
 
-      let qqq = handleMoveLotToMergeStation(currentLot, loadStationID, toStationId, quantity)
-      console.log('qqq',qqq)
-
       currentLot.bins = handleNextStationBins(currentLot.bins, quantity, loadStationID, toStationId, process, routes, stations)
 
       // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
@@ -204,7 +201,7 @@ const DashboardLotPage = (props) => {
         `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
       );
     }
-    //dispatchPutCard(currentLot, lotID);
+    dispatchPutCard(currentLot, lotID);
     onBack();
   };
 

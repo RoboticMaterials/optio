@@ -51,6 +51,13 @@ const LotContainer = (props) => {
   const routes = useSelector((state) => {
     return state.tasksReducer.tasks;
   });
+
+  const handlePathQuantity = (lot, station, routeId, count) => {
+    const pathQty = handleCurrentPathQuantity(lot,station, routeId, count)
+    return pathQty
+  }
+
+
   const process =
     useSelector((state) => {
       return state.processesReducer.processes[processId];
@@ -60,6 +67,7 @@ const LotContainer = (props) => {
 
   const processName = useMemo(() => process.name, [process]);
   const stationName = useMemo(() => station.name, [station]);
+
   const templateValues = useMemo(
     () => getCustomFields(lotTemplateId, lot),
     [lotTemplateId, lot]
@@ -68,9 +76,6 @@ const LotContainer = (props) => {
   if (!(binId in bins)) { return null }
   const { count=0, ...partials } = bins[binId] || {};
 
-  const handlePathQuantity = (lot, station) => {
-    handleCurrentPathQuantity(lot,station)
-  }
 
   return (
       <styled.LotFamilyContainer>
@@ -102,7 +107,7 @@ const LotContainer = (props) => {
             }
             {Object.entries(partials).map(([routeId, quantity]) => (
                 <>
-                    {handlePathQuantity(lot, routes[routeId]?.unload)< quantity && !!isDashboard &&
+                    {handlePathQuantity(lot, routes[routeId]?.unload, routeId, count)<quantity && !!isDashboard &&
                         <Lot
                             lotDisabled={true}
                             isDashboard={!!isDashboard}
@@ -114,7 +119,7 @@ const LotContainer = (props) => {
                             flags={flags || []}
                             enableFlagSelector={enableFlagSelector}
                             name={name + ` (${routes[routeId]?.part})`}
-                            count={quantity - count}
+                            count={quantity - handlePathQuantity(lot, routes[routeId]?.unload, routeId, count)}
                             id={lotId}
                             isSelected={false}
                             selectable={false}

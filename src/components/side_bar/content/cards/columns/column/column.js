@@ -25,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -189,6 +189,14 @@ const Column = ((props) => {
 			}
 			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
 			dispatchPutCard(submitLot, submitLot._id)
+	}
+
+	const handlePathQuantity = (lot, station, routeId, count) => {
+		if(routeId === 'count') return count
+		else {
+			const pathQty = handleCurrentPathQuantity(lot,station, routeId, count)
+			return pathQty
+		}
 	}
 
 	const getSelectedIndex = (lotId, binId) => {
@@ -409,7 +417,7 @@ const Column = ((props) => {
 										const isPartial = part !== 'count' ? true : false
 										return (
 											<>
-												{(partBins[part]>partBins['count'] || (part === 'count' && partBins['count']>0)) &&
+												{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) &&
 														<Draggable
 															key={cardId}
 															onMouseEnter={(event) => onMouseEnter(event, cardId)}
@@ -437,7 +445,7 @@ const Column = ((props) => {
 																	totalQuantity={totalQuantity}
 																	lotNumber={lotNumber}
 																	name={isPartial ? name + ` (${routes[part]?.part})` : name}
-																	count={isPartial ? partBins[part] - partBins['count'] : partBins['count']}
+																	count={isPartial ? partBins[part] - handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) : partBins['count']}
 																	leadTime={leadTime}
 																	id={cardId}
 																	flags={flags || []}
