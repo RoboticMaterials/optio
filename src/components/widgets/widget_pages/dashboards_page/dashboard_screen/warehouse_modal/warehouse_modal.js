@@ -121,7 +121,7 @@ const WarehouseModal = (props) => {
                 isOpen={!!selectedLot}
                 title={"Select Quantity"}
                 onRequestClose={() => setSelectedLot(null)}
-                onCloseButtonClick={() => {}}
+                onCloseButtonClick={() => setSelectedLot(null)}
                 handleOnClick1={(quantity) => {setSelectedLot(null)}}
                 handleOnClick2={(quantity) => {setSelectedLot(null); onSubmit(selectedLot._id, quantity)}}
                 button_1_text={"Cancel"}

@@ -700,7 +700,6 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
             }
             
         } else {
-            console.log(subExpression, subExpression in bin ? bin[subExpression] : 0)
             return subExpression in bin ? bin[subExpression] : 0;
         }
 
