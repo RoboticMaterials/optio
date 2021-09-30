@@ -106,8 +106,7 @@ const TaskField = (props) => {
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0) || (!enableSave))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-    console.log(errors)
-    
+
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -184,12 +183,32 @@ const TaskField = (props) => {
     }
 
     const onRemoveRoute = (id) => {
-      const updatedRoutes = []
+      let updatedRoutes = []
+      let removedRouteInd = 0
       for(const ind in values.routes){
         if(values.routes[ind]._id !== id){
           updatedRoutes.push(values.routes[ind])
         }
+        else removedRouteInd = ind
       }
+
+      //If you're removing a route that is split with another, revert the other
+      //route to not split. However, if 2 or more sibling routes exist dont revert as they
+      //are still split
+      if(values.routes[removedRouteInd].divergeType === 'split'){
+        let numRoutes = 0
+        let newUpdatedRoutes = updatedRoutes
+        for(const idx in newUpdatedRoutes){
+            if(newUpdatedRoutes[idx].load === values.routes[removedRouteInd].load){
+              newUpdatedRoutes[idx].divergeType = null
+              numRoutes++
+            }
+          }
+          if(numRoutes===1) updatedRoutes = newUpdatedRoutes
+        }
+
+
+
       dispatchSetSelectedTask(null)
       onEditing(false)
       setFieldValue(`routes`, updatedRoutes);
@@ -215,7 +234,6 @@ const TaskField = (props) => {
         onEditing(false)
         dispatchSetSelectedTask(null)
         dispatchSetEditingValues(values)
-
 
     }
 

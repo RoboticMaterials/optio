@@ -22,6 +22,27 @@ export const ButtonContainer = styled.div`
 
 `
 
+export const UndoIcon = styled.i`
+
+    position: absolute;
+    top: 6rem;
+    right: 1.5rem;
+
+    font-size: 2rem;
+    color: ${props => props.theme.fg.primary};
+    cursor: pointer;
+    z-index: 100;
+
+    ${props => props.disabled &&
+        `
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+        `
+    }
+    
+`
+
 
 export const GoBackButton = styled(ArrowBackIosIcon)`
     color: ${props => props.theme.fg.primary};

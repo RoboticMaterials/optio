@@ -294,7 +294,7 @@ function Station(props) {
     const onSetStationTask = () => {
 
         if (!!selectedTask) {
-            if (selectedTask?.load !== null && selectedTask?.unload === null) {
+            if (selectedTask?.load !== null && selectedTask?.unload === null && selectedTask.load !== station._id) {
                 // If it's a warehouse and the load station has been selected, then the task type has to be a push
                 // You can only push to a ware house
                 let type = station.type === 'warehouse' ? 'push' : 'push'
@@ -372,29 +372,31 @@ function Station(props) {
 
             </LocationSvg>
 
-            <DragEntityProto
-                isSelected={isSelected}
-                location={station}
-                rd3tClassName={rd3tClassName}
-                d3={() => d3()}
+            {isSelected &&
+                <DragEntityProto
+                    isSelected={isSelected}
+                    location={station}
+                    rd3tClassName={rd3tClassName}
+                    d3={() => d3()}
 
-                handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
-                handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
-                handleTranslateEnd={({ x, y }) => {
-                    const pos = convertD3ToReal([x, y], props.d3)
-                    dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
-                }}
+                    handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
+                    handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
+                    handleTranslateEnd={({ x, y }) => {
+                        const pos = convertD3ToReal([x, y], props.d3)
+                        dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
+                    }}
 
-                handleEnableDrag={() => {
-                    handleEnableDrag()
+                    handleEnableDrag={() => {
+                        handleEnableDrag()
 
-                }}
-                handleDisableDrag={() => {
-                    handleDisableDrag()
-                }}
+                    }}
+                    handleDisableDrag={() => {
+                        handleDisableDrag()
+                    }}
 
 
-            />
+                />
+            }
             {onWidgetPageOpen()}
         </React.Fragment>
     )

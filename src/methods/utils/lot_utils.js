@@ -701,7 +701,6 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
             }
 
         } else {
-            console.log(subExpression, subExpression in bin ? bin[subExpression] : 0)
             return subExpression in bin ? bin[subExpression] : 0;
         }
 
@@ -735,8 +734,9 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
       else if(statID === 'AND'){
         option += 1
         iDs.push([])
+        allAreOptions = false
       }
-      else if(statID === "OR" && wands!=0){
+      else if(statID === "OR"){
         allAreRequired = false
       }
     }
@@ -765,13 +765,13 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
         }
       }
     }
-
   //Determine count for that path
   let minCount = count
   for(const ind in iDs){
     if(iDs[ind].includes(routeId)){
       if(Object.keys(iDs[ind]).length === 1){
-          return count
+          let prt = iDs[ind][0]
+          return !!lot.bins[station][prt] ? lot.bins[station][prt] : count
       }
       else{
         for(const idx in iDs[ind]){
@@ -784,7 +784,81 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
   }
 }
 
+export const handleGetPathQuantityArray = (bins, station, count, processId) => {
 
+  const processes = store.getState().processesReducer.processes || {}
+  const routes = store.getState().tasksReducer.tasks || {}
+
+  let iDs = []
+  let option = 0
+  let requirement = 0
+  let allAreOptions = true
+  let allAreRequired = true
+
+  let wizardry = handleMergeExpression(station, processes[processId], routes).flat()
+    iDs.push([])
+    for(const wands in wizardry){
+      let statID = wizardry[wands]
+      if(statID !== 'OR' && statID!=='AND'){
+        iDs[option].push(statID)
+      }
+      else if(statID === 'AND'){
+        option += 1
+        iDs.push([])
+        allAreOptions = false
+      }
+      else if(statID === "OR"){
+        allAreRequired = false
+      }
+    }
+
+    //Probably better way to do this but if you never run into an and all the ids give are options
+    if(!!allAreOptions && !allAreRequired){
+      option = 0
+      iDs = []
+      for(const potion in wizardry){
+        let dumbledore = wizardry[potion]
+        if(dumbledore!== 'OR'){
+          iDs.push([])
+          iDs[option].push(dumbledore)
+          option+=1
+        }
+      }
+    }
+
+    else if(!allAreOptions && !!allAreRequired){
+      iDs = []
+      iDs.push([])
+      for(const potion in wizardry){
+        let dumbledore = wizardry[potion]
+        if(dumbledore!== 'AND'){
+          iDs[0].push(dumbledore)
+        }
+      }
+    }
+  //Determine count for that path
+  let minCount = count
+  let pathQuantityArray = []
+  for(const ind in iDs){
+    if(Object.keys(iDs[ind]).length === 1){
+      let prt = iDs[ind][0]
+      let cnt = !!bins[station][prt] ? bins[station][prt] : count
+      pathQuantityArray.push([])
+      pathQuantityArray[ind].push(cnt)
+      pathQuantityArray[ind].push(iDs[ind])
+    }
+    else{
+      for(const idx in iDs[ind]){
+        let partId = iDs[ind][idx]
+        minCount = !!bins[station][partId] ? bins[station][partId]<minCount ? bins[station][partId] : minCount : 0
+      }
+      pathQuantityArray.push([])
+      pathQuantityArray[ind].push(minCount)
+      pathQuantityArray[ind].push(iDs[ind])
+    }
+  }
+  return pathQuantityArray
+}
 
 export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quantity) => {
 
@@ -1005,12 +1079,28 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
       .filter((route) => route.unload === loadStationId);
 
     if (mergingRoutes.length > 1) {
-      //subtract quantity from both count and the parts at the station
-      for (const ind in bins[loadStationId]) {
-        if (bins[loadStationId][ind] - quantity < 1) {
-          delete bins[loadStationId][ind];
-        } else bins[loadStationId][ind] -= quantity;
+      let pathQuantityArray = handleGetPathQuantityArray(bins, loadStationId, quantity, process._id)
+      let availableQty = quantity
+      for(const ind in pathQuantityArray){
+        let pathQty = pathQuantityArray[ind][0]
+        let removeQty = Math.min(pathQty, availableQty)
+        let parts = pathQuantityArray[ind][1]
+        for(const i in parts){
+          if(!!bins[loadStationId][parts[i]]){
+            bins[loadStationId][parts[i]]-=removeQty
+          }
+          availableQty -= removeQty
+        }
+        if(availableQty<1) break
       }
+      //delete part if qty 0
+      for (const ind in bins[loadStationId]) {
+        if (bins[loadStationId][ind] === 0 && ind!=='count') {
+          delete bins[loadStationId][ind];
+        }
+        else if(ind === 'count') bins[loadStationId][ind]-= quantity
+      }
+
     } else {
       if (quantity === bins[loadStationId].count) {
         delete bins[loadStationId];
@@ -1018,6 +1108,5 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
         bins[loadStationId].count -= quantity;
       }
     }
-
     return bins;
   };

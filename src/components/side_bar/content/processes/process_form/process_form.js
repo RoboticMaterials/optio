@@ -132,6 +132,8 @@ const ProcessForm = (props) => {
 		dispatchSetSelectedTask(null) // clear selected task
 		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute._id)
 
+		const currDate = new Date();
+
 		// if new, POST
 		if (remainingValues.new) {
 			delete remainingValues.new
@@ -139,6 +141,8 @@ const ProcessForm = (props) => {
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMap._id,
+				created_at: currDate.toString(),
+				last_edited_at: currDate.toString(),
 				graph: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
@@ -149,6 +153,7 @@ const ProcessForm = (props) => {
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMap._id,
+				last_edited_at: currDate.toString(),
 				graph: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
