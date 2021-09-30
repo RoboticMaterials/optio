@@ -23,7 +23,6 @@ import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confi
 import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
-//import CardZone from './card_zone/card_zone'
 import LotEditorContainer from './card_editor/lot_editor_container'
 // Constants
 import {SORT_MODES} from "../../../../constants/common_contants";

@@ -145,7 +145,7 @@ const Column = ((props) => {
 					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
 				}
 				//Make this more restrictive, allows to drag from q and to Finish
-				else if(binId==="QUEUE") {
+				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
 					for(const ind in startNodes){
 						if(station_id===startNodes[ind]) return true
 					}

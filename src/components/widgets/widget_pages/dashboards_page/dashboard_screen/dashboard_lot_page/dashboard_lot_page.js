@@ -33,7 +33,8 @@ import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 // Import Utils
 import {
   handleNextStationBins,
-  handleCurrentStationBins
+  handleCurrentStationBins,
+  handleMoveLotToMergeStation
 } from "../../../../../../methods/utils/lot_utils";
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
@@ -175,8 +176,14 @@ const DashboardLotPage = (props) => {
             .join(" & ")}`
       );
     } else {
+
+
       // Single-flow node, just send to the station
       const toStationId = moveStations;
+
+      let qqq = handleMoveLotToMergeStation(currentLot, loadStationID, toStationId, quantity)
+      console.log('qqq',qqq)
+
       currentLot.bins = handleNextStationBins(currentLot.bins, quantity, loadStationID, toStationId, process, routes, stations)
 
       // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
@@ -197,7 +204,6 @@ const DashboardLotPage = (props) => {
         `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
       );
     }
-    console.log(currentLot)
     //dispatchPutCard(currentLot, lotID);
     onBack();
   };

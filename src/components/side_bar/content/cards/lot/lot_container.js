@@ -14,6 +14,7 @@ import {
   getBinQuantity,
   getCustomFields,
   safelyDeconstructBin,
+  handleCurrentPathQuantity,
 } from "../../../../../methods/utils/lot_utils";
 import * as styled from "./lot.style";
 
@@ -67,6 +68,10 @@ const LotContainer = (props) => {
   if (!(binId in bins)) { return null }
   const { count=0, ...partials } = bins[binId] || {};
 
+  const handlePathQuantity = (lot, station) => {
+    handleCurrentPathQuantity(lot,station)
+  }
+
   return (
       <styled.LotFamilyContainer>
             {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
@@ -97,7 +102,7 @@ const LotContainer = (props) => {
             }
             {Object.entries(partials).map(([routeId, quantity]) => (
                 <>
-                    {count < quantity && !!isDashboard &&
+                    {handlePathQuantity(lot, routes[routeId]?.unload)< quantity && !!isDashboard &&
                         <Lot
                             lotDisabled={true}
                             isDashboard={!!isDashboard}
