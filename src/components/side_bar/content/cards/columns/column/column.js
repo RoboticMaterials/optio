@@ -407,62 +407,74 @@ const Column = ((props) => {
 									Object.keys(partBins).map((part) => {
 										const isPartial = part !== 'count' ? true : false
 										return (
-											<>
-												{(partBins[part]>partBins['count'] || (part === 'count' && partBins['count']>0)) &&
-														<Draggable
-															key={cardId}
-															onMouseEnter={(event) => onMouseEnter(event, cardId)}
-															onMouseLeave={onMouseLeave}
-															style={{
-															}}
-														>
-															<div
-																style={{
+											<VisibilitySensor partialVisibility = {true}>
+												{({isVisible}) =>
+													<>
+														{!!isVisible ?
+															<>
+																{(partBins[part]>partBins['count'] || (part === 'count' && partBins['count']>0)) &&
+																		<Draggable
+																			key={cardId}
+																			onMouseEnter={(event) => onMouseEnter(event, cardId)}
+																			onMouseLeave={onMouseLeave}
+																			style={{
+																			}}
+																		>
+																			<div
+																				style={{
 
-																}}
-															>
-																<LotContainer
-																	isPartial = {isPartial}
-																	onDeleteDisabledLot = {() => {
-																		handleDeleteDisabledLot(card, card.binId, part)
-																	}}
-																	glow={isLastSelected}
-																	isFocused={isDragging || isHovering}
-																	enableFlagSelector={enableFlags}
-																	selectable={selectable}
-																	isSelected={isSelected}
-																	key={cardId}
-																	// processName={processName}
-																	totalQuantity={totalQuantity}
-																	lotNumber={lotNumber}
-																	name={isPartial ? name + ` (${routes[part]?.part})` : name}
-																	count={isPartial ? partBins[part] - partBins['count'] : partBins['count']}
-																	leadTime={leadTime}
-																	id={cardId}
-																	flags={flags || []}
-																	index={index}
-																	lotId={cardId}
-																	binId={station_id}
-																	onClick={(e) => {
-																		const payload = getBetweenSelected(cardId)
-																		onCardClick(
-																			e,
-																			{
-																				lotId: cardId,
-																				processId: processId,
-																				binId: station_id
-																			},
-																			payload
-																		)
-																	}}
-																	containerStyle={{
-																		marginBottom: "0.5rem",
-																	}}
-																/>
+																				}}
+																			>
+																				<LotContainer
+																					isPartial = {isPartial}
+																					onDeleteDisabledLot = {() => {
+																						handleDeleteDisabledLot(card, card.binId, part)
+																					}}
+																					glow={isLastSelected}
+																					isFocused={isDragging || isHovering}
+																					enableFlagSelector={enableFlags}
+																					selectable={selectable}
+																					isSelected={isSelected}
+																					key={cardId}
+																					// processName={processName}
+																					totalQuantity={totalQuantity}
+																					lotNumber={lotNumber}
+																					name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																					count={isPartial ? partBins[part] - partBins['count'] : partBins['count']}
+																					leadTime={leadTime}
+																					id={cardId}
+																					flags={flags || []}
+																					index={index}
+																					lotId={cardId}
+																					binId={station_id}
+																					onClick={(e) => {
+																						const payload = getBetweenSelected(cardId)
+																						onCardClick(
+																							e,
+																							{
+																								lotId: cardId,
+																								processId: processId,
+																								binId: station_id
+																							},
+																							payload
+																						)
+																					}}
+																					containerStyle={{
+																						marginBottom: "0.5rem",
+																					}}
+																				/>
+																			</div>
+																		</Draggable>
+																}
+															</>
+															:
+															<div style = {{height: '20rem', width: '80%'}}>
+															...Loading
 															</div>
-														</Draggable>
-												}
-											</>
+													}
+												</>
+											}
+										</VisibilitySensor>
 										)
 									})
 								)
