@@ -122,6 +122,7 @@ const DashboardLotList = () => {
                     }}
                     containerStyle={{
                         margin: ".5rem",
+                        pointerEvents: station.type === 'warehouse' ? 'none' : 'auto'
                     }}
                 />
             )

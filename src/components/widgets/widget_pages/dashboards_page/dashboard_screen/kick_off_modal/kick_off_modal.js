@@ -247,7 +247,7 @@ const KickOffModal = (props) => {
   }, [availableKickoffCards]);
 
   useEffect(() => {
-    let tempAvailableKickOffCards = Object.values(processCards[processID])
+    let tempAvailableKickOffCards = Object.values(processCards[processID] || {})
       .filter(
         (currCard) =>
           currCard.bins &&
