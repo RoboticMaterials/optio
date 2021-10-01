@@ -48,6 +48,7 @@ const LotEditorContainer = (props) => {
     const {
         merge
     } = props
+    
 
     // actions
     const dispatch = useDispatch()
@@ -576,7 +577,7 @@ const LotEditorContainer = (props) => {
                     processId: newProcessId,
                     fields
                 } = values || {}
-                
+
                 const submitItem = {
                     name: newName,
                     bins: newBins,

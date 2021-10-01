@@ -130,12 +130,11 @@ const Column = ((props) => {
 		 	if(binId === station_id) return false
 			for(const ind in processes[oldProcessId].routes){
 				let route = routes[processes[oldProcessId]?.routes[ind]]
-
-
 				if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
 
 					return true
 				}
+
 				else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split/merge route and routes arent merging into current station
 					const mergingRoutes = processes[oldProcessId].routes
 																.map(routeId => routes[routeId])
@@ -428,7 +427,7 @@ const Column = ((props) => {
 													<>
 														{!!isVisible ?
 															<>
-																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) &&
+																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) && (draggingLotId!==card.cardId && card.binId !== station_id) &&
 																		<Draggable
 																			key={cardId}
 																			onMouseEnter={(event) => onMouseEnter(event, cardId)}
@@ -465,6 +464,7 @@ const Column = ((props) => {
 																					binId={station_id}
 																					onClick={(e) => {
 																						const payload = getBetweenSelected(cardId)
+
 																						onCardClick(
 																							e,
 																							{
