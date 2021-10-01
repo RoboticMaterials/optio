@@ -13,7 +13,7 @@ export const PageContainer = styled.div`
     max-width: 100%;
     width: 100%;
     
-    background: ${props => props.theme.bg.octonary};
+    background: transparent;
     
     flex: 1;
     

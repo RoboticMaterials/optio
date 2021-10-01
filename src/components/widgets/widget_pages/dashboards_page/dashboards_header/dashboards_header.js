@@ -146,12 +146,11 @@ const DashboardsHeader = (props) => {
                   <>
                     {pullButtons.length > 0 && 
                         <Button
-                            schema="warehouse"
                             onClick={() => {
                                 setShowOperationsMenu(true)
                             }}
                             disabled={showOperationsMenu}
-                            style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
+                            style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
                         >
                             Pull
                         </Button>
@@ -165,7 +164,7 @@ const DashboardsHeader = (props) => {
                         disabled={showOperationsMenu}
                         style={{
                             height: '3rem',
-                            boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
+                            boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)' ,
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',

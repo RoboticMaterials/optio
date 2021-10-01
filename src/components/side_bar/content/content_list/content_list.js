@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Dropdown from "react-bootstrap/Dropdown";
 
@@ -27,6 +27,33 @@ export default function ContentList(props) {
         onMouseEnter,
         onMouseLeave,
     } = props;
+
+    const [sortKey, setSortKey] = useState('alphabetic')
+
+    const sortedElements = useMemo(() => {
+        let sortedElements = deepCopy(elements)
+        switch (sortKey) {
+            case 'alphabetic':
+                sortedElements.sort((a, b) => a.name < b.name ? 1 : a.name > b.name ? -1 : 0)
+                return sortedElements
+            case 'created old-new':
+                sortedElements.sort((a, b) => a.created_at > b.created_at ? 1 : a.created_at < b.created_at ? -1 : 0)
+                return sortedElements
+            case 'created new-old':
+                sortedElements.sort((a, b) => a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0)
+                return sortedElements
+            case 'edited old-new':
+                sortedElements.sort((a, b) => a.edited_at > b.edited_at ? 1 : a.edited_at < b.edited_at ? -1 : 0)
+                return sortedElements
+            case 'edited new-old':
+                sortedElements.sort((a, b) => a.edited_at < b.edited_at ? 1 : a.edited_at > b.edited_at ? -1 : 0)
+                return sortedElements
+            default:
+                return elements;
+        }
+    }, [elements, sortKey])
+
+    // console.log(sortedElements.map(e => ({name: e.name, ed: e.edited_at, cr: e.created_at})))
 
     // const processes = useSelector(state => state.processesReducer.processes)
     // const routes = useSelector(state => state.tasksReducer.tasks)
@@ -57,6 +84,7 @@ export default function ContentList(props) {
         </styled.SortToggle>
     ));
 
+
     return (
         <styled.Container>
             {!hideHeader && (
@@ -66,25 +94,30 @@ export default function ContentList(props) {
                 />
             )}
 
-            {/* <styled.SortContainer>
-                <Dropdown>
+            <styled.SortContainer>
+                <Dropdown onSelect={e => setSortKey(e)}>
                     <Dropdown.Toggle
-                        as={SortToggle}
-                        id="dropdown-custom-components"
+                        id="sort-dropdown"
+                        className="sort-dropdown-toggle"
+                        style={{userSelect: 'none'}}
                     >
                         Sort
                     </Dropdown.Toggle>
 
-                    <Dropdown.Menu style={{zIndex: 100}}>
-                        <Dropdown.Item eventKey="1">Red</Dropdown.Item>
-                        <Dropdown.Item eventKey="2">Blue</Dropdown.Item>
-                        <Dropdown.Item eventKey="3">Orange</Dropdown.Item>
-                    </Dropdown.Menu>
+                    <Portal>
+                        <Dropdown.Menu style={{zIndex: 10000}} >
+                            <Dropdown.Item eventKey="alphabetic">Alphabetical</Dropdown.Item>
+                            <Dropdown.Item eventKey="created new-old">Created Date (Newest -> Oldest)</Dropdown.Item>
+                            <Dropdown.Item eventKey="created old-new">Created Date (Oldest -> Newest)</Dropdown.Item>
+                            <Dropdown.Item eventKey="edited new-old">Last Edited Date (Newest -> Oldest)</Dropdown.Item>
+                            <Dropdown.Item eventKey="edited old-new">Last Edited Date (Oldest -> Newest)</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Portal>
                 </Dropdown>
-            </styled.SortContainer> */}
+            </styled.SortContainer>
 
             <styled.List>
-                {elements.map((element, ind) => {
+                {sortedElements.map((element, ind) => {
                     const error =
                         props.schema === "processes" && element.broken
                             ? true

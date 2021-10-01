@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { RGB_Linear_Shade, hexToRGBA } from '../../../../methods/utils/color_utils'
 import * as commonCss from "../../../../common_css/common_css";
+import Dropdown from "react-bootstrap/Dropdown";
 
 
 // ========== Content ========== //
@@ -52,12 +53,12 @@ export const ListItem = styled.div`
     border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};
 
-    box-shadow: ${props => props.theme.cardShadow};
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2);
     // cursor: pointer;
 
   ${props => props.isNew &&  commonCss.newGlow};
 
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
 
 
 `
@@ -125,7 +126,7 @@ export const ErrorContainer = styled.div`
 	position: relative;
 `
 
-export const SortToggle = styled.div`
+export const SortToggle = styled.span`
     font-size: 1rem;
     color: ${props => props.theme.bg.quinary};
     cursor: pointer;

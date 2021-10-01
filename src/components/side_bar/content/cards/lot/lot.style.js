@@ -25,7 +25,7 @@ export const Container = styled.div`
   }
 
   // letter-spacing: 1.5px;
-  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
 
   outline: none;
   user-select: none;
