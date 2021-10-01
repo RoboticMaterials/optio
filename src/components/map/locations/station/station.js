@@ -82,8 +82,6 @@ function Station(props) {
     const routeStart = getRouteStart(selectedTask)
     const routeEnd = getRouteEnd(selectedTask)
 
-    console.log(selectedStation)
-
     let disabled = false;
     if(!!selectedTask && !!selectedProcess) {
 

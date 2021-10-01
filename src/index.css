@@ -29,18 +29,12 @@ body {
   -moz-user-select: none !important;
   -webkit-user-select: none !important;
   -ms-user-select: none !important;
+  box-shadow:none !important;
+  outline: 0px !important;
 }
 .sort-dropdown-toggle:hover {
-  color: #AAA !important;
+  color: #666 !important;
 }
-.sort-dropdown-toggle:active {
-  color: #AAA !important;
-  user-select: none !important;
-  -moz-user-select: none !important;
-  -webkit-user-select: none !important;
-  -ms-user-select: none !important;
-}
-
 .smooth-dnd-ghost {
   cursor: grabbing;
 }

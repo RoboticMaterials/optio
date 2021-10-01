@@ -34,7 +34,7 @@ export default function ContentList(props) {
         let sortedElements = deepCopy(elements)
         switch (sortKey) {
             case 'alphabetic':
-                sortedElements.sort((a, b) => a.name < b.name ? 1 : a.name > b.name ? -1 : 0)
+                sortedElements.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
                 return sortedElements
             case 'created old-new':
                 sortedElements.sort((a, b) => a.created_at > b.created_at ? 1 : a.created_at < b.created_at ? -1 : 0)
@@ -99,7 +99,7 @@ export default function ContentList(props) {
                     <Dropdown.Toggle
                         id="sort-dropdown"
                         className="sort-dropdown-toggle"
-                        style={{userSelect: 'none'}}
+                        style={{userSelect: 'none !important', border: 'none !important'}}
                     >
                         Sort
                     </Dropdown.Toggle>
