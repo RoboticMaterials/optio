@@ -489,12 +489,10 @@ export const getAllTemplateFields = () => {
 * Each field field includes dataType, fieldName, and value
 * */
 export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
-    console.log(dashboardID)
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
     const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
-    console.log(dashboards)
     const currentDashboard = dashboards[dashboardID]
 
     let customFieldValues = []

@@ -69,7 +69,7 @@ const LotContainer = (props) => {
   const stationName = useMemo(() => station.name, [station]);
 
   const templateValues = useMemo(
-    () => getCustomFields(lotTemplateId, lot),
+    () => getCustomFields(lotTemplateId, lot, dashboardID),
     [lotTemplateId, lot]
   );
 
