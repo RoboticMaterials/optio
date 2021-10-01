@@ -431,7 +431,6 @@ const CardZone = ((props) => {
         let tempCardsSorted = { ...bins }
 
         Object.values(cards).forEach((card) => {
-
             // extract lot attributes
             const {
                 bins: cardBins,
@@ -464,7 +463,7 @@ const CardZone = ((props) => {
                     if (!(count > -1)) return
 
                     // don't render lot being dragged - prevents flicker bug after drop
-                    if ((binId === draggingBinId) && (_id === draggingLotId)) return
+                    //if ((binId === draggingBinId) && (_id === draggingLotId)) return
 
                     const lotItem = {
                         ...rest,

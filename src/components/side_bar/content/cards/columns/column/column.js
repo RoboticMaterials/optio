@@ -25,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -129,12 +129,14 @@ const Column = ((props) => {
 			let endNode = findProcessEndNode(processRoutes)
 
 			if (oldProcessId !== processId) return false
-		 	if(binId === station_id) return false
+		 	if(binId === station_id) return true
 			for(const ind in processes[oldProcessId].routes){
 				let route = routes[processes[oldProcessId]?.routes[ind]]
 				if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
+
 					return true
 				}
+
 				else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split/merge route and routes arent merging into current station
 					const mergingRoutes = processes[oldProcessId].routes
 																.map(routeId => routes[routeId])
@@ -147,7 +149,7 @@ const Column = ((props) => {
 					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
 				}
 				//Make this more restrictive, allows to drag from q and to Finish
-				else if(binId==="QUEUE") {
+				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
 					for(const ind in startNodes){
 						if(station_id===startNodes[ind]) return true
 					}
@@ -191,6 +193,14 @@ const Column = ((props) => {
 			}
 			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
 			dispatchPutCard(submitLot, submitLot._id)
+	}
+
+	const handlePathQuantity = (lot, station, routeId, count) => {
+		if(routeId === 'count') return count
+		else {
+			const pathQty = handleCurrentPathQuantity(lot,station, routeId, count)
+			return pathQty
+		}
 	}
 
 	const getSelectedIndex = (lotId, binId) => {
@@ -289,7 +299,6 @@ const Column = ((props) => {
 					// process_id: oldProcessId,
 					...remainingPayload
 				} = payload
-
 				await dispatchSetDroppingLotId(cardId, binId)
 
 				if (!(binId === station_id)) {
@@ -311,6 +320,11 @@ const Column = ((props) => {
 								...updatedLot.bins[binId],
 								count: 0
 							}
+						}
+
+						//Bin exists but nothing in it. Delete the bin as this messes various things up.
+						if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
+							delete updatedLot.bins[binId]
 						}
 						dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)
@@ -385,8 +399,6 @@ const Column = ((props) => {
 								lotTemplateId,
 								...rest
 							} = card
-
-
 							// console.log(lotNumber, leadTime)
 
 							// const templateValues = getCustomFields(lotTemplateId, card)
@@ -404,67 +416,79 @@ const Column = ((props) => {
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxCards[card.cardId].bins[card.binId]
-
 								return (
 									Object.keys(partBins).map((part) => {
 										const isPartial = part !== 'count' ? true : false
 										return (
-											<>
-												{(partBins[part]>partBins['count'] || (part === 'count' && partBins['count']>0)) &&
-														<Draggable
-															key={cardId}
-															onMouseEnter={(event) => onMouseEnter(event, cardId)}
-															onMouseLeave={onMouseLeave}
-															style={{
-															}}
-														>
-															<div
-																style={{
+											<VisibilitySensor partialVisibility = {true}>
+												{({isVisible}) =>
+													<>
+														{!!isVisible ?
+															<>
+																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) &&
+																		<Draggable
+																			key={cardId}
+																			onMouseEnter={(event) => onMouseEnter(event, cardId)}
+																			onMouseLeave={onMouseLeave}
+																			style={{
+																			}}
+																		>
+																			<div
+																				style={{
 
-																}}
-															>
-																<LotContainer
-																	isPartial = {isPartial}
-																	onDeleteDisabledLot = {() => {
-																		handleDeleteDisabledLot(card, card.binId, part)
-																	}}
-																	glow={isLastSelected}
-																	isFocused={isDragging || isHovering}
-																	enableFlagSelector={enableFlags}
-																	selectable={selectable}
-																	isSelected={isSelected}
-																	key={cardId}
-																	// processName={processName}
-																	totalQuantity={totalQuantity}
-																	lotNumber={lotNumber}
-																	name={isPartial ? name + ` (${routes[part]?.part})` : name}
-																	count={isPartial ? partBins[part] - partBins['count'] : partBins['count']}
-																	leadTime={leadTime}
-																	id={cardId}
-																	flags={flags || []}
-																	index={index}
-																	lotId={cardId}
-																	binId={station_id}
-																	onClick={(e) => {
-																		const payload = getBetweenSelected(cardId)
-																		onCardClick(
-																			e,
-																			{
-																				lotId: cardId,
-																				processId: processId,
-																				binId: station_id
-																			},
-																			payload
-																		)
-																	}}
-																	containerStyle={{
-																		marginBottom: "0.5rem",
-																	}}
-																/>
+																				}}
+																			>
+																				<LotContainer
+																					isPartial = {isPartial}
+																					onDeleteDisabledLot = {() => {
+																						handleDeleteDisabledLot(card, card.binId, part)
+																					}}
+																					glow={isLastSelected}
+																					isFocused={isDragging || isHovering}
+																					enableFlagSelector={enableFlags}
+																					selectable={selectable}
+																					isSelected={isSelected}
+																					key={cardId}
+																					// processName={processName}
+																					totalQuantity={totalQuantity}
+																					lotNumber={lotNumber}
+																					name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																					count={isPartial ? partBins[part] - handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) : partBins['count']}
+																					leadTime={leadTime}
+																					id={cardId}
+																					flags={flags || []}
+																					index={index}
+																					lotId={cardId}
+																					binId={station_id}
+																					onClick={(e) => {
+																						const payload = getBetweenSelected(cardId)
+
+																						onCardClick(
+																							e,
+																							{
+																								lotId: cardId,
+																								processId: processId,
+																								binId: station_id
+																							},
+																							payload
+																						)
+																					}}
+																					containerStyle={{
+																						marginBottom: "0.5rem",
+																					}}
+																				/>
+																			</div>
+																		</Draggable>
+																}
+															</>
+															:
+															<div style = {{height: '20rem', width: '80%'}}>
+															...Loading
 															</div>
-														</Draggable>
-												}
-											</>
+													}
+												</>
+											}
+										</VisibilitySensor>
 										)
 									})
 								)

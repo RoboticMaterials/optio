@@ -49,6 +49,7 @@ const LotEditorContainer = (props) => {
         merge
     } = props
 
+
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
@@ -219,7 +220,8 @@ const LotEditorContainer = (props) => {
         }
         csv = csv.replace(/^\s+|\s+$/g, "") //get rid of trailing spaces
       }
-        else if(!!xml.getElementsByTagName('row').length!==0){
+        else if(xml.getElementsByTagName('row').length!==0){
+          console.log(xml.getElementsByTagName('row').length)
           newXml[0].children.forEach((attribute, index, array) => {
               header += attribute.name + '\t'
           })
@@ -236,6 +238,28 @@ const LotEditorContainer = (props) => {
             }
             else{
               csv += row + '\n'
+            }
+          })
+        }
+        else if(xml.getElementsByTagName('ViewItem').length!==0){
+          var newXml = xml.getElementsByTagName('ViewItem')
+          console.log(newXml)
+          newXml[0].children.forEach((attribute, index, array) => {
+              header += attribute.name + '\t'
+          })
+
+          csv += header + 'AssemblyQuantity' + '\n'
+
+          newXml.forEach((lot, index, array) => {
+            var row = ""
+            lot.children.forEach((child, index, array) => {
+                row += child.value + '\t'
+            })
+            if(index===(array.length-1)){
+              csv += row + "1"
+            }
+            else{
+              csv += row + "1" + '\n'
             }
           })
         }
@@ -576,7 +600,7 @@ const LotEditorContainer = (props) => {
                     processId: newProcessId,
                     fields
                 } = values || {}
-                
+
                 const submitItem = {
                     name: newName,
                     bins: newBins,
