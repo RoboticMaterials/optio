@@ -560,6 +560,7 @@ const CardZone = ((props) => {
 
     return (
         <styled.Container style={{ background: 'white' }}>
+            
             <LotQueue
                 setSelectedCards={setSelectedCards}
                 selectedCards={selectedCards}

@@ -62,25 +62,30 @@ const LineThroughputChart = (props) => {
             }
         }
 
+        if (dataCopy[0]?.x > startEpoch) {
+            dataCopy.unshift({x: startEpoch, y: 0})
+        }
+        
+
         // If startIndex is undefined, then the start of the shift is after any data points
         if(startIndex === undefined){
             startIndex = dataCopy.length
         }
-
+        
         // Convert end of shift to epoch
         const endEpoch = convert24htoEpoch(shiftDetails.endOfShift, date)
         let endIndex = dataCopy.length
-        // Find end of Shift in the data based on selected input
-        for (let i = 0; i < dataCopy.length; i++) {
-            const dataDate = dataCopy[i].x
-            // Go through the data until the time is  after the end of shift input and take the vlaue before that one
-            if (dataDate > endEpoch) {
-                endIndex = i
-                break
-            }
-        }
+        // // Find end of Shift in the data based on selected input
+        // for (let i = 0; i < dataCopy.length; i++) {
+        //     const dataDate = dataCopy[i].x
+        //     // Go through the data until the time is  after the end of shift input and take the vlaue before that one
+        //     if (dataDate > endEpoch) {
+        //         endIndex = i
+        //         break
+        //     }
+        // }
 
-        dataCopy = dataCopy.slice(startIndex, endIndex)
+        // dataCopy = dataCopy.slice(startIndex, endIndex)
         // Modify y values to be stacked (IE add the next value to the total previous sum)
         let stack = 0
         for (const point of dataCopy) {
@@ -88,29 +93,30 @@ const LineThroughputChart = (props) => {
             stack += point.y
         }
 
+
         // Delete all points after the end of the shift if there are any
-        let pointsAfterShiftEnd = []
-        for (let point of convertedData) {
-            if (point.x > endEpoch) {
-                const ind = convertedData.indexOf(data => data.x === point.x)
-                pointsAfterShiftEnd.push(ind)
-            }
-        }
-        pointsAfterShiftEnd.forEach((point) => {
-            convertedData.splice(point, 1)
-        })
+        // let pointsAfterShiftEnd = []
+        // for (let point of convertedData) {
+        //     if (point.x > endEpoch) {
+        //         const ind = convertedData.indexOf(data => data.x === point.x)
+        //         pointsAfterShiftEnd.push(ind)
+        //     }
+        // }
+        // pointsAfterShiftEnd.forEach((point) => {
+        //     convertedData.splice(point, 1)
+        // })
 
         // Add 0 for the start of the shift
-        convertedData.unshift({ x: startEpoch, y: 0 })
+        // convertedData.unshift({ x: startEpoch, y: 0 })
 
         // Add the last value in converted data to the end of the shift
         // Only do this though if 2 things
         // 1) its not today
-        // 2) it is today but the end of the shift is before the current time
+        // 2) it is today but the end of the shift is after the current time
         // This allows for the line chart to be a bit more readable when your shift hasnt finished yet
-        if (!isDateToday(date) || (!!isDateToday(date) && Date.now() > endEpoch)) {
-            convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
-        }
+        // if (!isDateToday(date) || (!!isDateToday(date) && Date.now() > endEpoch)) {
+        //     convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
+        // }
 
         // This is the array of data that is passed to the line chart
         let expectedOutput = []
@@ -206,7 +212,7 @@ const LineThroughputChart = (props) => {
         // This allows for direct comparison between where you should be vs where you are
 
         // Update expected to have the same x values as converted
-        convertedData.map((output, ind) => {
+        convertedData.forEach((output, ind) => {
             let inExpected = false
 
             // Go through expected and see if the value is in it
@@ -294,8 +300,9 @@ const LineThroughputChart = (props) => {
         convertedData.forEach((data, i) => {
             convertedData[i] = { x: new Date(data.x), y: data.y }
         })
+
         expectedOutput.forEach((data, i) => {
-            expectedOutput[i] = { x: new Date(data.x), y: data.y }
+            expectedOutput[i] = { x: new Date(data.x), y: parseFloat(data.y) }
         })
 
         const lineData = [{
@@ -313,6 +320,8 @@ const LineThroughputChart = (props) => {
         ]
         return lineData
     }, [shiftDetails, data])
+
+    // console.log(lineDataConverter)
 
 
     const renderResponsiveLine = useMemo(() => {

@@ -31,36 +31,56 @@ const StationColumns = (props) => {
     const [collapsed, setCollapsed] = useState(false)
 
     const renderStationColumn = useMemo(() => {
-        const processStations = getProcessStations(processes[processId], routes)
-        return Object.keys(processStations).map((stationId) => {
-            return (
-              <VisibilitySensor partialVisibility = {true}>
-                {({isVisible}) =>
-                  <>
-                    {!!isVisible ?
-                <StationColumn
-                    key={stationId}
-                    dateIndex={dateIndex}
-                    timeSpan={timeSpan}
-                    stationId={stationId}
-                    showReport={showReport}
-                    setDateTitle={(title => setDateTitle(title))}
-                    dataLoading={loading => dataLoading(loading)}
-                    sortLevel={sortLevel}
-                />
-                :
-                <div style = {{height: '20rem', width: '80%'}}>
-                ...Loading
-                </div>
-            }
-          </>
-        }
-      </VisibilitySensor>
+        const renderRecursiveColumns = (node) => {
+            let columnContent, recursiveColumnContent;
+
+            columnContent = (
+                <>
+                    {node.children.map(child => {
+
+                        if (typeof child === 'string') {
+                            let childStationId = child;
+                            return (
+                                <VisibilitySensor partialVisibility = {true}>
+                                            {({isVisible}) =>
+                                            <>
+                                                {!!isVisible ?
+                                            <StationColumn
+                                                key={childStationId}
+                                                dateIndex={dateIndex}
+                                                timeSpan={timeSpan}
+                                                stationId={childStationId}
+                                                showReport={showReport}
+                                                setDateTitle={(title => setDateTitle(title))}
+                                                dataLoading={loading => dataLoading(loading)}
+                                                sortLevel={sortLevel}
+                                            />
+                                            :
+                                            <div style = {{height: '20rem', width: '80%'}}>
+                                            ...Loading
+                                            </div>
+                                        }
+                                    </>
+                                    }
+                                </VisibilitySensor>
+                            )
+                        } else {
+                            recursiveColumnContent = renderRecursiveColumns(child);
+                            return (
+                                <>
+                                    {recursiveColumnContent}
+                                </>
+                            )
+                        }
+                    })}
+                </>
             )
-        })
 
+            return columnContent
+        }
+        return renderRecursiveColumns(processes[processId].graph, 0)
     }, [dateIndex, timeSpan, showReport, sortLevel])
-
+    
     return (
         collapsed ?
             <styled.RowContainer>

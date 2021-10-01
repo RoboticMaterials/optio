@@ -122,7 +122,9 @@ const Column = ((props) => {
 				...remainingPayload
 			} = payload
 
-			const processRoutes = processes[oldProcessId]?.routes.map(routeId => routes[routeId])
+			if (process[oldProcessId] === undefined) return false
+
+			const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
 

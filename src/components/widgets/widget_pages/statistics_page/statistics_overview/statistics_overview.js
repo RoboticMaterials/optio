@@ -69,17 +69,15 @@ const StatisticsOverview = (props) => {
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
 
-    const [throughputData, setThroughputData] = useState(null)
+    const [lineData, setLineData] = useState(null)
+    const [barData, setBarData] = useState(null)
     const [reportData, setReportData] = useState(null)
 
     const [timeSpan, setTimeSpan] = useState('day')
     const [dateIndex, setDateIndex] = useState(0)
-    const [selector, setSelector] = useState('throughPut')
     const [loading, setLoading] = useState(false)
     const [timespanDisabled, setTimespanDisabled] = useState(false)
-    const [parentSortLevel, setParentSortLevel] = useState({ label: 'Object', value: 'object' })
-
-    const [isDevice, setIsDevice] = useState(false)
+    const [parentSortLevel, setParentSortLevel] = useState({ label: 'Product Group', value: 'product_group_id' })
     const [reportButtons, setReportButtons] = useState([])
 
     // update location properties
@@ -116,11 +114,6 @@ const StatisticsOverview = (props) => {
     const getAllData = () => {
         dispatchGetReportEvents() // load report events
 
-
-        if (stations[params.stationID].device_id !== undefined) {
-            setIsDevice(true)
-        }
-
         // If the page has been loaded in (see widget pages) then don't delay chart load, 
         // else delay chart load because it slows down the widget page opening animation.
         if (widgetPageLoaded) {
@@ -131,27 +124,30 @@ const StatisticsOverview = (props) => {
             }, 300);
         }
 
-        const body = { timespan: timeSpan, index: dateIndex }
+        const body = { timespan: timeSpan, index: dateIndex, sort_index: parentSortLevel.value }
         const dataPromise = getStationAnalytics(stationID, body)
         dataPromise.then(response => {
-            if (response === undefined) return
+            if (response === undefined) return setLoading(false)
+            // Convert Throughput
 
-            // Convert Throughput for line chart
             if (timeSpan === 'line') {
-                let convertedThroughput = []
-                response.throughPut.forEach((dataPoint) => {
-                    // Round Epoch time and multiply by 1000 to match front end times
+                let convertedThroughput = response.throughPut.map(dataPoint => {
                     let convertedTime = dataPoint.x * 1000
                     convertedTime = Math.round(convertedTime)
-                    convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
+                    return { x: convertedTime, y: dataPoint.y }
                 })
-                response = {
+                setLineData({
                     ...response,
                     throughPut: convertedThroughput
-                }
+                })
+                setTimeSpan('line')
+            } else {
+                setBarData(response)
             }
-            setThroughputData(response)
+            
+            setLoading(false)
 
+            return response;
         })
 
         getReportData(body)
@@ -211,26 +207,28 @@ const StatisticsOverview = (props) => {
             }
         }
 
-        dataPromise.then(response => {
+        return dataPromise.then(response => {
             if (response === undefined) return setLoading(false)
             // Convert Throughput
+
             if (newTimeSpan === 'line') {
-                let convertedThroughput = []
-                response.throughPut.forEach((dataPoint) => {
-                    // Round Epoch time and multiply by 1000 to match front end times
+                let convertedThroughput = response.throughPut.map(dataPoint => {
                     let convertedTime = dataPoint.x * 1000
                     convertedTime = Math.round(convertedTime)
-                    convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
+                    return { x: convertedTime, y: dataPoint.y }
                 })
-                response = {
+                setLineData({
                     ...response,
                     throughPut: convertedThroughput
-                }
+                })
                 setTimeSpan('line')
+            } else {
+                setBarData(response)
             }
 
-            setThroughputData(response)
             setLoading(false)
+
+            return response;
         })
     }
 
@@ -256,11 +254,18 @@ const StatisticsOverview = (props) => {
     // Handles the date selector at the top of the charts
     const renderDateSelector = () => {
 
-        if (throughputData === null) return null
+        let date_title
+        if (timeSpan === 'line') {
+            date_title = lineData?.date_title || null
+        } else {
+            date_title = barData?.date_title || null
+        }
+
+        if (date_title === null) return null
 
         return (
             <DaySelector
-                date={throughputData.date_title}
+                date={date_title}
                 dateIndex={dateIndex}
                 loading={loading}
                 onChange={(newIndex) => {
@@ -269,30 +274,6 @@ const StatisticsOverview = (props) => {
             />
         )
 
-    }
-
-    const handleGaugeCharts = () => {
-        return (
-            <styled.StatsSection>
-                <ApexGaugeChart max={Math.min(...throughputData.taktTime.map(point => point.y))} min={Math.max(...throughputData.taktTime.map(point => point.y))} value={throughputData.taktTime[throughputData.taktTime.length - 1].y}
-                    formatValue={() => {
-                        // const val = data.taktTime[data.taktTime.length - 1].y
-                        // return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
-                        return '1:23'
-                    }}
-                    name='Takt Time' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
-                <ApexGaugeChart min={Math.min(...throughputData.pYield.map(point => point.y))} max={Math.max(...throughputData.pYield.map(point => point.y))} value={throughputData.pYield[throughputData.pYield.length - 1].y}
-                    formatValue={() =>
-                        Math.round(10 * throughputData.pYield[throughputData.pYield.length - 1].y) / 10
-                    }
-                    name='Quality' color={colors.pYield} onClick={() => setSelector('pYield')} selected={selector == 'pYield'} />
-                <ApexGaugeChart min={Math.min(...throughputData.throughPut.map(point => point.y))} max={Math.max(...throughputData.throughPut.map(point => point.y))} value={throughputData.throughPut[throughputData.throughPut.length - 1].y}
-                    formatValue={() =>
-                        throughputData.throughPut[throughputData.throughPut.length - 1].y
-                    }
-                    name='Throughput' color={colors.throughPut} onClick={() => setSelector('throughPut')} selected={selector == 'throughPut'} />
-            </styled.StatsSection>
-        )
     }
 
 
@@ -314,17 +295,14 @@ const StatisticsOverview = (props) => {
             >
                 {renderHeader()}
                 <ThroughputChart
-                    data={throughputData}
+                    lineData={lineData}
+                    barData={barData}
+
                     loading={loading}
                     timeSpan={timeSpan}
                     isWidget={true}
-                    loadLineChartData={() => {
-                        onTimeSpan('line', dateIndex, parentSortLevel)
-                    }}
-                    loadBarChartData={() => {
-                        onTimeSpan('day', dateIndex, parentSortLevel)
-
-                    }}
+                    loadLineChartData={(sortLevel) => onTimeSpan('line', dateIndex, parentSortLevel)}
+                    loadBarChartData={(sortLevel) => onTimeSpan('day', dateIndex, parentSortLevel)}
                     disableTimeSpan={(bool) => {
                         setTimespanDisabled(bool)
                     }}

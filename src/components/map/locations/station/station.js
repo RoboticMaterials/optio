@@ -45,6 +45,7 @@ function Station(props) {
         handleEnableDrag,
         handleDisableDrag,
         mouseDown,
+        isSelected
     } = props
 
 
@@ -80,14 +81,6 @@ function Station(props) {
 
     const routeStart = getRouteStart(selectedTask)
     const routeEnd = getRouteEnd(selectedTask)
-
-    // Used to allow translating/rotation
-    let isSelected = false
-    // Set selected if there is a selected postion that is this position and no selected task
-    if (!!selectedStation && selectedStation._id === station._id && !selectedTask && !!editingStation) isSelected = true
-
-
-    
 
     let disabled = false;
     if(!!selectedTask && !!selectedProcess) {

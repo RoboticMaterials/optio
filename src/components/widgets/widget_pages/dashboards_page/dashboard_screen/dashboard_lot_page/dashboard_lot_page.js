@@ -53,6 +53,7 @@ import {
   putCard,
   getCards,
 } from "../../../../../../redux/actions/card_actions";
+import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 
 const DashboardLotPage = (props) => {
   const {
@@ -76,6 +77,7 @@ const DashboardLotPage = (props) => {
 
   const dispatch = useDispatch();
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
+  const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
 
   const availableFinishProcesses = useSelector((state) => {
     return state.dashboardsReducer.finishEnabledDashboards[dashboardID];
@@ -104,6 +106,7 @@ const DashboardLotPage = (props) => {
       )
     }, [routes, loadStationID, currentLot, stationID])
 
+  const [touchEvent, setTouchEvent] = useState(null)
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
@@ -111,6 +114,26 @@ const DashboardLotPage = (props) => {
     currentLot?.bins[loadStationID]?.count
   );
   const [localLotChildren, setLocalLotChildren] = useState([])
+
+  /**
+   * Start building a touch event on component mount. If this screen persists until the card is moved
+   * at which point the event will be saved to the backend.
+   */
+  useEffect(() => {
+    setTouchEvent({
+      start_time: new Date().getTime(),
+      stop_time: null,
+      pauses: [],
+      lot_id: currentLot._id,
+      product_group_id: currentLot.lotTemplateId,
+      sku: 'default',
+      quantity: null,
+      load_station_id: !!warehouseID ? warehouseID : stationID,
+      unload_station_id: null,
+      dashboard_id: dashboardID,
+      route_id: null
+    })
+  }, [])
 
 
   // Used to show dashboard input
@@ -186,6 +209,15 @@ const DashboardLotPage = (props) => {
       }
 
 
+      moveStations.forEach(toStationId => {
+        const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
+          stop_time: new Date().getTime(),
+          route_id: routeOptions.find(routeOption => routeOption.unload === toStationId)?._id,
+          unload_station_id: toStationId,
+          quantity
+        })
+        dispatchPostTouchEvent(updatedTouchEvent)
+      })
 
       //Add dispersed key to lot for totalQuantity Util
       handleTaskAlert(
@@ -223,6 +255,16 @@ const DashboardLotPage = (props) => {
         "Lot Moved",
         `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
       );
+
+      const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
+        stop_time: new Date().getTime(),
+        route_id: routeOptions.find(routeOption => routeOption.unload === toStationId)?._id,
+        unload_station_id: toStationId,
+        quantity
+      })
+      dispatchPostTouchEvent(updatedTouchEvent)
+
+
     }
     dispatchPutCard(currentLot, lotID);
     onBack();
@@ -359,6 +401,7 @@ const DashboardLotPage = (props) => {
           warehouseID={openWarehouse}
           stationID={stationID}
           initialQuantity={currentLot.bins[stationID]?.count}
+          onSubmitLabel={"Merge"}
           onSubmit={handleMergeWarehouseLot}
         />
       )}

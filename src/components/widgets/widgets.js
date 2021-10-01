@@ -217,13 +217,13 @@ const Widgets = (props) => {
                 return (
                     <>
                       <Wrapper idx={0} numItems={2} radius={widgetRadius}>
-                          {/* <WidgetButton
+                          <WidgetButton
                               id={stationID}
-                              type={'statistics'}
-                              label={'Statistics'}
+                              type={'dashboards'}
+                              label={'Lots'}
                               currentPage={widgetPage}
                               switcher={!!widgetPage}
-                          /> */}
+                          />
                       </Wrapper>
                     </>
 
