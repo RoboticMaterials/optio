@@ -192,7 +192,7 @@ export const ProcessField = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
-                title={"WARNING! All lots currently in this process will be deleted forever. Are you sure you want to delete this process?"}
+                title={"WARNING! All lots currently in this process will be permanently deleted. Are you sure you want to delete this process?"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}

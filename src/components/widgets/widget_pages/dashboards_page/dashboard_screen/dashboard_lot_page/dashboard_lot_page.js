@@ -33,7 +33,8 @@ import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 // Import Utils
 import {
   handleNextStationBins,
-  handleCurrentStationBins
+  handleCurrentStationBins,
+  handleMoveLotToMergeStation
 } from "../../../../../../methods/utils/lot_utils";
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
@@ -55,8 +56,8 @@ import {
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 
 const DashboardLotPage = (props) => {
-  const { 
-    handleTaskAlert, 
+  const {
+    handleTaskAlert,
     pushUndoHandler
   } = props;
 
@@ -88,7 +89,7 @@ const DashboardLotPage = (props) => {
 
   // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
   // but dashboard lot page is still mounted
-  const currentLot = useRef(cards[lotID]).current
+  let currentLot = useRef(cards[lotID]).current
   const currentProcess = useRef(processes[currentLot?.process_id]).current
   const routeOptions = useMemo(() => {
     return Object.values(routes)
@@ -180,7 +181,6 @@ const DashboardLotPage = (props) => {
         dispatchPutCard(currentLotCopy, currentLotCopy._id);
       }
     })
-
     currentLot.children = [...currentLot?.children || [], ...localLotChildren];
 
     const process = processes[currentLot.process_id];
@@ -195,12 +195,19 @@ const DashboardLotPage = (props) => {
       // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
       currentLot.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
 
+      //add count if only some of the parts exist but not count. Not having count breaking lot summary page
       if(!!currentLot.bins[loadStationID] && !currentLot.bins[loadStationID]['count']){
         currentLot.bins[loadStationID] = {
           ...currentLot.bins[loadStationID],
           count: 0
         }
       }
+
+      //Bin exists but nothing in it. Delete the bin as this messes various things up.
+      if(!!currentLot.bins[loadStationID] && currentLot.bins[loadStationID]['count'] === 0 && Object.values(currentLot.bins[loadStationID]).length === 1){
+        delete currentLot.bins[loadStationID]
+      }
+
 
       moveStations.forEach(toStationId => {
         const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
@@ -235,7 +242,12 @@ const DashboardLotPage = (props) => {
           count: 0
         }
       }
-      
+
+      //Bin exists but nothing in it. Delete the bin as this messes various things up.
+      if(!!currentLot.bins[loadStationID] && currentLot.bins[loadStationID]['count'] === 0 && Object.values(currentLot.bins[loadStationID]).length === 1){
+        delete currentLot.bins[loadStationID]
+      }
+
       const stationName =
         toStationId === "FINISH" ? "Finish" : stations[toStationId].name;
       handleTaskAlert(
@@ -282,7 +294,7 @@ const DashboardLotPage = (props) => {
     setLocalLotChildren(localLotChildrenCopy2)
 
     // Remove the quantity from the original merge lot
-    
+
     if (mergeLot.bins[openWarehouse].count - quantity < 1) {
       delete mergeLot.bins[openWarehouse];
     } else {
