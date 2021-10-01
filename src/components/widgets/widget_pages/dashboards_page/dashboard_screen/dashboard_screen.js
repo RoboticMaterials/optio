@@ -287,6 +287,7 @@ const DashboardScreen = (props) => {
                         stationID={stationID}
                         warehouseID={selectedOperation.warehouseID}
                         process={process}
+                        onSubmitLabel={'Pull'}
                         onSubmit={handleWarehousePull}
                     />
                 )
