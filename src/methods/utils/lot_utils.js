@@ -842,7 +842,7 @@ export const handleGetPathQuantityArray = (bins, station, count, processId) => {
   for(const ind in iDs){
     if(Object.keys(iDs[ind]).length === 1){
       let prt = iDs[ind][0]
-      let cnt = !!bins[station][prt] ? bins[station][prt] : count
+      let cnt = !!bins[station][prt] ? bins[station][prt] : 0
       pathQuantityArray.push([])
       pathQuantityArray[ind].push(cnt)
       pathQuantityArray[ind].push(iDs[ind])

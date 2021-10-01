@@ -127,7 +127,7 @@ const Column = ((props) => {
 			let endNode = findProcessEndNode(processRoutes)
 
 			if (oldProcessId !== processId) return false
-		 	if(binId === station_id) return false
+		 	if(binId === station_id) return true
 			for(const ind in processes[oldProcessId].routes){
 				let route = routes[processes[oldProcessId]?.routes[ind]]
 				if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
@@ -324,7 +324,6 @@ const Column = ((props) => {
 						if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
 							delete updatedLot.bins[binId]
 						}
-
 						dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)
 				}
@@ -398,8 +397,6 @@ const Column = ((props) => {
 								lotTemplateId,
 								...rest
 							} = card
-
-
 							// console.log(lotNumber, leadTime)
 
 							// const templateValues = getCustomFields(lotTemplateId, card)
@@ -417,7 +414,6 @@ const Column = ((props) => {
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxCards[card.cardId].bins[card.binId]
-
 								return (
 									Object.keys(partBins).map((part) => {
 										const isPartial = part !== 'count' ? true : false
@@ -427,7 +423,7 @@ const Column = ((props) => {
 													<>
 														{!!isVisible ?
 															<>
-																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) && (draggingLotId!==card.cardId && card.binId !== station_id) &&
+																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) &&
 																		<Draggable
 																			key={cardId}
 																			onMouseEnter={(event) => onMouseEnter(event, cardId)}

@@ -200,13 +200,12 @@ const TaskField = (props) => {
         let newUpdatedRoutes = updatedRoutes
         for(const idx in newUpdatedRoutes){
             if(newUpdatedRoutes[idx].load === values.routes[removedRouteInd].load){
-              newUpdatedRoutes[idx].divergeType = null
+              delete newUpdatedRoutes[idx].divergeType
               numRoutes++
             }
           }
           if(numRoutes===1) updatedRoutes = newUpdatedRoutes
         }
-
 
 
       dispatchSetSelectedTask(null)
