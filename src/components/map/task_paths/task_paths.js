@@ -133,15 +133,9 @@ export default function TaskPaths(props) {
     ];
 
     // Changes the color based on whether it's a selected task or part of a process
-    const primaryColor = !route
-      ? "rgba(56, 235, 135, 0.95)"
-      : "rgba(255, 182, 46, 0.95)";
-    const secondaryColor = !route
-      ? "rgba(184, 255, 215, 0.7)"
-      : "rgba(255, 236, 201, 0.7)";
-    const dashColor = !route
-      ? "rgba(56, 235, 135, 0.95)"
-      : "rgba(255, 182, 47, 0.95)";
+    const primaryColor = selectedHoveringTask?._id === route?._id ? 'rgba(56, 235, 135, 0.95)' : 'rgba(255, 182, 46, 0.95)'
+    const secondaryColor = selectedHoveringTask?._id === route?._id ? 'rgba(184, 255, 215, 0.7)' : 'rgba(255, 236, 201, 0.7)'
+    const dashColor = selectedHoveringTask?._id === route?._id ? 'rgba(56, 235, 135, 0.95)' : 'rgba(255, 182, 47, 0.95)'
     return (
       <>
         <g>

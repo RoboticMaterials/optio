@@ -38,6 +38,7 @@ const WarehouseModal = (props) => {
         close,
         dashboard,
         onSubmit,
+        onSubmitLabel, 
 
         initialQuantity,
 
@@ -125,7 +126,7 @@ const WarehouseModal = (props) => {
                 handleOnClick1={(quantity) => {setSelectedLot(null)}}
                 handleOnClick2={(quantity) => {setSelectedLot(null); onSubmit(selectedLot._id, quantity)}}
                 button_1_text={"Cancel"}
-                button_2_text={"Merge"}
+                button_2_text={onSubmitLabel}
             />
         }
 
@@ -167,6 +168,10 @@ const WarehouseModal = (props) => {
         </styled.Container>
         </>
     )
+}
+
+WarehouseModal.defaultProps = {
+    onSubmitLabel: "Pull"
 }
 
 export default WarehouseModal

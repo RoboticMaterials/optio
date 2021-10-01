@@ -188,6 +188,7 @@ export const BreakLabel = styled.label`
 export const FormIcon = styled.i`
     position: absolute;
     right: .5rem;
-    top: .5rem;
+    top: -1.5rem;
     font-size: 1.25rem;
+    cursor: pointer;
 `
