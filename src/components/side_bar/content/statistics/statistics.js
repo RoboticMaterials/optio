@@ -35,7 +35,7 @@ const Statistics = () => {
     const [showReport, setShowReport] = useState(false)
     const [date, setDate] = useState('')
     const [loading, setLoading] = useState(false)
-    const [sortLevel, setSortLevel] = useState({label: "Object", value: "object"})
+    const [sortLevel, setSortLevel] = useState({label: "Product Group", value: "product_group_id"})
 
     /**
      * Gets the new data based on the selected time span and dateIndex

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 // Import component
 import { ResponsiveBar } from '@nivo/bar'
@@ -141,7 +141,7 @@ const BarChart = (props) => {
             // borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             indexBy='x'
             // indexScale={{ type: 'band', round: true }}
-            animate={true}
+            animate={false}
             // colors={{ scheme: 'nivo' }}
             colors={colors}
             borderColor={{ from: 'color' }}
@@ -225,6 +225,16 @@ BarChart.defaultProps = {
     layout: "vertical",
     enableGridX: false,
     enableGridY: false,
+    colors: [
+        "#0094d9",
+        "#6d8fe8",
+        "#b085e5",
+        "#e876cf",
+        "#ff6caa",
+        "#ff717b",
+        "#ff8849",
+        "#ffa600",
+    ]
 };
 
 export default BarChart

@@ -27,7 +27,7 @@ const StatisticsHeader = (props) => {
     } = props || {}
 
     const dropDownOptions = [
-        { label: 'Object', value: 'object' },
+        { label: 'Product Group', value: 'product_group_id' },
         { label: 'Lot', value: 'lot_id' },
         { label: 'Route', value: 'route_id' }
 
