@@ -14,7 +14,7 @@ export const size = {
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#f0f0f5',
+    secondary: '#f7f7fa',
     tertiary: '#dedfe3',
     quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
@@ -68,6 +68,7 @@ export const theme = {
             }
         },
         cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
+        // cardShadow: '0 1px 0 0 rgba(0,0,0,0.1)',
         cardShadowBold: '0px 0px 8px 2px rgba(0,0,0,0.1)',
 
 
@@ -116,7 +117,7 @@ export const theme = {
         schema: {
             default: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(168, 0, 36, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
-                solid: '#FF4B4B'
+                solid: '#5c6fff'
             },
             locations: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',

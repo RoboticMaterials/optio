@@ -129,8 +129,8 @@ export default function LocationContent() {
                   }
                 }}
                 onMouseLeave={() => {
-                  if(selectedLocation?.schema!=="temporary_position")
-                  onSetSelectedLocation(null)
+                //   if(selectedLocation?.schema!=="temporary_position")
+                //   onSetSelectedLocation(null)
                 }}
                 onClick={(location) => {
                     console.log('QQQQ Editing Location', location)

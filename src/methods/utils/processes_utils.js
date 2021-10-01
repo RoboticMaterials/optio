@@ -669,7 +669,7 @@ export const flattenProcessStations = (originalProcessRoutes, stations) => {
     let backwardMergeNodes = [];
     let visited = [];
 
-    const verbose = false;
+    const verbose = true;
 
     const backwardTraverse = (node, processRoutes, graph) => {
         let incomingRoutes = getNodeIncoming(node, processRoutes);
@@ -724,7 +724,7 @@ export const flattenProcessStations = (originalProcessRoutes, stations) => {
                 graph.children.unshift(newSubgraph);
             }
 
-            if (verbose) console.log(stations[node].name, "OUT");
+            if (verbose) console.log(stations[node].name, "OUT", backwardMergeNodes.length);
 
             // All the saved up merge nodes should be added to the graph and recursed
             let backwardMergeNodesCopy = deepCopy(backwardMergeNodes);
@@ -772,6 +772,19 @@ export const flattenProcessStations = (originalProcessRoutes, stations) => {
         processRoutesWithoutWarehouseStartNodes,
         newNode()
     );
+
+    const allProcessStations = processRoutesWithoutWarehouseStartNodes.reduce((processNodes, route) => {
+        if (!processNodes.includes(route.load)) processNodes.push(route.load)
+        if (!processNodes.includes(route.unload)) processNodes.push(route.unload)
+        return processNodes;
+    }, [])
+
+    allProcessStations.forEach(pStation => {
+        if (!visited.includes(pStation)) {
+            outGraph.children.unshift(pStation)
+        }
+    })
+    
     return outGraph;
 };
 

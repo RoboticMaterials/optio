@@ -43,7 +43,7 @@ export const WidgetPageContainer = styled.div`
     position: relative;
 
     border-radius: 1rem;
-    box-shadow: 0 0.2rem 0.4rem 0rem #303030;
+    box-shadow: 0 2px 3px 2px rgba(0,0,0,0.2);
     // background-color: transparent;
     background-color: ${props => props.theme.bg.primary};
 

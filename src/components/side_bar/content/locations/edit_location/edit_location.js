@@ -205,10 +205,10 @@ const EditLocation = (props) => {
 
             const copyStation = deepCopy(selectedStation);
             copyStation.name = name;
-            copyStation.last_edited_at = currDate.toString();
+            copyStation.edited_at = currDate.getTime();
             // Post
             if (!!copyStation.new) {
-                copyStation.created_at = currDate.toString();
+                copyStation.created_at = currDate.getTime();
                 await dispatchPostStation(copyStation);
             }
             // Put

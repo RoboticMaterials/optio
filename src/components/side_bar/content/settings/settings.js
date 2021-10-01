@@ -297,7 +297,7 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-                        <styled.RowContainer>
+                        {/* <styled.RowContainer>
                             <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
                             <Switch
                                 checked={serverSettingsState.deviceEnabled}
@@ -311,7 +311,7 @@ const Settings = () => {
                                 onColor={themeContext.fg.primary}
                                 style={{ marginRight: '1rem' }}
                             />
-                        </styled.RowContainer>
+                        </styled.RowContainer> */}
 
                         <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
                             <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filtering on Mobile </styled.SwitchContainerLabel>

@@ -214,7 +214,7 @@ function Station(props) {
 
     let highlight = false
     // Set selected to true if the selected task inculdes the station
-    if (!!selectedTask && (selectedTask?.load === station._id || selectedTask?.unload === station._id)) highlight = true
+    if ((!!selectedTask && (selectedTask?.load === station._id || selectedTask?.unload === station._id))) highlight = true
 
     // Set Color
     let color = StationTypes[station.type].color
