@@ -51,6 +51,7 @@ const DashboardsHeader = (props) => {
     const processes = useSelector(state => state.processesReducer.processes);
     const stations = useSelector(state => state.stationsReducer.stations);
     const routes = useSelector(state => state.tasksReducer.tasks);
+    const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
 
     const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
     const [showOperationsMenu, setShowOperationsMenu] = useState(false)
@@ -96,7 +97,7 @@ const DashboardsHeader = (props) => {
                             })
                         }
                     })
-                
+
 
             }
 
@@ -135,7 +136,13 @@ const DashboardsHeader = (props) => {
 
         })
 
+
+
     }, [pullButtons])
+
+    const renderStationBasedLotsButton = () => {
+
+    }
 
     return (
         <styled.ColumnContainer>
@@ -144,7 +151,7 @@ const DashboardsHeader = (props) => {
 
                 {!phoneView ?
                   <>
-                    {pullButtons.length > 0 && 
+                    {pullButtons.length > 0 &&
                         <Button
                             schema="warehouse"
                             onClick={() => {
@@ -156,6 +163,7 @@ const DashboardsHeader = (props) => {
                             Pull
                         </Button>
                     }
+
                     <Button
                         schema="delete"
                         onClick={() => {
@@ -171,7 +179,7 @@ const DashboardsHeader = (props) => {
                             alignItems: 'center',
                             position: 'absolute',
                             right: '.5rem',
-                            width: '8.5rem',
+                            width: '6rem',
                             padding:'0rem'
 
                         }}
@@ -179,6 +187,30 @@ const DashboardsHeader = (props) => {
                         Report
                         {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
                     </Button>
+                    {!!stationBasedLots &&
+                      <Button
+                          schema="locations"
+                          onClick={() => {
+                              handleOperationSelected({operation: 'fieldSelect'})
+                              setShowOperationsMenu(false)
+                          }}
+                          disabled={showOperationsMenu}
+                          style={{
+                              height: '3rem',
+                              boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              position: 'absolute',
+                              right: '7.5rem',
+                              width: '4rem',
+                              padding:'0rem'
+
+                          }}
+                      >
+                      <i class="fas fa-list" style = {{color: '#FFFFFF'}}></i>
+                      </Button>
+                    }
                   </>
                   :
                   <>
