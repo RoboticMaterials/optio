@@ -9,6 +9,9 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
+import { findProcessStartNodes, getNodeOutgoing } from './processes_utils';
+import { deepCopy } from './utils'
+
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
 
@@ -677,6 +680,25 @@ export const routesSchema = Yup.array().of(
 
 // })
 
+// const DFSIsCyclic = (routes, node, visited) => {
+//     const outgoingRoutes = getNodeOutgoing(node, routes);
+
+//     for (var outgoingRoute of outgoingRoutes){
+//         const nextNode = outgoingRoute.unload;
+//         if (visited[nextNode] === 'EXPLORING') {
+//             return true
+//         } else if (visited[nextNode] === false) {
+//             visited[nextNode] = 'EXPLORING'
+//             let isCyclic = DFSIsCyclic(routes, nextNode, deepCopy(visited));
+//             if (isCyclic) return true
+//         }
+//     }
+
+//     visited[node] = true;
+//     return false;
+
+// }
+
 export const getProcessSchema = (stations) => Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -708,9 +730,40 @@ export const getProcessSchema = (stations) => Yup.object().shape({
     
             return numTerminalStations === 1;
         }
+    ).test(
+        'isProcessCyclic',
+        'Processes cannot contain loops. As a general rule, if your process contains a loops create a new "virtual" station to loop back to instead.',
+        (routes) => {
+            const startNodes = findProcessStartNodes(routes);
+
+            for (var startNode of startNodes) {
+                let stack = [startNode];
+                let isCyclic = DFSContainsCycle(routes, stack)
+                if (isCyclic) return false;
+            }
+
+            return true
+        }
     )
 
 })
+
+const DFSContainsCycle = (routes, stack) => {
+
+    let node = stack[stack.length-1];
+    let outgoingRoutes = getNodeOutgoing(node, routes);
+    for (var outgoingRoute of outgoingRoutes) {
+        let nextNode = outgoingRoute.unload;
+        if (stack.includes(nextNode)) return true;
+        let nextStack = deepCopy(stack);
+        nextStack.push(nextNode);
+        let isCyclic = DFSContainsCycle(routes, nextStack)
+        if (isCyclic) return true;
+    }
+
+    return false;
+
+}
 
 export const locationSchema = (stations, selectedLocation) => {
 

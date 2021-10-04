@@ -652,19 +652,6 @@ export const isNodeStartWarehouse = (node, processRoutes, stations) => {
     );
 };
 
-const removeRoute = (id, routes) => {
-    let removeIdx = routes.findIndex((route) => route._id === id);
-    routes.splice(removeIdx, 1);
-    return routes;
-};
-
-const newNode = () => {
-    return {
-        collapsed: false,
-        children: [],
-    };
-};
-
 export const flattenProcessStations = (processRoutes, stations) => {
 
     let flattenedStations = [];
