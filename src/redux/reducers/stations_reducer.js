@@ -15,6 +15,10 @@ import {
     DELETE_STATION_SUCCESS,
     DELETE_STATION_FAILURE,
 
+    UPDATE_STATION_CYCLE_TIME_STARTED,
+    UPDATE_STATION_CYCLE_TIME_SUCCESS,
+    UPDATE_STATION_CYCLE_TIME_FAILURE,
+
     ADD_STATION,
     SET_SELECTED_STATION,
     UPDATE_STATION,
@@ -208,6 +212,27 @@ export default function stationsReducer(state = defaultState, action) {
             }
 
         case DELETE_STATION_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
+
+        // ========== CYCLE TIME ========== //
+        case UPDATE_STATION_CYCLE_TIME_STARTED:
+            return Object.assign({}, state, {
+                pending: true
+            });
+
+        case UPDATE_STATION_CYCLE_TIME_SUCCESS:
+            stationsCopy = deepCopy(state.stations)
+            stationsCopy[action.payload._id] = action.payload
+            return {
+                ...state,
+                stations: stationsCopy,
+                pending: false,
+            }
+
+        case UPDATE_STATION_CYCLE_TIME_FAILURE:
             return Object.assign({}, state, {
                 error: action.payload,
                 pending: false

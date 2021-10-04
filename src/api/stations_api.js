@@ -238,7 +238,7 @@ export async function getStationAnalytics(id, timeSpan) {
     }
 }
 
-export async function getStationCycleTime(id) {
+export async function updateStationCycleTime(id) {
     try {
         const response = await axios({
             method: 'get',

@@ -13,47 +13,30 @@ import { uuidv4 } from "../../../../../../methods/utils/utils";
 import DashboardLotFields from "./dashboard_lot_fields/dashboard_lot_fields";
 import DashboardLotButtons from "./dashboard_lot_buttons/dashboard_lot_buttons";
 import ChildLotFields from './child_lot_fields/child_lot_fields';
-import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
-import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import WarehouseModal from "../warehouse_modal/warehouse_modal";
 import LotFlags from "../../../../../side_bar/content/cards/lot/lot_flags/lot_flags";
 import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_box";
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
-import Button from "../../../../../../components/basic/button/button";
 
 // constants
-import {
-  ADD_TASK_ALERT_TYPE,
-  PAGES,
-} from "../../../../../../constants/dashboard_constants";
-import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
-import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 
 // Import Utils
 import {
   handleNextStationBins,
   handleCurrentStationBins,
-  handleMoveLotToMergeStation
 } from "../../../../../../methods/utils/lot_utils";
-import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
-import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";
 import {
   findProcessStartNodes,
 } from "../../../../../../methods/utils/processes_utils";
-import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { deepCopy } from "../../../../../../methods/utils/utils";
 // Import Actions
-import {
-  handlePostTaskQueue,
-  putTaskQueue,
-} from "../../../../../../redux/actions/task_queue_actions";
-import { isObject } from "../../../../../../methods/utils/object_utils";
+
 import {
   putCard,
-  getCards,
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
+import { updateStationCycleTime } from "../../../../../../api/stations_api";
 
 const DashboardLotPage = (props) => {
   const {
@@ -78,6 +61,7 @@ const DashboardLotPage = (props) => {
   const dispatch = useDispatch();
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
+  const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
 
   const availableFinishProcesses = useSelector((state) => {
     return state.dashboardsReducer.finishEnabledDashboards[dashboardID];
@@ -267,6 +251,7 @@ const DashboardLotPage = (props) => {
 
     }
     dispatchPutCard(currentLot, lotID);
+    dispatchUpdateStationCycleTime(loadStationID)
     onBack();
   };
 
@@ -444,7 +429,6 @@ const DashboardLotPage = (props) => {
           setQuantity={setMoveQuantity}
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
-          //route={currentTask}
           disabled={!moveQuantity || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
           onBlur = {()=> {
             if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
