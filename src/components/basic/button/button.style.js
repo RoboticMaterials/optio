@@ -74,7 +74,9 @@ const buttonTheme = (props) => {
     } else { // Primary
         return (`
             background: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-            color: ${props.theme.bg.octonary};
+            // color: ${props.theme.bg.octonary};
+            // color: ${props.schema === 'default' ? 'white' : props.theme.bg.octonary};
+            color: white;
             border: none;
 
             &:hover {

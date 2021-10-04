@@ -740,6 +740,7 @@ export class MapView extends Component {
                                                     // If there is a selected station, then render the selected station vs station in redux
                                                     // Selected station could contain local edits that are not on the backend (naked redux) yet
                                                     station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                    isSelected={(!!selectedStation && station._id === selectedStation._id)}
                                                     // station={station}
                                                     rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
                                                     d3={this.d3}
