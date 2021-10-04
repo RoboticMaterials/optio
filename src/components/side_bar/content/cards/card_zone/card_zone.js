@@ -73,7 +73,6 @@ const CardZone = ((props) => {
     const [bins, setBins] = useState({})
     const [queue, setQueue] = useState([])
     const [finished, setFinished] = useState([])
-    const [cards, setCards] = useState({})
     const [deleteStationCycleTime, setDeleteStationCycleTime] = useState({})
 
     const {
@@ -99,50 +98,6 @@ const CardZone = ((props) => {
 
         return false;
     }, [currentProcess.routes, stations])
-
-    // const [cardsSorted, setCardsSorted] = useState({})
-    // const [queue, setQueue] = useState([])
-    // const [finished, setFinished] = useState([])hideQueueFinish
-
-    // ============================== LEAD TIME ESTIMATION ====================================== //
-    const convertShiftDetails = (details) => {
-
-        let breaks = [{
-            start: moment.duration(0).asSeconds(),
-            end: moment.duration(details.startOfShift).asSeconds()
-        }];
-        Object.values(shiftDetails.breaks)
-            .sort((a, b) => a.startOfBreak - b.startOfBreak)
-            .forEach(br => {
-                if (br.enabled) {
-                    breaks.push({
-                        start: moment.duration(br.startOfBreak).asSeconds(),
-                        end: moment.duration(br.endOfBreak).asSeconds()
-                    })
-                }
-            })
-
-        breaks.push({
-            start: moment.duration(details.endOfShift).asSeconds(),
-            end: moment.duration(24, 'hours').asSeconds()
-        })
-
-        return breaks;
-
-    }
-
-    const addWeekdays = (date, days) => {
-        date = moment(date); // use a clone
-        while (days > 0) {
-            date = date.add(1, 'days');
-            // decrease "days" only if it's a weekday.
-            if (date.isoWeekday() !== 6 && date.isoWeekday() !== 7) {
-                days -= 1;
-            }
-        }
-        return date;
-    }
-
     // need to loop through the process's routes first and get all station ids involved in the process
     // this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
     useEffect(() => {
@@ -185,7 +140,9 @@ const CardZone = ((props) => {
         let tempFinished = []	// temp var for storing finished lots
         let tempCardsSorted = { ...bins }
 
-        Object.values(cards).forEach((card) => {
+        const processCards = allCards[processId] || {}
+
+        Object.values(processCards).forEach((card) => {
             // extract lot attributes
             const {
                 bins: cardBins,
@@ -262,7 +219,7 @@ const CardZone = ((props) => {
         setCardsSorted(tempCardsSorted)
         setQueue(tempQueue)
         setFinished(tempFinished)
-    }, [bins, cards, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
+    }, [bins, allCards, processId, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
 
 
     const renderStationColumns = useMemo(() => {
@@ -270,7 +227,6 @@ const CardZone = ((props) => {
         const columns = currentProcess.flattened_stations.map((stationNode, idx) => (
 
             <div id={`column-${stationNode.stationID}`}>
-                
                 <StationsColumn
                     containerStyle={{marginTop: `${stationNode.depth*2}rem`, position: 'relative'}}
                     setSelectedCards={setSelectedCards}
@@ -285,8 +241,7 @@ const CardZone = ((props) => {
                     cards={cardsSorted[stationNode.stationID]?.cards || []}
                     onCardClick={handleCardClick}
                     autoCycleTime={deleteStationCycleTime[stationNode.stationID]}
-                >
-                </StationsColumn>
+                />
             </div>
 
         ))

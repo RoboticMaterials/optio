@@ -199,7 +199,7 @@ export const deleteStation = (ID) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export const updateStationCycleTime = async (id) => {
+export const updateStationCycleTime = (id) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: UPDATE_STATION_CYCLE_TIME_STARTED });
