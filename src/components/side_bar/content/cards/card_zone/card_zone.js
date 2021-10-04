@@ -1,4 +1,5 @@
 import React, { useEffect, useState, memo, useMemo } from "react"
+import useWindowDimensions from "../../../../../higher_order_components/react-window-size";
 import moment from 'moment';
 
 
@@ -48,6 +49,8 @@ const CardZone = ((props) => {
         setSelectedCards,
         handleAddLotClick,
     } = props
+
+    const { height: windowHeight, width: windowWidth } = useWindowDimensions()
 
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
@@ -509,52 +512,55 @@ const CardZone = ((props) => {
         setFinished(tempFinished)
     }, [bins, cards, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
 
-    /*
-    * Renders a {StationColumn} for each entry in {cardsSorted}
-    *
-    * */
+
     const renderStationColumns = useMemo(() => {
 
-        const renderRecursiveColumns = (node) => {
-            let columnContent, recursiveColumnContent;
+        const columns = currentProcess.flattened_stations.map((stationNode, idx) => (
 
-            columnContent = (
-                <>
-                    {node.children.map(child => {
+            <div id={`column-${stationNode.stationID}`}>
+                
+                <StationsColumn
+                    containerStyle={{marginTop: `${stationNode.depth*2}rem`, position: 'relative'}}
+                    setSelectedCards={setSelectedCards}
+                    selectedCards={selectedCards}
+                    sortMode={sortMode}
+                    sortDirection={sortDirection}
+                    maxHeight={maxHeight}
+                    id={processId + "+" + stationNode.stationID}
+                    station_id={stationNode.stationID}
+                    stationName={stations[stationNode.stationID].name}
+                    processId={processId}
+                    cards={cardsSorted[stationNode.stationID]?.cards || []}
+                    onCardClick={handleCardClick}
+                    autoCycleTime={deleteStationCycleTime[stationNode.stationID]}
+                >
+                </StationsColumn>
+            </div>
 
-                        if (typeof child === 'string') {
-                            let childStationId = child;
-                            return (
-                                <StationsColumn
-                                    setSelectedCards={setSelectedCards}
-                                    selectedCards={selectedCards}
-                                    sortMode={sortMode}
-                                    sortDirection={sortDirection}
-                                    maxHeight={maxHeight}
-                                    id={processId + "+" + childStationId}
-                                    station_id={childStationId}
-                                    stationName={stations[childStationId].name}
-                                    processId={processId}
-                                    cards={cardsSorted[childStationId]?.cards || []}
-                                    onCardClick={handleCardClick}
-                                    autoCycleTime={deleteStationCycleTime[childStationId]}
-                                />
-                            )
-                        } else {
-                            recursiveColumnContent = renderRecursiveColumns(child);
-                            return (
-                                <styled.ColumnGroup>
-                                    {recursiveColumnContent}
-                                </styled.ColumnGroup>
-                            )
-                        }
-                    })}
-                </>
-            )
+        ))
 
-            return columnContent
-        }
-        return renderRecursiveColumns(currentProcess.graph, 0)
+        // const pathsBoxWidth = 26*(currentProcess.flattened_stations.length + 2)
+        // const pathsBoxHeight = 2*Math.max(...currentProcess.flattened_stations.map(node => node.depth))
+        // const paths = (
+        //     <div style={{zIndex: 1000, background: 'red', width: '400rem', top: 0, left: 0}}>
+        //     {/* <svg style={{background: 'rgba(0,0,0.3,0.3)', position: 'absolute'}} fill='yellow' viewBox={`0 0 ${100*pathsBoxWidth} ${100*pathsBoxHeight}`} width={`${pathsBoxWidth}rem`} height={`${pathsBoxHeight}rem`} > 
+        //         {currentProcess.routes.map(routeId => {
+        //             const route = routes[routeId];
+        //             const loadIdx = currentProcess.flattened_stations.findIndex(node => node.stationID === route.load)
+        //             const unloadIdx = currentProcess.flattened_stations.findIndex(node => node.stationID === route.unload)
+
+        //             return <line x1={`${26*100*loadIdx}`} y1={200*currentProcess.flattened_stations[loadIdx].depth} x2={`${26*100*unloadIdx}`} y2={200*currentProcess.flattened_stations[unloadIdx].depth} stroke="black" strokeWidth="10"/>
+        //         })}
+        //     </svg> */}
+        //     </div>
+        // )
+
+        return (
+            <>
+                {columns}
+                {/* {paths} */}
+            </>
+        )
 
     }, [cardsSorted, currentProcess])
 

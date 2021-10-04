@@ -31,54 +31,32 @@ const StationColumns = (props) => {
     const [collapsed, setCollapsed] = useState(false)
 
     const renderStationColumn = useMemo(() => {
-        const renderRecursiveColumns = (node) => {
-            let columnContent, recursiveColumnContent;
 
-            columnContent = (
-                <>
-                    {node.children.map(child => {
-
-                        if (typeof child === 'string') {
-                            let childStationId = child;
-                            return (
-                                <VisibilitySensor partialVisibility = {true}>
-                                            {({isVisible}) =>
-                                            <>
-                                                {!!isVisible ?
-                                            <StationColumn
-                                                key={childStationId}
-                                                dateIndex={dateIndex}
-                                                timeSpan={timeSpan}
-                                                stationId={childStationId}
-                                                showReport={showReport}
-                                                setDateTitle={(title => setDateTitle(title))}
-                                                dataLoading={loading => dataLoading(loading)}
-                                                sortLevel={sortLevel}
-                                            />
-                                            :
-                                            <div style = {{height: '20rem', width: '80%'}}>
-                                            ...Loading
-                                            </div>
-                                        }
-                                    </>
-                                    }
-                                </VisibilitySensor>
-                            )
-                        } else {
-                            recursiveColumnContent = renderRecursiveColumns(child);
-                            return (
-                                <>
-                                    {recursiveColumnContent}
-                                </>
-                            )
-                        }
-                    })}
+        return processes[processId].flattened_stations.map(stationNode => (
+            <VisibilitySensor partialVisibility = {true}>
+                        {({isVisible}) =>
+                        <>
+                            {!!isVisible ?
+                        <StationColumn
+                            key={stationNode.stationID}
+                            dateIndex={dateIndex}
+                            timeSpan={timeSpan}
+                            stationId={stationNode.stationID}
+                            showReport={showReport}
+                            setDateTitle={(title => setDateTitle(title))}
+                            dataLoading={loading => dataLoading(loading)}
+                            sortLevel={sortLevel}
+                        />
+                        :
+                        <div style = {{height: '20rem', width: '80%'}}>
+                        ...Loading
+                        </div>
+                    }
                 </>
-            )
-
-            return columnContent
-        }
-        return renderRecursiveColumns(processes[processId].graph, 0)
+                }
+            </VisibilitySensor>
+        ))
+    
     }, [dateIndex, timeSpan, showReport, sortLevel])
     
     return (

@@ -143,7 +143,7 @@ const ProcessForm = (props) => {
 				map_id: currentMap._id,
 				created_at: currDate.getTime(),
 				edited_at: currDate.getTime(),
-				graph: flattenProcessStations(remainingValues.routes, stations)
+				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
 
@@ -154,7 +154,7 @@ const ProcessForm = (props) => {
 				routes: mappedRoutes,
 				map_id: currentMap._id,
 				edited_at: currDate.getTime(),
-				graph: flattenProcessStations(remainingValues.routes, stations)
+				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
 			})
 		}
 

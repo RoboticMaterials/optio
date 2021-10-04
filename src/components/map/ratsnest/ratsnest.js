@@ -20,7 +20,7 @@ const RatsNest = (props) => {
         <>
             {!editingStation && !editingPosition &&
                 mapProcesses.map(process => process.routes.map(route => (
-                    <RatsnestPath route={route} d3Scale={d3Scale} />
+                    <RatsnestPath route={route} d3Scale={d3Scale} id={`ratsnest-path-${route._id}`}/>
                 )))
             }
         </>
