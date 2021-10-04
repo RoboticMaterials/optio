@@ -198,7 +198,7 @@ const DashboardScreen = (props) => {
             }
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
             pullLot.bins = handleCurrentStationBins(pullLot.bins, quantity, warehouseID, process, routes)
-      
+
             //Add dispersed key to lot for totalQuantity Util
             setAddTaskAlert({
               type: "LOT_MOVED",
@@ -212,10 +212,10 @@ const DashboardScreen = (props) => {
             // Single-flow node, just send to the station
             const toStationId = moveStations;
             pullLot.bins = handleNextStationBins(pullLot.bins, quantity, warehouseID, toStationId, process, routes, stations)
-      
+
             // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
             pullLot.bins = handleCurrentStationBins(pullLot.bins, quantity, warehouseID, process, routes)
-      
+
             const stationName = stations[toStationId].name;
             setAddTaskAlert({
               type: "LOT_MOVED",
@@ -224,7 +224,7 @@ const DashboardScreen = (props) => {
             });
             setTimeout(() => setAddTaskAlert(null), 1800)
           }
-          
+
           dispatchPutCard(pullLot, pullLotID);
           setSelectedOperation(null);
     }
@@ -292,6 +292,15 @@ const DashboardScreen = (props) => {
                     />
                 )
 
+            case 'fieldSelect':
+                return (
+                    <FieldSelectModal
+                        isOpen={true}
+                        close={() => setSelectedOperation(null)}
+
+                    />
+                )
+
 
             default:
                 return (
@@ -308,7 +317,7 @@ const DashboardScreen = (props) => {
                 !!selectedOperation && renderModal()
             }
 
-            {showUndoModal && 
+            {showUndoModal &&
                 <SimpleModal
                     isOpen={showUndoModal}
                     title={'Confirm Undo'}

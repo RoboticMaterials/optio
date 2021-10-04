@@ -248,7 +248,7 @@ const LotEditorContainer = (props) => {
               header += attribute.name + '\t'
           })
 
-          csv += header + 'AssemblyQuantity' + '\n'
+          csv += header + '\n'
 
           newXml.forEach((lot, index, array) => {
             var row = ""
@@ -259,7 +259,7 @@ const LotEditorContainer = (props) => {
               csv += row + "1"
             }
             else{
-              csv += row + "1" + '\n'
+              csv += row + '\n'
             }
           })
         }
