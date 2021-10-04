@@ -483,7 +483,7 @@ const Column = ((props) => {
 																}
 															</>
 															:
-															<div style = {{height: '20rem', width: '80%'}}>
+															<div style = {{height: '20rem', width: '80%', margin: '2rem', color: 'grey'}}>
 															...Loading
 															</div>
 													}
