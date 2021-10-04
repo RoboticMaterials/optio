@@ -34,7 +34,6 @@ import { CUSTOM_TASK_ID } from "../../../../../../constants/route_constants";
 import {
   handleNextStationBins,
   handleCurrentStationBins,
-  handleMoveLotToMergeStation
 } from "../../../../../../methods/utils/lot_utils";
 import { isDeviceConnected } from "../../../../../../methods/utils/device_utils";
 import { isRouteInQueue } from "../../../../../../methods/utils/task_queue_utils";

@@ -662,8 +662,7 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
         totalCompleteParts += completeParts
         completeParts = currentLot.totalQuantity
      }
-     //console.log(totalCompleteParts)
-     //console.log(bestQty)
+
      return totalCompleteParts
 
 }
@@ -720,50 +719,36 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
   let iDs = []
   let option = 0
   let requirement = 0
-  let allAreOptions = true
-  let allAreRequired = true
 
-  let wizardry = handleMergeExpression(station, processes[lot.process_id], routes).flat()
-    iDs.push([])
-    for(const wands in wizardry){
-      let statID = wizardry[wands]
-      if(statID !== 'OR' && statID!=='AND'){
-        iDs[option].push(statID)
-      }
-      else if(statID === 'AND'){
-        option += 1
-        iDs.push([])
-        allAreOptions = false
-      }
-      else if(statID === "OR"){
-        allAreRequired = false
-      }
-    }
+  let precursor = ''
+  iDs.push([])
 
-    //Probably better way to do this but if you never run into an and all the ids give are options
-    if(!!allAreOptions && !allAreRequired){
-      option = 0
-      iDs = []
-      for(const potion in wizardry){
-        let dumbledore = wizardry[potion]
-        if(dumbledore!== 'OR'){
-          iDs.push([])
-          iDs[option].push(dumbledore)
-          option+=1
+  //console.log(handleMergeExpression(station, processes[lot.process_id], routes))
+  const recursiveParse = (row) => {
+      if(Array.isArray(row)){
+        let precursor = row[0]
+        for(let i = 1; i<Object.values(row).length; i++){
+          if(Array.isArray(row[i])){
+            if(row[0] === 'OR'){
+              option+=1
+              iDs.push([])
+            }
+            recursiveParse(row[i])
+          }
+          else{
+            if(precursor === 'OR'){
+              iDs[option].push(row[i])
+              option+=1
+              iDs.push([])
+            }
+            else if(precursor === 'AND'){
+              iDs[option].push(row[i])
+            }
+          }
         }
       }
     }
-
-    else if(!allAreOptions && !!allAreRequired){
-      iDs = []
-      iDs.push([])
-      for(const potion in wizardry){
-        let dumbledore = wizardry[potion]
-        if(dumbledore!== 'AND'){
-          iDs[0].push(dumbledore)
-        }
-      }
-    }
+    recursiveParse(handleMergeExpression(station, processes[lot.process_id], routes))
   //Determine count for that path
   let minCount = count
   for(const ind in iDs){
@@ -793,48 +778,39 @@ export const handleGetPathQuantityArray = (bins, station, count, processId) => {
   let requirement = 0
   let allAreOptions = true
   let allAreRequired = true
+  iDs.push([])
 
-  let wizardry = handleMergeExpression(station, processes[processId], routes).flat()
-    iDs.push([])
-    for(const wands in wizardry){
-      let statID = wizardry[wands]
-      if(statID !== 'OR' && statID!=='AND'){
-        iDs[option].push(statID)
-      }
-      else if(statID === 'AND'){
-        option += 1
-        iDs.push([])
-        allAreOptions = false
-      }
-      else if(statID === "OR"){
-        allAreRequired = false
-      }
-    }
-
-    //Probably better way to do this but if you never run into an and all the ids give are options
-    if(!!allAreOptions && !allAreRequired){
-      option = 0
-      iDs = []
-      for(const potion in wizardry){
-        let dumbledore = wizardry[potion]
-        if(dumbledore!== 'OR'){
-          iDs.push([])
-          iDs[option].push(dumbledore)
-          option+=1
+  const recursiveParse = (row) => {
+      if(Array.isArray(row)){
+        let precursor = row[0]
+        for(let i = 1; i<Object.values(row).length; i++){
+          if(Array.isArray(row[i])){
+            if(row[0] === 'OR'){
+              option+=1
+              iDs.push([])
+            }
+            recursiveParse(row[i])
+          }
+          else{
+            if(precursor === 'OR'){
+              iDs[option].push(row[i])
+              option+=1
+              iDs.push([])
+            }
+            else if(precursor === 'AND'){
+              iDs[option].push(row[i])
+            }
+          }
         }
       }
     }
+    recursiveParse(handleMergeExpression(station, processes[processId], routes))
 
-    else if(!allAreOptions && !!allAreRequired){
-      iDs = []
-      iDs.push([])
-      for(const potion in wizardry){
-        let dumbledore = wizardry[potion]
-        if(dumbledore!== 'AND'){
-          iDs[0].push(dumbledore)
-        }
-      }
+    let nonEmptyIds = []
+    for (const i in iDs){
+      if(Object.keys(iDs[i]).length !== 0) nonEmptyIds.push(iDs[i])
     }
+    iDs = nonEmptyIds
   //Determine count for that path
   let minCount = count
   let pathQuantityArray = []
@@ -849,123 +825,23 @@ export const handleGetPathQuantityArray = (bins, station, count, processId) => {
     else{
       for(const idx in iDs[ind]){
         let partId = iDs[ind][idx]
-        minCount = !!bins[station][partId] ? bins[station][partId]<minCount ? bins[station][partId] : minCount : 0
+        if(!!bins[station][partId]){
+          if(bins[station][partId] < minCount) {
+            minCount = bins[station][partId]
+          }
+        }
+        else {
+          minCount = 0
+        }
       }
       pathQuantityArray.push([])
       pathQuantityArray[ind].push(minCount)
       pathQuantityArray[ind].push(iDs[ind])
+      minCount = count
     }
   }
   return pathQuantityArray
 }
-
-export const handleMoveLotToMergeStation = (lot, currStation, nextStation, quantity) => {
-
-    const processes = store.getState().processesReducer.processes || {}
-    const routes = store.getState().tasksReducer.tasks || {}
-
-    let iDs = []
-    let option = 0
-    let requirement = 0
-    let allAreOptions = true
-    let allAreRequired = true
-
-    const mergingRoutes = processes[lot.process_id].routes
-                          .map(routeId => routes[routeId])
-                          .filter(route => route.unload === nextStation)
-
-
-    let wizardry = handleMergeExpression(nextStation, processes[lot.process_id], routes).flat()
-      iDs.push([])
-      for(const wands in wizardry){
-        let statID = wizardry[wands]
-        if(statID !== 'OR' && statID!=='AND'){
-          iDs[option].push(statID)
-        }
-        else if(statID === 'AND'){
-          option += 1
-          iDs.push([])
-        }
-        else if(statID === "OR" && wands!=0){
-          allAreRequired = false
-        }
-      }
-
-      //Probably better way to do this but if you never run into an and all the ids give are options
-      if(!!allAreOptions && !allAreRequired){
-        option = 0
-        iDs = []
-        for(const potion in wizardry){
-          let dumbledore = wizardry[potion]
-          if(dumbledore!== 'OR'){
-            iDs.push([])
-            iDs[option].push(dumbledore)
-            option+=1
-          }
-        }
-      }
-
-      //Fix this crap later
-      else if(!allAreOptions && !!allAreRequired){
-        iDs = []
-        iDs.push([])
-        for(const potion in wizardry){
-          let dumbledore = wizardry[potion]
-          if(dumbledore!== 'AND'){
-            iDs[0].push(dumbledore)
-          }
-        }
-      }
-
-
-      let countQuantity = lot.totalQuantity //Initialize count at totalquantity
-      let part = ""
-      for(const ind in mergingRoutes){
-        let currPartQty = mergingRoutes[ind]._id
-        if(mergingRoutes[ind].load === currStation){ //Found the route that we are currently transferring parts along
-          if(!!lot.bins[nextStation]){  // Bin exists, add parts to station
-            let existingQuantity = !!lot.bins[nextStation][currPartQty] ? lot.bins[nextStation][currPartQty] : 0
-            lot.bins[nextStation] = {
-              ...lot.bins[nextStation],
-              [currPartQty]: existingQuantity += quantity
-            }
-
-
-            //Update lot count. As we looped through the routes that merge to station the limiting factor has been found for lot quantity
-
-            return handleMergedLotQuantity(iDs, mergingRoutes, lot, nextStation, quantity, currStation)
-          }
-          else{//Nothing exists at station yet, creat bin, add parts to bin
-            lot.bins[nextStation] = {
-              [currPartQty]: quantity,
-            }
-            //return handleMergedLotQuantity(iDs, mergingRoutes, lot, nextStation, quantity, currStation)
-            return null
-
-          }
-        }
-      }
-}
-
-export const handleMoveLotFromMergeStation = (lot, currStation, nextStation, quantity) => {
-
-    const processes = store.getState().processesReducer.processes || {}
-    const routes = store.getState().tasksReducer.tasks || {}
-
-    for(const ind in lot.bins[currStation]){
-        if(lot.bins[currStation][ind]-quantity < 1){
-          if(ind === 'count'){
-            lot.bins[currStation][ind] = 0
-          }
-          else delete lot.bins[currStation][ind]
-        }
-        else lot.bins[currStation][ind] -= quantity
-
-        if(Object.keys(lot.bins[currStation]).length===1) delete lot.bins[currStation]
-    }
-
-      return lot
-    }
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 
@@ -1088,9 +964,11 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
           if(!!bins[loadStationId][parts[i]]){
             bins[loadStationId][parts[i]]-=removeQty
           }
-          availableQty -= removeQty
         }
-        if(availableQty<1) break
+        availableQty -= removeQty
+        if(availableQty<1){
+          break
+        }
       }
       //delete part if qty 0
       for (const ind in bins[loadStationId]) {

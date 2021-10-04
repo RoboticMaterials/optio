@@ -25,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -303,7 +303,6 @@ const Column = ((props) => {
 
 				if (!(binId === station_id)) {
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
-
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
 					const {
 						[binId]: movedBin,
