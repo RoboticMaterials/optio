@@ -234,7 +234,7 @@ const EditLocation = (props) => {
                         dispatchPutProcess(
                             {
                                 ...process,
-                                graph: flattenProcessStations(
+                                flattened_stations: flattenProcessStations(
                                     processRoutes,
                                     stationsCopy
                                 ),
