@@ -43,7 +43,8 @@ const Column = ((props) => {
 		maxHeight,
 		sortMode,
 		sortDirection,
-		setSelectedCards
+		setSelectedCards,
+		containerStyle
 	} = props
 
 	// redux state
@@ -531,6 +532,7 @@ const Column = ((props) => {
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				style={containerStyle}
 			>
 				{HeaderContent(numberOfLots, lotQuantitySummation)}
 

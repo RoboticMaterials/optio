@@ -32,7 +32,8 @@ const StationsColumn = ((props) => {
         sortDirection,
         selectedCards,
         setSelectedCards,
-        autoCycleTime
+        autoCycleTime,
+        containerStyle
     } = props
 
     const dispatch = useDispatch()
@@ -145,6 +146,7 @@ const StationsColumn = ((props) => {
             sortMode={sortMode}
             maxHeight={maxHeight}
             id={id}
+            containerStyle={containerStyle}
             HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
                 if (isCollapsed) {
                     return (
