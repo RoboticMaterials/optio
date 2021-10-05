@@ -31,6 +31,15 @@ export const ErrorText = styled.p`
     text-align: center;
 `
 
+export const SuccessText = styled.p`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.good};
+    width: 25rem;
+    margin-top: 0.5rem;
+    text-align: center;
+`
+
 export const CapsIconContainer = styled.div`
     transform: translate(-2rem, 0.3rem);
     margin-right: -1.7rem;
