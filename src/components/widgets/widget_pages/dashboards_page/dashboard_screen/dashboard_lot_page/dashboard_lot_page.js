@@ -291,6 +291,12 @@ const DashboardLotPage = (props) => {
   };
 
   const handleTypedQty = (e) => {
+
+    if (e === null) {
+      setMoveQuantity('')
+      return
+    }
+
     let arr = Array.from(String(moveQuantity), Number)
     if(!!arr[0]){
       if(e.nativeEvent.inputType === 'deleteContentBackward') arr.splice(-1)

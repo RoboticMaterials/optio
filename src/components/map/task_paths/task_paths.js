@@ -124,8 +124,10 @@ export default function TaskPaths(props) {
   }, [selectedTask]);
 
   if (selectedTask !== null && loadPositionId != null) {
-    const lineLen = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    const lineRot = Math.atan2(y2 - y1, x2 - x1);
+    let tempX2 = !!x2 ? x2 : x1
+    let tempY2 = !!y2 ? y2 : y1
+    const lineLen = Math.sqrt(Math.pow(tempX2 - x1, 2) + Math.pow(tempY2 - y1, 2));
+    const lineRot = Math.atan2(tempY2 - y1, tempX2 - x1);
     const arrowRot = (lineRot * 180) / Math.PI;
 
     const dashes = [

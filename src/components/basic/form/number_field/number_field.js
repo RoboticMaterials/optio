@@ -133,11 +133,11 @@ const NumberField = (props) => {
 	}
 
 	const handleFocus = () => {
-		if(isMobile) {
-			setFocused(true)
-			setPreviousValue(parseInt(fieldValue))
-			setFieldValue(fieldName, "")
-		}
+		// if(isMobile) {
+		setFocused(true)
+		setPreviousValue(parseInt(fieldValue))
+		setFieldValue(fieldName, "")
+		// }
 	}
 
 	const handleBlur = () => {

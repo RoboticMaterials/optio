@@ -113,11 +113,12 @@ const DashboardLotButtons = (props) => {
           <styled.QuantityText>The maximum quantity is {maxQuantity}</styled.QuantityText>
 
             <NumberInput
+                onFocus={() => onInputChange(null)}
                 minValue={minQuantity}
                 maxValue={maxQuantity}
                 plusDisabled = {quantity===maxQuantity? true:false}
                 minusDisabled = {quantity===1? true:false}
-                value={!!Number.isInteger(parseInt(quantity)) ? quantity: null}
+                value={!!Number.isInteger(parseInt(quantity)) ? quantity : ''}
                 onMinusClick={() => setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)}
                 onPlusClick={() => {
                   setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
