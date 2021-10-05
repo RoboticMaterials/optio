@@ -117,42 +117,6 @@ const LoadUnloadFields = (props) => {
                     inputStyle={!isProcess ? { background: themeContext.bg.primary } : {}}
                 />
 
-                {!humanLocation &&
-
-                    <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                        <styled.Label style={{ width: "70%" }}>Timeout (mm:ss): </styled.Label>
-
-                        <TimePickerField
-                            mapInput={(value) => {
-                                if (value && typeof value === String) {
-                                    const splitVal = value.split(':')
-                                    return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
-                                }
-                            }}
-                            mapOutput={(value) => {
-                                return value.format("mm:ss")
-                            }}
-                            name={fieldParent ? `${fieldParent}.load.timeout` : "load.timeout"}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={false}
-                            schema={'tasks'}
-                            className="xxx"
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={!!selectedTask.timeout ? moment().set({ 'minute': selectedTask.timeout.split(':')[0], 'second': selectedTask.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            defaultValue={!!selectedTask.timeout ? moment().set({ 'minute': selectedTask.timeout.split(':')[0], 'second': selectedTask.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            onChange={(time) => {
-                                dispatchSetSelectedTask({
-                                    ...selectedTask,
-                                    load: {
-                                        ...selectedTask.load,
-                                        timeout: time.format("mm:ss")
-                                    }
-                                })
-                            }}
-                        />
-                    </div>
-                }
 
                 {!isOnlyHumanTask(selectedTask) &&
                     <div style={{ display: "flex", flexDirection: "row", marginTop: "0rem" }}>
