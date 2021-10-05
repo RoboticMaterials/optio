@@ -186,7 +186,7 @@ const DashboardsHeader = (props) => {
                         Report
                         {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
                     </Button>
-                    {!!stationBasedLots &&
+                    {!!stationBasedLots && !mobileMode && 
                       <Button
                           schema="locations"
                           onClick={() => {
