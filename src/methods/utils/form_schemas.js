@@ -443,7 +443,7 @@ export const signUpSchema = Yup.object().shape({
 
     accessCode: Yup.string()
         .required('Please enter a access code')
-        .matches(/\b(Meier2021|Phunkshun2021|Demo2021|YALE2021)\b/, 'Must be a valid access code'),
+        .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9)\b/, 'Must be a valid access code'),
 
     password: Yup.string()
         .required('Please enter a password')
