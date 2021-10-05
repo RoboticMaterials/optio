@@ -66,6 +66,7 @@ const SignInUpPage = (props) => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [errorText, setErrorText] = useState('')
+    const [successText, setSuccessText] = useState('')
 
     const [capsLock, setCapsLock] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -131,17 +132,21 @@ const SignInUpPage = (props) => {
             });
         } else {
             if (password === confirmPassword) {
-                userPool.signUp(email, password, [], null, (err, data) => {
+                userPool.signUp(email, password, [{Name: 'email', Value: email}], null, (err, data) => {
                     if (err) {
                         if (err.message === 'Invalid version. Version should be 1') {
                             setErrorText('Invalid email. Please use a valid email.')
+                            setSuccessText('')
                             setLoading(false)
                         } else {
+                            console.log(err)
                             setErrorText(err.message)
+                            setSuccessText('')
                             setLoading(false)
                         }
                     } else {
-                        setErrorText('You have successfully signed up! Please check you email for a verification link.')
+                        setErrorText('')
+                        setSuccessText('You have successfully signed up! Please check you email for a verification link.')
                         history.push('/')
                         handleSignInChange(true)
                         setLoading(false)
@@ -213,6 +218,9 @@ const SignInUpPage = (props) => {
                             <styled.ErrorText>
                                 {errorText}
                             </styled.ErrorText>
+                            <styled.SuccessText>
+                                {successText}
+                            </styled.SuccessText>
                             <TextField
                                 name={"email"}
                                 placeholder='Enter Email'
