@@ -34,7 +34,9 @@ const StationColumn = (props) => {
     const dispatch = useDispatch()
     const dispatchGetReportEvents = () => dispatch(getReportEvents());
 
-    const [throughputData, setThroughputData] = useState(null)
+    const [lineData, setLineData] = useState({})
+    const [barData, setBarData] = useState({})
+
     const [loading, setLoading] = useState(false)
     const [collapsed, setCollapsed] = useState(false)
     const [reportButtons, setReportButtons] = useState([])
@@ -93,39 +95,37 @@ const StationColumn = (props) => {
         setLoading(true)
         const body = { timespan: timeSpan, index: dateIndex, sort_index: sortLevel.value }
         const dataPromise = getStationAnalytics(stationId, body)
-        dataPromise.then(response => {
-            if (response === undefined) {
-                setThroughputData([])
-                dataLoading(false)
-                setLoading(false)
-                return
-            }
+        
+        return dataPromise.then(response => {
+            if (response === undefined) return setLoading(false)
             // Convert Throughput
+
             if (timeSpan === 'line') {
-                let convertedThroughput = []
-                response.throughPut.forEach((dataPoint) => {
-                    // Round Epoch time and multiply by 1000 to match front end times
+                let convertedThroughput = response.throughPut.map(dataPoint => {
                     let convertedTime = dataPoint.x * 1000
                     convertedTime = Math.round(convertedTime)
-                    convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
+                    return { x: convertedTime, y: dataPoint.y }
                 })
-                response = {
+                setLineData({
                     ...response,
                     throughPut: convertedThroughput
-                }
+                })
+            } else {
+                setBarData(response)
             }
 
-            setThroughputData(response)
             setDateTitle(response.date_title)
             dataLoading(false)
             setLoading(false)
+
+            return response;
         })
 
     }
 
     return (
-
-        collapsed ?
+        <>
+        {collapsed ?
             <styled.StationCollapsedContainer>
                 <styled.CollapseIcon
                     className="fa fa-chevron-right"
@@ -158,20 +158,20 @@ const StationColumn = (props) => {
                     />
                     :
                     <ThroughputChart
-                        data={throughputData}
                         isWidget={false}
-                        loading={loading}
                         timeSpan={timeSpan}
-                        disableTimeSpan={(bool) => {
-                            // setTimespanDisabled(bool)
-                        }}
                         sortLevel={sortLevel}
+
+                        lineData={lineData}
+                        barData={barData}
+
+                        loading={loading}
                     />
                 }
 
             </styled.StationColumnContainer >
-
-
+        }
+        </>
 
     )
 }
