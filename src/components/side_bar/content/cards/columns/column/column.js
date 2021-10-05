@@ -329,7 +329,7 @@ const Column = ((props) => {
 						if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
 							delete updatedLot.bins[binId]
 						}
-						dispatchPutCard(updatedLot, updatedLot._id)
+					//	dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)
 				}
 			}

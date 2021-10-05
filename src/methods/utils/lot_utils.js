@@ -676,7 +676,6 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
  * contains the "AND" "OR" boolean expressions that describe the required input routes to count as a part
  */
 export const handleMergedLotBin = (bin, mergeExpression) => {
-
     const recursiveConditionalQuantities = (subExpression) => {
         // Since the expression can have nested elements, this function needs to be recursive
         if (Array.isArray(subExpression)) {
@@ -731,6 +730,7 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
               option+=1
               iDs.push([])
             }
+            console.log(row[i][0])
             recursiveParse(row[i])
           }
           else{
@@ -767,7 +767,7 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
             }
             else {
               minCount = 0
-            }    
+            }
           }
 
         }
