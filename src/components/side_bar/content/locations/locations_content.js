@@ -108,6 +108,7 @@ export default function LocationContent() {
         }
     }
 
+    
     return (
         (editingPosition || editingStation) ?
             <EditLocation />
