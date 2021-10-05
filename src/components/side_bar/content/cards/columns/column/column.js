@@ -314,7 +314,6 @@ const Column = ((props) => {
 						let updatedLot = droppedCard
 						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, station_id, processes[updatedLot.process_id], routes, stations)
 						updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, processes[updatedLot.process_id], routes)
-
 						if(!!updatedLot.bins[binId] && !updatedLot.bins[binId]['count']){
 							updatedLot.bins[binId] = {
 								...updatedLot.bins[binId],

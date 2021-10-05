@@ -684,9 +684,9 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
                 let count = Math.max(...Object.values(bin));
                 for (var i=1; i<subExpression.length; i++) {
                     // If its an AND, its the minimum of all the quantities of the incoming routes
-
-                    count = Math.min(count, recursiveConditionalQuantities(subExpression[i]));
-
+                    if(!!subExpression[i]){
+                      count = Math.min(count, recursiveConditionalQuantities(subExpression[i]));
+                    }
                 }
                 return count
             } else if (subExpression[0] === 'OR') {
@@ -703,7 +703,6 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
         }
 
     }
-
     return {
         ...bin,
         count: recursiveConditionalQuantities(mergeExpression)
@@ -712,7 +711,6 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
 }
 
 export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
-
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
 
@@ -751,6 +749,7 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
     recursiveParse(handleMergeExpression(station, processes[lot.process_id], routes))
   //Determine count for that path
   let minCount = count
+
   for(const ind in iDs){
     if(iDs[ind].includes(routeId)){
       if(Object.keys(iDs[ind]).length === 1){
@@ -760,7 +759,17 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
       else{
         for(const idx in iDs[ind]){
           let partId = iDs[ind][idx]
-          minCount = !!lot.bins[station][partId] ? lot.bins[station][partId]<minCount ? lot.bins[station][partId] : minCount : 0
+          if(!!partId){
+            if(!!lot.bins[station][partId]){
+              if(lot.bins[station][partId] < minCount) {
+                minCount = lot.bins[station][partId]
+              }
+            }
+            else {
+              minCount = 0
+            }    
+          }
+
         }
         return minCount
       }
@@ -911,6 +920,8 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
         // The Bin for the destination already exists, update quantities
 
         let existingQuantity = !!currentBin[traveledRoute._id]
+
+
           ? currentBin[traveledRoute._id]
           : 0;
         tempBin = {
