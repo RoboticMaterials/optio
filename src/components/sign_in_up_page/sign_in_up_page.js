@@ -139,7 +139,6 @@ const SignInUpPage = (props) => {
                             setSuccessText('')
                             setLoading(false)
                         } else {
-                            console.log(err)
                             setErrorText(err.message)
                             setSuccessText('')
                             setLoading(false)
