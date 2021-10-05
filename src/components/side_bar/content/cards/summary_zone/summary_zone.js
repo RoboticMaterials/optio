@@ -92,9 +92,9 @@ const SummaryZone = ((props) => {
       							</styled.ZoneContainer>
       					</>
                 :
-                <div style = {{height: '20rem', width: '80%'}}>
-                ...Loading
-                </div>
+                <div style = {{height: '20rem', width: '80%', margin: '2rem', color: 'grey'}}>
+                        ...Loading
+                        </div>
               }
             </>
           }

@@ -36,7 +36,7 @@ import {
   putCard,
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { updateStationCycleTime } from "../../../../../../api/stations_api";
+import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
 
 const DashboardLotPage = (props) => {
   const {
