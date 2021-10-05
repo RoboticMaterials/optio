@@ -154,7 +154,7 @@ const App = () => {
                                     <styled.ContentContainer>
 
                                         <styled.HeaderContainer>
-                                            {mapViewEnabled ?
+                                            {mapViewEnabled && !mobileMode ?
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                     component={StatusHeader}
@@ -168,7 +168,7 @@ const App = () => {
 
                                         <styled.BodyContainer>
                                             {/* Hides Side bar when in a dashboard in mobile mode */}
-                                            {mapViewEnabled ?
+                                            {mapViewEnabled && !mobileMode ?
                                                 // mobileMode ?
                                                 // dashboardOpen ?
                                                 //     <></>
@@ -205,7 +205,7 @@ const App = () => {
                                             */}
                                             {maps.length > 0 &&
                                                 <>
-                                                    {mapViewEnabled ?
+                                                    {mapViewEnabled && !mobileMode ?
 
                                                         (mobileMode ?
                                                             <Route

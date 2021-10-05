@@ -45,6 +45,7 @@ export const Logo = styled.div`
     margin-left: ${props => props.windowWidth > props.widthBreakPoint ? '1rem' : '.4rem'};
     margin-top: 0.7rem;
     margin-bottom: 0.7rem;
+    max-width: 12vw;
 `;
 
 export const LogoImg = styled.img`

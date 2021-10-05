@@ -51,7 +51,7 @@ const DashboardLotList = () => {
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()
-    const phoneView = size.width < 500
+    const phoneView = size.width < 1000
 
     const station = stations[stationID]
 
