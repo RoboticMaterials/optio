@@ -16,7 +16,7 @@ export const bodyStyle = css`
 `
 
 export const headerStyle = css`
-z-index: 10;
+  z-index: 10;
   background: ${props => props.theme.bg.secondary};
   box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 `

@@ -220,13 +220,8 @@ const Settings = () => {
     const TimeZone = () => {
 
         return (
-            <styled.SettingContainer>
-
-
-                <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
-
-
-                <styled.RowContainer style={{ borderColor: 'transparent' }}>
+                <styled.DropdownContainer>
+                    <styled.DropdownLabel>Timezone</styled.DropdownLabel>
                     <DropDownSearch
                         placeholder="Select Timezone"
                         label="Select your timezone"
@@ -240,22 +235,85 @@ const Settings = () => {
                         onChange={values => {
                             handleUpdateServerSettings({ timezone: values[0] })
                         }}
-
                         className="w-100"
                     />
-                </styled.RowContainer>
-
-            </styled.SettingContainer>
+                </styled.DropdownContainer>
         )
     }
 
-    const APIAddress = () => {
+    const dashboardSettings = () => {
+        return (
+            <>
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Track Users</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.trackUsers ? serverSettingsState.trackUsers : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                trackUsers: !serverSettingsState?.trackUsers || false
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
+
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Hide Filters on Mobile</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
+
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Advances Search Filters</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
+
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Custom Lot Display</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                stationBasedLots: !serverSettingsState.stationBasedLots
+                            })
+                        }}
+                        onColor={themeContext.fg.primary}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
+            </>
+        )
+    }
+
+    const advancedSettings = () => {
         //  if(MiRMapEnabled){
         return (
-            <styled.SettingContainer >
+            <styled.SettingContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel>Show Advanced Settings</styled.SwitchContainerLabel>
+                    <styled.SwitchLabel>Show Developer Settings</styled.SwitchLabel>
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
@@ -267,12 +325,10 @@ const Settings = () => {
 
                 </styled.RowContainer>
 
-                {!!localSettingsState.toggleDevOptions ?
+                {!!localSettingsState.toggleDevOptions  &&
                     <>
-                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-
-                            <styled.SwitchContainerLabel>Enable Non Local API</styled.SwitchContainerLabel>
-
+                        <styled.SwitchContainer>
+                            <styled.SwitchLabel>Enable Non Local API</styled.SwitchLabel>
                             <Switch
                                 checked={localSettingsState.non_local_api}
                                 onChange={() => {
@@ -281,8 +337,7 @@ const Settings = () => {
                                 onColor={themeContext.fg.primary}
                                 style={{ marginRight: '1rem' }}
                             />
-
-                        </styled.RowContainer>
+                        </styled.SwitchContainer>
 
                         {!!localSettingsState.non_local_api &&
                             <styled.RowContainer style={{ marginTop: '0rem' }}>
@@ -297,70 +352,9 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-                        {/* <styled.RowContainer>
-                            <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
-                            <Switch
-                                checked={serverSettingsState.deviceEnabled}
-                                onChange={() => {
-                                    setDevicesEnabled(!devicesEnabled)
-                                    setServerSettingsState({
-                                        ...serverSettingsState,
-                                        deviceEnabled: !devicesEnabled
-                                    })
-                                }}
-                                onColor={themeContext.fg.primary}
-                                style={{ marginRight: '1rem' }}
-                            />
-                        </styled.RowContainer> */}
-
-                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filtering on Mobile </styled.SwitchContainerLabel>
-                            <Switch
-                                checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
-                                onChange={() => {
-                                    setServerSettingsState({
-                                        ...serverSettingsState,
-                                        hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
-                                    })
-                                }}
-                                onColor={themeContext.fg.primary}
-                                style={{ marginRight: '1rem', minWidth:'3rem' }}
-                            />
-                        </styled.RowContainer>
-
-                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Multiple Search Filters </styled.SwitchContainerLabel>
-                            <Switch
-                                checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
-                                onChange={() => {
-                                    setServerSettingsState({
-                                        ...serverSettingsState,
-                                        enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
-                                    })
-                                }}
-                                onColor={themeContext.fg.primary}
-                                style={{ marginRight: '1rem', minWidth:'3rem' }}
-                            />
-                        </styled.RowContainer>
-
-                        <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                            <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Enable Station Based Lot Display</styled.SwitchContainerLabel>
-                            <Switch
-                                checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
-                                onChange={() => {
-                                    setServerSettingsState({
-                                        ...serverSettingsState,
-                                        stationBasedLots: !serverSettingsState.stationBasedLots
-                                    })
-                                }}
-                                onColor={themeContext.fg.primary}
-                                style={{ marginRight: '1rem', minWidth:'3rem' }}
-                            />
-                        </styled.RowContainer>
+                        
 
                     </>
-                    :
-                    <></>
                 }
 
             </styled.SettingContainer>
@@ -371,27 +365,23 @@ const Settings = () => {
 
     const MapViewEnabled = () => {
         return (
-            <styled.SettingContainer>
+            <styled.SwitchContainer>
+                <styled.SwitchLabel>Enable Map View</styled.SwitchLabel>
+                <Switch
+                    onColor={themeContext.fg.primary}
+                    checked={!!localSettingsState.mapViewEnabled}
+                    onChange={() => {
+                        handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
+                    }}
+                />
 
-                <styled.RowContainer style={{ marginTop: '2rem' }}>
-                    <styled.SwitchContainerLabel>Enable Map View</styled.SwitchContainerLabel>
-                    <Switch
-                        onColor={themeContext.fg.primary}
-                        checked={!!localSettingsState.mapViewEnabled}
-                        onChange={() => {
-                            handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
-                        }}
-                    />
-                </styled.RowContainer>
-
-            </styled.SettingContainer>
+            </styled.SwitchContainer>
         )
     }
 
     const LockUnlockAllDashboards = () => {
         return (
             <styled.SettingContainer>
-                <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
                 <styled.RowContainer>
                     {/* <styled.IconContainer>
                         <styled.LockUnlockIcon className="fas fa-unlock" onClick={() => setConfirmUnlock(true)}/>
@@ -400,17 +390,17 @@ const Settings = () => {
                         <styled.LockUnlockIcon className="fas fa-lock" onClick={() => setConfirmLock(true)}/>
                     </styled.IconContainer> */}
                     <Button
-                        style={{ width: '100%', minHeight: '3rem' }}
+                        style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmUnlock(true)}
-                    >Unlock All
+                    >Unlock All Dashboards
                     </Button>
 
                     <Button
-                        style={{ width: '100%', minHeight: '3rem' }}
+                        style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmLock(true)}
-                    >Lock All
+                    >Lock All Dashboards
                     </Button>
                 </styled.RowContainer>
 
@@ -421,8 +411,8 @@ const Settings = () => {
     const EmailAddress = () => {
         return (
             <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel>Enable Report Email Notifications </styled.SwitchContainerLabel>
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel>Email Notifications </styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.emailEnabled ? serverSettingsState.emailEnabled : false}
                         onChange={() => {
@@ -434,36 +424,33 @@ const Settings = () => {
                         onColor={themeContext.fg.primary}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
-                </styled.RowContainer>
+                </styled.SwitchContainer>
                 {!!serverSettingsState.emailEnabled &&
-                    <styled.SettingContainer style={{ background: '#f0f0f5', padding: '.5rem', borderRadius: '0.5rem' }}>
-                        <styled.SwitchContainerLabel>Contact Name</styled.SwitchContainerLabel>
-                        <styled.RowContainer style={{ marginBottom: '.5rem' }}>
-                            <Textbox
-                                placeholder="Enter a contact name..."
-                                value={!!serverSettingsState.emailName ? serverSettingsState.emailName : ""}
-                                onChange={(event) => {
-                                    handleUpdateServerSettings({ emailName: event.target.value })
-                                }}
-                                style={{ width: '100%' }}
-                                inputStyle={{ background: 'white' }}
-                            />
-                        </styled.RowContainer>
-                        <styled.SwitchContainerLabel>Email Address</styled.SwitchContainerLabel>
+                    <>
+                    <styled.DropdownContainer>
+                        <styled.DropdownLabel>Contact Name</styled.DropdownLabel>
+                        <Textbox
+                            placeholder="Enter a contact name..."
+                            value={!!serverSettingsState.emailName ? serverSettingsState.emailName : ""}
+                            onChange={(event) => {
+                                handleUpdateServerSettings({ emailName: event.target.value })
+                            }}
+                            style={{ width: '100%' }}
+                        />
+                    </styled.DropdownContainer>
 
-                        <styled.RowContainer>
-                            <Textbox
-                                placeholder="Enter an email address..."
-                                value={!!serverSettingsState.emailAddress ? serverSettingsState.emailAddress : ""}
-                                onChange={(event) => {
-                                    handleUpdateServerSettings({ emailAddress: event.target.value })
-                                }}
-                                style={{ width: '100%' }}
-                                inputStyle={{ background: 'white' }}
-                            />
-                        </styled.RowContainer>
-
-                    </styled.SettingContainer>
+                    <styled.DropdownContainer>
+                        <styled.DropdownLabel>Email Address</styled.DropdownLabel>
+                        <Textbox
+                            placeholder="Enter an email address..."
+                            value={!!serverSettingsState.emailAddress ? serverSettingsState.emailAddress : ""}
+                            onChange={(event) => {
+                                handleUpdateServerSettings({ emailAddress: event.target.value })
+                            }}
+                            style={{ width: '100%' }}
+                        />
+                    </styled.DropdownContainer>
+                    </>
                 }
 
             </styled.SettingContainer>
@@ -475,13 +462,8 @@ const Settings = () => {
     const CurrentMap = () => {
 
         return (
-            <styled.SettingContainer>
-
-
-                <styled.SwitchContainerLabel>Select a Map</styled.SwitchContainerLabel>
-
-
-                <styled.RowContainer style={{ borderColor: 'transparent' }}>
+                <styled.DropdownContainer>
+                    <styled.DropdownLabel>Map</styled.DropdownLabel>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
@@ -498,17 +480,17 @@ const Settings = () => {
                         }}
                         className="w-100"
                     />
-                </styled.RowContainer>
-
-            </styled.SettingContainer>
+                
+                </styled.DropdownContainer>
         )
     }
 
     const renderShiftSettings = () => {
         return (
             <>
+            
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
-                    <styled.SwitchContainerLabel>Show Shift Settings</styled.SwitchContainerLabel>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
 
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
@@ -528,27 +510,6 @@ const Settings = () => {
                     </styled.ShiftSettingsContainer>
                 }
             </>
-        )
-    }
-
-    const renderFilterSortSelection = () => {
-        return (
-            <styled.SettingContainer>
-                <styled.RowContainer style={{ borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
-                    <styled.SwitchContainerLabel style={{marginRight:'0rem'}}>Hide Filter and Sort Options on Mobile Dashboards </styled.SwitchContainerLabel>
-                    <Switch
-                        checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
-                        onChange={() => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
-                            })
-                        }}
-                        onColor={themeContext.fg.primary}
-                        style={{ marginRight: '1rem', minWidth:'3rem' }}
-                    />
-                </styled.RowContainer>
-            </styled.SettingContainer>
         )
     }
 
@@ -586,14 +547,14 @@ const Settings = () => {
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
     }
 
     return (
-        <styled.SettingsContainer>
+        <>
             <ConfirmDeleteModal
                 isOpen={!!confirmLock || !!confirmUnlock}
                 title={!!confirmLock ? "Are you sure you want to lock all dashboards?" : "Are you sure you want to unlock all dashboards?"}
@@ -627,19 +588,33 @@ const Settings = () => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
+        <styled.SettingsContainer>
+        
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
+
+            <styled.Label>Map Settings</styled.Label>
             {MapViewEnabled()}
             {CurrentMap()}
+
+            <styled.Label>General Settings</styled.Label>
             {TimeZone()}
-            {LockUnlockAllDashboards()}
             {EmailAddress()}
             {renderShiftSettings()}
-            {APIAddress()}
+            
+
+            <styled.Label>Dashboard Settings</styled.Label>
+            {dashboardSettings()}
+            {LockUnlockAllDashboards()}
+            
+            {advancedSettings()}
+
             {SignOut()}
 
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>
+
+        </>
     )
 }
 

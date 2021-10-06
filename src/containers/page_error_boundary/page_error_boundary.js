@@ -11,6 +11,8 @@ class PageErrorBoundary extends React.Component {
             hasError: false,
             error: null,
             info: null,
+
+            showStackTrace: false
         };
     }
 
@@ -47,9 +49,10 @@ class PageErrorBoundary extends React.Component {
                     >
                         Reload Page
                     </styled.ReloadButton>
-                    {/* <styled.ReloadButton onClick={this.props.deleteLocalSettings} className="btn btn-outline-danger">
-            Delete Local Storage
-          </styled.ReloadButton> */}
+                    <styled.Text style={{color: 'blue'}} onClick={() => this.setState({showStackTrace: !this.state.showStackTrace})}>Show Stack Trace</styled.Text>
+                    {this.state.showStackTrace &&
+                        <styled.Text>{this.state.error}</styled.Text>
+                    }
                 </styled.Container>
             );
         } else {

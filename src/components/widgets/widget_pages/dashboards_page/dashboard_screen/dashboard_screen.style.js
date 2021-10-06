@@ -22,11 +22,26 @@ export const ButtonContainer = styled.div`
 
 `
 
+export const Text = styled.span`
+    color: #6b6b6b;
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+`
+
+export const Icon = styled.i`
+	padding: 0;
+	margin: 0;
+	font-size: 1.3rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+    color: ${props => props.theme.bg.primary};
+`
+
 export const UndoIcon = styled.i`
 
     position: absolute;
-    bottom: 1.5rem;
-    left: 1.5rem;
 
     font-size: 2rem;
     color: ${props => props.theme.fg.primary};
@@ -35,10 +50,27 @@ export const UndoIcon = styled.i`
 
     ${props => props.disabled &&
         `
-        opacity: 0.5;
+        opacity: 0.3;
         cursor: default;
         pointer-events: none;
         `
+    }
+
+    ${props => 
+        (props.isMobile ? 
+            (props.isListView ?
+                `top: 10.5rem; left: 1rem;`
+                :
+                `top: 9.5rem; left: 1rem;`
+            )
+            :
+            (props.isListView ?
+                `top: 11.5rem; left: 2rem`
+                :
+                `top: 8rem; left: 1rem;`
+            )
+        )
+
     }
     
 `

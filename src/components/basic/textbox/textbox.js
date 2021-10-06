@@ -43,6 +43,7 @@ export default function Textbox(props) {
                     onBlur={props.onBlur}
                     onFocus={props.onFocus}
                     style={props.inputStyle}
+                    autoFocus={props.autoFocus}
                 />
                 {props.tooltip}
             </styled.TextboxContainer>

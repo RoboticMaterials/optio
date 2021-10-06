@@ -55,7 +55,12 @@ const disabledStyle = {
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
-const buttonStyle = {marginBottom: '0rem', marginTop: 0}
+const buttonStyle = {
+    marginBottom: "0rem",
+    marginTop: 0,
+    height: "3rem",
+    minWidth: "10rem",
+};
 
 const FormComponent = (props) => {
 
@@ -157,7 +162,7 @@ const FormComponent = (props) => {
 				<div style={{marginRight: "auto"}}/>
 
 				<styled.TemplateNameContainer>
-					<styled.TemplateLabel>Template Name</styled.TemplateLabel>
+					<styled.TemplateLabel>Product Group Name</styled.TemplateLabel>
 					<TextField
 						name={"name"}
 						placeholder={"Enter template name..."}
@@ -276,7 +281,7 @@ const FormComponent = (props) => {
 				schema={"ok"}
 				disabled={submitDisabled}
 			>
-				{formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
+				{formMode === FORM_MODES.UPDATE ? "Save Product Group" : "Create Product Group"}
 			</Button>
 			{/* <Button
 				style={buttonStyle}

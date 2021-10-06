@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 
 // Import components
 import TaskAddedAlert from './task_added_alert/task_added_alert'
@@ -10,53 +10,51 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
 import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
 import DashboardDevicePage from './dashboard_device_page/dashboard_device_page'
+import Button from '../../../../basic/button/button';
 
 // Import Modals
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal"
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
-import FinishModal from "./finish_modal/finish_modal";
-import TaskQueueModal from './task_queue_modal/task_queue_modal'
 import FieldSelectModal from './field_select_modal/field_select_modal'
 import WarehouseModal from './warehouse_modal/warehouse_modal'
-import RouteModal from './route_modal/route_modal'
+import UserCheckinModal from './user_checkin_modal/user_checkin_modal';
 
 // constants
-import { ADD_TASK_ALERT_TYPE, PAGES, OPERATION_TYPES } from "../../../../../constants/dashboard_constants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_constants";
 
 // Import Hooks
 import useWindowSize from '../../../../../hooks/useWindowSize'
 
 // Import Actions
-import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import {
     dashboardOpen,
-    setDashboardKickOffProcesses,
     putDashboard,
     putDashboardAttributes
 } from '../../../../../redux/actions/dashboards_actions'
 import { putCard } from '../../../../../redux/actions/card_actions'
-import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
-import { getTasks } from '../../../../../redux/actions/tasks_actions'
 
 // Import styles
 import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import MergeModal from "./merge_modal/merge_modal";
 
 // Utils
 import { getNodeOutgoing } from '../../../../../methods/utils/processes_utils';
 import { handleNextStationBins, handleCurrentStationBins } from '../../../../../methods/utils/lot_utils';
-import styled from 'styled-components';
 
 const logger = log.getLogger("DashboardsPage");
 
 const widthBreakPoint = 1026;
 
 const DashboardScreen = (props) => {
+
+    const {
+        onSetTitle,
+        onSetLogoutCallback
+    } = props
 
     const params = useParams()
 
@@ -66,6 +64,8 @@ const DashboardScreen = (props) => {
         editing,
         lotID
     } = params || {}
+
+    const history = useHistory();
 
     // redux state
     // const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardID] })
@@ -98,14 +98,15 @@ const DashboardScreen = (props) => {
     const [showLotsList, setShowLotsList] = useState(true)
     const [selectedOperation, setSelectedOperation] = useState(null)
     const [isDevice, setIsDevice] = useState(false)
+    const [user, setUser] = useState(null)
+    const [showUserCheckinModal, setShowUserCheckinModal] = useState(true)
 
     const [showUndoModal, setShowUndoModal] = useState(null)
     const undoHandlers = useRef([]).current
 
     const size = useWindowSize()
     const windowWidth = size.width
-
-    const mobileMode = windowWidth < widthBreakPoint;
+    const isMobile = windowWidth < widthBreakPoint;
 
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
@@ -336,6 +337,52 @@ const DashboardScreen = (props) => {
                 />
             }
 
+            {user === null && showUserCheckinModal && 
+                <UserCheckinModal 
+                    dashboard={currentDashboard} 
+                    onCheckin={user => {
+                        setUser(user); 
+                        setShowUserCheckinModal(false)
+                        onSetTitle(user)
+                    }}
+                    onClose={() => setShowUserCheckinModal(false)}/>
+            }
+
+            {user !== null && // User logout Button
+                <div style={{
+                    top: isMobile ? '0.4rem' : '7.3rem',
+                    right: '0.5rem',
+                    position: "absolute",
+                    zIndex: 11,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}>
+                    {!isMobile &&
+                        <style.Text>User: {user} </style.Text>
+                    }
+                    <Button
+                        color={"white"}
+                        onClick={() => {
+                            setUser(null)
+                            onSetTitle('-')
+                            setShowUserCheckinModal(true)
+                        }}
+                        disabled={!showLotsList}
+                        style={{
+                            color: "black",
+                            width: "2.5rem",
+                            height: "2.5rem",
+                            position: 'relative'
+                        }}
+                    >
+                        <style.Icon
+                            className={"fas fa-sign-out-alt"}
+                        />
+                    </Button>
+                </div>
+            }
+
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
@@ -359,7 +406,13 @@ const DashboardScreen = (props) => {
 
             />
 
-            <style.UndoIcon className="fas fa-undo" disabled={undoHandlers.length === 0} onClick={() => setShowUndoModal(true)}/>
+            <style.UndoIcon 
+                className="fas fa-undo" 
+                disabled={undoHandlers.length === 0} 
+                onClick={() => setShowUndoModal(true)}
+                isMobile={isMobile}
+                isListView={showLotsList}
+            />
 
             {isDevice ?
                 <DashboardDevicePage
@@ -369,9 +422,17 @@ const DashboardScreen = (props) => {
                 />
                 :
                 showLotsList ?
-                    <DashboardLotList />
+                    <DashboardLotList onCardClicked={(lotId) => {
+                        if (user !== null) {
+                            history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
+                        } else {
+                            setShowUserCheckinModal(true)
+                        }
+                    }}
+                    />
                     :
                     <DashboardLotPage
+                        user={user}
                         pushUndoHandler={handlePushUndoHandler}
                         handleTaskAlert={(type, label, message) => {
                             setAddTaskAlert({
