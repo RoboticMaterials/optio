@@ -14,7 +14,7 @@ import {
   getBinQuantity,
   getCustomFields,
   safelyDeconstructBin,
-  handleCurrentPathQuantity,
+  handleMergeParts,
 } from "../../../../../methods/utils/lot_utils";
 import * as styled from "./lot.style";
 
@@ -51,12 +51,6 @@ const LotContainer = (props) => {
     return state.tasksReducer.tasks;
   });
 
-  const handlePathQuantity = (lot, station, routeId, count) => {
-    const pathQty = handleCurrentPathQuantity(lot,station, routeId, count)
-    return pathQty
-  }
-
-
   const process =
     useSelector((state) => {
       return state.processesReducer.processes[processId];
@@ -73,14 +67,14 @@ const LotContainer = (props) => {
   );
 
   if (!(binId in bins)) { return null }
-  const { count=0, ...partials } = bins[binId] || {};
-
+  const { count = 0, ...partials } = bins[binId] || {};
+  console.log(partials)
 
   return (
       <styled.LotFamilyContainer>
-            {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
+            {((!!count && count > 0) || (count>0 && !isDashboard)) &&
                 <Lot
-                    lotDisabled={(count < 1 && !!isDashboard) || isPartial}
+                    lotDisabled={false}
                     onDeleteDisabledLot = {onDeleteDisabledLot}
                     isDashboard={!!isDashboard}
                     stationName={stationName}
@@ -106,7 +100,7 @@ const LotContainer = (props) => {
             }
             {Object.entries(partials).map(([routeId, quantity]) => (
                 <>
-                    {handlePathQuantity(lot, routes[routeId]?.unload, routeId, count)<quantity && !!isDashboard &&
+                    {!!lot.bins[station._id][routeId] && quantity>0 &&
                         <Lot
                             lotDisabled={true}
                             isDashboard={!!isDashboard}
@@ -118,7 +112,7 @@ const LotContainer = (props) => {
                             flags={flags || []}
                             enableFlagSelector={enableFlagSelector}
                             name={name + ` (${routes[routeId]?.part})`}
-                            count={quantity - handlePathQuantity(lot, routes[routeId]?.unload, routeId, count)}
+                            count={quantity}
                             id={lotId}
                             isSelected={false}
                             selectable={false}
