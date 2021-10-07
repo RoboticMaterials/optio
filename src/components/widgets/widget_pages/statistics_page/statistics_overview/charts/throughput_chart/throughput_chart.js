@@ -345,6 +345,7 @@ const ThroughputChart = (props) => {
 // Specifies the default values for props:
 ThroughputChart.defaultProps = {
     sortLevel: { label: "Product Group", value: "product_group_id" },
+    disableTimeSpan: () => {}
 };
 
 export default ThroughputChart;

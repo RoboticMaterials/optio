@@ -6,6 +6,8 @@ import ls from 'local-storage'
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
+import 'rc-time-picker/assets/index.css';
+
 
 // Import Hooks
 import useWindowSize from './hooks/useWindowSize'
@@ -152,7 +154,7 @@ const App = () => {
                                     <styled.ContentContainer>
 
                                         <styled.HeaderContainer>
-                                            {mapViewEnabled ?
+                                            {mapViewEnabled && !mobileMode ?
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                     component={StatusHeader}
@@ -166,7 +168,7 @@ const App = () => {
 
                                         <styled.BodyContainer>
                                             {/* Hides Side bar when in a dashboard in mobile mode */}
-                                            {mapViewEnabled ?
+                                            {mapViewEnabled && !mobileMode ?
                                                 // mobileMode ?
                                                 // dashboardOpen ?
                                                 //     <></>
@@ -203,7 +205,7 @@ const App = () => {
                                             */}
                                             {maps.length > 0 &&
                                                 <>
-                                                    {mapViewEnabled ?
+                                                    {mapViewEnabled && !mobileMode ?
 
                                                         (mobileMode ?
                                                             <Route

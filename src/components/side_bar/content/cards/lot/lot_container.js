@@ -34,7 +34,6 @@ const LotContainer = (props) => {
   const isDashboard = !!pageName.includes("/locations");
   const params = useParams();
   const { dashboardID } = params;
-
   const lot =
     useSelector((state) => {
       return state.cardsReducer.cards[lotId];

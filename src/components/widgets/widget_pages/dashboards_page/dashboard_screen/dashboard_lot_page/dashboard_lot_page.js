@@ -36,7 +36,7 @@ import {
   putCard,
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { updateStationCycleTime } from "../../../../../../api/stations_api";
+import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
 
 const DashboardLotPage = (props) => {
   const {
@@ -291,6 +291,12 @@ const DashboardLotPage = (props) => {
   };
 
   const handleTypedQty = (e) => {
+
+    if (e === null) {
+      setMoveQuantity('')
+      return
+    }
+
     let arr = Array.from(String(moveQuantity), Number)
     if(!!arr[0]){
       if(e.nativeEvent.inputType === 'deleteContentBackward') arr.splice(-1)

@@ -25,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNodes} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -56,6 +56,7 @@ const Column = ((props) => {
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
+	const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -74,6 +75,7 @@ const Column = ((props) => {
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
+
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -123,13 +125,14 @@ const Column = ((props) => {
 				...remainingPayload
 			} = payload
 
-		//	if (process[oldProcessId] === undefined) return false
-
-			const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
+			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNodes = findProcessEndNodes(processRoutes)
 
 			if (oldProcessId !== processId) return false
+			if(!!showCardEditor) return false
+			//if (process[oldProcessId] === undefined) return false
+
 		 	if(binId === station_id) return true
 			for(const ind in processes[oldProcessId].routes){
 				let route = routes[processes[oldProcessId]?.routes[ind]]
@@ -161,6 +164,7 @@ const Column = ((props) => {
 						if(endNodes.includes(binId)) return true
 					}
 				}
+
 			}
 
 			return false
@@ -304,7 +308,6 @@ const Column = ((props) => {
 
 				if (!(binId === station_id)) {
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
-
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
 					const {
 						[binId]: movedBin,
@@ -315,7 +318,6 @@ const Column = ((props) => {
 						let updatedLot = droppedCard
 						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, station_id, processes[updatedLot.process_id], routes, stations)
 						updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, processes[updatedLot.process_id], routes)
-
 						if(!!updatedLot.bins[binId] && !updatedLot.bins[binId]['count']){
 							updatedLot.bins[binId] = {
 								...updatedLot.bins[binId],
@@ -483,7 +485,7 @@ const Column = ((props) => {
 																}
 															</>
 															:
-															<div style = {{height: '20rem', width: '80%'}}>
+															<div style = {{height: '20rem', width: '80%', margin: '2rem', color: 'grey'}}>
 															...Loading
 															</div>
 													}
@@ -537,7 +539,9 @@ const Column = ((props) => {
 			>
 				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
-				{renderCards()}
+				{!showCardEditor &&
+					renderCards()
+				}
 			</styled.StationContainer>
 		)
 	}

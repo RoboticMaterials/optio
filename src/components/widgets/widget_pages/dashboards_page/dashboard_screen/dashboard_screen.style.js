@@ -16,7 +16,7 @@ export const Container = styled.div`
     background: ${props => props.theme.bg.secondary};
     
 `
-
+    
 export const ButtonContainer = styled.div`
 
 
@@ -25,8 +25,8 @@ export const ButtonContainer = styled.div`
 export const UndoIcon = styled.i`
 
     position: absolute;
-    top: 6rem;
-    right: 1.5rem;
+    bottom: 1.5rem;
+    left: 1.5rem;
 
     font-size: 2rem;
     color: ${props => props.theme.fg.primary};

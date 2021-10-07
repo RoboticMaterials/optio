@@ -10,7 +10,7 @@ import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
 import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression } from './processes_utils';
-import { deepCopy } from './utils'
+import { deepCopy, uuidv4 } from './utils'
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -443,7 +443,7 @@ export const signUpSchema = Yup.object().shape({
 
     accessCode: Yup.string()
         .required('Please enter a access code')
-        .matches(/\b(Meier2021|Phunkshun2021|Demo2021)\b/, 'Must be a valid access code'),
+        .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9)\b/, 'Must be a valid access code'),
 
     password: Yup.string()
         .required('Please enter a password')
@@ -713,9 +713,9 @@ export const getProcessSchema = (stations) => Yup.object().shape({
     ).test(
         'doRoutesConverge',
         'All split branches of the process must converge at a single station',
-        (routes) => {
+        function (routes) {
 
-            const { startDivergeType } = this.parent;
+            const { startDivergeType } = this.parent
 
             const recursiveFindAnd = (exp) => {
                  // Recursive function to detect if there is any AND expressions (split) in the merge expression
@@ -730,9 +730,13 @@ export const getProcessSchema = (stations) => Yup.object().shape({
 
             const endNodes = findProcessEndNodes(routes);
             endNodes.forEach(endNode => {
-                const mergeExp = handleMergeExpression(endNode, {routes: routes.map(r =>r._id), startDivergeType}, routes, stations)
+                let normalizedRoutes = {}
+                routes.forEach(route => normalizedRoutes[route._id] = route)
+                const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
+                console.log(stations[endNode].name, mergeExp)
                 if (recursiveFindAnd(mergeExp)) return false;
             })
+            return true
         }
     ).test(
         'isProcessCyclic',

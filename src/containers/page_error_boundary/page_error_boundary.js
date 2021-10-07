@@ -39,7 +39,7 @@ class PageErrorBoundary extends React.Component {
             return (
                 <styled.Container>
                     <styled.Text>
-                        Oops! Something went wrong...
+                        Oops! Something went wrong... {this.state.error}
                     </styled.Text>
                     <styled.ReloadButton
                         onClick={this.handleReloadPage}
