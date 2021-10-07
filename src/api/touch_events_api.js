@@ -96,7 +96,6 @@ export async function deleteTouchEvent(ID) {
 
 export async function postTouchEvent(touchEvent) {
     try {
-        console.log(touchEvent)
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,

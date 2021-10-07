@@ -20,10 +20,10 @@ export const FooterContainer = styled.div`
 export const Title = styled(pageStyle.Title)`
     margin: 0;
     padding: 0;
-    
+
     font-size: ${props => props.isSmall && props.theme.fontSize.sz2};
-    
-    
+
+
 `
 export const Header = styled(pageStyle.Header)`
     justify-content: center;
@@ -38,17 +38,15 @@ export const TitleText = styled.h1`
 
 export const Container = styled.div`
 
-    
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     align-items: center;
-    z-index: 1;
     overflow: hidden;
     flex: 1;
     background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 80)};
-  padding: 0;
-    
+  	padding: 0;
+
 `
 
 export const Footer = styled.div`
@@ -90,7 +88,7 @@ export const TemplateIcon = styled.div`
   	position: relative;
   	color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
     margin-right: 1rem;
-  
+
 `
 export const EditTemplateIcon = styled.button`
   color: ${props => props.theme.bg.tertiary};
@@ -115,7 +113,7 @@ export const TemplateName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  
+
 	//color: black;
   //position: absolute;
   //top: 50%;
@@ -129,7 +127,7 @@ export const ListContainer = styled.div`
   padding: 1rem;
   vertical-align: middle;
   display: inline-block;
-  
+
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -137,9 +135,9 @@ export const ListContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   //z-index: 1;
-  
+
   background: ${props => props.theme.bg.primary};
-  
+
   // hide scroll bar
   ::-webkit-scrollbar {
       width: 0px;  /* Remove scrollbar space */
@@ -148,7 +146,7 @@ export const ListContainer = styled.div`
   ::-webkit-scrollbar-thumb {
       background: transparent;
   }
-    
+
 `
 
 // adds padding to handle to make it easier to click
@@ -158,7 +156,7 @@ export const HandleContainer = styled.div`
     right: -2rem;
     top: 50%;
     transform: translateY(-50%);
-  
+
     &:hover {
         cursor: grab;
     }
