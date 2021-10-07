@@ -67,8 +67,7 @@ const LotContainer = (props) => {
   );
 
   if (!(binId in bins)) { return null }
-  const { count = 0, ...partials } = bins[binId] || {};
-  console.log(partials)
+  const { count=0, ...partials } = bins[binId] || {};
 
   return (
       <styled.LotFamilyContainer>

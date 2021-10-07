@@ -322,7 +322,6 @@ const Column = ((props) => {
 							delete updatedLot.bins[binId]
 						}
 						//dispatchPutCard(updatedLot, updatedLot._id)
-						console.log(updatedLot)
 						await dispatchSetDroppingLotId(null, null)
 				}
 			}
@@ -411,61 +410,71 @@ const Column = ((props) => {
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
-
+								let partBins = reduxCards[card.cardId].bins[card.binId]
+								return (
+									Object.keys(partBins).map((part) => {
+										
+										const isPartial = part !== 'count' ? true : false
 										return (
-													<Draggable
-														key={cardId}
-														onMouseEnter={(event) => onMouseEnter(event, cardId)}
-														onMouseLeave={onMouseLeave}
-														style={{
-														}}
-													>
-														<div
-															style={{
+														<>
+															{partBins[part]>0 &&
+																	<Draggable
+																		key={cardId}
+																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
+																		onMouseLeave={onMouseLeave}
+																		style={{
+																		}}
+																	>
+																		<div
+																			style={{
 
-															}}
-														>
-															<LotContainer
-																onDeleteDisabledLot = {() => {
-																	handleDeleteDisabledLot(card, card.binId)
-																}}
-																glow={isLastSelected}
-																isFocused={isDragging || isHovering}
-																enableFlagSelector={enableFlags}
-																selectable={selectable}
-																isSelected={isSelected}
-																key={cardId}
-																// processName={processName}
-																totalQuantity={totalQuantity}
-																lotNumber={lotNumber}
-																name={name}
-																count={count}
-																leadTime={leadTime}
-																id={cardId}
-																flags={flags || []}
-																index={index}
-																lotId={cardId}
-																binId={station_id}
-																onClick={(e) => {
-																	const payload = getBetweenSelected(cardId)
-																	onCardClick(
-																		e,
-																		{
-																			lotId: cardId,
-																			processId: processId,
-																			binId: station_id
-																		},
-																		payload
-																	)
-																}}
-																containerStyle={{
-																	marginBottom: "0.5rem",
-																}}
-															/>
-														</div>
-													</Draggable>
+																			}}
+																		>
+																			<LotContainer
+																				isPartial = {isPartial}
+																				onDeleteDisabledLot = {() => {
+																					handleDeleteDisabledLot(card, card.binId, part)
+																				}}
+																				glow={isLastSelected}
+																				isFocused={isDragging || isHovering}
+																				enableFlagSelector={enableFlags}
+																				selectable={selectable}
+																				isSelected={isSelected}
+																				key={cardId}
+																				// processName={processName}
+																				totalQuantity={totalQuantity}
+																				lotNumber={lotNumber}
+																				name={name}
+																				count={partBins[part]}
+																				leadTime={leadTime}
+																				id={cardId}
+																				flags={flags || []}
+																				index={index}
+																				lotId={cardId}
+																				binId={station_id}
+																				onClick={(e) => {
+																					const payload = getBetweenSelected(cardId)
+																					onCardClick(
+																						e,
+																						{
+																							lotId: cardId,
+																							processId: processId,
+																							binId: station_id
+																						},
+																						payload
+																					)
+																				}}
+																				containerStyle={{
+																					marginBottom: "0.5rem",
+																				}}
+																			/>
+																		</div>
+																	</Draggable>
+															}
+													</>
 										)
-
+									})
+								)
 							}
 						})}
 
