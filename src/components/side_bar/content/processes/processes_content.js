@@ -41,8 +41,6 @@ const ProcessesContent = () => {
             dispatchSetSelectedProcess(null)
         }
     }, [])
-
-    console.log(history.hello.goodbye)
     
     useEffect(() => {
         // Maps through all process and sees if they're broken
