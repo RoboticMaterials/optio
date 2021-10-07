@@ -99,7 +99,7 @@ const LotContainer = (props) => {
             }
             {Object.entries(partials).map(([routeId, quantity]) => (
                 <>
-                    {!!lot.bins[station._id][routeId] && quantity>0 &&
+                    {!!lot.bins[station._id][routeId] && quantity>0 && !isDashboard &&
                         <Lot
                             lotDisabled={true}
                             isDashboard={!!isDashboard}
