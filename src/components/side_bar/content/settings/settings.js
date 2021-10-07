@@ -254,7 +254,7 @@ const Settings = () => {
                                 trackUsers: !serverSettingsState?.trackUsers || false
                             })
                         }}
-                        onColor={themeContext.fg.primary}
+                        onColor={themeContext.schema.settings.solid}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
@@ -269,13 +269,13 @@ const Settings = () => {
                                 hideFilterSortDashboards: !serverSettingsState.hideFilterSortDashboards
                             })
                         }}
-                        onColor={themeContext.fg.primary}
+                        onColor={themeContext.schema.settings.solid}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Advances Search Filters</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Advanced Search Filters</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
                         onChange={() => {
@@ -284,7 +284,7 @@ const Settings = () => {
                                 enableMultipleLotFilters: !serverSettingsState.enableMultipleLotFilters
                             })
                         }}
-                        onColor={themeContext.fg.primary}
+                        onColor={themeContext.schema.settings.solid}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
@@ -299,7 +299,7 @@ const Settings = () => {
                                 stationBasedLots: !serverSettingsState.stationBasedLots
                             })
                         }}
-                        onColor={themeContext.fg.primary}
+                        onColor={themeContext.schema.settings.solid}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
@@ -334,7 +334,7 @@ const Settings = () => {
                                 onChange={() => {
                                     handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
                                 }}
-                                onColor={themeContext.fg.primary}
+                                onColor={themeContext.schema.settings.solid}
                                 style={{ marginRight: '1rem' }}
                             />
                         </styled.SwitchContainer>
@@ -368,7 +368,7 @@ const Settings = () => {
             <styled.SwitchContainer>
                 <styled.SwitchLabel>Enable Map View</styled.SwitchLabel>
                 <Switch
-                    onColor={themeContext.fg.primary}
+                    onColor={themeContext.schema.settings.solid}
                     checked={!!localSettingsState.mapViewEnabled}
                     onChange={() => {
                         handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
@@ -421,7 +421,7 @@ const Settings = () => {
                                 emailEnabled: !serverSettingsState.emailEnabled
                             })
                         }}
-                        onColor={themeContext.fg.primary}
+                        onColor={themeContext.schema.settings.solid}
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
@@ -491,7 +491,6 @@ const Settings = () => {
             
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
-
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
