@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { apiIPAddress } from '../settings/settings'
+import store from '../redux/store'
+
 import * as log from 'loglevel';
 
 const operator = 'tasks'
 
 export async function getTasks() {
     try {
+        const currMapId = store.getState().settingsReducer.settings.currentMapId
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
@@ -102,6 +105,9 @@ export async function getTask(id) {
 export async function postTask(task) {
     // log.debug('postTask task:',task, JSON.stringify(task));
     try {
+        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        task.map_id = currMapId
+
         const response = await axios({
             method: 'post',
             headers: {
