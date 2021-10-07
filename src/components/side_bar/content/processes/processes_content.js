@@ -41,7 +41,7 @@ const ProcessesContent = () => {
             dispatchSetSelectedProcess(null)
         }
     }, [])
-
+    
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
