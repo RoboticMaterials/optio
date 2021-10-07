@@ -42,6 +42,8 @@ const ProcessesContent = () => {
         }
     }, [])
 
+    console.log(history.hello.goodbye)
+    
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
