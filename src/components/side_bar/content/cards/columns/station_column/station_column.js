@@ -54,9 +54,11 @@ const StationsColumn = ((props) => {
         }
 
         // Else if there is a auto cycle time then use that
-        else if (!!autoCycleTime) {
-            time = convertSecondsToHHMMSS(autoCycleTime)
-        }
+        // else if (!!autoCycleTime) {
+        //     time = convertSecondsToHHMMSS(autoCycleTime)
+        // }
+
+        console.log(time)
 
         // Split the time up
         const splitVal = time.split(':')

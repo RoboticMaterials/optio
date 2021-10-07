@@ -26,7 +26,7 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields, handleMoveLotToMergeStation, handleMoveLotFromMergeStation, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
-import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -127,7 +127,7 @@ const Column = ((props) => {
 
 			const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
-			let endNode = findProcessEndNode(processRoutes)
+			let endNodes = findProcessEndNodes(processRoutes)
 
 			if (oldProcessId !== processId) return false
 		 	if(binId === station_id) return true
@@ -158,7 +158,7 @@ const Column = ((props) => {
 
 				else if(station_id==="FINISH") {
 					for(const ind in startNodes){
-						if(binId===endNode) return true
+						if(endNodes.includes(binId)) return true
 					}
 				}
 			}

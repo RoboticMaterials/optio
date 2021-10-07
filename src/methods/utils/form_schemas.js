@@ -9,7 +9,7 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
-import { findProcessStartNodes, getNodeOutgoing } from './processes_utils';
+import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression } from './processes_utils';
 import { deepCopy } from './utils'
 
 const { object, lazy, string, number } = require('yup')
@@ -712,23 +712,27 @@ export const getProcessSchema = (stations) => Yup.object().shape({
         )
     ).test(
         'doRoutesConverge',
-        'All routes of the process must converge at a single station',
+        'All split branches of the process must converge at a single station',
         (routes) => {
-            let loadStations = routes.map(route => route.load);
-            let unloadStations = routes.map(route => route.unload);
-    
-            let numTerminalStations = 0;
-            for (var i=0; i<unloadStations.length; i++) {
-                const unloadStationA = unloadStations[i];
-    
-                if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
-                    if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
-                        numTerminalStations += 1;
+
+            const { startDivergeType } = this.parent;
+
+            const recursiveFindAnd = (exp) => {
+                 // Recursive function to detect if there is any AND expressions (split) in the merge expression
+                if (exp[0] === 'AND') return true;
+                for (var i=1; i<exp.length; i++) {
+                    if (Array.isArray(exp[i])) {
+                        if (recursiveFindAnd(exp[i])) return true;
                     }
                 }
+                return false;
             }
-    
-            return numTerminalStations === 1;
+
+            const endNodes = findProcessEndNodes(routes);
+            endNodes.forEach(endNode => {
+                const mergeExp = handleMergeExpression(endNode, {routes: routes.map(r =>r._id), startDivergeType}, routes, stations)
+                if (recursiveFindAnd(mergeExp)) return false;
+            })
         }
     ).test(
         'isProcessCyclic',

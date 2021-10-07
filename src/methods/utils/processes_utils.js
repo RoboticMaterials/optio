@@ -499,20 +499,22 @@ export const findProcessStartNodes = (processRoutes, stations) => {
     return startNodes;
 };
 
-export const findProcessEndNode = (routes) => {
+export const findProcessEndNodes = (routes) => {
     let loadStations = routes.map((route) => (!!route ? route.load : {}));
     let unloadStations = routes.map((route) => (!!route ? route.unload : {}));
 
+    let endNodes = [];
     for (var unloadStation of unloadStations) {
         if (
             loadStations.find(
                 (loadStation) => loadStation === unloadStation
-            ) === undefined
+            ) === undefined &&
+            !endNodes.includes(unloadStation)
         ) {
-            return unloadStation;
+            endNodes.push(unloadStation)
         }
     }
-    return null;
+    return endNodes;
 };
 
 /**
