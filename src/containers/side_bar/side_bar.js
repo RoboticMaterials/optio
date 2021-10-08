@@ -168,6 +168,8 @@ const SideBar = (props) => {
             setBinCount(binCount)
           }
           else{
+            setCardId(card._id)
+            setBinCount(binCount)
             dispatchShowLotScanModal(true)
           }
         }
