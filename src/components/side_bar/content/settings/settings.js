@@ -40,7 +40,7 @@ import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
-  
+
 
 const Settings = () => {
 
@@ -357,7 +357,7 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-                        
+
 
                     </>
                 }
@@ -475,11 +475,11 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={[Object.values(maps).find(map => {
+                        values={[Object.values(maps).find((map, ind) => {
                             if (!!localSettingsState && !!localSettingsState.currentMapId) {
                                 return map._id === localSettingsState.currentMapId
                             }
-                            else return map.name === 'Blank Map'
+                            else return ind === 0
                         })]}
                         dropdownGap={2}
                         noDataLabel="No matches found"
@@ -490,7 +490,7 @@ const Settings = () => {
                         }}
                         className="w-100"
                     />
-                
+
                 </styled.DropdownContainer>
         )
     }
@@ -498,7 +498,7 @@ const Settings = () => {
     const renderShiftSettings = () => {
         return (
             <>
-            
+
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
 
@@ -625,7 +625,7 @@ const Settings = () => {
                 visible={!!addTaskAlert}
             />
         <styled.SettingsContainer>
-        
+
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
 
             <styled.Label>Map Settings</styled.Label>
@@ -637,12 +637,12 @@ const Settings = () => {
             {EmailAddress()}
             {renderAlertDurationSetting()}
             {renderShiftSettings()}
-            
+
 
             <styled.Label>Dashboard Settings</styled.Label>
             {dashboardSettings()}
             {LockUnlockAllDashboards()}
-            
+
             {advancedSettings()}
 
             {SignOut()}
