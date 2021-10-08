@@ -375,7 +375,7 @@ const DashboardScreen = (props) => {
                     onClose={() => setShowUserCheckinModal(false)}/>
             }
 
-            {user !== null && // User logout Button
+            {trackUsers && // User logout Button
                 <div style={{
                     top: isMobile ? '0.4rem' : '7.3rem',
                     right: '0.5rem',
@@ -386,17 +386,22 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>User: {user} </style.Text>
+                        <style.Text>{user === null ? `Sign In` : `Worker: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}
                         onClick={() => {
-                            setUser(null)
-                            onSetTitle('-')
-                            setShowUserCheckinModal(true)
-                            setCheckinCallback([() => {}])
+                            if (user === null) {
+                                setShowUserCheckinModal(true)
+                            } else {
+                                setUser(null)
+                                onSetTitle('-')
+                                setShowUserCheckinModal(true)
+                                setCheckinCallback([() => {}])
+                            }
                         }}
                         disabled={!showLotsList}
+                        // schema={user === null ? 'delete' : null}
                         style={{
                             color: "black",
                             width: "2.5rem",
@@ -405,7 +410,7 @@ const DashboardScreen = (props) => {
                         }}
                     >
                         <style.Icon
-                            className={"fas fa-sign-out-alt"}
+                            className={user === null ? "fas fa-sign-in-alt" : "fas fa-sign-out-alt"}
                         />
                     </Button>
                 </div>
