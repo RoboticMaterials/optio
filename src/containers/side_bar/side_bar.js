@@ -239,9 +239,6 @@ const SideBar = (props) => {
         const prevSubpage = prevParams.subpage
         const prevId = prevParams.id
 
-        console.log(page, subpage, id)
-
-
         const time = Date.now()
         if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
 
