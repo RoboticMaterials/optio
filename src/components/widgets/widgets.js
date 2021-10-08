@@ -86,8 +86,6 @@ const Widgets = (props) => {
     }, [])
 
 
-
-
     /**
      * Closes the widget
      * If editing, then dont set the selected location to null
@@ -407,103 +405,6 @@ const Widgets = (props) => {
 
         </Suspense>
     )
-
-    // return (
-    //     <>
-    //         {!!widgetPage &&
-    //             <styled.WidgetBlurContainer />
-    //         }
-    //         {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
-    //         <styled.WidgetLocationContainer
-    //             id={hoveringInfo.id}
-    //             onMouseEnter={() => {
-    //                 dispatchHoverStationInfo(hoveringInfo)
-    //                 onWidgetPosition()
-    //             }}
-
-    //             onMouseLeave={() => {
-    //                 if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
-    //                     onWidgetClose()
-    //                     dispatchSetSelectedStation(null)
-    //                     dispatchSetSelectedPosition(null)
-    //                 }
-    //             }}
-
-    //             // xPosition={hoveringInfo.xPosition + 'px'}
-    //             xPosition={onWidgetPosition('x')}
-    //             yPosition={onWidgetPosition('y')}
-    //             scale={hoveringInfo.scale}
-    //             widgetPage={widgetPage}
-
-    //             // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
-    //             style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
-    //         >
-    //             {/* If not widget page and not a right click widget then add an invisable hover area */}
-    //             {!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' &&
-    //                 <styled.WidgetHoverArea
-    //                     hoverScale={hoveringInfo.realScale}
-    //                     onMouseEnter={() => {
-    //                         dispatchHoverStationInfo(hoveringInfo)
-    //                     }}
-
-    //                 />
-    //             }
-    //             {!!selectedLocation &&
-    //               <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
-    //                   {!widgetPage && !!selectedLocation &&
-    //                       <>
-    //                           {selectedLocation.schema == "temporary_position" ?
-    //                               <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
-    //                               :
-    //                               <>
-    //                                   {!!selectedLocation.parent ?
-    //                                       <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
-    //                                       :
-    //                                       <styled.RowContainer>
-    //                                           <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
-    //                                           <styled.EditIcon
-    //                                               className='fas fa-edit'
-    //                                               styled={{ color: '#ff1818' }}
-    //                                               onClick={() => onClickLocation()}
-    //                                           />
-    //                                       </styled.RowContainer>
-
-    //                                   }
-    //                               </>
-    //                           }
-    //                       </>
-    //                   }
-
-
-
-    //                   <styled.WidgetButtonContainer widgetPage={widgetPage}>
-    //                       {renderWidgetButtons}
-    //                   </styled.WidgetButtonContainer>
-
-
-    //                   {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
-    //                   {/* {!widgetPage &&
-    //                       statistics
-    //                   } */}
-
-    //                   {onWidgetPageOpen()}
-    //               </styled.WidgetContainer>
-    //             }
-
-
-
-
-    //         </styled.WidgetLocationContainer>
-
-    //         {!!widgetPage &&
-    //             <>
-    //                 <WidgetPages />
-    //             </>
-    //         }
-
-    //     </>
-
-    // )
 }
 
 export default Widgets

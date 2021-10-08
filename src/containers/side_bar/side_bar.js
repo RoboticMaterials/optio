@@ -8,16 +8,7 @@ import * as styled from './side_bar.style'
 
 // Import Components
 import { DraggableCore } from "react-draggable";
-//import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
-//import LocationsContent from '../../components/side_bar/content/locations/locations_content'
-//import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
-//import DevicesContent from '../../components/side_bar/content/devices/devices_content'
-//import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
-//import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
-//import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
-//import Cards from "../../components/side_bar/content/cards/cards";
-//import Statistics from '../../components/side_bar/content/statistics/statistics'
 import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
 import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
@@ -39,7 +30,6 @@ import disableBrowserBackButton from 'disable-browser-back-navigation';
 const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_switcher/side_bar_switcher'))
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
 const TasksContent = lazy(() => import('../../components/side_bar/content/tasks/tasks_content'))
-const DevicesContent = lazy(() => import('../../components/side_bar/content/devices/devices_content'))
 const SchedulerContent = lazy(() => import('../../components/side_bar/content/scheduler/scheduler_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
@@ -249,6 +239,8 @@ const SideBar = (props) => {
         const prevSubpage = prevParams.subpage
         const prevId = prevParams.id
 
+        console.log(page, subpage, id)
+
 
         const time = Date.now()
         if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
@@ -262,6 +254,10 @@ const SideBar = (props) => {
             setPageWidth(prevWidth)
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
+        }
+        else if (page === 'settings') {
+            setPageWidth(600)
+            dispatchSetWidth(600)
         }
 
         setPrevParams(params)
@@ -357,10 +353,6 @@ const SideBar = (props) => {
 
         case 'scheduler':
             content = <SchedulerContent />
-            break
-
-        case 'devices':
-            content = <DevicesContent />
             break
 
         case 'settings':

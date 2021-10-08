@@ -55,7 +55,9 @@ const defaultState = {
     apiSim: false,
 
     mapApps: {
-        heatmap: true
+        heatmap: true,
+        ratsnest: true,
+        labels: true
     },
 
     emailNotifications: {

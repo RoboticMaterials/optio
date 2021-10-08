@@ -8,10 +8,16 @@ export const Container = styled.div`
     align-items: center;
 `;
 
-export const Text = styled.h1`
-
+export const Label = styled.h1`
+  font-size: 2rem;
+  color: grey
 `
 
 export const ReloadButton = styled.button`
   margin-top: .5rem;
+`
+
+export const Text = styled.span`
+  font-size: 12px;
+
 `

@@ -4,14 +4,17 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+import store from '../redux/store'
+
 const operator = 'dashboards'
 const log = logger.getLogger('Api')
 
 export async function getDashboards() {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
@@ -95,8 +98,11 @@ export async function deleteDashboards(ID) {
     }
 }
 
-export async function postDashboards(dashboards) {
+export async function postDashboards(dashboard) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        dashboard.map_id = currMapId
+
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
@@ -106,7 +112,7 @@ export async function postDashboards(dashboards) {
                 'Accept': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            data: dashboards
+            data: dashboard
         });
 
         // Success 🎉
