@@ -30,6 +30,7 @@ const TemplateSelectorSidebar = (props) => {
         selectedLotTemplatesId,
         minWidth,
         onCloseClick,
+        processId
     } = props
 
     // theme
@@ -40,8 +41,11 @@ const TemplateSelectorSidebar = (props) => {
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
-
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+    console.log(lotTemplates)
+    const processLotTemplates = Object.values(lotTemplates).filter(template => template.processId === processId)
+
+
 
     const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions
 
@@ -91,7 +95,7 @@ const TemplateSelectorSidebar = (props) => {
                     >Basic</style.TemplateName>
                 </style.LotTemplateButton>
                 {
-                    Object.values(lotTemplates).map((currTemplate, currIndex) => {
+                    processLotTemplates.map((currTemplate, currIndex) => {
                         const {
                             fields,
                             name,
@@ -147,6 +151,7 @@ const TemplateSelectorSidebar = (props) => {
     const handleDrag = (e, ui) => {
         setWidth(width + ui.deltaX)
     }
+
 
     return (
             <style.SidebarContent

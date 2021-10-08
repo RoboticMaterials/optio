@@ -9,7 +9,7 @@ const operator = 'stations'
 export async function getStations() {
     
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'GET',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,

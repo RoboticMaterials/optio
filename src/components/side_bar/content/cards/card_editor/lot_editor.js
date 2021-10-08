@@ -826,7 +826,7 @@ const FormComponent = (props) => {
                             <styled.Title>
                                 {formMode === FORM_MODES.CREATE
                                     ? "Create Lot"
-                                    : "Edit Lot"}
+                                    : "Lot Info"}
                             </styled.Title>
                         )}
 
@@ -860,6 +860,7 @@ const FormComponent = (props) => {
                                     );
                                 }}
                                 selectedLotTemplatesId={lotTemplateId}
+                                processId={processId}
                             />
                         )}
 
@@ -989,12 +990,12 @@ const FormComponent = (props) => {
                                                         true
                                                     ),
                                             },
-                                            {
-                                                label: "Lot History",
-                                                schema: "fields",
-                                                onClick: () =>
-                                                    setShowHistory(true),
-                                            },
+                                            // {
+                                            //     label: "Lot History",
+                                            //     schema: "fields",
+                                            //     onClick: () =>
+                                            //         setShowHistory(true),
+                                            // },
                                         ]}
                                     />
                                 </styled.SubHeader>
@@ -1463,6 +1464,7 @@ const LotEditor = (props) => {
                         close={() => {
                             setShowLotTemplateEditor(false);
                         }}
+                        processId={processId}
                     />
                 )}
                 <styled.Container>

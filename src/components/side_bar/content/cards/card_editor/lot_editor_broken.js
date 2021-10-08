@@ -675,7 +675,7 @@ const FormComponent = (props) => {
                             {formMode === FORM_MODES.CREATE ?
                                 "Create Lot"
                                 :
-                                "Edit Lot"
+                                "Lot Info"
                             }
                         </styled.Title>
                     }

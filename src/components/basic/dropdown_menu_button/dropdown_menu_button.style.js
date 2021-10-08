@@ -16,7 +16,7 @@ export const Button = styled.div`
     cursor: pointer;
 
     z-index: 3;
-
+    user-select: none;
     
 
     ${props => props.isActive &&

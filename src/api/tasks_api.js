@@ -8,7 +8,7 @@ const operator = 'tasks'
 
 export async function getTasks() {
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
@@ -105,7 +105,7 @@ export async function getTask(id) {
 export async function postTask(task) {
     // log.debug('postTask task:',task, JSON.stringify(task));
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         task.map_id = currMapId
 
         const response = await axios({
