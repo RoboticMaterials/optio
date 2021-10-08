@@ -502,18 +502,20 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
-      Object.values(currentDashboard.fields).forEach((field) =>{
-
-        const {
-          fieldName,
-          dataType,
-          _id
-        } = field
-
-        customFieldValues.push({
-          dataType,
-          fieldName,
-          value: getLotField('_id', _id, lot)?.value
+      Object.keys(currentDashboard.fields).forEach((template) =>{
+          Object.values(currentDashboard.fields[template]).forEach((field) =>{
+            const {
+              fieldName,
+              dataType,
+              _id
+            } = field
+            if(lot.lotTemplateId===template){
+              customFieldValues.push({
+                dataType,
+                fieldName,
+                value: getLotField('_id', _id, lot)?.value
+                })
+            }
           })
         })
       }
@@ -767,7 +769,7 @@ export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
             }
             else {
               minCount = 0
-            }    
+            }
           }
 
         }

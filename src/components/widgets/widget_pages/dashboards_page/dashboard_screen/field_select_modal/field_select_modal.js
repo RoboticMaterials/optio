@@ -33,24 +33,31 @@ const FieldSelectModal = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const currentDashboard = dashboards[dashboardID]
     const [selectedFields, setSelectedFields] = useState({})
-
     useEffect(() => {
       if(!!currentDashboard.fields){
         setSelectedFields(currentDashboard.fields)
       }
     }, [])
 
-    const onCheckBoxClick = (field) => {
+    const onCheckBoxClick = (field, templateId) => {
       var id = field[0]._id
-      if(!selectedFields[field[0]._id]){
+
+      const updatedTemplateFields = {
+        ...selectedFields[templateId],
+        [id]: field[0]
+      }
+
+      if(!selectedFields[templateId] || !selectedFields[templateId][field[0]._id]){
         setSelectedFields({
           ...selectedFields,
-          [id]:field[0]
+          [templateId]: updatedTemplateFields
         })
       }
       else{
-        delete selectedFields[field[0]._id]
+        delete selectedFields[templateId][field[0]._id]
       }
+      if(!!selectedFields[templateId] && Object.values(selectedFields[templateId]).length === 0) delete selectedFields[templateId]
+
     }
 
 
@@ -79,9 +86,9 @@ const FieldSelectModal = (props) => {
                 <styled.ListItem>
                   <Checkbox
                     onClick = {()=> {
-                      onCheckBoxClick(field)
+                      onCheckBoxClick(field, template._id)
                     }}
-                    checked = {!!selectedFields[field[0]._id]}
+                    checked = {!!selectedFields[template._id] && !!selectedFields[template._id][field[0]._id]}
                   />
                   <styled.ListItemTitle>
                     {field[0].fieldName}
