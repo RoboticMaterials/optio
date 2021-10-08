@@ -177,9 +177,7 @@ const ListView = (props) => {
       Object.values(cards).forEach((card) => {
         if(card.lotNumber === id){
           lotFound = true
-          console.log(card.bins)
           Object.values(stations).forEach((station) => {
-            console.log(station)
             if(!!card.bins[station._id]){
               binCount = binCount + 1
               statId = station._id
