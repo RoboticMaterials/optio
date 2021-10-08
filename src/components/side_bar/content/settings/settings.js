@@ -633,7 +633,7 @@ const Settings = () => {
             {CurrentMap()}
 
             <styled.Label>General Settings</styled.Label>
-            // {TimeZone()}
+            {TimeZone()}
             {EmailAddress()}
             {renderAlertDurationSetting()}
             {renderShiftSettings()}
