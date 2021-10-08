@@ -79,9 +79,6 @@ const Settings = () => {
 
     const themeContext = useContext(ThemeContext);
 
-    console.log("!!!", serverSettingsState.moveAlertDuration)
-
-
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
