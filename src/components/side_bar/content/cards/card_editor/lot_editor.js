@@ -769,7 +769,7 @@ const FormComponent = (props) => {
             <styled.ProcessFieldContainer>
                 <styled.ContentHeader style={{ marginBottom: ".5rem" }}>
                     <styled.ContentTitle>
-                        Selected Process: {processes[values.processId].name}
+                        Process: {processes[values.processId].name}
                     </styled.ContentTitle>
                 </styled.ContentHeader>
             </styled.ProcessFieldContainer>
@@ -847,7 +847,7 @@ const FormComponent = (props) => {
                             overflow: "hidden",
                         }}
                     >
-                        {showTemplateSelector && (
+                        {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
                             <TemplateSelectorSidebar
                                 showFields={false}
                                 onTemplateSelectClick={onSelectLotTemplate}
@@ -956,7 +956,7 @@ const FormComponent = (props) => {
 
                                         <div>
                                             <styled.ContentTitle>
-                                                Selected Product Group:{" "}
+                                                Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
                                                 {lotTemplate.name}
@@ -1224,7 +1224,7 @@ const FormComponent = (props) => {
                                                     );
                                                 }}
                                             >
-                                                Save Lot
+                                                Save Changes
                                             </Button>
                                         </>
                                     )}

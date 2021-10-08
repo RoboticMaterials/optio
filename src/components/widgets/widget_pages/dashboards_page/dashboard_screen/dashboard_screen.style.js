@@ -46,7 +46,7 @@ export const UndoIcon = styled.i`
     font-size: 2rem;
     color: ${props => props.theme.fg.primary};
     cursor: pointer;
-    z-index: 100;
+    z-index: 2;
 
     ${props => props.disabled &&
         `
