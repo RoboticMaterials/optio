@@ -20,7 +20,7 @@ const DragEntityProto = (props) => {
 
     useEffect(() => {
         bindDragListener()
-    })
+    }, [])
 
     let rotateStart = null          // Inital rotation angle
     let originalRotation = null     // Original rotation of location
