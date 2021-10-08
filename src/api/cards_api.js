@@ -4,6 +4,8 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+import store from '../redux/store'
+
 const operator = 'cards'
 const log = logger.getLogger('Api')
 
@@ -98,9 +100,10 @@ export async function getCardsCount() {
 
 export async function getCards() {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
@@ -231,6 +234,9 @@ export async function deleteCard(ID) {
 
 export async function postCard(card) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        card.map_id = currMapId
+
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,

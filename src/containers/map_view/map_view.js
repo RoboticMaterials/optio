@@ -298,6 +298,8 @@ export class MapView extends Component {
         }
     }
 
+    
+
 
     /* ========== D3 Functions ========== */
 
@@ -606,7 +608,7 @@ export class MapView extends Component {
         return (
 
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
-                <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }} >
+                <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ touchAction: 'none', pointerEvents: this.widgetDraggable ? 'default' : 'none' }} >
                   <Suspense fallback = {<></>}>
                     <MapApps />
                   </Suspense>
@@ -674,7 +676,7 @@ export class MapView extends Component {
 
                                         src={'data:image/png;base64, ' + this.state.currentMap.map}
                                         onLoad={() => {
-
+                                            
                                             this.naturalImageDimensions = {
                                                 height: this.mapImage.naturalHeight,
                                                 width: this.mapImage.naturalWidth

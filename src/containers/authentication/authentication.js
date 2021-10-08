@@ -15,6 +15,7 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
+import { uuidv4 } from '../../methods/utils/utils'
 
 
 /**

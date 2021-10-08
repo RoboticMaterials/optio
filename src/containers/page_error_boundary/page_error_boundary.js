@@ -11,6 +11,8 @@ class PageErrorBoundary extends React.Component {
             hasError: false,
             error: null,
             info: null,
+
+            showTrace: false
         };
     }
 
@@ -38,18 +40,22 @@ class PageErrorBoundary extends React.Component {
             // You can render any custom fallback UI
             return (
                 <styled.Container>
-                    <styled.Text>
+                    <styled.Label>
                         Oops! Something went wrong... {this.state.error}
-                    </styled.Text>
+                    </styled.Label>
                     <styled.ReloadButton
                         onClick={this.handleReloadPage}
                         className="btn btn-outline-danger"
                     >
                         Reload Page
                     </styled.ReloadButton>
-                    {/* <styled.ReloadButton onClick={this.props.deleteLocalSettings} className="btn btn-outline-danger">
-            Delete Local Storage
-          </styled.ReloadButton> */}
+                    <styled.Text style={{color: 'lightgrey', marginTop: '1rem'}} onClick={() => this.setState({showTrace: !this.state.showTrace})}>Show Stack Trace</styled.Text>
+                    {this.state.showTrace &&
+                        <>
+                            <styled.Text>{this.state.error}</styled.Text>
+                            <styled.Text>{this.state.info}</styled.Text>
+                        </>
+                    }
                 </styled.Container>
             );
         } else {

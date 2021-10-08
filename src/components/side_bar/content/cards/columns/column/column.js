@@ -56,6 +56,7 @@ const Column = ((props) => {
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
+	const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -74,6 +75,7 @@ const Column = ((props) => {
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
+
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -123,13 +125,14 @@ const Column = ((props) => {
 				...remainingPayload
 			} = payload
 
-		//	if (process[oldProcessId] === undefined) return false
-
-			const processRoutes = processes[oldProcessId].routes.map(routeId => routes[routeId])
+			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
 
 			if (oldProcessId !== processId) return false
+			if(!!showCardEditor) return false
+			//if (process[oldProcessId] === undefined) return false
+
 		 	if(binId === station_id) return true
 			for(const ind in processes[oldProcessId].routes){
 				let route = routes[processes[oldProcessId]?.routes[ind]]
@@ -161,6 +164,7 @@ const Column = ((props) => {
 						if(binId===endNode) return true
 					}
 				}
+
 			}
 
 			return false
@@ -535,7 +539,9 @@ const Column = ((props) => {
 			>
 				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
-				{renderCards()}
+				{!showCardEditor &&
+					renderCards()
+				}
 			</styled.StationContainer>
 		)
 	}

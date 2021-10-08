@@ -37,12 +37,16 @@ export const TextboxInput = styled.input`
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
+    outline: 0px !important;
+
     &:focus {
         background-color: ${props => props.theme.bg.secondary};
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
+        box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
     }
+    
 
     &::placeholder {
         font-family: ${props => props.theme.font.secondary};

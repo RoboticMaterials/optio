@@ -40,6 +40,7 @@ import { updateStationCycleTime } from '../../../../../../redux/actions/stations
 
 const DashboardLotPage = (props) => {
   const {
+    user,
     handleTaskAlert,
     pushUndoHandler
   } = props;
@@ -115,6 +116,7 @@ const DashboardLotPage = (props) => {
       load_station_id: !!warehouseID ? warehouseID : stationID,
       unload_station_id: null,
       dashboard_id: dashboardID,
+      user: user,
       route_id: null
     })
   }, [])
