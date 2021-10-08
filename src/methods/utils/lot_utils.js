@@ -729,14 +729,11 @@ export const handleMergedLotBin = (bin, mergeExpression, station, routeId, count
 
 /**This function handles the case of split followed by choice.
 This case is unusual as different combinations can be used to create an available qty
-The function creates an Array of arrays. The first array is a list of all the parts
-in that path. However not all these parts are needed to create an available qty.
-The second array contains all possible combinations that can produce an available qty
-Other functions can use this data to determine the combination that produces maximum avail qty
-The max qty is combo with max qty. combo qty is minimum of parts at station in that combo(same as simple merging)
-Note since this is recursive and processes can get infintely complex even a one of the listed combos can have a subArray.
-eg. Path A has 4 possible combos. combo A can also be made up of sub-combos and so on.
- a merge expression that looks like [AND,A,[OR,B,AND[C,OR[D,E]]]] can cause sub-combos. Comboception*/
+The function creates an array of all possible merge combinations that will create a fully merged part in the [AND, A, [OR,B,C]] subexpression.
+Note, this is the simplest case with only 2 possible combinations of 2 paths (2x2 array). if subExpression was [AND, [OR,A,B], [OR,C,D,E]]
+a list of all combinations should be AC, AD, AE, BC, BD, BE.
+
+*/
 
 export const handleGenerateSplitChoiceArray = (row) => {
   let subArray = []
@@ -747,7 +744,7 @@ export const handleGenerateSplitChoiceArray = (row) => {
 
   for(let i = 1; i<Object.values(row).length; i++){
 
-    let subArrayCopy = []
+    let subArrayCopy = []//Need a copy so you can reference these values when duplicating array.
     for (const index in subArray){
       subArrayCopy.push([])
       for(const idx in subArray[index]){
@@ -757,7 +754,7 @@ export const handleGenerateSplitChoiceArray = (row) => {
 
     existingArrLength = Object.values(subArray).length
     rowLength = Object.values(row[i]).length
-    if(rowLength === 36){ //Its just single ID not array, fix this later
+    if(rowLength === 36){ //if element in the subexpression is just single ID
         if(existingArrLength === 0){
           subArray.push([])
           subArray[0].push(row[i][0])
@@ -770,25 +767,25 @@ export const handleGenerateSplitChoiceArray = (row) => {
       }
 
     else{
-      if(row[i][0] === "OR"){
-          if(existingArrLength === 0){
+      if(row[i][0] === "OR"){//if one element in the subexpression is an OR array
+          if(existingArrLength === 0){//If no array, push options, creating new row for each ID
             for(let j = 1; j<rowLength; j++){
               subArray.push([])
               subArray[j-1].push(row[i][j])
             }
           }
           else{
-            for(let j = 1; j<rowLength; j++){
-              for(let k = 0; k<existingArrLength; k++){
+            for(let j = 1; j<rowLength; j++){//if array exists push options into array
+              for(let k = 0; k<existingArrLength; k++){//you need to duplicate rows for each option. eg.  A and [B or C] would need to duplicate A twice when pushing options B,C to get [A,B],[A,C]
                 let ind = k+existingArrLength*(j-1)
-                if(j>1){
+                if(j>1){//If on second or higher option always need to duplicate existing rows
                   subArray.push([])
                   for(let p = 0; p < Object.keys(subArrayCopy[k]).length; p++) {
                     subArray[ind].push(subArrayCopy[k][p])
                   }
                     subArray[ind].push(row[i][j])
                 }
-                else{
+                else{//if on first option just push to existing row
                   subArray[k].push(row[i][j])
                 }
               }
@@ -796,14 +793,14 @@ export const handleGenerateSplitChoiceArray = (row) => {
           }
         }
 
-      else if(row[i][0] === "AND"){
-          if(existingArrLength === 0){
+      else if(row[i][0] === "AND"){ //if one of the elements in subexpression is an AND array
+          if(existingArrLength === 0){//If array doesnt exist just push AND options
             for(let m=1; m<rowLength; m++){
               if(m===1) subArray.push([])
               subArray[0].push(row[i][m])
             }
           }
-          else{
+          else{//Else need to go through each row in array and add AND option to the end
             for(let m=1; m<rowLength; m++){
               for(let n = 0; n<existingArrLength; n++) subArray[n].push(row[i][m])
             }
@@ -815,18 +812,16 @@ export const handleGenerateSplitChoiceArray = (row) => {
 }
 
 
+/**This function uses the handleGenerateSplitChoiceArray's array and goes through each option
+to see if the parts are available in that combination to make a merged part. If it is possible
+to make 1 or more merged parts from this array row, remove the parts and add to completed count
+*/
 export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
 
   let comboCount = count
   let containedInCombo = false
   let optimalCombo = []
 
-
-  /**Need to find which combination produces max available qty.
-  Keep track of that qty and which comb it is
-  if current partial lot is contained in that max combo return available qty. Since it is in optimal combo it is being consumed at that qty
-  if current partial lot not contained in that combo return 0. in this case this lot
-  isnt being used in the optimal combination so it is not consumed*/
 
   for(const i in iDs[1]){
     let combo = iDs[1][i]
@@ -841,7 +836,7 @@ export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
       }
     }
 
-    if(comboCount>0){
+    if(comboCount>0){//Greater than 0, consume the parts, add to count
       for(const k in combo){
         bin[combo[k]]-=comboCount
         }
@@ -851,6 +846,13 @@ export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
 
     return bin
 }
+
+/**This gets the overall array for all ways to create a completed parts
+  it can include the handleGenerateSplitChoiceArray if the AND->OR case comes up
+  there is still some work to fully integrate AND->OR part in really complex cases
+  eg. [AND, OR[A,B], AND[C,[OR,D,OR[E,F]]]] wont work. Anything with less than
+  6 routes coming into a station will work.
+*/
 
 export const handleGetPathArray = (station, process) => {
   const processes = store.getState().processesReducer.processes || {}
@@ -921,26 +923,23 @@ export const handleGetPathArray = (station, process) => {
             option+=1
             iDs.push([])
           }
-          console.log(JSON.parse(JSON.stringify(iDs)))
         }
       }
     }
 
     recursiveParse(handleMergeExpression(station, process, routes))
-    console.log(handleMergeExpression(station, process, routes))
-    //console.log(iDs)
 
     return iDs
 }
 
-
+/**This merges handles merging parts. It takes the array of all options and consumes parts that will merge to full part */
 export const handleMergeParts = (bin, routeId, count, station, process) => {
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
 
   let iDs = handleGetPathArray(station, process, routes)
   //Determine count for that path
-  for(const ind in iDs){
+  for(const ind in iDs){//Go through all options
     let minCount = count
     if(Object.values(iDs[ind]).length>0){
       for(const idx in iDs[ind]){
@@ -1079,7 +1078,7 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
   };
 
 
-export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {
+export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {//Since parts are now consumed, only reduce count. dont need to touch parts.
     if(quantity === bins[loadStationId]['count']) {
       delete bins[loadStationId]['count'];
     } else {
