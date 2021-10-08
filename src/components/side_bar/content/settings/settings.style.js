@@ -1,14 +1,12 @@
 import styled from 'styled-components'
 
 export const SettingsContainer = styled.div`
-    flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
     padding-bottom: 0;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
 
     overflow-y: scroll;
 
@@ -16,6 +14,80 @@ export const SettingsContainer = styled.div`
         display: none;
     }
 `
+
+export const SettingContainer = styled.div`
+    width: 100%;
+    margin-bottom: 2rem;
+`
+
+export const SwitchContainer = styled.div`
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    gap: 1rem;
+
+    flex-grow: 1;
+    width: 100%;
+    // border: 2px solid #f5f5f5;
+    padding: 0 0.5rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.8rem;
+`
+export const SwitchLabel = styled.span`
+    padding: 0;
+    margin: 0;
+    text-align:left;
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1rem;
+    color: ${props => props.theme.textColor};
+
+    display: flex;
+    align-self: center;
+`
+
+export const DropdownContainer = styled.div`
+
+    display: grid;
+    padding: 0 0.5rem;
+    grid-template-columns: 1.4fr 2fr;
+    gap: 0.5rem;
+    width: 100%;
+
+    margin-bottom: 1rem;
+
+`
+export const DropdownLabel = styled.span`
+    padding: 0;
+    margin: 0;
+    text-align: right;
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1rem;
+    color: ${props => props.theme.textColor};
+
+    display: flex;
+    align-self: center;
+`
+
+export const Label = styled.span`
+    padding: 0;
+    margin: 0;
+    padding-top: 0.5rem;
+    margin-top:2rem;
+    border-top: 2px solid #f5f5f5;
+
+    width: 100%;
+
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1.4rem;
+    color: ${props => props.theme.textColor};
+`
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.5rem;
+`
+
+// SPECIAL STYLES
 
 export const EmailContainer = styled.div`
     display: flex;
@@ -25,11 +97,7 @@ export const EmailContainer = styled.div`
     background: ${props=>props.theme.bg.secondary};
 `
 
-export const SettingContainer = styled.div`
 
-    width: 100%;
-    margin-bottom: 2rem;
-`
 export const ChevronIcon = styled.i`
     font-size: 1.3rem;
     color: white;
@@ -37,116 +105,6 @@ export const ChevronIcon = styled.i`
 
     &:hover{
         cursor: pointer;
-    }
-`
-export const RowContainer = styled.div`
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    justify-content: space-between;
-    padding-bottom: .5rem;
-    margin-top: .5rem;
-    // border-bottom: 1px solid white;
-`
-
-export const ColumnContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`
-
-export const Header = styled.p`
-    color: ${props => props.theme.bg.octonary};
-    font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz2};
-
-    margin-bottom: 1rem;
-`
-
-export const ConnectionIcon = styled.i`
-
-    margin-left: 1rem;
-    font-size: 1.2rem;
-    color: ${props => props.className === 'fas fa-check' ? 'green' :
-        props.className === 'fas fa-circle-notch fa-spin' ? 'yellow' :
-        props.className === 'fas fa-times' ? 'red' : 'gray'
-    };
-`
-
-export const IconContainer = styled.div`
-    flex-grow: 1;
-    justify-content: center;
-`
-
-export const LockUnlockIcon = styled.i`
-    color: ${props => props.theme.bg.quinary};
-    font-size: 2.5rem;
-    width: 100%;
-    text-align: center;
-    cursor: pointer;
-`
-
-export const ConnectionButton = styled.button`
-
-    margin-bottom: 1rem;
-    border: none;
-    border-radius: .5rem;
-    background-color: ${props => props.theme.bg.secondary};
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    outline: 0 !important;
-    width: 10rem;
-
-    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-
-    &:focus{
-        outline: 0 !important
-    }
-
-    &:active{
-        box-shadow: none;
-    }
-
-    &:hover{
-        background-color: ${props => !props.disabled && props.theme.bg.senary};
-    }
-
-`
-
-export const SwitchContainerLabel = styled.span`
-    padding: 0;
-    margin: 0;
-    align-self: center;
-    font-family: ${props => props.theme.font.primary};
-    font-size: 1rem;
-    color: ${props => props.theme.bg.octonary};
-`
-
-export const DualSelectionButton = styled.button`
-    font-size: 1rem;
-    width: 8rem;
-    border: none;
-    font-family: ${props => props.theme.font.primary};
-
-    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
-
-    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.tertiary};
-
-    transition: background-color 0.25s ease, box-shadow 0.1s ease;
-
-    &:focus{
-        outline: 0 !important
-    }
-
-    &:active{
-        box-shadow: none;
-    }
-
-    &:hover{
-        //background-color: ${props => props.theme.bg.quaternary};
     }
 `
 

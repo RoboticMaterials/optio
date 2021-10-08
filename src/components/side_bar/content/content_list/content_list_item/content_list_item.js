@@ -74,6 +74,9 @@ const ContentListItem = (props) => {
                         {LocationTypes['cart_position'].svgPath}
                     </styled.LocationTypeGraphic>
                 )
+
+            case 'user':
+                return 
         }
     }
 
@@ -93,6 +96,13 @@ const ContentListItem = (props) => {
                         <>
                             {renderLocationTypeIcon(element)}
                         </>
+                    }
+
+                    {element.type === 'user' && 
+                        <styled.ListItemIcon
+                            style = {{color: 'orange' }}
+                            className='fas fa-user'
+                        />
                     }
 
 

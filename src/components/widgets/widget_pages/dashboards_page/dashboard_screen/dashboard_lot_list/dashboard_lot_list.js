@@ -8,6 +8,7 @@ import * as styled from './dashboard_lot_list.style'
 // Import Componenets
 import LotContainer from "../../../../../side_bar/content/cards/lot/lot_container";
 import SortFilterContainer from '../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container'
+import Button  from '../../../../../basic/button/button';
 
 // Import Utils
 import { deepCopy } from '../../../../../../methods/utils/utils'
@@ -22,7 +23,11 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from '../../../../../../constants
 import { putDashboard } from '../../../../../../redux/actions/dashboards_actions'
 
 
-const DashboardLotList = () => {
+const DashboardLotList = (props) => {
+
+    const {
+        onCardClicked
+    } = props
 
     const params = useParams()
 
@@ -54,10 +59,6 @@ const DashboardLotList = () => {
     const phoneView = size.width < 1000
 
     const station = stations[stationID]
-
-    const handleCardClicked = (lotID) => {
-        history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotID}`)
-    }
 
     const handleChangeSortMode = (mode) => {
         let dashboardCopy = deepCopy(dashboard)
@@ -118,11 +119,11 @@ const DashboardLotList = () => {
                     enableFlagSelector={false}
                     key={currCardId}
                     onClick={() => {
-                        handleCardClicked(currCardId)
+                        onCardClicked(currCardId)
                     }}
                     containerStyle={{
                         margin: ".5rem",
-                        pointerEvents: station.type === 'warehouse' ? 'none' : 'auto'
+                        // pointerEvents: station.type === 'warehouse' ? 'none' : 'auto'
                     }}
                 />
             )
@@ -174,7 +175,7 @@ const DashboardLotList = () => {
                           enableFlagSelector={false}
                           key={currCardId}
                           onClick={() => {
-                              handleCardClicked(currCardId)
+                              onCardClicked(currCardId)
                           }}
                           containerStyle={{
                               margin: ".5rem",
@@ -211,6 +212,9 @@ const DashboardLotList = () => {
             <styled.LotCardContainer>
                 {renderLotCards}
             </styled.LotCardContainer>
+            {/* <styled.Footer>
+                <Button>Log Out</Button>
+            </styled.Footer> */}
         </styled.LotListContainer>
     )
 }

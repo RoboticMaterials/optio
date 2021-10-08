@@ -676,7 +676,7 @@ export class MapView extends Component {
 
                                         src={'data:image/png;base64, ' + this.state.currentMap.map}
                                         onLoad={() => {
-
+                                            
                                             this.naturalImageDimensions = {
                                                 height: this.mapImage.naturalHeight,
                                                 width: this.mapImage.naturalWidth

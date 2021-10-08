@@ -11,7 +11,7 @@ const log = logger.getLogger('Api')
 
 export async function getProcesses() {
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
@@ -102,7 +102,7 @@ export async function deleteProcess(ID) {
 export async function postProcesses(process) {
 
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         process.map_id = currMapId
 
         const response = await axios({

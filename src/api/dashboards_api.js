@@ -11,7 +11,7 @@ const log = logger.getLogger('Api')
 
 export async function getDashboards() {
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
@@ -100,7 +100,7 @@ export async function deleteDashboards(ID) {
 
 export async function postDashboards(dashboard) {
     try {
-        const currMapId = store.getState().settingsReducer.settings.currentMapId
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         dashboard.map_id = currMapId
 
         const response = await axios({
