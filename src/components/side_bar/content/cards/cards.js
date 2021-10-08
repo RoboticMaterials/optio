@@ -38,9 +38,7 @@ import { deepCopy } from '../../../../methods/utils/utils'
 // Actions
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
-const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
 const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
-const MultiSelectOptions = lazy(() => import("./multi_select_options/multi_select_options"))
 const CardMenu = lazy(() => import("./card_menu/card_menu"))
 const CardZone = lazy(() => import("./card_zone/card_zone"))
 const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
