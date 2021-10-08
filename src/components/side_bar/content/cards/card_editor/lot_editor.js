@@ -769,7 +769,7 @@ const FormComponent = (props) => {
             <styled.ProcessFieldContainer>
                 <styled.ContentHeader style={{ marginBottom: ".5rem" }}>
                     <styled.ContentTitle>
-                        Selected Process: {processes[values.processId].name}
+                        Process: {processes[values.processId].name}
                     </styled.ContentTitle>
                 </styled.ContentHeader>
             </styled.ProcessFieldContainer>
@@ -826,7 +826,7 @@ const FormComponent = (props) => {
                             <styled.Title>
                                 {formMode === FORM_MODES.CREATE
                                     ? "Create Lot"
-                                    : "Edit Lot"}
+                                    : "Lot Info"}
                             </styled.Title>
                         )}
 
@@ -847,7 +847,7 @@ const FormComponent = (props) => {
                             overflow: "hidden",
                         }}
                     >
-                        {showTemplateSelector && (
+                        {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
                             <TemplateSelectorSidebar
                                 showFields={false}
                                 onTemplateSelectClick={onSelectLotTemplate}
@@ -860,6 +860,7 @@ const FormComponent = (props) => {
                                     );
                                 }}
                                 selectedLotTemplatesId={lotTemplateId}
+                                processId={processId}
                             />
                         )}
 
@@ -955,7 +956,7 @@ const FormComponent = (props) => {
 
                                         <div>
                                             <styled.ContentTitle>
-                                                Selected Product Group:{" "}
+                                                Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
                                                 {lotTemplate.name}
@@ -989,12 +990,12 @@ const FormComponent = (props) => {
                                                         true
                                                     ),
                                             },
-                                            {
-                                                label: "Lot History",
-                                                schema: "fields",
-                                                onClick: () =>
-                                                    setShowHistory(true),
-                                            },
+                                            // {
+                                            //     label: "Lot History",
+                                            //     schema: "fields",
+                                            //     onClick: () =>
+                                            //         setShowHistory(true),
+                                            // },
                                         ]}
                                     />
                                 </styled.SubHeader>
@@ -1223,7 +1224,7 @@ const FormComponent = (props) => {
                                                     );
                                                 }}
                                             >
-                                                Save Lot
+                                                Save Changes
                                             </Button>
                                         </>
                                     )}
@@ -1463,6 +1464,7 @@ const LotEditor = (props) => {
                         close={() => {
                             setShowLotTemplateEditor(false);
                         }}
+                        processId={processId}
                     />
                 )}
                 <styled.Container>

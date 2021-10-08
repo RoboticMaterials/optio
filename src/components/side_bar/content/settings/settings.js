@@ -39,6 +39,9 @@ import { getIsEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
 
+export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
+  
+
 const Settings = () => {
 
     const history = useHistory()
@@ -75,6 +78,8 @@ const Settings = () => {
     const [saveDisabled, setSaveDisabled] = useState(true)
 
     const themeContext = useContext(ThemeContext);
+
+    console.log("!!!", serverSettingsState.moveAlertDuration)
 
 
     /**
@@ -410,7 +415,7 @@ const Settings = () => {
 
     const EmailAddress = () => {
         return (
-            <styled.SettingContainer>
+            <>
                 <styled.SwitchContainer>
                     <styled.SwitchLabel>Email Notifications </styled.SwitchLabel>
                     <Switch
@@ -453,7 +458,7 @@ const Settings = () => {
                     </>
                 }
 
-            </styled.SettingContainer>
+            </>
         )
     }
 
@@ -470,13 +475,18 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={!!serverSettingsState ? [Object.values(maps).find(map => map._id === serverSettingsState.currentMapId)] : []}
+                        values={[Object.values(maps).find(map => {
+                            if (!!localSettingsState && !!localSettingsState.currentMapId) {
+                                return map._id === localSettingsState.currentMapId
+                            }
+                            else return map.name === 'Blank Map'
+                        })]}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateServerSettings({ currentMapId: values[0]._id })
+                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
                         }}
                         className="w-100"
                     />
@@ -510,6 +520,32 @@ const Settings = () => {
                 }
             </>
         )
+    }
+
+    const renderAlertDurationSetting = () => {
+        return (
+            <styled.DropdownContainer>
+                <styled.DropdownLabel>Move Alert Duration</styled.DropdownLabel>
+                <div style={{width: '100%', display: 'flex', justifyContent: 'flex-end'}}>
+                    <DropDownSearch
+                        placeholder="(s)"
+                        labelField="label"
+                        valueField="value"
+                        label="(secs)"
+                        options={Durations}
+                        values={!!serverSettingsState.moveAlertDuration ? [Durations.find(d => d.value === serverSettingsState.moveAlertDuration)] : []}
+                        dropdownGap={0}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        onChange={values => {
+                            console.log('dffff', values)
+                            handleUpdateServerSettings({ moveAlertDuration: values[0].value })
+                        }}
+                        style={{width: '3.5rem', alignSelf: 'flex-end'}}
+                    />
+                </div>
+            </styled.DropdownContainer>
+    )
     }
 
 
@@ -598,6 +634,7 @@ const Settings = () => {
             <styled.Label>General Settings</styled.Label>
             {TimeZone()}
             {EmailAddress()}
+            {renderAlertDurationSetting()}
             {renderShiftSettings()}
             
 

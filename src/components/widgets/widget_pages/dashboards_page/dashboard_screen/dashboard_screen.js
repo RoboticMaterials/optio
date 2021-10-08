@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import usePrevious from '../../../../../hooks/usePrevious';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
@@ -75,6 +76,8 @@ const DashboardScreen = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const lots = useSelector(state => state.cardsReducer.cards)
     const processes = useSelector(state => state.processesReducer.processes)
+    const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
+    const trackUsers = useSelector(state => state.settingsReducer.settings?.trackUsers || false)
 
     const currentDashboard = dashboards[dashboardID]
     // actions
@@ -100,6 +103,9 @@ const DashboardScreen = (props) => {
     const [isDevice, setIsDevice] = useState(false)
     const [user, setUser] = useState(null)
     const [showUserCheckinModal, setShowUserCheckinModal] = useState(true)
+    const [checkinCallback, setCheckinCallback] = useState([() => {}])
+
+    const prevUser = usePrevious(user)
 
     const [showUndoModal, setShowUndoModal] = useState(null)
     const undoHandlers = useRef([]).current
@@ -107,6 +113,14 @@ const DashboardScreen = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
     const isMobile = windowWidth < widthBreakPoint;
+
+    useEffect(() => {
+        if (prevUser === null && user !== null) {
+            checkinCallback[0]()
+        }
+    }, [user])
+
+    console.log('A', user)
 
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
@@ -164,6 +178,17 @@ const DashboardScreen = (props) => {
         return setTimeout(() => setAddTaskAlert(null), 2500)
     }
 
+    const handleLotClick = (lotId) => {
+        if (user !== null || !trackUsers) {
+            console.log('B',user)
+            history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
+        } else {
+            setShowUserCheckinModal(true)
+            // setCheckinCallback([() => history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)])
+            // I think history.push works weird because if we make it just a function instead of an array it is called when the state is set
+        }
+    }
+
     /**
      * Undo's are stored as a FIFO stack, where each time the undo is called, it pops the top function from
      * the stack. This way you can go back more than once (if you merge and then move).
@@ -208,7 +233,7 @@ const DashboardScreen = (props) => {
                 .map((stationId) => stations[stationId].name)
                 .join(" & ")}`
               });
-            setTimeout(() => setAddTaskAlert(null), 1800)
+            setTimeout(() => setAddTaskAlert(null), alertDuration)
           } else {
             // Single-flow node, just send to the station
             const toStationId = moveStations;
@@ -223,7 +248,7 @@ const DashboardScreen = (props) => {
               label: "Lot Moved",
               message:`Lot has been moved to ${stationName}`
             });
-            setTimeout(() => setAddTaskAlert(null), 1800)
+            setTimeout(() => setAddTaskAlert(null), alertDuration)
           }
 
           dispatchPutCard(pullLot, pullLotID);
@@ -337,18 +362,20 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {user === null && showUserCheckinModal && 
+            {trackUsers && user === null && showUserCheckinModal && 
                 <UserCheckinModal 
                     dashboard={currentDashboard} 
-                    onCheckin={user => {
-                        setUser(user); 
+                    onCheckin={async newUser => {
+                        await setUser(newUser); 
                         setShowUserCheckinModal(false)
-                        onSetTitle(user)
+                        onSetTitle(newUser)
+                        // newUser !== null && checkinCallback[0]()
+                        // setCheckinCallback([() => {}])
                     }}
                     onClose={() => setShowUserCheckinModal(false)}/>
             }
 
-            {user !== null && // User logout Button
+            {trackUsers && // User logout Button
                 <div style={{
                     top: isMobile ? '0.4rem' : '7.3rem',
                     right: '0.5rem',
@@ -359,16 +386,22 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>User: {user} </style.Text>
+                        <style.Text>{user === null ? `Sign In` : `Worker: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}
                         onClick={() => {
-                            setUser(null)
-                            onSetTitle('-')
-                            setShowUserCheckinModal(true)
+                            if (user === null) {
+                                setShowUserCheckinModal(true)
+                            } else {
+                                setUser(null)
+                                onSetTitle('-')
+                                setShowUserCheckinModal(true)
+                                setCheckinCallback([() => {}])
+                            }
                         }}
                         disabled={!showLotsList}
+                        // schema={user === null ? 'delete' : null}
                         style={{
                             color: "black",
                             width: "2.5rem",
@@ -377,7 +410,7 @@ const DashboardScreen = (props) => {
                         }}
                     >
                         <style.Icon
-                            className={"fas fa-sign-out-alt"}
+                            className={user === null ? "fas fa-sign-in-alt" : "fas fa-sign-out-alt"}
                         />
                     </Button>
                 </div>
@@ -422,13 +455,7 @@ const DashboardScreen = (props) => {
                 />
                 :
                 showLotsList ?
-                    <DashboardLotList onCardClicked={(lotId) => {
-                        if (user !== null) {
-                            history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
-                        } else {
-                            setShowUserCheckinModal(true)
-                        }
-                    }}
+                    <DashboardLotList onCardClicked={handleLotClick}
                     />
                     :
                     <DashboardLotPage
@@ -442,7 +469,7 @@ const DashboardScreen = (props) => {
                             })
 
                             // clear alert after timeout
-                            return setTimeout(() => setAddTaskAlert(null), 1800)
+                            return setTimeout(() => setAddTaskAlert(null), alertDuration)
                         }}
                     />
             }

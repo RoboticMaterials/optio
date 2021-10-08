@@ -2,14 +2,17 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+import store from '../redux/store'
 
 const operator = 'stations'
 
 export async function getStations() {
+    
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'GET',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
