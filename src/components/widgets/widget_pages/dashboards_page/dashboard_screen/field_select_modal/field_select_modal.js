@@ -67,6 +67,14 @@ const FieldSelectModal = (props) => {
         <>
           {Object.values(lotTemplates).map((template, index) =>
             <>
+            <styled.ListItem
+              style = {{ background: '#5c6fff', justifyContent: 'center' }}
+            >
+              <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
+                {'Product Group: '+ template.name}
+              </styled.ListItemTitle>
+            </styled.ListItem>
+            <>
             {template.fields.map((field, fieldIndex) =>
                 <styled.ListItem>
                   <Checkbox
@@ -80,6 +88,7 @@ const FieldSelectModal = (props) => {
                   </styled.ListItemTitle>
                 </styled.ListItem>
               )}
+            </>
             </>
           )}
         </>
