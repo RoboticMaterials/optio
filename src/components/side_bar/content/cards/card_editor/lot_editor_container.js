@@ -304,12 +304,9 @@ const LotEditorContainer = (props) => {
         let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
         if (isObject(card) && card?.lotTemplateId) {
-            console.log('iscard', card?.lotTemplateId)
             if (!!templateId && templateId !== card.lotTemplateId) {
-                console.log('updateCard', templateId)
                 dispatchPutCard({...card, lotTemplateId: templateId}, card._id)
             } else {
-                console.log('takingCards', card.lotTemplateId)
                 newTemplateId = card?.lotTemplateId
             }
         }

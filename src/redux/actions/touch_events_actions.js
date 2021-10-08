@@ -47,7 +47,7 @@ export const getLotTouchEvents = (lotId) => {
 
         try {
             onStart();
-            const events = await api.getTouchEvents(lotId);
+            const events = await api.getLotTouchEvents(lotId);
 
             return onSuccess(events)
             // return onSuccess(events)

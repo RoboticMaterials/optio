@@ -57,14 +57,7 @@ const CardZone = ((props) => {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
     } = draggedLotInfo || {}
-
-    const pg = useSelector(state => state.lotTemplatesReducer.lotTemplates)
-    const c = useSelector(state => state.cardsReducer.cards);
-    console.log('===', pg)
-    console.log("---",c)
-
-    console.log(currentProcess.name, currentProcess._id, Object.values(allCards[currentProcess._id] || {}))
-
+    
     // component state
     const [cardsSorted, setCardsSorted] = useState({})
     const [bins, setBins] = useState({})

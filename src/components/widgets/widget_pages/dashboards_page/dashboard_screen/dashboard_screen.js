@@ -120,8 +120,6 @@ const DashboardScreen = (props) => {
         }
     }, [user])
 
-    console.log('A', user)
-
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
     }, [stations, stationID])
@@ -180,7 +178,6 @@ const DashboardScreen = (props) => {
 
     const handleLotClick = (lotId) => {
         if (user !== null || !trackUsers) {
-            console.log('B',user)
             history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
         } else {
             setShowUserCheckinModal(true)
