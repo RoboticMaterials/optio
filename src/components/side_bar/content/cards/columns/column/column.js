@@ -321,7 +321,7 @@ const Column = ((props) => {
 						if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
 							delete updatedLot.bins[binId]
 						}
-						//dispatchPutCard(updatedLot, updatedLot._id)
+						dispatchPutCard(updatedLot, updatedLot._id)
 						await dispatchSetDroppingLotId(null, null)
 				}
 			}
@@ -413,11 +413,11 @@ const Column = ((props) => {
 								let partBins = reduxCards[card.cardId].bins[card.binId]
 								return (
 									Object.keys(partBins).map((part) => {
-										
+
 										const isPartial = part !== 'count' ? true : false
 										return (
 														<>
-															{partBins[part]>0 &&
+																{(partBins[part]>0 || (part === 'count' && partBins['count']>0)) &&
 																	<Draggable
 																		key={cardId}
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
@@ -430,44 +430,45 @@ const Column = ((props) => {
 
 																			}}
 																		>
-																			<LotContainer
-																				isPartial = {isPartial}
-																				onDeleteDisabledLot = {() => {
-																					handleDeleteDisabledLot(card, card.binId, part)
-																				}}
-																				glow={isLastSelected}
-																				isFocused={isDragging || isHovering}
-																				enableFlagSelector={enableFlags}
-																				selectable={selectable}
-																				isSelected={isSelected}
-																				key={cardId}
-																				// processName={processName}
-																				totalQuantity={totalQuantity}
-																				lotNumber={lotNumber}
-																				name={name}
-																				count={partBins[part]}
-																				leadTime={leadTime}
-																				id={cardId}
-																				flags={flags || []}
-																				index={index}
-																				lotId={cardId}
-																				binId={station_id}
-																				onClick={(e) => {
-																					const payload = getBetweenSelected(cardId)
-																					onCardClick(
-																						e,
-																						{
-																							lotId: cardId,
-																							processId: processId,
-																							binId: station_id
-																						},
-																						payload
-																					)
-																				}}
-																				containerStyle={{
-																					marginBottom: "0.5rem",
-																				}}
-																			/>
+																		<LotContainer
+																			isPartial = {isPartial}
+																			onDeleteDisabledLot = {() => {
+																				handleDeleteDisabledLot(card, card.binId, part)
+																			}}
+																			glow={isLastSelected}
+																			isFocused={isDragging || isHovering}
+																			enableFlagSelector={enableFlags}
+																			selectable={selectable}
+																			isSelected={isSelected}
+																			key={cardId}
+																			// processName={processName}
+																			totalQuantity={totalQuantity}
+																			lotNumber={lotNumber}
+																			name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																			count={isPartial ? partBins[part] : partBins['count']}
+																			leadTime={leadTime}
+																			id={cardId}
+																			flags={flags || []}
+																			index={index}
+																			lotId={cardId}
+																			binId={station_id}
+																			onClick={(e) => {
+																				const payload = getBetweenSelected(cardId)
+
+																				onCardClick(
+																					e,
+																					{
+																						lotId: cardId,
+																						processId: processId,
+																						binId: station_id
+																					},
+																					payload
+																				)
+																			}}
+																			containerStyle={{
+																				marginBottom: "0.5rem",
+																			}}
+																		/>
 																		</div>
 																	</Draggable>
 															}

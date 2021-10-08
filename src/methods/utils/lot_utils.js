@@ -743,7 +743,6 @@ export const handleGenerateSplitChoiceArray = (row) => {
   let existingArrLength = 0
   let rowLength = 0
   let index = 0
-  let allPathIDs = []
 
 
   for(let i = 1; i<Object.values(row).length; i++){
@@ -758,47 +757,56 @@ export const handleGenerateSplitChoiceArray = (row) => {
 
     existingArrLength = Object.values(subArray).length
     rowLength = Object.values(row[i]).length
-
-    if(row[i][0] === "OR"){
+    if(rowLength === 36){ //Its just single ID not array, fix this later
         if(existingArrLength === 0){
-          for(let j = 1; j<rowLength; j++){
-            subArray.push([])
-            subArray[j-1].push(row[i][j])
-            allPathIDs.push(row[i][j])
-          }
+          subArray.push([])
+          subArray[0].push(row[i][0])
         }
         else{
-          for(let j = 1; j<rowLength; j++){
-            allPathIDs.push(row[i][j])
-            for(let k = 0; k<existingArrLength; k++){
-              let ind = k+existingArrLength*(j-1)
-              if(j>1){
-                subArray.push([])
-                for(let p = 0; p < Object.keys(subArrayCopy[k]).length; p++) {
-                  subArray[ind].push(subArrayCopy[k][p])
-                }
-                  subArray[ind].push(row[i][j])
-              }
-              else{
-                subArray[k].push(row[i][j])
-              }
-            }
+          for(const ind in subArray){
+            subArray[ind].push(row[i])
           }
         }
       }
 
-    else if(row[i][0] === "AND"){
-        if(existingArrLength === 0){
-          for(let m=1; m<rowLength; m++){
-            if(m===1) subArray.push([])
-            subArray[0].push(row[i][m])
-            allPathIDs.push(row[i][m])
+    else{
+      if(row[i][0] === "OR"){
+          if(existingArrLength === 0){
+            for(let j = 1; j<rowLength; j++){
+              subArray.push([])
+              subArray[j-1].push(row[i][j])
+            }
+          }
+          else{
+            for(let j = 1; j<rowLength; j++){
+              for(let k = 0; k<existingArrLength; k++){
+                let ind = k+existingArrLength*(j-1)
+                if(j>1){
+                  subArray.push([])
+                  for(let p = 0; p < Object.keys(subArrayCopy[k]).length; p++) {
+                    subArray[ind].push(subArrayCopy[k][p])
+                  }
+                    subArray[ind].push(row[i][j])
+                }
+                else{
+                  subArray[k].push(row[i][j])
+                }
+              }
+            }
           }
         }
-        else{
-          for(let m=1; m<rowLength; m++){
-            allPathIDs.push(row[i][m])
-            for(let n = 0; n<existingArrLength; n++) subArray[n].push(row[i][m])
+
+      else if(row[i][0] === "AND"){
+          if(existingArrLength === 0){
+            for(let m=1; m<rowLength; m++){
+              if(m===1) subArray.push([])
+              subArray[0].push(row[i][m])
+            }
+          }
+          else{
+            for(let m=1; m<rowLength; m++){
+              for(let n = 0; n<existingArrLength; n++) subArray[n].push(row[i][m])
+            }
           }
         }
       }
@@ -844,20 +852,22 @@ export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
     return bin
 }
 
-
-export const handleMergeParts = (bin, routeId, count, station, process) => {
+export const handleGetPathArray = (station, process) => {
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
 
   let iDs = []
   let option = 0
   let requirement = 0
+  let startOption = 0
   let splitToChoice = false
+  let involveSplitChoice = false
 
   let precursor = ''
   iDs.push([])
 
   const recursiveParse = (row) => {
+      let splitMergeInd = 0
       let splitToChoice = false
       if(Array.isArray(row)){
         let precursor = row[0]
@@ -865,7 +875,11 @@ export const handleMergeParts = (bin, routeId, count, station, process) => {
         //Check for splitToChoice case
         if(precursor === 'AND'){
           for(let i = 1; i<Object.values(row).length; i++){
-            if(row[i][0] === 'OR') splitToChoice = true
+            if(row[i][0] === 'OR') {
+              splitToChoice = true
+              involveSplitChoice = true
+              startOption = option
+            }
           }
         }
         if(!splitToChoice){
@@ -879,12 +893,21 @@ export const handleMergeParts = (bin, routeId, count, station, process) => {
             }
             else{
               if(precursor === 'OR'){
+                involveSplitChoice = false
                 iDs[option].push(row[i])
                 option+=1
                 iDs.push([])
+
               }
               else if(precursor === 'AND'){
-                iDs[option].push(row[i])
+                if(!!involveSplitChoice){
+                  for(let a = startOption; a<option; a++){
+                    iDs[a].push(row[i])
+                  }
+                }
+                else{
+                  iDs[option].push(row[i])
+                }
               }
             }
           }
@@ -892,18 +915,33 @@ export const handleMergeParts = (bin, routeId, count, station, process) => {
         else {
           let pathArray = handleGenerateSplitChoiceArray(row)
           for(const i in pathArray){
-            iDs[option].push(pathArray[i])
+            for(const j in pathArray[i]){
+              iDs[option].push(pathArray[i][j])
+            }
             option+=1
             iDs.push([])
           }
+          console.log(JSON.parse(JSON.stringify(iDs)))
         }
       }
     }
 
     recursiveParse(handleMergeExpression(station, process, routes))
+    console.log(handleMergeExpression(station, process, routes))
+    //console.log(iDs)
+
+    return iDs
+}
+
+
+export const handleMergeParts = (bin, routeId, count, station, process) => {
+  const processes = store.getState().processesReducer.processes || {}
+  const routes = store.getState().tasksReducer.tasks || {}
+
+  let iDs = handleGetPathArray(station, process, routes)
   //Determine count for that path
-  let minCount = 9999999999
   for(const ind in iDs){
+    let minCount = count
     if(Object.values(iDs[ind]).length>0){
       for(const idx in iDs[ind]){
           let prt = iDs[ind][idx]
@@ -913,13 +951,12 @@ export const handleMergeParts = (bin, routeId, count, station, process) => {
           else minCount = 0
       }
       if(minCount>0){
-        for(const ind in bin){
-          if(ind!=='count'){
-            if(bin[ind]-minCount === 0) delete bin[ind]
-            else bin[ind]-=minCount
-            }
-            else bin[ind]+=minCount
+        for(const idx in iDs[ind]){
+            let id = iDs[ind][idx]
+            if(!!bin[id] && bin[id]-minCount === 0) delete bin[id]
+            else bin[id]-=minCount
           }
+          bin['count'] += minCount
         }
       }
     }
@@ -1043,41 +1080,11 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
 
 
 export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {
-    const mergingRoutes = process.routes
-      .map((routeId) => routes[routeId])
-      .filter((route) => route.unload === loadStationId);
-
-    if (mergingRoutes.length > 1) {
-      let pathQuantityArray = []
-      let availableQty = quantity
-      for(const ind in pathQuantityArray){
-        let pathQty = pathQuantityArray[ind][0]
-        let removeQty = Math.min(pathQty, availableQty)
-        let parts = pathQuantityArray[ind][1]
-        for(const i in parts){
-          if(!!bins[loadStationId][parts[i]]){
-            bins[loadStationId][parts[i]]-=removeQty
-          }
-        }
-        availableQty -= removeQty
-        if(availableQty<1){
-          break
-        }
-      }
-      //delete part if qty 0
-      for (const ind in bins[loadStationId]) {
-        if (bins[loadStationId][ind] === 0 && ind!=='count') {
-          delete bins[loadStationId][ind];
-        }
-        else if(ind === 'count') bins[loadStationId][ind]-= quantity
-      }
-
+    if(quantity === bins[loadStationId]['count']) {
+      delete bins[loadStationId]['count'];
     } else {
-      if (quantity === bins[loadStationId].count) {
-        delete bins[loadStationId];
-      } else {
-        bins[loadStationId].count -= quantity;
-      }
+      bins[loadStationId]['count'] -= quantity;
     }
+    if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };
