@@ -127,7 +127,7 @@ const EditLocation = (props) => {
     const serverSettings = useSelector(
         (state) => state.settingsReducer.settings
     );
-    const deviceEnabled = serverSettings.deviceEnabled;
+    const deviceEnabled = false;
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);

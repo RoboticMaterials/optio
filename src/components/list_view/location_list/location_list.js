@@ -40,7 +40,7 @@ const LocationList = (props) => {
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const maps = useSelector(state => state.mapReducer.maps)
     const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-    const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
+    const deviceEnabled = false
     const {
         _id: mapId
     } = currentMap || {}

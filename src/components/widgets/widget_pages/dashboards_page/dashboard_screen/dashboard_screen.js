@@ -119,9 +119,7 @@ const DashboardScreen = (props) => {
             checkinCallback[0]()
         }
     }, [user])
-
-    console.log('A', user)
-
+    
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
     }, [stations, stationID])
@@ -362,11 +360,11 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {trackUsers && user === null && showUserCheckinModal && 
-                <UserCheckinModal 
-                    dashboard={currentDashboard} 
+            {trackUsers && user === null && showUserCheckinModal &&
+                <UserCheckinModal
+                    dashboard={currentDashboard}
                     onCheckin={async newUser => {
-                        await setUser(newUser); 
+                        await setUser(newUser);
                         setShowUserCheckinModal(false)
                         onSetTitle(newUser)
                         // newUser !== null && checkinCallback[0]()
@@ -439,9 +437,9 @@ const DashboardScreen = (props) => {
 
             />
 
-            <style.UndoIcon 
-                className="fas fa-undo" 
-                disabled={undoHandlers.length === 0} 
+            <style.UndoIcon
+                className="fas fa-undo"
+                disabled={undoHandlers.length === 0}
                 onClick={() => setShowUndoModal(true)}
                 isMobile={isMobile}
                 isListView={showLotsList}
