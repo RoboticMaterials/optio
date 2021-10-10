@@ -298,7 +298,7 @@ export class MapView extends Component {
         }
     }
 
-    
+
 
 
     /* ========== D3 Functions ========== */
@@ -676,7 +676,7 @@ export class MapView extends Component {
 
                                         src={'data:image/png;base64, ' + this.state.currentMap.map}
                                         onLoad={() => {
-                                            
+
                                             this.naturalImageDimensions = {
                                                 height: this.mapImage.naturalHeight,
                                                 width: this.mapImage.naturalWidth
@@ -864,7 +864,7 @@ const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
-        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
+        deviceEnabled: false,
         settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,

@@ -60,7 +60,7 @@ const RightClickMenu = (props) => {
     const maps = useSelector(state => state.mapReducer.maps)
     const currentMap = Object.values(maps).find(map => map._id === currentMapId)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
-    const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
+    const deviceEnabled = false
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const editingStation = useSelector(state => state.stationsReducer.editingStation)

@@ -50,7 +50,7 @@ export default function Positions(props) {
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const deviceEnabled = serverSettings.deviceEnabled
+    const deviceEnabled = false
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
