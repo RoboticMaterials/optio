@@ -46,7 +46,8 @@ import { putProcesses } from '../../../../../redux/actions/processes_actions';
 const LotEditorContainer = (props) => {
 
     const {
-        merge
+        merge,
+        processId
     } = props
 
 
@@ -1229,6 +1230,7 @@ const LotEditorContainer = (props) => {
                 collectionCount={parseInt((collectionCount + 1))}
                 lotTemplateId={lotTemplateId}
                 lotTemplate={lotTemplate}
+                processId={processId}
                 onSelectLotTemplate={handleSelectLotTemplate}
                 showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}
                 hidden={showStatusList || showPasteMapper}
