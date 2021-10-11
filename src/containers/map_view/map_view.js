@@ -736,22 +736,20 @@ export class MapView extends Component {
                                         .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
-                                            <>
-                                                <Station
-                                                    key={`loc-${ind}`}
-                                                    // If there is a selected station, then render the selected station vs station in redux
-                                                    // Selected station could contain local edits that are not on the backend (naked redux) yet
-                                                    station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
-                                                    isSelected={(!!selectedStation && station._id === selectedStation._id)}
-                                                    // station={station}
-                                                    rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
-                                                    d3={this.d3}
-                                                    handleEnableDrag={this.onEnableDrag}
-                                                    handleDisableDrag={this.onDisableDrag}
-                                                    // Mouse down is used to disabling hovering when the mouse is down on the map
-                                                    mouseDown={this.mouseDown}
-                                                />
-                                            </>
+                                            <Station
+                                                key={`loc-${ind}`}
+                                                // If there is a selected station, then render the selected station vs station in redux
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet
+                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                isSelected={(!!selectedStation && station._id === selectedStation._id)}
+                                                // station={station}
+                                                rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
+                                                d3={this.d3}
+                                                handleEnableDrag={this.onEnableDrag}
+                                                handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
+                                            />
                                         )
                                 }</>
 
