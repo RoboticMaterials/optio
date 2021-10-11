@@ -383,7 +383,7 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>{user === null ? `Sign In` : `Worker: ${user}`} </style.Text>
+                        <style.Text>{user === null ? `Sign In` : `Operator: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}

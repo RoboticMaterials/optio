@@ -253,6 +253,7 @@ const DashboardLotPage = (props) => {
 
     }
     dispatchPutCard(currentLot, lotID);
+    //console.log(currentLot)
     dispatchUpdateStationCycleTime(loadStationID)
     onBack();
   };

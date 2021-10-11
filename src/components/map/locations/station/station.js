@@ -29,10 +29,7 @@ import LocationSvg from "../location_svg/location_svg";
 import DragEntityProto from "../drag_entity_proto";
 import {
     generateDefaultRoute,
-    getRouteEnd,
-    getRouteStart,
 } from "../../../../methods/utils/route_utils";
-import { immutableDelete } from "../../../../methods/utils/array_utils";
 
 function Station(props) {
     const {
@@ -42,7 +39,7 @@ function Station(props) {
         handleEnableDrag,
         handleDisableDrag,
         mouseDown,
-        isSelected,
+        // isSelected,
     } = props;
 
     const [hovering, setHovering] = useState(false);
@@ -93,6 +90,8 @@ function Station(props) {
     //        Station Characteristics           //
     //                                          //
     // ======================================== //
+
+    const isSelected = !!selectedStation && selectedStation._id === station._id
 
     let disabled = false;
     if (!!selectedTask && !!selectedProcess) {
@@ -298,7 +297,7 @@ function Station(props) {
                     dispatchSetStationAttributes(station._id, { rotation });
                 }}
                 handleTranslate={({ x, y }) => 
-                    isSelected && dispatchSetStationAttributes(station._id, { x, y })
+                    dispatchSetStationAttributes(station._id, { x, y })
                 }
                 handleTranslateEnd={({ x, y }) => {
                     const pos = convertD3ToReal([x, y], props.d3);
@@ -306,6 +305,7 @@ function Station(props) {
                         pos_x: pos[0],
                         pos_y: pos[1],
                     });
+                    
                 }}
                 handleEnableDrag={() => {
                     handleEnableDrag();
