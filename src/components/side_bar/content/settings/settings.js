@@ -218,6 +218,10 @@ const Settings = () => {
         if (!localSettingsState.mapViewEnabled) {
             history.push(`/`)
         }
+
+        if (mapChange) {
+            window.location.reload()
+        }
     }
 
     const TimeZone = () => {
