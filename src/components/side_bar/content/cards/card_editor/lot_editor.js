@@ -1339,6 +1339,8 @@ const LotEditor = (props) => {
         merge,
     } = props;
 
+    
+
     // redux state
     const cards = useSelector((state) => {
         return state.cardsReducer.cards;
