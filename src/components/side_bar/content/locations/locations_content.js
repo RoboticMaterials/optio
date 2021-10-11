@@ -37,15 +37,9 @@ export default function LocationContent() {
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
 
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const maps = useSelector(state => state.mapReducer.maps)
     const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-    const processes = useSelector(state => state.processesReducer.processes)
-    const [mergeStation, setMergeStation] = useState(false)
-    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const locations = {

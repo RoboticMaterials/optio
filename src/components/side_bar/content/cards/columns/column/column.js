@@ -75,6 +75,7 @@ const Column = ((props) => {
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
+	const [isSourcee, setIsSource] = useState(false)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -124,11 +125,9 @@ const Column = ((props) => {
 				process_id: oldProcessId,
 				...remainingPayload
 			} = payload
-
 			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
-
 			if (oldProcessId !== processId) return false
 			if(!!showCardEditor) return false
 			//if (process[oldProcessId] === undefined) return false
@@ -152,7 +151,6 @@ const Column = ((props) => {
 
 					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
 				}
-				//Make this more restrictive, allows to drag from q and to Finish
 				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
 					for(const ind in startNodes){
 						if(station_id===startNodes[ind]) return true
@@ -347,6 +345,7 @@ const Column = ((props) => {
 								payload,
 								willAcceptDrop
 							} = dragStartParams
+							setIsSource(isSource)
 
 							if (isSource && payload) {
 								const {
@@ -377,7 +376,7 @@ const Column = ((props) => {
 						getChildPayload={index =>
 							cards[index]
 						}
-						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem"}}
+						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 4rem 1rem", background:!!dragEnter &&!isSourcee? '#dedfe3' : '#f7f7fa'}}
 					>
 						{cards.map((card, index) => {
 							const {

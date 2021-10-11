@@ -79,8 +79,6 @@ const Settings = () => {
 
     const themeContext = useContext(ThemeContext);
 
-    console.log("!!!", serverSettingsState.moveAlertDuration)
-
 
     /**
      *  Sets current settings to state so that changes can be discarded or saved
@@ -223,6 +221,7 @@ const Settings = () => {
     }
 
     const TimeZone = () => {
+
 
         return (
                 <styled.DropdownContainer>
@@ -466,6 +465,7 @@ const Settings = () => {
 
     const CurrentMap = () => {
 
+
         return (
                 <styled.DropdownContainer>
                     <styled.DropdownLabel>Map</styled.DropdownLabel>
@@ -475,11 +475,11 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={[Object.values(maps).find((map, ind) => {
-                            if (!!localSettingsState && !!localSettingsState.currentMapId) {
+                        values={[Object.values(maps).find((map,ind) => {
+                            if (!!localSettingsState && !!localSettingsState.currentMapId && !!maps.find(map => map._id === localSettingsState.currentMapId)) {
                                 return map._id === localSettingsState.currentMapId
                             }
-                            else return ind === 0
+                            else return ind===0
                         })]}
                         dropdownGap={2}
                         noDataLabel="No matches found"

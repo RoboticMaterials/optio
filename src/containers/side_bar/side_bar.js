@@ -168,6 +168,8 @@ const SideBar = (props) => {
             setBinCount(binCount)
           }
           else{
+            setCardId(card._id)
+            setBinCount(binCount)
             dispatchShowLotScanModal(true)
           }
         }
@@ -238,9 +240,6 @@ const SideBar = (props) => {
         const prevPage = prevParams.page
         const prevSubpage = prevParams.subpage
         const prevId = prevParams.id
-
-        console.log(page, subpage, id)
-
 
         const time = Date.now()
         if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {

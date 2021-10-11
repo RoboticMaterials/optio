@@ -119,9 +119,7 @@ const DashboardScreen = (props) => {
             checkinCallback[0]()
         }
     }, [user])
-
-    console.log('A', user)
-
+    
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
     }, [stations, stationID])
@@ -362,11 +360,11 @@ const DashboardScreen = (props) => {
                 />
             }
 
-            {trackUsers && user === null && showUserCheckinModal && 
-                <UserCheckinModal 
-                    dashboard={currentDashboard} 
+            {trackUsers && user === null && showUserCheckinModal &&
+                <UserCheckinModal
+                    dashboard={currentDashboard}
                     onCheckin={async newUser => {
-                        await setUser(newUser); 
+                        await setUser(newUser);
                         setShowUserCheckinModal(false)
                         onSetTitle(newUser)
                         // newUser !== null && checkinCallback[0]()
@@ -375,7 +373,7 @@ const DashboardScreen = (props) => {
                     onClose={() => setShowUserCheckinModal(false)}/>
             }
 
-            {user !== null && // User logout Button
+            {trackUsers && // User logout Button
                 <div style={{
                     top: isMobile ? '0.4rem' : '7.3rem',
                     right: '0.5rem',
@@ -386,17 +384,22 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>User: {user} </style.Text>
+                        <style.Text>{user === null ? `Sign In` : `Worker: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}
                         onClick={() => {
-                            setUser(null)
-                            onSetTitle('-')
-                            setShowUserCheckinModal(true)
-                            setCheckinCallback([() => {}])
+                            if (user === null) {
+                                setShowUserCheckinModal(true)
+                            } else {
+                                setUser(null)
+                                onSetTitle('-')
+                                setShowUserCheckinModal(true)
+                                setCheckinCallback([() => {}])
+                            }
                         }}
                         disabled={!showLotsList}
+                        // schema={user === null ? 'delete' : null}
                         style={{
                             color: "black",
                             width: "2.5rem",
@@ -405,7 +408,7 @@ const DashboardScreen = (props) => {
                         }}
                     >
                         <style.Icon
-                            className={"fas fa-sign-out-alt"}
+                            className={user === null ? "fas fa-sign-in-alt" : "fas fa-sign-out-alt"}
                         />
                     </Button>
                 </div>
@@ -434,9 +437,9 @@ const DashboardScreen = (props) => {
 
             />
 
-            <style.UndoIcon 
-                className="fas fa-undo" 
-                disabled={undoHandlers.length === 0} 
+            <style.UndoIcon
+                className="fas fa-undo"
+                disabled={undoHandlers.length === 0}
                 onClick={() => setShowUndoModal(true)}
                 isMobile={isMobile}
                 isListView={showLotsList}
