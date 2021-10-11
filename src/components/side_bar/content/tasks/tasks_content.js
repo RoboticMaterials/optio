@@ -50,9 +50,6 @@ export default function TaskContent(props) {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
@@ -197,8 +194,6 @@ export default function TaskContent(props) {
                     elements={
 
                         tasksSortedAlphabetically(Object.values(tasks))
-                            // Filters outs any tasks that don't belong to the current map
-                            .filter(task => task.map_id === currentMap._id)
                             // Filter out empty tasks that are somehow created when choosing an existing task to add to a process in the process tab
                             // These are deleted by the cleaner function on page refresh but in the meantime dont show in the list view
                             .filter(task => task.load.position !== null)

@@ -61,12 +61,10 @@ const CreateScheduleForm = (props) => {
     const dispatch = useDispatch()
 
     const width = useSelector(state => state.sidebarReducer.width)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const isSmall = width < widthBreakPoint
 
-    const tasksArr = Object.values(tasks).filter((task) => task.map_id === currentMap._id) // get copy of tasks as arr here instead of calling Object.values() multiple times
+    const tasksArr = Object.values(tasks) // get copy of tasks as arr here instead of calling Object.values() multiple times
 
     const themeContext = useContext(ThemeContext)
 
@@ -170,7 +168,7 @@ const CreateScheduleForm = (props) => {
                 time_interval: selectedScheduleItem.time_interval ? moment(timeString24HrToDate(selectedScheduleItem.time_interval)) : nowTimeString,
                 interval_on: selectedScheduleItem.interval_on,
                 next_time: selectedScheduleItem.next_time,
-                map_id: currentMap._id,
+                map_id: currentMapId,
                 stop_time: selectedScheduleItem.stop_time ? moment(timeString24HrToDate(selectedScheduleItem.stop_time)) : nowTimeString,
                 name: selectedScheduleItem.name ? selectedScheduleItem.name : '',
                 selectedScheduleId: selectedScheduleItem.id,
@@ -201,7 +199,7 @@ const CreateScheduleForm = (props) => {
             // no schedule was found, return template
         } else {
             let newScheduleTemplate = getScheduleItemTemplate()
-            newScheduleTemplate.map_id = currentMap._id
+            newScheduleTemplate.map_id = currentMapId
             return newScheduleTemplate
         }
     }
@@ -330,7 +328,7 @@ const CreateScheduleForm = (props) => {
                                         name="task"
                                         options={tasksArr
                                             // Filters outs any tasks that don't belong to the current map
-                                            .filter(task => task.map_id === currentMap._id)
+                                            .filter(task => task.map_id === currentMapId)
                                         }
                                         // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
                                         valueField={tasksArr.length > 0 ? "_id" : 'id'}

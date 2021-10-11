@@ -37,10 +37,6 @@ export default function LocationContent() {
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
 
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const locations = {
         ...stations,
@@ -115,7 +111,7 @@ export default function LocationContent() {
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
                         // Filters out devices, entry positions, other positions and right click to move positions
-                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.map_id === currentMap._id))
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position')
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => {

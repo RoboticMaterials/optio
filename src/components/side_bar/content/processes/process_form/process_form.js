@@ -64,9 +64,7 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-	const maps = useSelector(state => state.mapReducer.maps)
-	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+	const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
 	const stations = useSelector(state => state.stationsReducer.stations);
 	const editing = useSelector(state => state.processesReducer.editingProcess)
 	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
@@ -140,7 +138,7 @@ const ProcessForm = (props) => {
 			await dispatchPostProcess({
 				...remainingValues,
 				routes: mappedRoutes,
-				map_id: currentMap._id,
+				map_id: currentMapId,
 				created_at: currDate.getTime(),
 				edited_at: currDate.getTime(),
 				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
@@ -152,7 +150,7 @@ const ProcessForm = (props) => {
 			await dispatchPutProcess({
 				...remainingValues,
 				routes: mappedRoutes,
-				map_id: currentMap._id,
+				map_id: currentMapId,
 				edited_at: currDate.getTime(),
 				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
 			})
@@ -243,7 +241,7 @@ const ProcessForm = (props) => {
 				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
 				broken: selectedProcess ? selectedProcess.broken : false,
 				new: selectedProcess.new,
-				map_id: currentMap._id,
+				map_id: currentMapId,
 				startDivergeType: selectedProcess.new ? false: selectedProcess.startDivergeType,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
 				showQueue: selectedProcess.new || selectedProcess.showQueue === undefined ? true: selectedProcess.showQueue,
