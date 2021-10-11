@@ -178,7 +178,6 @@ const DashboardScreen = (props) => {
 
     const handleLotClick = (lotId) => {
         if (user !== null || !trackUsers) {
-            console.log('B',user)
             history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
         } else {
             setShowUserCheckinModal(true)
@@ -384,7 +383,7 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>{user === null ? `Sign In` : `Worker: ${user}`} </style.Text>
+                        <style.Text>{user === null ? `Sign In` : `Operator: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}

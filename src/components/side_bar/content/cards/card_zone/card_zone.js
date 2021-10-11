@@ -57,7 +57,6 @@ const CardZone = ((props) => {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
     } = draggedLotInfo || {}
-
     // component state
     const [cardsSorted, setCardsSorted] = useState({})
     const [bins, setBins] = useState({})

@@ -287,6 +287,9 @@ export async function postCard(card) {
 
 export async function putCard(card, ID) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        card.map_id = currMapId
+        
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + ID,

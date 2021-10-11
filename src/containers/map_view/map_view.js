@@ -46,6 +46,7 @@ import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
 import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
+import { postLocalSettings } from '../../redux/actions/local_actions';
 const logger = log.getLogger("MapView")
 
 const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
@@ -122,16 +123,16 @@ export class MapView extends Component {
 
     checkForMapLoad = () => {
 
-      var currentMap = this.props.maps.find(map => map._id === this.props.currentMapId)
+      var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
 
-      if(!currentMap){
+      if(currentMap === undefined){
         this.setState({currentMap: this.props.maps[0]})
 
         const updatedSettings = {
-          ...this.props.settings,
+          ...this.props.localSettings,
           currentMapId: this.props.maps[0]._id,
         }
-        this.props.dispatchPostSettings(updatedSettings)
+        this.props.dispatchPostLocalSettings(updatedSettings)
       }
       else{
         this.setState({currentMap: currentMap})
@@ -147,7 +148,7 @@ export class MapView extends Component {
         // }
         //this.checkForMapLoad() //test
 
-        if(this.props.currentMapId !== this.state.currentMap._id){
+        if(this.props.localSettings.currentMapId !== this.state.currentMap._id){
           this.checkForMapLoad()
         }
         if(prevProps.selectedTask !== this.props.selectedTask) {
@@ -861,7 +862,7 @@ MapView.defaultProps = {
 const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
-        currentMapId: state.settingsReducer.settings.currentMapId,
+        localSettings: state.localReducer.localSettings,
         deviceEnabled: false,
         settings: state.settingsReducer.settings,
 
@@ -895,6 +896,7 @@ const mapDispatchToProps = dispatch => {
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
+        dispatchPostLocalSettings: (settings) => dispatch(postLocalSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
