@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import * as d3 from 'd3'
 
-import usePrevious from '../../../hooks/usePrevious'
 
 const DragEntityProto = (props) => {
     const {
@@ -15,8 +14,6 @@ const DragEntityProto = (props) => {
         rd3tClassName,
         // d3
     } = props
-
-    const prevIsSelected = usePrevious(isSelected)
 
     // console.log(location.name, isSelected)
 
