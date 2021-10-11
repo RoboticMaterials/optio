@@ -239,13 +239,18 @@ const SideBar = (props) => {
         const prevSubpage = prevParams.subpage
         const prevId = prevParams.id
 
-        console.log(page, subpage, id)
+        if (prevPage === 'settings') {
+            setPageWidth(450)
+            dispatchSetWidth(450)
+            setPrevWidth(null)
+        }
 
+        const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
 
         const time = Date.now()
         if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
 
-            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
+            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 

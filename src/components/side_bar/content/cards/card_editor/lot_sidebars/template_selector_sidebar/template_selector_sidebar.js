@@ -42,7 +42,6 @@ const TemplateSelectorSidebar = (props) => {
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-    console.log(lotTemplates)
     const processLotTemplates = Object.values(lotTemplates).filter(template => template.processId === processId)
 
 

@@ -863,7 +863,7 @@ MapView.defaultProps = {
 const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
-        currentMapId: state.settingsReducer.settings.currentMapId,
+        currentMapId: state.localReducer.localSettings.currentMapId,
         deviceEnabled: state.settingsReducer.settings.deviceEnabled,
         settings: state.settingsReducer.settings,
 

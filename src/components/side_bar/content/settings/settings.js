@@ -79,9 +79,6 @@ const Settings = () => {
 
     const themeContext = useContext(ThemeContext);
 
-    console.log("!!!", serverSettingsState.moveAlertDuration)
-
-
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
@@ -501,7 +498,6 @@ const Settings = () => {
             
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
-
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}

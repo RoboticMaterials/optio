@@ -79,7 +79,7 @@ const DashboardsHeader = (props) => {
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
             
 
-            if (incomingRoutes.length === 0) {
+            if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
                 tempPullButtons.push({
                     type: 'kickoff',
                     processID: process._id

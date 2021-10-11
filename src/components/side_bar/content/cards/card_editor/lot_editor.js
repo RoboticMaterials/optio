@@ -4,26 +4,22 @@ import React, {
     useRef,
     useContext,
     useCallback,
+    useMemo
 } from "react";
 
 // api
-import { getCardsCount } from "../../../../../api/cards_api";
 
 // external functions
 import PropTypes from "prop-types";
-import { Formik, setNestedObjectValues } from "formik";
+import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { isMobile } from "react-device-detect";
 
 // external components
 import FadeLoader from "react-spinners/FadeLoader";
-import Popup from "reactjs-popup";
 import ReactTooltip from "react-tooltip";
 
 // internal components
-import CalendarField, {
-    CALENDAR_FIELD_MODES,
-} from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
@@ -48,7 +44,6 @@ import {
     putCard,
     showBarcodeModal,
 } from "../../../../../redux/actions/card_actions";
-import { getCardHistory } from "../../../../../redux/actions/card_history_actions";
 import {
     getLotTemplates,
     setSelectedLotTemplate,
@@ -72,7 +67,6 @@ import {
 // utils
 import {
     getFormCustomFields,
-    parseMessageFromEvent,
 } from "../../../../../methods/utils/card_utils";
 import {
     CARD_SCHEMA_MODES,
@@ -81,7 +75,6 @@ import {
 } from "../../../../../methods/utils/form_schemas";
 import {
     getProcessStations,
-    getNextStationInProcess,
 } from "../../../../../methods/utils/processes_utils";
 import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import { isArray } from "../../../../../methods/utils/array_utils";
@@ -89,7 +82,6 @@ import {
     formatLotNumber,
     getDisplayName,
 } from "../../../../../methods/utils/lot_utils";
-import { deepCopy } from "../../../../../methods/utils/utils";
 import uuid from "uuid";
 
 // import styles
@@ -769,12 +761,38 @@ const FormComponent = (props) => {
             <styled.ProcessFieldContainer>
                 <styled.ContentHeader style={{ marginBottom: ".5rem" }}>
                     <styled.ContentTitle>
-                        Selected Process: {processes[values.processId].name}
+                        Process: {processes[values.processId].name}
                     </styled.ContentTitle>
                 </styled.ContentHeader>
             </styled.ProcessFieldContainer>
         );
     };
+
+    const operationButtons = useMemo(() => {
+        let btns = [
+            {
+                label: "Import XML",
+                onClick: onImportXML,
+            },
+            {
+                label: "Barcode",
+                onClick: () =>
+                    dispatchShowBarcodeModal(
+                        true
+                    ),
+            },
+        ]
+
+        if (formMode !== FORM_MODES.CREATE) {
+            btns.push({
+                label: "Lot History",
+                schema: "fields",
+                onClick: () => setShowHistory(true),
+            })
+        }
+
+        return btns
+    }, [formMode])
 
     const renderForm = () => {
         return (
@@ -838,7 +856,7 @@ const FormComponent = (props) => {
                 </styled.Header>
 
                 {showHistory ? (
-                    <LotHistory />
+                    <LotHistory lotId={cardId} />
                 ) : (
                     <styled.RowContainer
                         style={{
@@ -847,7 +865,7 @@ const FormComponent = (props) => {
                             overflow: "hidden",
                         }}
                     >
-                        {showTemplateSelector && (
+                        {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
                             <TemplateSelectorSidebar
                                 showFields={false}
                                 onTemplateSelectClick={onSelectLotTemplate}
@@ -956,7 +974,7 @@ const FormComponent = (props) => {
 
                                         <div>
                                             <styled.ContentTitle>
-                                                Selected Product Group:{" "}
+                                                Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
                                                 {lotTemplate.name}
@@ -978,25 +996,7 @@ const FormComponent = (props) => {
                                     <DropdownMenuButton
                                         label={"Options"}
                                         schema={"lots"}
-                                        buttons={[
-                                            {
-                                                label: "Import XML",
-                                                onClick: onImportXML,
-                                            },
-                                            {
-                                                label: "Barcode",
-                                                onClick: () =>
-                                                    dispatchShowBarcodeModal(
-                                                        true
-                                                    ),
-                                            },
-                                            // {
-                                            //     label: "Lot History",
-                                            //     schema: "fields",
-                                            //     onClick: () =>
-                                            //         setShowHistory(true),
-                                            // },
-                                        ]}
+                                        buttons={operationButtons}
                                     />
                                 </styled.SubHeader>
 
@@ -1224,7 +1224,7 @@ const FormComponent = (props) => {
                                                     );
                                                 }}
                                             >
-                                                Save Lot
+                                                Save Changes
                                             </Button>
                                         </>
                                     )}
