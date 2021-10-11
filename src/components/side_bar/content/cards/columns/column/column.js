@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useMemo, useState} from "react";
 import { useParams, useHistory } from "react-router-dom";
 import VisibilitySensor from 'react-visibility-sensor'
 
@@ -25,7 +25,7 @@ import * as styled from "./column.style";
 /// utils
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
-import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleCurrentPathQuantity } from "../../../../../../methods/utils/lot_utils";
+import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../../../methods/utils/lot_utils";
 import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
@@ -75,6 +75,7 @@ const Column = ((props) => {
 	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
+	const [isSourcee, setIsSource] = useState(false)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -124,11 +125,9 @@ const Column = ((props) => {
 				process_id: oldProcessId,
 				...remainingPayload
 			} = payload
-
 			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
-
 			if (oldProcessId !== processId) return false
 			if(!!showCardEditor) return false
 			//if (process[oldProcessId] === undefined) return false
@@ -152,7 +151,6 @@ const Column = ((props) => {
 
 					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
 				}
-				//Make this more restrictive, allows to drag from q and to Finish
 				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
 					for(const ind in startNodes){
 						if(station_id===startNodes[ind]) return true
@@ -198,14 +196,6 @@ const Column = ((props) => {
 			}
 			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
 			dispatchPutCard(submitLot, submitLot._id)
-	}
-
-	const handlePathQuantity = (lot, station, routeId, count) => {
-		if(routeId === 'count') return count
-		else {
-			const pathQty = handleCurrentPathQuantity(lot,station, routeId, count)
-			return pathQty
-		}
 	}
 
 	const getSelectedIndex = (lotId, binId) => {
@@ -355,6 +345,7 @@ const Column = ((props) => {
 								payload,
 								willAcceptDrop
 							} = dragStartParams
+							setIsSource(isSource)
 
 							if (isSource && payload) {
 								const {
@@ -385,7 +376,7 @@ const Column = ((props) => {
 						getChildPayload={index =>
 							cards[index]
 						}
-						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 2rem 1rem"}}
+						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 4rem 1rem", background:!!dragEnter &&!isSourcee? '#dedfe3' : '#f7f7fa'}}
 					>
 						{cards.map((card, index) => {
 							const {
@@ -421,77 +412,66 @@ const Column = ((props) => {
 								let partBins = reduxCards[card.cardId].bins[card.binId]
 								return (
 									Object.keys(partBins).map((part) => {
+
 										const isPartial = part !== 'count' ? true : false
 										return (
-											<VisibilitySensor partialVisibility = {true}>
-												{({isVisible}) =>
-													<>
-														{!!isVisible ?
-															<>
-																{(partBins[part]>handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) || (part === 'count' && partBins['count']>0)) &&
-																		<Draggable
-																			key={cardId}
-																			onMouseEnter={(event) => onMouseEnter(event, cardId)}
-																			onMouseLeave={onMouseLeave}
+														<>
+																{(partBins[part]>0 || (part === 'count' && partBins['count']>0)) &&
+																	<Draggable
+																		key={cardId}
+																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
+																		onMouseLeave={onMouseLeave}
+																		style={{
+																		}}
+																	>
+																		<div
 																			style={{
+
 																			}}
 																		>
-																			<div
-																				style={{
+																		<LotContainer
+																			isPartial = {isPartial}
+																			onDeleteDisabledLot = {() => {
+																				handleDeleteDisabledLot(card, card.binId, part)
+																			}}
+																			glow={isLastSelected}
+																			isFocused={isDragging || isHovering}
+																			enableFlagSelector={enableFlags}
+																			selectable={selectable}
+																			isSelected={isSelected}
+																			key={cardId}
+																			// processName={processName}
+																			totalQuantity={totalQuantity}
+																			lotNumber={lotNumber}
+																			name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																			count={isPartial ? partBins[part] : partBins['count']}
+																			leadTime={leadTime}
+																			id={cardId}
+																			flags={flags || []}
+																			index={index}
+																			lotId={cardId}
+																			binId={station_id}
+																			onClick={(e) => {
+																				const payload = getBetweenSelected(cardId)
 
-																				}}
-																			>
-																				<LotContainer
-																					isPartial = {isPartial}
-																					onDeleteDisabledLot = {() => {
-																						handleDeleteDisabledLot(card, card.binId, part)
-																					}}
-																					glow={isLastSelected}
-																					isFocused={isDragging || isHovering}
-																					enableFlagSelector={enableFlags}
-																					selectable={selectable}
-																					isSelected={isSelected}
-																					key={cardId}
-																					// processName={processName}
-																					totalQuantity={totalQuantity}
-																					lotNumber={lotNumber}
-																					name={isPartial ? name + ` (${routes[part]?.part})` : name}
-																					count={isPartial ? partBins[part] - handlePathQuantity(reduxCards[card.cardId], card.binId, part, partBins['count']) : partBins['count']}
-																					leadTime={leadTime}
-																					id={cardId}
-																					flags={flags || []}
-																					index={index}
-																					lotId={cardId}
-																					binId={station_id}
-																					onClick={(e) => {
-																						const payload = getBetweenSelected(cardId)
-
-																						onCardClick(
-																							e,
-																							{
-																								lotId: cardId,
-																								processId: processId,
-																								binId: station_id
-																							},
-																							payload
-																						)
-																					}}
-																					containerStyle={{
-																						marginBottom: "0.5rem",
-																					}}
-																				/>
-																			</div>
-																		</Draggable>
-																}
-															</>
-															:
-															<div style = {{height: '20rem', width: '80%', margin: '2rem', color: 'grey'}}>
-															...Loading
-															</div>
-													}
-												</>
-											}
-										</VisibilitySensor>
+																				onCardClick(
+																					e,
+																					{
+																						lotId: cardId,
+																						processId: processId,
+																						binId: station_id
+																					},
+																					payload
+																				)
+																			}}
+																			containerStyle={{
+																				marginBottom: "0.5rem",
+																			}}
+																		/>
+																		</div>
+																	</Draggable>
+															}
+													</>
 										)
 									})
 								)

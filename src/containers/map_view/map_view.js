@@ -298,7 +298,7 @@ export class MapView extends Component {
         }
     }
 
-    
+
 
 
     /* ========== D3 Functions ========== */
@@ -676,7 +676,7 @@ export class MapView extends Component {
 
                                         src={'data:image/png;base64, ' + this.state.currentMap.map}
                                         onLoad={() => {
-                                            
+
                                             this.naturalImageDimensions = {
                                                 height: this.mapImage.naturalHeight,
                                                 width: this.mapImage.naturalWidth
@@ -736,22 +736,20 @@ export class MapView extends Component {
                                         .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
-                                            <>
-                                                <Station
-                                                    key={`loc-${ind}`}
-                                                    // If there is a selected station, then render the selected station vs station in redux
-                                                    // Selected station could contain local edits that are not on the backend (naked redux) yet
-                                                    station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
-                                                    isSelected={(!!selectedStation && station._id === selectedStation._id)}
-                                                    // station={station}
-                                                    rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
-                                                    d3={this.d3}
-                                                    handleEnableDrag={this.onEnableDrag}
-                                                    handleDisableDrag={this.onDisableDrag}
-                                                    // Mouse down is used to disabling hovering when the mouse is down on the map
-                                                    mouseDown={this.mouseDown}
-                                                />
-                                            </>
+                                            <Station
+                                                key={`loc-${ind}`}
+                                                // If there is a selected station, then render the selected station vs station in redux
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet
+                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                isSelected={(!!selectedStation && station._id === selectedStation._id)}
+                                                // station={station}
+                                                rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
+                                                d3={this.d3}
+                                                handleEnableDrag={this.onEnableDrag}
+                                                handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
+                                            />
                                         )
                                 }</>
 
@@ -864,7 +862,7 @@ const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
-        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
+        deviceEnabled: false,
         settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,

@@ -17,7 +17,7 @@ import NumberInput from '../../../../../../basic/number_input/number_input';
 // Rework
 const DashboardLotButtons = (props) => {
 
-  const deviceEnabled = useSelector(state => state.settingsReducer.settings.deviceEnabled)
+  const deviceEnabled = false
 
     const {
         handleMoveClicked,
