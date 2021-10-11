@@ -129,7 +129,7 @@ export class MapView extends Component {
 
         const updatedSettings = {
           ...this.props.settings,
-          currentMapId: this.props.maps[0]._id,
+          currentMapId: this.props.currentMapId,
         }
         this.props.dispatchPostSettings(updatedSettings)
       }

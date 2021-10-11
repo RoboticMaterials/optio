@@ -50,9 +50,7 @@ const ScheduleList = (props) => {
     let [nextScheduleName, setNextScheduleName] = useState("")
     let [id, setId] = useState("")
 
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     /*
     * handles switch press event of list items
     *
@@ -86,7 +84,7 @@ const ScheduleList = (props) => {
     * renders the task list
     * */
     const renderTasks = () => {
-        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMapId)
         return (
             <styled.TaskListContainer>
                 {fullSchedulesArr.length > 0 ?
@@ -160,7 +158,7 @@ const ScheduleList = (props) => {
     }
 
     const handleNextExecution = () => {
-        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMapId)
         const minutesPerDay = 1440
         let currentTime = Number(((moment(moment(), 'HH:mm:ss')).format('HH')) * 60) + Number((moment(moment(), 'HH:mm:ss')).format('mm'))
         logger.log('nexttime')

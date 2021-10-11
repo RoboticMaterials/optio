@@ -19,9 +19,7 @@ export const generateDefaultRoute = (processId) => {
 export const autoGenerateRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
-    const currentMapId = storeState.settingsReducer.settings.currentMapId
-    const maps = storeState.mapReducer.maps
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = storeState.localReducer.localSettings.currentMapId
     const routeConfirmationLocation = storeState.tasksReducer.routeConfirmationLocation
 
     const positions = storeState.positionsReducer.positions
@@ -30,7 +28,7 @@ export const autoGenerateRoute = (obj) => {
         ...defaultTask,
         device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
         handoff: true,
-        map_id: currentMap._id,
+        map_id: currentMapId,
         load: {...defaultTask.load,
                station: !!positions[routeConfirmationLocation] ? positions[routeConfirmationLocation].parent : routeConfirmationLocation,
                position: routeConfirmationLocation,

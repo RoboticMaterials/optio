@@ -56,10 +56,7 @@ const RightClickMenu = (props) => {
 
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
 
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-    const showSideBar = useSelector(state => state.sidebarReducer.open)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const deviceEnabled = false
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
@@ -77,7 +74,7 @@ const RightClickMenu = (props) => {
             name: '',
             schema: 'temporary_position',
             type: 'cart_position',
-            map_id: currentMap._id,
+            map_id: currentMapId,
             pos_x: pos[0],
             pos_y: pos[1],
             rotation: 0,
@@ -99,7 +96,7 @@ const RightClickMenu = (props) => {
 
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
-        defaultAttributes['map_id'] = currentMap._id
+        defaultAttributes['map_id'] = currentMapId
         defaultAttributes['_id'] = uuid.v4()
         defaultAttributes['pos_x'] = pos[0]
         defaultAttributes['pos_y'] = pos[1]
