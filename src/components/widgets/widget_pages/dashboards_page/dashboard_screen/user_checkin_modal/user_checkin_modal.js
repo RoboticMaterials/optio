@@ -58,7 +58,7 @@ const UserCheckinModal = (props) => {
         >
             <styled.Header>
                 <styled.HeaderMainContentContainer>
-                    <styled.Title>{'Select User'}</styled.Title>
+                    <styled.Title>{'Select Operator'}</styled.Title>
                     <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onClose} />
                 </styled.HeaderMainContentContainer>
 
@@ -70,7 +70,7 @@ const UserCheckinModal = (props) => {
                     style={{width: '100%', height: '3rem', margin: '1rem'}} 
                     inputStyle={{background: 'white', fontSize: '1rem'}} 
                     autoFocus={true}
-                    placeholder="Enter name of user"
+                    placeholder="Enter name/identifier of operator"
                     value={userName}
                     onChange={e => {
                         setUserName(e.target.value)
@@ -80,7 +80,7 @@ const UserCheckinModal = (props) => {
                 />
                 {!!dashboard.users && dashboard.users.length &&
                     <>
-                    <styled.Label>Previous Users</styled.Label>
+                    <styled.Label>Previous Operators</styled.Label>
                     <div style={{marginBottom: '1rem', width: '100%', maxHeight: '40vh', overflowY: 'scroll'}}>
                         
                         {dashboard.users.map((user, ind) => (
