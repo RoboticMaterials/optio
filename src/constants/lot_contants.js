@@ -267,7 +267,7 @@ export const SORT_DIRECTIONS = {
 
 export const LOT_FILTER_OPTIONS = {
     name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
-    lotNumber: { label: "Lot Number", fieldName: 'lotNum', primary: true, dataType: "INTEGER" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "STRING" },
     flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
     processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
     quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},
@@ -276,7 +276,7 @@ export const LOT_FILTER_OPTIONS = {
 
 export const LOT_SORT_OPTIONS = {
     name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
-    lotNumber: { label: "Lot Number", fieldName: 'lotNum', primary: true, dataType: "INTEGER" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "STRING" },
     flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
     processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
     quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},

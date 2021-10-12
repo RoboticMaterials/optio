@@ -104,6 +104,7 @@ const Column = ((props) => {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
 			setCards(tempCards)
+
 		}
 		else {
 			setCards(props.cards)

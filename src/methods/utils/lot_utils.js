@@ -214,7 +214,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
         //  lot number (treated as string when formatted)
         case LOT_FILTER_OPTIONS.lotNumber.label: {
             if (filterValue) {
-                const formattedLotNumber = formatLotNumber(lot.lotNumber)
+                const formattedLotNumber = formatLotNumber(lot.lotNum)
                 return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
             }
             return true
