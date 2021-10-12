@@ -40,21 +40,21 @@ const FieldSelectModal = (props) => {
     }, [])
 
     const onCheckBoxClick = (field, templateId) => {
-      var id = field[0]._id
+      var id = field._id
 
       const updatedTemplateFields = {
         ...selectedFields[templateId],
-        [id]: field[0]
+        [id]: field
       }
 
-      if(!selectedFields[templateId] || !selectedFields[templateId][field[0]._id]){
+      if(!selectedFields[templateId] || !selectedFields[templateId][field._id]){
         setSelectedFields({
           ...selectedFields,
           [templateId]: updatedTemplateFields
         })
       }
       else{
-        delete selectedFields[templateId][field[0]._id]
+        delete selectedFields[templateId][field._id]
       }
       if(!!selectedFields[templateId] && Object.values(selectedFields[templateId]).length === 0) delete selectedFields[templateId]
 
@@ -70,6 +70,7 @@ const FieldSelectModal = (props) => {
     }
 
     const renderFields = () => {
+
       return (
         <>
           {Object.values(lotTemplates).map((template, index) =>
@@ -82,20 +83,25 @@ const FieldSelectModal = (props) => {
               </styled.ListItemTitle>
             </styled.ListItem>
             <>
+
             {template.fields.map((field, fieldIndex) =>
-                <styled.ListItem>
-                  <Checkbox
-                    onClick = {()=> {
-                      onCheckBoxClick(field, template._id)
-                    }}
-                    checked = {!!selectedFields[template._id] && !!selectedFields[template._id][field[0]._id]}
-                  />
-                  <styled.ListItemTitle>
-                    {field[0].fieldName}
-                  </styled.ListItemTitle>
-                </styled.ListItem>
-              )}
-            </>
+              <>
+                {field.map((indField, ind) =>
+                  <styled.ListItem>
+                    <Checkbox
+                      onClick = {()=> {
+                        onCheckBoxClick(indField, template._id)
+                      }}
+                      checked = {!!selectedFields[template._id] && !!selectedFields[template._id][indField._id]}
+                    />
+                    <styled.ListItemTitle>
+                      {indField.fieldName}
+                    </styled.ListItemTitle>
+                  </styled.ListItem>
+                )}
+                </>
+                )}
+              </>
             </>
           )}
         </>

@@ -200,6 +200,7 @@ const FormComponent = (props) => {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [templateFieldsChanged, setTemplateFieldsChanged] = useState(false);
     const [loadingTemplateValues, setLoadingTemplateValues] = useState(false);
+    const [deletedObject, setDeletedObject] = useState({})
 
     const [showFieldModal, setShowFieldModal] = useState(false);
     const [checkedCardAndTemplateFields, setCheckedCardAndTemplateFields] =
@@ -302,64 +303,39 @@ const FormComponent = (props) => {
         let submitItem = {};
         let newBins = {};
 
-        if (
-            !!bins[selectedBin] &&
-            Object.values(bins[selectedBin]).length > 1
-        ) {
-            let partsBin = bins[selectedBin];
-            let qty = partsBin["count"];
-            for (const ind in partsBin) {
-                let newCount = partsBin[ind] - qty;
-                if (newCount === 0 && ind !== "count") delete partsBin[ind];
-                else partsBin[ind] = newCount;
-            }
+        const { [selectedBin]: currentBin, ...remainingBins } = bins;
 
-            newBins = {
-                ...bins,
-                [selectedBin]: partsBin,
-            };
+        newBins = remainingBins;
 
-            if (
-                Object.values(partsBin).length === 1 &&
-                partsBin["count"] === 0
-            ) {
-                delete newBins[selectedBin];
-            }
-
-            submitItem = {
-                ...card,
-                bins: newBins,
-            };
-        } else {
-            const { [selectedBin]: currentBin, ...remainingBins } = bins;
-
-            newBins = remainingBins;
-
-            submitItem = {
-                ...card,
-                bins: { ...newBins },
-            };
-        }
+        submitItem = {
+            ...card,
+            bins: { ...newBins },
+        };
 
         let requestSuccessStatus = false;
 
         // if there are no remaining bins, delete the card
         if (isEmpty(newBins)) {
-            dispatchDeleteCard(cardId, processId);
+            const res = await dispatchDeleteCard(cardId, processId);
+            setDeletedObject(res)
+            if(Object.values(res).length>0){
+              console.log(res[0])
+               close();
+             }
+
         }
 
         // otherwise update the card to contain only the remaining bins
         else {
-            console.log(submitItem);
             const result = await dispatchPutCard(submitItem, cardId);
 
             // check if request was successful
             if (!(result instanceof Error)) {
                 requestSuccessStatus = true;
             }
+            close();
         }
 
-        close();
     };
 
     useEffect(() => {
@@ -1339,7 +1315,7 @@ const LotEditor = (props) => {
         merge,
     } = props;
 
-    
+
 
     // redux state
     const cards = useSelector((state) => {
