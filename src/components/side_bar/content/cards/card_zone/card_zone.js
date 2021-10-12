@@ -210,6 +210,7 @@ const CardZone = ((props) => {
         setFinished(tempFinished)
     }, [bins, allCards, processId, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
 
+    console.log(cardsSorted)
 
     const renderStationColumns = useMemo(() => {
 
