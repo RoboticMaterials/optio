@@ -15,12 +15,20 @@ const DragEntityProto = (props) => {
         // d3
     } = props
 
+    // console.log(location.name, isSelected)
+
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
+    const [isBinded, setBinded] = useState(false)
+
     useEffect(() => {
-        bindDragListener()
-    }, [])
+        if (isSelected) {
+            !isBinded && bindDragListener()
+        } else {
+            isBinded && unbindDragListener()
+        }
+    }, [isSelected])
 
     let rotateStart = null          // Inital rotation angle
     let originalRotation = null     // Original rotation of location
@@ -164,6 +172,33 @@ const DragEntityProto = (props) => {
                     }
                 })
         )
+
+        setBinded(true)
+    }
+
+    const unbindDragListener = () => {
+
+        const mainElement = d3.select(`.${rd3tClassName}`)
+        const ringElement = d3.select(`.${rd3tClassName}-rot`)
+        const rectElement = d3.select(`.${rd3tClassName}-trans`)
+
+        // Define drag callbacks for dragging the ring (which rotates the location)
+        ringElement.call(
+            d3.behavior.drag()
+                .on("dragstart", () => {})
+                .on("drag", () => {})
+                .on("dragend", () => {})
+        )
+
+        // Define drag callbacks for the element itself (which translates location)
+        rectElement.call(
+            d3.behavior.drag()
+                .on("dragstart", () => {})
+                .on("drag", () => {})
+                .on("dragend", async () => {})
+        )
+
+        setBinded(false)
     }
 
     return (null)

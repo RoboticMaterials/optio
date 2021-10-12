@@ -40,7 +40,7 @@ import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
-  
+
 
 const Settings = () => {
 
@@ -78,6 +78,7 @@ const Settings = () => {
     const [saveDisabled, setSaveDisabled] = useState(true)
 
     const themeContext = useContext(ThemeContext);
+
 
     /**
      *  Sets current settings to state so that changes can be discarded or saved
@@ -217,9 +218,14 @@ const Settings = () => {
         if (!localSettingsState.mapViewEnabled) {
             history.push(`/`)
         }
+
+        if (mapChange) {
+            window.location.reload()
+        }
     }
 
     const TimeZone = () => {
+
 
         return (
                 <styled.DropdownContainer>
@@ -354,7 +360,7 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-                        
+
 
                     </>
                 }
@@ -463,6 +469,7 @@ const Settings = () => {
 
     const CurrentMap = () => {
 
+
         return (
                 <styled.DropdownContainer>
                     <styled.DropdownLabel>Map</styled.DropdownLabel>
@@ -472,11 +479,11 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={[Object.values(maps).find(map => {
-                            if (!!localSettingsState && !!localSettingsState.currentMapId) {
+                        values={[Object.values(maps).find((map,ind) => {
+                            if (!!localSettingsState && !!localSettingsState.currentMapId && !!maps.find(map => map._id === localSettingsState.currentMapId)) {
                                 return map._id === localSettingsState.currentMapId
                             }
-                            else return map.name === 'Blank Map'
+                            else return ind===0
                         })]}
                         dropdownGap={2}
                         noDataLabel="No matches found"
@@ -487,7 +494,7 @@ const Settings = () => {
                         }}
                         className="w-100"
                     />
-                
+
                 </styled.DropdownContainer>
         )
     }
@@ -495,7 +502,7 @@ const Settings = () => {
     const renderShiftSettings = () => {
         return (
             <>
-            
+
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
                     <styled.ChevronIcon
@@ -621,7 +628,7 @@ const Settings = () => {
                 visible={!!addTaskAlert}
             />
         <styled.SettingsContainer>
-        
+
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
 
             <styled.Label>Map Settings</styled.Label>
@@ -633,12 +640,12 @@ const Settings = () => {
             {EmailAddress()}
             {renderAlertDurationSetting()}
             {renderShiftSettings()}
-            
+
 
             <styled.Label>Dashboard Settings</styled.Label>
             {dashboardSettings()}
             {LockUnlockAllDashboards()}
-            
+
             {advancedSettings()}
 
             {SignOut()}

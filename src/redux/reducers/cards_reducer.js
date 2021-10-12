@@ -66,8 +66,8 @@ export default function cardsReducer(state = defaultState, action) {
     case GET + PROCESS_CARDS + SUCCESS:
       return {
         ...state,
-        processCards: {...state.processCards, [action.payload.process_id]: {
-          ...state.processCards[action.payload.process_id], ...action.payload.cards
+        processCards: {...state.processCards, [action.payload.processId]: {
+          ...state.processCards[action.payload.processId], ...action.payload.cards
           }},
         pending: false,
       }
@@ -76,8 +76,8 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.process_id]: {
-            ...state.processCards[action.payload.process_id], [action.payload.card._id]: action.payload.card
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
           }},
         pending: false,
       }
@@ -86,8 +86,8 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.process_id]: {
-            ...state.processCards[action.payload.process_id], [action.payload.card._id]: action.payload.card
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
           }},
         pending: false,
       }
@@ -96,7 +96,7 @@ export default function cardsReducer(state = defaultState, action) {
       const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
       const {
 
-        [action.payload.process_id]: {[action.payload.cardId]: removedCard, ...remaining} ,
+        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
         ...unchangedProcessGroups
 
       } = state.processCards; // extracts payload lot from rest
@@ -104,7 +104,7 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         cards: {...rest},
-        processCards: {...unchangedProcessGroups, [action.payload.process_id]: remaining},
+        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
         pending: false,
       }
 

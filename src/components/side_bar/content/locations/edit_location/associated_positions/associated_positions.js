@@ -44,13 +44,11 @@ export default function Positions(props) {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const deviceEnabled = serverSettings.deviceEnabled
+    const deviceEnabled = false
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -129,7 +127,7 @@ export default function Positions(props) {
 
         const newPositionType = type
 
-        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
+        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMapId)
 
         await dispatchSetSelectedStationChildrenCopy({
             ...selectedStationChildrenCopy,

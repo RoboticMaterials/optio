@@ -47,7 +47,7 @@ const StatusHeader = (props) => {
     const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const deviceEnabled = serverSettings.deviceEnabled
+    const deviceEnabled = false
     const [initialRender, setInitialRender] = useState (null)
     const [statusBarPath, setStatusBarPath] = useState(``)
     const [rightCurvePoint, setRightCurvePoint] = useState(``)

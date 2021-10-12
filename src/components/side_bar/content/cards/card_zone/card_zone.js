@@ -57,7 +57,6 @@ const CardZone = ((props) => {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
     } = draggedLotInfo || {}
-    
     // component state
     const [cardsSorted, setCardsSorted] = useState({})
     const [bins, setBins] = useState({})
@@ -210,7 +209,6 @@ const CardZone = ((props) => {
         setQueue(tempQueue)
         setFinished(tempFinished)
     }, [bins, allCards, processId, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
-
 
     const renderStationColumns = useMemo(() => {
 
