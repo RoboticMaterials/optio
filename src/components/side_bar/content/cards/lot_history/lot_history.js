@@ -71,7 +71,7 @@ const LotHistory = (props) => {
                     <styled.Label>Touch Time</styled.Label>
                     <styled.Label>Move Time</styled.Label>
                     <styled.Label>Speed</styled.Label>
-                    <styled.Label>Worker</styled.Label>
+                    <styled.Label>Operator</styled.Label>
                     <styled.Label>Product Group</styled.Label>
                     <styled.Label>SKU / Product</styled.Label>
                 </styled.HeaderRow>

@@ -49,9 +49,6 @@ function Station(props) {
     const selectedStation = useSelector(
         (state) => state.stationsReducer.selectedStation
     );
-    const editingStation = useSelector(
-        (state) => state.stationsReducer.editingStation
-    );
     const editingProcess = useSelector(
         (state) => state.processesReducer.editingProcess
     );
@@ -67,11 +64,6 @@ function Station(props) {
     const hoveringInfo = useSelector(
         (state) => state.widgetReducer.hoverStationInfo
     );
-    const tasks = useSelector((state) => state.tasksReducer.tasks);
-    const fixingProcess = useSelector(
-        (state) => state.processesReducer.fixingProcess
-    );
-    const positions = useSelector((state) => state.positionsReducer.positions);
 
     const dispatch = useDispatch();
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info));
@@ -120,7 +112,7 @@ function Station(props) {
 
     // Set Color
     let color = StationTypes[station.type].color;
-    if (!isSelected && disabled) color = "#afb5c9";
+    if (!isSelected && disabled) color = "#c4cbff";
     // Grey
     else if (highlight) color = "#38eb87"; // Green
 
@@ -302,10 +294,11 @@ function Station(props) {
                 handleTranslateEnd={({ x, y }) => {
                     const pos = convertD3ToReal([x, y], props.d3);
                     dispatchSetStationAttributes(station._id, {
+                        x,
+                        y,
                         pos_x: pos[0],
                         pos_y: pos[1],
-                    });
-                    
+                    });                    
                 }}
                 handleEnableDrag={() => {
                     handleEnableDrag();
