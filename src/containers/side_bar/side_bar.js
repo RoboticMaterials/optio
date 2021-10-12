@@ -128,17 +128,14 @@ const SideBar = (props) => {
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
                 setBarcode([])
-                const splitLot = full.split('-')
-                let lotId = parseInt(splitLot[1].slice(0,-5))
+                let lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)
                 onScanLot(lotId)
                 setFull('')
             }
-        }
 
     }, [full])
 
@@ -150,9 +147,8 @@ const SideBar = (props) => {
       let binCount = 0
       let statId = ""
       let lotFound = false
-
       Object.values(cards).forEach((card) => {
-        if(card.lotNumber === id){
+        if(card.lotNum == id){
           lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){

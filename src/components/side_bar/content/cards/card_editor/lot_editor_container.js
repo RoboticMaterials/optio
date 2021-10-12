@@ -596,6 +596,7 @@ const LotEditorContainer = (props) => {
                     name: newName,
                     bins: newBins,
                     processId: newProcessId,
+                    lotNumber: newLotNumber,
                     fields
                 } = values || {}
 
@@ -605,7 +606,7 @@ const LotEditorContainer = (props) => {
                     process_id: newProcessId,
                     lotTemplateId: lotTemplateId,
                     fields,
-                    lotNumber: index, //collectionCount + index
+                    lotNumber: newLotNumber, //collectionCount + index
                     totalQuantity: newBins['QUEUE']?.count
                 }
 
@@ -684,6 +685,7 @@ const LotEditorContainer = (props) => {
                   name: newName,
                   bins: newBins,
                   processId: newProcessId,
+                  lotNumber: newLotNumber,
                   fields
               } = values || {}
 
@@ -693,7 +695,7 @@ const LotEditorContainer = (props) => {
                   process_id: newProcessId,
                   lotTemplateId: lotTemplateId,
                   fields,
-                  lotNumber: index //collectionCount + index
+                  lotNumber: newLotNumber //collectionCount + index
               }
 
 
@@ -711,6 +713,7 @@ const LotEditorContainer = (props) => {
                     name: newName,
                     bins: newBins,
                     processId: newProcessId,
+                    lotNumber: newLotNumber,
                     fields
                 } = values || {}
 
@@ -720,7 +723,7 @@ const LotEditorContainer = (props) => {
                     process_id: newProcessId,
                     lotTemplateId: lotTemplateId,
                     fields,
-                    lotNumber: index //collectionCount + index
+                    lotNumber: newLotNumber  //collectionCount + index
                 }
 
                 let workOrderNumber = ''

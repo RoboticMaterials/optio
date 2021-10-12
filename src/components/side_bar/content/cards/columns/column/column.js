@@ -387,7 +387,7 @@ const Column = ((props) => {
 								object_id,
 								cardId,
 								flags,
-								lotNumber,
+								lotNum,
 								totalQuantity,
 								processName,
 								lotTemplateId,
@@ -442,7 +442,7 @@ const Column = ((props) => {
 																			key={cardId}
 																			// processName={processName}
 																			totalQuantity={totalQuantity}
-																			lotNumber={lotNumber}
+																			lotNumber={lotNum}
 																			name={isPartial ? name + ` (${routes[part]?.part})` : name}
 																			count={isPartial ? partBins[part] : partBins['count']}
 																			leadTime={leadTime}

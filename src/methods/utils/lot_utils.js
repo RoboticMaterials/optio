@@ -373,7 +373,7 @@ export const getLotField = (searchKey, searchValue, lot) => {
 
 export const formatLotNumber = (lotNumber) => {
     return (isString(lotNumber) || Number.isInteger(lotNumber)) ?
-        `RM-${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
+        `${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
         :
         ``
 }

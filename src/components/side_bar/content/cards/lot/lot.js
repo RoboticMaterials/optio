@@ -58,12 +58,7 @@ const Lot = (props) => {
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
 
     // component state
-    const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
     const [popupOpen, setPopupOpen] = useState(false)
-
-    useEffect(() => {
-        setFormattedLotNumber(formatLotNumber(lotNumber))
-    }, [lotNumber])
 
     const renderTemplateValues = () => {
         return templateValues
@@ -249,10 +244,10 @@ const Lot = (props) => {
                 }
 
                 <styled.NameNumberContainer>
-                    <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
+                    <styled.CardName>{name ? name : lotNumber}</styled.CardName>
 
                     {name &&
-                        <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
+                        <styled.LotNumber>{lotNumber}</styled.LotNumber>
                     }
                 </styled.NameNumberContainer>
 

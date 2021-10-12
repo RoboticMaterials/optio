@@ -148,18 +148,14 @@ const ListView = (props) => {
     }, [barcode])
 
     useEffect(() => {
-      //this is ridiculous but there are different codes for usb transmitter/bluetooth/wired to all need to be included to register different methods
-      if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
             if(enter === 'Enter'){
                 setBarcode([])
-                const splitLot = full.split('-')
-                let lotId = parseInt(splitLot[1].slice(0,-5))
+                let lotId = parseInt(full.slice(0,-5))
                 setLotNum(lotId)
                 onScanLot(lotId)
                 setFull('')
             }
-        }
 
     }, [full])
 
@@ -175,7 +171,7 @@ const ListView = (props) => {
       let lotFound = false
 
       Object.values(cards).forEach((card) => {
-        if(card.lotNumber === id){
+        if(card.lotNum == id){
           lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){

@@ -38,7 +38,7 @@ const WarehouseModal = (props) => {
         close,
         dashboard,
         onSubmit,
-        onSubmitLabel, 
+        onSubmitLabel,
 
         initialQuantity,
 
@@ -86,7 +86,7 @@ const WarehouseModal = (props) => {
                         templateValues={templateValues}
                         totalQuantity={lot.totalQuantity}
                         enableFlagSelector={false}
-                        lotNumber={lot.lotNumber}
+                        lotNumber={lot.lotNum}
                         processName={processName}
                         flags={lot?.flags || []}
                         name={lot.name}
@@ -112,7 +112,7 @@ const WarehouseModal = (props) => {
 
     return (
       <>
-        {!!selectedLot && 
+        {!!selectedLot &&
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 initialValue={initialQuantity}
