@@ -391,13 +391,13 @@ const DashboardLotPage = (props) => {
     let maxQty = currentLot.bins[stationID]?.count
 
     switch(fraction) {
-      case '1/4': setMoveQuantity(Math.ceil(maxQty/4))
+      case '1/4': setMoveQuantity(Math.round(maxQty/4))
       break
 
-      case '1/2': setMoveQuantity(Math.ceil(maxQty/2))
+      case '1/2': setMoveQuantity(Math.round(maxQty/2))
       break
 
-      case '3/4': setMoveQuantity(Math.ceil(3*maxQty/4))
+      case '3/4': setMoveQuantity(Math.round(3*maxQty/4))
       break
 
       case '1': setMoveQuantity(maxQty)

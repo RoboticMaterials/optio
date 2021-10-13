@@ -27,3 +27,10 @@ export const RowContainer = styled.div`
   flex-direction: row;
   margin-top: .5rem;
 `
+
+export const ColumnContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justifyContent: center;
+  margin-top: .5rem;
+`

@@ -39,6 +39,7 @@ const DashboardLotButtons = (props) => {
         fractionMove
     } = props
 
+    const [fractionClicked, setFractionClicked] = useState(true)
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
         const color = '#90eaa8'
@@ -115,11 +116,7 @@ const DashboardLotButtons = (props) => {
 
     return (
         <styled.ButtonContainer>
-        {!fractionMove ?
-          <styled.QuantityText>The maximum quantity is {maxQuantity}</styled.QuantityText>
-          :
-          <styled.QuantityText>Select a fraction of the lot to move</styled.QuantityText>
-        }
+
             {!fractionMove ?
               <NumberInput
                   onFocus={() => onInputChange(null)}
@@ -137,36 +134,73 @@ const DashboardLotButtons = (props) => {
                   onBlur = {onBlur}
               />
               :
-              <styled.RowContainer>
-                <Button
-                    style={{minWidth: '8rem', height: '4rem', marginBottom: '1rem'}}
-                    secondary = {selectedFraction !== '1/4'}
-                    onClick = {()=> onFractionClick('1/4')}
-                    label={'1/4 (' + Math.ceil(maxQuantity/4) + ')'}
-                    type="button"
+              <styled.ColumnContainer>
+                <styled.RowContainer>
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '1/4'}
+                      onClick = {()=> {
+                        onFractionClick('1/4')
+                        setFractionClicked(true)
+                    }}
+                      label={'25%' }
+                      type="button"
+                  />
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '1/2'}
+                      onClick = {()=> {
+                        onFractionClick('1/2')
+                        setFractionClicked(true)
+                    }}
+                      label={'50%'}
+                      type="button"
+                  />
+
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '3/4'}
+                      onClick = {()=> {
+                        onFractionClick('3/4')
+                        setFractionClicked(true)
+                    }}
+                      label={'75%'}
+                      type="button"
+                  />
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      onClick = {()=> {
+                        onFractionClick('1')
+                        setFractionClicked(true)
+                    }}
+                      secondary = {!fractionClicked || selectedFraction !== '1'}
+                      label={'100%'}
+                      type="button"
+                  />
+                </styled.RowContainer>
+                <NumberInput
+                    onFocus={() => {
+                      onInputChange(null)
+                      setFractionClicked(false)
+                    }}
+                    minValue={minQuantity}
+                    maxValue={maxQuantity}
+                    plusDisabled = {quantity===maxQuantity? true:false}
+                    minusDisabled = {quantity===1? true:false}
+                    value={!!Number.isInteger(parseInt(quantity)) ? quantity : ''}
+                    onMinusClick={() => {
+                      setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)
+                      setFractionClicked(false)
+                    }}
+                    onPlusClick={() => {
+                      setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
+                      setFractionClicked(false)
+                    }}
+                    containerStyle={{marginBottom: '1rem', marginTop: '0rem', alignSelf: 'center'}}
+                    onInputChange = {onInputChange}
+                    onBlur = {onBlur}
                 />
-                <Button
-                    style={{minWidth: '8rem', height: '4rem', marginBottom: '1rem'}}
-                    secondary = {selectedFraction !== '1/2'}
-                    onClick = {()=> onFractionClick('1/2')}
-                    label={'1/2 (' + Math.ceil(maxQuantity/2) + ')'}
-                    type="button"
-                />
-                <Button
-                    style={{minWidth: '8rem', height: '4rem', marginBottom: '1rem'}}
-                    secondary = {selectedFraction !== '3/4'}
-                    onClick = {()=> onFractionClick('3/4')}
-                    label={'3/4 (' + Math.ceil(3*maxQuantity/4) + ')'}
-                    type="button"
-                />
-                <Button
-                    style={{minWidth: '8rem', height: '4rem', marginBottom: '1rem'}}
-                    onClick = {()=> onFractionClick('1')}
-                    secondary = {selectedFraction !== '1'}
-                    label={'1 (' + maxQuantity + ')'}
-                    type="button"
-                />
-              </styled.RowContainer>
+              </styled.ColumnContainer>
             }
             {isFinish ?
                 renderFinishButton()
