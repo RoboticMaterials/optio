@@ -9,6 +9,7 @@ import { theme } from "../../../../../../../theme";
 import DashboardButton from '../../../dashboard_buttons/dashboard_button/dashboard_button'
 import DashboardSplitButton from '../../../dashboard_buttons/dashboard_split_button/dashboard_split_button'
 import NumberInput from '../../../../../../basic/number_input/number_input';
+import Button from '../../../../../../basic/button/button'
 
 // Renders that buttons at the footer of the dashboard screen
 // IE:
@@ -18,6 +19,7 @@ import NumberInput from '../../../../../../basic/number_input/number_input';
 const DashboardLotButtons = (props) => {
 
   const deviceEnabled = false
+
 
     const {
         handleMoveClicked,
@@ -32,8 +34,12 @@ const DashboardLotButtons = (props) => {
         disabled,
         onKeyPress,
         onBlur,
+        onFractionClick,
+        selectedFraction,
+        fractionMove
     } = props
 
+    const [fractionClicked, setFractionClicked] = useState(true)
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
         const color = '#90eaa8'
@@ -110,23 +116,92 @@ const DashboardLotButtons = (props) => {
 
     return (
         <styled.ButtonContainer>
-          <styled.QuantityText>The maximum quantity is {maxQuantity}</styled.QuantityText>
 
-            <NumberInput
-                onFocus={() => onInputChange(null)}
-                minValue={minQuantity}
-                maxValue={maxQuantity}
-                plusDisabled = {quantity===maxQuantity? true:false}
-                minusDisabled = {quantity===1? true:false}
-                value={!!Number.isInteger(parseInt(quantity)) ? quantity : ''}
-                onMinusClick={() => setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)}
-                onPlusClick={() => {
-                  setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
-                }}
-                containerStyle={{marginBottom: '1rem', marginTop: '1rem'}}
-                onInputChange = {onInputChange}
-                onBlur = {onBlur}
-            />
+            {!fractionMove ?
+              <NumberInput
+                  onFocus={() => onInputChange(null)}
+                  minValue={minQuantity}
+                  maxValue={maxQuantity}
+                  plusDisabled = {quantity===maxQuantity? true:false}
+                  minusDisabled = {quantity===1? true:false}
+                  value={!!Number.isInteger(parseInt(quantity)) ? quantity : ''}
+                  onMinusClick={() => setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)}
+                  onPlusClick={() => {
+                    setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
+                  }}
+                  containerStyle={{marginBottom: '1rem', marginTop: '1rem'}}
+                  onInputChange = {onInputChange}
+                  onBlur = {onBlur}
+              />
+              :
+              <styled.ColumnContainer>
+                <styled.RowContainer>
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '1/4'}
+                      onClick = {()=> {
+                        onFractionClick('1/4')
+                        setFractionClicked(true)
+                    }}
+                      label={'25%' }
+                      type="button"
+                  />
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '1/2'}
+                      onClick = {()=> {
+                        onFractionClick('1/2')
+                        setFractionClicked(true)
+                    }}
+                      label={'50%'}
+                      type="button"
+                  />
+
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      secondary = {!fractionClicked || selectedFraction !== '3/4'}
+                      onClick = {()=> {
+                        onFractionClick('3/4')
+                        setFractionClicked(true)
+                    }}
+                      label={'75%'}
+                      type="button"
+                  />
+                  <Button
+                      style={{minWidth: '6rem', height: '3rem', marginBottom: '1rem'}}
+                      onClick = {()=> {
+                        onFractionClick('1')
+                        setFractionClicked(true)
+                    }}
+                      secondary = {!fractionClicked || selectedFraction !== '1'}
+                      label={'100%'}
+                      type="button"
+                  />
+                </styled.RowContainer>
+                <NumberInput
+                    onFocus={() => {
+                      onInputChange(null)
+                      setFractionClicked(false)
+                    }}
+                    minValue={minQuantity}
+                    maxValue={maxQuantity}
+                    plusDisabled = {quantity===maxQuantity? true:false}
+                    minusDisabled = {quantity===1? true:false}
+                    value={!!Number.isInteger(parseInt(quantity)) ? quantity : ''}
+                    onMinusClick={() => {
+                      setQuantity(Number.isInteger(parseInt(quantity)) ? quantity - 1 : 0)
+                      setFractionClicked(false)
+                    }}
+                    onPlusClick={() => {
+                      setQuantity(!!Number.isInteger(parseInt(quantity)) ? quantity + 1 : 1)
+                      setFractionClicked(false)
+                    }}
+                    containerStyle={{marginBottom: '1rem', marginTop: '0rem', alignSelf: 'center'}}
+                    onInputChange = {onInputChange}
+                    onBlur = {onBlur}
+                />
+              </styled.ColumnContainer>
+            }
             {isFinish ?
                 renderFinishButton()
                 :
