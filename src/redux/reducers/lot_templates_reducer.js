@@ -48,7 +48,6 @@ export default function lotTemplatesReducer(state = defaultState, action) {
       }
 
     case PUT + LOT_TEMPLATE + SUCCESS:
-      console.log("!", action.payload.lotTemplate)
       return {
         ...state,
         lotTemplates: {...state.lotTemplates, [action.payload.lotTemplate._id]: action.payload.lotTemplate},

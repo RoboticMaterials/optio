@@ -97,6 +97,7 @@ export const DefaultItemComponent = styled.span`
   cursor: pointer;
   white-space: nowrap;
   display: flex;
+  overflow-x: visible;
   justify-content: space-between;
   font-family: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
@@ -156,7 +157,6 @@ const DefaultContentContainer = styled.div`
   flex: 1;
   justify-content: space-between;
   padding: 0;
-  overflow: hidden;
   white-space: nowrap;
 `;
 

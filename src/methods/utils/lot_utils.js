@@ -1093,3 +1093,50 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
     if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };
+
+
+  export const createPastePayload = (table, fieldMapping) => {
+
+    return table.map((row, i) => {
+
+      let lotFields = [];
+      for (var j=0; j<row.length; j++) {
+        if (!!fieldMapping[j]) {
+          let { index: rangeIndex, ...field} = fieldMapping[j]
+          let value = row[j]
+
+          // Parse Data
+					if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+						let parsedDate = new Date(value)
+
+            let existingFieldIdx = lotFields.findIndex(lotField => lotField.fieldName === field.fieldName)
+            if (existingFieldIdx !== -1) {
+              if (Array.isArray(lotFields[existingFieldIdx].value)) {
+                // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
+                // therefore, we just alter the array at the index that the field specifies
+                let dateArr = lotFields[existingFieldIdx].value
+                dateArr.splice(rangeIndex, 0, parsedDate)
+                lotFields[existingFieldIdx].value = dateArr
+                continue // Dont append a new field because one for this already exists
+              } else { // Otherwise its a single element array
+                value = [parsedDate]
+              }
+            }
+					}
+					else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
+						value = parseInt(value)
+						if(!Number.isInteger(value)) value = 0
+					}
+
+          lotFields.push({
+            ...field,
+            value: row[j]
+          })
+        }
+      }
+
+      return lotFields
+
+
+    })
+	}

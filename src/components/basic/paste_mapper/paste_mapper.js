@@ -14,6 +14,7 @@ import DropDownSearch from '../drop_down_search_v2/drop_down_search'
 //utils
 import { templateMapperSchema } from "../../../methods/utils/form_schemas";
 import { deepCopy, uuidv4 } from '../../../methods/utils/utils'
+import { createPastePayload } from '../../../methods/utils/lot_utils'
 
 // style
 import * as styled from './paste_mapper.style'
@@ -40,10 +41,20 @@ const PasteMapper = (props) => {
         table
     } = values
 
+    const [fieldMapping, setFieldMapping] = useState([])
+
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 
-    const createPayload = () => {}
+    useEffect(() => {
+        if (!!lotTemplate?.uploadFieldMapping) {
+            let originalFieldMapping = lotTemplate.uploadFieldMapping
+                .map(displayName => availableFields
+                    .find(field => field.displayName === displayName))
+
+            setFieldMapping(originalFieldMapping)
+        }
+    }, [])
 
     const renderColumnDropdown = ({ column }) => {
 
@@ -56,9 +67,8 @@ const PasteMapper = (props) => {
                 }
             }
             return {
-                displayName: field.displayName,
-                disabled: false,
-                _id: uuidv4()
+                ...field,
+                disabled,
             }
 
         })
@@ -67,11 +77,11 @@ const PasteMapper = (props) => {
         const savedValue = !!savedDName ? [unusedFields.find(field => field.displayName === savedDName)] : []
 
         return (
-            <td style={{minWidth: '8rem'}}>
+            <td style={{minWidth: '4rem'}}>
                 <DropDownSearch
                     placeholder="Column Field"
                     labelField="displayName"
-                    valueField="_id"
+                    valueField="displayName"
                     options={unusedFields}
                     disabledLabel={''}
                     values={savedValue}
@@ -81,6 +91,12 @@ const PasteMapper = (props) => {
                     closeOnSelect="true"
                     searchable={false}
                     onChange={values => {
+                        // Save this value locally to be used when creating the payload
+                        let fieldMappingCopy = deepCopy(fieldMapping)
+                        fieldMappingCopy[column] = values[0]
+                        setFieldMapping(fieldMappingCopy)
+
+                        // Save this value in the product group template for next time you paste
                         let lotTemplateCopy = deepCopy(lotTemplate)
                         if (lotTemplateCopy.uploadFieldMapping === undefined) { // If mapping does not exist yet, create it
                             lotTemplateCopy.uploadFieldMapping = new Array(availableFields.length).fill(null);
@@ -120,7 +136,8 @@ const PasteMapper = (props) => {
                     schema={'lots'}
                     label={"Preview Lots"}
                     onClick={()=>{
-                        const payload = createPayload()
+                        const payload = createPastePayload(table, fieldMapping)
+                        console.log(payload)
                         onCreateClick(payload)
                     }}
                     style={{minWidth: '14rem', minHeight: '3rem'}}
