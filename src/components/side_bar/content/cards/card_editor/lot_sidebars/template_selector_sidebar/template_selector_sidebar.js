@@ -71,30 +71,8 @@ const TemplateSelectorSidebar = (props) => {
                         Create Product Group
                     </Button>
                 }
-                <style.LotTemplateButton
-                    isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    onClick={() => {
-                        onTemplateSelectClick(BASIC_LOT_TEMPLATE_ID)
-                        isMobile && onCloseClick()
-                    }}
-                    onMouseEnter={() => {
-                      dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
-                    }}
-                    onMouseLeave={() => {
-                      dispatchSetSelectedLotTemplate(null)
-                    }}
-                >
-                    <style.TemplateIcon
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                        className={SIDE_BAR_MODES.TEMPLATES.iconName}
-                    />
-
-                    <style.TemplateName
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    >Basic</style.TemplateName>
-                </style.LotTemplateButton>
                 {
-                    processLotTemplates.map((currTemplate, currIndex) => {
+                    processLotTemplates.sort(template => template.name === 'Basic' ? -1 : 1).map((currTemplate, currIndex) => {
                         const {
                             fields,
                             name,
@@ -102,7 +80,7 @@ const TemplateSelectorSidebar = (props) => {
                         } = currTemplate
                         //
 
-                        const isSelected = selectedLotTemplatesId === currTemplateId
+                        const isSelected = selectedLotTemplatesId !== 'BASIC_LOT_TEMPLATE' ? (selectedLotTemplatesId === currTemplateId) : name === 'Basic'
 
                         return <style.LotTemplateButton
                             key={currTemplateId}
@@ -129,7 +107,7 @@ const TemplateSelectorSidebar = (props) => {
                                isSelected={isSelected}
                            >{name}</style.TemplateName>
 
-                            {!isMobile &&
+                            {!isMobile && currTemplate.name !== 'Basic' && 
                                 <style.EditTemplateIcon
                                     isSelected={isSelected}
                                     onClick={()=>{

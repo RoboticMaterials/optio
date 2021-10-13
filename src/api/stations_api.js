@@ -101,6 +101,8 @@ export async function deleteStation(ID) {
 export async function postStation(station) {
 
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        station.map_id = currMapId
 
         const response = await axios({
             method: 'POST',

@@ -622,6 +622,16 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
     }
 
     startRouteExpression = startRouteExpression.filter((el) => el !== null);
+
+    const recursivePrint = (exp) => {
+      for (var i=1; i<exp.length; i++) {
+        if (Array.isArray(exp[i])) {exp[i] = recursivePrint(exp[i])}
+        else return exp[i] = routes[exp[i]]?.name || ""
+      }
+      return exp
+    }
+    //console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(startRouteExpression))
+
     if (
         startRouteExpression.every(
             (element, idx) =>
@@ -679,7 +689,7 @@ export const flattenProcessStations = (processRoutes, stations) => {
         if (outgoingRoutes.length > 1) { // This is a diverging node, move down in depth
             depth++;
         }
-        
+
         for (var nextRoute of outgoingRoutes) {
             traveresedRoutes[nextRoute._id] = true;
             DFS(nextRoute.unload, routes, depth);
@@ -708,5 +718,5 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     return flattenedStations;
 
-    
+
 }

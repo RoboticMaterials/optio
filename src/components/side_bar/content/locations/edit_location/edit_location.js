@@ -118,11 +118,7 @@ const EditLocation = (props) => {
 
     const devices = useSelector((state) => state.devicesReducer.devices);
     const currentMapId = useSelector(
-        (state) => state.settingsReducer.settings.currentMapId
-    );
-    const maps = useSelector((state) => state.mapReducer.maps);
-    const currentMap = Object.values(maps).find(
-        (map) => map._id === currentMapId
+        (state) => state.localReducer.localSettings.currentMapId
     );
     const serverSettings = useSelector(
         (state) => state.settingsReducer.settings
@@ -339,7 +335,7 @@ const EditLocation = (props) => {
         const defaultAttributes = deepCopy(LocationDefaultAttributes);
 
         defaultAttributes["name"] = newName;
-        defaultAttributes["map_id"] = currentMap._id;
+        defaultAttributes["map_id"] = currentMapId;
         defaultAttributes["_id"] = uuid.v4();
         defaultAttributes["temp"] = true;
 

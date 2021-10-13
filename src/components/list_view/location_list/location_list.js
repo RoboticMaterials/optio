@@ -37,13 +37,8 @@ const LocationList = (props) => {
     // redux state
     const locations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const deviceEnabled = false
-    const {
-        _id: mapId
-    } = currentMap || {}
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
     // component state
@@ -59,7 +54,7 @@ const LocationList = (props) => {
     * */
     useEffect(() => {
         // sort locations + filter by map id
-        let tempLocationsArr = locationsSortedAlphabetically(Object.values(locations).filter(loc => loc.map_id === currentMap._id))
+        let tempLocationsArr = locationsSortedAlphabetically(Object.values(locations))
 
         // map through locations and update name
         tempLocationsArr = tempLocationsArr.map((currLocation) => {
@@ -76,7 +71,7 @@ const LocationList = (props) => {
 
         // update state
         setLocationsArr(tempLocationsArr)
-    }, [mapId, locations, dashboards])
+    }, [currentMapId, locations, dashboards])
 
     // this effect updates dashboardsArr
     useEffect(() => {

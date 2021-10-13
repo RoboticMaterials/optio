@@ -198,6 +198,9 @@ export async function postLotTemplate(lotTemplate) {
 
 export async function putLotTemplate(lotTemplate, ID) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        lotTemplate.map_id = currMapId
+
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + ID,

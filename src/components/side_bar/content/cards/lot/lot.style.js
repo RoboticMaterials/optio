@@ -95,7 +95,7 @@ export const PartContainer = styled.div`
     display: flex;
     height: 1.4rem;
     max-width: 14rem;
-    min-width: 5rem;
+    min-width: 3rem;
     margin-left: .2rem;
     margin-top: .2rem;
 

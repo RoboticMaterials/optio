@@ -100,10 +100,7 @@ const ZoneHeader = (props) => {
 	const themeContext = useContext(ThemeContext)
 
 	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) }) || []
-	const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-	const maps = useSelector(state => state.mapReducer.maps)
 	const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
-	const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
 	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
 	const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])

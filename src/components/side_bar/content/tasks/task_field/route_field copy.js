@@ -137,9 +137,7 @@ const TaskField = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
 
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
@@ -390,7 +388,7 @@ const TaskField = (props) => {
             description: obj.description,
             modelName: "",
             dimensions: null,
-            map_id: currentMap._id,
+            map_id: currentMapId,
             _id: !!selectedObject.new ? uuid.v4() : obj._id,
         }
 
@@ -414,7 +412,7 @@ const TaskField = (props) => {
             description: "",
             modelName: "",
             dimensions: null,
-            map_id: currentMap._id,
+            map_id: currentMapId,
             _id: uuid.v4(),
             new: true,
         }

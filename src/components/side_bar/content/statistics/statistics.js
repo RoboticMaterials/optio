@@ -26,9 +26,6 @@ const Statistics = () => {
     const themeContext = useContext(ThemeContext);
 
     const processes = useSelector(state => state.processesReducer.processes)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
 
     const [dateIndex, setDateIndex] = useState(0)
     const [timeSpan, setTimeSpan] = useState('day')
@@ -73,7 +70,6 @@ const Statistics = () => {
         // Else push all processes
         else {
             Object.values(processes)
-            .filter((currProcess) => currProcess.map_id === currentMap._id)
             .forEach(process => {
               if(!!process.showStatistics){
                 processesToRender.push(process._id)
