@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import {useFilePicker} from 'use-file-picker'
 // actions
 import { postCard, putCard } from "../../../../../redux/actions/card_actions";
@@ -90,7 +90,7 @@ const LotEditorContainer = (props) => {
     const [fieldNameArr, setFieldNameArr] = useState([])
 
     const [lotTemplateId, setLotTemplateId] = useState(null)
-    const [lotTemplate, setLotTemplate] = useState([])
+    const lotTemplate = useMemo(() => lotTemplates[lotTemplateId], [lotTemplates, lotTemplateId])
     const {
         name: lotTemplateName = ""
     } = lotTemplate || {}
@@ -108,6 +108,8 @@ const LotEditorContainer = (props) => {
     const {
         current
     } = formRef || {}
+
+    
 
     const {
         values = {},
@@ -265,21 +267,16 @@ const LotEditorContainer = (props) => {
           })
         }
 
+            console.log("!!", csv)
+
           var rows = csv.split("\n");
           let table = []
 
           for (var y in rows) {
 
               var cells = rows[y].split("\t")
-
-              for (const x in cells) {
-
-                  if (table[x]) {
-                      table[x].push(cells[x])
-                  }
-                  else {
-                      table.push([cells[x]])
-                  }
+              if (cells.length) {
+                  table.push(cells.map(cell => ({value: cell})))
               }
           }
           setPasteTable(table)	// set paste table
@@ -302,6 +299,12 @@ const LotEditorContainer = (props) => {
 
     const handleSelectLotTemplate = (templateId) => {
 
+        if (templateId === null) {
+            console.log(lotTemplates)
+            templateId = Object.values(lotTemplates)
+                .find(lotTemplate => (!process || lotTemplate.processId === process._id) && lotTemplate.name === 'Basic')?._id || null
+        }
+
         let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
         if (isObject(card) && card?.lotTemplateId) {
@@ -312,25 +315,17 @@ const LotEditorContainer = (props) => {
             }
         }
 
-        // if the template wasn't found, default everything to use BASIC_LOT_TEMPLATE
-        let template;
-        if (!lotTemplates[templateId]) {
-            newTemplateId = BASIC_LOT_TEMPLATE_ID
-            template = BASIC_LOT_TEMPLATE
-        } else {
-            template = lotTemplates[templateId]
-        }
+        let template = lotTemplates[templateId]
 
         if (!isObject(card)) { // If you're in editing mode, dont update lastUsedTemplateId
           if(!!process)
             dispatchPutProcess({
                 ...process,
-                lastLotTemplateId: newTemplateId
+                lastLotTemplateId: template._id
             }, process._id)
         }
 
-        setLotTemplateId(newTemplateId)
-        setLotTemplate(template)
+        setLotTemplateId(template._id)
     }
 
 
@@ -1031,15 +1026,8 @@ const LotEditorContainer = (props) => {
         for (var y in rows) {
 
             var cells = rows[y].split("\t")
-
-            for (const x in cells) {
-
-                if (table[x]) {
-                    table[x].push(cells[x])
-                }
-                else {
-                    table.push([cells[x]])
-                }
+            if (cells.length) {
+                table.push(cells.map(cell => ({value: cell})))
             }
         }
         setPasteTable(table)	// set paste table
@@ -1148,9 +1136,8 @@ const LotEditorContainer = (props) => {
                 <PasteForm
                     hidden={pasteMapperHidden}
                     reset={resetPasteTable}
-                    availableFieldNames={[
+                    availableFields={[
                         ...fieldNameArr,
-
                     ]}
                     onCancel={() => {
                         setShowPasteMapper(false)
@@ -1159,6 +1146,7 @@ const LotEditorContainer = (props) => {
                     }}
 
                     table={pasteTable}
+                    lotTemplate={lotTemplate}
                     // onPreviewClick={(payload) => {
                     // 	// setShowPasteMapper(false)
                     // 	// setShowProcessSelector(true)

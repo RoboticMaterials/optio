@@ -427,10 +427,7 @@ export const getCardsInBin = (cards, binId, processId) => {
 }
 
 export const getAllTemplateFields = () => {
-    const lotTemplates = {
-        [BASIC_LOT_TEMPLATE_ID]: { ...BASIC_LOT_TEMPLATE },
-        ...(store.getState().lotTemplatesReducer.lotTemplates || {})
-    }
+    const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
 
     let templateFields = []
 
@@ -490,7 +487,7 @@ export const getAllTemplateFields = () => {
 * */
 export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-    const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+    const lotTemplate = lotTemplates[lotTemplateId] || {}
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
     const currentDashboard = dashboards[dashboardID]
