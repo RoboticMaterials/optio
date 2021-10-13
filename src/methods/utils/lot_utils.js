@@ -15,7 +15,7 @@ import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_pl
 // Import external utils
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
 import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations, handleMergeExpression } from './processes_utils'
+import { getProcessStations, handleMergeExpression, findProcessStartNodes } from './processes_utils'
 import { getLoadStationId } from './route_utils'
 import { jsDateToString } from './card_utils'
 
@@ -860,6 +860,7 @@ export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
 export const handleGetPathArray = (station, process) => {
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
+  const stations = store.getState().stationsReducer.stations || {}
 
   let iDs = []
   let option = 0
@@ -880,7 +881,7 @@ export const handleGetPathArray = (station, process) => {
         //Check for splitToChoice case
         if(precursor === 'AND'){
           for(let i = 1; i<Object.values(row).length; i++){
-            if(row[i][0] === 'OR') {
+            if(!!row[i] && row[i][0] === 'OR') {
               splitToChoice = true
               involveSplitChoice = true
               startOption = option
@@ -930,8 +931,8 @@ export const handleGetPathArray = (station, process) => {
       }
     }
 
-    recursiveParse(handleMergeExpression(station, process, routes))
-
+    recursiveParse(handleMergeExpression(station, process, routes, stations))
+    //console.log(handleMergeExpression(station, process, routes, stations))
     return iDs
 }
 
@@ -1013,9 +1014,14 @@ export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
   //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
 export const handleNextStationBins = (bins, quantity, loadStationId, unloadStationId, process, routes, stations) => {
 
+    const processRoutes = process.routes.map((routeId) => routes[routeId]);
+    let unloadStations = processRoutes.map((route) =>
+        !!route ? route.unload : {}
+    );
+
     const mergingRoutes = process.routes
       .map((routeId) => routes[routeId])
-      .filter((route) => route.unload === unloadStationId);
+      .filter((route) => route.unload === unloadStationId && (stations[route.load]?.type !=='warehouse' || unloadStations.includes(route.load)));
 
     if (mergingRoutes.length > 1) {
       //If multiple routes merge into station, keep track of parts at the station

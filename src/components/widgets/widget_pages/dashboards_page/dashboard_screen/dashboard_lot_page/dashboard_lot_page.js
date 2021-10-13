@@ -162,7 +162,6 @@ const DashboardLotPage = (props) => {
 
   // Handles moving lot to next station
   const onMove = (moveStations, quantity) => {
-
     const currentLotCopy = deepCopy(currentLot);
     pushUndoHandler({
       message: `Are you sure you want to undo the move of ${currentLotCopy?.name} from ${stations[loadStationID]?.name}?`,
@@ -256,7 +255,6 @@ const DashboardLotPage = (props) => {
 
     }
     dispatchPutCard(currentLot, lotID);
-    //console.log(currentLot)
     dispatchUpdateStationCycleTime(loadStationID)
     onBack();
   };

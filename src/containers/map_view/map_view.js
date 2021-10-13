@@ -190,9 +190,9 @@ export class MapView extends Component {
 
 
 
-          if(!this.props.editingStation && !this.props.hoveringInfo){
-            this.props.dispatchSetSelectedStation(null)
-          }
+        //   if(!this.props.editingStation && !this.props.hoveringInfo){
+        //     this.props.dispatchSetSelectedStation(null)
+        //   }
     }
 
 
@@ -734,7 +734,6 @@ export class MapView extends Component {
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
-                                        .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
                                             <Station
