@@ -399,7 +399,7 @@ const LotEditorContainer = (props) => {
 
         setPasteMapperHidden(true)		// hide paste form
         setShowPasteMapper(false)			// don't render paste form
-        setPasteTable([])					// clear pasteTable
+        // setPasteTable([])					// clear pasteTable
         setShowStatusList(true)			// display statusList
 
         // run validation for each lot
@@ -1092,6 +1092,7 @@ const LotEditorContainer = (props) => {
                         for (let i = 0; i < mappedValues.length; i++) {
                             await createLot(i)
                         }
+                        setPasteTable([])
                     }}
                     onCanceleClick={() => {
                         setShowStatusList(false)
@@ -1103,6 +1104,11 @@ const LotEditorContainer = (props) => {
                             props.close()
                         }
                     }}
+                    onBack={() => { 
+                        setShowPasteMapper(true); 
+                        setPasteMapperHidden(false);
+                        setShowStatusList(false)
+                     }}
 
                     onShowMapperClick={() => {
                         setShowStatusList(false)
@@ -1143,6 +1149,9 @@ const LotEditorContainer = (props) => {
                         setShowPasteMapper(false)
                         setPasteMapperHidden(true)
                         setPasteTable([])	// clear table
+                        setShowStatusList(false)			// display statusList
+                        setSelectedIndex(null)
+                        setMappedValues([])
                     }}
 
                     table={pasteTable}

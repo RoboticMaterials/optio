@@ -1099,39 +1099,38 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
 
     return table.map((row, i) => {
 
-      let lotFields = [];
+      let lotFields = {};
       for (var j=0; j<row.length; j++) {
         if (!!fieldMapping[j]) {
           let { index: rangeIndex, ...field} = fieldMapping[j]
-          let value = row[j]
+          let { value } = row[j]
 
           // Parse Data
 					if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
 						let parsedDate = new Date(value)
 
-            let existingFieldIdx = lotFields.findIndex(lotField => lotField.fieldName === field.fieldName)
-            if (existingFieldIdx !== -1) {
-              if (Array.isArray(lotFields[existingFieldIdx].value)) {
+            if (field._id in lotFields) {
+              if (Array.isArray(lotFields[field._id].value)) {
                 // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
                 // therefore, we just alter the array at the index that the field specifies
-                let dateArr = lotFields[existingFieldIdx].value
+                let dateArr = lotFields[field._id].value
                 dateArr.splice(rangeIndex, 0, parsedDate)
-                lotFields[existingFieldIdx].value = dateArr
+                lotFields[field._id].value = dateArr
                 continue // Dont append a new field because one for this already exists
-              } else { // Otherwise its a single element array
-                value = [parsedDate]
               }
             }
+            value = [null, null]
+            value[rangeIndex] = parsedDate
 					}
 					else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
 						value = parseInt(value)
-						if(!Number.isInteger(value)) value = 0
+						if(!Number.isInteger(value)) value = null
 					}
 
-          lotFields.push({
+          lotFields[field._id] = {
             ...field,
-            value: row[j]
-          })
+            value
+          }
         }
       }
 

@@ -43,6 +43,7 @@ export const Container = styled.div`
     flex-direction: column;
     z-index: 5000;
     overflow: hidden;
+    min-height: 90vh;
     height: 90vh;
     width: 90vw;
     background: ${props => props.theme.bg.primary};

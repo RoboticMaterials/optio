@@ -21,6 +21,7 @@ import * as styled from './paste_mapper.style'
 
 // actions
 import { putLotTemplate } from '../../../redux/actions/lot_template_actions'
+import BackButton from '../back_button/back_button';
 
 const PasteMapper = (props) => {
 
@@ -117,11 +118,16 @@ const PasteMapper = (props) => {
     return (
         <styled.Container>
             <styled.Header>
-                <styled.Title>Map Data</styled.Title>
+                <BackButton schema={'lots'} onClick={onCancel}/>
+                <styled.Title>Upload Lot Data</styled.Title>
                 <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
             </styled.Header>
 
             <styled.Body>
+                <styled.ContentContainer>
+                    <styled.SectionDescription>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
+                </styled.ContentContainer>
+                <styled.SectionBreak />
                 <styled.TableContainer style={{backdropFilter: 'none !important'}}>
                     {Table}
                 </styled.TableContainer>
@@ -134,7 +140,7 @@ const PasteMapper = (props) => {
                 <Button
                     type={"button"}
                     schema={'lots'}
-                    label={"Preview Lots"}
+                    label={"Validate Lots"}
                     onClick={()=>{
                         const payload = createPastePayload(table, fieldMapping)
                         console.log(payload)
