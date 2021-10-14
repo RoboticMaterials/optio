@@ -4,6 +4,8 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+import store from '../redux/store'
+
 const operator = 'cards/templates'
 const log = logger.getLogger('Api')
 
@@ -53,9 +55,10 @@ export async function getLotTemplate(id) {
 
 export async function getLotTemplates() {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
@@ -142,6 +145,9 @@ export async function deleteLotTemplate(ID) {
 
 export async function postLotTemplate(lotTemplate) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        lotTemplate.map_id = currMapId
+
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
@@ -192,6 +198,9 @@ export async function postLotTemplate(lotTemplate) {
 
 export async function putLotTemplate(lotTemplate, ID) {
     try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        lotTemplate.map_id = currMapId
+
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + ID,

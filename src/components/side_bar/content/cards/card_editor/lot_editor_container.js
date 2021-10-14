@@ -46,7 +46,8 @@ import { putProcesses } from '../../../../../redux/actions/processes_actions';
 const LotEditorContainer = (props) => {
 
     const {
-        merge
+        merge,
+        processId
     } = props
 
 
@@ -304,12 +305,9 @@ const LotEditorContainer = (props) => {
         let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
         if (isObject(card) && card?.lotTemplateId) {
-            console.log('iscard', card?.lotTemplateId)
             if (!!templateId && templateId !== card.lotTemplateId) {
-                console.log('updateCard', templateId)
                 dispatchPutCard({...card, lotTemplateId: templateId}, card._id)
             } else {
-                console.log('takingCards', card.lotTemplateId)
                 newTemplateId = card?.lotTemplateId
             }
         }
@@ -1232,6 +1230,7 @@ const LotEditorContainer = (props) => {
                 collectionCount={parseInt((collectionCount + 1))}
                 lotTemplateId={lotTemplateId}
                 lotTemplate={lotTemplate}
+                processId={processId}
                 onSelectLotTemplate={handleSelectLotTemplate}
                 showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}
                 hidden={showStatusList || showPasteMapper}

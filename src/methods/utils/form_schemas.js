@@ -436,20 +436,21 @@ Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
     });
   });
 
-export const signUpSchema = Yup.object().shape({
+export const getSignUpSchema = (accessCode) => Yup.object().shape({
     email: Yup.string()
         .email()
         .required('Please enter an email'),
 
     accessCode: Yup.string()
         .required('Please enter a access code')
-        .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9)\b/, 'Must be a valid access code'),
+        .oneOf([accessCode], 'Must be a valid access code'),
+        // .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9|690f5884-aef6-4f65-b098-9c9304baac48)\b/, 'Must be a valid access code'),
 
     password: Yup.string()
         .required('Please enter a password')
         .matches(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$\-!%*#?&]{8,}$/,
-            "Must Contain 8 characters, one uppercase, one lowercase, and one number"
+            "Must Contain at least 8 characters, one uppercase, one lowercase, and one number"
         ),
 
     confirmPassword: Yup.string()
@@ -699,6 +700,17 @@ export const routesSchema = Yup.array().of(
 
 // }
 
+const recursiveFindAnd = (exp) => {
+    // Recursive function to detect if there is any AND expressions (split) in the merge expression
+   if (exp[0] === 'AND') return true;
+   for (var i=1; i<exp.length; i++) {
+       if (Array.isArray(exp[i])) {
+           if (recursiveFindAnd(exp[i])) return true;
+       }
+   }
+   return false;
+}
+
 export const getProcessSchema = (stations) => Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -717,37 +729,38 @@ export const getProcessSchema = (stations) => Yup.object().shape({
 
             const { startDivergeType } = this.parent
 
-            const recursiveFindAnd = (exp) => {
-                 // Recursive function to detect if there is any AND expressions (split) in the merge expression
-                if (exp[0] === 'AND') return true;
-                for (var i=1; i<exp.length; i++) {
-                    if (Array.isArray(exp[i])) {
-                        if (recursiveFindAnd(exp[i])) return true;
-                    }
-                }
-                return false;
-            }
-
+            // You can have multiple end nodes, as long as none of them are on a 'split' branch
             const endNodes = findProcessEndNodes(routes);
-            endNodes.forEach(endNode => {
+            for (var endNode of endNodes) {
                 let normalizedRoutes = {}
                 routes.forEach(route => normalizedRoutes[route._id] = route)
                 const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
-                console.log(stations[endNode].name, mergeExp)
-                if (recursiveFindAnd(mergeExp)) return false;
-            })
+                if (!mergeExp || recursiveFindAnd(mergeExp)) {
+                    return false;
+                }
+            }
             return true
         }
     ).test(
         'isProcessCyclic',
         'Processes cannot contain loops. As a general rule, if your process contains a loops create a new "virtual" station to loop back to instead.',
-        (routes) => {
+        function (routes) {
+            const { startDivergeType } = this.parent
+
             const startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 0) return false
 
             for (var startNode of startNodes) {
                 let stack = [startNode];
-                let isCyclic = DFSContainsCycle(routes, stack)
-                if (isCyclic) return false;
+                let { isCyclic, breakingRoute } = DFSContainsCycle(routes, stack)
+                if (isCyclic) {
+                    // Cycles are fine as long as they dont originate from a split branch. By getting the merge expression at the node where the 
+                    // breaking route (the route that makes the process cyclic) we can determine if that node is already in a split branch
+                    let normalizedRoutes = {}
+                    routes.forEach(route => normalizedRoutes[route._id] = route)
+                    const mergeExp = handleMergeExpression(breakingRoute.load, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
+                    if (!mergeExp || recursiveFindAnd(mergeExp)) return false
+                }
             }
 
             return true
@@ -762,14 +775,14 @@ const DFSContainsCycle = (routes, stack) => {
     let outgoingRoutes = getNodeOutgoing(node, routes);
     for (var outgoingRoute of outgoingRoutes) {
         let nextNode = outgoingRoute.unload;
-        if (stack.includes(nextNode)) return true;
+        if (stack.includes(nextNode)) return { isCyclic: true, breakingRoute: outgoingRoute };
         let nextStack = deepCopy(stack);
         nextStack.push(nextNode);
-        let isCyclic = DFSContainsCycle(routes, nextStack)
-        if (isCyclic) return true;
+        let { isCyclic, breakingRoute } = DFSContainsCycle(routes, nextStack)
+        if (isCyclic) return { isCyclic, breakingRoute };
     }
 
-    return false;
+    return { isCyclic: false, breakingRoute: null };
 
 }
 

@@ -4,6 +4,11 @@ import {
     GET_TOUCH_EVENTS_SUCCESS,
     GET_TOUCH_EVENTS_FAILURE,
 
+    GET_LOT_TOUCH_EVENTS,
+    GET_LOT_TOUCH_EVENTS_STARTED,
+    GET_LOT_TOUCH_EVENTS_SUCCESS,
+    GET_LOT_TOUCH_EVENTS_FAILURE,
+
     POST_TOUCH_EVENTS,
     POST_TOUCH_EVENTS_STARTED,
     POST_TOUCH_EVENTS_SUCCESS,
@@ -23,7 +28,8 @@ import {
 import { deepCopy } from '../../methods/utils/utils';
 
 const defaultState = {
-    events: {},
+    events: [],
+    lotEvents: {}
 }
 
 const eventsReducer = (state = defaultState, action) => {
@@ -35,30 +41,31 @@ const eventsReducer = (state = defaultState, action) => {
 
         // ======================================== //
         //                                          //
-        //              Get Events                 //
+        //              Get Lot Events              //
         //                                          //
         // ======================================== //
-        case GET_TOUCH_EVENTS:
+        case GET_LOT_TOUCH_EVENTS:
             break;
 
-        case GET_TOUCH_EVENTS_SUCCESS:
-
-
+        case GET_LOT_TOUCH_EVENTS_SUCCESS:
             return {
     
                 ...state,
-                events: { ...action.payload },
+                lotEvents: {
+                    ...state.lotEvents,
+                    [action.payload.lotId]: action.payload.events
+                },
                 pending: false,
             }
 
 
-        case GET_TOUCH_EVENTS_FAILURE:
+        case GET_LOT_TOUCH_EVENTS_FAILURE:
             return Object.assign({}, state, {
                 error: action.payload,
                 pending: false
             });
 
-        case GET_TOUCH_EVENTS_STARTED:
+        case GET_LOT_TOUCH_EVENTS_STARTED:
             return Object.assign({}, state, {
                 pending: true
             });
@@ -93,82 +100,13 @@ const eventsReducer = (state = defaultState, action) => {
             return Object.assign({}, state, {
                 pending: true
             });
-        // ~~~~~~~~~~~~~~~
 
-        // ======================================== //
-        //                                          //
-        //              Put Events              //
-        //                                          //
-        // ======================================== //
-        case PUT_TOUCH_EVENTS:
-            break;
-
-        case PUT_TOUCH_EVENTS_SUCCESS:
-            // Find the corresponding event and replace it with the new one
-            currentEvent = JSON.parse(action.payload)
-
-            eventsClone = deepCopy(state.events)
-
-            eventsClone[currentEvent._id.$oid] = currentEvent
-
-            return {
-                ...state,
-                events: { ...eventsClone }
-            }
-
-        case PUT_TOUCH_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case PUT_TOUCH_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
-
-        // ======================================== //
-        //                                          //
-        //           Delete Events                 //
-        //                                          //
-        // ======================================== //
-        case DELETE_TOUCH_EVENTS:
-            break;
-
-        case DELETE_TOUCH_EVENTS_SUCCESS:
-
-            eventsClone = deepCopy(state.events)
-
-            delete eventsClone[action.payload]
-
-            return {
-                ...state,
-                events: eventsClone
-            }
-
-        case DELETE_TOUCH_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case DELETE_TOUCH_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
 
         // ======================================== //
         //                                          //
         //             Utilities                    //
         //                                          //
         // ======================================== //
-        case 'UPDATE_TOUCH_EVENTS':
-            return {
-                ...state,
-                events: deepCopy(action.payload.events)
-            }
 
         default:
             return state

@@ -46,6 +46,7 @@ import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
 import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
+import { postLocalSettings } from '../../redux/actions/local_actions';
 const logger = log.getLogger("MapView")
 
 const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
@@ -122,16 +123,16 @@ export class MapView extends Component {
 
     checkForMapLoad = () => {
 
-      var currentMap = this.props.maps.find(map => map._id === this.props.currentMapId)
+      var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
 
-      if(!currentMap){
+      if(currentMap === undefined){
         this.setState({currentMap: this.props.maps[0]})
 
         const updatedSettings = {
-          ...this.props.settings,
+          ...this.props.localSettings,
           currentMapId: this.props.maps[0]._id,
         }
-        this.props.dispatchPostSettings(updatedSettings)
+        this.props.dispatchPostLocalSettings(updatedSettings)
       }
       else{
         this.setState({currentMap: currentMap})
@@ -147,7 +148,7 @@ export class MapView extends Component {
         // }
         //this.checkForMapLoad() //test
 
-        if(this.props.currentMapId !== this.state.currentMap._id){
+        if(this.props.localSettings.currentMapId !== this.state.currentMap._id){
           this.checkForMapLoad()
         }
         if(prevProps.selectedTask !== this.props.selectedTask) {
@@ -189,9 +190,9 @@ export class MapView extends Component {
 
 
 
-          if(!this.props.editingStation && !this.props.hoveringInfo){
-            this.props.dispatchSetSelectedStation(null)
-          }
+        //   if(!this.props.editingStation && !this.props.hoveringInfo){
+        //     this.props.dispatchSetSelectedStation(null)
+        //   }
     }
 
 
@@ -297,6 +298,8 @@ export class MapView extends Component {
             }
         }
     }
+
+
 
 
     /* ========== D3 Functions ========== */
@@ -731,25 +734,22 @@ export class MapView extends Component {
                                 <>{
                                     //// Render Locations
                                     Object.values(stations)
-                                        .filter(station => (station.map_id === this.state.currentMap?._id))
                                         .map((station, ind) =>
 
-                                            <>
-                                                <Station
-                                                    key={`loc-${ind}`}
-                                                    // If there is a selected station, then render the selected station vs station in redux
-                                                    // Selected station could contain local edits that are not on the backend (naked redux) yet
-                                                    station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
-                                                    isSelected={(!!selectedStation && station._id === selectedStation._id)}
-                                                    // station={station}
-                                                    rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
-                                                    d3={this.d3}
-                                                    handleEnableDrag={this.onEnableDrag}
-                                                    handleDisableDrag={this.onDisableDrag}
-                                                    // Mouse down is used to disabling hovering when the mouse is down on the map
-                                                    mouseDown={this.mouseDown}
-                                                />
-                                            </>
+                                            <Station
+                                                key={`loc-${ind}`}
+                                                // If there is a selected station, then render the selected station vs station in redux
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet
+                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                isSelected={(!!selectedStation && station._id === selectedStation._id)}
+                                                // station={station}
+                                                rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
+                                                d3={this.d3}
+                                                handleEnableDrag={this.onEnableDrag}
+                                                handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
+                                            />
                                         )
                                 }</>
 
@@ -861,8 +861,8 @@ MapView.defaultProps = {
 const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
-        currentMapId: state.settingsReducer.settings.currentMapId,
-        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
+        localSettings: state.localReducer.localSettings,
+        deviceEnabled: false,
         settings: state.settingsReducer.settings,
 
         devices: state.devicesReducer.devices,
@@ -895,6 +895,7 @@ const mapDispatchToProps = dispatch => {
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
+        dispatchPostLocalSettings: (settings) => dispatch(postLocalSettings(settings)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),

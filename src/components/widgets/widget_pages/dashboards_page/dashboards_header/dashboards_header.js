@@ -63,7 +63,7 @@ const DashboardsHeader = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
     const phoneView = windowWidth < phoneViewBreakPoint;
 
-    const name = stations[currentDashboard.station]?.name
+    const name = stations[currentDashboard.station]?.name + ' Dashboard'
 
     const menuRef = useRef() // ref for useOnClickOutside
     useOnClickOutside(menuRef, () => { setShowOperationsMenu(false) }) // calls onClickOutside when click outside of element
@@ -71,16 +71,16 @@ const DashboardsHeader = (props) => {
     useEffect(() => {
 
         let tempPullButtons = [];
+        if (stations[currentDashboard.station]?.type === 'warehouse') return []
         Object.values(processes).forEach(process => {
 
             const processRoutes = process.routes.map(routeId => routes[routeId]);
             const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes)
                 .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
+            
 
-            if (outgoingRoutes.length === 0) {
-                return;
-            } else if (incomingRoutes.length === 0) {
+            if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
                 tempPullButtons.push({
                     type: 'kickoff',
                     processID: process._id
@@ -157,7 +157,7 @@ const DashboardsHeader = (props) => {
                                 setShowOperationsMenu(true)
                             }}
                             disabled={showOperationsMenu}
-                            style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem'}}
+                            style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '6rem', padding: '0rem'}}
                         >
                             Pull
                         </Button>
@@ -219,19 +219,20 @@ const DashboardsHeader = (props) => {
                             setShowOperationsMenu(true)
                         }}
                         disabled={showOperationsMenu}
-                        style={{ height: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
+                        style={{ height: '3rem', width: '3rem', boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' }}
                     >
-                      <i class="fas fa-list" style = {{color: '#FFFFFF'}}></i>
+                      <i class="fas fa-arrow-right" style = {{color: '#FFFFFF'}}></i>
                     </Button>
                     <Button
                         schema="delete"
                         onClick={() => {
-                            handleOperationSelected('report')
+                            handleOperationSelected({operation: 'report'})
                             setShowOperationsMenu(false)
                         }}
                         disabled={showOperationsMenu}
                         style={{
                             height: '3rem',
+                            width: '3rem',
                             boxShadow: '0px 1px 3px 1px rgba(0,0,0,0.2)' ,
                             display: 'flex',
                             justifyContent: 'center',
@@ -248,12 +249,6 @@ const DashboardsHeader = (props) => {
 
 
                 <styled.Title>{name}</styled.Title>
-                {/* <styled.PaceContainer
-                    color={color}
-                >
-
-                    <styled.PaceText color={color}>89/100</styled.PaceText>
-                </styled.PaceContainer> */}
 
                 {!mobileMode &&
                     <styled.LockIcon
@@ -277,27 +272,10 @@ const DashboardsHeader = (props) => {
 
 
                 {showOperationsMenu &&
-                    // <DashboardOperationsMenu
-                    //     handleCloseMenu={() => { setShowOperationsMenu(false) }}
-                    //     handleOperationSelected={(op) => {
-                    //         handleOperationSelected(op)
-                    //         setShowOperationsMenu(false)
-                    //     }}
-                    //     handleTaskAlert={handleTaskAlert}
-                    // />
                     <styled.MenuContainer ref={menuRef}>
                     {renderPullButtons}
                     </styled.MenuContainer>
                 }
-
-                {/* {showEditButton && !mobileMode &&
-                    <Button styled={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
-                        onClick={setEditingDashboard}
-                        secondary
-                    >
-                        Edit Dashboard
-                </Button>
-                } */}
 
                 {showSaveButton &&
                     <>

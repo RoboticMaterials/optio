@@ -38,9 +38,7 @@ import { deepCopy } from '../../../../methods/utils/utils'
 // Actions
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
-const LotCreatorForm = lazy(() => import("./lot_template_editor/template_form"))
 const SummaryHeader = lazy(() => import("./summary_header/summary_header"))
-const MultiSelectOptions = lazy(() => import("./multi_select_options/multi_select_options"))
 const CardMenu = lazy(() => import("./card_menu/card_menu"))
 const CardZone = lazy(() => import("./card_zone/card_zone"))
 const SummaryZone = lazy(() => import("./summary_zone/summary_zone"))
@@ -62,8 +60,6 @@ const Cards = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
     // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
@@ -78,7 +74,7 @@ const Cards = (props) => {
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
-    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes))
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
         height: undefined,
@@ -120,7 +116,7 @@ const Cards = (props) => {
     * filters processes by map id
     * */
     useEffect(() => {
-        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+        setFilteredProcesses(Object.values(processes))
     }, [processes])
 
     /*

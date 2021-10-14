@@ -127,6 +127,9 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
                 solid: '#5294ff'
             },
+            users: {
+                solid: '#f5b33b'
+            },
             objects: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
@@ -155,7 +158,7 @@ export const theme = {
             },
             lots: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
-                solid: '#ba8fff',
+                solid: '#924dff',
                 iconName: "fas fa-play"
             },
             merge: {
@@ -209,7 +212,7 @@ export const theme = {
             },
             settings: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
-                solid: '#c59bff'
+                solid: '#ff6e61'
             },
             delete: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',

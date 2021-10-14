@@ -15,7 +15,7 @@ import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_pl
 // Import external utils
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
 import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations, handleMergeExpression } from './processes_utils'
+import { getProcessStations, handleMergeExpression, findProcessStartNodes } from './processes_utils'
 import { getLoadStationId } from './route_utils'
 import { jsDateToString } from './card_utils'
 
@@ -502,18 +502,20 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
-      Object.values(currentDashboard.fields).forEach((field) =>{
-
-        const {
-          fieldName,
-          dataType,
-          _id
-        } = field
-
-        customFieldValues.push({
-          dataType,
-          fieldName,
-          value: getLotField('_id', _id, lot)?.value
+      Object.keys(currentDashboard.fields).forEach((template) =>{
+          Object.values(currentDashboard.fields[template]).forEach((field) =>{
+            const {
+              fieldName,
+              dataType,
+              _id
+            } = field
+            if(lot.lotTemplateId===template){
+              customFieldValues.push({
+                dataType,
+                fieldName,
+                value: getLotField('_id', _id, lot)?.value
+                })
+            }
           })
         })
       }
@@ -675,27 +677,44 @@ export const handleMergedLotQuantity = (iDs, mergingRoutes, currentLot, destinat
  * @param {array} mergeExpression This is the expression output from the handleMergeExpression function from process_utils. It
  * contains the "AND" "OR" boolean expressions that describe the required input routes to count as a part
  */
-export const handleMergedLotBin = (bin, mergeExpression) => {
-
+export const handleMergedLotBin = (bin, mergeExpression, station, routeId, count) => {
     const recursiveConditionalQuantities = (subExpression) => {
         // Since the expression can have nested elements, this function needs to be recursive
+        let splitToChoice = false
         if (Array.isArray(subExpression)) {
-            if (subExpression[0] === 'AND') {
-                let count = Math.max(...Object.values(bin));
-                for (var i=1; i<subExpression.length; i++) {
-                    // If its an AND, its the minimum of all the quantities of the incoming routes
-                    if(!!subExpression[i]){
-                      count = Math.min(count, recursiveConditionalQuantities(subExpression[i]));
-                    }
-                }
-                return count
-            } else if (subExpression[0] === 'OR') {
-                let count = 0
-                for (var i=1; i<subExpression.length; i++) {
-                    // If its an OR, we actually want the SUM of all the quantities of the station options
-                    count += recursiveConditionalQuantities(subExpression[i])
-                }
-                return count
+            let precursor = subExpression[0]
+
+            //Check for splitToChoice case
+            if(precursor === 'AND'){
+              for(let i = 1; i<Object.values(subExpression).length; i++){
+                if(subExpression[i][0] === 'OR') splitToChoice = true
+              }
+            }
+
+            if(!!splitToChoice){
+              let pathArray = handleGenerateSplitChoiceArray(subExpression)
+              const [containedInCombo, bestComboCount] = handleGetOptimalCombo(pathArray, bin, routeId, count)
+              return bestComboCount
+
+            }
+            else{
+              if (subExpression[0] === 'AND') {
+                  let count = Math.max(...Object.values(bin));
+                  for (var i=1; i<subExpression.length; i++) {
+                      // If its an AND, its the minimum of all the quantities of the incoming routes
+                      if(!!subExpression[i]){
+                        count = Math.min(count, recursiveConditionalQuantities(subExpression[i]));
+                      }
+                  }
+                  return count
+              } else if (subExpression[0] === 'OR') {
+                  let count = 0
+                  for (var i=1; i<subExpression.length; i++) {
+                      // If its an OR, we actually want the SUM of all the quantities of the station options
+                      count += recursiveConditionalQuantities(subExpression[i])
+                  }
+                  return count
+              }
             }
 
         } else {
@@ -710,147 +729,243 @@ export const handleMergedLotBin = (bin, mergeExpression) => {
 
 }
 
-export const handleCurrentPathQuantity = (lot, station, routeId, count) => {
+/**This function handles the case of split followed by choice.
+This case is unusual as different combinations can be used to create an available qty
+The function creates an array of all possible merge combinations that will create a fully merged part in the [AND, A, [OR,B,C]] subexpression.
+Note, this is the simplest case with only 2 possible combinations of 2 paths (2x2 array). if subExpression was [AND, [OR,A,B], [OR,C,D,E]]
+a list of all combinations should be AC, AD, AE, BC, BD, BE.
+
+*/
+
+export const handleGenerateSplitChoiceArray = (row) => {
+  let subArray = []
+  let existingArrLength = 0
+  let rowLength = 0
+  let index = 0
+
+
+  for(let i = 1; i<Object.values(row).length; i++){
+
+    let subArrayCopy = []//Need a copy so you can reference these values when duplicating array.
+    for (const index in subArray){
+      subArrayCopy.push([])
+      for(const idx in subArray[index]){
+        subArrayCopy[index].push(subArray[index][idx])
+      }
+    }
+
+    existingArrLength = Object.values(subArray).length
+    rowLength = Object.values(row[i]).length
+    if(rowLength === 36){ //if element in the subexpression is just single ID
+        if(existingArrLength === 0){
+          subArray.push([])
+          subArray[0].push(row[i][0])
+        }
+        else{
+          for(const ind in subArray){
+            subArray[ind].push(row[i])
+          }
+        }
+      }
+
+    else{
+      if(row[i][0] === "OR"){//if one element in the subexpression is an OR array
+          if(existingArrLength === 0){//If no array, push options, creating new row for each ID
+            for(let j = 1; j<rowLength; j++){
+              subArray.push([])
+              subArray[j-1].push(row[i][j])
+            }
+          }
+          else{
+            for(let j = 1; j<rowLength; j++){//if array exists push options into array
+              for(let k = 0; k<existingArrLength; k++){//you need to duplicate rows for each option. eg.  A and [B or C] would need to duplicate A twice when pushing options B,C to get [A,B],[A,C]
+                let ind = k+existingArrLength*(j-1)
+                if(j>1){//If on second or higher option always need to duplicate existing rows
+                  subArray.push([])
+                  for(let p = 0; p < Object.keys(subArrayCopy[k]).length; p++) {
+                    subArray[ind].push(subArrayCopy[k][p])
+                  }
+                    subArray[ind].push(row[i][j])
+                }
+                else{//if on first option just push to existing row
+                  subArray[k].push(row[i][j])
+                }
+              }
+            }
+          }
+        }
+
+      else if(row[i][0] === "AND"){ //if one of the elements in subexpression is an AND array
+          if(existingArrLength === 0){//If array doesnt exist just push AND options
+            for(let m=1; m<rowLength; m++){
+              if(m===1) subArray.push([])
+              subArray[0].push(row[i][m])
+            }
+          }
+          else{//Else need to go through each row in array and add AND option to the end
+            for(let m=1; m<rowLength; m++){
+              for(let n = 0; n<existingArrLength; n++) subArray[n].push(row[i][m])
+            }
+          }
+        }
+      }
+    }
+    return subArray
+}
+
+
+/**This function uses the handleGenerateSplitChoiceArray's array and goes through each option
+to see if the parts are available in that combination to make a merged part. If it is possible
+to make 1 or more merged parts from this array row, remove the parts and add to completed count
+*/
+export const handleGetOptimalCombo = (iDs, bin, routeId, count) => {
+
+  let comboCount = count
+  let containedInCombo = false
+  let optimalCombo = []
+
+
+  for(const i in iDs[1]){
+    let combo = iDs[1][i]
+    comboCount = count
+    for(const j in combo){
+      let partId = combo[j]
+      if(!!partId && !!bin[partId]){
+        if(bin[partId] < comboCount) comboCount = bin[partId]
+      }
+      else {
+        comboCount = 0
+      }
+    }
+
+
+    if(comboCount>0){//Greater than 0, consume the parts, add to count
+      for(const k in combo){
+        bin[combo[k]]-=comboCount
+        }
+        bin['count']+=comboCount
+      }
+    }
+
+    return bin
+}
+
+/**This gets the overall array for all ways to create a completed parts
+  it can include the handleGenerateSplitChoiceArray if the AND->OR case comes up
+  there is still some work to fully integrate AND->OR part in really complex cases
+  eg. [AND, OR[A,B], AND[C,[OR,D,OR[E,F]]]] wont work. Anything with less than
+  6 routes coming into a station will work.
+*/
+
+export const handleGetPathArray = (station, process) => {
   const processes = store.getState().processesReducer.processes || {}
   const routes = store.getState().tasksReducer.tasks || {}
+  const stations = store.getState().stationsReducer.stations || {}
 
   let iDs = []
   let option = 0
   let requirement = 0
+  let startOption = 0
+  let splitToChoice = false
+  let involveSplitChoice = false
 
   let precursor = ''
   iDs.push([])
 
-  //console.log(handleMergeExpression(station, processes[lot.process_id], routes))
   const recursiveParse = (row) => {
+      let splitMergeInd = 0
+      let splitToChoice = false
       if(Array.isArray(row)){
         let precursor = row[0]
-        for(let i = 1; i<Object.values(row).length; i++){
-          if(Array.isArray(row[i])){
-            if(row[0] === 'OR'){
-              option+=1
-              iDs.push([])
-            }
-            recursiveParse(row[i])
-          }
-          else{
-            if(precursor === 'OR'){
-              iDs[option].push(row[i])
-              option+=1
-              iDs.push([])
-            }
-            else if(precursor === 'AND'){
-              iDs[option].push(row[i])
+
+        //Check for splitToChoice case
+        if(precursor === 'AND'){
+          for(let i = 1; i<Object.values(row).length; i++){
+            if(!!row[i] && row[i][0] === 'OR') {
+              splitToChoice = true
+              involveSplitChoice = true
+              startOption = option
             }
           }
         }
-      }
-    }
-    recursiveParse(handleMergeExpression(station, processes[lot.process_id], routes))
-  //Determine count for that path
-  let minCount = count
+        if(!splitToChoice){
+          for(let i = 1; i<Object.values(row).length; i++){
+            if(Array.isArray(row[i])){
+              if(row[0] === 'OR'){
+                option+=1
+                iDs.push([])
+              }
+              recursiveParse(row[i])
+            }
+            else{
+              if(precursor === 'OR'){
+                involveSplitChoice = false
+                iDs[option].push(row[i])
+                option+=1
+                iDs.push([])
 
-  for(const ind in iDs){
-    if(iDs[ind].includes(routeId)){
-      if(Object.keys(iDs[ind]).length === 1){
-          let prt = iDs[ind][0]
-          return !!lot.bins[station][prt] ? lot.bins[station][prt] : count
-      }
-      else{
-        for(const idx in iDs[ind]){
-          let partId = iDs[ind][idx]
-          if(!!partId){
-            if(!!lot.bins[station][partId]){
-              if(lot.bins[station][partId] < minCount) {
-                minCount = lot.bins[station][partId]
+              }
+              else if(precursor === 'AND'){
+                if(!!involveSplitChoice){
+                  for(let a = startOption; a<option; a++){
+                    iDs[a].push(row[i])
+                  }
+                }
+                else{
+                  iDs[option].push(row[i])
+                }
               }
             }
-            else {
-              minCount = 0
-            }    
-          }
-
-        }
-        return minCount
-      }
-    }
-  }
-}
-
-export const handleGetPathQuantityArray = (bins, station, count, processId) => {
-
-  const processes = store.getState().processesReducer.processes || {}
-  const routes = store.getState().tasksReducer.tasks || {}
-
-  let iDs = []
-  let option = 0
-  let requirement = 0
-  let allAreOptions = true
-  let allAreRequired = true
-  iDs.push([])
-
-  const recursiveParse = (row) => {
-      if(Array.isArray(row)){
-        let precursor = row[0]
-        for(let i = 1; i<Object.values(row).length; i++){
-          if(Array.isArray(row[i])){
-            if(row[0] === 'OR'){
-              option+=1
-              iDs.push([])
-            }
-            recursiveParse(row[i])
-          }
-          else{
-            if(precursor === 'OR'){
-              iDs[option].push(row[i])
-              option+=1
-              iDs.push([])
-            }
-            else if(precursor === 'AND'){
-              iDs[option].push(row[i])
-            }
-          }
-        }
-      }
-    }
-    recursiveParse(handleMergeExpression(station, processes[processId], routes))
-
-    let nonEmptyIds = []
-    for (const i in iDs){
-      if(Object.keys(iDs[i]).length !== 0) nonEmptyIds.push(iDs[i])
-    }
-    iDs = nonEmptyIds
-  //Determine count for that path
-  let minCount = count
-  let pathQuantityArray = []
-  for(const ind in iDs){
-    if(Object.keys(iDs[ind]).length === 1){
-      let prt = iDs[ind][0]
-      let cnt = !!bins[station][prt] ? bins[station][prt] : 0
-      pathQuantityArray.push([])
-      pathQuantityArray[ind].push(cnt)
-      pathQuantityArray[ind].push(iDs[ind])
-    }
-    else{
-      for(const idx in iDs[ind]){
-        let partId = iDs[ind][idx]
-        if(!!bins[station][partId]){
-          if(bins[station][partId] < minCount) {
-            minCount = bins[station][partId]
           }
         }
         else {
-          minCount = 0
+          let pathArray = handleGenerateSplitChoiceArray(row)
+          for(const i in pathArray){
+            for(const j in pathArray[i]){
+              iDs[option].push(pathArray[i][j])
+            }
+            option+=1
+            iDs.push([])
+          }
         }
       }
-      pathQuantityArray.push([])
-      pathQuantityArray[ind].push(minCount)
-      pathQuantityArray[ind].push(iDs[ind])
-      minCount = count
     }
-  }
-  return pathQuantityArray
+
+    recursiveParse(handleMergeExpression(station, process, routes, stations))
+    //console.log(handleMergeExpression(station, process, routes, stations))
+    return iDs
 }
+
+/**This merges handles merging parts. It takes the array of all options and consumes parts that will merge to full part */
+export const handleMergeParts = (bin, routeId, count, station, process) => {
+  const processes = store.getState().processesReducer.processes || {}
+  const routes = store.getState().tasksReducer.tasks || {}
+
+  let iDs = handleGetPathArray(station, process, routes)
+  //Determine count for that path
+  for(const ind in iDs){//Go through all options
+    let minCount = count
+    if(Object.values(iDs[ind]).length>0){
+      for(const idx in iDs[ind]){
+          let prt = iDs[ind][idx]
+          if(!!prt && !!bin[prt]){
+            if(bin[prt]<minCount) minCount = bin[prt]
+          }
+          else minCount = 0
+      }
+      if(minCount>0){
+        for(const idx in iDs[ind]){
+            let id = iDs[ind][idx]
+            if(!!bin[id] && bin[id]-minCount === 0) delete bin[id]
+            else bin[id]-=minCount
+          }
+          bin['count'] += minCount
+        }
+      }
+    }
+    return bin
+  }
+
 
 export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
 
@@ -890,7 +1005,7 @@ export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
     }
 
     return updatedLot
-    // }
+
 }
 
   //This function determines if multiple routes are merging into a station and handles the lot quantity available to move accordingly
@@ -899,9 +1014,14 @@ export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
   //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
 export const handleNextStationBins = (bins, quantity, loadStationId, unloadStationId, process, routes, stations) => {
 
+    const processRoutes = process.routes.map((routeId) => routes[routeId]);
+    let unloadStations = processRoutes.map((route) =>
+        !!route ? route.unload : {}
+    );
+
     const mergingRoutes = process.routes
       .map((routeId) => routes[routeId])
-      .filter((route) => route.unload === unloadStationId);
+      .filter((route) => route.unload === unloadStationId && (stations[route.load]?.type !=='warehouse' || unloadStations.includes(route.load)));
 
     if (mergingRoutes.length > 1) {
       //If multiple routes merge into station, keep track of parts at the station
@@ -929,20 +1049,28 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
           [traveledRoute._id]: (existingQuantity += quantity),
         };
 
-        bins[unloadStationId] = handleMergedLotBin(
+
+        bins[unloadStationId] = handleMergeParts(
           tempBin,
-          mergingExpression
+          traveledRoute._id,
+          99999999,
+          unloadStationId,
+          process
         );
       } else {
         // The Bin for the destination does not exist, create is here
 
         tempBin = {
           [traveledRoute._id]: quantity,
+          count: 0
         };
 
-        bins[unloadStationId] = handleMergedLotBin(
+        bins[unloadStationId] = handleMergeParts(
           tempBin,
-          mergingExpression
+          traveledRoute._id,
+          99999999,
+          unloadStationId,
+          process
         );
       }
     } else {
@@ -959,42 +1087,12 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
   };
 
 
-export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {
-    const mergingRoutes = process.routes
-      .map((routeId) => routes[routeId])
-      .filter((route) => route.unload === loadStationId);
-
-    if (mergingRoutes.length > 1) {
-      let pathQuantityArray = handleGetPathQuantityArray(bins, loadStationId, quantity, process._id)
-      let availableQty = quantity
-      for(const ind in pathQuantityArray){
-        let pathQty = pathQuantityArray[ind][0]
-        let removeQty = Math.min(pathQty, availableQty)
-        let parts = pathQuantityArray[ind][1]
-        for(const i in parts){
-          if(!!bins[loadStationId][parts[i]]){
-            bins[loadStationId][parts[i]]-=removeQty
-          }
-        }
-        availableQty -= removeQty
-        if(availableQty<1){
-          break
-        }
-      }
-      //delete part if qty 0
-      for (const ind in bins[loadStationId]) {
-        if (bins[loadStationId][ind] === 0 && ind!=='count') {
-          delete bins[loadStationId][ind];
-        }
-        else if(ind === 'count') bins[loadStationId][ind]-= quantity
-      }
-
+export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {//Since parts are now consumed, only reduce count. dont need to touch parts.
+    if(quantity === bins[loadStationId]['count']) {
+      delete bins[loadStationId]['count'];
     } else {
-      if (quantity === bins[loadStationId].count) {
-        delete bins[loadStationId];
-      } else {
-        bins[loadStationId].count -= quantity;
-      }
+      bins[loadStationId]['count'] -= quantity;
     }
+    if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };

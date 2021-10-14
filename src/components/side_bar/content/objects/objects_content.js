@@ -20,9 +20,7 @@ export default function ObjectsContent(props) {
     const dispatch = useDispatch()
     let objects = useSelector(state => state.objectsReducer.objects)
     let selectedObject = useSelector(state => state.objectsReducer.selectedObject)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const [editing, toggleEditing] = useState(false)
     const [selectedObjectCopy, setSelectedObjectCopy] = useState(null)
 
@@ -89,7 +87,7 @@ export default function ObjectsContent(props) {
             <ContentList
                 title={'Objects'}
                 schema={'objects'}
-                elements={Object.values(objects).filter((item) => item.map_id === currentMap._id)}
+                elements={Object.values(objects).filter((item) => item.map_id === currentMapId)}
                 onMouseEnter={(object) => dispatch(objectActions.selectObject(object._id.$oid))}
                 onMouseLeave={() => dispatch(objectActions.deselectObject())}
                 onClick={() => {
@@ -100,7 +98,7 @@ export default function ObjectsContent(props) {
                     dispatch(objectActions.addObject({
                         name: "",
                         _id: { $oid: '__NEW_OBJECT' },
-                        map_id: currentMap._id,
+                        map_id: currentMapId,
                     }))
                     dispatch(setAction('NEW'))
                     dispatch(objectActions.selectObject('__NEW_OBJECT'))

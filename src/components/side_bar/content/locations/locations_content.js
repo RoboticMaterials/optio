@@ -26,7 +26,7 @@ export default function LocationContent() {
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
     const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
-    const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -36,16 +36,6 @@ export default function LocationContent() {
 
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
-
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-    const processes = useSelector(state => state.processesReducer.processes)
-    const [mergeStation, setMergeStation] = useState(false)
-    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const locations = {
@@ -121,7 +111,7 @@ export default function LocationContent() {
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
                         // Filters out devices, entry positions, other positions and right click to move positions
-                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.map_id === currentMap._id))
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position')
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => {
@@ -130,11 +120,11 @@ export default function LocationContent() {
                   }
                 }}
                 onMouseLeave={() => {
-                //   if(selectedLocation?.schema!=="temporary_position")
-                //   onSetSelectedLocation(null)
+                  if(selectedLocation?.schema!=="temporary_position") {
+                    onSetSelectedLocation(null)
+                  }
                 }}
                 onClick={(location) => {
-                    console.log('QQQQ Editing Location', location)
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {

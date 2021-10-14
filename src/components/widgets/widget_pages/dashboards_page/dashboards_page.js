@@ -111,13 +111,13 @@ const DashboardsPage = (props) => {
                 const processRoutes = currProcess.routes.map(routeId => routes[routeId])
 
                 let processStartNodes = findProcessStartNodes(processRoutes, stations);
-                let processEndNode = findProcessEndNodes(processRoutes);
+                let processEndNodes = findProcessEndNodes(processRoutes);
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
                 if (processStartNodes.includes(stationID) && stationID !== undefined) firstStationProcesses.push(currProcess._id)
 
                 // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
-                if (processEndNode.includes(stationID) && stationID !== undefined) lastStationProcesses.push(currProcess._id)
+                if (processEndNodes.includes(stationID) && stationID !== undefined) lastStationProcesses.push(currProcess._id)
 
             }
         })
@@ -171,7 +171,7 @@ const DashboardsPage = (props) => {
         <style.PageContainer >
             <DndProvider backend={HTML5Backend}>
                 <style.Container style={{ flexGrow: '1' }}>
-                    <DashboardScreen />
+                    <DashboardScreen {...props}/>
                 </style.Container>
             </DndProvider>
         </style.PageContainer >

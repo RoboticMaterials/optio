@@ -9,7 +9,7 @@ import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_p
 import Settings from "../side_bar/content/settings/settings";
 import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
-import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import Button from '../basic/button/button';
 import ScanLotModal from '../../components/basic/modals/scan_lot_modal/scan_lot_modal'
 import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
 import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
@@ -92,11 +92,10 @@ const ListView = (props) => {
     const [lotNum, setLotNum] = useState('')
     const [showSnoop, setShowSnoop] = useState(null)
     const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [title, setTitle] = useState('Dashboard')
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
-
-    const title = CURRENT_SCREEN.title
 
     let pause_status = ''
 
@@ -117,11 +116,13 @@ const ListView = (props) => {
         // displays dashboards page if url is on widget page
         if (stationID) {
             setShowDashboards(true)
+            setTitle(stations[stationID]?.name + ' Dashboard')
         }
 
         // hides dashboards page if url is NOT on widget page
         else {
             setShowDashboards(false)
+            setTitle('Locations')
         }
 
     }, [stationID])
@@ -177,7 +178,7 @@ const ListView = (props) => {
         if(card.lotNumber === id){
           lotFound = true
           Object.values(stations).forEach((station) => {
-            if(card.station_id === station._id){
+            if(!!card.bins[station._id]){
               binCount = binCount + 1
               statId = station._id
             }
@@ -190,6 +191,7 @@ const ListView = (props) => {
           setShowSettings(false)
           history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
           setShowDashboards(true)
+          setTitle(stations[statId]?.name + ' Dashboard')
         }
         }
       })
@@ -213,6 +215,7 @@ const ListView = (props) => {
         const dashboardID = !!stations[item._id] ? stations[item._id].dashboards[0] : devices[item._id].dashboards[0]
         history.push('/locations/' + item._id + '/' + "dashboards/" + dashboardID)
         setShowDashboards(true)
+        setTitle(stations[item._id]?.name + ' Dashboard')
     }
 
     // Handles the play pause button
@@ -309,13 +312,16 @@ const ListView = (props) => {
                                       color={"white"}
                                       onClick={() => {
                                           setShowDashboards(false)
+                                          setTitle('Locations')
                                           history.push('/locations')
                                       }}
                                       containerStyle={{
                                           color: "black",
                                           width: "2.5rem",
                                           height: "2.5rem",
-                                          position: "relative"
+                                          top: '0.75rem',
+                                            left: '1rem',
+                                            position: "absolute"
                                       }}
                                   >
 
@@ -330,6 +336,7 @@ const ListView = (props) => {
                                     color={"blue"}
                                     onClick={() => {
                                         setShowSettings(!showSettings)
+                                        setTitle('Settings')
                                         if (showSettings) {
                                             history.push(`/`)
                                         }
@@ -342,7 +349,9 @@ const ListView = (props) => {
                                         background: 'white',
                                         width: "2.5rem",
                                         height: "2.5rem",
-                                        position: "relative"
+                                        top: '0.75rem',
+                                        left: '1rem',
+                                        position: "absolute"
                                     }}
                                 >
                                     <styled.Icon
@@ -378,7 +387,7 @@ const ListView = (props) => {
                 // must be wrapped in route to give dashboards page the match params
                 <Route
                     path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouseID?"
-                    component={DashboardsPage}
+                    render={() => <DashboardsPage onSetTitle={(title) => setTitle(title)}/>}
                 />
             }
 

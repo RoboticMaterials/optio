@@ -26,6 +26,7 @@ const ScanLotModal = (props) => {
         id,
     } = props
 
+
     const cards = useSelector(state => state.cardsReducer.cards)
     const stations = useSelector(state =>state.stationsReducer.stations)
 
@@ -37,34 +38,38 @@ const ScanLotModal = (props) => {
 
       return Object.values(cards).map((card) => {
             if(card.lotNumber === id){
-          return  Object.values(stations).map((station) => {
-                if(card.station_id === station._id){
-                  return (
-                    <styled.ListItem
-                      onClick={() => {
-                        history.push(`/locations/${station._id}/dashboards/${stations[station._id].dashboards[0]}/lots/${card._id}`)
-                        dispatchShowLotScanModal(null)
-                      }}
-                    >
-                    <styled.HoverContainer >
-                        <styled.ListItemIcon
-                            className='fas fa-user-alt'
-                        />
-                        <styled.ListItemTitle>{station.name}</styled.ListItemTitle>
-                      </styled.HoverContainer>
 
-                        <LotContainer
-                            lotId={card._id}
-                            binId={station._id}
-                            enableFlagSelector={false}
-                            key={card._id}
-                            containerStyle={{
-                                minWidth: "95%",
-                                marginBottom: "1rem"
-                            }}
-                        />
-                    </styled.ListItem>
-                  )
+          return  Object.values(stations).map((station) => {
+                for(const i in card.bins){
+                  if(i === station._id){
+                    return (
+                      <styled.ListItem
+                        onClick={() => {
+                          history.push(`/locations/${station._id}/dashboards/${stations[station._id].dashboards[0]}/lots/${card._id}`)
+                          dispatchShowLotScanModal(null)
+                        }}
+                      >
+                      <styled.HoverContainer >
+                          <styled.ListItemIcon
+                              className='fas fa-user-alt'
+                          />
+                          <styled.ListItemTitle>{station.name}</styled.ListItemTitle>
+                        </styled.HoverContainer>
+
+                          <LotContainer
+                              lotId={card._id}
+                              binId={station._id}
+                              enableFlagSelector={false}
+                              key={card._id}
+                              containerStyle={{
+                                  minWidth: "95%",
+                                  marginBottom: "1rem"
+                              }}
+                          />
+                      </styled.ListItem>
+                    )
+                  }
+
                 }
               })
             }

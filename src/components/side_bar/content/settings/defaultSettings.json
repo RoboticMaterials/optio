@@ -1,0 +1,57 @@
+{
+    "loggers": {
+        "Dashboards": false,
+        "Scheduler": false,
+        "Tasks": false,
+        "Objects": false,
+        "ModelViewer": false,
+        "Api": false,
+        "ReduxLogger": false,
+        "All": false
+    },
+    "shiftDetails": {
+        "startOfShift": "08:00",
+        "endOfShift": "6:00",
+        "expectedOutput": "10",
+        "breaks": {
+            "break1": {
+                "enabled": false,
+                "startOfBreak": "10:00",
+                "endOfBreak": "11:00"
+            },
+            "break2": {
+                "enabled": false,
+                "startOfBreak": "12:00",
+                "endOfBreak": "13:00"
+            },
+            "break3": {
+                "enabled": false,
+                "startOfBreak": "14:00",
+                "endOfBreak": "15:00"
+            }
+        }
+    },
+    "mapApps": {
+        "heatmap": true,
+        "ratsnest": true,
+        "labels": true
+    },
+    "enableMultipleLotFilters": true,
+    "timezone": {
+        "name": "(Mountain Time) Denver",
+        "label": "America/Denver"
+    },
+    "MiRMapEnabled": true,
+    "currentMapId": "7166abf6-4b94-4373-8eb5-f6d8a775bfdf",
+    "accessToken": null,
+    "authenticated": false,
+    "deviceEnabled": false,
+    "mapViewEnabled": true,
+    "non_local_api": false,
+    "non_local_api_ip": "localhost",
+    "refreshToken": "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.MsUhi6ZaFbJMIPiyCte25VvFFoiou2TxoFkNVNtETmJmLS21PkAgxFYSdorPQIJ_p3wHtnpY9poVkuzgYx79wbIm1ajfdxK4XE-i69IirEj6DwPGdlfFnl2L0hVE7AD9R8NucbSNzCvaouOrKOJRiG3vNGWze0cvnHkv1lhKscJ_LaVqIZ8VxvfA6dSeRoAkrTRaUmzkYpAr6dI06XEoFg3UgGjwC8O-o2MrSTh2k0OLSC8WKSuxDzCpcNp-WfmsEBU2PPRwwMsEx0oB8Ap0ggBMCvriZUgYDsvJ_M8GEwVfP35xubz5am-NeKSHMJhZqzrrHayB51Y6Zuza6f5fLw.-UoSwyL-CAeaE_0a.TuTf4_s8SrEQdkNkFEIRyvg0gM_XO_-vUR6TCShkzVFU_aNS64BE_jPhws7QIsVZvaK5odFB1szXoVI3PqMYlUnP3kHJdmPqQTnjd4EDvCvSXa35tC3TpTG_e_edVv8_16puDG72HjmftmNm_RsnpXTiiCMZBvsw2kXfU7V2pVpNTans2JPUhj291CRthckOYMcGsg47k06-vqI1L9ocyZukQCObV3fTHPL1ksgJT2zxZcnAH3NbUXyAHrTFnwS335GbzxlvuvmeXQV8Hc0s6v4E9veTA_uzjOhHkrGLsz_OTcVHI4ZRbPiqmd2PCZ_FuaW9PqDWHXEHZL8D5i1JSqSKSust_yz_flWVMlFWYOawAiaXOiNCOglRS9i_gwNPyKAffjzvQVvQp0xcIQNvCB0rKYAiR3MnW9jKPW4zVX2motgVtFE6eCSXyCMrWtyCPQ8muuRQxUinL3e0lcJt9bNBBEr6GPmKP4Et3gGdg07cfIAo3gt_q3mUbwjyip1V6z4D_QvxWhTeOgCvpqd7_1zJWO4KVeUctk7VG1fiipH_K8zkZvWaCKPeekGb7yDskcqJp0ZdgXPSaMwfPcgRJsOCWRWkfmD88pQFi8PSNYPRZiydg2ou3SmDKsHB-FNM32fZfeDn2LafTEaYdu2wYj-GF4FqJtwBPJsQTD9s02q7p7ofp9865ZdoGoJnOVpyF4EvUbDk3uVU0YPqqXy_yi7s3JdGHtziAOeaqQpgHFErhJhlEpj5Op2etdvNq927RwRl89J7VCJxI0XGxZVYG7EzcbTWySyM9p93IuDNd3I2ZuVzk_YiU6jOxocX-K6UI-aW1mhfQ6-cRkYEDRS42Xyc8R6dqckA3cIxwMIVJ3t3F19i3vlJsGaib4afhgUj9xgwoR7gVJmqURUzUY7QduFZGsT-pNSEit69zCBbC-FTl6M0AMELxsC5AR29vy5KxZjObnWZsvzL25M1yh9OPWIgNjXzFQakdqJp7KZaCigCKx4zW_OQNq6FS13h6-_9kUACZJkiMni0D61HkP2PGesG9tCJxjwxAag94pZlEYHN4B8Y6Bd2a5dddlWDsbzM4PJ6DCITC7zIZLJKBCieYjcDnyvi6JqpbWkUD4Qugzsom_UKr8OnpoN4nA7m7d2bJhHlbuoxq9PAxVr_VplN7ZxEwF764pEZTd7WE1VnPkTjXcdnAUgUhBUWMrVWQCIjVVyzULjz3l3AzjslNQXCkduAI7ATcVlFsBgP5pvuP3Sv5-KCn6y40uMVuyv9UnKQS9OQk0A4a28p1Lmc-GXsQIODWEIX_VgSJmcoQkFQbSSKp5Tlcq8a7bPShy4KVlSpPQF1ACFgCIP_bV6W.4SI_CYGpr9j2UIKhDi8EyQ",
+    "toggleDevOptions": false,
+    "stationBasedLots": false,
+    "moveAlertDuration": 3000,
+    "trackUsers": false
+}

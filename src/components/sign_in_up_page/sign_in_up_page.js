@@ -9,7 +9,7 @@ import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cogn
 import { Formik, Form } from 'formik'
 
 // Import Utils
-import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
+import { signInSchema, getSignUpSchema } from '../../methods/utils/form_schemas'
 
 // Import Components
 import TextField from '../basic/form/text_field/text_field'
@@ -177,7 +177,7 @@ const SignInUpPage = (props) => {
             validateOnChange={false}
 
             // Chooses what schema to use based on whether it's a sign in or sign up
-            validationSchema={signIn ? signInSchema : signUpSchema}
+            validationSchema={signIn ? signInSchema : getSignUpSchema(configData.ClientId)}
 
             onChange={() => {
                 console.log('changing');

@@ -1,7 +1,5 @@
 import React, { useEffect, useState, memo, useMemo } from "react"
 import useWindowDimensions from "../../../../../higher_order_components/react-window-size";
-import moment from 'moment';
-
 
 // components internal
 import StationsColumn from "../columns/station_column/station_column"
@@ -13,22 +11,14 @@ import { useDispatch, useSelector } from "react-redux"
 import PropTypes from "prop-types"
 
 // utils
-import { getLotTotalQuantity, getCardsInBin, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
-import { getProcessStationsSorted, flattenProcessStations } from '../../../../../methods/utils/processes_utils';
-import { convertShiftDetailsToWorkingTime, convertHHMMSSStringToSeconds } from '../../../../../methods/utils/time_utils'
 
 // styles
 import * as styled from "./card_zone.style"
 import { isObject } from "../../../../../methods/utils/object_utils";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lot_contants";
-
-// Import Actions
-import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
-
-// Import API
-import { getStationCycleTime } from '../../../../../api/stations_api'
 
 
 const CardZone = ((props) => {
@@ -67,7 +57,6 @@ const CardZone = ((props) => {
         lotId: draggingLotId = "",
         binId: draggingBinId = ""
     } = draggedLotInfo || {}
-
     // component state
     const [cardsSorted, setCardsSorted] = useState({})
     const [bins, setBins] = useState({})
@@ -220,7 +209,6 @@ const CardZone = ((props) => {
         setQueue(tempQueue)
         setFinished(tempFinished)
     }, [bins, allCards, processId, lotFilters, draggingBinId, draggingLotId, lotFilterValue, selectedFilterOption])
-
 
     const renderStationColumns = useMemo(() => {
 

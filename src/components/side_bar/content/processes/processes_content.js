@@ -27,9 +27,7 @@ const ProcessesContent = () => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const processes = useSelector(state => state.processesReducer.processes)
     const editing = useSelector(state => state.processesReducer.editingProcess)
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
-    const maps = useSelector(state => state.mapReducer.maps)
-    const currentMap = Object.values(maps).find(map => map._id === currentMapId)
+    const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     // State definitions
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true)
@@ -41,7 +39,7 @@ const ProcessesContent = () => {
             dispatchSetSelectedProcess(null)
         }
     }, [])
-
+    
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
@@ -82,7 +80,7 @@ const ProcessesContent = () => {
                 schema={'processes'}
                 // elements={Object.values(tasks)}
                 elements={
-                    Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id)
+                    Object.values(processes)
                 }
                 onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
                 onMouseLeave={() => dispatchSetSelectedProcess(null)}

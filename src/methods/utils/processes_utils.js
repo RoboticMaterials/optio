@@ -461,7 +461,7 @@ export const doRoutesConverge = (routes) => {
  * @param {Array} stations
  * @returns
  */
-export const findProcessStartNodes = (processRoutes, stations) => {
+export const findProcessStartNodes = (processRoutes, stations) => { 
     if (processRoutes.length === 0) return [];
     let loadStations = processRoutes.map((route) =>
         !!route ? route.load : {}
@@ -481,6 +481,8 @@ export const findProcessStartNodes = (processRoutes, stations) => {
             startNodes.push(loadStation);
         }
     }
+
+    if (startNodes.length === 0) return []
 
     if (
         stations !== undefined &&
@@ -503,15 +505,14 @@ export const findProcessEndNodes = (routes) => {
     let loadStations = routes.map((route) => (!!route ? route.load : {}));
     let unloadStations = routes.map((route) => (!!route ? route.unload : {}));
 
-    let endNodes = [];
+    let endNodes = []
     for (var unloadStation of unloadStations) {
         if (
             loadStations.find(
                 (loadStation) => loadStation === unloadStation
-            ) === undefined &&
-            !endNodes.includes(unloadStation)
+            ) === undefined
         ) {
-            endNodes.push(unloadStation)
+            endNodes.push(unloadStation);
         }
     }
     return endNodes;
@@ -545,18 +546,16 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
             routeId = sExpression[entryIdx];
             node = routes[routeId].unload;
             outgoingRoutes = getNodeOutgoing(node, processRoutes);
-            if (node === stationId) {
-                sExpressionCopy[entryIdx] = routeId;
-            } else if (outgoingRoutes.length === 0) {
-                sExpressionCopy[entryIdx] = null;
-            } else if (outgoingRoutes.length === 1) {
+            if (node === stationId || outgoingRoutes.length === 0) { // We've found our station, or weve found an end node
+                // sExpressionCopy[entryIdx] = routeId;
+            } else if (outgoingRoutes.length === 1) {// Not a diverging node
                 // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
                 // This null is removed before the expression is returned \/
                 sExpressionCopy[entryIdx] = recursiveExpand([
                     null,
                     outgoingRoutes[0]._id,
                 ]);
-            } else {
+            } else { // Diverging node, new sub expression and expand
                 nextRoutes = outgoingRoutes.map((route) => route._id);
                 if (
                     outgoingRoutes.some(
@@ -624,6 +623,20 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
     }
 
     startRouteExpression = startRouteExpression.filter((el) => el !== null);
+
+    const recursivePrint = (exp) => {
+        exp = deepCopy(exp)
+      for (var i=1; i<exp.length; i++) {
+        if (Array.isArray(exp[i])) {
+            exp[i] = recursivePrint(exp[i])
+        } else {
+            exp[i] = routes[exp[i]]?.name || "---"
+        }
+      }
+      return exp
+    }
+    console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(startRouteExpression))
+
     if (
         startRouteExpression.every(
             (element, idx) =>
@@ -681,7 +694,7 @@ export const flattenProcessStations = (processRoutes, stations) => {
         if (outgoingRoutes.length > 1) { // This is a diverging node, move down in depth
             depth++;
         }
-        
+
         for (var nextRoute of outgoingRoutes) {
             traveresedRoutes[nextRoute._id] = true;
             DFS(nextRoute.unload, routes, depth);
@@ -710,5 +723,5 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     return flattenedStations;
 
-    
+
 }

@@ -18,35 +18,18 @@ import { pageDataChanged } from "../../../../redux/actions/sidebar_actions";
 
 // Import Utils
 import { handleWidgetHoverCoord } from "../../../../methods/utils/widget_utils";
-import { deepCopy } from "../../../../methods/utils/utils";
 import { convertD3ToReal } from "../../../../methods/utils/map_utils";
 import { editing } from "../../../../methods/utils/locations_utils";
-import { getProcessStationsWhileEditing } from "../../../../methods/utils/processes_utils";
 
 // Import Constants
 import { StationTypes } from "../../../../constants/station_constants";
-import { defaultTask } from "../../../../constants/route_constants";
 
 // Import Components
 import LocationSvg from "../location_svg/location_svg";
 import DragEntityProto from "../drag_entity_proto";
-import { getPreviousRoute } from "../../../../methods/utils/processes_utils";
 import {
     generateDefaultRoute,
-    getHasStartAndEnd,
-    getLoadStationId,
-    getRouteEnd,
-    getRouteIndexInRoutes,
-    getRouteStart,
-    getUnloadStationId,
-    isNextRouteViable,
-    isPositionAtLoadStation,
-    isPositionInRoutes,
-    isStationInRoutes,
-    isStationLoadStation,
-    isStationUnloadStation,
 } from "../../../../methods/utils/route_utils";
-import { immutableDelete } from "../../../../methods/utils/array_utils";
 
 function Station(props) {
     const {
@@ -56,7 +39,7 @@ function Station(props) {
         handleEnableDrag,
         handleDisableDrag,
         mouseDown,
-        isSelected,
+        // isSelected,
     } = props;
 
     const [hovering, setHovering] = useState(false);
@@ -65,9 +48,6 @@ function Station(props) {
 
     const selectedStation = useSelector(
         (state) => state.stationsReducer.selectedStation
-    );
-    const editingStation = useSelector(
-        (state) => state.stationsReducer.editingStation
     );
     const editingProcess = useSelector(
         (state) => state.processesReducer.editingProcess
@@ -84,11 +64,6 @@ function Station(props) {
     const hoveringInfo = useSelector(
         (state) => state.widgetReducer.hoverStationInfo
     );
-    const tasks = useSelector((state) => state.tasksReducer.tasks);
-    const fixingProcess = useSelector(
-        (state) => state.processesReducer.fixingProcess
-    );
-    const positions = useSelector((state) => state.positionsReducer.positions);
 
     const dispatch = useDispatch();
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info));
@@ -108,8 +83,7 @@ function Station(props) {
     //                                          //
     // ======================================== //
 
-    const routeStart = getRouteStart(selectedTask);
-    const routeEnd = getRouteEnd(selectedTask);
+    const isSelected = !!selectedStation && selectedStation._id === station._id
 
     let disabled = false;
     if (!!selectedTask && !!selectedProcess) {
@@ -138,7 +112,7 @@ function Station(props) {
 
     // Set Color
     let color = StationTypes[station.type].color;
-    if (!isSelected && disabled) color = "#afb5c9";
+    if (!isSelected && disabled) color = "#c4cbff";
     // Grey
     else if (highlight) color = "#38eb87"; // Green
 
@@ -306,33 +280,33 @@ function Station(props) {
                 handleRotating={onRotating}
             ></LocationSvg>
 
-            {isSelected && selectedTask === null && selectedProcess === null && (
-                <DragEntityProto
-                    isSelected={isSelected}
-                    location={station}
-                    rd3tClassName={rd3tClassName}
-                    d3={() => d3()}
-                    handleRotate={(rotation) => {
-                        dispatchSetStationAttributes(station._id, { rotation });
-                    }}
-                    handleTranslate={({ x, y }) =>
-                        dispatchSetStationAttributes(station._id, { x, y })
-                    }
-                    handleTranslateEnd={({ x, y }) => {
-                        const pos = convertD3ToReal([x, y], props.d3);
-                        dispatchSetStationAttributes(station._id, {
-                            pos_x: pos[0],
-                            pos_y: pos[1],
-                        });
-                    }}
-                    handleEnableDrag={() => {
-                        handleEnableDrag();
-                    }}
-                    handleDisableDrag={() => {
-                        handleDisableDrag();
-                    }}
-                />
-            )}
+            <DragEntityProto
+                isSelected={isSelected}
+                location={station}
+                rd3tClassName={rd3tClassName}
+                d3={() => d3()}
+                handleRotate={(rotation) => {
+                    dispatchSetStationAttributes(station._id, { rotation });
+                }}
+                handleTranslate={({ x, y }) => 
+                    dispatchSetStationAttributes(station._id, { x, y })
+                }
+                handleTranslateEnd={({ x, y }) => {
+                    const pos = convertD3ToReal([x, y], props.d3);
+                    dispatchSetStationAttributes(station._id, {
+                        x,
+                        y,
+                        pos_x: pos[0],
+                        pos_y: pos[1],
+                    });                    
+                }}
+                handleEnableDrag={() => {
+                    handleEnableDrag();
+                }}
+                handleDisableDrag={() => {
+                    handleDisableDrag();
+                }}
+            />
             {onWidgetPageOpen()}
         </React.Fragment>
     );
