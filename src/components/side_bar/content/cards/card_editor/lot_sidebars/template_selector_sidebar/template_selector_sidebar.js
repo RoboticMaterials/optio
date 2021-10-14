@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
@@ -14,8 +14,8 @@ import { ThemeContext } from "styled-components";
 import log from '../../../../../../../logger'
 
 import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
-import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
-import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
+import {setSelectedLotTemplate, postLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
+import {BASIC_LOT_TEMPLATE, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
 import Button from "../../../../../../basic/button/button";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
@@ -40,10 +40,22 @@ const TemplateSelectorSidebar = (props) => {
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+    const dispatchPostLotTemplate = (lotTemplate) => dispatch(postLotTemplate(lotTemplate))
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-    const processLotTemplates = Object.values(lotTemplates).filter(template => template.processId === processId)
+    const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
 
+
+    useEffect(() => {
+        if (processLotTemplates.find(template => template.name === 'Basic') === undefined) {
+            // As of 10/14/21 when a process is created, it makes the Basic template. 
+            // If the Basic template is not found this means the process was made prior to this update and the Basic
+            // template needs to be created
+
+            dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: processId})
+        } 
+    }, [processLotTemplates, processId])
+    
 
 
     const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions

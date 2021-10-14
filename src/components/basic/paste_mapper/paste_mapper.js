@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 
 // components external
 import Spreadsheet from "react-spreadsheet";
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+
 
 // components internal
 import Button from "../button/button";
@@ -13,7 +15,7 @@ import DropDownSearch from '../drop_down_search_v2/drop_down_search'
 
 //utils
 import { templateMapperSchema } from "../../../methods/utils/form_schemas";
-import { deepCopy, uuidv4 } from '../../../methods/utils/utils'
+import { deepCopy } from '../../../methods/utils/utils'
 import { createPastePayload } from '../../../methods/utils/lot_utils'
 
 // style
@@ -38,10 +40,7 @@ const PasteMapper = (props) => {
         values,
     } = formikProps;
 
-    const {
-        table
-    } = values
-
+    const [table, setTable] = useState(values.table)
     const [fieldMapping, setFieldMapping] = useState([])
 
     const dispatch = useDispatch()
@@ -111,8 +110,54 @@ const PasteMapper = (props) => {
         )
     }
 
+    const deleteRow = (row) => {
+        let tableCopy = deepCopy(table);
+        tableCopy.splice(row, 1)
+        setTable(tableCopy)
+    }   
+
+    const addAbove = (row) => {
+        let tableCopy = deepCopy(table);
+        const numCols = tableCopy[0].length
+        const newRow = new Array(numCols).fill('')
+        tableCopy.splice(row, 0, newRow)
+        setTable(tableCopy)
+    }
+
+    const addBelow = (row) => {
+        let tableCopy = deepCopy(table);
+        const numCols = tableCopy[0].length
+        const newRow = new Array(numCols).fill('')
+        tableCopy.splice(row+1, 0, newRow)
+        setTable(tableCopy)
+    }
+
+    const renderRowLabel = ({ row }) => {
+        return (
+                
+                <styled.RowLabelContainer>
+                    <ContextMenuTrigger id={`context-menu-${row}`}>
+                        <styled.RowLabel>{row+1}</styled.RowLabel>
+                    </ContextMenuTrigger>
+
+                    <ContextMenu id={`context-menu-${row}`}>
+                        <MenuItem onClick={() => deleteRow(row)}>
+                            Delete Row
+                        </MenuItem>
+                        <MenuItem onClick={() => addAbove(row)}>
+                            Add Row Above
+                        </MenuItem>
+                        <MenuItem onClick={() => addBelow(row)}>
+                            Add Row Below
+                        </MenuItem>
+                </ContextMenu>
+                </styled.RowLabelContainer>
+            
+        )
+    }
+
     const Table = useMemo(() => {
-        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown}/>
+        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel}/>
     }, [table, lotTemplate.uploadFieldMapping])
 
     return (
