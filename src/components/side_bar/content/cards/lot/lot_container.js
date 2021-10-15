@@ -26,6 +26,7 @@ const LotContainer = (props) => {
     containerStyle,
     isPartial,
     onDeleteDisabledLot,
+    onRightClickDeleteLot,
     // quantity,
     ...rest
   } = props;
@@ -75,6 +76,7 @@ const LotContainer = (props) => {
               <Lot
                   lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                   onDeleteDisabledLot = {onDeleteDisabledLot}
+                  onRightClickDeleteLot = {onRightClickDeleteLot}
                   isDashboard={!!isDashboard}
                   stationName={stationName}
                   templateValues={templateValues}

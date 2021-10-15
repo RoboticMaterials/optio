@@ -60,6 +60,7 @@ const Column = ((props) => {
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
+
 	// console.log(shiftDetails)
 
 	// actions
@@ -76,6 +77,8 @@ const Column = ((props) => {
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
 	const [isSourcee, setIsSource] = useState(false)
+	const [highlightStation, setHighlightStation] = useState(false)
+	const [lastStationTraversed, setLastStationTraversed] = useState(null)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -92,6 +95,7 @@ const Column = ((props) => {
 		setNumberOfLots(tempNumberOfLots)
 		setLotQuantitySummation(tempLotQuantitySummation)
 	}, [cards])
+
 
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
@@ -127,47 +131,104 @@ const Column = ((props) => {
 				...remainingPayload
 			} = payload
 			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
+
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNode(processRoutes)
 			if (oldProcessId !== processId) return false
 			if(!!showCardEditor) return false
 			//if (process[oldProcessId] === undefined) return false
 
-		 	if(binId === station_id) return true
-			for(const ind in processes[oldProcessId].routes){
-				let route = routes[processes[oldProcessId]?.routes[ind]]
-				if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
+		 	if(binId === station_id) {
+				setHighlightStation(true)
+				return true
+			}
 
+			const forwardsTraverseCheck = (currentStationID) => {
+				if(endNode === currentStationID && station_id =='FINISH'){//If you can traverse to the end node, also allow finish column
+					setHighlightStation(true)
+					return true
+				}
+				else if(currentStationID === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)){
+					if(startNodes.includes(station_id)){
+						setHighlightStation(true)
+						return true
+					}
+					else{
+						for(const ind in startNodes){
+							const canMove = forwardsTraverseCheck(startNodes[ind])
+							if(!!canMove) return true
+						}
+					}
+				}
+				const nextRoutes = processRoutes.filter(route => route.load === currentStationID)
+				if(!!nextRoutes[0] && (!nextRoutes[0].divergeType || nextRoutes[0].divergeType!=='split')){//can't drag forward if station disperses lots
+					for(const ind in nextRoutes){
+						if(nextRoutes[ind].unload === station_id){
+							//If you are skipping over nodes and drag to a merge station we need to keep track of the station right before
+							//the merge station as merge functions need this to find routeTravelled
+							setLastStationTraversed(nextRoutes[ind].load)
+							setHighlightStation(true)
+							return true
+						}
+						else{
+							const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
+							if(mergingRoutes.length === 1){
+								const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
+								if(!!canMove) return true
+							}
+						}
+					}
+				}
+			}
+
+			const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
+				if(startNodes.includes(currentStationID) && station_id === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
+					setHighlightStation(true)
 					return true
 				}
 
-				else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split/merge route and routes arent merging into current station
-					const mergingRoutes = processes[oldProcessId].routes
-																.map(routeId => routes[routeId])
-																.filter(route => route.unload === binId)
-
-					const previousMergingRoutes = processes[oldProcessId].routes
-																.map(routeId => routes[routeId])
-																.filter(route => route.unload === station_id)
-
-					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
-				}
-				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
-					for(const ind in startNodes){
-						if(station_id===startNodes[ind]) return true
+				else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
+					if(endNode === station_id){
+					const mergingRoutes = processRoutes.filter((route) => route.unload === endNode);
+						if(mergingRoutes.length === 1){
+							setHighlightStation(true)
+							return true
+						}
+					}
+					else{
+						const canMove = backwardsTraverseCheck(endNode)
+						if(!!canMove) return true
 					}
 				}
 
-				else if(station_id==="FINISH") {
-					for(const ind in startNodes){
-						if(binId===endNode) return true
+				const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
+				if(mergingRoutes.length===1){//Can't drag backwards from merge station
+					for(const ind in mergingRoutes){
+						const dispersingRoutes = processRoutes.filter((route) => route.load === mergingRoutes[ind].load);
+						if(mergingRoutes[ind].load === station_id) {
+							if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
+								setHighlightStation(true)
+								return true
+							}
+						}
+						else{
+								if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
+									const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
+									if(!!canMove) return true
+								}
+
+							}
 					}
 				}
-
 			}
 
-			return false
+			let atMergeStation = false
+			const forwardsFound = forwardsTraverseCheck(binId)
+			if(!!forwardsFound) return true
+			const backwardsFound = backwardsTraverseCheck(binId)
+			if(!!backwardsFound) return true
 
+			return false
 		}
 		else return false
 	}
@@ -196,6 +257,24 @@ const Column = ((props) => {
 				}
 			}
 			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
+			dispatchPutCard(submitLot, submitLot._id)
+	}
+
+	const handleRightClickDeleteLot = (card, binId) => {
+			let currLot = reduxCards[card.cardId]
+			let currBin = currLot.bins[binId]
+
+			currBin['count'] = 0
+
+			let submitLot = {
+				...currLot,
+				bins: {
+					...currLot.bins,
+					[binId]: currBin
+				}
+			}
+
+			if(Object.values(currBin).length===1) delete submitLot.bins[binId]
 			dispatchPutCard(submitLot, submitLot._id)
 	}
 
@@ -307,7 +386,8 @@ const Column = ((props) => {
 
 					if (movedBin) {
 						let updatedLot = droppedCard
-						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, station_id, processes[updatedLot.process_id], routes, stations)
+						let stationBeforeMerge = !!lastStationTraversed ? lastStationTraversed : binId
+						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, stationBeforeMerge, station_id, processes[updatedLot.process_id], routes, stations)
 						updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, processes[updatedLot.process_id], routes)
 						if(!!updatedLot.bins[binId] && !updatedLot.bins[binId]['count']){
 							updatedLot.bins[binId] = {
@@ -358,6 +438,7 @@ const Column = ((props) => {
 							}
 						}}
 						onDragEnd={(dragEndParams) => {
+							setHighlightStation(false)
 							const {
 								isSource,
 							} = dragEndParams
@@ -377,7 +458,12 @@ const Column = ((props) => {
 						getChildPayload={index =>
 							cards[index]
 						}
-						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 4rem 1rem", background:!!dragEnter &&!isSourcee? '#dedfe3' : '#f7f7fa'}}
+						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 4rem 1rem",
+						 background:!!highlightStation && !isSourcee? '#dedfe3' : '#f7f7fa',
+						 border:!!highlightStation && !isSourcee && '0.1rem solid #b8b9bf',
+						 borderRadius:!!highlightStation && !isSourcee && '.5rem',
+						 margin:!!highlightStation && !isSourcee && '1rem',
+					 }}
 					>
 						{cards.map((card, index) => {
 							const {
@@ -404,7 +490,6 @@ const Column = ((props) => {
 							const isSelected = getIsSelected(cardId, station_id)
 							const isDragging = draggingLotId === cardId
 							const isHovering = hoveringLotId === cardId
-
 							const isLastSelected = getIsLastSelected(cardId)
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
@@ -435,8 +520,10 @@ const Column = ((props) => {
 																			onDeleteDisabledLot = {() => {
 																				handleDeleteDisabledLot(card, card.binId, part)
 																			}}
+																			onRightClickDeleteLot = {()=>{
+																				handleRightClickDeleteLot(card, card.binId)
+																			}}
 																			glow={isLastSelected}
-																			isFocused={isDragging || isHovering}
 																			enableFlagSelector={enableFlags}
 																			selectable={selectable}
 																			isSelected={isSelected}

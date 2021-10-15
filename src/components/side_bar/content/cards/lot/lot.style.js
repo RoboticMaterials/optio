@@ -16,7 +16,7 @@ export const Container = styled.div`
 
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
-  border-radius: 0.4rem;
+  border-radius: .6rem;
   color: ${props => props.theme.bg.octonary};
 
   outline: none;
@@ -30,8 +30,8 @@ export const Container = styled.div`
   outline: none;
   user-select: none;
 
-  cursor: pointer;
-  pointer-events: ${props => !!props.disabled ? 'none' : 'auto'};
+  cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
+  pointer-events: ${props => !!props.disabled ? 'auto' : 'auto'};
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -52,6 +52,7 @@ export const Container = styled.div`
   // ${props => props.containerStyle};
 
   max-width: 30rem;
+
 `
 
 const selectedCss = css`
@@ -84,26 +85,39 @@ export const Row = styled.div`
     justify-content: space-between;
     padding: .25rem 0 .25rem 0;
 `
+export const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 10rem;
+    padding: 0.4rem;
+    background-color: ${props => !!props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
+    border-radius: 0rem 0.6rem 0rem .6rem;
+    justify-content: center;
+    align-content: center;
+    z-index: 5;
+
+`
 export const PartsRow = styled.div`
     display: flex;
     width: 100%;
     justify-content: space-between;
-    padding: .25rem 0 .25rem 0;
+    padding: 0rem 0 .25rem 0;
 `
 
 export const PartContainer = styled.div`
     display: flex;
-    height: 1.4rem;
-    max-width: 14rem;
-    min-width: 5rem;
+    height: 2.4rem;
+    width: 9rem;
     margin-left: .2rem;
     margin-top: .2rem;
+    padding-top: .5rem;
+    margin-bottom: 0.1rem;
 
     justify-content: center;
     z-index: 5000;
     pointer-events: auto;
     background: #F92644;
-    border-radius: 0.8rem;
+    border-radius: 0.4rem;
     color: ${props => props.theme.bg.primary};
 
     &:hover {
@@ -216,7 +230,7 @@ export const HeaderBar = styled.div`
 	display: flex;
   flex-direction: column;
 
-  padding: 0.2rem 0.5rem 0.1rem 0.5rem;
+  padding: 0rem 0rem 0.1rem 0.5rem;
 `
 
 export const NameNumberContainer = styled.div`
@@ -224,14 +238,6 @@ export const NameNumberContainer = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
 `
-
-
-
-
-
-
-
-
 
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
