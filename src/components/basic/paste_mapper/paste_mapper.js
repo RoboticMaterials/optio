@@ -62,7 +62,8 @@ const PasteMapper = (props) => {
 
             let disabled = false;
             if (!!lotTemplate?.uploadFieldMapping) {
-                if (lotTemplate.uploadFieldMapping.find((fieldDName, ind) => fieldDName === field.displayName && ind !== column)) {
+                const usedValueIndex = lotTemplate.uploadFieldMapping.findIndex((fieldDName, ind) => fieldDName === field.displayName && ind !== column)
+                if (usedValueIndex !== -1 && usedValueIndex < table[0].length) {
                     disabled = true
                 }
             }
@@ -158,7 +159,7 @@ const PasteMapper = (props) => {
 
     const Table = useMemo(() => {
         return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel}/>
-    }, [table, lotTemplate.uploadFieldMapping])
+    }, [table])
 
     return (
         <styled.Container>
