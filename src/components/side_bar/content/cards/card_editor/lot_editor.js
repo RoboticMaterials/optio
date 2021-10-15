@@ -947,7 +947,7 @@ const FormComponent = (props) => {
                                                 Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
-                                                {lotTemplate.name}
+                                                {lotTemplate?.name}
                                             </styled.ContentValue>
                                         </div>
                                     </styled.IconRow>
@@ -1460,7 +1460,7 @@ const LotEditor = (props) => {
                             fields: getFormCustomFields(
                                 useCardFields && !card?.syncWithTemplate
                                     ? card?.fields || []
-                                    : lotTemplate.fields,
+                                    : lotTemplate?.fields,
                                 card?.fields ? card?.fields : null
                             ),
                         }}

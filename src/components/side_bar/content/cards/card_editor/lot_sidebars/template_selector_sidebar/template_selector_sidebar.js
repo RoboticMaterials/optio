@@ -40,22 +40,11 @@ const TemplateSelectorSidebar = (props) => {
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
-    const dispatchPostLotTemplate = (lotTemplate) => dispatch(postLotTemplate(lotTemplate))
+    
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
     const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
 
-
-    useEffect(() => {
-        if (processLotTemplates.find(template => template.name === 'Basic') === undefined) {
-            // As of 10/14/21 when a process is created, it makes the Basic template. 
-            // If the Basic template is not found this means the process was made prior to this update and the Basic
-            // template needs to be created
-
-            dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: processId})
-        } 
-    }, [processLotTemplates, processId])
-    
 
 
     const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions
@@ -119,7 +108,7 @@ const TemplateSelectorSidebar = (props) => {
                                isSelected={isSelected}
                            >{name}</style.TemplateName>
 
-                            {!isMobile && currTemplate.name !== 'Basic' && 
+                            {!isMobile && currTemplate.name !== 'Basic' &&
                                 <style.EditTemplateIcon
                                     isSelected={isSelected}
                                     onClick={()=>{
