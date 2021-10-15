@@ -436,14 +436,15 @@ Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
     });
   });
 
-export const signUpSchema = Yup.object().shape({
+export const getSignUpSchema = (accessCode) => Yup.object().shape({
     email: Yup.string()
         .email()
         .required('Please enter an email'),
 
     accessCode: Yup.string()
         .required('Please enter a access code')
-        .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9|690f5884-aef6-4f65-b098-9c9304baac48)\b/, 'Must be a valid access code'),
+        .oneOf([accessCode], 'Must be a valid access code'),
+        // .matches(/\b(c20513dd-a031-495e-bd38-a342128b24b9|690f5884-aef6-4f65-b098-9c9304baac48)\b/, 'Must be a valid access code'),
 
     password: Yup.string()
         .required('Please enter a password')

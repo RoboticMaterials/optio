@@ -18,6 +18,7 @@ const StatusList = (props) => {
 		onCreateClick,
 		onMergeClick,
 		onCreateAllClick,
+		onBack,
 		displayNames,
 		mergeDisabled,
 	} = props
@@ -25,6 +26,7 @@ const StatusList = (props) => {
 	return (
 		<styled.Container>
 			<StatusListHeader
+				onBack={onBack}
 				onCanceleClick={onCanceleClick}
 			/>
 

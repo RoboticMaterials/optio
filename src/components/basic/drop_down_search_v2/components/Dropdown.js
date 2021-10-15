@@ -114,7 +114,7 @@ export const DefaultDropDownComponent = styled.div`
   border-radius: 2px;
   box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.1);
   max-height: ${({ dropdownHeight }) => dropdownHeight};
-  overflow: auto;
+  overflow-x: visible;
   z-index: 100;
 
     ${props => props.css && props.css};
@@ -146,8 +146,12 @@ export const DefaultDropDownComponent = styled.div`
     background: rgba(255,255,255,0.2);
   }
 
-    max-width: ${props => props.maxWidth && props.maxWidth};
+    // max-width: ${props => props.maxWidth && props.maxWidth};
 
+
+    overflow: visible;
+    min-width: fit-content;
+    // block-size: fit-content;
 }
 `;
 

@@ -22,3 +22,15 @@ export const QuantityText = styled.span`
   padding-right: 0.5rem;
   padding-top: 0.5rem;
 `
+export const RowContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: .5rem;
+`
+
+export const ColumnContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justifyContent: center;
+  margin-top: .5rem;
+`
