@@ -723,23 +723,52 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             (route) => !(stations[route.load]?.type === 'warehouse' && stations[route.unload]?.type === 'warehouse')
         )
     ).test(
+        'doesHaveStartNode',
+        'All processes must have at least one "Kick Off" station (The beginning of this process is ambiguous).',
+        (routes) => {
+            const startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 0) return false;
+            else return true
+        }
+    ).test(
+        'doesHaveEndNode',
+        'All processes must have at least one "Finish" station. This process has no end.',
+        (routes) => {
+            const endNodes = findProcessEndNodes(routes);
+            if (endNodes.length === 0) return false;
+            else return true
+        }
+    ).test(
         'doRoutesConverge',
         'All split branches of the process must converge at a single station',
         function (routes) {
 
             const { startDivergeType } = this.parent
 
+            const allNodes = routes.reduce((nodes, route) => {
+                if (!nodes.includes(route.load)) nodes.push(route.load)
+                if (!nodes.includes(route.unload)) nodes.push(route.unload)
+                return nodes
+            }, [])
+
+            let normalizedRoutes = {}
+            routes.forEach(route => normalizedRoutes[route._id] = route)
+            let routeIds = routes.map(r=>r._id)
+            allNodes.forEach(node => {
+                const mergeExp = handleMergeExpression(node, {startDivergeType, routes: routeIds}, normalizedRoutes, stations)
+            })
+
             // You can have multiple end nodes, as long as none of them are on a 'split' branch
-            const endNodes = findProcessEndNodes(routes);
-            for (var endNode of endNodes) {
-                let normalizedRoutes = {}
-                routes.forEach(route => normalizedRoutes[route._id] = route)
-                const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
-                if (!mergeExp || recursiveFindAnd(mergeExp)) {
-                    return false;
-                }
-            }
-            return true
+            // const endNodes = findProcessEndNodes(routes);
+            // for (var endNode of endNodes) {
+            //     let normalizedRoutes = {}
+            //     routes.forEach(route => normalizedRoutes[route._id] = route)
+            //     const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
+            //     if (!mergeExp || recursiveFindAnd(mergeExp)) {
+            //         return false;
+            //     }
+            // }
+            // return true
         }
     ).test(
         'isProcessCyclic',
