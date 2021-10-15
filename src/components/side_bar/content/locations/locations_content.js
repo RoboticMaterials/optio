@@ -26,7 +26,7 @@ export default function LocationContent() {
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
     const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
-    const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
 
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -120,11 +120,11 @@ export default function LocationContent() {
                   }
                 }}
                 onMouseLeave={() => {
-                //   if(selectedLocation?.schema!=="temporary_position")
-                //   onSetSelectedLocation(null)
+                  if(selectedLocation?.schema!=="temporary_position") {
+                    onSetSelectedLocation(null)
+                  }
                 }}
                 onClick={(location) => {
-                    console.log('QQQQ Editing Location', location)
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {

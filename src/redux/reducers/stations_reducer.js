@@ -62,7 +62,7 @@ export default function stationsReducer(state = defaultState, action) {
                 [station._id]: station
             },
             // If the post station is the selectedStation, then update selected station
-            selectedStation: (state.selectedStation !== null && state.selectedStation._id === station._id) && station,
+            selectedStation: (state.selectedStation !== null && state.selectedStation._id === station._id) ? station : state.selectedStation,
             pending: false,
         }
     }
@@ -93,7 +93,7 @@ export default function stationsReducer(state = defaultState, action) {
             }
 
             else {
-                let updatedStation = state.stations[action.payload.id]
+                let updatedStation = deepCopy(state.stations[action.payload.id])
                 Object.assign(updatedStation, action.payload.attr)
                 return onUpdateStation(updatedStation)
             }

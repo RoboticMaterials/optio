@@ -268,6 +268,21 @@ const Settings = () => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Move Lots by Fraction</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.fractionMove ? serverSettingsState.fractionMove : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                fractionMove: !serverSettingsState?.fractionMove || false
+                            })
+                        }}
+                        onColor={themeContext.schema.settings.solid}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
+
+                <styled.SwitchContainer>
                     <styled.SwitchLabel style={{marginRight:'0rem'}}>Hide Filters on Mobile</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
@@ -321,11 +336,11 @@ const Settings = () => {
             <styled.SettingContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
-                    <styled.SwitchLabel>Show Developer Settings</styled.SwitchLabel>
+                    <styled.Label>Show Developer Settings</styled.Label>
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
-                        style={{ color: 'black' }}
+                        style={{ color: 'black', paddingTop: '3rem' }}
                         onClick={() => {
                             handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
@@ -631,18 +646,23 @@ const Settings = () => {
 
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
 
-            <styled.Label>Map Settings</styled.Label>
+            <styled.HeaderContainer>
+              <styled.Label style = {{marginTop: '0rem'}}>Map Settings</styled.Label>
+            </styled.HeaderContainer>
             {MapViewEnabled()}
             {CurrentMap()}
-
-            <styled.Label>General Settings</styled.Label>
+            <styled.HeaderContainer>
+              <styled.Label>General Settings</styled.Label>
+            </styled.HeaderContainer>
             {TimeZone()}
             {EmailAddress()}
             {renderAlertDurationSetting()}
             {renderShiftSettings()}
 
 
-            <styled.Label>Dashboard Settings</styled.Label>
+            <styled.HeaderContainer>
+              <styled.Label>Dashboard Settings</styled.Label>
+            </styled.HeaderContainer>
             {dashboardSettings()}
             {LockUnlockAllDashboards()}
 
