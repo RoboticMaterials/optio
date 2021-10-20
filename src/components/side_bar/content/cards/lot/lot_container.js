@@ -61,7 +61,6 @@ const LotContainer = (props) => {
 
   const processName = useMemo(() => process.name, [process]);
   const stationName = useMemo(() => station.name, [station]);
-
   const templateValues = useMemo(
     () => getCustomFields(lotTemplateId, lot, dashboardID),
     [lotTemplateId, lot]
@@ -93,6 +92,7 @@ const LotContainer = (props) => {
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{
+                      borderRadius: '1rem',
                       width: "80%",
                       margin: ".5rem auto .5rem auto",
                       ...containerStyle,

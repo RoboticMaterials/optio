@@ -16,7 +16,6 @@ export const Container = styled.div`
 
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
-  border-radius: .6rem;
   color: ${props => props.theme.bg.octonary};
 
   outline: none;
@@ -25,13 +24,14 @@ export const Container = styled.div`
   }
 
   // letter-spacing: 1.5px;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
 
   outline: none;
   user-select: none;
-
+  border: 0.1rem solid transparent;
+  border-radius: 1rem;
   cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
   pointer-events: ${props => !!props.disabled ? 'auto' : 'auto'};
+  box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.2);
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -39,7 +39,8 @@ export const Container = styled.div`
     }
 
   &:hover {
-    box-shadow: ${props => props.disabled ? '0px 1px 4px 0px rgba(0, 0, 0, 0.3)' : '1px 1px 7px 3px #b385ff'};
+    border: 0.1rem solid #79797d;
+    border-radius: 1rem;
   }
 
 

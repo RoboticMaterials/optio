@@ -51,6 +51,7 @@ const Lot = (props) => {
         isDashboard,
         onDeleteDisabledLot,
         onRightClickDeleteLot,
+        dragging
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -201,6 +202,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
             isFocused={isFocused}

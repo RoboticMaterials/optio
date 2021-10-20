@@ -13,7 +13,7 @@ import 'rc-time-picker/assets/index.css';
 import useWindowSize from './hooks/useWindowSize'
 
 import * as styled from './App.style'
-
+import {DragDropContext} from 'react-beautiful-dnd'
 // Import API
 import { deleteLocalSettings } from './api/local_api'
 import { stopAPICalls } from './redux/actions/local_actions'
@@ -108,6 +108,7 @@ const App = () => {
     // }
 
     return (
+      <DragDropContext>
         <Suspense fallback = {<></>}>
             <Logger />
 
@@ -255,9 +256,10 @@ const App = () => {
                         </PageErrorBoundary>
                       </BrowserRouter>
                   </styled.Container>
-                  
+
               </ThemeProvider>
-              </Suspense>
+            </Suspense>
+          </DragDropContext>
     );
 
 }

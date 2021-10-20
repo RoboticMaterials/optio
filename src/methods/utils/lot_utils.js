@@ -1030,43 +1030,56 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
       let tempBin,
         currentBin = bins[unloadStationId];
       let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
-      if (!!currentBin) {
-        // The Bin for the destination already exists, update quantities
+      if(!traveledRoute){ //This handles dragging lot back into merge station. Just add to existing qty and keep excess parts the same
+        let totalQuantity = !!bins[unloadStationId]?.count
+          ? bins[unloadStationId].count + quantity
+          : quantity;
 
-        let existingQuantity = !!currentBin[traveledRoute._id]
-
-
-          ? currentBin[traveledRoute._id]
-          : 0;
-        tempBin = {
+        bins[unloadStationId] = {
           ...bins[unloadStationId],
-          [traveledRoute._id]: (existingQuantity += quantity),
+          count: totalQuantity,
         };
-
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
-      } else {
-        // The Bin for the destination does not exist, create is here
-
-        tempBin = {
-          [traveledRoute._id]: quantity,
-          count: 0
-        };
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
       }
+      else{
+        if (!!currentBin) {
+          // The Bin for the destination already exists, update quantities
+
+          let existingQuantity = !!currentBin[traveledRoute._id]
+
+
+            ? currentBin[traveledRoute._id]
+            : 0;
+          tempBin = {
+            ...bins[unloadStationId],
+            [traveledRoute._id]: (existingQuantity += quantity),
+          };
+
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        } else {
+          // The Bin for the destination does not exist, create is here
+
+          tempBin = {
+            [traveledRoute._id]: quantity,
+            count: 0
+          };
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        }
+      }
+
     } else {
       // Only one route enters station, don't worry about tracking parts at the station
       let totalQuantity = !!bins[unloadStationId]?.count
