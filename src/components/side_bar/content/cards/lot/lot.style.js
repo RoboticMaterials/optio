@@ -107,8 +107,14 @@ export const PartsRow = styled.div`
 
 export const PartContainer = styled.div`
     display: flex;
+<<<<<<< HEAD
     height: 2.4rem;
     width: 9rem;
+=======
+    height: 1.4rem;
+    max-width: 14rem;
+    min-width: 3rem;
+>>>>>>> development
     margin-left: .2rem;
     margin-top: .2rem;
     padding-top: .5rem;

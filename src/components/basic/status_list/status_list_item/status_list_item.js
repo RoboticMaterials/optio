@@ -158,7 +158,6 @@ const StatusListItem = (props) => {
 			</styled.NameContainer>
 
 			<styled.StatusContainer>
-				<styled.StatusMessage>{validationMessage}</styled.StatusMessage>
 
 				{/* icon switch/case */}
 				{
@@ -205,22 +204,26 @@ const StatusListItem = (props) => {
 				}
 
 				{hasWarnings &&
-				<ErrorTooltip
-					visible={true}
-					containerStyle={{
-						marginLeft: ".5rem"
-					}}
-					color={"yellow"}
-					tooltip={renderErrorTooltip(mappedWarnings)}
-					ContainerComponent={styled.TooltipContainer}
-				/>
+					<ErrorTooltip
+						visible={true}
+						containerStyle={{
+							marginLeft: ".5rem"
+						}}
+						color={"#ffd000"}
+						tooltip={renderErrorTooltip(mappedWarnings)}
+						ContainerComponent={styled.TooltipContainer}
+					/>
 				}
+
+				<styled.StatusMessage>{validationMessage}</styled.StatusMessage>
+
+				
 			</styled.StatusContainer>
 
 			<styled.StatusContainer style={{flex: 0.5}}>
 				<Button
 					type={"button"}
-					label={"Create"}
+					label={"Create Lot"}
 					schema={"ok"}
 					disabled={submitDisabled}
 					onClick={(e) => {

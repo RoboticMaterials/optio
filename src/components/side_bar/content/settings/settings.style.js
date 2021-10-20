@@ -5,9 +5,6 @@ export const SettingsContainer = styled.div`
     padding-top: 1.5rem;
     padding-bottom: 0;
 
-    display: flex;
-    flex-direction: column;
-
     overflow-y: scroll;
 
     ::-webkit-scrollbar{
@@ -21,31 +18,23 @@ export const SettingContainer = styled.div`
 `
 
 export const SwitchContainer = styled.div`
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    gap: 1rem;
+    display: flex;
+    justify-content: space-between;
 
-    flex-grow: 1;
     width: 100%;
-    // border: 2px solid #f5f5f5;
     padding: 0 0.5rem;
     border-radius: 0.3rem;
     margin-bottom: 0.8rem;
 `
 export const SwitchLabel = styled.span`
-    padding: 0;
-    margin: 0;
-    text-align:left;
     font-family: ${props => props.theme.font.primary};
     font-size: 1rem;
     color: ${props => props.theme.textColor};
-
     display: flex;
     align-self: center;
 `
 
 export const DropdownContainer = styled.div`
-
     display: grid;
     padding: 0 0.5rem;
     grid-template-columns: 1.4fr 2fr;
@@ -85,6 +74,11 @@ export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
     margin-top: 0.5rem;
+`
+export const HeaderContainer = styled.div`
+    display: flex;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
 `
 
 // SPECIAL STYLES

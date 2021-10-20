@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
@@ -14,8 +14,8 @@ import { ThemeContext } from "styled-components";
 import log from '../../../../../../../logger'
 
 import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
-import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
-import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
+import {setSelectedLotTemplate, postLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
+import {BASIC_LOT_TEMPLATE, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
 import Button from "../../../../../../basic/button/button";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
@@ -40,9 +40,10 @@ const TemplateSelectorSidebar = (props) => {
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+    
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-    const processLotTemplates = Object.values(lotTemplates).filter(template => template.processId === processId)
+    const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
 
 
 
@@ -71,30 +72,8 @@ const TemplateSelectorSidebar = (props) => {
                         Create Product Group
                     </Button>
                 }
-                <style.LotTemplateButton
-                    isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    onClick={() => {
-                        onTemplateSelectClick(BASIC_LOT_TEMPLATE_ID)
-                        isMobile && onCloseClick()
-                    }}
-                    onMouseEnter={() => {
-                      dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
-                    }}
-                    onMouseLeave={() => {
-                      dispatchSetSelectedLotTemplate(null)
-                    }}
-                >
-                    <style.TemplateIcon
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                        className={SIDE_BAR_MODES.TEMPLATES.iconName}
-                    />
-
-                    <style.TemplateName
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    >Basic</style.TemplateName>
-                </style.LotTemplateButton>
                 {
-                    processLotTemplates.map((currTemplate, currIndex) => {
+                    processLotTemplates.sort(template => template.name === 'Basic' ? -1 : 1).map((currTemplate, currIndex) => {
                         const {
                             fields,
                             name,
@@ -102,7 +81,7 @@ const TemplateSelectorSidebar = (props) => {
                         } = currTemplate
                         //
 
-                        const isSelected = selectedLotTemplatesId === currTemplateId
+                        const isSelected = selectedLotTemplatesId !== 'BASIC_LOT_TEMPLATE' ? (selectedLotTemplatesId === currTemplateId) : name === 'Basic'
 
                         return <style.LotTemplateButton
                             key={currTemplateId}
@@ -129,7 +108,7 @@ const TemplateSelectorSidebar = (props) => {
                                isSelected={isSelected}
                            >{name}</style.TemplateName>
 
-                            {!isMobile &&
+                            {!isMobile && currTemplate.name !== 'Basic' &&
                                 <style.EditTemplateIcon
                                     isSelected={isSelected}
                                     onClick={()=>{

@@ -17,17 +17,18 @@ const StatusListFooter = (props) => {
 		<styled.Container>
 			<Button
 				type={"button"}
-				label={"Create All"}
+				label={"Create All Lots"}
 				schema={"lots"}
 				onClick={onCreateAllClick}
+				style={{height: '3rem', padding: '0 2rem'}}
 			/>
 
-			<Button
+			{/* <Button
 				type={"button"}
 				schema={"lots"}
 				label={"Close"}
 				onClick={onCanceleClick}
-			/>
+			/> */}
 		</styled.Container>
 	);
 };

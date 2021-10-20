@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import * as d3 from 'd3'
 
 
@@ -15,8 +15,6 @@ const DragEntityProto = (props) => {
         // d3
     } = props
 
-    // console.log(location.name, isSelected)
-
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
@@ -24,19 +22,19 @@ const DragEntityProto = (props) => {
 
     useEffect(() => {
         if (isSelected) {
-            !isBinded && bindDragListener()
+            bindDragListener()
         } else {
             isBinded && unbindDragListener()
         }
-    }, [isSelected])
+    })
 
     let rotateStart = null          // Inital rotation angle
     let originalRotation = null     // Original rotation of location
     let deltaRotation = null        // Change in rotation (current angle - start angle)
 
-    let translateStart = null       // Initial coordinates of translate
-    let originalTranslation = []    // Original coordinates of location
-    let deltaTranslation = []       // Change in coordinates (over course of the drag event)
+    let translateStart = useRef(null).current       // Initial coordinates of translate
+    let originalTranslation = useRef([]).current    // Original coordinates of location
+    let deltaTranslation = useRef([]).current       // Change in coordinates (over course of the drag event)
 
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
@@ -85,6 +83,8 @@ const DragEntityProto = (props) => {
         rotateStart = null
     }
 
+    const currentTranslation = useMemo(() => [location.x, location.y], [location])
+
     const translate = (event, element) => {
 
         // Cant move location if the location isnt selected
@@ -102,7 +102,7 @@ const DragEntityProto = (props) => {
         // Keep track of the initial positon coords and the start coords of the event
         if (translateStart == null) {
             translateStart = translation
-            originalTranslation = [location.x, location.y]
+            originalTranslation = currentTranslation
         }
         // Calculate the change in translation relative to the start coordinates (round to nearest 5th pixel)
         deltaTranslation[0] = Math.round((translation[0] - translateStart[0]) / 5) * 5
@@ -151,8 +151,8 @@ const DragEntityProto = (props) => {
         rectElement.call(
             d3.behavior.drag()
                 .on("dragstart", () => {
-                    originalTranslation = [location.x, location.y]
                     if (isSelected) {
+                        originalTranslation = currentTranslation
                         handleDisableDrag()
                     }
                 })
