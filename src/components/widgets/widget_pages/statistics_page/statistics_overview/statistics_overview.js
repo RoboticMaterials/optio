@@ -65,7 +65,6 @@ const StatisticsOverview = (props) => {
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const stations = useSelector(state => state.stationsReducer.stations)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
 
@@ -161,19 +160,6 @@ const StatisticsOverview = (props) => {
             setReportData(reportAnalyticsResponse)
         }
         setLoading(false)
-    }
-
-    const handleDeviceStatistics = () => {
-
-        const device = devices[stations[params.stationID].device_id]
-        if (device === undefined) return
-        return (
-
-            <>
-                {/* <p>{Object.keys(device.real_data)}</p> */}
-                <styled.StatLabel>{device.real_data}</styled.StatLabel>
-            </>
-        )
     }
 
     /**

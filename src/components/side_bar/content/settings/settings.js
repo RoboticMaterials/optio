@@ -31,7 +31,6 @@ import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
-import { getStatus } from '../../../../redux/actions/status_actions'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
@@ -52,7 +51,6 @@ const Settings = () => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
-    const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
     const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
 
@@ -212,7 +210,6 @@ const Settings = () => {
         }
 
         await dispatchGetSettings()
-        await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
         if (!localSettingsState.mapViewEnabled) {

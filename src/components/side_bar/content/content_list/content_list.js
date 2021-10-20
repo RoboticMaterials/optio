@@ -59,7 +59,6 @@ export default function ContentList(props) {
     // const routes = useSelector(state => state.tasksReducer.tasks)
     // console.log(Object.values(processes)[0].routes.map(routeId => routes[routeId]))
 
-    let taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
     const handleIconClick = useMemo(() => {
         switch (schema) {
             case "locations":
@@ -122,22 +121,6 @@ export default function ContentList(props) {
                         props.schema === "processes" && element.broken
                             ? true
                             : false;
-                    let inQueue = false;
-                    Object.values(taskQueue).forEach((item) => {
-                        if (
-                            item.task_id == element._id &&
-                            props.schema === "tasks"
-                        ) {
-                            if (
-                                isOnlyHumanTask(element) &&
-                                element.handoff === true
-                            ) {
-                                inQueue = false;
-                            } else {
-                                inQueue = true;
-                            }
-                        }
-                    });
 
                     return (
                         <ContentListItem
@@ -148,7 +131,7 @@ export default function ContentList(props) {
                             error={error}
                             element={element}
                             schema={schema}
-                            inQueue={inQueue}
+                            inQueue={false}
                             onMouseEnter={onMouseEnter}
                             onMouseLeave={onMouseLeave}
                         />

@@ -59,16 +59,10 @@ const DashboardsPage = (props) => {
     const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
     const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
 
-    const dispatchGetTasks = () => dispatch(getTasks())
-
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
     const stations = useSelector(state => state.stationsReducer.stations);
-
-    const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
 
     const history = useHistory()
     const dashboard = dashboards[dashboardID]

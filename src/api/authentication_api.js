@@ -14,12 +14,12 @@ export const getRefreshToken = async () => {
         let c = ca[i];
 
         // Skips all blank characters
-        while (c.charAt(0) == ' ') {
+        while (c.charAt(0) === ' ') {
             c = c.substring(1);
         }
 
         // Sees if the current cookies string has rmStudioRefreshToken= at index 0, if it does thats the cookie we want
-        if (c.indexOf(name) == 0) {
+        if (c.indexOf(name) === 0) {
             // Takes the substring starting at the end of rmStudioRefreshToken= to the total length of the string
             const token = c.substring(name.length, c.length);
             return token;
@@ -27,7 +27,7 @@ export const getRefreshToken = async () => {
     }
 
     // Throw an error if the cookie cannot be found
-    throw 'No Refresh Token';
+    throw new Error('No Refresh Token');
 }
 
 export const postRefreshToken = async (token) => {
