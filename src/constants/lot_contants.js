@@ -165,7 +165,6 @@ export const getDefaultFields = () => {
 export const BASIC_LOT_TEMPLATE = {
     fields: EMPTY_DEFAULT_FIELDS,
     name: "Basic",
-    _id: BASIC_LOT_TEMPLATE_ID
 }
 
 export const DEFAULT_NAME_DISPLAY_NAME = "Name"

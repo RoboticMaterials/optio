@@ -71,7 +71,7 @@ export const TooltipContainer = styled.div`
 `
 
 export const StatusMessage = styled.span`
-  margin-right: 2rem;
+  margin-left: 1rem;
 	${overflowTextCss};
 `
 

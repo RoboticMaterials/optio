@@ -20,6 +20,7 @@ import { debounce, hexToRGBA, isEqual, getByPath, getProp, valueExistInSelected 
 import { LIB_NAME } from './constants';
 
 import theme from '../../../theme.js'
+import Portal from '../../../higher_order_components/portal';
 
 export class DropDownSearch extends Component {
   static propTypes = {
@@ -559,7 +560,7 @@ export class DropDownSearch extends Component {
               />
             )}
 
-            {this.state.dropdown && !this.props.disabled && this.renderDropdown(ItemComponent)}
+              {this.state.dropdown && !this.props.disabled && this.renderDropdown(ItemComponent)}
           </ReactDropdownSelect>
         </ClickOutside>
       </Container>

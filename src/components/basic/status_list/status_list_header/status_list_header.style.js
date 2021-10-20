@@ -2,12 +2,12 @@ import styled, {css} from "styled-components"
 import {columnRowLayout, headerStyle} from "../../../../common_css/layout";
 
 export const Container = styled.div`
-  	${columnRowLayout};
-  	${headerStyle};
-  	min-height: 5rem;
-  	display: flex;
-  	justify-content: center;
-  	align-items: center;
+	background: ${props => props.theme.bg.secondary};
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+	padding: 0 1rem;
 `
 
 export const CloseIcon = styled.i`

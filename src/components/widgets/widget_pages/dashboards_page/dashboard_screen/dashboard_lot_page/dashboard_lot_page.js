@@ -58,6 +58,7 @@ const DashboardLotPage = (props) => {
   const routes = useSelector((state) => state.tasksReducer.tasks);
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
+  const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
 
   const dispatch = useDispatch();
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
@@ -95,9 +96,11 @@ const DashboardLotPage = (props) => {
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
+  const [selectedFraction, setSelectedFraction] = useState('1')
   const [moveQuantity, setMoveQuantity] = useState(
     currentLot?.bins[loadStationID]?.count
   );
+
   const [localLotChildren, setLocalLotChildren] = useState([])
 
   /**
@@ -159,7 +162,6 @@ const DashboardLotPage = (props) => {
 
   // Handles moving lot to next station
   const onMove = (moveStations, quantity) => {
-
     const currentLotCopy = deepCopy(currentLot);
     pushUndoHandler({
       message: `Are you sure you want to undo the move of ${currentLotCopy?.name} from ${stations[loadStationID]?.name}?`,
@@ -253,7 +255,6 @@ const DashboardLotPage = (props) => {
 
     }
     dispatchPutCard(currentLot, lotID);
-    //console.log(currentLot)
     dispatchUpdateStationCycleTime(loadStationID)
     onBack();
   };
@@ -384,6 +385,26 @@ const DashboardLotPage = (props) => {
     );
   }, [routeOptions, showRouteSelector]);
 
+  const onFractionClick = (fraction) => {
+    setSelectedFraction(fraction)
+
+    let maxQty = currentLot.bins[stationID]?.count
+
+    switch(fraction) {
+      case '1/4': setMoveQuantity(Math.round(maxQty/4))
+      break
+
+      case '1/2': setMoveQuantity(Math.round(maxQty/2))
+      break
+
+      case '3/4': setMoveQuantity(Math.round(3*maxQty/4))
+      break
+
+      case '1': setMoveQuantity(maxQty)
+      break
+    }
+  }
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -429,6 +450,9 @@ const DashboardLotPage = (props) => {
       <styled.LotButtonContainer>
         <DashboardLotButtons
           handleMoveClicked={() => onMoveClicked()}
+          fractionMove = {fractionMove}
+          onFractionClick = {(fraction) => onFractionClick(fraction)}
+          selectedFraction = {selectedFraction}
           handleCancel={() => onBack()}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}

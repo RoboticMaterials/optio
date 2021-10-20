@@ -156,9 +156,7 @@ const Lot = (props) => {
               <styled.PartContainer
                 onClick = {onDeleteDisabledLot}
               >
-                <styled.PartName>
-                  Delete Parts
-                </styled.PartName>
+              <i className = {'fas fa-minus'} style = {{paddingTop: '.25rem'}}/>
               </styled.PartContainer>
             }
 

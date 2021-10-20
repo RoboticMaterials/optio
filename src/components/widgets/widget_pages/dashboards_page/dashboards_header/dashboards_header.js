@@ -71,6 +71,7 @@ const DashboardsHeader = (props) => {
     useEffect(() => {
 
         let tempPullButtons = [];
+        if (stations[currentDashboard.station]?.type === 'warehouse') return []
         Object.values(processes).forEach(process => {
 
             const processRoutes = process.routes.map(routeId => routes[routeId]);

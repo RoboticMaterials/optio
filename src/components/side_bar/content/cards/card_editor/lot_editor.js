@@ -744,29 +744,23 @@ const FormComponent = (props) => {
     };
 
     const operationButtons = useMemo(() => {
-        let btns = [
-            {
-                label: "Import XML",
-                onClick: onImportXML,
-            },
-            {
-                label: "Barcode",
-                onClick: () =>
-                    dispatchShowBarcodeModal(
-                        true
-                    ),
-            },
-        ]
+        let btns
 
-        if (formMode !== FORM_MODES.CREATE) {
-            btns.push({
-                label: "Lot History",
-                schema: "fields",
-                onClick: () => setShowHistory(true),
-            })
+        if (formMode === FORM_MODES.CREATE) {
+
+            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml' />
+
+        } else {
+
+            return (
+                <>
+                    <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
+                    <Button schema='fields' onClick={() => setShowHistory(true)} label='Lot History' />
+                </>
+            )
+
         }
 
-        return btns
     }, [formMode])
 
     const renderForm = () => {
@@ -952,7 +946,7 @@ const FormComponent = (props) => {
                                                 Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
-                                                {lotTemplate.name}
+                                                {lotTemplate?.name}
                                             </styled.ContentValue>
                                         </div>
                                     </styled.IconRow>
@@ -968,11 +962,13 @@ const FormComponent = (props) => {
                                         </LabeledButton>
                                     )}
 
-                                    <DropdownMenuButton
+                                    {operationButtons}
+
+                                    {/* <DropdownMenuButton
                                         label={"Options"}
                                         schema={"lots"}
                                         buttons={operationButtons}
-                                    />
+                                    /> */}
                                 </styled.SubHeader>
 
                                 {(showProcessSelector || !values.processId) &&
@@ -1503,7 +1499,7 @@ const LotEditor = (props) => {
                             fields: getFormCustomFields(
                                 useCardFields && !card?.syncWithTemplate
                                     ? card?.fields || []
-                                    : lotTemplate.fields,
+                                    : lotTemplate?.fields,
                                 card?.fields ? card?.fields : null
                             ),
                         }}
