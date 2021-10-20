@@ -368,7 +368,6 @@ const Column = ((props) => {
 	const handleDrop = async () => {
 		let inDropZne = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
 		if(!!inDropZne && draggingStationId!==dragFromBin){
-			console.log('here')
 				const binId = dragFromBin
 				const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
 				const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -394,7 +393,7 @@ const Column = ((props) => {
 						delete updatedLot.bins[binId]
 					}
 					//console.log(JSON.parse(JSON.stringify(updatedLot)))
-					dispatchPutCard(updatedLot, updatedLot._id)
+					//dispatchPutCard(updatedLot, updatedLot._id)
 					await dispatchSetDroppingLotId(null, null)
 			}
 		}
@@ -530,7 +529,7 @@ const Column = ((props) => {
 																			border: draggingLotId === cardId && station_id === dragFromBin && '.2rem solid #7e7e7e',
 																			margin: draggingLotId === cardId && station_id === dragFromBin ? '0rem' : '.4rem',
 																			padding: '.1rem',
-																			width: '100%',
+																			width: draggingLotId === cardId && station_id === dragFromBin ? '100%' : '95%',
 																		}}
 																	/>
 																	</styled.LotDiv>
