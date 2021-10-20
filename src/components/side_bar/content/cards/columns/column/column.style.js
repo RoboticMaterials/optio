@@ -11,16 +11,17 @@ export const RotationWrapperInner = styled.div`
 `
 export const LotDiv = styled.div`
 
-
 `
 
 export const DragToDiv = styled.div`
-  width: 100%;
-  margin-top: 1rem;
-  min-height: 7rem;
-  background: ${props => props.theme.bg.primary};
+  width: 97%;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  margin-left: 0.5rem;
+  min-height: 10rem;
+  background: ${props => props.theme.bg.tertiary};
 
-  border: 0.2rem solid #b8b9bf;
+  border: 0.2rem solid #dedfe3;
   border-radius: 0.5rem;
 `
 
@@ -86,10 +87,9 @@ export const StationLabel = styled.span`
 export const BodyContainer = styled.div`
 	display: flex;
 	flex-direction: column;
+  height: 100%;
 	min-height: 10rem;
-	overflow: hidden;
-	background: ${props => props.theme.bg.secondary};
-	opacity: ${props => props.dragEnter ? 0.75 : 1};
+  background: ${props => props.theme.bg.secondary};
 	border-bottom-right-radius: 0.5rem;
 	border-bottom-left-radius: 0.5rem;
 
@@ -97,5 +97,5 @@ export const BodyContainer = styled.div`
   // border-bottom: 0.2rem solid ${props => props.theme.schema.lots.solid};
   // border-right: 0.2rem solid ${props => props.theme.schema.lots.solid};
 
-	justify-content: center;
+	justify-content: start;
 `

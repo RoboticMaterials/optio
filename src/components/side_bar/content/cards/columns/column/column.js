@@ -84,7 +84,7 @@ const Column = ((props) => {
 	const [isSourcee, setIsSource] = useState(false)
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [lastStationTraversed, setLastStationTraversed] = useState(null)
-	const [acceptDrop, setAcceptDrop] = useState(false)
+	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
 
 	useEffect(() => {
@@ -160,11 +160,12 @@ const Column = ((props) => {
 					return true
 				}
 				else if(currentStationID === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)){
+					//if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
 					if(startNodes.includes(station_id)){
 						setHighlightStation(true)
 						return true
 					}
-					else{
+					else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
 						for(const ind in startNodes){
 							const canMove = forwardsTraverseCheck(startNodes[ind])
 							if(!!canMove) return true
@@ -367,6 +368,7 @@ const Column = ((props) => {
 	const handleDrop = async () => {
 		let inDropZne = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
 		if(!!inDropZne && draggingStationId!==dragFromBin){
+			console.log('here')
 				const binId = dragFromBin
 				const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
 				const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -391,6 +393,7 @@ const Column = ((props) => {
 					if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
 						delete updatedLot.bins[binId]
 					}
+					//console.log(JSON.parse(JSON.stringify(updatedLot)))
 					dispatchPutCard(updatedLot, updatedLot._id)
 					await dispatchSetDroppingLotId(null, null)
 			}
@@ -401,38 +404,38 @@ const Column = ((props) => {
 		return (
 				<styled.BodyContainer
 					className = 'container'
-					onDragEnter={(e) => {
-					}}
-					onDragOver = {(e)=>{
-						dispatchSetDraggingStationId(station_id)
-						if(e.target.className.includes('container') && !!highlightStation && cards.length === 0){
-							e.target.style.border = '0.2rem solid #2ed182'
-							e.target.style.height = '18rem'
-							e.target.style.background = '#f7f7fa'
-						}
-						if(!!acceptDrop){
-							setInDropZone(true)
-						}
-
-						e.preventDefault()
-					}}
-					onDragLeave={(e) => {
-							setInDropZone(false)
-							dispatchSetDraggingStationId(null)
-							if(!!inDropZone && !!highlightStation && cards.length === 0){
-									e.target.style.border = '0.2rem solid #b8b9bf'
-									e.target.style.background = '#FFFFFF'
-									e.target.style.height = '80%'
-							}
-					}}
-					style={{ overflow: "auto", height: "100%", padding: "3rem 1rem 2rem 1rem",
-					 background:!!highlightStation && !inDropZone && cards.length===0? '#FFFFFF' : '#f7f7fa',
-					 border:!!highlightStation && cards.length===0 ? '0.2rem solid #b8b9bf' : '0.2rem solid transparent',
-					 borderRadius:'.5rem',
-					 margin:!!highlightStation && !isSourcee && cards.length===0 && '0rem',
+					style={{ overflow: "auto", height: "100%", padding: "1rem",
 
 				 }}
+
+				 onDragOver = {(e)=>{
+					 dispatchSetDraggingStationId(station_id)
+					 if(!!acceptDrop){
+						 setInDropZone(true)
+					 }
+					 e.preventDefault()
+				 }}
+				 onDragLeave={(e) => {
+						 setInDropZone(false)
+						 dispatchSetDraggingStationId(null)
+				 }}
 					>
+					{!!highlightStation &&
+						<styled.DragToDiv
+
+						className = 'dragToDiv'
+						onDragOver={(e) => {
+							if(e.target.className.includes('dragToDiv')){
+								e.target.style.minHeight = '18rem'
+							}
+						}}
+						onDragLeave={(e) => {
+								if(!!inDropZone){
+										e.target.style.minHeight = '10rem'
+								}
+						}}
+						/>
+					}
 						{cards.map((card, index) => {
 							const {
 								_id,
@@ -471,7 +474,7 @@ const Column = ((props) => {
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
-																			e.target.style.opacity = '.01'
+																			e.target.style.opacity = '.001'
 																			dispatchSetDraggingLotId(cardId)
 																			dispatchSetDragFromBin(station_id)
 																		}}
@@ -524,8 +527,8 @@ const Column = ((props) => {
 																			)
 																		}}
 																		containerStyle={{
-																			border: draggingLotId === cardId && '.2rem solid #7e7e7e ',
-																			margin: draggingLotId === cardId ? '0rem' : '.4rem',
+																			border: draggingLotId === cardId && station_id === dragFromBin && '.2rem solid #7e7e7e',
+																			margin: draggingLotId === cardId && station_id === dragFromBin ? '0rem' : '.4rem',
 																			padding: '.1rem',
 																			width: '100%',
 																		}}
@@ -533,28 +536,6 @@ const Column = ((props) => {
 																	</styled.LotDiv>
 
 															}
-															{!!highlightStation &&
-																<styled.DragToDiv
-																className = 'dragToDiv'
-																onDragOver={(e) => {
-																	if(e.target.className.includes('dragToDiv')){
-																		e.target.style.transistion = 'height 400ms'
-																		e.target.style.border = '0.2rem solid #2ed182'
-																		e.target.style.height = '18rem'
-																		e.target.style.background = '#f7f7fa'
-																	}
-																}}
-																onDragLeave={(e) => {
-																		if(!!inDropZone){
-																				e.target.style.border = '0.2rem solid #b8b9bf'
-																				e.target.style.background = '#FFFFFF'
-																				e.target.style.height = '7rem'
-																		}
-																}}
-																/>
-															}
-
-
 													</>
 										)
 									})
@@ -597,7 +578,7 @@ const Column = ((props) => {
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
-				style={containerStyle, {marginBottom: '0.2rem'}}
+				style={containerStyle}
 			>
 				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
