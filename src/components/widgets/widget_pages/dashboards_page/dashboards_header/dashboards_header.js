@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef} from 'react';
+import { useParams, useHistory } from 'react-router-dom'
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -47,7 +48,7 @@ const DashboardsHeader = (props) => {
     } = props
 
     const theme = useContext(ThemeContext);
-
+    const history = useHistory()
     const processes = useSelector(state => state.processesReducer.processes);
     const stations = useSelector(state => state.stationsReducer.stations);
     const routes = useSelector(state => state.tasksReducer.tasks);
@@ -78,7 +79,7 @@ const DashboardsHeader = (props) => {
             const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes)
                 .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
-            
+
 
             if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
                 tempPullButtons.push({
@@ -186,7 +187,7 @@ const DashboardsHeader = (props) => {
                         Report
                         {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
                     </Button>
-                    {!!stationBasedLots && !mobileMode && 
+                    {!!stationBasedLots && !mobileMode && !history.location.pathname.includes('lots') &&
                       <Button
                           schema="locations"
                           onClick={() => {

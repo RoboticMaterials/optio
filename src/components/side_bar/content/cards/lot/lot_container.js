@@ -59,11 +59,12 @@ const LotContainer = (props) => {
 
     const station = useSelector(state => state.stationsReducer.stations[binId]) || {}
 
+  const dashboard = useSelector(state => state.dashboardsReducer.dashboards[dashboardID]) || {}
   const processName = useMemo(() => process.name, [process]);
   const stationName = useMemo(() => station.name, [station]);
   const templateValues = useMemo(
     () => getCustomFields(lotTemplateId, lot, dashboardID),
-    [lotTemplateId, lot]
+    [lotTemplateId, lot, dashboard]
   );
 
   if (!(binId in bins)) { return null }

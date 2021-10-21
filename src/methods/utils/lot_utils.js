@@ -491,11 +491,9 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
     const currentDashboard = dashboards[dashboardID]
-
     let customFieldValues = []
 
     const { syncWithTemplate } = lot || {}
-
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
@@ -504,9 +502,10 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
             const {
               fieldName,
               dataType,
-              _id
+              _id,
+              component,
             } = field
-            if(lot.lotTemplateId===template){
+            if((lot.lotTemplateId===template && component!=='INPUT_BOX') || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
                 fieldName,

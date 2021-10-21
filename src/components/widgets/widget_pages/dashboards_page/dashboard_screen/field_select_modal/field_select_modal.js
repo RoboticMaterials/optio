@@ -5,6 +5,7 @@ import { useParams, useHistory } from 'react-router-dom'
 // Import Style
 import * as styled from './field_select_modal.style'
 import { putDashboard, getDashboards } from '../../../../../../redux/actions/dashboards_actions'
+import {BASIC_DEFAULT_DATES_FIELD, BASIC_DEFAULT_DESCIPTION_FIELD } from "../../../../../../constants/lot_contants";
 import {
 	deleteLotTemplate,
 } from "../../../../../../redux/actions/lot_template_actions";
@@ -36,6 +37,7 @@ const FieldSelectModal = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const currentDashboard = dashboards[dashboardID]
     const [selectedFields, setSelectedFields] = useState({})
+
     useEffect(() => {
       if(!!currentDashboard.fields){
         setSelectedFields(currentDashboard.fields)
@@ -43,24 +45,23 @@ const FieldSelectModal = (props) => {
     }, [])
 
     const onCheckBoxClick = (field, templateId) => {
-      var id = field._id
 
-      const updatedTemplateFields = {
-        ...selectedFields[templateId],
-        [id]: field
-      }
+       let id = field._id
+        const updatedTemplateFields = {
+          ...selectedFields[templateId],
+          [id]: field
+        }
 
-      if(!selectedFields[templateId] || !selectedFields[templateId][field._id]){
-        setSelectedFields({
-          ...selectedFields,
-          [templateId]: updatedTemplateFields
-        })
-      }
-      else{
-        delete selectedFields[templateId][field._id]
-      }
-      if(!!selectedFields[templateId] && Object.values(selectedFields[templateId]).length === 0) delete selectedFields[templateId]
-
+        if(!selectedFields[templateId] || !selectedFields[templateId][id]){
+          setSelectedFields({
+            ...selectedFields,
+            [templateId]: updatedTemplateFields
+          })
+        }
+        else{
+          delete selectedFields[templateId][id]
+        }
+        if(!!selectedFields[templateId] && Object.values(selectedFields[templateId]).length === 0) delete selectedFields[templateId]
     }
 
 
@@ -76,12 +77,44 @@ const FieldSelectModal = (props) => {
 
       return (
         <>
+          <styled.ListItem
+            style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center', minHeight: '2.5rem'}}
+          >
+            <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
+              {'Product Group: Basic Template'}
+            </styled.ListItemTitle>
+          </styled.ListItem>
+          <styled.ListItem style = {{minHeight: '2.5rem'}}>
+            <Checkbox
+              onClick = {()=> {
+                onCheckBoxClick(BASIC_DEFAULT_DESCIPTION_FIELD, 'Basic')
+              }}
+              checked = {!!selectedFields['Basic'] && !!selectedFields['Basic'][BASIC_DEFAULT_DESCIPTION_FIELD._id]}
+
+            />
+            <styled.ListItemTitle>
+              description
+            </styled.ListItemTitle>
+          </styled.ListItem>
+
+          <styled.ListItem style = {{minHeight: '2.5rem'}}>
+            <Checkbox
+              onClick = {()=> {
+                onCheckBoxClick(BASIC_DEFAULT_DATES_FIELD, 'Basic')
+              }}
+              checked = {!!selectedFields['Basic'] && !!selectedFields['Basic'][BASIC_DEFAULT_DATES_FIELD._id]}
+            />
+            <styled.ListItemTitle>
+              dates
+            </styled.ListItemTitle>
+          </styled.ListItem>
+
           {Object.values(lotTemplates).map((template, index) =>
             <>
-              {template.name!== 'Basic' &&
+              {template.name !== 'Basic' &&
                 <>
                 <styled.ListItem
-                  style = {{ background: '#5c6fff', justifyContent: 'center', minHeight: '2rem'}}
+                  style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center', minHeight: '2.5rem'}}
                 >
                   <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
                     {'Product Group: '+ template.name}
@@ -92,7 +125,7 @@ const FieldSelectModal = (props) => {
                 {template.fields.map((field, fieldIndex) =>
                   <>
                     {field.map((indField, ind) =>
-                      <styled.ListItem style = {{minHeight: '2rem'}}>
+                      <styled.ListItem style = {{minHeight: '2.5rem'}}>
                         <Checkbox
                           onClick = {()=> {
                             onCheckBoxClick(indField, template._id)
@@ -138,19 +171,17 @@ const FieldSelectModal = (props) => {
 
             <styled.ColumnContainer>
               {renderFields()}
-              <Button
-                type={"button"}
-                schema={'locations'}
-                label={"Save"}
-                onClick={()=>{
-                  handlePutDashboard()
-                  close()
-                }}
-                style={{minWidth: '14rem', minHeight: '3rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
-              />
             </styled.ColumnContainer>
-
-
+            <Button
+              type={"button"}
+              schema={'objects'}
+              label={"Save"}
+              onClick={()=>{
+                handlePutDashboard()
+                close()
+              }}
+              style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
+            />
             </styled.BodyContainer>
         </styled.Container>
     )
