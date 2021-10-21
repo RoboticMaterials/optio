@@ -104,27 +104,27 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-        history.push('/locations')
-        dispatchShowSideBar(true)
+        // history.push('/locations')
+        // dispatchShowSideBar(true)
 
 
-        if (!!selectedStation) {
-            dispatchSetEditingStation(true)
-            let copy = {}
-            selectedStation.children.forEach(child => {
-                copy[child] = positions[child]
-            })
-            dispatchSetSelectedStationChildrenCopy(copy)
-            dispatchSetSelectedStation(selectedStation)
-        }
-        else if (!!selectedPosition) {
-            dispatchSetEditingPosition(true)
-            dispatchSetSelectedPosition(selectedPosition)
+        // if (!!selectedStation) {
+        //     dispatchSetEditingStation(true)
+        //     let copy = {}
+        //     selectedStation.children.forEach(child => {
+        //         copy[child] = positions[child]
+        //     })
+        //     dispatchSetSelectedStationChildrenCopy(copy)
+        //     dispatchSetSelectedStation(selectedStation)
+        // }
+        // else if (!!selectedPosition) {
+        //     dispatchSetEditingPosition(true)
+        //     dispatchSetSelectedPosition(selectedPosition)
 
-        }
+        // }
 
-          onWidgetClose(true)
-          dispatchHoverStationInfo(null)
+        //   onWidgetClose(true)
+        //   dispatchHoverStationInfo(null)
     }
 
 

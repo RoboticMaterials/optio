@@ -29,6 +29,9 @@ import { postSettings, getSettings } from '../../../../redux/actions/settings_ac
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 
+import { getStations } from '../../../../redux/actions/stations_actions';
+import { getProcesses } from '../../../../redux/actions/processes_actions';
+import { getTasks } from '../../../../redux/actions/tasks_actions';
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
@@ -37,6 +40,7 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 import { getIsEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
+
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
@@ -52,7 +56,10 @@ const Settings = () => {
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
-    const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
+
+    const dispatchGetStations = () => dispatch(getStations())
+    const dispatchGetProcesses = () => dispatch(getProcesses())
+    const dispatchGetRoutes = () => dispatch(getTasks())
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -186,7 +193,7 @@ const Settings = () => {
             ...localSettingsState,
             [key]: value,
         }
-        setLocalSettingsState(updatedSettings)
+        return setLocalSettingsState(updatedSettings)
     }
 
 
@@ -502,7 +509,13 @@ const Settings = () => {
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            const mapUpdatePromise = handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            mapUpdatePromise.then(() => {
+                                dispatchGetStations()
+                                dispatchGetProcesses()
+                                dispatchGetRoutes()
+                            })
+
                         }}
                         className="w-100"
                     />
