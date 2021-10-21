@@ -5,7 +5,9 @@ import { useParams, useHistory } from 'react-router-dom'
 // Import Style
 import * as styled from './field_select_modal.style'
 import { putDashboard, getDashboards } from '../../../../../../redux/actions/dashboards_actions'
-
+import {
+	deleteLotTemplate,
+} from "../../../../../../redux/actions/lot_template_actions";
 // Import Components
 import Checkbox from '../../../../../../components/basic/checkbox/checkbox'
 import Button from "../../../../../../components/basic/button/button";
@@ -28,6 +30,7 @@ const FieldSelectModal = (props) => {
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchGetDashboards = () => dispatch(getDashboards())
+    const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -75,34 +78,38 @@ const FieldSelectModal = (props) => {
         <>
           {Object.values(lotTemplates).map((template, index) =>
             <>
-            <styled.ListItem
-              style = {{ background: '#5c6fff', justifyContent: 'center' }}
-            >
-              <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
-                {'Product Group: '+ template.name}
-              </styled.ListItemTitle>
-            </styled.ListItem>
-            <>
+              {template.name!== 'Basic' &&
+                <>
+                <styled.ListItem
+                  style = {{ background: '#5c6fff', justifyContent: 'center', minHeight: '2rem'}}
+                >
+                  <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
+                    {'Product Group: '+ template.name}
+                  </styled.ListItemTitle>
+                </styled.ListItem>
+                <>
 
-            {template.fields.map((field, fieldIndex) =>
-              <>
-                {field.map((indField, ind) =>
-                  <styled.ListItem>
-                    <Checkbox
-                      onClick = {()=> {
-                        onCheckBoxClick(indField, template._id)
-                      }}
-                      checked = {!!selectedFields[template._id] && !!selectedFields[template._id][indField._id]}
-                    />
-                    <styled.ListItemTitle>
-                      {indField.fieldName}
-                    </styled.ListItemTitle>
-                  </styled.ListItem>
-                )}
+                {template.fields.map((field, fieldIndex) =>
+                  <>
+                    {field.map((indField, ind) =>
+                      <styled.ListItem style = {{minHeight: '2rem'}}>
+                        <Checkbox
+                          onClick = {()=> {
+                            onCheckBoxClick(indField, template._id)
+                          }}
+                          checked = {!!selectedFields[template._id] && !!selectedFields[template._id][indField._id]}
+                        />
+                        <styled.ListItemTitle>
+                          {indField.fieldName}
+                        </styled.ListItemTitle>
+                      </styled.ListItem>
+                    )}
+                    </>
+                    )}
+                  </>
                 </>
-                )}
-              </>
-            </>
+              }
+          </>
           )}
         </>
     )

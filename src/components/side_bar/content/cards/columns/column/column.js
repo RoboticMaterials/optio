@@ -393,7 +393,7 @@ const Column = ((props) => {
 						delete updatedLot.bins[binId]
 					}
 					//console.log(JSON.parse(JSON.stringify(updatedLot)))
-					//dispatchPutCard(updatedLot, updatedLot._id)
+					dispatchPutCard(updatedLot, updatedLot._id)
 					await dispatchSetDroppingLotId(null, null)
 			}
 		}
