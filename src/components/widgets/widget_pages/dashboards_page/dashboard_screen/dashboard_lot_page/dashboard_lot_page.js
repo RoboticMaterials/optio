@@ -139,7 +139,7 @@ const DashboardLotPage = (props) => {
       });
     }
     else{
-      if(!!dashboards[dashboardID]?.fields[currentLot.lotTemplateId]){
+      if(dashboards[dashboardID].fields && !!dashboards[dashboardID]?.fields[currentLot.lotTemplateId]){
         let fields = dashboards[dashboardID]?.fields[currentLot.lotTemplateId]
         for(const i in fields){
           if(fields[i].component === 'INPUT_BOX') containsInput = true
