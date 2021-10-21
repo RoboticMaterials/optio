@@ -37,13 +37,9 @@ const DashboardLotList = (props) => {
     } = params || {}
 
     const dispatch = useDispatch()
-    const history = useHistory()
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state => state.cardsReducer.cards)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    const routes = useSelector(state => state.tasksReducer.tasks)
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
@@ -51,8 +47,6 @@ const DashboardLotList = (props) => {
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()

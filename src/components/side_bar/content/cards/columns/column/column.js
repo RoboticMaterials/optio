@@ -26,7 +26,7 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../../../methods/utils/lot_utils";
-import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes} from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -48,7 +48,6 @@ const Column = ((props) => {
 	} = props
 
 	// redux state
-	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
@@ -125,9 +124,11 @@ const Column = ((props) => {
 				process_id: oldProcessId,
 				...remainingPayload
 			} = payload
+
 			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 			let startNodes = findProcessStartNodes(processRoutes, stations)
-			let endNode = findProcessEndNode(processRoutes)
+			let endNodes = findProcessEndNodes(processRoutes)
+
 			if (oldProcessId !== processId) return false
 			if(!!showCardEditor) return false
 			//if (process[oldProcessId] === undefined) return false
@@ -159,7 +160,7 @@ const Column = ((props) => {
 
 				else if(station_id==="FINISH") {
 					for(const ind in startNodes){
-						if(binId===endNode) return true
+						if(endNodes.includes(binId)) return true
 					}
 				}
 

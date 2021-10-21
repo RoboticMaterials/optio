@@ -116,7 +116,6 @@ const EditLocation = (props) => {
     const processes = useSelector((state) => state.processesReducer.processes);
     const routes = useSelector((state) => state.tasksReducer.tasks);
 
-    const devices = useSelector((state) => state.devicesReducer.devices);
     const currentMapId = useSelector(
         (state) => state.localReducer.localSettings.currentMapId
     );
@@ -401,57 +400,8 @@ const EditLocation = (props) => {
         }
     };
 
-    const handleSetPositionToCartCoords = async () => {
-        Object.values(devices).map(async (device, ind) => {
-            if (device.device_model === "MiR100") {
-                const devicePosition = device.position;
-
-                const updatedSelectedLocation = {
-                    ...selectedLocation,
-                    pos_x: devicePosition.pos_x,
-                    pos_y: devicePosition.pos_y,
-                    x: devicePosition.x,
-                    y: devicePosition.y,
-                    rotation: devicePosition.orientation,
-                };
-
-                // Not sure why onSetSelectedLocation is not working, should be the same as a normal dispatch...
-                await dispatchAddPosition(updatedSelectedLocation);
-                await dispatchSetSelectedPosition(updatedSelectedLocation);
-            }
-        });
-    };
-
     const handlePageDataChange = () => {
         dispatchPageDataChanged(true);
-    };
-
-    const handleSetChildPositionToCartCoords = (position) => {
-        Object.values(devices).map(async (device, ind) => {
-            if (device.device_model === "MiR100") {
-                const devicePosition = device.position;
-                const copyPos = deepCopy(position);
-                const updatedPosition = {
-                    ...copyPos,
-                    pos_x: devicePosition.pos_x,
-                    pos_y: devicePosition.pos_y,
-                    x: devicePosition.x,
-                    y: devicePosition.y,
-                    rotation: devicePosition.orientation,
-                };
-
-                if (updatedPosition._id in selectedStationChildrenCopy) {
-                    let copyOfCopy = deepCopy(selectedStationChildrenCopy);
-                    copyOfCopy = {
-                        ...copyOfCopy,
-                        [updatedPosition._id]: updatedPosition,
-                    };
-                    dispatchSetSelectedStationChildrenCopy(copyOfCopy);
-                } else {
-                    setSelectedPosition(updatedPosition);
-                }
-            }
-        });
     };
 
     const renderStationButtons = (onClick, onDrag, disableDrag) => {
@@ -629,35 +579,6 @@ const EditLocation = (props) => {
                                             </styled.LocationTypeContainer>
                                         )}
                                     </styled.DefaultTypesContainer>
-
-                                    {!!selectedLocation &&
-                                        selectedLocation.schema === "station" &&
-                                        !selectedLocation.temp && (
-                                            <AssociatedPositions
-                                                handleSetChildPositionToCartCoords={
-                                                    handleSetChildPositionToCartCoords
-                                                }
-                                            />
-                                        )}
-
-                                    {!!selectedLocation &&
-                                        selectedLocation.schema ===
-                                            "position" &&
-                                        !selectedLocation.temp && (
-                                            <Button
-                                                schema={"locations"}
-                                                secondary
-                                                onClick={() => {
-                                                    handleSetPositionToCartCoords();
-                                                    dispatchPageDataChanged(
-                                                        true
-                                                    );
-                                                }}
-                                                style={{ marginBottom: "1rem" }}
-                                            >
-                                                Use Cart Location
-                                            </Button>
-                                        )}
 
                                     <div style={{ height: "100%" }}></div>
 

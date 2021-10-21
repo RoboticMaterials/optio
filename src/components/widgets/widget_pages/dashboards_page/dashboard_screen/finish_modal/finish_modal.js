@@ -7,30 +7,20 @@ import { useParams } from 'react-router-dom'
 
 
 // actions
-import { getCards, getProcessCards, putCard } from "../../../../../../redux/actions/card_actions";
+import { getCards } from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './finish_modal.style'
 import { useTheme } from "styled-components";
 import { getProcesses } from "../../../../../../redux/actions/processes_actions";
-import Textbox from "../../../../../basic/textbox/textbox";
-import { SORT_MODES } from "../../../../../../constants/common_contants";
-import { sortBy } from "../../../../../../methods/utils/card_utils";
+∂import { sortBy } from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import { quantityOneSchema } from "../../../../../../methods/utils/form_schemas";
 import { getLotTemplates } from "../../../../../../redux/actions/lot_template_actions";
-import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
-import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../../constants/lot_contants";
 import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
-import * as taskQueueActions from "../../../../../../redux/actions/task_queue_actions";
-import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
-import {CUSTOM_TASK_ID} from "../../../../../../constants/route_constants";
-import {deepCopy} from "../../../../../../methods/utils/utils";
-import {putTaskQueue} from "../../../../../../redux/actions/task_queue_actions";
 
 Modal.setAppElement('body');
 
@@ -65,23 +55,16 @@ const FinishModal = (props) => {
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
-    const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
-    const dispatchHandlePostTaskQueue = async (props) => await dispatch(taskQueueActions.handlePostTaskQueue(props))
-    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const finishEnabledDashboard = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
     const processCards = useSelector(state => { return state.cardsReducer.processCards })
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
-    const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
 
     const [selectedLot, setSelectedLot] = useState(lotSelected ? processCards[lotID] : null)
     const [lotCount, setLotCount] = useState(null)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [showQuantitySelector, setShowQuantitySelector] = useState(lotSelected)
-    const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
 
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
@@ -152,36 +135,7 @@ const FinishModal = (props) => {
                 quantity: 1
             }
 
-            // first, post task queue
-            const result = await dispatchHandlePostTaskQueue({ hil_response: null, tasks, deviceType: DEVICE_CONSTANTS.HUMAN, taskQueue, Id: CUSTOM_TASK_ID, custom })
-
-            // check if request was successful
-            if(!(result instanceof Error)) {
-
-                const {
-                    _id,
-                    dashboardID,
-                    dashboard,
-                    ...rest
-                } = result || {}
-
-                // now must update task queue item to move the lot
-                setTimeout(async () =>  {
-
-                    await disptachPutTaskQueue(
-                        {
-                            ...rest,
-                            hil_response: true,
-                            lot_id: lotId,
-                            quantity
-                        }
-                        , result._id)
-                    await dispatchGetCards()
-                }, 1000)
-
-                requestSuccessStatus = true
-                message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
-            }
+            message = cardName ? `Finished ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Finished ${quantity} ${quantity > 1 ? "items" : "item"}`
         }
 
         else {
@@ -189,7 +143,6 @@ const FinishModal = (props) => {
         }
 
         onSubmit(cardName, requestSuccessStatus, quantity, message)
-        setSubmitting(false)
         close()
     }
 

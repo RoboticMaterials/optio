@@ -36,9 +36,8 @@ import * as api from '../../api/positions_api'
 import { positionsSchema } from '../../normalizr/schema'
 
 // Import External Actions
-import { putStation, putStationWithoutSavingChildren, setStationAttributes, setSelectedStation, updateStation } from './stations_actions'
+import { putStationWithoutSavingChildren, setStationAttributes, updateStation } from './stations_actions'
 import { deleteTask } from './tasks_actions'
-import { putDevices } from './devices_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils';
@@ -241,7 +240,6 @@ const onDeletePosition = (id, stationDelete) => {
         const stationsState = store.getState().stationsReducer
         const positionsState = store.getState().positionsReducer
         const tasksState = store.getState().tasksReducer
-        const devicesState = store.getState().devicesReducer
 
         let position = deepCopy(positionsState.positions[id])
 
@@ -316,15 +314,6 @@ const onDeletePosition = (id, stationDelete) => {
                 return task.load.position == position._id || task.unload.position == position._id
             }).forEach(async relevantTask => {
                 await dispatch(deleteTask(relevantTask._id))
-            })
-
-            const devices = devicesState.devices
-            // See if the position belonged as an idle location for a device
-            Object.values(devices).filter(device => {
-                return !!device.idle_location && device.idle_location === position._id
-            }).forEach(async relevantDevice => {
-                relevantDevice.idle_location = null
-                await dispatch(putDevices(relevantDevice, relevantDevice._id))
             })
 
 

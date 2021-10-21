@@ -9,8 +9,8 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
-import { findProcessStartNodes, getNodeOutgoing } from './processes_utils';
-import { deepCopy } from './utils'
+import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression } from './processes_utils';
+import { deepCopy, uuidv4 } from './utils'
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -700,6 +700,17 @@ export const routesSchema = Yup.array().of(
 
 // }
 
+const recursiveFindAnd = (exp) => {
+    // Recursive function to detect if there is any AND expressions (split) in the merge expression
+   if (exp[0] === 'AND') return true;
+   for (var i=1; i<exp.length; i++) {
+       if (Array.isArray(exp[i])) {
+           if (recursiveFindAnd(exp[i])) return true;
+       }
+   }
+   return false;
+}
+
 export const getProcessSchema = (stations) => Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -712,35 +723,73 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             (route) => !(stations[route.load]?.type === 'warehouse' && stations[route.unload]?.type === 'warehouse')
         )
     ).test(
-        'doRoutesConverge',
-        'All routes of the process must converge at a single station',
+        'doesHaveStartNode',
+        'All processes must have at least one "Kick Off" station (The beginning of this process is ambiguous).',
         (routes) => {
-            let loadStations = routes.map(route => route.load);
-            let unloadStations = routes.map(route => route.unload);
-    
-            let numTerminalStations = 0;
-            for (var i=0; i<unloadStations.length; i++) {
-                const unloadStationA = unloadStations[i];
-    
-                if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
-                    if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
-                        numTerminalStations += 1;
-                    }
-                }
-            }
-    
-            return numTerminalStations === 1;
+            const startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 0) return false;
+            else return true
+        }
+    ).test(
+        'doesHaveEndNode',
+        'All processes must have at least one "Finish" station. This process has no end.',
+        (routes) => {
+            const endNodes = findProcessEndNodes(routes);
+            if (endNodes.length === 0) return false;
+            else return true
+        }
+    ).test(
+        'doRoutesConverge',
+        'All split branches of the process must converge at a single station',
+        function (routes) {
+
+            const { startDivergeType } = this.parent
+
+            const allNodes = routes.reduce((nodes, route) => {
+                if (!nodes.includes(route.load)) nodes.push(route.load)
+                if (!nodes.includes(route.unload)) nodes.push(route.unload)
+                return nodes
+            }, [])
+
+            let normalizedRoutes = {}
+            routes.forEach(route => normalizedRoutes[route._id] = route)
+            let routeIds = routes.map(r=>r._id)
+            allNodes.forEach(node => {
+                const mergeExp = handleMergeExpression(node, {startDivergeType, routes: routeIds}, normalizedRoutes, stations)
+            })
+
+            // You can have multiple end nodes, as long as none of them are on a 'split' branch
+            // const endNodes = findProcessEndNodes(routes);
+            // for (var endNode of endNodes) {
+            //     let normalizedRoutes = {}
+            //     routes.forEach(route => normalizedRoutes[route._id] = route)
+            //     const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
+            //     if (!mergeExp || recursiveFindAnd(mergeExp)) {
+            //         return false;
+            //     }
+            // }
+            // return true
         }
     ).test(
         'isProcessCyclic',
         'Processes cannot contain loops. As a general rule, if your process contains a loops create a new "virtual" station to loop back to instead.',
-        (routes) => {
+        function (routes) {
+            const { startDivergeType } = this.parent
+
             const startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 0) return false
 
             for (var startNode of startNodes) {
                 let stack = [startNode];
-                let isCyclic = DFSContainsCycle(routes, stack)
-                if (isCyclic) return false;
+                let { isCyclic, breakingRoute } = DFSContainsCycle(routes, stack)
+                if (isCyclic) {
+                    // Cycles are fine as long as they dont originate from a split branch. By getting the merge expression at the node where the 
+                    // breaking route (the route that makes the process cyclic) we can determine if that node is already in a split branch
+                    let normalizedRoutes = {}
+                    routes.forEach(route => normalizedRoutes[route._id] = route)
+                    const mergeExp = handleMergeExpression(breakingRoute.load, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations)
+                    if (!mergeExp || recursiveFindAnd(mergeExp)) return false
+                }
             }
 
             return true
@@ -755,14 +804,14 @@ const DFSContainsCycle = (routes, stack) => {
     let outgoingRoutes = getNodeOutgoing(node, routes);
     for (var outgoingRoute of outgoingRoutes) {
         let nextNode = outgoingRoute.unload;
-        if (stack.includes(nextNode)) return true;
+        if (stack.includes(nextNode)) return { isCyclic: true, breakingRoute: outgoingRoute };
         let nextStack = deepCopy(stack);
         nextStack.push(nextNode);
-        let isCyclic = DFSContainsCycle(routes, nextStack)
-        if (isCyclic) return true;
+        let { isCyclic, breakingRoute } = DFSContainsCycle(routes, nextStack)
+        if (isCyclic) return { isCyclic, breakingRoute };
     }
 
-    return false;
+    return { isCyclic: false, breakingRoute: null };
 
 }
 

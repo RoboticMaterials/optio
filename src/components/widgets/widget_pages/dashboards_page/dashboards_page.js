@@ -37,7 +37,7 @@ import {
 
 import {
     findProcessStartNodes,
-    findProcessEndNode
+    findProcessEndNodes
 } from "../../../../methods/utils/processes_utils";
 
 const logger = log.getLogger("DashboardsPage");
@@ -59,16 +59,10 @@ const DashboardsPage = (props) => {
     const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
     const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
 
-    const dispatchGetTasks = () => dispatch(getTasks())
-
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
     const stations = useSelector(state => state.stationsReducer.stations);
-
-    const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
 
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
@@ -111,13 +105,13 @@ const DashboardsPage = (props) => {
                 const processRoutes = currProcess.routes.map(routeId => routes[routeId])
 
                 let processStartNodes = findProcessStartNodes(processRoutes, stations);
-                let processEndNode = findProcessEndNode(processRoutes);
+                let processEndNodes = findProcessEndNodes(processRoutes);
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
                 if (processStartNodes.includes(stationID) && stationID !== undefined) firstStationProcesses.push(currProcess._id)
 
                 // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
-                if (stationID === processEndNode && stationID !== undefined) lastStationProcesses.push(currProcess._id)
+                if (processEndNodes.includes(stationID) && stationID !== undefined) lastStationProcesses.push(currProcess._id)
 
             }
         })

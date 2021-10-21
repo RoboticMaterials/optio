@@ -1,8 +1,8 @@
 import axios from 'axios';
-import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 import store from '../redux/store'
+import { getHeaders, handleError } from './helpers';
 
 const operator = 'stations'
 
@@ -13,10 +13,7 @@ export async function getStations() {
         const response = await axios({
             method: 'GET',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
+            headers: getHeaders()
         });
         // Success 🎉
         const data = response.data;
@@ -25,28 +22,7 @@ export async function getStations() {
 
 
     } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        throw error
+        handleError(error);
     }
 
 
@@ -57,43 +33,16 @@ export async function deleteStation(ID) {
         const response = await axios({
             method: 'DELETE',
             url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: getHeaders()
         });
 
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-
         return dataJson
 
     } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        handleError(error);
     }
 }
 
@@ -107,12 +56,7 @@ export async function postStation(station) {
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: getHeaders(),
             data: JSON.stringify(station)
         });
 
@@ -124,28 +68,7 @@ export async function postStation(station) {
 
 
     } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        handleError(error);
     }
 }
 
@@ -155,12 +78,7 @@ export async function putStation(station, ID) {
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'text/html',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: getHeaders(),
             data: station
         });
 
@@ -172,28 +90,7 @@ export async function putStation(station, ID) {
 
 
     } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        handleError(error);
     }
 }
 
@@ -202,12 +99,7 @@ export async function getStationAnalytics(id, timeSpan) {
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + id + '/stats',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'text/html',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: getHeaders(),
             // A timespan is {time_span: 'day', index: 0}
             data: timeSpan
         });
@@ -219,27 +111,7 @@ export async function getStationAnalytics(id, timeSpan) {
 
 
     } catch (error) {
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        throw error
+        handleError(error);
     }
 }
 
@@ -248,12 +120,7 @@ export async function updateStationCycleTime(id) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + '/' + id + '/cycle_time',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'text/html',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: getHeaders(),
         });
         // Success 🎉
         const data = response.data;
@@ -262,27 +129,7 @@ export async function updateStationCycleTime(id) {
 
 
     } catch (error) {
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        throw error
+        handleError(error);
     }
 
 

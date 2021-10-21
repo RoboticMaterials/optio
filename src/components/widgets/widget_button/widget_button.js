@@ -8,14 +8,12 @@ import * as styled from './widget_button.style'
 import uuid from 'uuid'
 
 // Import Actions
-import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
 import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'
 import { removePosition, setSelectedPosition } from '../../../redux/actions/positions_actions'
 import { widgetLoaded, hoverStationInfo } from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
 import { deepCopy } from '../../../methods/utils/utils'
-import { handlePostTaskQueue } from "../../../redux/actions/task_queue_actions";
 import * as sidebarActions from "../../../redux/actions/sidebar_actions";
 
 
@@ -37,7 +35,6 @@ const WidgetButton = (props) => {
     const widgetPage = params.widgetPage
 
     const dispatch = useDispatch()
-    const dispatchHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchDashboardOpen = (props) => dispatch(dashboardOpen(props))
@@ -58,9 +55,6 @@ const WidgetButton = (props) => {
 
     const handleOnClick = () => {
         switch (props.type) {
-            case 'cart':
-                onCartButtonClick()
-                break;
 
             case 'cancel':
                 onCancelClick()
@@ -89,41 +83,6 @@ const WidgetButton = (props) => {
 
     const onDefaultClick = () => {
         history.push('/locations/' + id + '/' + type)
-    }
-
-    // Handles  if the widget button clicked was a cart
-    const onCartButtonClick = () => {
-        // If the button is for cart, then see if its a coord move or a simple task move
-        // Coord move is for right click send cart to pos
-        if (!!coordinateMove) {
-            dispatchHandlePostTaskQueue({
-                Id: 'custom_task',
-                custom: {
-                    type: 'coordinate_move',
-                    coordinate: {
-                        pos_x: selectedLocation.pos_x,
-                        pos_y: selectedLocation.pos_y,
-                        rotation: selectedLocation.rotation,
-                    },
-                },
-                deviceType: 'MiR_100',
-            })
-            dispatchWidgetLoaded(false)
-            dispatchHoverStationInfo(null)
-            dispatchRemovePosition(selectedPosition._id)
-            dispatchSetSelectedPosition(null)
-        }
-        else {
-            dispatchHandlePostTaskQueue({
-                Id: 'custom_task',
-                custom: {
-                    type: 'position_move',
-                    position: id,
-
-                },
-                deviceType: 'MiR_100',
-            })
-        }
     }
 
     // Handles if the widget button clicked was cancel

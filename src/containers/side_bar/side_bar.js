@@ -29,8 +29,6 @@ import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_switcher/side_bar_switcher'))
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
-const TasksContent = lazy(() => import('../../components/side_bar/content/tasks/tasks_content'))
-const SchedulerContent = lazy(() => import('../../components/side_bar/content/scheduler/scheduler_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
 const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
@@ -348,14 +346,6 @@ const SideBar = (props) => {
             if ((id === "summary") || (id === "timeline")) {
                 content = <Cards id={id} />
             }
-            break
-
-        case 'tasks':
-            content = <TasksContent />
-            break
-
-        case 'scheduler':
-            content = <SchedulerContent />
             break
 
         case 'settings':

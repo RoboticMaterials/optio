@@ -42,6 +42,11 @@ export const Icon = styled.i`
 export const UndoIcon = styled.i`
 
     position: absolute;
+<<<<<<< HEAD
+    bottom: 1.5rem;
+    left: 1.5rem;
+=======
+>>>>>>> ace1aa277a68457c9c642f6ee73682b89fa2decf
 
     font-size: 2rem;
     color: ${props => props.theme.fg.primary};
