@@ -124,6 +124,7 @@ export default function ContentList(props) {
 
                     return (
                         <ContentListItem
+                            key={`content-list-${element._id}`}
                             id={`content-list-${element._id}`}
                             onIconClick={handleIconClick}
                             onEditClick={onClick}

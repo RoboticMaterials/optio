@@ -16,7 +16,7 @@ import { postDevSettings } from '../../api/local_api'
 
 import { getLoggers } from '../../redux/actions/local_actions';
 
-import { getPositions, deletePosition, putPosition } from '../../redux/actions/positions_actions'
+
 import { getStations, putStation, deleteStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
@@ -41,7 +41,6 @@ const ApiContainer = (props) => {
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
     const onGetStations = async () => await dispatch(getStations())
-    const onGetPositions = () => dispatch(getPositions())
     const onGetDashboards = async () => await dispatch(getDashboards())
     const onGetTasks = async () => await dispatch(getTasks())
     const onGetLotTemplates = () => dispatch(getLotTemplates())
@@ -266,7 +265,6 @@ const ApiContainer = (props) => {
         }
 
         const stations = await onGetStations()
-        const positions = await onGetPositions()
         const dashboards = await onGetDashboards()
         const tasks = await onGetTasks()
         const processes = await onGetProcesses()
@@ -339,9 +337,6 @@ const ApiContainer = (props) => {
 
     const loadMapData = async () => {
         const stations = await onGetStations();
-        const positions = await onGetPositions();
-        const dashboards = await onGetDashboards();
-
     }
 
     /*

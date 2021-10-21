@@ -68,6 +68,8 @@ export async function postDashboards(dashboard) {
 
 export async function putDashboards(dashboard, ID) {
 
+    console.log("@@@", dashboard)
+
     try {
         const response = await axios({
             method: 'PUT',
