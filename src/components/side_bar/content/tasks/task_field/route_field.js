@@ -20,48 +20,21 @@ import Portal from '../../../../../higher_order_components/portal'
 import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
-import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
-import IconButton from '../../../../basic/icon_button/icon_button'
 
 // Import Components
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-import LoadUnloadFields from './fields/load_unload_fields'
-import ObjectEditor from '../object_editor/object_editor'
 
 // Import utils
-import uuid from 'uuid'
-import { deepCopy } from '../../../../../methods/utils/utils'
-import { getPreviousRoute, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
-import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
-import * as objectActions from '../../../../../redux/actions/objects_actions'
-import { setFixingProcess, setEditingValues } from '../../../../../redux/actions/processes_actions'
-import { putStation } from '../../../../../redux/actions/stations_actions'
-import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
-import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-
-import { setSelectedHoveringTask, editingTask, setSelectedTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean, deleteTask } from '../../../../../redux/actions/tasks_actions'
-import { processHover } from '../../../../../redux/actions/widget_actions'
-import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
-
+import { setEditingValues } from '../../../../../redux/actions/processes_actions'
+import { editingTask, setSelectedTask } from '../../../../../redux/actions/tasks_actions'
 import {
     buildDefaultRouteName,
-    getLoadStationId,
-    getRouteProcesses,
-    getUnloadStationId, isMiRTask,
-    isNextRouteViable, isOnlyHumanTask
 } from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
-import NumberField from '../../../../basic/form/number_field/number_field'
-import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
-import PropTypes from "prop-types";
-import { isObject } from "../../../../../methods/utils/object_utils";
-import useChange from "../../../../basic/form/useChange";
-import { removeTask } from "../../../../../redux/actions/tasks_actions";
-import { isArray } from "../../../../../methods/utils/array_utils";
+
 import usePrevious from "../../../../../hooks/usePrevious";
-import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskField = (props) => {
 
@@ -80,8 +53,6 @@ const TaskField = (props) => {
 
     const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
-    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false)
     const [enableSave, setEnableSave] = useState(false)
     const { tasks: routes, selectedTask: selectedRoute } = useSelector(state => state.tasksReducer)
     const { stations } = useSelector(state => state.stationsReducer)
@@ -89,8 +60,6 @@ const TaskField = (props) => {
     const [initialNameSet, setInitialNameSet] = useState(false)
 
     const dispatch = useDispatch()
-    const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
-    const dispatchDeleteTask = async (routeId) => await dispatch(deleteTask(routeId))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
@@ -98,7 +67,6 @@ const TaskField = (props) => {
     const editingIdx = processRoutes.findIndex(route => route._id === selectedRoute._id)
     const editingRoute = processRoutes[editingIdx]
     const fieldName = `routes[${editingIdx}]`
-    const editedRoute = values.routes[editingIdx]
 
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)

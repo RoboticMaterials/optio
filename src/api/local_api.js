@@ -1,16 +1,7 @@
 //This API is used to handle calls to the local storage
 
-import logger from '../logger'
 import ls from 'local-storage'
-import {
-    BrowserView,
-    MobileView,
-    isBrowser,
-    isMobile
-} from "react-device-detect";
 import {defaultLocalSettings} from "../constants/local_settings_constants";
-
-const log = logger.getLogger('LocalStorage')
 
 export async function getLoggers() {
 

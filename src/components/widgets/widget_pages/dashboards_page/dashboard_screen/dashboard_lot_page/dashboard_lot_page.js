@@ -53,8 +53,6 @@ const DashboardLotPage = (props) => {
   const { stationID, dashboardID, lotID, warehouseID } = params || {};
 
   const cards = useSelector((state) => state.cardsReducer.cards);
-  const dashboards = useSelector((state) => state.dashboardsReducer.dashboards);
-  const taskQueue = useSelector((state) => state.taskQueueReducer.taskQueue);
   const routes = useSelector((state) => state.tasksReducer.tasks);
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
@@ -64,10 +62,6 @@ const DashboardLotPage = (props) => {
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
   const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
-
-  const availableFinishProcesses = useSelector((state) => {
-    return state.dashboardsReducer.finishEnabledDashboards[dashboardID];
-  });
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;

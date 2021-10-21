@@ -9,14 +9,11 @@ import WidgetPageHeader from './widget_page_header/widget_page_header'
 import useWindowSize from '../../../hooks/useWindowSize'
 
 import DashboardsPage from './dashboards_page/dashboards_page'
-import ObjectsPage from './objects_page/objects_page'
 import StatisticsPage from './statistics_page/statistics_page'
 import TasksPage from './tasks_page/tasks_page'
-import ViewerPage from './viewer_page/viewer_page'
 
 import log from "../../../logger"
 import { widgetPageLoaded } from '../../../redux/actions/widget_actions'
-import { taskQueueOpen } from '../../../redux/actions/task_queue_actions'
 
 const logger = log.getLogger("WidgetPages")
 
@@ -32,9 +29,6 @@ const WidgetPages = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
-    const taskQueueOpened = useSelector(state => state.taskQueueReducer.taskQueueOpen)
-
-    const onTaskQueueOpen = (props) => dispatch(taskQueueOpen(props))
 
     const { locationID, widgetPage } = props.match.params
     const showWidgetPage = widgetPage
@@ -59,15 +53,15 @@ const WidgetPages = (props) => {
         }
     }, [])
 
-    useEffect(() => {
-        if (windowWidth < 1030) {
-            onTaskQueueOpen(false)
-        }
-    }, [windowWidth])
+    // useEffect(() => {
+    //     if (windowWidth < 1030) {
+    //         onTaskQueueOpen(false)
+    //     }
+    // }, [windowWidth])
 
 
     return (
-        <styled.Container taskQueueOpen={taskQueueOpened} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
+        <styled.Container taskQueueOpen={false} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer
                 showWidgetPage={showWidgetPage}
@@ -77,20 +71,12 @@ const WidgetPages = (props) => {
                     render={() => <DashboardsPage onSetTitle={() => {}}/>}
                 />
                 <Route
-                    path="/locations/:stationID/objects/:objectID?/:editing?"
-                    component={ObjectsPage}
-                />
-                <Route
                     path="/locations/:stationID/statistics"
                     component={StatisticsPage}
                 />
                 <Route
                     path="/locations/:stationID/tasks"
                     component={TasksPage}
-                />
-                <Route
-                    path="/locations/:stationID/view"
-                    component={ViewerPage}
                 />
             </styled.WidgetPageContainer>
         </styled.Container>
