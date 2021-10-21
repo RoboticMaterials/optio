@@ -419,7 +419,7 @@ const Column = ((props) => {
 						 dispatchSetDraggingStationId(null)
 				 }}
 					>
-					{!!highlightStation &&
+					{!!highlightStation && !!draggingLotId &&
 						<styled.DragToDiv
 
 						className = 'dragToDiv'
