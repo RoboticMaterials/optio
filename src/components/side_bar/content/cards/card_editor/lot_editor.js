@@ -1004,7 +1004,7 @@ const FormComponent = (props) => {
                                                     : {}
                                             }
                                             name={"lotNum"}
-                                            type={"number"}
+                                            type={"text"}
                                             placeholder={"Lot #"}
                                             InputComponent={Textbox}
                                             schema={"lots"}
