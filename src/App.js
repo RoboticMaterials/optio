@@ -37,7 +37,7 @@ const App = () => {
     const maps = useSelector(state => state.mapReducer.maps)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
+    const authenticated = useSelector(state => state.localReducer.authenticated)
     const dispatch = useDispatch()
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
@@ -101,9 +101,11 @@ const App = () => {
                         <PageErrorBoundary>
                             <>
                                 {/* Authentication */}
-                                <Route path="/" >
-                                    <Authentication mobileMode={mobileMode} />
-                                </Route>
+                                {!authenticated && 
+                                    <Route path="/" >
+                                        <Authentication mobileMode={mobileMode} />
+                                    </Route>
+                                }
 
                                 {authenticated &&
                                     <Route
@@ -152,7 +154,7 @@ const App = () => {
                                             {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                                 And if the device is mobile, then unmount if widgets are open
                                             */}
-                                            {maps.length > 0 &&
+                                            {!!maps && maps.length > 0 &&
                                                 <>
                                                     {mapViewEnabled && !mobileMode ?
 

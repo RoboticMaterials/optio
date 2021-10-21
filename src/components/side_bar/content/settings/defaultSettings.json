@@ -42,7 +42,7 @@
         "label": "America/Denver"
     },
     "MiRMapEnabled": true,
-    "currentMapId": "7166abf6-4b94-4373-8eb5-f6d8a775bfdf",
+    "currentMapId": null,
     "accessToken": null,
     "authenticated": false,
     "deviceEnabled": false,

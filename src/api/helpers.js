@@ -1,30 +1,7 @@
-
-// Authentication
-import configData from '../settings/config'
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import store from '../redux/store'
 
 import logger from '../logger'
 const log = logger.getLogger('Api')
-
-var poolData = {
-    UserPoolId: configData.UserPoolId,
-    ClientId: configData.ClientId,
-};
-
-var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-var cognitoUser = userPool.getCurrentUser();
-
-var token = null;
-if (cognitoUser != null) {
-    token = cognitoUser.getSession(function (err, session) {
-        if (err) {
-            alert(err.message || JSON.stringify(err));
-            return null;
-        }
-
-        return session?.idToken?.jwtToken || null
-    });
-}
 
 
 export const getHeaders = () => {
@@ -33,7 +10,7 @@ export const getHeaders = () => {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': token
+        'Authorization': store.getState().localReducer.idToken
     }
 
     return headers;
