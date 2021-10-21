@@ -92,7 +92,6 @@
     "@babel/core": "^7.13.8",
     "@babel/preset-env": "^7.13.9",
     "@babel/preset-react": "^7.12.13",
-    "@imaginary-cloud/eslint-config-react": "^1.0.1",
     "@imaginary-cloud/prettier-config": "^1.0.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
@@ -121,8 +120,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "postinstall": "node ./scripts/postinstall.js",
-    "lint": "eslint ./ --ignore-path .gitignore",
-    "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write \"{,!(node_modules)/**/}*.js\""
   },
   "browserslist": {
@@ -136,9 +133,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "eslintConfig": {
-    "extends": "@imaginary-cloud/react"
   },
   "prettier": "@imaginary-cloud/prettier-config"
 }
