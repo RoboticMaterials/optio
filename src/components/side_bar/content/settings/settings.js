@@ -487,7 +487,7 @@ const Settings = () => {
                     <styled.DropdownLabel>Map</styled.DropdownLabel>
                     <DropDownSearch
                         placeholder="Select Map"
-                        label="Select the map you would like to use for RMStudio"
+                        label="Select a map"
                         labelField="name"
                         valueField="_id"
                         options={maps}

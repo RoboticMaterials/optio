@@ -427,10 +427,7 @@ export const getCardsInBin = (cards, binId, processId) => {
 }
 
 export const getAllTemplateFields = () => {
-    const lotTemplates = {
-        [BASIC_LOT_TEMPLATE_ID]: { ...BASIC_LOT_TEMPLATE },
-        ...(store.getState().lotTemplatesReducer.lotTemplates || {})
-    }
+    const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
 
     let templateFields = []
 
@@ -490,7 +487,7 @@ export const getAllTemplateFields = () => {
 * */
 export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-    const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+    const lotTemplate = lotTemplates[lotTemplateId] || {}
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
     const currentDashboard = dashboards[dashboardID]
@@ -1096,3 +1093,49 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
     if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };
+
+
+  export const createPastePayload = (table, fieldMapping) => {
+
+    return table.map((row, i) => {
+
+      let lotFields = {};
+      for (var j=0; j<row.length; j++) {
+        if (!!fieldMapping[j]) {
+          let { index: rangeIndex, ...field} = fieldMapping[j]
+          let { value } = row[j]
+
+          // Parse Data
+					if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+						let parsedDate = new Date(value)
+
+            if (field._id in lotFields) {
+              if (Array.isArray(lotFields[field._id].value)) {
+                // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
+                // therefore, we just alter the array at the index that the field specifies
+                let dateArr = lotFields[field._id].value
+                dateArr.splice(rangeIndex, 0, parsedDate)
+                lotFields[field._id].value = dateArr
+                continue // Dont append a new field because one for this already exists
+              }
+            }
+            value = [null, null]
+            value[rangeIndex] = parsedDate
+					}
+					else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
+						value = parseInt(value)
+						if(!Number.isInteger(value)) value = null
+					}
+
+          lotFields[field._id] = {
+            ...field,
+            value
+          }
+        }
+      }
+
+      return lotFields
+
+
+    })
+	}

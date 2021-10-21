@@ -97,6 +97,7 @@ export const DefaultItemComponent = styled.span`
   cursor: pointer;
   white-space: nowrap;
   display: flex;
+  overflow-x: visible;
   justify-content: space-between;
   font-family: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
@@ -124,20 +125,28 @@ export const DefaultItemComponent = styled.span`
     `}
   }
 
+  ${({ disabled }) => disabled && `
+    color: #aaa; 
+    &:hover {
+      background: #eee;
+    }
+    
+  `}
+
   ${({ disabled }) =>
     disabled
       ? `
-    background: ${props => props.theme.bg.quinary};
-    color: ${props => props.theme.bg.primary};
+    // background: ${props => props.theme.bg.quinary};
+    // color: ${props => props.theme.bg.primary};
 
-    ins {
-      text-decoration: none;
-      border:1px solid #ccc;
-      border-radius: 2px;
-      padding: 0px 3px;
-      font-size: x-small;
-      text-transform: uppercase;
-    }
+    // ins {
+    //   text-decoration: none;
+    //   border:1px solid #ccc;
+    //   border-radius: 2px;
+    //   padding: 0px 3px;
+    //   font-size: x-small;
+    //   text-transform: uppercase;
+    // }
     `
       : ''}
 
@@ -148,7 +157,6 @@ const DefaultContentContainer = styled.div`
   flex: 1;
   justify-content: space-between;
   padding: 0;
-  overflow: hidden;
   white-space: nowrap;
 `;
 
