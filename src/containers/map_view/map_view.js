@@ -15,9 +15,9 @@ import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../metho
 import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
-import { getMap } from '../../redux/actions/map_actions'
+import { getMap, getMaps } from '../../redux/actions/map_actions'
 import { postSettings } from '../../redux/actions/settings_actions'
-import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
+import { getStations, updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
@@ -90,7 +90,8 @@ export class MapView extends Component {
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
-        this.checkForMapLoad()
+        const getMapsPromise = this.props.dispatchGetMaps()
+        getMapsPromise.then(res => this.checkForMapLoad())
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
         window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
@@ -107,17 +108,38 @@ export class MapView extends Component {
 
       var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
 
-      if(currentMap === undefined){
-        this.setState({currentMap: this.props.maps[0]})
+      console.log(this.props.localSettings.currentMapId, this.state.currentMap, this.props.maps)
 
-        const updatedSettings = {
-          ...this.props.localSettings,
-          currentMapId: this.props.maps[0]._id,
-        }
-        this.props.dispatchPostLocalSettings(updatedSettings)
-      }
-      else{
+      if (!!currentMap) {
         this.setState({currentMap: currentMap})
+      } else if (!this.state.currentMap && this.props.localSettings.currentMapId === null && this.props.maps.length > 0) {
+          this.setState({currentMap: this.props.maps[0]})
+          
+
+          const updatedSettings = {
+            ...this.props.localSettings,
+            currentMapId: this.props.maps[0]._id,
+          }
+          const postSettingsPromise = this.props.dispatchPostLocalSettings(updatedSettings)
+          postSettingsPromise.then(() => {
+            const getStationsPromise = this.props.dispatchGetStations()
+            getStationsPromise.then((stations) => {
+                //// Apply the event translation to each station
+                let stationsCopy = []
+                Object.values(stations).forEach(station => {
+
+                    let [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
+                    station = {
+                        ...station,
+                        x: x,
+                        y: y,
+                    }
+                    stationsCopy[station._id] = station
+
+                })
+                this.props.dispatchUpdateStations(stationsCopy, null, this.d3) // Bulk Update
+            })
+          })
       }
     }
 
@@ -130,7 +152,7 @@ export class MapView extends Component {
         // }
         //this.checkForMapLoad() //test
 
-        if(this.props.localSettings.currentMapId !== this.state.currentMap._id){
+        if(!this.state.currentMap || this.props.localSettings.currentMapId !== this.state.currentMap._id){
           this.checkForMapLoad()
         }
         if(prevProps.selectedTask !== this.props.selectedTask) {
@@ -291,6 +313,9 @@ export class MapView extends Component {
      * drag events, so this will take care of both
      */
     bindZoomListener = () => {
+
+        if (!this.state.currentMap) return
+
         const { scaleExtent } = this.props
         const { resolution } = this.state.currentMap
         const { translate, scale } = this.d3
@@ -802,11 +827,13 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {
     return {
+        dispatchGetMaps: () => dispatch(getMaps()),
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
         dispatchPostLocalSettings: (settings) => dispatch(postLocalSettings(settings)),
 
+        dispatchGetStations: () => dispatch(getStations()),
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
 

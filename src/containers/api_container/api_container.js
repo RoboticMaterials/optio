@@ -34,6 +34,7 @@ import { getMap } from '../../api/map_api';
 import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
 import { getReportEvents } from "../../redux/actions/report_event_actions";
+import { mapValues } from 'lodash';
 
 const ApiContainer = (props) => {
 
@@ -258,7 +259,7 @@ const ApiContainer = (props) => {
         // const refreshToken = await onGetRefreshToken()
         const maps = await onGetMaps()
 
-        if (maps.length === undefined) {
+        if (mapValues === undefined) {
             props.onLoad()
             setApiError(true)
             return
@@ -336,7 +337,9 @@ const ApiContainer = (props) => {
     }
 
     const loadMapData = async () => {
-        const stations = await onGetStations();
+        onGetStations();
+        onGetTasks()
+        onGetProcesses()
     }
 
     /*
