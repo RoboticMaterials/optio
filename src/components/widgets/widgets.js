@@ -104,27 +104,20 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-        // history.push('/locations')
-        // dispatchShowSideBar(true)
+        let dashboardID
 
+        // If there's no selected station, then see if theres a station in the url, if so, use that, else do nothing
+        if (!selectedLocation) {
+            if (!!stationID) {
+                dashboardID = stations[stationID].dashboards[0]
+            } else {
+                return null
+            }
+        } else {
+            dashboardID = selectedLocation.dashboards[0]
+        }
 
-        // if (!!selectedStation) {
-        //     dispatchSetEditingStation(true)
-        //     let copy = {}
-        //     selectedStation.children.forEach(child => {
-        //         copy[child] = positions[child]
-        //     })
-        //     dispatchSetSelectedStationChildrenCopy(copy)
-        //     dispatchSetSelectedStation(selectedStation)
-        // }
-        // else if (!!selectedPosition) {
-        //     dispatchSetEditingPosition(true)
-        //     dispatchSetSelectedPosition(selectedPosition)
-
-        // }
-
-        //   onWidgetClose(true)
-        //   dispatchHoverStationInfo(null)
+        history.push('/locations/' + stationID + '/dashboards/' + dashboardID)
     }
 
 
@@ -264,6 +257,30 @@ const Widgets = (props) => {
         }
     }, [selectedLocation, hoveringInfo])
 
+    const editLocation = () => {
+        history.push('/locations')
+        dispatchShowSideBar(true)
+
+
+        if (!!selectedStation) {
+            dispatchSetEditingStation(true)
+            let copy = {}
+            selectedStation.children.forEach(child => {
+                copy[child] = positions[child]
+            })
+            dispatchSetSelectedStationChildrenCopy(copy)
+            dispatchSetSelectedStation(selectedStation)
+        }
+        else if (!!selectedPosition) {
+            dispatchSetEditingPosition(true)
+            dispatchSetSelectedPosition(selectedPosition)
+
+        }
+
+          onWidgetClose(true)
+          dispatchHoverStationInfo(null)
+    }
+
     return (
         <Suspense fallback = {<></>}>
 
@@ -308,7 +325,7 @@ const Widgets = (props) => {
                             <styled.LocationOverlay scale={hoveringInfo.scale} onClick={() => onClickLocation()} />
                             <styled.WidgetButtonContainer widgetPage={widgetPage}>
                                 {renderWidgetButtons}
-                                <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                <styled.WidgetStationName onClick={editLocation}>{selectedLocation.name}</styled.WidgetStationName>
                             </styled.WidgetButtonContainer>
 
                         </CSSTransitionGroup>

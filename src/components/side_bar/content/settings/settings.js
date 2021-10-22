@@ -203,7 +203,7 @@ const Settings = () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
         await dispatchPostLocalSettings(localSettingsState)
         const serverChange = getIsEquivalent(serverSettingsState, serverSettings)
-        const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+        const mapChange = localSettingsState.currentMapId !== localSettings.currMapId
         const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
@@ -224,7 +224,11 @@ const Settings = () => {
         }
 
         if (mapChange) {
-            window.location.reload()
+            mapUpdatePromise.then(() => {
+                dispatchGetStations()
+                dispatchGetProcesses()
+                dispatchGetRoutes()
+            })
         }
     }
 
@@ -509,12 +513,8 @@ const Settings = () => {
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
-                            const mapUpdatePromise = handleUpdateLocalSettings({ currentMapId: values[0]._id })
-                            mapUpdatePromise.then(() => {
-                                dispatchGetStations()
-                                dispatchGetProcesses()
-                                dispatchGetRoutes()
-                            })
+                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            
 
                         }}
                         className="w-100"
