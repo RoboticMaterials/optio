@@ -59,6 +59,7 @@ export const ProcessField = (props) => {
         if (!isEmpty(currError)) errorCount++
     }) // get number of field errors
     const touchedCount = Object.values(touched).length // number of touched fields
+    console.log('ERR', errors)
     const submitDisabled = ((errorCount > 0)|| isSubmitting || !values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
@@ -94,19 +95,7 @@ export const ProcessField = (props) => {
         if (!!selectedTask.unload && formikSelectedTask === undefined) {
             let processRoutesCopy = values.routes;
 
-            // Set the new route's partname to be that of the preceeding route.
             const selectedTaskCopy = selectedTask
-            if (selectedTaskCopy.part === null) {
-                const preceedingRoutes = processRoutesCopy.filter(route => route._id !== selectedTask._id && route.unload === selectedTask.load)
-                let defaultName = values.name;
-                for (var preceedingRoute of preceedingRoutes) {
-                    if (!!preceedingRoute.part) {
-                        defaultName = preceedingRoute.part;
-                        break;
-                    }
-                }
-                selectedTaskCopy.part = defaultName;
-            }
 
             processRoutesCopy.push(selectedTaskCopy);
             setFieldValue('routes', processRoutesCopy)

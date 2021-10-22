@@ -654,10 +654,6 @@ export const routeSchema = Yup.object().shape({
         .min(1, '1 character minimum.')
         .max(75, '75 character maximum.')
         .required('Please enter a name.'),
-    part: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a part name.'),
     load: Yup.string().required('Select a load location'),
     unload: Yup.string().required('Select an unload location')
 })//.uniqueProperty('part', 'Route part names must be unique')
@@ -769,6 +765,7 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             //     }
             // }
             // return true
+            return true
         }
     ).test(
         'isProcessCyclic',

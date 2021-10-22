@@ -126,14 +126,20 @@ const TaskField = (props) => {
 
     useEffect(() => {
 
+        console.log("RECALC")
+
       for(const ind in values.routes){
         if(values.routes[ind]._id === selectedRoute?._id){
+            console.log("in1", ind, selectedRoute, values.routes[ind])
           if(selectedRoute.unload!== values.routes[ind].unload || selectedRoute.load!==values.routes[ind].load){
+              console.log("in2")
             setFieldValue(`routes[${ind}].unload`, selectedRoute.unload);
             setFieldValue(`routes[${ind}].load`, selectedRoute.load);
           }
         }
       }
+
+      validateForm()
 
     }, [selectedRoute])
 
@@ -213,10 +219,16 @@ const TaskField = (props) => {
     const isDivergingRoute = useMemo(() => {
         const isDiverging = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load) !== undefined
         if (isDiverging && editingRoute.divergeType === undefined) {
-            updateDivergingRoutes('split');
+            updateDivergingRoutes('choice');
         }
         return isDiverging;
     }, [processRoutes, editingRoute])
+
+    useEffect(() => {
+        if (!isDivergingRoute && !submitDisabled && !!editingRoute.unload) {
+            onSaveRoute()
+        }
+    }, [isDivergingRoute, submitDisabled])
 
     return (
         <>
@@ -257,7 +269,7 @@ const TaskField = (props) => {
                             containerStyle={{marginBottom: '1rem'}}
                         />
 
-                        <styled.Title>Part Name</styled.Title>
+                        {/* <styled.Title>Part Name</styled.Title>
                         <TextField
                             placeholder='Name of transported part'
                             value={editingRoute.part}
@@ -268,25 +280,17 @@ const TaskField = (props) => {
                             style={{ fontSize: '1.2rem', fontWeight: '100' }}
                             textboxContainerStyle={{ border: "none" }}
                             containerStyle={{marginBottom: '1rem'}}
-                        />
+                        /> */}
 
 
                         {isDivergingRoute &&
                             <>
                                 <styled.Title style={{ alignSelf: 'center' }}>Diverging Type</styled.Title>
                                 <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem'}}>
-                                    <styled.DualSelectionButton
-                                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                        onClick={() => {
-                                            updateDivergingRoutes('split')
-                                        }}
-                                        selected={editingRoute.divergeType === 'split'}
-                                    >
-                                        Split
-                                    </styled.DualSelectionButton>
 
                                     <styled.DualSelectionButton
-                                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                        
                                         onClick={() => {
                                             updateDivergingRoutes('choice')
                                         }}
@@ -295,6 +299,16 @@ const TaskField = (props) => {
                                     >
                                         Choice
                                     </styled.DualSelectionButton>
+
+                                    <styled.DualSelectionButton
+                                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                        onClick={() => {
+                                            updateDivergingRoutes('split')
+                                        }}
+                                        selected={editingRoute.divergeType === 'split'}
+                                    >
+                                        Split
+                                    </styled.DualSelectionButton>                                    
 
                                 </styled.RowContainer>
                             </>
