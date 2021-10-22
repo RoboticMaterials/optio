@@ -224,11 +224,9 @@ const Settings = () => {
         }
 
         if (mapChange) {
-            mapUpdatePromise.then(() => {
-                dispatchGetStations()
-                dispatchGetProcesses()
-                dispatchGetRoutes()
-            })
+            dispatchGetStations()
+            dispatchGetProcesses()
+            dispatchGetRoutes()
         }
     }
 
