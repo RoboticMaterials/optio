@@ -291,7 +291,8 @@ const ListView = (props) => {
                             }
 
 
-                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }} phoneView = {phoneView}>{title}</styled.Title>
+                    <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }} phoneView = {phoneView}>{!showDashboards && title}</styled.Title>
+                    {handleTaskQueueStatus()}
 
                 </styled.Header>
             </ClickNHold>

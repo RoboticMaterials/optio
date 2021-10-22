@@ -26,6 +26,7 @@ const LotContainer = (props) => {
     containerStyle,
     isPartial,
     onDeleteDisabledLot,
+    onRightClickDeleteLot,
     // quantity,
     ...rest
   } = props;
@@ -58,12 +59,12 @@ const LotContainer = (props) => {
 
     const station = useSelector(state => state.stationsReducer.stations[binId]) || {}
 
+  const dashboard = useSelector(state => state.dashboardsReducer.dashboards[dashboardID]) || {}
   const processName = useMemo(() => process.name, [process]);
   const stationName = useMemo(() => station.name, [station]);
-
   const templateValues = useMemo(
     () => getCustomFields(lotTemplateId, lot, dashboardID),
-    [lotTemplateId, lot]
+    [lotTemplateId, lot, dashboard]
   );
 
   if (!(binId in bins)) { return null }
@@ -75,6 +76,7 @@ const LotContainer = (props) => {
               <Lot
                   lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                   onDeleteDisabledLot = {onDeleteDisabledLot}
+                  onRightClickDeleteLot = {onRightClickDeleteLot}
                   isDashboard={!!isDashboard}
                   stationName={stationName}
                   templateValues={templateValues}
@@ -91,6 +93,7 @@ const LotContainer = (props) => {
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{
+                      borderRadius: '0.5rem',
                       width: "80%",
                       margin: ".5rem auto .5rem auto",
                       ...containerStyle,

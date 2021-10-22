@@ -12,7 +12,6 @@ import 'rc-time-picker/assets/index.css';
 import useWindowSize from './hooks/useWindowSize'
 
 import * as styled from './App.style'
-
 // Import API
 import { getLocalSettings } from './redux/actions/local_actions'
 
@@ -206,9 +205,9 @@ const App = () => {
                         </PageErrorBoundary>
                       </BrowserRouter>
                   </styled.Container>
-                  
+
               </ThemeProvider>
-              </Suspense>
+            </Suspense>
     );
 
 }

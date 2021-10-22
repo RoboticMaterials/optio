@@ -19,13 +19,14 @@ import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
 
 // constants
-import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
+import { FIELD_COMPONENT_NAMES, BASIC_DEFAULT_DATES_FIELD, BASIC_DEFAULT_DESCIPTION_FIELD } from "../../../../../../constants/lot_contants";
 
 // Import Utils
 import {
   handleNextStationBins,
   handleCurrentStationBins,
 } from "../../../../../../methods/utils/lot_utils";
+
 import {
   findProcessStartNodes,
 } from "../../../../../../methods/utils/processes_utils";
@@ -57,7 +58,7 @@ const DashboardLotPage = (props) => {
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
-
+  const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
   const dispatch = useDispatch();
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
@@ -122,14 +123,23 @@ const DashboardLotPage = (props) => {
   // Used to show dashboard input
   useEffect(() => {
     let containsInput = false;
-    currentLot.fields.forEach((field) => {
-      field.forEach((subField) => {
-        if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
-          containsInput = true;
-        }
+    if(!stationBasedLots){
+      currentLot.fields.forEach((field) => {
+        field.forEach((subField) => {
+          if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
+            containsInput = true;
+          }
+        });
       });
-    });
-
+    }
+    else{
+      if(dashboards[dashboardID].fields && !!dashboards[dashboardID]?.fields[currentLot.lotTemplateId]){
+        let fields = dashboards[dashboardID]?.fields[currentLot.lotTemplateId]
+        for(const i in fields){
+          if(fields[i].component === 'INPUT_BOX') containsInput = true
+        }
+      }
+    }
     setLotContainsInput(containsInput);
   }, [currentLot]);
 
