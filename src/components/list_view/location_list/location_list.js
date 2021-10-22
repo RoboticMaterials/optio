@@ -36,7 +36,6 @@ const LocationList = (props) => {
 
     // redux state
     const locations = useSelector(state => state.stationsReducer.stations)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
     const deviceEnabled = false
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -44,8 +43,6 @@ const LocationList = (props) => {
     // component state
     const [locationsArr, setLocationsArr] = useState([])
     const [dashboardsArr, setDashboardsArr] = useState([])
-
-    // const devicesArr = Object.values(devices)
 
     /*
     * this effect updates locationsArr
@@ -75,13 +72,8 @@ const LocationList = (props) => {
 
     // this effect updates dashboardsArr
     useEffect(() => {
-      if(!!deviceEnabled){
-        setDashboardsArr([...locationsArr, ...Object.values(devices)])
-      }
-      else{
         setDashboardsArr([...locationsArr])
-      }
-    }, [locationsArr, devices])
+    }, [locationsArr])
 
     return (
         <styled.ListScrollContainer>

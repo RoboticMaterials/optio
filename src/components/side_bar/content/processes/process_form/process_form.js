@@ -66,12 +66,9 @@ const ProcessForm = (props) => {
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-	const objects = useSelector(state => state.objectsReducer.objects)
 	const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
 	const stations = useSelector(state => state.stationsReducer.stations);
 	const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
-	const editing = useSelector(state => state.processesReducer.editingProcess)
-	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
 	const [processCopy, setProcessCopy] = useState(selectedProcess)	// Initial process, used when changes are not to be saved (onBack)
 
 	useEffect(() => {

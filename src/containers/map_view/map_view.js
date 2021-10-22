@@ -15,47 +15,29 @@ import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../metho
 import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
-import { getMap } from '../../redux/actions/map_actions'
+import { getMap, getMaps } from '../../redux/actions/map_actions'
 import { postSettings } from '../../redux/actions/settings_actions'
-import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
+import { getStations, updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
-import * as deviceActions from '../../redux/actions/devices_actions'
 
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 // Import Components
-//import TaskPaths from '../../components/map/task_paths/task_paths.js'
-//import ProcessPaths from '../../components/map/process_paths/process_paths'
-//import MiR100 from '../../components/map/amrs/mir100/mir100.js'
-//import Zones from '../../components/map/zones/zones'
-//import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
-//import TaskStatistics from '../../components/map/task_statistics/task_statistics'
-//import RouteConfirmation from '../../components/map/route_confirmation/route_confirmation'
-//import Widgets from '../../components/widgets/widgets'
-import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
-
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
 import HeatMap from '../../components/map/heatmap/heatmap'
 import RatsNest from '../../components/map/ratsnest/ratsnest'
-//import MapApps from '../../components/map/map_apps/map_apps'
 
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
-import { getPreviousRoute } from "../../methods/utils/processes_utils";
-import { isObject } from "../../methods/utils/object_utils";
-import {getHasStartAndEnd, getUnloadPositionId} from "../../methods/utils/route_utils";
+import { getHasStartAndEnd, getUnloadPositionId } from "../../methods/utils/route_utils";
 import { postLocalSettings } from '../../redux/actions/local_actions';
 const logger = log.getLogger("MapView")
 
 const TaskPaths = lazy(()=> import('../../components/map/task_paths/task_paths.js'))
 const ProcessPaths = lazy(()=> import('../../components/map/process_paths/process_paths'))
-const MiR100 = lazy(()=> import('../../components/map/amrs/mir100/mir100.js'))
-const Zones = lazy(()=> import('../../components/map/zones/zones'))
 const RightClickMenu = lazy(()=> import('../../components/map/right_click_menu/right_click_menu'))
-const TaskStatistics = lazy(()=> import('../../components/map/task_statistics/task_statistics'))
-const RouteConfirmation = lazy(()=> import('../../components/map/route_confirmation/route_confirmation'))
 const Widgets = lazy(()=> import('../../components/widgets/widgets'))
 const MapApps = lazy(()=> import('../../components/map/map_apps/map_apps'))
 
@@ -108,7 +90,8 @@ export class MapView extends Component {
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
-        this.checkForMapLoad()
+        const getMapsPromise = this.props.dispatchGetMaps()
+        getMapsPromise.then(res => this.checkForMapLoad())
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
         window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
@@ -125,17 +108,38 @@ export class MapView extends Component {
 
       var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
 
-      if(currentMap === undefined){
-        this.setState({currentMap: this.props.maps[0]})
+      console.log(this.props.localSettings.currentMapId, this.state.currentMap, this.props.maps)
 
-        const updatedSettings = {
-          ...this.props.localSettings,
-          currentMapId: this.props.maps[0]._id,
-        }
-        this.props.dispatchPostLocalSettings(updatedSettings)
-      }
-      else{
+      if (!!currentMap) {
         this.setState({currentMap: currentMap})
+      } else if (!this.state.currentMap && this.props.localSettings.currentMapId === null && this.props.maps.length > 0) {
+          this.setState({currentMap: this.props.maps[0]})
+          
+
+          const updatedSettings = {
+            ...this.props.localSettings,
+            currentMapId: this.props.maps[0]._id,
+          }
+          const postSettingsPromise = this.props.dispatchPostLocalSettings(updatedSettings)
+          postSettingsPromise.then(() => {
+            const getStationsPromise = this.props.dispatchGetStations()
+            getStationsPromise.then((stations) => {
+                //// Apply the event translation to each station
+                let stationsCopy = []
+                Object.values(stations).forEach(station => {
+
+                    let [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
+                    station = {
+                        ...station,
+                        x: x,
+                        y: y,
+                    }
+                    stationsCopy[station._id] = station
+
+                })
+                this.props.dispatchUpdateStations(stationsCopy, null, this.d3) // Bulk Update
+            })
+          })
       }
     }
 
@@ -148,7 +152,7 @@ export class MapView extends Component {
         // }
         //this.checkForMapLoad() //test
 
-        if(this.props.localSettings.currentMapId !== this.state.currentMap._id){
+        if(!this.state.currentMap || this.props.localSettings.currentMapId !== this.state.currentMap._id){
           this.checkForMapLoad()
         }
         if(prevProps.selectedTask !== this.props.selectedTask) {
@@ -309,6 +313,9 @@ export class MapView extends Component {
      * drag events, so this will take care of both
      */
     bindZoomListener = () => {
+
+        if (!this.state.currentMap) return
+
         const { scaleExtent } = this.props
         const { resolution } = this.state.currentMap
         const { translate, scale } = this.d3
@@ -329,7 +336,9 @@ export class MapView extends Component {
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
                     this.lastEvent = d3.event
-                    let { stations, positions, devices } = this.props
+                    let { stations, positions } = this.props
+                    let stationsCopy = {}
+                    let positionsCopy = {}
 
 
                     //// Apply the event translation to image
@@ -349,7 +358,7 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-                        stations[station._id] = station
+                        stationsCopy[station._id] = station
 
                     })
 
@@ -366,7 +375,7 @@ export class MapView extends Component {
 
                     }
 
-                    this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
+                    this.props.dispatchUpdateStations(stationsCopy, updatedSelectedStation, this.d3) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -378,7 +387,7 @@ export class MapView extends Component {
                             y: y,
                         }
 
-                        positions[position._id] = position
+                        positionsCopy[position._id] = position
 
                     })
 
@@ -411,20 +420,7 @@ export class MapView extends Component {
                         })
                     }
 
-                    this.props.dispatchUpdatePositions(positions, updatedSelectedPosition, updatedChildrenPositions, this.d3) // Bulk Update
-
-                    //// Apply the event translation to each mobile device
-                    Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
-                        [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-
-                        device.position = {
-                            ...device.position,
-                            x: x,
-                            y: y,
-                        }
-                        devices[device._id] = device
-                    })
-                    this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
+                    this.props.dispatchUpdatePositions(positionsCopy, updatedSelectedPosition, updatedChildrenPositions, this.d3) // Bulk Update
 
                     // Once zoomed or dragged, stop initializing locations with transforms, instead now let the listener handle that. Otherwise zoom gets jumpy
                     if (this.initialRender) { this.initialRender = false }
@@ -538,7 +534,7 @@ export class MapView extends Component {
 
 
             let x, y
-            let { stations, positions, devices } = this.props
+            let { stations, positions } = this.props
             //// Apply the event translation to each station
             Object.values(stations).forEach(station => {
                 [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
@@ -565,18 +561,6 @@ export class MapView extends Component {
             })
             this.props.dispatchUpdatePositions(positions, null, null, this.d3) // Bulk Update
 
-            //// Apply the event translation to each mobile device
-            Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
-                [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-                device.position = {
-                    ...device.position,
-                    x: x,
-                    y: y,
-                }
-                devices[device._id] = device
-            })
-            this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
-
         } else {
             translate = this.props.translate
         }
@@ -598,7 +582,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
+        let { stations, positions, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
         const { hasStartAndEnd } = this.state
         if (this.state.currentMap == null) {
 
@@ -782,56 +766,9 @@ export class MapView extends Component {
 
                                         )
                                 }</>
-
-                                <>{
-                                    //// Render mobile devices
-                                    (devices === undefined || !deviceEnabled) ?
-                                        <></>
-                                        :
-                                        Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
-                                            <>
-                                                {device.connected == true &&
-                                                  <Suspense fallback = {<></>}>
-                                                    <MiR100 key={device._id}
-                                                        device={device}
-                                                        d3={this.d3}
-                                                    />
-                                                  </Suspense>
-                                                }
-                                            </>
-
-                                        )
-                                }</>
                             </>
                         }
                     </svg>
-
-                    {/* {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
-                      <Suspense fallback = {<></>}>
-                        <TaskStatistics d3={this.d3} />
-                      </Suspense>
-                    } */}
-
-                    {/* {!!this.props.showRouteConfirmation &&
-                      <Suspense fallback = {<></>}>
-                        <RouteConfirmation d3={this.d3} />
-                      </Suspense>
-                    } */}
-
-                    {!!this.props.devices &&
-                        Object.values(this.props.devices).map((device) => {
-                            if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
-                                const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
-
-                                return (
-                                    <CartWaypoint
-                                        x={x}
-                                        y={y}
-                                    />
-                                )
-                            }
-                        })
-                    }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
@@ -865,11 +802,9 @@ const mapStateToProps = function (state) {
         deviceEnabled: false,
         settings: state.settingsReducer.settings,
 
-        devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
-        taskQueue: state.taskQueueReducer.taskQueue,
         showRouteConfirmation: state.tasksReducer.showRouteConfirmation,
 
         selectedStation: state.stationsReducer.selectedStation,
@@ -892,14 +827,15 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {
     return {
+        dispatchGetMaps: () => dispatch(getMaps()),
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
         dispatchPostSettings: (settings) => dispatch(postSettings(settings)),
         dispatchPostLocalSettings: (settings) => dispatch(postLocalSettings(settings)),
 
+        dispatchGetStations: () => dispatch(getStations()),
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
-        dispatchUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 
         dispatchPostPosition: (position) => dispatch(postPosition(position)),
         dispatchSetStationAttributes: (id, attr) => dispatch(setStationAttributes(id, attr)),

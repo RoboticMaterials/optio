@@ -29,15 +29,18 @@ import { postSettings, getSettings } from '../../../../redux/actions/settings_ac
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 
+import { getStations } from '../../../../redux/actions/stations_actions';
+import { getProcesses } from '../../../../redux/actions/processes_actions';
+import { getTasks } from '../../../../redux/actions/tasks_actions';
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
-import { getStatus } from '../../../../redux/actions/status_actions'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
 import { getIsEquivalent } from '../../../../methods/utils/utils'
 import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
+
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
@@ -52,9 +55,11 @@ const Settings = () => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
-    const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
-    const dispatchSetCurrentMap = (mapID) => dispatch(setCurrentMap(mapID))
+
+    const dispatchGetStations = () => dispatch(getStations())
+    const dispatchGetProcesses = () => dispatch(getProcesses())
+    const dispatchGetRoutes = () => dispatch(getTasks())
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -188,7 +193,7 @@ const Settings = () => {
             ...localSettingsState,
             [key]: value,
         }
-        setLocalSettingsState(updatedSettings)
+        return setLocalSettingsState(updatedSettings)
     }
 
 
@@ -198,7 +203,7 @@ const Settings = () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
         await dispatchPostLocalSettings(localSettingsState)
         const serverChange = getIsEquivalent(serverSettingsState, serverSettings)
-        const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
+        const mapChange = localSettingsState.currentMapId !== localSettings.currMapId
         const deviceChange = getIsEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!serverChange) {
@@ -212,7 +217,6 @@ const Settings = () => {
         }
 
         await dispatchGetSettings()
-        await dispatchGetStatus()
         await dispatchGetLocalSettings()
 
         if (!localSettingsState.mapViewEnabled) {
@@ -220,7 +224,9 @@ const Settings = () => {
         }
 
         if (mapChange) {
-            window.location.reload()
+            dispatchGetStations()
+            dispatchGetProcesses()
+            dispatchGetRoutes()
         }
     }
 
@@ -506,6 +512,8 @@ const Settings = () => {
                         onChange={values => {
                             // update current map
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            
+
                         }}
                         className="w-100"
                     />

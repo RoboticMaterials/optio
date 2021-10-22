@@ -14,7 +14,7 @@ import configData from '../../settings/config'
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import actions
-import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings, updateLocalSettingsState } from '../../redux/actions/local_actions'
 import { uuidv4 } from '../../methods/utils/utils'
 
 
@@ -37,6 +37,7 @@ const Authentication = (props) => {
     const [signIn, setSignIn] = useState(true)
     const [forgotPassword, setForgotPassword] = useState(false)
 
+    const dispatchUpdateLocalSettings = (settings) => dispatch(updateLocalSettingsState(settings))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
@@ -62,42 +63,39 @@ const Authentication = (props) => {
 
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
-        const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response =>{
+        if (!configData.authenticationNeeded) {
 
-            if (!configData.authenticationNeeded) {
+            dispatchUpdateLocalSettings({
+                authenticated: 'no'
+            })
 
-                dispatchPostLocalSettings({
-                    ...response,
-                    authenticated: 'no'
-                })
+            
 
-            } else {
-                var poolData = {
-                    UserPoolId: configData.UserPoolId,
-                    ClientId: configData.ClientId,
-                };
+        } else {
+            var poolData = {
+                UserPoolId: configData.UserPoolId,
+                ClientId: configData.ClientId,
+            };
 
-                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-                var cognitoUser = userPool.getCurrentUser();
+            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+            var cognitoUser = userPool.getCurrentUser();
 
-                if (cognitoUser != null) {
-                    cognitoUser.getSession(function (err, session) {
-                        if (err) {
-                            alert(err.message || JSON.stringify(err));
-                            return;
-                        }
+            if (cognitoUser != null) {
+                cognitoUser.getSession(function (err, session) {
+                    if (err) {
+                        alert(err.message || JSON.stringify(err));
+                        return;
+                    }
 
-                        if (session.isValid()) {
-                            dispatchPostLocalSettings({
-                                ...response,
-                                authenticated:true,
-                            })
-                        }
-                    });
-                }
+                    if (session.isValid()) {
+                        dispatchUpdateLocalSettings({
+                            authenticated:true,
+                            idToken: session?.idToken?.jwtToken || null
+                        })
+                    }
+                });
             }
-        })
+        }
     }
 
     return (

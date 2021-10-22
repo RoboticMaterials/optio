@@ -17,7 +17,6 @@ import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_pag
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import actions
-import { postStatus } from '../../redux/actions/status_actions'
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
 
 // Import Utils
@@ -70,9 +69,6 @@ const ListView = (props) => {
 
     const positions = useSelector(state => state.positionsReducer.positions)
     const stations = useSelector(state => state.stationsReducer.stations)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const status = useSelector(state => state.statusReducer.status)
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const settings = useSelector(state => state.settingsReducer.settings)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
@@ -80,7 +76,6 @@ const ListView = (props) => {
 
     const deviceEnabled = settings.deviceEnabled
 
-    const onPostStatus = (status) => dispatch(postStatus(status))
     const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
 
     const [showDashboards, setShowDashboards] = useState(false)
@@ -96,19 +91,6 @@ const ListView = (props) => {
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
-
-    let pause_status = ''
-
-    // If there's no status available then set to blank object.
-    try {
-        pause_status = status?.pause_status;
-    } catch (e) {
-        pause_status = status?.pause_status;
-    }
-
-    // Handles the icon type being displayed based on the pause_status in status
-    var playButtonClassName = "fas fa-";
-    pause_status ? playButtonClassName += 'play' : playButtonClassName += 'pause';
 
     useEffect(() => {
         disableBrowserBackButton()
@@ -208,59 +190,11 @@ const ListView = (props) => {
 
     const onLocationClick = (item) => {
         // If the id is in station that its a station, else its the Mir Dashboard
-        const dashboardID = !!stations[item._id] ? stations[item._id].dashboards[0] : devices[item._id].dashboards[0]
+        const dashboardID = stations[item._id]?.dashboards[0]
         history.push('/locations/' + item._id + '/' + "dashboards/" + dashboardID)
         setShowDashboards(true)
         setTitle(stations[item._id]?.name + ' Dashboard')
     }
-
-    // Handles the play pause button
-    const handleTogglePlayPause = async () => {
-
-        //Flip the status to the opposite of the current value when the button is pressed
-        var status_clone = deepCopy(status);
-        const pause_status = !status_clone.pause_status;
-
-        //Post the status to the API
-        await onPostStatus({ pause_status: pause_status });
-    }
-
-
-    const handleTaskQueueStatus = () => {
-
-        // return (
-        //     <styled.StatusContainer>
-        //         <p>Distance to Station 3 is 30m</p>
-        //     </styled.StatusContainer>
-        // )
-        return Object.values(taskQueue).map((item, ind) => {
-
-            // If the item has an owner that means that task is being executed
-            if (!!item.owner) {
-
-                // If the station is a device and the task q owner is that device then show the status
-                if (!!devices[stationID] && item.owner === devices[stationID]._id) {
-
-                    let locationName = ''
-
-                    if (!!item.custom_task) {
-                        locationName = positions[item.custom_task.position].name
-                    }
-                    else if (!!item.next_position) {
-                        locationName = positions[item.next_position].name
-                    }
-
-                    return (
-                        <styled.StatusContainer>
-                            <p>{`Distance to ${locationName} - ${Math.floor(devices[item.owner].distance_to_next_target)}m`}</p>
-                        </styled.StatusContainer>
-                    )
-
-                }
-            }
-        })
-    }
-
 
     return (
         <styled.Container>
@@ -359,16 +293,6 @@ const ListView = (props) => {
 
                     <styled.Title schema={CURRENT_SCREEN.schema} style={{ userSelect: "none" }} phoneView = {phoneView}>{!showDashboards && title}</styled.Title>
                     {handleTaskQueueStatus()}
-
-                    {!!deviceEnabled &&
-                        <styled.PlayButton
-                            play={pause_status}
-                            windowWidth={windowWidth}
-                            widthBreakPoint={widthBreakPoint}
-                        >
-                            <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
-                        </styled.PlayButton>
-                    }
 
                 </styled.Header>
             </ClickNHold>

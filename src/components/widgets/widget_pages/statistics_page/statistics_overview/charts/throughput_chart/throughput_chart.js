@@ -40,7 +40,6 @@ const ThroughputChart = (props) => {
     } = props;
 
     // redux state
-    const objects = useSelector((state) => state.objectsReducer.objects);
     const cards = useSelector((state) => state.cardsReducer.cards);
     const tasks = useSelector((state) => state.tasksReducer.tasks);
     const productGroups =
@@ -207,28 +206,6 @@ const ThroughputChart = (props) => {
                                 break;
 
                             default:
-                                const currObjectDef = objects[currKey];
-
-                                // object with id was found
-                                if (isObject(currObjectDef)) {
-                                    // get object name
-                                    const {
-                                        name: currObjectName = `Unnamed`,
-                                    } = currObjectDef || {};
-
-                                    // format
-                                    const currObjectNameCapitalized =
-                                        capitalizeFirstLetter(
-                                            currObjectName
-                                        );
-
-                                    onChartKeys(currObjectNameCapitalized);
-                                }
-
-                                // object with id was NOT found
-                                else {
-                                    onDeletedKeys(currKey);
-                                }
                                 break;
                         }
                     }
