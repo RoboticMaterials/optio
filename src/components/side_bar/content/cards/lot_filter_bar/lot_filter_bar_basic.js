@@ -45,7 +45,6 @@ const LotFilterBarBasic = (props) => {
         setSelectedFilterOption,
         shouldFocusLotFilter,
     } = props
-
     // theme
     const themeContext = useContext(ThemeContext)
 
@@ -373,7 +372,6 @@ const LotFilterBarBasic = (props) => {
                                         }}
                                         onChange={(val) => {
                                             // this function updates lot filter value
-
                                             setLotFilterValue(val.map((currItem, currIndex) => {
                                                 const prevValue = isNonEmptyArray(lotFilterValue) ? lotFilterValue[currIndex] : {} // previous value
                                                 return {

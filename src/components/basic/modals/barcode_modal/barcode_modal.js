@@ -42,7 +42,10 @@ const BarcodeModal = (props) => {
 
     useEffect(() => {
       if (!!componentRef.current) {
-        JsBarcode("#barcode", barcodeId)
+        JsBarcode("#barcode", barcodeId, {
+          width: 16,
+          height: 800,
+        })
         setGenerated(true)
       }
   	}, [componentRef.current])
@@ -78,7 +81,7 @@ const BarcodeModal = (props) => {
             </styled.Header>
             <styled.BodyContainer generated = {generated}>
 
-                  <svg
+                  <styled.BarcodeSVG
                     id = "barcode"
                     ref = {componentRef}
                   />

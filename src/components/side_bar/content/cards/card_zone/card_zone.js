@@ -14,6 +14,9 @@ import PropTypes from "prop-types"
 import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 
+//Actions
+import {putCard} from '../../../../../redux/actions/card_actions'
+
 // styles
 import * as styled from "./card_zone.style"
 import { isObject } from "../../../../../methods/utils/object_utils";
@@ -41,13 +44,16 @@ const CardZone = ((props) => {
     } = props
 
     const { height: windowHeight, width: windowWidth } = useWindowDimensions()
+    const dispatch = useDispatch()
 
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
     const showFinish = currentProcess.showFinish === undefined ? true: currentProcess.showFinish
     const showQueue = currentProcess.showQueue === undefined ? true: currentProcess.showQueue
 
+    const dispatchPutCard = (card,cardId) => dispatch(putCard(card, cardId))
     const routes = useSelector(state => { return state.tasksReducer.tasks })
+    const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
     const allCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations })
     const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
@@ -121,6 +127,27 @@ const CardZone = ((props) => {
         setBins(tempBins)
 
     }, [currentProcess, routes])
+
+    ///Remove this once people are switched over. Assigns correct lot template ID and lot number to old cards
+    useEffect(() => {
+      for(const process in allCards){
+        for(const j in allCards[process]){
+          let card = allCards[process][j]
+
+          //find basic lot template id for this process
+          let templatt = Object.values(lotTemplates).find(template => template.name === 'Basic' && template.processId === process)
+          if(!!templatt && card.lotTemplateId === 'BASIC_LOT_TEMPLATE'){
+              let newCard = {
+              ...card,
+              lotTemplateId: templatt._id,
+              lotNum: card.lotNumber
+            }
+            //dispatchPutCard(newCard, card._id)
+          }
+        }
+      }
+
+    }, [])
 
 
     // now that the object keys have been made, loop through the process's cards and add them to the correct bins
@@ -238,7 +265,7 @@ const CardZone = ((props) => {
         // const pathsBoxHeight = 2*Math.max(...currentProcess.flattened_stations.map(node => node.depth))
         // const paths = (
         //     <div style={{zIndex: 1000, background: 'red', width: '400rem', top: 0, left: 0}}>
-        //     {/* <svg style={{background: 'rgba(0,0,0.3,0.3)', position: 'absolute'}} fill='yellow' viewBox={`0 0 ${100*pathsBoxWidth} ${100*pathsBoxHeight}`} width={`${pathsBoxWidth}rem`} height={`${pathsBoxHeight}rem`} > 
+        //     {/* <svg style={{background: 'rgba(0,0,0.3,0.3)', position: 'absolute'}} fill='yellow' viewBox={`0 0 ${100*pathsBoxWidth} ${100*pathsBoxHeight}`} width={`${pathsBoxWidth}rem`} height={`${pathsBoxHeight}rem`} >
         //         {currentProcess.routes.map(routeId => {
         //             const route = routes[routeId];
         //             const loadIdx = currentProcess.flattened_stations.findIndex(node => node.stationID === route.load)
@@ -261,7 +288,7 @@ const CardZone = ((props) => {
 
     return (
         <styled.Container style={{ background: 'white' }}>
-            
+
             <LotQueue
                 setSelectedCards={setSelectedCards}
                 selectedCards={selectedCards}

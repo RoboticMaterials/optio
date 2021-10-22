@@ -50,22 +50,42 @@ const Lot = (props) => {
         lotDisabled,
         isDashboard,
         onDeleteDisabledLot,
+        onRightClickDeleteLot,
+        dragging
     } = props
 
     const themeContext = useContext(ThemeContext)
     // actions
     const dispatch = useDispatch()
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
+    const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
+
 
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
     const [popupOpen, setPopupOpen] = useState(false)
-
+    const [showRightClickMenu, setShowRightClickMenu] = useState(false)
+    const [cardHover, setCardHover] = useState(false)
     useEffect(() => {
         setFormattedLotNumber(formatLotNumber(lotNumber))
     }, [lotNumber])
 
-    const renderTemplateValues = () => {
+
+    useEffect(() => {
+      if(!!cardHover) document.addEventListener('contextmenu', handleLotRightClick)
+      else document.removeEventListener('contextmenu', handleLotRightClick)
+
+      return () => {
+          document.removeEventListener('contextmenu', handleLotRightClick)
+      }
+    }, [cardHover])
+
+    const handleLotRightClick = (e) => {
+      e.preventDefault()
+      setShowRightClickMenu(!showRightClickMenu)
+    }
+
+        const renderTemplateValues = () => {
         return templateValues
             .filter((currItem) => {
                 const {
@@ -154,15 +174,26 @@ const Lot = (props) => {
     const renderFlags = () => {
         return (
           <styled.PartsRow>
-            <LotFlags
-                flags={flags}
-            />
-            {!!lotDisabled && !isDashboard &&
-              <styled.PartContainer
-                onClick = {onDeleteDisabledLot}
-              >
-              <i className = {'fas fa-minus'} style = {{paddingTop: '.25rem'}}/>
-              </styled.PartContainer>
+              <LotFlags
+                  flags={flags}
+              />
+            {!!showRightClickMenu && !isDashboard &&
+              <styled.ColumnContainer disabled = {lotDisabled}>
+                <i
+                 className = {'fas fa-chevron-up'}
+                 style = {{marginBottom: '.3rem', fontSize: '1.2rem', marginLeft: '0.4rem'}}
+                 onClick = {() => {
+                   setShowRightClickMenu(false)
+
+                 }}
+                 />
+                <styled.PartContainer
+                  style = {{paddingBottom: '0.5rem'}}
+                  onClick = {lotDisabled ? onDeleteDisabledLot: onRightClickDeleteLot}
+                >
+                Delete Lot
+                </styled.PartContainer>
+              </styled.ColumnContainer>
             }
 
             </styled.PartsRow>
@@ -172,6 +203,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
             isFocused={isFocused}
@@ -180,6 +212,8 @@ const Lot = (props) => {
             isSelected={isSelected}
             onClick={onClick}
             style={containerStyle}
+            onMouseEnter = {()=>setCardHover(true)}
+            onMouseLeave = {() =>setCardHover(false)}
         >
 
             <styled.HeaderBar>
@@ -195,7 +229,7 @@ const Lot = (props) => {
                         }}
 
                         trigger={open => (
-                            <div>
+                            <div style = {{paddingTop: showRightClickMenu? '0rem' : '0.4rem'}}>
                                 {renderFlags()}
                             </div>
                         )}
@@ -247,10 +281,10 @@ const Lot = (props) => {
                 }
 
                 <styled.NameNumberContainer>
-                    <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
+                    <styled.CardName>{name ? name : lotNumber}</styled.CardName>
 
-                    {name &&
-                        <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
+                    {name && !!lotNumber &&
+                        <styled.LotNumber>{lotNumber}</styled.LotNumber>
                     }
                 </styled.NameNumberContainer>
 

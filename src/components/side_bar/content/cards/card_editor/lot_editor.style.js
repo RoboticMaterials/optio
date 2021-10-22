@@ -32,7 +32,7 @@ export const CloseIcon = styled.i`
   	position: absolute;
     color: ${props => props.theme.bg.quaternary};
     cursor: pointer;
-	
+
 `
 
 export const LotNumberContainer = styled.div`
@@ -78,7 +78,7 @@ export const Title = styled.div`
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
 	font-family: ${props => props.theme.font.primary};
-	
+
 `
 export const TitleText = styled.span`
 
@@ -103,7 +103,7 @@ export const SectionContainer = styled.div`
   //padding: 0 1rem;
   flex: 1;
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
 `
 
 export const TheBody = styled.div`
@@ -111,7 +111,7 @@ export const TheBody = styled.div`
   overflow: auto;
   flex: 1;
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
 
 `
 
@@ -123,7 +123,7 @@ export const ScrollContainer = styled.div`
   //height: 50rem;
   flex-direction: column;
   //background: blue;
-  
+
 
 `
 
@@ -146,16 +146,16 @@ export const ProcessOptionsContainer = styled.div`
   overflow-x: auto;
   overflow-y: hidden;
   position: relative;
-  
-  
-  box-shadow: ${props => props.hasError && "0 0 5px red"}; 
 
-  background: ${props => props.theme.bg.primary}; 
+
+  box-shadow: ${props => props.hasError && "0 0 5px red"};
+
+  background: ${props => props.theme.bg.primary};
   padding: 1rem;
   border-radius: 1rem;
-  
+
   padding-bottom: 1rem;
-  
+
   ::-webkit-scrollbar {
     height: 10px;
   }
@@ -195,40 +195,40 @@ export const ProcessOption = styled.div`
 	&:hover {
 		cursor: pointer;
 	}
-	
+
 	text-shadow: 0.05rem 0.05rem 0.2rem #303030;
 	&:hover {
 		cursor: pointer;
 		filter: brightness(140%);
 	}
-	
+
 	&:active{
 		filter: brightness(85%);
 		text-shadow: none;
 	}
-  
+
   	background: ${props => props.theme.bg.senary};
-	
+
   	padding: 1rem;
 	border-radius: 1rem;
   	margin-right: 1rem;
-  
+
 	min-width: 10rem;
 	max-width: 10rem;
 	width: 10rem;
-	
+
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	
+
 	${props => (!props.isSelected && props.containsSelected) && "filter: grayscale(50%)"};
 	${props => props.isSelected && "filter: brightness(130%)"};
 	transition: all 0.5s ease;
-	
+
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.normal};
 	font-family: ${props => props.theme.font.primary};
-  
+
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -249,7 +249,7 @@ const mainCss = css`
 	// overflow-x: hidden;
 	border-radius: .5rem;
 	position: relative;
-	
+
 	overflow: hidden;
 	background: ${props => props.theme.bg.primary};
 	flex: 1;
@@ -258,7 +258,7 @@ const mainCss = css`
 
 export const StyledForm = styled(Form)`
     ${mainCss};
-  
+
 	transition: all .5s ease;
 	filter: ${props => props.loading && "blur(5px)"};
 `;
@@ -295,11 +295,11 @@ export const BodyContainer = styled.div`
   background: ${props => props.theme.bg.primary};
 	padding: 1rem;
   align-self: stretch;
-  
+
 	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
-  
+
 `
 
 export const WidgetContainer = styled.div`
@@ -309,7 +309,7 @@ export const WidgetContainer = styled.div`
 	font-size: 1.4rem;
 	justify-content: center;
 	cursor: pointer;
-	
+
 	${rowCss};
 `
 
@@ -391,8 +391,8 @@ export const DatesContainer = styled.span`
 	border-radius: 1rem;
   width: fit-content;
   margin: 0;
-	
-	
+
+
 	//${rowCss};
 `
 
@@ -401,15 +401,15 @@ export const DateItem = styled.div`
 	flex-direction: column;
 	background: ${props => props.theme.bg.secondary};
 	border-radius: 1rem;
-	
+
 	padding: .5rem;
 	align-items: center;
 	justify-content: center;
-	
+
 	&:hover {
 		cursor: pointer;
 	}
-	
+
 `
 
 export const ErrorTooltipContainer = styled.div`
@@ -491,13 +491,13 @@ const fieldValueCss = css`
   font-family: ${props => props.theme.font.primary};
   font-weight: bold;
   white-space: nowrap;
-  
+
   flex-grow: 1;
   color: ${props => props.theme.textColor};
 
   /* box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important; */
   /* border-bottom: 2px solid ${props => props.theme.bg.secondary}; */
-  
+
   cursor: default;
   display: flex;
   align-items: center;
@@ -511,7 +511,7 @@ export const LotName = styled.span`
 
 export const LotNumber = styled.div`
 	${fieldValueCss};
-	
+
 	padding: 0 2rem;
 `
 
@@ -519,7 +519,7 @@ export const TemplateButton = styled.button`
   ${iconButtonCss};
   ${commonClickableIcon};
   font-size: 2.5rem;
-  
+
 `
 
 export const PasteIcon = styled.button`
@@ -539,20 +539,20 @@ export const PasteIcon = styled.button`
 	  opacity: 1;
       filter: brightness(120%);
     }
-	
+
 	100% {
       opacity: 0.5;
 	}
-	
+
   }
-  
+
 `
 
 
 
 export const CalendarContainer = styled.div`
 	overflow: auto;
-	
+
 	${rowCss};
 `
 export const PopupFooter = styled.div`
@@ -579,7 +579,7 @@ export const SubHeader = styled.div`
   background: ${props => props.theme.bg.primary};
   padding: 0.5rem;
   border-bottom: 3px solid ${props => props.theme.bg.secondary};
-  
+
 `
 export const IconRow = styled.div`
   ${rowCss2};
@@ -594,9 +594,9 @@ export const ColumnContainer = styled.div`
   flex-direction: column;
   flex: 1;
   align-self: stretch;
-  
+
 	// margin-bottom: 1rem;
-  
+
 `
 
 export const FadeLoaderCSS = css`
@@ -659,8 +659,8 @@ export const HistoryDateText = styled.span`
 export const HistoryUserContainer = styled.div`
 	${historyContainerCommon};
 	// display: inline-flex;
-	
-	
+
+
 `
 export const HistoryUserText = styled.span`
 	${textCommon};
@@ -676,7 +676,7 @@ export const HistoryInfoContainer = styled.div`
 	flex: 2;
 	align-items: flex-start;
 	margin: 0 1rem 0 1rem;
-	
+
 `
 
 export const HistoryInfoText = styled.span`
@@ -720,26 +720,26 @@ export const buttonGroupContainerCss = css`
 	padding: 0;
 	//margin: 0 0 1rem 0;
   width: fit-content;
-  
-	
+
+
 `
 
 
 export const buttonCss = css`
 	margin: 0;
 	padding: 0;
-  
-	
+
+
 	&:focus{
 	}
-	
+
 	&:active{
 	}
-	
+
 	&:hover{
 		cursor: default;
 	}
-	
+
 `
 
 export const TemplateNameContainer = styled.div`
@@ -769,5 +769,3 @@ export const Sync = styled(SyncIcon)`
   color: ${props => props.sync ? "#00d6d0" : "#d1d1d1"};
   transition: all 2s ease;
 `
-
-

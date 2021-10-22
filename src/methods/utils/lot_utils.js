@@ -214,7 +214,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
         //  lot number (treated as string when formatted)
         case LOT_FILTER_OPTIONS.lotNumber.label: {
             if (filterValue) {
-                const formattedLotNumber = formatLotNumber(lot.lotNumber)
+                const formattedLotNumber = formatLotNumber(lot.lotNum)
                 return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
             }
             return true
@@ -373,7 +373,7 @@ export const getLotField = (searchKey, searchValue, lot) => {
 
 export const formatLotNumber = (lotNumber) => {
     return (isString(lotNumber) || Number.isInteger(lotNumber)) ?
-        `RM-${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
+        `${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
         :
         ``
 }
@@ -491,11 +491,9 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
     const currentDashboard = dashboards[dashboardID]
-
     let customFieldValues = []
 
     const { syncWithTemplate } = lot || {}
-
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
@@ -504,9 +502,10 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
             const {
               fieldName,
               dataType,
-              _id
+              _id,
+              component,
             } = field
-            if(lot.lotTemplateId===template){
+            if((lot.lotTemplateId===template && component!=='INPUT_BOX') || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
                 fieldName,
@@ -1033,43 +1032,56 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
       let tempBin,
         currentBin = bins[unloadStationId];
       let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
-      if (!!currentBin) {
-        // The Bin for the destination already exists, update quantities
+      if(!traveledRoute){ //This handles dragging lot back into merge station. Just add to existing qty and keep excess parts the same
+        let totalQuantity = !!bins[unloadStationId]?.count
+          ? bins[unloadStationId].count + quantity
+          : quantity;
 
-        let existingQuantity = !!currentBin[traveledRoute._id]
-
-
-          ? currentBin[traveledRoute._id]
-          : 0;
-        tempBin = {
+        bins[unloadStationId] = {
           ...bins[unloadStationId],
-          [traveledRoute._id]: (existingQuantity += quantity),
+          count: totalQuantity,
         };
-
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
-      } else {
-        // The Bin for the destination does not exist, create is here
-
-        tempBin = {
-          [traveledRoute._id]: quantity,
-          count: 0
-        };
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
       }
+      else{
+        if (!!currentBin) {
+          // The Bin for the destination already exists, update quantities
+
+          let existingQuantity = !!currentBin[traveledRoute._id]
+
+
+            ? currentBin[traveledRoute._id]
+            : 0;
+          tempBin = {
+            ...bins[unloadStationId],
+            [traveledRoute._id]: (existingQuantity += quantity),
+          };
+
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        } else {
+          // The Bin for the destination does not exist, create is here
+
+          tempBin = {
+            [traveledRoute._id]: quantity,
+            count: 0
+          };
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        }
+      }
+
     } else {
       // Only one route enters station, don't worry about tracking parts at the station
       let totalQuantity = !!bins[unloadStationId]?.count
