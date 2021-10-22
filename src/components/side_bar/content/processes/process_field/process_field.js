@@ -59,7 +59,6 @@ export const ProcessField = (props) => {
         if (!isEmpty(currError)) errorCount++
     }) // get number of field errors
     const touchedCount = Object.values(touched).length // number of touched fields
-    console.log('ERR', errors)
     const submitDisabled = ((errorCount > 0)|| isSubmitting || !values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
