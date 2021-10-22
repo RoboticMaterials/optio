@@ -108,8 +108,6 @@ export class MapView extends Component {
 
       var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
 
-      console.log(this.props.localSettings.currentMapId, this.state.currentMap, this.props.maps)
-
       if (!!currentMap) {
         this.setState({currentMap: currentMap})
       } else if (!this.state.currentMap && this.props.localSettings.currentMapId === null && this.props.maps.length > 0) {
@@ -197,6 +195,21 @@ export class MapView extends Component {
         //   if(!this.props.editingStation && !this.props.hoveringInfo){
         //     this.props.dispatchSetSelectedStation(null)
         //   }
+    }
+
+    componentWillUnmount = () => {
+        window.removeEventListener('mousedown', () => this.mouseDown = true, { passive: false })
+        window.removeEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
+        window.removeEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
+
+        // Event listener that will recalculate the map geometry when the screen size changes
+        window.removeEventListener('resize', () => {
+            //this.calculateD3Geometry()
+            this.bindZoomListener()
+        }, { passive: false })
+
+        document.removeEventListener("dragend", this.validateNewLocation)
+        this.unbindZoomListener()
     }
 
 

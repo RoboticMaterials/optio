@@ -249,7 +249,7 @@ const ProcessForm = (props) => {
 				broken: selectedProcess ? selectedProcess.broken : false,
 				new: selectedProcess.new,
 				map_id: currentMapId,
-				startDivergeType: selectedProcess.new ? false: selectedProcess.startDivergeType,
+				startDivergeType: selectedProcess.new ? null: selectedProcess.startDivergeType,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
 				showQueue: selectedProcess.new || selectedProcess.showQueue === undefined ? true: selectedProcess.showQueue,
 				showFinish: selectedProcess.new || selectedProcess.showFinish === undefined ? true: selectedProcess.showFinish,

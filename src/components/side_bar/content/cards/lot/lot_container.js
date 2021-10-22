@@ -38,6 +38,7 @@ const LotContainer = (props) => {
     useSelector((state) => {
       return state.cardsReducer.cards[lotId];
     }) || {};
+  const stations = useSelector(state => state.stationsReducer.stations)
   const {
     bins,
     lotNumber,
@@ -110,7 +111,7 @@ const LotContainer = (props) => {
                           lotNumber={lotNumber}
                           flags={flags || []}
                           enableFlagSelector={enableFlagSelector}
-                          name={name + ` (${routes[routeId]?.part})`}
+                          name={name + ` (${stations[routes[routeId]?.load]?.name})`}
                           count={quantity}
                           id={lotId}
                           isSelected={false}

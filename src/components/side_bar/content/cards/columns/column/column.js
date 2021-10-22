@@ -444,7 +444,7 @@ const Column = ((props) => {
 																			// processName={processName}
 																			totalQuantity={totalQuantity}
 																			lotNumber={lotNumber}
-																			name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																			name={isPartial ? name + ` (${stations[routes[part]?.load]?.name})` : name}
 																			count={isPartial ? partBins[part] : partBins['count']}
 																			leadTime={leadTime}
 																			id={cardId}

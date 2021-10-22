@@ -20,8 +20,8 @@ const RatsNest = (props) => {
     return (
         <>
             {!editingStation && !editingPosition &&
-                mapProcesses.filter(process => !selectedProcess || selectedProcess._id !== process._id).map(process => process.routes.map(route => (
-                    <RatsnestPath key={`ratsnest-${route._id}`} route={route} d3Scale={d3Scale} id={`ratsnest-path-${route._id}`}/>
+                mapProcesses.filter((process) => !selectedProcess || selectedProcess._id !== process._id).map((process, i) => process.routes.map((route,j) => (
+                    <RatsnestPath key={`ratsnest-${i}-${j}`} route={route} d3Scale={d3Scale} id={`ratsnest-path-${route._id}`}/>
                 )))
             }
         </>
