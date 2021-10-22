@@ -144,7 +144,7 @@ const Column = ((props) => {
 			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
 
 			let startNodes = findProcessStartNodes(processRoutes, stations)
-			let endNodes = findProcessEndNodes(processRoutes)
+			let endNode = findProcessEndNodes(processRoutes)
 
 			if (oldProcessId !== processId) return false
 			if(!!showCardEditor) return false
