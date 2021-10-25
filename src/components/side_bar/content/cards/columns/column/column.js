@@ -122,7 +122,7 @@ const Column = ((props) => {
 
 	useEffect(() => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
-			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
+			let [accDrop, id] = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
 			setAcceptDrop(accDrop)
 		}
 		if(!draggingLotId) setHighlightStation(null)
@@ -145,8 +145,8 @@ const Column = ((props) => {
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNodes(processRoutes)
 
-			if (oldProcessId !== processId) return false
-			if(!!showCardEditor) return false
+			if (oldProcessId !== processId) return [false, lastStationTraversed]
+			if(!!showCardEditor) return [false, lastStationTraversed]
 			//if (process[oldProcessId] === undefined) return false
 
 		 	if(binId === station_id) {
@@ -369,7 +369,6 @@ const Column = ((props) => {
 	}
 
 	const handleDrop = async () => {
-		if(draggingStationId!==dragFromBin){
 			let [inDropZne, lastStn] = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
 
 			if(!!inDropZne){
@@ -405,11 +404,6 @@ const Column = ((props) => {
 						})
 				}
 			}
-		}
-		else{
-			dispatchSetDraggingLotId(null)
-			dispatchSetDragFromBin(null)
-		}
 	}
 
 	const renderCards = () => {
@@ -420,7 +414,7 @@ const Column = ((props) => {
 
 				 }}
 
-				 onDragOver = {(e)=>{
+				 onDragOver = {(e) => {
 					 dispatchSetDraggingStationId(station_id)
 					 if(!!acceptDrop){
 						 setInDropZone(true)
@@ -494,7 +488,11 @@ const Column = ((props) => {
 																			dispatchSetDragFromBin(station_id)
 																		}}
 																		onDragEnd = {(e)=>{
-																			handleDrop()
+																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
+																			else{
+																				dispatchSetDraggingLotId(null)
+																				dispatchSetDragFromBin(null)
+																			}
 																			e.target.style.opacity = '1'
 																		}}
 
