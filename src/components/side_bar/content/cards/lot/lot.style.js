@@ -17,7 +17,6 @@ export const Container = styled.div`
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
   color: ${props => props.theme.bg.octonary};
-
   outline: none;
   &:focus {
       outline: none;
@@ -30,7 +29,7 @@ export const Container = styled.div`
   border: 0.1rem solid transparent;
   border-radius: 1rem;
   cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
-  pointer-events: ${props => !!props.disabled ? 'auto' : 'auto'};
+  pointer-events: ${props => !!props.isDashboard && !!props.disabled ? 'none' : 'auto'};
   box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.2);
   &:active{
         box-shadow: none;

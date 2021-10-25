@@ -461,7 +461,7 @@ export const doRoutesConverge = (routes) => {
  * @param {Array} stations
  * @returns
  */
-export const findProcessStartNodes = (processRoutes, stations) => { 
+export const findProcessStartNodes = (processRoutes, stations) => {
     if (processRoutes.length === 0) return [];
     let loadStations = processRoutes.map((route) =>
         !!route ? route.load : {}
@@ -631,6 +631,7 @@ export const handleMergeExpression = (stationId, process, routes, stations, clea
                     }
                 }
 
+
                 sExpressionCopy[entryIdx] = cleanExpression(sExpressionCopy[entryIdx]);
                 
                 
@@ -696,7 +697,7 @@ export const handleMergeExpression = (stationId, process, routes, stations, clea
     const cleanedExpression = cleanExpression(startRouteExpression)
 
     
-    console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(cleanedExpression))
+    //console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(cleanedExpression))
     
     return cleanedExpression;
 };
