@@ -122,7 +122,7 @@ const Column = ((props) => {
 
 	useEffect(() => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
-			let [accDrop, id] = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
+			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
 			setAcceptDrop(accDrop)
 		}
 		if(!draggingLotId) setHighlightStation(null)
@@ -155,7 +155,7 @@ const Column = ((props) => {
 			}
 
 			const forwardsTraverseCheck = (currentStationID) => {
-				if(endNode === currentStationID && station_id =='FINISH'){//If you can traverse to the end node, also allow finish column
+				if(endNode.includes(currentStationID) && station_id =='FINISH'){//If you can traverse to the end node, also allow finish column
 					setHighlightStation(true)
 					return true
 				}
@@ -201,7 +201,7 @@ const Column = ((props) => {
 				}
 
 				else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
-					if(endNode === station_id){
+					if(endNode.includes(station_id)){
 							setHighlightStation(true)
 							return true
 						}
@@ -209,6 +209,7 @@ const Column = ((props) => {
 						const canMove = backwardsTraverseCheck(endNode)
 						if(!!canMove) return true
 					}
+
 				}
 
 				const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
@@ -237,6 +238,8 @@ const Column = ((props) => {
 
 			const backwardsFound = backwardsTraverseCheck(binId)
 			if(!!backwardsFound) return [true, lastStationTraversed]
+
+			return [false, lastStationTraversed]
 
 	}
 
@@ -403,6 +406,10 @@ const Column = ((props) => {
 							dispatchSetDragFromBin(null)
 						})
 				}
+			}
+			else{
+				dispatchSetDraggingLotId(null)
+				dispatchSetDragFromBin(null)
 			}
 	}
 
