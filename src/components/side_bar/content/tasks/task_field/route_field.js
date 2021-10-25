@@ -126,13 +126,9 @@ const TaskField = (props) => {
 
     useEffect(() => {
 
-        console.log("RECALC")
-
       for(const ind in values.routes){
         if(values.routes[ind]._id === selectedRoute?._id){
-            console.log("in1", ind, selectedRoute, values.routes[ind])
           if(selectedRoute.unload!== values.routes[ind].unload || selectedRoute.load!==values.routes[ind].load){
-              console.log("in2")
             setFieldValue(`routes[${ind}].unload`, selectedRoute.unload);
             setFieldValue(`routes[${ind}].load`, selectedRoute.load);
           }
