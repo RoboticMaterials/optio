@@ -41,7 +41,7 @@ const PasteMapper = (props) => {
     } = formikProps;
 
     const [table, setTable] = useState(values.table)
-    const [fieldMapping, setFieldMapping] = useState([])
+    const [fieldMapping, setFieldMapping] = useState(new Array(availableFields.length).fill(null))
 
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
@@ -58,55 +58,70 @@ const PasteMapper = (props) => {
 
     const renderColumnDropdown = ({ column }) => {
 
-        const unusedFields = availableFields.map(field => {
+        const unusedFields = availableFields.map(availField => {
 
             let disabled = false;
-            if (!!lotTemplate?.uploadFieldMapping) {
-                const usedValueIndex = lotTemplate.uploadFieldMapping.findIndex((fieldDName, ind) => fieldDName === field.displayName && ind !== column)
-                if (usedValueIndex !== -1 && usedValueIndex < table[0].length) {
-                    disabled = true
-                }
+
+            const usedValueIndex = fieldMapping.findIndex((field, ind) => field?.displayName === availField.displayName && ind !== column)
+            if (usedValueIndex !== -1 && usedValueIndex < table[0].length) {
+                disabled = true
             }
+
             return {
-                ...field,
+                ...availField,
                 disabled,
             }
 
         })
 
-        const savedDName = (!!lotTemplate?.uploadFieldMapping ? lotTemplate.uploadFieldMapping[column] : null)
+        const savedDName = (fieldMapping[column]?.displayName || null)
         const savedValue = !!savedDName ? [unusedFields.find(field => field.displayName === savedDName)] : []
 
         return (
             <td style={{minWidth: '4rem'}}>
-                <DropDownSearch
-                    placeholder="Column Field"
-                    labelField="displayName"
-                    valueField="displayName"
-                    options={unusedFields}
-                    disabledLabel={''}
-                    values={savedValue}
-                    dropdownGap={2}
-                    schema={'lots'}
-                    noDataLabel="No matches found"
-                    closeOnSelect="true"
-                    searchable={false}
-                    onChange={values => {
-                        // Save this value locally to be used when creating the payload
+                <ContextMenuTrigger id={`context-menu-column-${column}`}>
+                    <DropDownSearch
+                        placeholder="Column Field"
+                        labelField="displayName"
+                        valueField="displayName"
+                        options={unusedFields}
+                        disabledLabel={''}
+                        values={savedValue}
+                        dropdownGap={2}
+                        schema={'lots'}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        searchable={false}
+                        onClick={() => console.log("CLICK")}
+                        onChange={values => {
+                            // Save this value locally to be used when creating the payload
+                            let fieldMappingCopy = deepCopy(fieldMapping)
+                            fieldMappingCopy[column] = values[0]
+                            setFieldMapping(fieldMappingCopy)
+
+                            // Save this value in the product group template for next time you paste
+                            let lotTemplateCopy = deepCopy(lotTemplate)
+                            lotTemplateCopy.uploadFieldMapping[column] = values[0].displayName
+                            dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                        }}
+                        className="w-100"
+                    />
+                </ContextMenuTrigger>
+
+                <ContextMenu id={`context-menu-column-${column}`}>
+                    <MenuItem onClick={() => {
                         let fieldMappingCopy = deepCopy(fieldMapping)
-                        fieldMappingCopy[column] = values[0]
+                        fieldMappingCopy[column] = null
                         setFieldMapping(fieldMappingCopy)
 
                         // Save this value in the product group template for next time you paste
                         let lotTemplateCopy = deepCopy(lotTemplate)
-                        if (lotTemplateCopy.uploadFieldMapping === undefined) { // If mapping does not exist yet, create it
-                            lotTemplateCopy.uploadFieldMapping = new Array(availableFields.length).fill(null);
-                        }
-                        lotTemplateCopy.uploadFieldMapping[column] = values[0].displayName
+                        lotTemplateCopy.uploadFieldMapping[column] = null
                         dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-                    }}
-                    className="w-100"
-                />
+                    }}>
+                        Clear
+                    </MenuItem>
+                </ContextMenu>
             </td>
         )
     }
@@ -159,7 +174,7 @@ const PasteMapper = (props) => {
 
     const Table = useMemo(() => {
         return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel}/>
-    }, [table])
+    }, [table, fieldMapping])
 
     return (
         <styled.Container>
