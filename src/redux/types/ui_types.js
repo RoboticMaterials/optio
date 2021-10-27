@@ -6,3 +6,4 @@ export const LOT_HOVERING = 'LOT_HOVERING'
 export const SET_SIZE = "SET_SIZE"
 export const DRAGGING_STATION_ID = "DRAGGING_STATION_ID"
 export const DRAG_FROM_BIN = "DRAG_FROM_BIN"
+export const LOT_DIV_HEIGHT = 'LOT_DIV_HEIGHT'

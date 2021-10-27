@@ -9,7 +9,8 @@ import {
 	setLotHovering,
 	setDraggingLotId,
 	setDraggingStationId,
-	setDragFromBin
+	setDragFromBin,
+	setLotDivHeight,
 } from "../../../../../../redux/actions/card_page_actions";
 
 // components external
@@ -54,6 +55,7 @@ const Column = ((props) => {
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 	const draggingStationId = useSelector(state => state.cardPageReducer.draggingStationId) || null
+	const lotDivHeight = useSelector(state => state.cardPageReducer.lotDivHeight) || null
 	const dragFromBin = useSelector(state => state.cardPageReducer.dragFromBin) || null
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
@@ -63,10 +65,12 @@ const Column = ((props) => {
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
-
 	// actions
+	const lotRef = useRef(null)
+	const dragContainerRef = useRef(null)
 	const dispatch = useDispatch()
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const dispatchSetLotDivHeight = (height) => dispatch(setLotDivHeight(height))
 	const dispatchSetDroppingLotId = async (lotId, binId) => await dispatch(setDroppingLotId(lotId, binId))
 	const dispatchSetLotHovering = async (lotId) => await dispatch(setLotHovering(lotId))
 	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
@@ -422,6 +426,7 @@ const Column = ((props) => {
 				 }}
 
 				 onDragOver = {(e) => {
+					 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight + 4) + 'rem'
 					 dispatchSetDraggingStationId(station_id)
 					 if(!!acceptDrop){
 						 setInDropZone(true)
@@ -431,19 +436,22 @@ const Column = ((props) => {
 				 onDragLeave={(e) => {
 						 setInDropZone(false)
 						 dispatchSetDraggingStationId(null)
+						 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight -0.5) + 'rem'
 				 }}
 					>
 					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
 						<styled.DragToDiv
+						ref = {dragContainerRef}
+						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-0.5) + 'rem' : '10rem'}
 						className = 'dragToDiv'
 						onDragOver={(e) => {
 							if(e.target.className.includes('dragToDiv')){
-								e.target.style.minHeight = '18rem'
+								//e.target.style.minHeight = (lotDivHeight + 4) + 'rem'
 							}
 						}}
 						onDragLeave={(e) => {
 								if(!!inDropZone){
-								 e.target.style.minHeight = '10rem'
+									//e.target.style.minHeight = (lotDivHeight - 0.5) + 'rem'
 								}
 						}}
 						/>
@@ -485,11 +493,13 @@ const Column = ((props) => {
 
 																	<styled.LotDiv
 																		id = 'item'
+																		ref = {lotRef}
 																		class = 'item'
 																		draggable = {true}
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
+																			dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
 																			e.target.style.opacity = '.001'
 																			dispatchSetDraggingLotId(cardId)
 																			dispatchSetDragFromBin(station_id)
