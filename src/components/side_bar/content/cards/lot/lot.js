@@ -41,6 +41,7 @@ const Lot = (props) => {
         enableFlagSelector,
         onClick,
         count,
+        loopCount,
         containerStyle,
         selectable,
         isSelected,
@@ -280,11 +281,18 @@ const Lot = (props) => {
 
                 }
 
+                {!!loopCount &&
+                    <styled.LoopIndicator>
+                        <styled.LoopIcon className="fas fa-redo-alt"/>
+                        <styled.LoopCount>{loopCount}</styled.LoopCount>
+                    </styled.LoopIndicator>
+                }
+
                 <styled.NameNumberContainer>
                     <styled.CardName>{name ? name : lotNumber}</styled.CardName>
 
                     {name && !!lotNumber &&
-                        <styled.LotNumber>{lotNumber}</styled.LotNumber>
+                        <styled.LotNumber>#{lotNumber}</styled.LotNumber>
                     }
                 </styled.NameNumberContainer>
 

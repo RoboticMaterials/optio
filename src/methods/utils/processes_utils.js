@@ -696,13 +696,15 @@ export const handleMergeExpression = (stationId, process, routes, stations, clea
     const cleanedExpression = cleanExpression(startRouteExpression)
 
     
-    console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(cleanedExpression))
+    // console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(cleanedExpression))
     
     return cleanedExpression;
 };
 
-export const getNodeIncoming = (node, processRoutes) => {
-    return processRoutes.filter((route) => route.unload === node);
+export const getNodeIncoming = (node, processRoutes, filterLoopRoutes=false) => {
+    return processRoutes.filter((route) => {
+        return route.unload === node && (!filterLoopRoutes || !isLoopingRoute(route._id, processRoutes))
+    });
 };
 
 export const getNodeOutgoing = (node, processRoutes) => {
@@ -724,22 +726,25 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     const DFS = (node, routes, depth) => {
 
-        const incomingRoutes = getNodeIncoming(node, routes);
+        const incomingRoutes = getNodeIncoming(node, routes, true);
         const nonTraversedIncomingRoutes = incomingRoutes.filter(route => traveresedRoutes[route._id] === false)
 
         if (nonTraversedIncomingRoutes.length === 0) { // youve traversed all incoming routes, now add this station
             if (incomingRoutes.length > 1) { // This station was a merge node, that means move up one in depth
                 depth--;
             }
-            flattenedStations.push({
-                depth,
-                stationID: node
-            })
-        } else if (incomingRoutes.length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
+            if (flattenedStations.find(({stationID}) => stationID === node) === undefined) {
+                flattenedStations.push({
+                    depth,
+                    stationID: node
+                })
+            }
+            
+        } else if (incomingRoutes.filter(inRoute => !isLoopingRoute(inRoute._id, processRoutes)).length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
             return
         }
 
-        const outgoingRoutes = getNodeOutgoing(node, routes);
+        const outgoingRoutes = getNodeOutgoing(node, routes).filter(outgoingRoute => !traveresedRoutes[outgoingRoute._id]);
         if (outgoingRoutes.length > 1) { // This is a diverging node, move down in depth
             depth++;
         }
@@ -773,4 +778,132 @@ export const flattenProcessStations = (processRoutes, stations) => {
     return flattenedStations;
 
 
+}
+
+const DFSFindCycleRoute = (routeId, routes, stack) => {
+
+    let node = stack[stack.length-1];
+    let outgoingRoutes = getNodeOutgoing(node, routes);
+
+    for (var outgoingRoute of outgoingRoutes) {
+        let nextNode = outgoingRoute.unload;
+        if (stack.includes(nextNode)) {
+            if (outgoingRoute._id === routeId) {
+                return true;
+            } else {
+                continue
+            }
+        }
+        let nextStack = deepCopy(stack);
+        nextStack.push(nextNode);
+        if (DFSFindCycleRoute(routeId, routes, nextStack)) return true
+    }
+
+    return false
+
+}
+
+export const isLoopingRoute = (routeId, processRoutes) => {
+
+    const startNodes = findProcessStartNodes(processRoutes);
+
+    for (var startNode of startNodes) {
+        let stack = [startNode];
+        if (DFSFindCycleRoute(routeId, processRoutes, stack)) return true
+        
+    }
+    return false
+
+}
+export const isStationOnBranch = (currentStationId, stationId, process, processRoutes, stations, setHighlightStation=()=>{}, setLastStationTraversed=()=>{}) => {
+
+    if(currentStationId === stationId) {
+        return true
+    }
+
+    let startNodes = findProcessStartNodes(processRoutes, stations)
+    let endNode = findProcessEndNodes(processRoutes)
+
+    
+    const forwardsTraverseCheck = (currentStationID) => {
+        if(endNode === currentStationID && stationId =='FINISH'){//If you can traverse to the end node, also allow finish column
+            setHighlightStation(true)
+            return true
+        }
+        else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
+            //if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
+            if(startNodes.includes(stationId)){
+                setHighlightStation(true)
+                return true
+            }
+            else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
+                for(const ind in startNodes){
+                    const canMove = forwardsTraverseCheck(startNodes[ind])
+                    if(!!canMove) return true
+                }
+            }
+        }
+        const nextRoutes = processRoutes.filter(route => route.load === currentStationID)
+        if(!!nextRoutes[0] && (!nextRoutes[0].divergeType || nextRoutes[0].divergeType!=='split')){//can't drag forward if station disperses lots
+            for(const ind in nextRoutes){
+                if(nextRoutes[ind].unload === stationId){
+                    //If you are skipping over nodes and drag to a merge station we need to keep track of the station right before
+                    //the merge station as merge functions need this to find routeTravelled
+                    setLastStationTraversed(nextRoutes[ind].load)
+                    setHighlightStation(true)
+                    return true
+                }
+                else{
+                    const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
+                    if(mergingRoutes.length === 1){
+                        const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
+                        if(!!canMove) return true
+                    }
+                }
+            }
+        }
+    }
+
+    const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
+        if(startNodes.includes(currentStationID) && stationId === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
+            setHighlightStation(true)
+            return true
+
+        }
+
+        else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
+            if(endNode === stationId){
+                    setHighlightStation(true)
+                    return true
+                }
+            else{
+                const canMove = backwardsTraverseCheck(endNode)
+                if(!!canMove) return true
+            }
+        }
+
+        const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
+        if(mergingRoutes.length===1){//Can't drag backwards from merge station
+            for(const ind in mergingRoutes){
+                const dispersingRoutes = processRoutes.filter((route) => route.load === mergingRoutes[ind].load);
+                if(mergingRoutes[ind].load === stationId) {
+                    if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
+                        setHighlightStation(true)
+                        return true
+                    }
+                }
+                else{
+                        if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
+                            const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
+                            if(!!canMove) return true
+                        }
+                    }
+                }
+            }
+        }
+
+    const forwardsFound = forwardsTraverseCheck(currentStationId)
+    if(!!forwardsFound) return true
+    const backwardsFound = backwardsTraverseCheck(currentStationId)
+    if(!!backwardsFound) return true
 }

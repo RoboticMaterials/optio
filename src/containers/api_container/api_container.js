@@ -30,10 +30,7 @@ import { getIsEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
-import { getMap } from '../../api/map_api';
-import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
-import { getReportEvents } from "../../redux/actions/report_event_actions";
 import { mapValues } from 'lodash';
 
 const ApiContainer = (props) => {
@@ -45,11 +42,8 @@ const ApiContainer = (props) => {
     const onGetDashboards = async () => await dispatch(getDashboards())
     const onGetTasks = async () => await dispatch(getTasks())
     const onGetLotTemplates = () => dispatch(getLotTemplates())
-
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
-    // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
-
     const onGetProcesses = () => dispatch(getProcesses());
 
     const onGetSettings = () => dispatch(getSettings())
@@ -68,30 +62,19 @@ const ApiContainer = (props) => {
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiError, setApiError] = useState(false)
-    const [pageDataInterval, setPageDataInterval] = useState(null)
+
+    const [pageDataIntervals, setPageDataIntervals] = useState([])
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
-    const [mapDataInterval, setMapDataInterval] = useState(null)
 
     const params = useParams()
 
     useEffect(() => {
         loadInitialData() // initial call to load data when app opens
 
-        // this interval is always on
-        // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
-
-
-        if (!!mapViewEnabled) {
-            setMapDataInterval(setInterval(() => loadMapData(), 10000));
-        }
-
-
         return () => {
             // clear intervals
-            clearInterval(pageDataInterval);
+            pageDataIntervals.forEach(interval => clearInterval(interval))
             clearInterval(criticalDataInterval);
-            //clearInterval(mapDataInterval)
         }
     }, [])
 
@@ -99,8 +82,7 @@ const ApiContainer = (props) => {
     useEffect(() => {
         if (stopAPICalls === true) {
             clearInterval(criticalDataInterval);
-            clearInterval(pageDataInterval);
-            clearInterval(mapDataInterval);
+            pageDataIntervals.forEach(interval => clearInterval(interval))
             //dispatchStopAPICalls(false)
         }
     }, [stopAPICalls])
@@ -166,7 +148,7 @@ const ApiContainer = (props) => {
      * Handles data interval based on page
      */
 
-    const setDataInterval = (pageParams) => {
+    const setDataInterval = async (pageParams) => {
         let pageName = ''
         const {
             data1,
@@ -175,76 +157,49 @@ const ApiContainer = (props) => {
 
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
-
-
         } else if (Object.keys(pageParams)[0] === 'stationID') {
-
-            // Not the best way to do this, but if the params have a locationId and it's undefined
-            // then it's url is just locations and not a widget page
-            // This happens in app.js file in the route path.
             if (pageParams.widgetPage === undefined) {
                 pageName = 'locations'
-
             } else {
                 pageName = pageParams.widgetPage
-
             }
-
         }
 
         // clear current interval
-        clearInterval(pageDataInterval);
+        await pageDataIntervals.forEach(interval => clearInterval(interval));
+        setPageDataIntervals([])
 
         // set new interval for specific page
         switch (pageName) {
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
+                setDashboardPageIntervals()
                 break;
 
             case 'locations':
-                setPageDataInterval(setInterval(() => loadLocationsData(), 5000))
+                setLocationPageIntervals()
                 break
 
-            case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
-                break;
-
             case 'settings':
-                setPageDataInterval(setInterval(() => loadSettingsData(), 10000))
+                setSettingsPageIntervals()
                 break;
 
             case 'lots':
-                setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                setKanbanIntervals()
                 break
 
             case 'processes':
                 if (data2 === "lots") {
-                    loadCardsData(data1) // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(data1), 10000))
-                }
-                else if (data1 === "timeline") {
-                    loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
-                }
-                else if (data1 === "summary") {
-                    loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
-                }
-                else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    setKanbanIntervals()
+                } else {
+                    setProcessPageIntervals()
                 }
 
                 break
 
-            case 'more':
-                setPageDataInterval(setInterval(() => loadMoreData(), 10000))
-                // pageDataInterval = ;
-                break;
-
             default:
                 if(!mapViewEnabled) {
-                    setPageDataInterval(setInterval(() => loadListViewData(), 5000))
+                    setDashboardPageIntervals()
                 }
                 break;
         }
@@ -253,11 +208,9 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        //const localSettings = await onGetLocalSettings()
-        const settings = await onGetSettings();
-        //await postSettings(settings)
-        // const refreshToken = await onGetRefreshToken()
-        const maps = await onGetMaps()
+
+        await onGetSettings();
+        await onGetMaps()
 
         if (mapValues === undefined) {
             props.onLoad()
@@ -265,14 +218,14 @@ const ApiContainer = (props) => {
             return
         }
 
-        const stations = await onGetStations()
-        const dashboards = await onGetDashboards()
-        const tasks = await onGetTasks()
-        const processes = await onGetProcesses()
-        const cards = onGetCards()
-        const lotTemplates = onGetLotTemplates()
+        await onGetStations()
+        await onGetDashboards()
+        await onGetTasks()
+        await onGetProcesses()
+        await onGetCards()
+        await onGetLotTemplates()
 
-        const loggers = await onGetLoggers()
+        await onGetLoggers()
 
         props.apiLoaded()
         props.onLoad()
@@ -282,102 +235,63 @@ const ApiContainer = (props) => {
     //  DATA LOADERS SECTION BEGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    const loadCriticalData = async () => {
+    const setDashboardPageIntervals = () => {
+        setPageDataIntervals([
+            setInterval(async () => {
+                await onGetStations()
+                await onGetTasks()
+                await onGetDashboards();
+                await onGetCards()
+                await onGetProcesses()
+                await onGetTasks();
+                await onGetDashboards() // must go last
+            }, 5000)
+        ])
     }
 
-    const loadLocalData = async () => {
-        const localSettings = await onGetLocalSettings()
+    const setLocationPageIntervals = () => {
+        // On these pages, the map is shown. therefore we also have to load stuff to render on the map
+        setPageDataIntervals([
+            setInterval(() => {
+                onGetStations();
+                onGetProcesses();
+                onGetTasks();
+            }, 5000),
+            setInterval(() => {
+                onGetCards();
+            }, 1000)
+        ])
     }
 
-    /*
-        Loads data pertinent to Tasks page
-
-        required data:
-        tasks
-    */
-    const loadTasksData = async () => {
-        const tasks = await onGetTasks()
-        const processes = await onGetProcesses()
+    const setKanbanIntervals = () => {
+        setPageDataIntervals([
+            setInterval(() => {
+                onGetProcesses();
+            }, 10000),
+            setInterval(() => {
+                onGetCards();
+            }, 1000)
+        ])
     }
 
-    const loadLocationsData = async () => {
-        await onGetStations()
-        await onGetTasks()
-        await onGetDashboards()
-
-    }
-
-    const loadListViewData = () => {
-        onGetStations()
-        onGetDashboards()
-    }
-
-    /*
-        Loads data pertinent to Dashboards page
-
-        required data:
-        dashboards
-    */
-    const loadDashboardsData = async () => {
-        await onGetStations()
-        await onGetTasks()
-        await onGetDashboards();
-        await onGetCards()
-        await onGetProcesses()
-        await onGetTasks();
-
-        /*
-        * For now, this MUST come last.
-        *
-        * If this is made first, the dashboards page will do updates without the other data updated first,
-        * which may include incorrectly removing buttons.
-        * */
-        await onGetDashboards()
+    const setSettingsPageIntervals = () => {
 
     }
 
-    const loadMapData = async () => {
-        onGetStations();
-        onGetTasks()
-        onGetProcesses()
+    const setProcessPageIntervals = () => {
+        // On these pages, the map is shown. therefore we also have to load stuff to render on the map
+        setPageDataIntervals([
+            setInterval(() => {
+                onGetStations();
+                onGetProcesses();
+                onGetTasks();
+            }, 5000),
+            setInterval(() => {
+                onGetCards();
+            }, 1000)
+        ])
     }
 
-    /*
-        Loads data pertinent to Settings page
-
-        required data:
-        settings, loggers
-    */
-    const loadSettingsData = async () => {
-        const settings = await onGetSettings();
-        //const localSettings = await onGetLocalSettings()
-        const loggers = await onGetLoggers();
-    }
-
-    /*
-        Loads data pertinent to process card view
-
-        required data:
-        cards
-    */
-    const loadCardsData = async (processId) => {
-        if (processId) {
-            await onGetProcessCards(processId)
-
-        } else {
-            onGetCards()
-        }
-
-        onGetProcesses()
-        onGetTasks()
-    }
-
-    /*
-        Loads data pertinent to More page
-    */
-    const loadMoreData = async () => {
-
-    }
 
     //  API LOGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

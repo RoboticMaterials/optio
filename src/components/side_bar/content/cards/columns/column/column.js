@@ -28,7 +28,7 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../../../methods/utils/lot_utils";
-import {findProcessStartNodes, findProcessEndNodes} from '../../../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -132,111 +132,20 @@ const Column = ((props) => {
 
 	//This function is now more limiting with split/merge
 	// -dont allow moving lot to next stations(s) if current station disperses a lot
-	//-dont allow movinga lot backwards if the previous node has routes merging into it or if it disperses a lot
-	//-dont allow moving lot back if current node has routes merging into it
-	//-These limitations ensure dragging lots around in cardZone dont mess merge/split functionality
-	//-We should make it more flexible in the future with functions that handle the above cases...
-	//-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
-	const shouldAcceptDrop = (cardId, binId, station_id) => {
+	// -dont allow movinga lot backwards if the previous node has routes merging into it or if it disperses a lot
+	// -dont allow moving lot back if current node has routes merging into it
+	// -These limitations ensure dragging lots around in cardZone dont mess merge/split functionality
+	// -We should make it more flexible in the future with functions that handle the above cases...
+	// -There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
+	const shouldAcceptDrop = (cardId, binId, stationId) => {
 
-			let oldProcessId = reduxCards[cardId].process_id
+		const process = processes[reduxCards[cardId].process_id]
+		const processRoutes = process.routes.map(routeId => routes[routeId])
 
-			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
+		if (reduxCards[cardId].process_id !== processId) return false
+		if (!!showCardEditor) return false
 
-			let startNodes = findProcessStartNodes(processRoutes, stations)
-			let endNode = findProcessEndNodes(processRoutes)
-
-			if (oldProcessId !== processId) return false
-			if(!!showCardEditor) return false
-			//if (process[oldProcessId] === undefined) return false
-
-		 	if(binId === station_id) {
-				//setHighlightStation(true)
-				return true
-			}
-
-			const forwardsTraverseCheck = (currentStationID) => {
-				if(endNode === currentStationID && station_id =='FINISH'){//If you can traverse to the end node, also allow finish column
-					setHighlightStation(true)
-					return true
-				}
-				else if(currentStationID === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)){
-					//if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
-					if(startNodes.includes(station_id)){
-						setHighlightStation(true)
-						return true
-					}
-					else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
-						for(const ind in startNodes){
-							const canMove = forwardsTraverseCheck(startNodes[ind])
-							if(!!canMove) return true
-						}
-					}
-				}
-				const nextRoutes = processRoutes.filter(route => route.load === currentStationID)
-				if(!!nextRoutes[0] && (!nextRoutes[0].divergeType || nextRoutes[0].divergeType!=='split')){//can't drag forward if station disperses lots
-					for(const ind in nextRoutes){
-						if(nextRoutes[ind].unload === station_id){
-							//If you are skipping over nodes and drag to a merge station we need to keep track of the station right before
-							//the merge station as merge functions need this to find routeTravelled
-							setLastStationTraversed(nextRoutes[ind].load)
-							setHighlightStation(true)
-							return true
-						}
-						else{
-							const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
-							if(mergingRoutes.length === 1){
-								const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
-								if(!!canMove) return true
-							}
-						}
-					}
-				}
-			}
-
-			const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
-				if(startNodes.includes(currentStationID) && station_id === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
-					setHighlightStation(true)
-					return true
-
-				}
-
-				else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
-					if(endNode === station_id){
-							setHighlightStation(true)
-							return true
-						}
-					else{
-						const canMove = backwardsTraverseCheck(endNode)
-						if(!!canMove) return true
-					}
-				}
-
-				const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
-				if(mergingRoutes.length===1){//Can't drag backwards from merge station
-					for(const ind in mergingRoutes){
-						const dispersingRoutes = processRoutes.filter((route) => route.load === mergingRoutes[ind].load);
-						if(mergingRoutes[ind].load === station_id) {
-							if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
-								setHighlightStation(true)
-								return true
-							}
-						}
-						else{
-								if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
-									const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
-									if(!!canMove) return true
-								}
-							}
-						}
-					}
-				}
-
-			let atMergeStation = false
-			const forwardsFound = forwardsTraverseCheck(binId)
-			if(!!forwardsFound) return true
-			const backwardsFound = backwardsTraverseCheck(binId)
-			if(!!backwardsFound) return true
+		return isStationOnBranch(binId, stationId, process, processRoutes, stations, setHighlightStation, setLastStationTraversed)
 	}
 
 
