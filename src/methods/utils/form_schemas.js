@@ -9,7 +9,7 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
-import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression, isStationOnBranch, getNodeIncoming } from './processes_utils';
+import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression, getNodeIncoming } from './processes_utils';
 import { deepCopy, uuidv4 } from './utils'
 
 const { object, lazy, string, number } = require('yup')
