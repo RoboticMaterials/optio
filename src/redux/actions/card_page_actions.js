@@ -1,5 +1,5 @@
 import { SET } from "../types/prefixes"
-import {LOT_DRAGGING, LOT_DROPPING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE, LOT_HOVERING, DRAGGING_STATION_ID, DRAG_FROM_BIN} from "../types/ui_types"
+import {LOT_DRAGGING, LOT_DROPPING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE, LOT_HOVERING, DRAGGING_STATION_ID, DRAG_FROM_BIN, LOT_DIV_HEIGHT} from "../types/ui_types"
 
 export const setDroppingLotId = (lotId, binId) => async dispatch => {
 	dispatch({ type: SET + LOT_DROPPING, payload: {lotId, binId} });
@@ -28,4 +28,8 @@ export const setDraggingStationId = (stationId) => async dispatch => {
 
 export const setDragFromBin = (stationId) => async dispatch => {
 	dispatch({ type: DRAG_FROM_BIN, payload: stationId});
+}
+
+export const setLotDivHeight = (height) => async dispatch => {
+	dispatch({ type: LOT_DIV_HEIGHT, payload: height});
 }

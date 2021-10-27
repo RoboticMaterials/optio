@@ -1102,47 +1102,49 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
   };
 
 
-  export const createPastePayload = (table, fieldMapping) => {
+export const createPastePayload = (table, fieldMapping) => {
 
-    return table.map((row, i) => {
+  console.log(table, fieldMapping)
 
-      let lotFields = {};
-      for (var j=0; j<row.length; j++) {
-        if (!!fieldMapping[j]) {
-          let { index: rangeIndex, ...field} = fieldMapping[j]
-          let { value } = row[j]
+  return table.map((row, i) => {
 
-          // Parse Data
-					if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-						let parsedDate = new Date(value)
+    let lotFields = {};
+    for (var j=0; j<row.length; j++) {
+      if (!!fieldMapping[j]) {
+        let { index: rangeIndex, ...field} = fieldMapping[j]
+        let { value } = row[j]
 
-            if (field._id in lotFields) {
-              if (Array.isArray(lotFields[field._id].value)) {
-                // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
-                // therefore, we just alter the array at the index that the field specifies
-                let dateArr = lotFields[field._id].value
-                dateArr.splice(rangeIndex, 0, parsedDate)
-                lotFields[field._id].value = dateArr
-                continue // Dont append a new field because one for this already exists
-              }
+        // Parse Data
+        if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+          let parsedDate = new Date(value)
+
+          if (field._id in lotFields) {
+            if (Array.isArray(lotFields[field._id].value)) {
+              // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
+              // therefore, we just alter the array at the index that the field specifies
+              let dateArr = lotFields[field._id].value
+              dateArr.splice(rangeIndex, 0, parsedDate)
+              lotFields[field._id].value = dateArr
+              continue // Dont append a new field because one for this already exists
             }
-            value = [null, null]
-            value[rangeIndex] = parsedDate
-					}
-					else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
-						value = parseInt(value)
-						if(!Number.isInteger(value)) value = null
-					}
-
-          lotFields[field._id] = {
-            ...field,
-            value
           }
+          value = [null, null]
+          value[rangeIndex] = parsedDate
+        }
+        else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
+          value = parseInt(value)
+          if(!Number.isInteger(value)) value = null
+        }
+
+        lotFields[field._id] = {
+          ...field,
+          value
         }
       }
+    }
 
-      return lotFields
+    return lotFields
 
 
-    })
-	}
+  })
+}
