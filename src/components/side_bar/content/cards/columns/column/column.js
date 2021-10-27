@@ -29,7 +29,7 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../../../methods/utils/lot_utils";
-import {findProcessStartNodes, findProcessEndNodes} from '../../../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -141,10 +141,14 @@ const Column = ((props) => {
 	//-We should make it more flexible in the future with functions that handle the above cases...
 	//-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
 	const shouldAcceptDrop = (cardId, binId, station_id) => {
-			let lastStationTraversed = false
-			let oldProcessId = reduxCards[cardId].process_id
+		let lastStationTraversed = false
+		let oldProcessId = reduxCards[cardId].process_id
 
-			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
+		const process = processes[reduxCards[cardId].process_id]
+		const processRoutes = process.routes.map(routeId => routes[routeId])
+
+		if (reduxCards[cardId].process_id !== processId) return false
+		if (!!showCardEditor) return false
 
 			let startNodes = findProcessStartNodes(processRoutes, stations)
 			let endNode = findProcessEndNodes(processRoutes)
@@ -163,7 +167,7 @@ const Column = ((props) => {
 					setHighlightStation(true)
 					return true
 				}
-				else if(currentStationID === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)){
+				else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
 					//if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
 					if(startNodes.includes(station_id)){
 						setHighlightStation(true)
@@ -198,7 +202,7 @@ const Column = ((props) => {
 			}
 
 			const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
-				if(startNodes.includes(currentStationID) && station_id === 'QUEUE' && (processes[oldProcessId].startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
+				if(startNodes.includes(currentStationID) && station_id === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
 					setHighlightStation(true)
 					return true
 

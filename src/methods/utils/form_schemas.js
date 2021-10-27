@@ -9,7 +9,7 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
-import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression } from './processes_utils';
+import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression, isStationOnBranch, getNodeIncoming } from './processes_utils';
 import { deepCopy, uuidv4 } from './utils'
 
 const { object, lazy, string, number } = require('yup')
@@ -802,48 +802,61 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             return true
         }
     ).test(
-        'isProcessCyclic',
-        'Processes cannot contain loops. As a general rule, if your process contains a loops create a new "virtual" station to loop back to instead.',
+        'isProcessValidCyclic',
+        'This process contains a loop that loops back to a station that is not on the same branch. Looping routes must not loop back to stations that are before a splitting route.',
         function (routes) {
             // const { startDivergeType } = this.parent
 
-            // const startNodes = findProcessStartNodes(routes);
-            // if (startNodes.length === 0) return false
+            const startNodes = findProcessStartNodes(routes);
 
-            // for (var startNode of startNodes) {
-            //     let stack = [startNode];
-            //     let { isCyclic, breakingRoute } = DFSContainsCycle(routes, stack)
-            //     if (isCyclic) {
-            //         // Cycles are fine as long as they dont originate from a split branch. By getting the merge expression at the node where the 
-            //         // breaking route (the route that makes the process cyclic) we can determine if that node is already in a split branch
-            //         let normalizedRoutes = {}
-            //         routes.forEach(route => normalizedRoutes[route._id] = route)
-            //         const mergeExp = handleMergeExpression(breakingRoute.unload, {startDivergeType, routes: routes.map(r=>r._id)}, normalizedRoutes, stations, false)
-                    
-            //     }
-            // }
+            for (var startNode of startNodes) {
+                let stack = [startNode];
+                let loopRoutes = DFSContainsCycle(routes, stack, [])
+                for (var loopRoute of loopRoutes) {
+                    const validConnectionStations = backTraverseUntilSplit(loopRoute.load, routes, [])
+                    if (!validConnectionStations.includes(loopRoute.unload)) {
+                        return false
+                    }
+                }
+            }
 
-            // return true
             return true
         }
     )
 
 })
 
-const DFSContainsCycle = (routes, stack) => {
+const backTraverseUntilSplit = (node, routes, visited) => {
+
+    visited.push(node);
+    const incomingRoutes = getNodeIncoming(node, routes, true)
+    for (var inRoute of incomingRoutes) {
+        if (inRoute.divergeType !== 'split') {
+            visited = backTraverseUntilSplit(inRoute.load, routes, visited);
+        }
+    }
+
+    return visited;
+
+}
+
+const DFSContainsCycle = (routes, stack, loopRoutes) => {
 
     let node = stack[stack.length-1];
     let outgoingRoutes = getNodeOutgoing(node, routes);
+
     for (var outgoingRoute of outgoingRoutes) {
         let nextNode = outgoingRoute.unload;
-        if (stack.includes(nextNode)) return { isCyclic: true, breakingRoute: outgoingRoute };
+        if (stack.includes(nextNode)) {
+            loopRoutes.push(outgoingRoute)
+            continue
+        }
         let nextStack = deepCopy(stack);
         nextStack.push(nextNode);
-        let { isCyclic, breakingRoute } = DFSContainsCycle(routes, nextStack)
-        if (isCyclic) return { isCyclic, breakingRoute };
+        loopRoutes = DFSContainsCycle(routes, nextStack, deepCopy(loopRoutes))
     }
 
-    return { isCyclic: false, breakingRoute: null };
+    return loopRoutes
 
 }
 

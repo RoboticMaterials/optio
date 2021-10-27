@@ -13,10 +13,9 @@ import { useSelector } from "react-redux";
 import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_placeholder_button/advanced_calendar_placeholder_button";
 
 // Import external utils
-import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
-import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations, handleMergeExpression, findProcessStartNodes } from './processes_utils'
-import { getLoadStationId } from './route_utils'
+import { isArray, isNonEmptyArray } from "./array_utils";
+import { isEqualCI, isString } from "./string_utils";
+import { handleMergeExpression, } from './processes_utils'
 import { jsDateToString } from './card_utils'
 
 
@@ -1097,12 +1096,8 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
 
 
 export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {//Since parts are now consumed, only reduce count. dont need to touch parts.
-    if(quantity === bins[loadStationId]['count']) {
-      delete bins[loadStationId]['count'];
-    } else {
-      bins[loadStationId]['count'] -= quantity;
-    }
-    if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
+    bins[loadStationId].count -= quantity;
+    if(bins[loadStationId].count <= 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };
 

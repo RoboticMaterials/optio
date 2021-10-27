@@ -19,7 +19,7 @@ import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
 
 // constants
-import { FIELD_COMPONENT_NAMES, BASIC_DEFAULT_DATES_FIELD, BASIC_DEFAULT_DESCIPTION_FIELD } from "../../../../../../constants/lot_contants";
+import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
 
 // Import Utils
 import {
@@ -29,15 +29,20 @@ import {
 
 import {
   findProcessStartNodes,
+  isLoopingRoute
 } from "../../../../../../methods/utils/processes_utils";
+import { handleMoveLot } from '../../../../../../methods/utils/lot_utils';
 import { deepCopy } from "../../../../../../methods/utils/utils";
-// Import Actions
 
+// Import Actions
 import {
+  postCard,
   putCard,
+  deleteCard
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
+import { RemoveCircleOutlineOutlined } from "@material-ui/icons";
 
 const DashboardLotPage = (props) => {
   const {
@@ -60,8 +65,11 @@ const DashboardLotPage = (props) => {
   const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
+
   const dispatch = useDispatch();
+  const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
+  const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
   const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
 
@@ -152,12 +160,12 @@ const DashboardLotPage = (props) => {
   const onMoveClicked = () => {
     // Depending on if its a finish column, a single flow, or a split/choice
     if (routeOptions.length === 0) {
-      onMove("FINISH", moveQuantity);
+      onMove(["FINISH"], moveQuantity);
     } else if (routeOptions.length === 1) {
-      onMove(routeOptions[0].unload, moveQuantity);
+      onMove(routeOptions, moveQuantity);
     } else if (routeOptions.some((route) => route.divergeType === "split")) {
       onMove(
-        routeOptions.map((route) => route.unload),
+        routeOptions,
         moveQuantity
       );
     } else {
@@ -165,104 +173,109 @@ const DashboardLotPage = (props) => {
     }
   };
 
+
   // Handles moving lot to next station
-  const onMove = (moveStations, quantity) => {
-    const currentLotCopy = deepCopy(currentLot);
-    pushUndoHandler({
-      message: `Are you sure you want to undo the move of ${currentLotCopy?.name} from ${stations[loadStationID]?.name}?`,
-      handler: () => {
-        dispatchPutCard(currentLotCopy, currentLotCopy._id);
-      }
-    })
-    currentLot.children = [...currentLot?.children || [], ...localLotChildren];
+  const onMove = async (moveRoutes, quantity) => {
 
     const process = processes[currentLot.process_id];
+
+    let lotCopy = deepCopy(currentLot);
+    lotCopy.children = [...lotCopy?.children || [], ...localLotChildren];
+
+    // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
+    lotCopy.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
+
     const processRoutes = process.routes.map(routeId => routes[routeId])
+    let unloadStationId, isLoop, loopLotCopy, saveLoopLotPromise, newLoopLots = [];
+    for (var moveRoute of moveRoutes) {
+      unloadStationId = (typeof moveRoute === 'string') ? moveRoute : moveRoute.unload
 
-    if (Array.isArray(moveStations)) {
-      // Split node, duplicate card and send to all stations
+      // If the route is a loop, we want to duplicate the card and post it as new (but with all the same attributes) so that it will not
+      // merge with the existing lot if they reach the same station
+      isLoop = isLoopingRoute(moveRoute._id, processRoutes)
+      if (isLoop) {
 
-      for (var toStationId of moveStations) {
-        currentLot.bins = handleNextStationBins(currentLot.bins, quantity, loadStationID, toStationId, process, routes, stations)
-      }
-      // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
-      currentLot.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
+        // If there is already a lot with this lot number and the same loop parameters, merge instead of creating more
+        loopLotCopy = Object.values(cards).find(currLot => (
+          lotCopy.lotNum === currLot.lotNum &&
+          currLot.loopRouteId === moveRoute._id && 
+          (lotCopy.loopCount === undefined || currLot.loopCount - 1 === lotCopy.loopCount)
+        )) || {...deepCopy(lotCopy), bins: {}}
 
-      //add count if only some of the parts exist but not count. Not having count breaking lot summary page
-      if(!!currentLot.bins[loadStationID] && !currentLot.bins[loadStationID]['count']){
-        currentLot.bins[loadStationID] = {
-          ...currentLot.bins[loadStationID],
-          count: 0
+        // Start with blank bins because this particular lot is not at any other stations
+        loopLotCopy.bins = handleNextStationBins(loopLotCopy.bins, quantity, loadStationID, unloadStationId, process, routes, stations);
+        
+
+        // Post the loop lot, and save the ID to be used for the undo function
+        if (loopLotCopy._id === currentLot._id) {
+          delete loopLotCopy._id
+          loopLotCopy.loopRouteId = moveRoute._id
+          loopLotCopy.loopCount = !!loopLotCopy.loopCount ? loopLotCopy.loopCount + 1 : 1
+          saveLoopLotPromise = dispatchPostCard(loopLotCopy)
+        } else {
+          let loopLotId = loopLotCopy._id
+          delete loopLotCopy._id
+          saveLoopLotPromise = dispatchPutCard(loopLotCopy, loopLotId)
         }
+        
+        saveLoopLotPromise.then(postedLoopLot => newLoopLots.push(postedLoopLot._id))
+
+      } else {
+        lotCopy.bins = handleNextStationBins(lotCopy.bins, quantity, loadStationID, unloadStationId, process, routes, stations);
       }
+    }
+    dispatchPutCard(currentLot, lotID);
+    
 
-      //Bin exists but nothing in it. Delete the bin as this messes various things up.
-      if(!!currentLot.bins[loadStationID] && currentLot.bins[loadStationID]['count'] === 0 && Object.values(currentLot.bins[loadStationID]).length === 1){
-        delete currentLot.bins[loadStationID]
+    // Push a new Undo function for moving this lot
+    const revertLot = deepCopy(currentLot)
+    pushUndoHandler({
+      message: `Are you sure you want to undo the move of ${lotCopy?.name} from ${stations[loadStationID]?.name}?`,
+      handler: () => {
+        dispatchPutCard(revertLot, revertLot._id);
+        // If there was any looping involved, we have to also delete all those cards
+        newLoopLots.forEach(loopLotId => dispatchDeleteCard(loopLotId))
       }
+    })
 
 
-      moveStations.forEach(toStationId => {
-        const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
-          stop_time: new Date().getTime(),
-          route_id: routeOptions.find(routeOption => routeOption.unload === toStationId)?._id,
-          unload_station_id: toStationId,
-          quantity
-        })
-        dispatchPostTouchEvent(updatedTouchEvent)
+    // Create new touch Events
+    for (var moveRoute of moveRoutes) {
+      const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
+        stop_time: new Date().getTime(),
+        route_id: (typeof moveRoute === 'string') ? moveRoute : moveRoute._id,
+        unload_station_id: (typeof moveRoute === 'string') ? moveRoute : stations[moveRoute.unload]._id,
+        quantity
       })
+      await dispatchPostTouchEvent(updatedTouchEvent)
+    }
+    dispatchUpdateStationCycleTime(loadStationID)
 
-      //Add dispersed key to lot for totalQuantity Util
+    // Move Alert (based on whether lot was split or not)
+    if (moveRoutes.length > 1) {
       handleTaskAlert(
         "LOT_MOVED",
         "Lot Moved",
-        `${quantity} parts from ${currentLot.name}
-          have been split between ${moveStations
-            .map((stationId) => stations[stationId].name)
+        `${quantity} parts from ${lotCopy.name}
+          have been split between ${moveRoutes
+            .map((route) => stations[route.unload].name)
             .join(" & ")}`
       );
     } else {
-      // Single-flow node, just send to the station
-      const toStationId = moveStations;
-      currentLot.bins = handleNextStationBins(currentLot.bins, quantity, loadStationID, toStationId, process, routes, stations)
-
-      // If the whole quantity is moved, delete that bin. Otherwise keep the bin but subtract the qty
-      currentLot.bins = handleCurrentStationBins(currentLot.bins, quantity, loadStationID, process, routes)
-
-      if(!!currentLot.bins[loadStationID] && !currentLot.bins[loadStationID]['count']){
-        currentLot.bins[loadStationID] = {
-          ...currentLot.bins[loadStationID],
-          count: 0
-        }
-      }
-
-      //Bin exists but nothing in it. Delete the bin as this messes various things up.
-      if(!!currentLot.bins[loadStationID] && currentLot.bins[loadStationID]['count'] === 0 && Object.values(currentLot.bins[loadStationID]).length === 1){
-        delete currentLot.bins[loadStationID]
-      }
-
       const stationName =
-        toStationId === "FINISH" ? "Finish" : stations[toStationId].name;
+        moveRoutes[0] === "FINISH" ? "Finish" : stations[moveRoutes[0].unload].name;
       handleTaskAlert(
         "LOT_MOVED",
         "Lot Moved",
-        `${quantity} parts from ${currentLot.name} have been moved to ${stationName}`
+        `${quantity} parts from ${lotCopy.name} have been moved to ${stationName}`
       );
-
-      const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
-        stop_time: new Date().getTime(),
-        route_id: routeOptions.find(routeOption => routeOption.unload === toStationId)?._id,
-        unload_station_id: toStationId,
-        quantity
-      })
-      dispatchPostTouchEvent(updatedTouchEvent)
-
-
     }
-    dispatchPutCard(currentLot, lotID);
-    dispatchUpdateStationCycleTime(loadStationID)
+
+    // Exit page
     onBack();
   };
+
+  console.log(currentLot)
 
   const handleMergeWarehouseLot = (mergeLotID, quantity) => {
 
@@ -379,7 +392,7 @@ const DashboardLotPage = (props) => {
                   height: "5rem",
                 }}
                 onClick={() => {
-                  onMove(route.unload, moveQuantity);
+                  onMove([route], moveQuantity);
                   setShowRouteSelector(false);
                 }}
               />

@@ -702,8 +702,10 @@ export const handleMergeExpression = (stationId, process, routes, stations, clea
     return cleanedExpression;
 };
 
-export const getNodeIncoming = (node, processRoutes) => {
-    return processRoutes.filter((route) => route.unload === node);
+export const getNodeIncoming = (node, processRoutes, filterLoopRoutes=false) => {
+    return processRoutes.filter((route) => {
+        return route.unload === node && (!filterLoopRoutes || !isLoopingRoute(route._id, processRoutes))
+    });
 };
 
 export const getNodeOutgoing = (node, processRoutes) => {
@@ -725,22 +727,25 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     const DFS = (node, routes, depth) => {
 
-        const incomingRoutes = getNodeIncoming(node, routes);
+        const incomingRoutes = getNodeIncoming(node, routes, true);
         const nonTraversedIncomingRoutes = incomingRoutes.filter(route => traveresedRoutes[route._id] === false)
 
         if (nonTraversedIncomingRoutes.length === 0) { // youve traversed all incoming routes, now add this station
             if (incomingRoutes.length > 1) { // This station was a merge node, that means move up one in depth
                 depth--;
             }
-            flattenedStations.push({
-                depth,
-                stationID: node
-            })
-        } else if (incomingRoutes.length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
+            if (flattenedStations.find(({stationID}) => stationID === node) === undefined) {
+                flattenedStations.push({
+                    depth,
+                    stationID: node
+                })
+            }
+            
+        } else if (incomingRoutes.filter(inRoute => !isLoopingRoute(inRoute._id, processRoutes)).length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
             return
         }
 
-        const outgoingRoutes = getNodeOutgoing(node, routes);
+        const outgoingRoutes = getNodeOutgoing(node, routes).filter(outgoingRoute => !traveresedRoutes[outgoingRoute._id]);
         if (outgoingRoutes.length > 1) { // This is a diverging node, move down in depth
             depth++;
         }
@@ -773,5 +778,41 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     return flattenedStations;
 
+
+}
+
+const DFSFindCycleRoute = (routeId, routes, stack) => {
+
+    let node = stack[stack.length-1];
+    let outgoingRoutes = getNodeOutgoing(node, routes);
+
+    for (var outgoingRoute of outgoingRoutes) {
+        let nextNode = outgoingRoute.unload;
+        if (stack.includes(nextNode)) {
+            if (outgoingRoute._id === routeId) {
+                return true;
+            } else {
+                continue
+            }
+        }
+        let nextStack = deepCopy(stack);
+        nextStack.push(nextNode);
+        if (DFSFindCycleRoute(routeId, routes, nextStack)) return true
+    }
+
+    return false
+
+}
+
+export const isLoopingRoute = (routeId, processRoutes) => {
+
+    const startNodes = findProcessStartNodes(processRoutes);
+
+    for (var startNode of startNodes) {
+        let stack = [startNode];
+        if (DFSFindCycleRoute(routeId, processRoutes, stack)) return true
+        
+    }
+    return false
 
 }

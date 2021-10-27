@@ -50,6 +50,8 @@ export async function postProcesses(process) {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         process.map_id = currMapId
+        
+        process.created_at = (new Date()).getTime();
 
         const response = await axios({
             method: 'POST',
