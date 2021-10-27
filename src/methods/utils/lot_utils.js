@@ -1108,9 +1108,6 @@ export const handleCurrentStationBins = (bins, quantity, loadStationId, process,
 
 
 export const createPastePayload = (table, fieldMapping) => {
-
-  console.log(table, fieldMapping)
-
   return table.map((row, i) => {
 
     let lotFields = {};

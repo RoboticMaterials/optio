@@ -332,6 +332,21 @@ const Settings = () => {
                         style={{ marginRight: '1rem', minWidth:'3rem' }}
                     />
                 </styled.SwitchContainer>
+
+                <styled.SwitchContainer>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Alpen Parse</styled.SwitchLabel>
+                    <Switch
+                        checked={!!serverSettingsState.alpenParse ? serverSettingsState.alpenParse : false}
+                        onChange={() => {
+                            setServerSettingsState({
+                                ...serverSettingsState,
+                                alpenParse: !serverSettingsState.alpenParse
+                            })
+                        }}
+                        onColor={themeContext.schema.settings.solid}
+                        style={{ marginRight: '1rem', minWidth:'3rem' }}
+                    />
+                </styled.SwitchContainer>
             </>
         )
     }
@@ -512,7 +527,7 @@ const Settings = () => {
                         onChange={values => {
                             // update current map
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
-                            
+
 
                         }}
                         className="w-100"

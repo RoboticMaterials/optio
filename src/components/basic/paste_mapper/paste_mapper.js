@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useRef, useState, useMemo } from 'react'
+import { useDispatch, useSelector } from "react-redux";
+
 import PropTypes from "prop-types";
 import { Formik } from "formik";
 import set from "lodash/set";
-import { useDispatch } from 'react-redux'
 
 // components external
 import Spreadsheet from "react-spreadsheet";
@@ -35,16 +36,16 @@ const PasteMapper = (props) => {
         availableFields,
         lotTemplate
     } = props
-        
+
     const {
         values,
     } = formikProps;
 
     const [table, setTable] = useState(values.table)
     const [fieldMapping, setFieldMapping] = useState(new Array(availableFields.length).fill(null))
-
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
+    const alpenParse = useSelector(state => state.settingsReducer.settings.alpenParse)
 
     useEffect(() => {
         if (!!lotTemplate?.uploadFieldMapping) {
@@ -101,7 +102,13 @@ const PasteMapper = (props) => {
 
                             // Save this value in the product group template for next time you paste
                             let lotTemplateCopy = deepCopy(lotTemplate)
-                            lotTemplateCopy.uploadFieldMapping[column] = values[0].displayName
+                            if(!lotTemplateCopy.uploadFieldMapping){
+                              lotTemplateCopy = {
+                                ...lotTemplateCopy,
+                                uploadFieldMapping: []
+                              }
+                            }
+                            lotTemplateCopy.uploadFieldMapping[column] = values[0]?.displayName
                             dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
                         }}
                         className="w-100"
@@ -130,7 +137,7 @@ const PasteMapper = (props) => {
         let tableCopy = deepCopy(table);
         tableCopy.splice(row, 1)
         setTable(tableCopy)
-    }   
+    }
 
     const addAbove = (row) => {
         let tableCopy = deepCopy(table);
@@ -148,9 +155,63 @@ const PasteMapper = (props) => {
         setTable(tableCopy)
     }
 
+    const handleApplyLotTemplateFields = () => {
+
+      let lotTemplateCopy = deepCopy(lotTemplate)
+      if(!lotTemplateCopy.uploadFieldMapping){
+        lotTemplateCopy = {
+          ...lotTemplateCopy,
+          uploadFieldMapping: []
+        }
+      }
+
+      let fieldMappingCopy = deepCopy(fieldMapping)
+
+      //Loop thgrough available fields and assign dropdown choices
+      for(const i in availableFields){
+        fieldMappingCopy[i] = availableFields[i]
+        lotTemplateCopy.uploadFieldMapping[i] = availableFields[i].displayName
+      }
+      setFieldMapping(fieldMappingCopy)
+      dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+    }
+
+    const handleMergeIdenticalLots = () => {
+
+      let tableCopy = deepCopy(table)
+      for(let a = 0; a<tableCopy.length; a++){
+        for(let i = a+1; i<tableCopy.length; i++){
+          let match = true
+          let qtyIndex = null
+          for(const j in tableCopy[i]){
+            if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
+              qtyIndex = j
+            }
+            if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+              match = false
+              break
+            }
+          }
+          if(match === true){
+              tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+              tableCopy.splice(i, 1)
+          }
+        }
+      }
+      setTable(tableCopy)
+    }
+
+    const mergeDisabled = () => {
+      if(!!lotTemplate?.uploadFieldMapping){
+        const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
+        if(!foundQtyField) return true
+      }
+      return false
+    }
+
     const renderRowLabel = ({ row }) => {
         return (
-                
+
                 <styled.RowLabelContainer>
                     <ContextMenuTrigger id={`context-menu-${row}`}>
                         <styled.RowLabel>{row+1}</styled.RowLabel>
@@ -168,7 +229,7 @@ const PasteMapper = (props) => {
                         </MenuItem>
                 </ContextMenu>
                 </styled.RowLabelContainer>
-            
+
         )
     }
 
@@ -186,6 +247,28 @@ const PasteMapper = (props) => {
 
             <styled.Body>
                 <styled.ContentContainer>
+                    <Button
+                        style={{maxWidth: '18rem', marginLeft: '2rem'}}
+                        secondary
+                        label={'Apply lot template fields'}
+                        onClick = {()=>{
+                          handleApplyLotTemplateFields()
+                        }}
+                        type="button"
+                    />
+                    {!!alpenParse &&
+                      <Button
+                          style={{maxWidth: '18rem', marginLeft: '1rem'}}
+                          secondary
+                          disabled = {mergeDisabled()}
+                          label={'Merge identical lots'}
+                          onClick = {()=>{
+                            handleMergeIdenticalLots()
+                          }}
+                          type="button"
+                      />
+                    }
+
                     <styled.SectionDescription>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
                 </styled.ContentContainer>
                 <styled.SectionBreak />
@@ -204,7 +287,6 @@ const PasteMapper = (props) => {
                     label={"Validate Lots"}
                     onClick={()=>{
                         const payload = createPastePayload(table, fieldMapping)
-                        console.log(payload)
                         onCreateClick(payload)
                     }}
                     style={{minWidth: '14rem', minHeight: '3rem'}}
@@ -229,6 +311,7 @@ export const PasteForm = (props) => {
 
 	const handlePreviewClick = (payload) => {
 		onPreviewClick && onPreviewClick(payload)
+
 	}
 
 
