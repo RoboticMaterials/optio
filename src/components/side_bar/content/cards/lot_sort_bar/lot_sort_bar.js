@@ -8,7 +8,7 @@ import RotateButton from "../../../../basic/rotate_button/rotate_button"
 // functions external
 import PropTypes from 'prop-types'
 import { ThemeContext } from "styled-components"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { isMobile } from "react-device-detect"
 
 // styles
@@ -16,6 +16,8 @@ import * as styled from "../zone_header/zone_header.style"
 
 // utils
 import { getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
+import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+
 import {
     FIELD_DATA_TYPES,
     LOT_FILTER_OPTIONS,
@@ -40,6 +42,11 @@ const LotSortBar = (props) => {
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+
+    const dispatch = useDispatch()
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
     useEffect(() => {
@@ -102,6 +109,10 @@ const LotSortBar = (props) => {
                             onChange={(values) => {
                                 // set sort mode
                                 setSortMode(values[0])
+                                dispatchPostLocalSettings({
+                                  ...localSettings,
+                                  lotSummarySortValue: values[0]
+                                })
                             }}
                             values={[sortMode]}
                             labelField={"label"}
@@ -122,12 +133,20 @@ const LotSortBar = (props) => {
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
                             onStateOne={() => {
-                                // set sort direction
-                                  setSortDirection(SORT_DIRECTIONS.ASCENDING)
+                              // set sort direction
+                              setSortDirection(SORT_DIRECTIONS.DESCENDING)
+                              dispatchPostLocalSettings({
+                                ...localSettings,
+                                lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                              })
                             }}
                             onStateTwo={() => {
-                                // set sort direction
-                                  setSortDirection(SORT_DIRECTIONS.DESCENDING)
+                            // set sort direction
+                              setSortDirection(SORT_DIRECTIONS.ASCENDING)
+                              dispatchPostLocalSettings({
+                                ...localSettings,
+                                lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                              })
                             }}
                         />
                     </styled.OptionContainer>
