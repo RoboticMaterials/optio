@@ -50,7 +50,6 @@ const DashboardLotList = (props) => {
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()
-    console.log(serverSettings?.hideFilterSortDashboards)
     const station = stations[stationID]
 
     const handleChangeSortMode = (mode) => {

@@ -207,7 +207,7 @@ const Lot = (props) => {
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
-            draggable = {true}
+            draggable = {!isDashboard ? 'true' : 'false'}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
