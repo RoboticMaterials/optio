@@ -95,8 +95,9 @@ const LotContainer = (props) => {
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{
-                      borderRadius: '0.5rem',
-                      width: "80%",
+                      borderRadius: '.3rem',
+                      width: "100%",
+                      padding: !!isDashboard && '.2rem',
                       margin: ".5rem auto .5rem auto",
                       ...containerStyle,
                   }}

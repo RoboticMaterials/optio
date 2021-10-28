@@ -198,13 +198,13 @@ const DashboardLotPage = (props) => {
         // If there is already a lot with this lot number and the same loop parameters, merge instead of creating more
         loopLotCopy = Object.values(cards).find(currLot => (
           lotCopy.lotNum === currLot.lotNum &&
-          currLot.loopRouteId === moveRoute._id && 
+          currLot.loopRouteId === moveRoute._id &&
           (lotCopy.loopCount === undefined || currLot.loopCount - 1 === lotCopy.loopCount)
         )) || {...deepCopy(lotCopy), bins: {}}
 
         // Start with blank bins because this particular lot is not at any other stations
         loopLotCopy.bins = handleNextStationBins(loopLotCopy.bins, quantity, loadStationID, unloadStationId, process, routes, stations);
-        
+
 
         // Post the loop lot, and save the ID to be used for the undo function
         if (loopLotCopy._id === currentLot._id) {
@@ -217,7 +217,7 @@ const DashboardLotPage = (props) => {
           delete loopLotCopy._id
           saveLoopLotPromise = dispatchPutCard(loopLotCopy, loopLotId)
         }
-        
+
         saveLoopLotPromise.then(postedLoopLot => newLoopLots.push(postedLoopLot._id))
 
       } else {
@@ -225,7 +225,7 @@ const DashboardLotPage = (props) => {
       }
     }
     dispatchPutCard(currentLot, lotID);
-    
+
 
     // Push a new Undo function for moving this lot
     const revertLot = deepCopy(currentLot)
@@ -274,8 +274,6 @@ const DashboardLotPage = (props) => {
     // Exit page
     onBack();
   };
-
-  console.log(currentLot)
 
   const handleMergeWarehouseLot = (mergeLotID, quantity) => {
 

@@ -88,7 +88,6 @@ const Column = ((props) => {
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
-
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -424,40 +423,18 @@ const Column = ((props) => {
 	const renderCards = () => {
 		return (
 				<styled.BodyContainer
-					className = 'container'
-					style={{ overflow: "auto", height: "100%", padding: "1rem",
+					class = 'container'
+					style={{ overflow: "auto", height: "100%", padding: "1rem", pointerEvents: !!draggingLotId && 'none'
 
 				 }}
 
-				 onDragOver = {(e) => {
-					 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight + 4) + 'rem'
-					 dispatchSetDraggingStationId(station_id)
-					 if(!!acceptDrop){
-						 setInDropZone(true)
-					 }
-					 e.preventDefault()
-				 }}
-				 onDragLeave={(e) => {
-						 setInDropZone(false)
-						 dispatchSetDraggingStationId(null)
-						 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight -0.5) + 'rem'
-				 }}
 					>
 					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
 						<styled.DragToDiv
 						ref = {dragContainerRef}
-						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-0.5) + 'rem' : '10rem'}
-						className = 'dragToDiv'
-						onDragOver={(e) => {
-							if(e.target.className.includes('dragToDiv')){
-								//e.target.style.minHeight = (lotDivHeight + 4) + 'rem'
-							}
-						}}
-						onDragLeave={(e) => {
-								if(!!inDropZone){
-									//e.target.style.minHeight = (lotDivHeight - 0.5) + 'rem'
-								}
-						}}
+						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
+						class = 'dragToDiv'
+
 						/>
 					}
 						{cards.map((card, index) => {
@@ -499,14 +476,16 @@ const Column = ((props) => {
 																		id = 'item'
 																		ref = {lotRef}
 																		class = 'item'
-																		draggable = {true}
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
-																			dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
+																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
+																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
+																			}
 																			e.target.style.opacity = '.001'
 																			dispatchSetDraggingLotId(cardId)
 																			dispatchSetDragFromBin(station_id)
+
 																		}}
 																		onDragEnd = {(e)=>{
 																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
@@ -520,6 +499,7 @@ const Column = ((props) => {
 																		style={{
 																			background: 'transparent',
 																			borderRadius: '1rem',
+																			pointerEvents: 'none'
 																		}}
 																	>
 																	<LotContainer
@@ -559,10 +539,13 @@ const Column = ((props) => {
 																			)
 																		}}
 																		containerStyle={{
-																			border: draggingLotId === cardId && station_id === dragFromBin && '.2rem solid #7e7e7e',
-																			margin: draggingLotId === cardId && station_id === dragFromBin ? '0rem' : '.4rem',
-																			padding: '.1rem',
-																			width: draggingLotId === cardId && station_id === dragFromBin ? '100%' : '95%',
+																			border: draggingLotId === cardId && station_id === dragFromBin && '.1rem solid #b8b9bf',
+																			boxShadow: draggingLotId === cardId && station_id === dragFromBin && '2px 3px 2px 1px rgba(0,0,0,0.2)',
+																			borderRadius: '0.2rem',
+																			padding: '0.2rem',
+																			margin: '.4rem',
+																			width: '96%',
+																			pointerEvents: !!draggingLotId && draggingLotId !== cardId && 'none',
 																		}}
 																	/>
 																	</styled.LotDiv>
@@ -614,14 +597,31 @@ const Column = ((props) => {
 
 	else {
 		return (
+
 			<styled.StationContainer
+				onDragOver = {(e) => {
+				 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight + 4) + 'rem'
+				 dispatchSetDraggingStationId(station_id)
+				 if(!!acceptDrop){
+					 setInDropZone(true)
+				 }
+				 e.preventDefault()
+			 }}
+			 onDragLeave={(e) => {
+					 setInDropZone(false)
+					 dispatchSetDraggingStationId(null)
+					 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight -1) + 'rem'
+			 }}
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
-				style={containerStyle}
+				style={{
+					...containerStyle
+				}}
 			>
-				{HeaderContent(numberOfLots, lotQuantitySummation)}
-
+				<div style = {{pointerEvents: !!draggingLotId && 'none'}}>
+					{HeaderContent(numberOfLots, lotQuantitySummation)}
+				</div>
 				{!showCardEditor &&
 					renderCards()
 				}
