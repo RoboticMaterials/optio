@@ -50,8 +50,7 @@ const DashboardLotList = (props) => {
 
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const size = useWindowSize()
-    const phoneView = size.width < 1000
-
+    console.log(serverSettings?.hideFilterSortDashboards)
     const station = stations[stationID]
 
     const handleChangeSortMode = (mode) => {
@@ -183,7 +182,7 @@ const DashboardLotList = (props) => {
 
     return (
         <styled.LotListContainer>
-            {(!phoneView && !(!!serverSettings?.hideFilterSortDashboards && !localSettings?.mapViewEnabled)) &&
+            {(!serverSettings.hideFilterSortDashboards || size.width>1000) &&
               <SortFilterContainer
                   lotFilterValue={lotFilterValue}
                   shouldFocusLotFilter={shouldFocusLotFilter}
