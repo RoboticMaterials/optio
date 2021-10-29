@@ -88,6 +88,7 @@ const Column = ((props) => {
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
+
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -108,10 +109,6 @@ const Column = ((props) => {
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
-		setIsSelectedCardsNotEmpty(isNonEmptyArray(selectedCards))
-	}, [selectedCards])
-
-	useEffect(() => {
 		if (sortMode) {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
@@ -125,7 +122,7 @@ const Column = ((props) => {
 
 	useEffect(() => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
-			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
+			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id)
 			setAcceptDrop(accDrop)
 		}
 		if(!draggingLotId) setHighlightStation(null)
@@ -296,22 +293,6 @@ const Column = ((props) => {
 			dispatchPutCard(submitLot, submitLot._id)
 	}
 
-	const getSelectedIndex = (lotId, binId) => {
-		return selectedCards.findIndex((currLot) => {
-			const {
-				cardId: currLotId,
-				binId: currBinId
-			} = currLot
-
-			return (lotId === currLotId) && (binId === currBinId)
-		})
-	}
-
-	const getIsSelected = (lotId, binId) => {
-		const existingIndex = getSelectedIndex(lotId, binId)
-		return (existingIndex !== -1)
-	}
-
 	const getLastSelectedIndex = () => {
 		let addedIndex = -1
 
@@ -332,15 +313,6 @@ const Column = ((props) => {
 	const getLastSelected = () => {
 		const lastSelectedIndex = getLastSelectedIndex()
 		return selectedCards[lastSelectedIndex]
-	}
-
-	const getIsLastSelected = (lotId) => {
-		const lastSelected = getLastSelected() || {}
-		const {
-			cardId: currLotId,
-		} = lastSelected
-
-		return lotId === currLotId
 	}
 
 	const getBetweenSelected = (lotId) => {
@@ -453,8 +425,6 @@ const Column = ((props) => {
 								...rest
 							} = card
 
-							const isLastSelected = getIsLastSelected(cardId)
-
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
@@ -510,7 +480,6 @@ const Column = ((props) => {
 																		onRightClickDeleteLot = {()=>{
 																			handleRightClickDeleteLot(card, card.binId)
 																		}}
-																		glow={isLastSelected}
 																		enableFlagSelector={enableFlags}
 																		selectable={selectable}
 																		key={cardId}

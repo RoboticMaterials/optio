@@ -25,7 +25,7 @@ export const apiIPAddress = () => {
     if (!!hostServerIpAddress) {
         // If there is no api use the local host
         if (nonLocalIp===false) {
-            return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
+            return apiIPAddress = 'http://' + 'dev.optio.cloud' + ':5000/api/'
         } else {
             return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
 
