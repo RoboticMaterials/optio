@@ -75,7 +75,7 @@ const StationsColumn = ((props) => {
     }
 
     const renderCycleTime = () => {
-        
+
         return (
             <>
                 <styled.divider />

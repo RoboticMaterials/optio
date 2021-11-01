@@ -396,8 +396,8 @@ const Column = ((props) => {
 		return (
 				<styled.BodyContainer
 					class = 'container'
-					style={{ overflow: "auto", height: "100%", padding: "1rem", pointerEvents: !!draggingLotId && 'none'
-
+					style={{ overflow: "auto", height: "100%", padding: "1rem",
+					 pointerEvents: !!draggingLotId && 'none',
 				 }}
 
 					>
@@ -406,7 +406,6 @@ const Column = ((props) => {
 						ref = {dragContainerRef}
 						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
 						class = 'dragToDiv'
-
 						/>
 					}
 						{cards.map((card, index) => {
@@ -449,6 +448,8 @@ const Column = ((props) => {
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
+																			console.log(e.target.getBoundingClientRect())
+																			console.log(e.clientX)
 																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
 																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
 																			}

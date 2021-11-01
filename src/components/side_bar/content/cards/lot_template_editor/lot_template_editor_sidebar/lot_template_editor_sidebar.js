@@ -64,7 +64,6 @@ const LotTemplateEditorSidebar = (props) => {
 
     const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450) // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)) // used for tracking sidebar dimensions
-
     const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name) // used for tracking sidebar dimensions
 
 
