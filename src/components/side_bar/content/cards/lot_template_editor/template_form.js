@@ -182,7 +182,7 @@ const FormComponent = (props) => {
 				{/*<LotTemplateEditorSidebar/>*/}
 
 				<styled.ScrollContainer>
-					<styled.SectionContainer>
+					<styled.SectionContainer style = {{margin: '2rem 4rem 1rem 4rem'}}>
 						<styled.FieldsHeader
 							style={disabledStyle}
 						>
@@ -195,7 +195,7 @@ const FormComponent = (props) => {
 									usable={true}
 									schema='lots'
 									textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-									inputStyle={{flex: 1, pointerEvents: 'none'}}
+									inputStyle={{flex: 1, pointerEvents: 'none', maxWidth: '25rem'}}
 									type="text"
 									placeholder="Enter name..."
 									InputComponent={Textbox}

@@ -33,7 +33,7 @@ const LotFormCreator = (props) => {
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
 	const [draggingRow, setDraggingRow] = useState(null)
 	const [hoveringRow, setHoveringRow] = useState(null)
-
+	const [selectedEditingField, setSelectedEditingField] = useState(null)
 	const {
 		fields: items = []
 	} = values || {}
@@ -233,44 +233,46 @@ const LotFormCreator = (props) => {
 		switch(component) {
 			case 'TEXT_BOX':
 				return (
-					<Textbox
-						style={{flex: 1}}
-						usable={true}
-						schema='lots'
-						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-						inputStyle={{flex: 1, pointerEvents: 'none'}}
-						type="text"
-						placeholder="Enter name..."
-						InputComponent={Textbox}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '20rem', height: '2rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</styled.FieldName>
+					</styled.RowContainer>
 				)
 			case 'TEXT_BOX_BIG':
 				return (
-					<Textbox
-						style={{flex: 1}}
-						usable={true}
-						lines = {3}
-						schema='lots'
-						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-						inputStyle={{flex: 1, pointerEvents: 'none'}}
-						type="text"
-						placeholder="Enter name..."
-						InputComponent={Textbox}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '20rem', height: '4rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6',}}>multi-line input...</styled.FieldName>
+					</styled.RowContainer>
 				)
 
 			case 'INPUT_BOX':
 				return (
-					<Textbox
-						style={{flex: 1}}
-						usable={true}
-						schema='lots'
-						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-						inputStyle={{flex: 1, pointerEvents: 'none'}}
-						type="text"
-						placeholder="Enter name..."
-						InputComponent={Textbox}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '20rem', height: '3rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6'}}>add dashboard text...</styled.FieldName>
+					</styled.RowContainer>
 				)
 
 			case 'NUMBER_INPUT':
@@ -291,23 +293,34 @@ const LotFormCreator = (props) => {
 
 			case 'CALENDAR_SINGLE':
 				return (
-					<CalendarPlaceholder
-							usable={false}
-							selectRange = {false}
-							defaultText = {'select date'}
-							containerStyle={{ width: "8rem", marginLeft: '0rem', cursor: 'default', userSelect: 'none' }}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '4.4rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+						<i class="far fa-calendar" style = {{color: '#7e7e7e', fontSize: '2rem', marginRight: '.75rem', marginLeft: '0.75rem'}}></i>
+					</styled.RowContainer>
 				)
 
 			case 'CALENDAR_START_END':
 				return (
-					<CalendarPlaceholder
-							defaultStartText = {'start date'}
-							defaultEndText = {'end date'}
-							usable={false}
-							selectRange = {true}
-							containerStyle={{ width: "23rem", cursor: 'default', userSelect: 'none' }}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '8rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+						<i class="far fa-calendar" style = {{color: '#7e7e7e', fontSize: '2rem', marginRight: '.75rem'}}></i>
+						<i class="fas fa-long-arrow-alt-right" style = {{color: '#7e7e7e', fontSize: '2rem'}}></i>
+						<i class="far fa-calendar" style = {{color: '#7e7e7e', fontSize: '2rem', marginLeft: '.75rem'}}></i>
+					</styled.RowContainer>
 				)
 			}
 		}
@@ -338,10 +351,26 @@ const LotFormCreator = (props) => {
 							const isOnlyItem = currRow.length === 1
 
 							return (
-								<styled.ColumnFieldContainer style = {{margin: '1rem'}}>
-									<styled.FieldName>{fieldName}</styled.FieldName>
-									{handleRenderComponentType(component)}
-								</styled.ColumnFieldContainer>
+								<>
+								{currItem?._id !== selectedEditingField ?
+									<styled.ColumnFieldContainer
+									 style = {{margin: '1rem'}}
+									 onClick = {()=>{
+										setSelectedEditingField(currItem._id)
+									}}>
+										<styled.FieldName>{fieldName}</styled.FieldName>
+										{handleRenderComponentType(component)}
+									</styled.ColumnFieldContainer>
+									:
+									<styled.ColumnFieldContainer
+									 style = {{margin: '1rem'}}
+									 onClick = {()=>{
+										setSelectedEditingField(currItem._id)
+									}}>
+										<styled.FieldName>{fieldName}</styled.FieldName>
+										{handleRenderComponentType(component)}
+									</styled.ColumnFieldContainer>								}
+								</>
 							)
 						})}
 					</styled.ColumnContainer>
