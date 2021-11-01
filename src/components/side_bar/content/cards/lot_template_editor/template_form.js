@@ -27,10 +27,11 @@ import set from "lodash/set";
 
 // import styles
 import * as styled from "../card_editor/lot_editor.style"
+import * as style from './lot_form_creator/lot_form_creator.style'
 
 // logger
 import log from '../../../../../logger'
-import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
+//import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
 import LotFormCreator from "./lot_form_creator/lot_form_creator";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import {
@@ -178,51 +179,30 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
-				<LotTemplateEditorSidebar/>
+				{/*<LotTemplateEditorSidebar/>*/}
 
 				<styled.ScrollContainer>
 					<styled.SectionContainer>
 						<styled.FieldsHeader
 							style={disabledStyle}
 						>
-							<styled.NameContainer>
-								{/*<styled.LotName>Lot Name</styled.LotName>*/}
-								<TextField
 
-									style={{
-										fontSize: themeContext.fontSize.sz3,
-										fontWeight: themeContext.fontWeight.bold,
-										whiteSpace: "nowrap" ,
-										marginRight: "2rem",
-										marginBottom: ".5rem",
-										width: "20rem"
-									}}
-										schema='lots'
-									inputStyle={{fontSize: '1rem'}}
-									name={"displayNames.name"}
+						<style.ColumnContainer>
+							<style.ColumnFieldContainer style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem'}}>
+								<style.FieldName>Name</style.FieldName>
+								<Textbox
+									style={{flex: 1}}
+									usable={true}
+									schema='lots'
+									textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
+									inputStyle={{flex: 1, pointerEvents: 'none'}}
+									type="text"
+									placeholder="Enter name..."
 									InputComponent={Textbox}
 								/>
-								<div
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										width: "100%",
-										position: "relative",
-										display: "flex",
-									}}
-								>
-									<Textbox
-										style={{flex: 1}}
-										usable={false}
-										schema='lots'
-										textboxContainerStyle={{flex: 1}}
-										inputStyle={{flex: 1, pointerEvents: 'none'}}
-										type="text"
-										placeholder="Enter name..."
-										InputComponent={Textbox}
-									/>
-								</div>
-							</styled.NameContainer>
+							</style.ColumnFieldContainer>
+						</style.ColumnContainer>
+
 						</styled.FieldsHeader>
 						<styled.TheBody>
 							{loaded ?

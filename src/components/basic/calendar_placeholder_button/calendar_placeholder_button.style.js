@@ -16,16 +16,16 @@ const notUsableCss = css`
 export const DateItem = styled.div`
 	display: flex;
 	flex-direction: column;
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.theme.bg.primary};
 	border-radius: 0.2rem;
-    width: fit-content;
-    position: relative;
-    min-width: 10rem;
+  width: fit-content;
+  position: relative;
+  min-width: 10rem;
 
-    padding: .5rem 1rem;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  padding: .5rem 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 
   ${props => props.usable ? usableCss : notUsableCss};
 `

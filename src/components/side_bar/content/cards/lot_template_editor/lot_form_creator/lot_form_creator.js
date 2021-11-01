@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import * as styled from "./lot_form_creator.style"
 import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
 import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
-import DropContainer from "../drop_container/drop_container";
+//import DropContainer from "../drop_container/drop_container";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
@@ -12,7 +12,7 @@ import CalendarPlaceholder from '../../../../../basic/calendar_placeholder/calen
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
-
+import NumberInput from '../../../../../basic/number_input/number_input'
 const LotFormCreator = (props) => {
 
 	const {
@@ -249,6 +249,7 @@ const LotFormCreator = (props) => {
 					<Textbox
 						style={{flex: 1}}
 						usable={true}
+						lines = {3}
 						schema='lots'
 						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
 						inputStyle={{flex: 1, pointerEvents: 'none'}}
@@ -274,16 +275,18 @@ const LotFormCreator = (props) => {
 
 			case 'NUMBER_INPUT':
 				return (
-					<Textbox
-						style={{flex: 1}}
-						usable={true}
-						schema='lots'
-						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-						inputStyle={{flex: 1, pointerEvents: 'none'}}
-						type="text"
-						placeholder="Enter name..."
-						InputComponent={Textbox}
-					/>
+					<styled.RowContainer
+					 style = {{
+					 	background: '#f7f7fa', width: '8rem',
+					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+					 	border: '0.1rem solid transparent',
+						borderRadius: '0.2rem',
+						padding: '0.5rem'
+					}}
+					>
+						<i class="fas fa-plus" style = {{color: '#7e7e7e', fontSize: '2rem'}}></i>
+						<i class="fas fa-minus" style = {{color: '#7e7e7e', fontSize: '2rem', marginLeft: '2.5rem'}}></i>
+					</styled.RowContainer>
 				)
 
 			case 'CALENDAR_SINGLE':
@@ -291,7 +294,8 @@ const LotFormCreator = (props) => {
 					<CalendarPlaceholder
 							usable={false}
 							selectRange = {false}
-							containerStyle={{ width: "8rem", cursor: 'default', userSelect: 'none' }}
+							defaultText = {'select date'}
+							containerStyle={{ width: "8rem", marginLeft: '0rem', cursor: 'default', userSelect: 'none' }}
 					/>
 				)
 
@@ -302,7 +306,7 @@ const LotFormCreator = (props) => {
 							defaultEndText = {'end date'}
 							usable={false}
 							selectRange = {true}
-							containerStyle={{ width: "25rem", cursor: 'default', userSelect: 'none' }}
+							containerStyle={{ width: "23rem", cursor: 'default', userSelect: 'none' }}
 					/>
 				)
 			}
