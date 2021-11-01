@@ -8,6 +8,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
+import CalendarPlaceholder from '../../../../../basic/calendar_placeholder/calendar_placeholder'
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
@@ -76,7 +77,6 @@ const LotFormCreator = (props) => {
 			component,
 			_id: payloadId
 		} = payload
-
 		if(addedIndex !== null) {
 			const [oldSelected, oldIndexPattern, oldFinalIndex, ] = getSelected(payloadId)
 
@@ -227,30 +227,92 @@ const LotFormCreator = (props) => {
 		}
 
 		setFieldValue("fields", updatedData, true)
-
-
 	}
+
+	const handleRenderComponentType = (component) => {
+		switch(component) {
+			case 'TEXT_BOX':
+				return (
+					<Textbox
+						style={{flex: 1}}
+						usable={true}
+						schema='lots'
+						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
+						inputStyle={{flex: 1, pointerEvents: 'none'}}
+						type="text"
+						placeholder="Enter name..."
+						InputComponent={Textbox}
+					/>
+				)
+			case 'TEXT_BOX_BIG':
+				return (
+					<Textbox
+						style={{flex: 1}}
+						usable={true}
+						schema='lots'
+						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
+						inputStyle={{flex: 1, pointerEvents: 'none'}}
+						type="text"
+						placeholder="Enter name..."
+						InputComponent={Textbox}
+					/>
+				)
+
+			case 'INPUT_BOX':
+				return (
+					<Textbox
+						style={{flex: 1}}
+						usable={true}
+						schema='lots'
+						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
+						inputStyle={{flex: 1, pointerEvents: 'none'}}
+						type="text"
+						placeholder="Enter name..."
+						InputComponent={Textbox}
+					/>
+				)
+
+			case 'NUMBER_INPUT':
+				return (
+					<Textbox
+						style={{flex: 1}}
+						usable={true}
+						schema='lots'
+						textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
+						inputStyle={{flex: 1, pointerEvents: 'none'}}
+						type="text"
+						placeholder="Enter name..."
+						InputComponent={Textbox}
+					/>
+				)
+
+			case 'CALENDAR_SINGLE':
+				return (
+					<CalendarPlaceholder
+							usable={false}
+							selectRange = {false}
+							containerStyle={{ width: "8rem", cursor: 'default', userSelect: 'none' }}
+					/>
+				)
+
+			case 'CALENDAR_START_END':
+				return (
+					<CalendarPlaceholder
+							defaultStartText = {'start date'}
+							defaultEndText = {'end date'}
+							usable={false}
+							selectRange = {true}
+							containerStyle={{ width: "25rem", cursor: 'default', userSelect: 'none' }}
+					/>
+				)
+			}
+		}
 
 	const mapContainers = (items, mode, prevItems, indexPattern, thisIndex) => {
 
 		return (
 			<styled.ColumnContainer>
-				<ContainerWrapper
-					onDrop={(dropResult)=>{
-						handleVerticalDrop(dropResult, 0)
-					}}
-					shouldAcceptDrop={()=>{return true}}
-					// getGhostParent={()=>document.body}
-					groupName="lot_field_buttons"
-					getChildPayload={index =>
-						index
-					}
-					hovering={hoveringRow === -1}
-					showHighlight={false}
-					isRow={true}
-					style={{ background: "coral", width: !mode && "1rem", height: mode && "1rem", alignSelf: "stretch", flex: items.length === 0 && 1}}
-					// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
-				/>
+				<div>
 				{items.map((currRow, currRowIndex) => {
 
 					const isLastRow = currRowIndex === items.length - 1
@@ -259,7 +321,7 @@ const LotFormCreator = (props) => {
 						key={currRowIndex}
 					>
 
-					<styled.RowContainer>
+					<styled.ColumnContainer>
 
 						{currRow.map((currItem, currItemIndex) => {
 							const {
@@ -267,60 +329,25 @@ const LotFormCreator = (props) => {
 								component,
 								fieldName
 							} = currItem || {}
-
 							const isLastItem = currItemIndex === currRow.length - 1
 							const indexPattern = [currRowIndex, currItemIndex]
 							const isOnlyItem = currRow.length === 1
 
-							return <DropContainer
-								currRowIndex={currRowIndex}
-								setDraggingRow={() => setDraggingRow(currRowIndex)}
-								clearDraggingRow={() => setDraggingRow(null)}
-								hoveringRow={hoveringRow}
-								setHoveringRow={(val) => setHoveringRow(val)}
-								clearHoveringRow={() => setHoveringRow(null)}
-								fieldName={fieldName}
-								payload={items[currRowIndex][currItemIndex]}
-								key={dropContainerId}
-								indexPattern={indexPattern}
-								onDeleteClick={handleDeleteClick}
-								component={component}
-								id={dropContainerId}
-								onBottomDrop={(dropResult) => handleVerticalDrop(dropResult, currRowIndex + 1)}
-								onTopDrop={(dropResult) => handleVerticalDrop(dropResult, currRowIndex)}
-								onLeftDrop={(id, dropResult) => handleSideDrop(id, dropResult, false)}
-								onRightDrop={(id, dropResult) => handleSideDrop(id, dropResult, true)}
-								onCenterDrop={handleCenterDrop}
-								top={false}
-								bottom={false}
-								right={true}
-								left={true}
-								preview={preview}
-							/>
+							return (
+								<styled.ColumnFieldContainer style = {{margin: '1rem'}}>
+									<styled.FieldName>{fieldName}</styled.FieldName>
+									{handleRenderComponentType(component)}
+								</styled.ColumnFieldContainer>
+							)
 						})}
-
-					</styled.RowContainer>
-
-						{!((draggingRow === currRowIndex) && (currRow.length === 1)) &&
-						<ContainerWrapper
-							onDrop={(dropResult)=>{
-								handleVerticalDrop(dropResult, currRowIndex + 1)
-							}}
-							hovering={hoveringRow === currRowIndex}
-							shouldAcceptDrop={()=>{return true}}
-							getGhostParent={()=>document.body}
-							groupName="lot_field_buttons"
-							getChildPayload={index =>
-								index
-							}
-							showHighlight={false}
-							isRow={true}
-							style={{minHeight: isLastRow && "10rem",flex: isLastRow ? 1 : 0, background: "coral", width: !mode && "1rem", height: mode && "1rem"}}
-						/>
-						}
-
+					</styled.ColumnContainer>
 					</div>
 				})}
+				</div>
+				<styled.ColumnFieldContainer style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem', flexDirection: 'row', maxHeight: '4rem'}}>
+					<i className = 'fas fa-plus' style = {{fontSize: '1.2rem', paddingRight: '.5rem'}}/>
+					<styled.FieldName>Add New Field</styled.FieldName>
+				</styled.ColumnFieldContainer>
 			</styled.ColumnContainer>
 		)
 	}

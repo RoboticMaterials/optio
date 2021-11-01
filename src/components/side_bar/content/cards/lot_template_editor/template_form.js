@@ -12,6 +12,7 @@ import Textbox from "../../../../basic/textbox/textbox";
 import Button from "../../../../basic/button/button";
 import BackButton from '../../../../basic/back_button/back_button';
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import CalendarPlaceholder from '../../../../basic/calendar_placeholder/calendar_placeholder'
 
 // actions
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
@@ -225,10 +226,10 @@ const FormComponent = (props) => {
 						</styled.FieldsHeader>
 						<styled.TheBody>
 							{loaded ?
-								<LotFormCreator
-									{...formikProps}
-									preview={preview}
-								/>
+									<LotFormCreator
+										{...formikProps}
+										preview={preview}
+									/>
 
 								:
 								<FadeLoader
@@ -238,7 +239,6 @@ const FormComponent = (props) => {
 									loading={true}
 								/>
 							}
-
 
 						</styled.TheBody>
 					</styled.SectionContainer>

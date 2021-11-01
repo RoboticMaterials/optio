@@ -3,15 +3,15 @@ import styled, {css} from "styled-components";
 export const DatesContainer = styled.span`
 	display: inline-flex;
 	align-items: center;
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.theme.bg.primary};
 	justify-content: center;
 	padding: .75rem;
 	border-radius: 0.4rem;
 	width: fit-content;
 	margin: 0;
 
-  
-  
+
+
 `
 
 const usableCss = css`
@@ -30,16 +30,16 @@ const notUsableCss = css`
 export const DateItem = styled.div`
 	display: flex;
 	flex-direction: column;
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.primary};
 	border-radius: 0.2rem;
-    width: fit-content;
-    position: relative;
-    
-    padding: .5rem 1rem;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  
+  width: fit-content;
+  position: relative;
+
+  padding: .5rem 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
   ${props => props.usable ? usableCss : notUsableCss};
 `
 
@@ -64,13 +64,13 @@ export const BodyContainer = styled.div`
 	padding: 1rem;
   align-self: stretch;
   z-index: 1001;
-  
+
 	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
 
-  
-  
+
+
 `
 
 export const ContentHeader = styled.div`
@@ -89,5 +89,5 @@ export const ContentTitle = styled.span`
 
 export const CalendarContainer = styled.div`
 	overflow: auto;
-	
+
 `

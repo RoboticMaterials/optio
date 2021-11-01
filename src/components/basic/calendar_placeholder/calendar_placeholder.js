@@ -134,6 +134,7 @@ const CalendarPlaceholder = (props) => {
 				<PlaceholderButton
 					schema={schema}
 					usable={usable}
+					style = {{background: 'blue'}}
 					onClick={() => {
 						if(usable) {
 							onStartClick()

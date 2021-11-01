@@ -243,7 +243,6 @@ const LotTemplateEditorSidebar = (props) => {
     const handleDrag = (e, ui) => {
         setWidth(width + ui.deltaX)
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
-
     }
 
     const renderNavButtons = () => {
