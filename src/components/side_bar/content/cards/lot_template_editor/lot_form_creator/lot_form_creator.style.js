@@ -24,19 +24,48 @@ export const ColumnContainer = styled.div`
   flex: 1;
 `
 
+export const ComponentOptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+	background: ${props => props.theme.bg.primary};
+	padding: 0.5rem;
+	border: 0.1rem solid ${props => props.theme.bg.quaternary};
+	border-radius: 0.5rem;
+	margin-right: 1rem;
+	z-index: 10000;
+
+	&:hover {
+		border: 0.1rem solid ${props => props.theme.bg.septenary};
+		cursor: pointer;
+	}
+`
+
+
 export const ColumnFieldContainer = styled.div`
   display: flex;
   flex-direction: column;
 	background: ${props => props.theme.bg.primary};
 	box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.2);
-	padding: 0.2rem 1rem 1rem 1rem;
+	padding: 0.4rem .4rem 1rem 1rem;
 	border: 0.1rem solid ${props => props.theme.bg.primary};
+	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
 	border-radius: .5rem;
   flex: 1;
 
 	&:hover {
-		border-bottom: 0.1rem solid ${props => props.theme.bg.quinary};
+		border-bottom: ${props => !props.selected && '0.1rem solid #79797d'};
 	}
+`
+
+export const OptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+	background: transparent;
+	border: 0.1rem solid ${props => props.theme.bg.primary};
+	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
+	border-radius: .5rem;
+	justify-content: start;
+
 `
 
 export const FieldName = styled.span`

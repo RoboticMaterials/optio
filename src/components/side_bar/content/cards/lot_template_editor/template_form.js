@@ -157,20 +157,21 @@ const FormComponent = (props) => {
 				<BackButton
 					secondary
 					onClick={close}
-					schema={'error'}
+					schema={'lots'}
 				>
 				</BackButton>
 
 				<div style={{marginRight: "auto"}}/>
 
 				<styled.TemplateNameContainer>
-					<styled.TemplateLabel>Product Group Name</styled.TemplateLabel>
+					<styled.TemplateLabel>Product Group Name:</styled.TemplateLabel>
 					<TextField
 						name={"name"}
 						placeholder={"Enter template name..."}
 						InputComponent={Textbox}
 						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
 						inputStyle={{background: themeContext.bg.tertiary}}
+						schema = {'lots'}
 					/>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
@@ -188,18 +189,19 @@ const FormComponent = (props) => {
 						>
 
 						<style.ColumnContainer>
-							<style.ColumnFieldContainer style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem'}}>
+							<style.ColumnFieldContainer style = {{margin: '1rem', paddingLeft: '1.2rem'}}>
 								<style.FieldName>Name</style.FieldName>
-								<Textbox
-									style={{flex: 1}}
-									usable={true}
-									schema='lots'
-									textboxContainerStyle={{flex: 1, pointerEvents: 'none'}}
-									inputStyle={{flex: 1, pointerEvents: 'none', maxWidth: '25rem'}}
-									type="text"
-									placeholder="Enter name..."
-									InputComponent={Textbox}
-								/>
+								<style.RowContainer
+								 style = {{
+								 	background: '#f7f7fa', width: '20rem', height: '2rem',
+								 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+								 	border: '0.1rem solid transparent',
+									borderRadius: '0.2rem',
+									padding: '0.5rem'
+								}}
+								>
+								<style.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</style.FieldName>
+								</style.RowContainer>
 							</style.ColumnFieldContainer>
 						</style.ColumnContainer>
 
