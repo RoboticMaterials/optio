@@ -29,12 +29,13 @@ const LotFormCreator = (props) => {
 		loaded,
 		fieldName,
 		fieldParent,
+		selectedEditingField,
+		setSelectedEditingField
 	} = props
 
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
 	const [draggingRow, setDraggingRow] = useState(null)
 	const [hoveringRow, setHoveringRow] = useState(null)
-	const [selectedEditingField, setSelectedEditingField] = useState(null)
 	const {
 		fields: items = []
 	} = values || {}

@@ -454,7 +454,7 @@ export const FieldsHeader = styled.div`
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
-  border-bottom: 2px solid ${props => props.theme.bg.secondary};
+  border-bottom: 3px solid ${props => props.theme.bg.secondary};
 	//padding: 1rem;
 `
 

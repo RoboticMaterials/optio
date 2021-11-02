@@ -29,14 +29,14 @@ export const ComponentOptionContainer = styled.div`
   flex-direction: column;
 	background: ${props => props.theme.bg.primary};
 	padding: 0.5rem;
-	border: 0.1rem solid ${props => props.theme.bg.quaternary};
 	border-radius: 0.5rem;
 	margin-right: 1rem;
+	box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.2);
 	z-index: 10000;
 
 	&:hover {
-		border: 0.1rem solid ${props => props.theme.bg.septenary};
 		cursor: pointer;
+		transform: translateY(-4px)
 	}
 `
 

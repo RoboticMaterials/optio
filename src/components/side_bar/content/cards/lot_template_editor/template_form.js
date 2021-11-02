@@ -87,7 +87,7 @@ const FormComponent = (props) => {
 	// component state
 	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
-
+	const [selectedEditingField, setSelectedEditingField] = useState(false)
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
@@ -189,11 +189,31 @@ const FormComponent = (props) => {
 						>
 
 						<style.ColumnContainer>
-							<style.ColumnFieldContainer style = {{margin: '1rem', paddingLeft: '1.2rem'}}>
-								<style.FieldName>Name</style.FieldName>
+							<style.ColumnFieldContainer
+								style = {{margin: '1rem', paddingLeft: '1.2rem'}}
+								onClick = {()=>setSelectedEditingField('NAME')}
+								selected = {selectedEditingField === 'NAME'}
+								>
+								{selectedEditingField === 'NAME' ?
+									<TextField
+										style={{
+											fontSize: '0.9rem',
+											whiteSpace: "nowrap" ,
+											marginRight: "2rem",
+											marginBottom: ".5rem",
+											width: "20rem"
+										}}
+										schema='lots'
+										inputStyle={{fontSize: '1rem'}}
+										name={"displayNames.name"}
+										InputComponent={Textbox}
+									/>
+									:
+									<style.FieldName>{values.displayNames.name}</style.FieldName>
+								}
 								<style.RowContainer
 								 style = {{
-								 	background: '#f7f7fa', width: '20rem', height: '2rem',
+								 	background: '#f7f7fa', width: selectedEditingField === 'NAME' ? '70%' : '20rem', height: '2rem',
 								 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
 								 	border: '0.1rem solid transparent',
 									borderRadius: '0.2rem',
@@ -211,6 +231,8 @@ const FormComponent = (props) => {
 									<LotFormCreator
 										{...formikProps}
 										preview={preview}
+										selectedEditingField = {selectedEditingField}
+										setSelectedEditingField = {setSelectedEditingField}
 									/>
 
 								:
@@ -232,10 +254,14 @@ const FormComponent = (props) => {
 								<TextField
 									name={"displayNames.count"}
 									InputComponent={Textbox}
+									placeholder = {'Enter a fieldname...'}
+									schema = {'lots'}
+									onChange = {()=> setSelectedEditingField(null)}
 									style={{
+										padding: '1rem',
 										display: "inline-flex",
-										marginRight: "1rem",
 										fontWeight: "bold",
+										marginLeft: '1rem',
 										alignItems: "center",
 										textAlign: "center",
 									}}
@@ -245,6 +271,9 @@ const FormComponent = (props) => {
 									themeContext={themeContext}
 									minusDisabled={true}
 									plusDisabled={true}
+									containerSyle = {{pointerEvents: 'none', userSelect: 'none'}}
+									inputStyle = {{pointerEvents: 'none', userSelect: 'none'}}
+									buttonStyle = {{pointerEvents: 'none', userSelect: 'none'}}
 								/>
 							</styled.ObjectInfoContainer>
 						</div>
