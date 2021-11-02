@@ -14,6 +14,7 @@ import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
 import NumberInput from '../../../../../basic/number_input/number_input'
 import CheckboxField from '../../../../../basic/form/checkbox_field/checkbox_field'
+import {getProcessStations} from "../../../../../../methods/utils/processes_utils";
 const LotFormCreator = (props) => {
 
 	const {
@@ -34,6 +35,7 @@ const LotFormCreator = (props) => {
 	} = props
 
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
+	const processes = useSelector(state => state.processesReducer.processes)
 	const [draggingRow, setDraggingRow] = useState(null)
 	const [hoveringRow, setHoveringRow] = useState(null)
 	const {
@@ -69,15 +71,28 @@ const LotFormCreator = (props) => {
 	const handleAddField = (componentType, dataType) => {
 
 		let existingFields = values.fields
-		let newField =[]
-		newField.push({
-			component: componentType,
-			dataType: dataType,
-			fieldName: '',
-			required: false,
-			showInPreview: false,
-			_id: uuidv4()
-		})
+		let newField = []
+		if(componentType === 'WORK_INSTRUCTIONS'){
+			newField.push({
+				component: componentType,
+				dataType: dataType,
+				workInstructions: [],
+				fieldName: '',
+				required: false,
+				showInPreview: false,
+				_id: uuidv4()
+			})
+		}
+		else{
+			newField.push({
+				component: componentType,
+				dataType: dataType,
+				fieldName: '',
+				required: false,
+				showInPreview: false,
+				_id: uuidv4()
+			})
+		}
 
 		let id = newField[0]._id
 		existingFields.push(newField)
@@ -152,7 +167,6 @@ const LotFormCreator = (props) => {
 		else {
 			updatedData = immutableDelete(items, indexPattern.pop())
 		}
-
 		setFieldValue("fields", updatedData, true)
 	}
 
@@ -223,6 +237,14 @@ const LotFormCreator = (props) => {
 						/>
 					</styled.ComponentOptionContainer>
 
+					<styled.ComponentOptionContainer
+						onClick = {()=> handleAddField('WORK_INSTRUCTIONS', 'FILE')}
+						style = {{flexDirection: 'row'}}
+						>
+						<styled.FieldName style = {{paddingTop: '.5rem'}}>work instructions</styled.FieldName>
+						<i class="far fa-file-alt" style = {{fontSize: '2.5rem', color: '#b8b9bf'}}></i>
+					</styled.ComponentOptionContainer>
+
 			</styled.RowContainer>
 		)
 	}
@@ -270,7 +292,7 @@ const LotFormCreator = (props) => {
 						padding: '0.5rem'
 					}}
 					>
-					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6'}}>add dashboard text...</styled.FieldName>
+					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6'}}>dashboard text input...</styled.FieldName>
 					</styled.RowContainer>
 				)
 
@@ -361,6 +383,21 @@ const LotFormCreator = (props) => {
 						}
 					</>
 				)
+
+				case 'WORK_INSTRUCTIONS':
+					return (
+						<styled.RowContainer
+						 style = {{
+							background: '#f7f7fa', width: '3rem',
+							boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+							border: '0.1rem solid transparent',
+							borderRadius: '0.2rem',
+							padding: '0.5rem'
+						}}
+						>
+							<i class="far fa-file-alt" style = {{fontSize: '2.5rem', color: '#7e7e7e'}}></i>
+						</styled.RowContainer>
+					)
 			}
 		}
 
