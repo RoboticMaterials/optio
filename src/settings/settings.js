@@ -22,16 +22,16 @@ export const apiIPAddress = () => {
      * If non local api is true, then the server is running on an IP address entered
      */
 
-    if (!!hostServerIpAddress) {
-        // If there is no api use the local host
-        if (nonLocalIp===false) {
-            return apiIPAddress = 'https://' + 'localhost' + ':5000/api/'
-        } else {
+    if (nonLocalIp === true) {
+        if (!!hostServerIpAddress) {
             return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
-
+        } else if (window.location.hostname === 'localhost') {
+            return 'http://localhost:5000/api/'
+        } else {
+            return 'https://' + window.location.hostname + ':5000/api/'
         }
     } else {
-        return 'https://' + window.location.hostname + ':5000/api/'
+        return 'http://localhost:5000/api/'
     }
 
 };
