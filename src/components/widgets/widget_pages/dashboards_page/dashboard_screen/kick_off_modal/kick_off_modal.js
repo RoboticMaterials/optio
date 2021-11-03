@@ -37,14 +37,13 @@ import {
   SORT_DIRECTIONS,
 } from "../../../../../../constants/lot_contants";
 import { getLotTemplates } from "../../../../../../redux/actions/lot_template_actions";
-import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
-import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions';
 import useWindowSize from "../../../../../../hooks/useWindowSize";
 
 Modal.setAppElement("body");
 
 const KickOffModal = (props) => {
-  const { isOpen, title, close, dashboard, processID, stationID, onSubmit } =
+  const { isOpen, title, close, dashboard, processID, stationID, onSubmit, user } =
     props;
 
   const params = useParams();
@@ -62,6 +61,7 @@ const KickOffModal = (props) => {
   const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates());
   const dispatchGetProcesses = () => dispatch(getProcesses());
   const onPutCard = async (card, ID) => await dispatch(putCard(card, ID));
+  const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
 
   const processCards = useSelector((state) => {
     return state.cardsReducer.processCards;
@@ -169,6 +169,28 @@ const KickOffModal = (props) => {
         if (updatedCard.bins["QUEUE"].count === 0)
           delete updatedCard.bins["QUEUE"];
       }
+
+      for (var kickoffStation of kickoffStations) {
+        // Save Touch events for the kickoff
+        dispatchPostTouchEvent({
+          start_datetime: new Date().getTime(),
+          move_datetime: new Date().getTime(),
+          pauses: [],
+          lot_id: updatedCard._id,
+          lot_number: updatedCard.lotNum,
+          product_group_id: updatedCard.lotTemplateId,
+          sku: 'default',
+          quantity,
+          load_station_id: 'QUEUE',
+          current_cycle_time: null,
+          current_wip: {},
+          unload_station_id: kickoffStation,
+          dashboard_id: dashboard._id.$oid,
+          user,
+          route_id: null
+        })
+      }
+      
 
       const result = await onPutCard(updatedCard, updatedCard._id);
 

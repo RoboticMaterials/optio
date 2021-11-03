@@ -120,7 +120,7 @@ const ReportModal = (props) => {
             dashboard_id: dashboard._id.$oid,
             station_id: dashboard.station,
             report_button_id: _id,
-            date: new Date().getTime(),
+            datetime: new Date().getTime(),
 
             // spread rest of buttons data - commented out for now, get remaining data from actual report button when its needed
             // ...rest

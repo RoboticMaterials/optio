@@ -10,7 +10,7 @@ export const LocationDefaultAttributes = {
     _id: '',
     map_id: null,
     cycle_time: 0,
-    manual_cycle_time: '00:00:00',
+    manual_cycle_time: 0,
     cycle_time_mode: 'auto',
     temp: true
 }
