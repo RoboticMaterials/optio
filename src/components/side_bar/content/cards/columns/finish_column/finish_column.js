@@ -45,12 +45,9 @@ const FinishColumn = ((props) => {
 					return(
 						<styled.StationHeader>
 							<styled.HeaderRow style={{
-								marginBottom: "1rem"
+								marginBottom: "1rem",
+								justifyContent: 'center'
 							}}>
-								<i className="fa fa-chevron-down" aria-hidden="true"
-								   onClick={() => setCollapsed(true)}
-									 style = {{cursor: "pointer"}}
-								/>
 
 								<styled.LabelContainer>
 

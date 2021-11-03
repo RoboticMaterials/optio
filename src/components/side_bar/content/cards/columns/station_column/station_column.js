@@ -75,7 +75,7 @@ const StationsColumn = ((props) => {
     }
 
     const renderCycleTime = () => {
-        
+
         return (
             <>
                 <styled.divider />
@@ -150,14 +150,10 @@ const StationsColumn = ((props) => {
                         <styled.StationHeader>
                             <styled.HeaderRow
                                 style={{
-                                    marginBottom: "1rem"
+                                    marginBottom: "1rem",
+                                    justifyContent: 'center'
                                 }}
                             >
-                                <i className="fa fa-chevron-down" aria-hidden="true"
-                                    onClick={() => setCollapsed(true)}
-                                    style={{ marginRight: "1rem", cursor: "pointer" }}
-                                />
-
                                 <styled.LabelContainer>
                                     <styled.StationTitle>{stationName}</styled.StationTitle>
                                 </styled.LabelContainer>

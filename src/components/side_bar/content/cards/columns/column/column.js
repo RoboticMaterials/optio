@@ -88,6 +88,7 @@ const Column = ((props) => {
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
+
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
 		let tempNumberOfLots = 0
@@ -553,7 +554,7 @@ const Column = ((props) => {
 															}
 													</>
 													:
-													<div style = {{minHeight: '15rem', width: '80%'}}>
+													<div style = {{minHeight:'15rem', width: '80%'}}>
 													...Loading
 													</div>
 											}
