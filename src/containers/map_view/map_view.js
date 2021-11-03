@@ -5,7 +5,6 @@ import moduleName from 'react'
 import { withRouter } from "react-router-dom";
 
 import * as styled from './map_view.style'
-import VisibilitySensor from 'react-visibility-sensor'
 
 import uuid from 'uuid';
 import * as d3 from 'd3'
@@ -112,7 +111,7 @@ export class MapView extends Component {
         this.setState({currentMap: currentMap})
       } else if (!this.state.currentMap && this.props.localSettings.currentMapId === null && this.props.maps.length > 0) {
           this.setState({currentMap: this.props.maps[0]})
-          
+
 
           const updatedSettings = {
             ...this.props.localSettings,

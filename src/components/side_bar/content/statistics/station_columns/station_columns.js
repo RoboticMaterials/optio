@@ -47,7 +47,7 @@ const StationColumns = (props) => {
                         ) : (
                             <div
                                 style={{
-                                    height: "20rem",
+                                    minHeight: "20rem",
                                     width: "80%",
                                     margin: "2rem",
                                     color: "grey",
