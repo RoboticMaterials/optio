@@ -127,7 +127,8 @@ const SideBar = (props) => {
 
     useEffect(() => {
             const enter = full.substring(full.length-5)
-            if(enter === 'Enter' && full.length>5){
+            const enterEnter = full.substring(full.length-10)
+            if(enter === 'Enter' && enterEnter!== 'EnterEnter' && full.length>5){
                 setBarcode([])
                 let lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)

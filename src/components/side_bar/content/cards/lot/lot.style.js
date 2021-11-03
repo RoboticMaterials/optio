@@ -13,7 +13,6 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   // overflow: hidden;
-
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
   color: ${props => props.theme.bg.octonary};
@@ -26,11 +25,10 @@ export const Container = styled.div`
 
   outline: none;
   user-select: none;
-  border: 0.1rem solid transparent;
-  border-radius: 1rem;
   cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
   pointer-events: ${props => !!props.isDashboard && !!props.disabled ? 'none' : 'auto'};
-  box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.2);
+  box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
+
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -38,10 +36,11 @@ export const Container = styled.div`
     }
 
   &:hover {
-    border: 0.1rem solid #79797d;
-    border-radius: 1rem;
+    box-shadow: 2px 5px 5px 2px rgba(0,0,0,0.2);
+    //transform: translateY(-2px);
+    //cant transform or lot looks weird when dragging
   }
-
+  }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
 
@@ -229,6 +228,7 @@ export const FlagsContainer = styled.div`
 export const HeaderBar = styled.div`
 	display: flex;
   flex-direction: column;
+  position: relative;
 
   padding: 0rem 0rem 0.1rem 0.5rem;
 `
@@ -242,4 +242,45 @@ export const NameNumberContainer = styled.div`
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 600;
+`
+
+export const LoopIndicator = styled.div`
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    background: white;
+    box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+export const LoopIcon = styled.i`
+    color: #888;
+    font-size: 1.2rem;
+    transform: rotate(-70deg) scaleX(-1);
+`
+
+export const LoopCount = styled.div`
+    position: absolute;
+    top: 0.15rem;
+    right: 0.15rem;
+
+    height: 1rem;
+    width: 1rem;
+    border-radius: 0.5rem;
+    background: #888;
+    color: white;
+
+    font-size: 0.6rem;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white
 `

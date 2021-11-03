@@ -52,6 +52,7 @@ export async function postStation(station) {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         station.map_id = currMapId
+        station.created_at = (new Date()).getTime();
 
         const response = await axios({
             method: 'POST',

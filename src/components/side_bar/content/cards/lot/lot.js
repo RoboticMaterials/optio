@@ -41,6 +41,7 @@ const Lot = (props) => {
         enableFlagSelector,
         onClick,
         count,
+        loopCount,
         containerStyle,
         selectable,
         isSelected,
@@ -206,12 +207,15 @@ const Lot = (props) => {
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
+            draggable = {!isDashboard ? 'true' : 'false'}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
-            style={containerStyle}
+            style={{
+              ...containerStyle
+            }}
             onMouseEnter = {()=>setCardHover(true)}
             onMouseLeave = {() =>setCardHover(false)}
         >
@@ -280,11 +284,18 @@ const Lot = (props) => {
 
                 }
 
+                {!!loopCount &&
+                    <styled.LoopIndicator>
+                        <styled.LoopIcon className="fas fa-redo-alt"/>
+                        <styled.LoopCount>{loopCount}</styled.LoopCount>
+                    </styled.LoopIndicator>
+                }
+
                 <styled.NameNumberContainer>
                     <styled.CardName>{name ? name : lotNumber}</styled.CardName>
 
                     {name && !!lotNumber &&
-                        <styled.LotNumber>{lotNumber}</styled.LotNumber>
+                        <styled.LotNumber>#{lotNumber}</styled.LotNumber>
                     }
                 </styled.NameNumberContainer>
 

@@ -18,11 +18,11 @@ export const DragToDiv = styled.div`
   margin-top: .5rem;
   margin-bottom: .5rem;
   margin-left: 0.5rem;
-  min-height: 10rem;
+  min-height: ${props => !props.dragDivHeight ? '10rem' : props.dragDivHeight};
   background: ${props => props.theme.bg.tertiary};
 
   border: 0.2rem solid #dedfe3;
-  border-radius: 0.5rem;
+  border-radius: 0.2rem;
 `
 
 

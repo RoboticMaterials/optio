@@ -68,7 +68,7 @@ const LotContainer = (props) => {
     [lotTemplateId, lot, dashboard]
   );
 
-  if (!(binId in bins)) { return null }
+  if (bins === undefined || !(binId in bins)) { return null }
   const { count=0, ...partials } = bins[binId] || {};
 
   return (
@@ -88,14 +88,16 @@ const LotContainer = (props) => {
                   enableFlagSelector={enableFlagSelector}
                   name={name}
                   count={count}
+                  loopCount={lot.loopCount}
                   id={lotId}
                   isSelected={false}
                   selectable={false}
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{
-                      borderRadius: '0.5rem',
-                      width: "80%",
+                      borderRadius: '.3rem',
+                      width: "100%",
+                      padding: !!isDashboard && '.2rem',
                       margin: ".5rem auto .5rem auto",
                       ...containerStyle,
                   }}
@@ -116,6 +118,7 @@ const LotContainer = (props) => {
                           enableFlagSelector={enableFlagSelector}
                           name={name + ` (${stations[routes[routeId]?.load]?.name})`}
                           count={quantity}
+                          loopCount={lot.loopCount}
                           id={lotId}
                           isSelected={false}
                           selectable={false}
