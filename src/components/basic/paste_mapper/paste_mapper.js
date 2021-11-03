@@ -43,10 +43,10 @@ const PasteMapper = (props) => {
 
     const [table, setTable] = useState(values.table)
     const [fieldMapping, setFieldMapping] = useState(new Array(availableFields.length).fill(null))
+    const [disableMergeButton, setDisableMergeButton] = useState(false)
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
-    const alpenParse = useSelector(state => state.settingsReducer.settings.alpenParse)
-
+    const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
     useEffect(() => {
         if (!!lotTemplate?.uploadFieldMapping) {
             let originalFieldMapping = lotTemplate.uploadFieldMapping
@@ -56,6 +56,20 @@ const PasteMapper = (props) => {
             setFieldMapping(originalFieldMapping)
         }
     }, [])
+
+    useEffect(() => {
+      if(!!lotTemplate?.uploadFieldMapping){
+        const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
+        if(foundQtyField === 'LILIQuantity') {
+          console.log(foundQtyField)
+          setDisableMergeButton(false)
+        }
+        else setDisableMergeButton(true)
+      }
+      else{
+        return setDisableMergeButton(true)
+      }
+    }, [lotTemplate])
 
     const renderColumnDropdown = ({ column }) => {
 
@@ -123,8 +137,11 @@ const PasteMapper = (props) => {
 
                         // Save this value in the product group template for next time you paste
                         let lotTemplateCopy = deepCopy(lotTemplate)
-                        lotTemplateCopy.uploadFieldMapping[column] = null
-                        dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                        if(lotTemplate && lotTemplate.uploadFieldMapping){
+                          lotTemplateCopy.uploadFieldMapping[column] = null
+                          dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                        }
+
                     }}>
                         Clear
                     </MenuItem>
@@ -193,20 +210,18 @@ const PasteMapper = (props) => {
             }
           }
           if(match === true){
+            if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
               tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
               tableCopy.splice(i, 1)
+            }
+            else{
+              console.log('No qty field')
+            }
           }
+
         }
       }
       setTable(tableCopy)
-    }
-
-    const mergeDisabled = () => {
-      if(!!lotTemplate?.uploadFieldMapping){
-        const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
-        if(!foundQtyField) return true
-      }
-      return false
     }
 
     const renderRowLabel = ({ row }) => {
@@ -247,29 +262,32 @@ const PasteMapper = (props) => {
 
             <styled.Body>
                 <styled.ContentContainer>
-                    <Button
-                        style={{maxWidth: '18rem', marginLeft: '2rem'}}
-                        secondary
-                        label={'Apply lot template fields'}
-                        onClick = {()=>{
-                          handleApplyLotTemplateFields()
-                        }}
-                        type="button"
-                    />
-                    {!!alpenParse &&
+                  {!!parseMode && parseMode === 'Alpen' &&
+                      <Button
+                          style={{maxWidth: '18rem', marginLeft: '2rem'}}
+                          secondary
+                          label={'Apply lot template fields'}
+                          onClick = {()=>{
+                            handleApplyLotTemplateFields()
+                          }}
+                          type="button"
+                      />
+                    }
+                    {!!parseMode && parseMode === 'Alpen' &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
                           secondary
-                          disabled = {mergeDisabled()}
+                          disabled = {disableMergeButton}
                           label={'Merge identical lots'}
                           onClick = {()=>{
                             handleMergeIdenticalLots()
                           }}
                           type="button"
+                          schema = {'lots'}
                       />
                     }
 
-                    <styled.SectionDescription>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
+                    <styled.SectionDescription style = {{flex: parseMode === 'Alpen' && '0.75'}}>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
                 </styled.ContentContainer>
                 <styled.SectionBreak />
                 <styled.TableContainer style={{backdropFilter: 'none !important'}}>

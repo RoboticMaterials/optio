@@ -285,7 +285,7 @@ export const SectionDescription = styled.span`
     justify-content: center;
     align-items: center;
     display: flex;
-    flex: .75;
+    flex: 1;
     flex-direction: column;
     font-size: ${props => props.theme.fontSize.sz4};
     //margin-bottom: 1rem;
