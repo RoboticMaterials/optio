@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import * as styled from "./status_list_body.style"
@@ -15,7 +15,7 @@ const StatusListBody = (props) => {
 		mergeDisabled,
 	} = props
 
-	const renderData = () => {
+	const renderData = useMemo(() => {
 		return data.map((currDatem, currIndex) => {
 
 			const {
@@ -58,7 +58,8 @@ const StatusListBody = (props) => {
 				/>
 			)
 		})
-	}
+	}, [data])
+
 	return (
 		<styled.Container>
 			<styled.RowTitles>
@@ -71,7 +72,7 @@ const StatusListBody = (props) => {
 
 			</styled.RowTitles>
 
-			{renderData()}
+			{renderData}
 		</styled.Container>
 	);
 };

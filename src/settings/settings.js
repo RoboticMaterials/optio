@@ -25,13 +25,13 @@ export const apiIPAddress = () => {
     if (!!hostServerIpAddress) {
         // If there is no api use the local host
         if (nonLocalIp===false) {
-            return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
+            return apiIPAddress = 'https://' + 'localhost' + ':5000/api/'
         } else {
-            return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
+            return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
 
         }
     } else {
-        return 'http://' + window.location.hostname + ':5000/api/'
+        return 'https://' + window.location.hostname + ':5000/api/'
     }
 
 };
