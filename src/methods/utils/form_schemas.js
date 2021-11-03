@@ -759,6 +759,7 @@ export const getProcessSchema = (stations) => Yup.object().shape({
         'All processes must have at least one "Kick Off" station (The beginning of this process is ambiguous).',
         (routes) => {
             const startNodes = findProcessStartNodes(routes);
+            console.log("START", startNodes)
             if (startNodes.length === 0) return false;
             else return true
         }
@@ -777,16 +778,15 @@ export const getProcessSchema = (stations) => Yup.object().shape({
 
             const { startDivergeType } = this.parent
 
-            const allNodes = routes.reduce((nodes, route) => {
-                if (!nodes.includes(route.load)) nodes.push(route.load)
-                if (!nodes.includes(route.unload)) nodes.push(route.unload)
-                return nodes
-            }, [])
-
             let normalizedRoutes = {}
             routes.forEach(route => normalizedRoutes[route._id] = route)
             let routeIds = routes.map(r=>r._id)
 
+            // const allNodes = routes.reduce((nodes, route) => {
+            //     if (!nodes.includes(route.load)) nodes.push(route.load)
+            //     if (!nodes.includes(route.unload)) nodes.push(route.unload)
+            //     return nodes
+            // }, [])
             // allNodes.forEach(node => {
             //     const mergeExp = handleMergeExpression(node, {startDivergeType, routes: routeIds}, normalizedRoutes, stations)
             // })
@@ -795,7 +795,7 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             const endNodes = findProcessEndNodes(routes);
             for (var endNode of endNodes) {
                 const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routeIds}, normalizedRoutes, stations, false)
-                if (!doesExpressionConverge(mergeExp, normalizedRoutes, endNode)) {
+                if (mergeExp === null || !doesExpressionConverge(mergeExp, normalizedRoutes, endNode)) {
                     return false;
                 }
             }
