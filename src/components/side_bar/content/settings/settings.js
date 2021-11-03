@@ -512,7 +512,7 @@ const Settings = () => {
                         onChange={values => {
                             // update current map
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
-                            
+
 
                         }}
                         className="w-100"

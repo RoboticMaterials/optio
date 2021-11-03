@@ -246,7 +246,7 @@ export const Cell = styled.div`
 
 export const ContentContainer = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
     align-self: stretch;
     padding: 1rem 0;
@@ -285,6 +285,7 @@ export const SectionDescription = styled.span`
     justify-content: center;
     align-items: center;
     display: flex;
+    flex: 1;
     flex-direction: column;
     font-size: ${props => props.theme.fontSize.sz4};
     //margin-bottom: 1rem;
@@ -392,8 +393,8 @@ export const buttonGroupContainerCss = css`
 	padding: 0;
 	margin: 0;
 
-    
-    
+
+
 `
 
 export const RowLabelContainer = styled.td`

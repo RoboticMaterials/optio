@@ -82,7 +82,7 @@ export const parseXML = (content) => {
         }
         csv = csv.replace(/^\s+|\s+$/g, ""); //get rid of trailing spaces
     } else if (xml.getElementsByTagName("row").length !== 0) {
-        console.log(xml.getElementsByTagName("row").length);
+        //console.log(xml.getElementsByTagName("row").length);
         newXml[0].children.forEach((attribute, index, array) => {
             header += attribute.name + "\t";
         });
@@ -102,33 +102,34 @@ export const parseXML = (content) => {
         });
     } else if (xml.getElementsByTagName("ViewItem").length !== 0) {
         var newXml = xml.getElementsByTagName("ViewItem");
-        newXml[0].children.forEach((attribute, index, array) => {
-            header += attribute.name + "\t";
-        });
+        //newXml[0].children.forEach((attribute, index, array) => {
+        //    header += attribute.name + "\t";
+        //});
 
         //   csv += header + '\n'
 
         newXml.forEach((lot, index, array) => {
+            let workOrderNumber = lot.children.find((att => att.name === 'WorkOrderNumber'))
+            if(workOrderNumber.value.includes(' 1of')){
             var row = "";
             lot.children.forEach((child, index, array) => {
                 row += child.value + "\t";
             });
-            if (index === array.length - 1) {
-                csv += row + "1";
-            } else {
-                csv += row + "\n";
-            }
+
+            csv += row + "\n";
+          }
         });
+
     }
 
-    console.log("!!", csv);
+    //console.log("!!", csv);
 
     var rows = csv.split("\n");
     let table = [];
 
     for (var y in rows) {
         var cells = rows[y].split("\t");
-        if (cells.length) {
+        if (cells.length>1) {
             table.push(cells.map((cell) => ({ value: cell })));
         }
     }
