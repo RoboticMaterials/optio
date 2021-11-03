@@ -129,7 +129,6 @@ const LotEditorContainer = (props) => {
 
     const formRef = useRef(null); // gets access to form state
     const { current } = formRef || {};
-
     const {
         values = {},
         touched = {},
@@ -574,7 +573,7 @@ const LotEditorContainer = (props) => {
                     name: newName,
                     bins: newBins,
                     processId: newProcessId,
-                    lotNumber: newLotNumber,
+                    lotNum: newLotNumber,
                     fields
                 } = values || {}
 
@@ -584,7 +583,7 @@ const LotEditorContainer = (props) => {
                     process_id: newProcessId,
                     lotTemplateId: lotTemplateId,
                     fields,
-                    lotNumber: newLotNumber, //collectionCount + index
+                    lotNum: collectionCount + index,
                     totalQuantity: newBins['QUEUE']?.count
                 }
 

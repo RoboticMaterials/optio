@@ -434,7 +434,7 @@ const Column = ((props) => {
 
 										const isPartial = part !== 'count' ? true : false
 										return (
-											<VisibilitySensor partialVisibility = {true}>
+											<VisibilitySensor partialVisibility = {true} offset = {{bottom: 50, top: 50}}>
 												{({isVisible}) =>
 													<>
 														{!!isVisible ?
@@ -523,7 +523,7 @@ const Column = ((props) => {
 															}
 													</>
 													:
-													<div style = {{height: '20rem', width: '80%'}}>
+													<div style = {{minHeight:'15rem', width: '80%'}}>
 													...Loading
 													</div>
 											}
