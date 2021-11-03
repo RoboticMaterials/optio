@@ -31,7 +31,7 @@ import {
   findProcessStartNodes,
   isLoopingRoute
 } from "../../../../../../methods/utils/processes_utils";
-import { handleMoveLot } from '../../../../../../methods/utils/lot_utils';
+import { getIsCardAtBin } from '../../../../../../methods/utils/lot_utils';
 import { deepCopy } from "../../../../../../methods/utils/utils";
 
 // Import Actions
@@ -42,7 +42,6 @@ import {
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
-import { RemoveCircleOutlineOutlined } from "@material-ui/icons";
 
 const DashboardLotPage = (props) => {
   const {
@@ -112,15 +111,37 @@ const DashboardLotPage = (props) => {
    * at which point the event will be saved to the backend.
    */
   useEffect(() => {
+    const fromStation = !!warehouseID ? warehouseID : stationID
+    
+    // Track the WIP (by product group) that are currently at the station
+    let WIP = {}
+    Object.values(cards)
+      .filter(card => getIsCardAtBin(card, fromStation?._id))
+      .forEach(card => {
+          const {
+              bins = {},
+          } = card || {}
+
+          const quantity = bins[stationID]?.count
+          if (card.lotTemplateId in WIP) {
+            WIP[card.lotTemplateId] += quantity
+          } else {
+            WIP[card.lotTemplateId] = quantity
+          }
+      })
+
+    // Set initial information for the touch event, the rest will be filled out on move
     setTouchEvent({
-      start_time: new Date().getTime(),
-      stop_time: null,
+      start_datetime: new Date().getTime(),
+      move_datetime: null,
       pauses: [],
       lot_id: currentLot._id,
+      lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
       sku: 'default',
       quantity: null,
-      load_station_id: !!warehouseID ? warehouseID : stationID,
+      load_station_id: fromStation,
+      current_wip: WIP,
       unload_station_id: null,
       dashboard_id: dashboardID,
       user: user,
@@ -241,11 +262,13 @@ const DashboardLotPage = (props) => {
 
     // Create new touch Events
     for (var moveRoute of moveRoutes) {
+      const fromStation = stations[moveRoute.load]
       const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
-        stop_time: new Date().getTime(),
+        move_datetime: new Date().getTime(),
         route_id: (typeof moveRoute === 'string') ? moveRoute : moveRoute._id,
-        unload_station_id: (typeof moveRoute === 'string') ? moveRoute : stations[moveRoute.unload]._id,
-        quantity
+        unload_station_id: (typeof moveRoute === 'string') ? moveRoute : fromStation._id,
+        quantity,
+        type: 'move'
       })
       await dispatchPostTouchEvent(updatedTouchEvent)
     }

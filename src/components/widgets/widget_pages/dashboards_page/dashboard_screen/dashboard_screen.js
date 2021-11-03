@@ -274,6 +274,7 @@ const DashboardScreen = (props) => {
             case 'kickoff':
                 return (
                     <KickOffModal
+                        user={user}
                         isOpen={true}
                         stationID={stationID}
                         processID={selectedOperation.processID}

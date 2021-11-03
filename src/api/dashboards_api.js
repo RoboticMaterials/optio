@@ -68,7 +68,6 @@ export async function postDashboards(dashboard) {
 
 export async function putDashboards(dashboard, ID) {
 
-
     try {
         const response = await axios({
             method: 'PUT',
