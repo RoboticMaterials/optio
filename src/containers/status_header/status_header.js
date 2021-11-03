@@ -60,7 +60,7 @@ const StatusHeader = (props) => {
     const onSetWidth = (props) => dispatch (setWidth(props))
     const onSetOpen = (props) => dispatch (setOpen(props))
 
-    
+
 
 
     // Used for determining break point of header
@@ -212,7 +212,8 @@ const StatusHeader = (props) => {
                                     <styled.NotificationIcon className='far fa-bell' />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                //<styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <></>
 
                             }
 
@@ -241,7 +242,8 @@ const StatusHeader = (props) => {
                                     <styled.NotificationIcon className='far fa-bell' />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                //<styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <></>
 
                             }
 
