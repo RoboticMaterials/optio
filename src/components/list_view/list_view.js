@@ -131,7 +131,8 @@ const ListView = (props) => {
 
     useEffect(() => {
             const enter = full.substring(full.length-5)
-            if(enter === 'Enter'){
+            const enterEnter = full.substring(full.length-10)
+            if(enter === 'Enter' && enterEnter!== 'EnterEnter' && full.length>5){
                 setBarcode([])
                 let lotId = parseInt(full.slice(0,-5))
                 setLotNum(lotId)

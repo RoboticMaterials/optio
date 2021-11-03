@@ -207,12 +207,15 @@ const Lot = (props) => {
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
+            draggable = {!isDashboard ? 'true' : 'false'}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
-            style={containerStyle}
+            style={{
+              ...containerStyle
+            }}
             onMouseEnter = {()=>setCardHover(true)}
             onMouseLeave = {() =>setCardHover(false)}
         >

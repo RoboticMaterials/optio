@@ -22,7 +22,7 @@ export const DragToDiv = styled.div`
   background: ${props => props.theme.bg.tertiary};
 
   border: 0.2rem solid #dedfe3;
-  border-radius: 0.5rem;
+  border-radius: 0.2rem;
 `
 
 

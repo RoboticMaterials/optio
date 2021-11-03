@@ -13,7 +13,6 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   // overflow: hidden;
-
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
   color: ${props => props.theme.bg.octonary};
@@ -26,11 +25,10 @@ export const Container = styled.div`
 
   outline: none;
   user-select: none;
-  border: 0.1rem solid transparent;
-  border-radius: 1rem;
   cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
   pointer-events: ${props => !!props.isDashboard && !!props.disabled ? 'none' : 'auto'};
   box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
+
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -38,8 +36,10 @@ export const Container = styled.div`
     }
 
   &:hover {
-    box-shadow: 2px 5px 4px 2px rgba(0,0,0,0.2);
-    transform: translateY(-2px);
+    box-shadow: 2px 5px 5px 2px rgba(0,0,0,0.2);
+    //transform: translateY(-2px);
+    //cant transform or lot looks weird when dragging
+  }
   }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
@@ -98,7 +98,7 @@ export const ColumnContainer = styled.div`
 `
 export const PartsRow = styled.div`
     display: flex;
-    width: 80%;
+    width: 100%;
     justify-content: space-between;
     padding: 0rem 0 .25rem 0;
 `
