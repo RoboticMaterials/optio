@@ -1,7 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Redirect,} from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
-import ls from 'local-storage'
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -13,28 +12,15 @@ import 'rc-time-picker/assets/index.css';
 import useWindowSize from './hooks/useWindowSize'
 
 import * as styled from './App.style'
-
 // Import API
-import { deleteLocalSettings } from './api/local_api'
-import { stopAPICalls } from './redux/actions/local_actions'
-import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
+import { getLocalSettings } from './redux/actions/local_actions'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
-//import StatusHeader from './containers/status_header/status_header';
-//import Logger from './containers/logger/logger';
-//import SideBar from './containers/side_bar/side_bar'
-//import MapView from './containers/map_view/map_view'
-//import HILModal from './containers/hil_modal/hil_modal'
-//import Authentication from './containers/authentication/authentication'
-//import Widgets from './components/widgets/widgets'
-//import ListView from "./components/list_view/list_view";
-import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 const ListView = lazy(() => import('./components/list_view/list_view'))
 const Widgets = lazy(() => import('./components/widgets/widgets'))
 const Authentication = lazy(() => import('./containers/authentication/authentication'))
-const HILModal = lazy(() => import('./containers/hil_modal/hil_modal'))
 const Logger = lazy(() => import('./containers/logger/logger'))
 const MapView = lazy(()=> import('./containers/map_view/map_view'))
 const StatusHeader = lazy(() => import('./containers/status_header/status_header'))
@@ -50,20 +36,14 @@ const App = () => {
     const maps = useSelector(state => state.mapReducer.maps)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-    const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
-    const localSettings = useSelector(state => state.localReducer.localSettings)
-    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
-    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const authenticated = useSelector(state => state.localReducer.authenticated)
     const dispatch = useDispatch()
-    const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
 
     const [showSideBar, setShowSideBar] = useState(false)
-    const [showStopAPIModal, setShowStopAPIModal] = useState(true)
 
     const size = useWindowSize()
     const windowWidth = size.width
@@ -116,27 +96,11 @@ const App = () => {
               <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
-                    <ConfirmDeleteModal
-                        isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
-                        title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
-                        button_1_text={"Yes"}
-                        handleOnClick1={() => {
-                            dispatchStopAPICalls(true)
-                            setShowStopAPIModal(false)
-                        }}
-                        button_2_text={"No"}
-                        handleOnClick2={() => {
-                            setShowStopAPIModal(false)
-                        }}
-                        handleClose={() => {
-                            setShowStopAPIModal(false)
-                        }}
-                    />
                     <BrowserRouter>
                         <PageErrorBoundary>
                             <>
                                 {/* Authentication */}
-                                {!authenticated &&
+                                {!authenticated && 
                                     <Route path="/" >
                                         <Authentication mobileMode={mobileMode} />
                                     </Route>
@@ -182,28 +146,14 @@ const App = () => {
                                                         setShowSideBar={setShowSideBar}
                                                     />
                                                 </Route>
-                                                // :
-                                                //     <Route
-                                                //         path={["/:page?/:id?/:subpage?", '/']}
-                                                //     >
-                                                //         <SideBar
-                                                //             showSideBar={sideBarOpen}
-                                                //             setShowSideBar={setShowSideBar}
-                                                //         />
-                                                //     </Route>
                                                 :
                                                 <></>
                                             }
 
-                                            <Route
-                                                path={["/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouseID?", '/']}
-                                                component={HILModal}
-                                            />
-
                                             {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                                 And if the device is mobile, then unmount if widgets are open
                                             */}
-                                            {maps.length > 0 &&
+                                            {!!maps && maps.length > 0 &&
                                                 <>
                                                     {mapViewEnabled && !mobileMode ?
 
@@ -255,9 +205,9 @@ const App = () => {
                         </PageErrorBoundary>
                       </BrowserRouter>
                   </styled.Container>
-                  
+
               </ThemeProvider>
-              </Suspense>
+            </Suspense>
     );
 
 }

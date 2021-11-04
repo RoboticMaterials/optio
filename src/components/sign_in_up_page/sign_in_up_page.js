@@ -22,7 +22,7 @@ import { loaderCSS } from './sign_in_up_page.style'
 import PropagateLoader from "react-spinners/PropagateLoader";
 
 // Import actions
-import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings, updateLocalSettingsState } from '../../redux/actions/local_actions'
 
 import configData from '../../settings/config'
 
@@ -37,6 +37,7 @@ const SignInUpPage = (props) => {
     const history = useHistory()
 
     // Dispatches
+    const dispatchUpdateLocalSettings = (settings) => dispatch(updateLocalSettingsState(settings))
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
@@ -46,11 +47,9 @@ const SignInUpPage = (props) => {
     if (!configData.authenticationNeeded) {
         const localSettingsPromise = dispatchGetLocalSettings()
         localSettingsPromise.then(response => {
-            dispatchPostLocalSettings({
+            dispatchUpdateLocalSettings({
                 ...response,
                 authenticated: 'no',
-                //non_local_api_ip: window.location.hostname,
-                //non_local_api: true,
             })
         })
 
@@ -113,14 +112,11 @@ const SignInUpPage = (props) => {
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
-                    dispatchPostLocalSettings({
-                        ...localReducer,
-                        authenticated: result.accessToken.payload.username,
-                        non_local_api_ip: window.location.hostname,
-                        non_local_api: true,
-                        refreshToken: true
-                    })
 
+                    dispatchUpdateLocalSettings({
+                        authenticated: result.accessToken.payload.username,
+                        idToken: result?.idToken?.jwtToken || null
+                    })
 
                 },
 

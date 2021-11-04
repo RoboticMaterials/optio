@@ -1,39 +1,32 @@
-import axios from 'axios';
+import store from '../redux/store'
 
-import logger from '../logger';
-
-import {apiIPAddress} from '../settings/settings';
-const operator = 'poses';
-const log = logger.getLogger('Api', 'Poses');
-
-export async function getPoses() {
-  try {
-
-    const response = await axios({
-      method: 'get',
-      url: apiIPAddress() + operator,
-      headers:{
-        'X-API-Key': '123456',
-      }
-    });
-
-    // Success
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    return dataJson;
+import logger from '../logger'
+const log = logger.getLogger('Api')
 
 
-} catch (error) {
+export const getHeaders = () => {
 
-    // Error 😨
-    if (error.response) {
+    let headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': store.getState().localReducer.idToken
+    }
+
+    return headers;
+}
+
+export const handleError = (error) => {
+     // Error 😨
+     if (error.response) {
         /*
          * The request was made and the server responded with a
          * status code that falls out of the range of 2xx
          */
+
         log.debug('error.response.data', error.response.data);
-        log.debug('error.response.status',error.response.status);
-        log.debug('error.response.headers',error.response.headers);
+        log.debug('error.response.status', error.response.status);
+        log.debug('error.response.headers', error.response.headers);
     } else if (error.request) {
         /*
          * The request was made but no response was received, `error.request`
@@ -46,6 +39,4 @@ export async function getPoses() {
         log.debug('error.message', error.message);
     }
     log.debug('error', error);
-  }
-
 }

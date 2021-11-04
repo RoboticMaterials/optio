@@ -195,12 +195,6 @@ export const getProcessStationsSorted = (process, routes) => {
         // get unload and load objects
         const { unload = {}, load = {} } = currRoute;
 
-        // get unload station id
-        const { station: unloadStationId } = unload;
-
-        // get load station id
-        const { station: loadStationId } = load;
-
         if (!stationIds.includes(currRoute.load)) {
             stationIds.push(currRoute.load);
         }
@@ -482,6 +476,8 @@ export const findProcessStartNodes = (processRoutes, stations) => {
         }
     }
 
+    if (startNodes.length === 0) return []
+
     if (
         stations !== undefined &&
         startNodes.every((nodeId) => stations[nodeId].type === "warehouse")
@@ -499,20 +495,21 @@ export const findProcessStartNodes = (processRoutes, stations) => {
     return startNodes;
 };
 
-export const findProcessEndNode = (routes) => {
+export const findProcessEndNodes = (routes) => {
     let loadStations = routes.map((route) => (!!route ? route.load : {}));
     let unloadStations = routes.map((route) => (!!route ? route.unload : {}));
 
+    let endNodes = []
     for (var unloadStation of unloadStations) {
         if (
             loadStations.find(
                 (loadStation) => loadStation === unloadStation
             ) === undefined
         ) {
-            return unloadStation;
+            endNodes.push(unloadStation);
         }
     }
-    return null;
+    return endNodes;
 };
 
 /**
@@ -533,28 +530,117 @@ export const findProcessEndNode = (routes) => {
  * @param {array} routes
  * @param {ID} stationId
  */
-export const handleMergeExpression = (stationId, process, routes, stations) => {
+export const handleMergeExpression = (stationId, process, routes, stations, clean=true) => {
     const processRoutes = process.routes.map((routeId) => routes[routeId]);
 
+    const recursivePrint = (exp) => {
+        if (!Array.isArray(exp)) return routes[exp]?.name || exp
+        else if (exp.length === 1) return exp
+        exp = deepCopy(exp)
+      for (var i=1; i<exp.length; i++) {
+        if (Array.isArray(exp[i])) {
+            exp[i] = recursivePrint(exp[i])
+        } else {
+            exp[i] = routes[exp[i]]?.name || exp[i]
+        }
+      }
+      return exp
+    }
+
+    /***
+     * Cleans up an expression.
+     */
+    const cleanExpression = (expression) => {
+        if (!Array.isArray(expression)) {
+            return expression
+        } else if (expression[0] === null) {
+            // If the first element is null, there is no AND or OR. Its just the child ('through' node)
+            return expression[1];
+        } else {
+            // Remove all nulls from the expression. Nulls are set when the recursion hits the end
+            // of the process but didnt come across the desired stationId
+            let nonNullExpression = expression.filter((el) => !!el);
+
+            // If len < 2, this isnt even an expression (reached process end without hitting stationId)
+            if (nonNullExpression.length < 2) {
+                return null;
+            } else if (
+                // If all pieces are the same, theres no need for an AND or OR
+                nonNullExpression.every(
+                    (element, idx) =>
+                        idx === 0 ||
+                        JSON.stringify(element) ===
+                            JSON.stringify(nonNullExpression[1])
+                )
+            ) {
+                return nonNullExpression[1];
+            } else {
+                // Otherwise, just return the expression
+                return nonNullExpression;
+            }
+        }
+    }
+
     let node, outgoingRoutes, nextRoutes, routeId;
-    const recursiveExpand = (sExpression) => {
+    const recursiveExpand = (sExpression, traversed) => {
         let sExpressionCopy = deepCopy(sExpression);
         for (var entryIdx = 1; entryIdx < sExpression.length; entryIdx++) {
             routeId = sExpression[entryIdx];
+
+            if (traversed.includes(routeId)) {
+                sExpressionCopy[entryIdx] = null;
+                continue
+            }
+            traversed.push(routeId)
+
             node = routes[routeId].unload;
             outgoingRoutes = getNodeOutgoing(node, processRoutes);
-            if (node === stationId) {
-                sExpressionCopy[entryIdx] = routeId;
+            if (node === stationId) { // We've found our station
+                /**
+                 * OKAY, this is where cycles get tricky. When you find your station, THIS MAY NOT BE THE ONLY SOLUTION.
+                 * So instead, this is an OR with all possible solutions. I.E. save this solution, but keep recursing in case a
+                 * route later down the graph has a solution as well.
+                 */
+
+                if (outgoingRoutes.length === 0) {
+                    sExpressionCopy[entryIdx] = routeId
+                } else if (outgoingRoutes.length === 1) {
+                    sExpressionCopy[entryIdx] = ['OR', routeId, recursiveExpand([null, outgoingRoutes[0]._id], deepCopy(traversed))]
+                } else {
+                    nextRoutes = outgoingRoutes.map((route) => route._id);
+                    if (
+                        outgoingRoutes.some(
+                            (route) => route.divergeType === "split"
+                        )
+                    ) {
+                        sExpressionCopy[entryIdx] = ['OR', routeId, recursiveExpand([
+                            "AND",
+                            ...nextRoutes,
+                        ], deepCopy(traversed))]
+                    } else {
+                        sExpressionCopy[entryIdx] = ['OR', routeId, recursiveExpand([
+                            "OR",
+                            ...nextRoutes,
+                        ], deepCopy(traversed))]
+                    }
+                }
+
+
+                sExpressionCopy[entryIdx] = cleanExpression(sExpressionCopy[entryIdx]);
+                
+                
             } else if (outgoingRoutes.length === 0) {
-                sExpressionCopy[entryIdx] = null;
-            } else if (outgoingRoutes.length === 1) {
+                if (clean) {
+                    sExpressionCopy[entryIdx] = null
+                }
+            } else if (outgoingRoutes.length === 1) {// Not a diverging node
                 // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
                 // This null is removed before the expression is returned \/
                 sExpressionCopy[entryIdx] = recursiveExpand([
                     null,
                     outgoingRoutes[0]._id,
-                ]);
-            } else {
+                ], deepCopy(traversed));
+            } else { // Diverging node, new sub expression and expand
                 nextRoutes = outgoingRoutes.map((route) => route._id);
                 if (
                     outgoingRoutes.some(
@@ -564,36 +650,17 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
                     sExpressionCopy[entryIdx] = recursiveExpand([
                         "AND",
                         ...nextRoutes,
-                    ]);
+                    ], deepCopy(traversed));
                 } else {
                     sExpressionCopy[entryIdx] = recursiveExpand([
                         "OR",
                         ...nextRoutes,
-                    ]);
+                    ], deepCopy(traversed));
                 }
             }
         }
 
-        if (sExpressionCopy[0] === null) {
-            return sExpressionCopy[1];
-        } else {
-            sExpressionCopy = sExpressionCopy.filter((el) => el !== null);
-
-            if (sExpression.length < 2) {
-                return null;
-            } else if (
-                sExpressionCopy.every(
-                    (element, idx) =>
-                        idx === 0 ||
-                        JSON.stringify(element) ===
-                            JSON.stringify(sExpressionCopy[1])
-                )
-            ) {
-                return sExpressionCopy[1];
-            } else {
-                return sExpressionCopy;
-            }
-        }
+        return cleanExpression(sExpressionCopy)
     };
 
     const startNodes = findProcessStartNodes(processRoutes, stations); // Dont consider warehouses start nodes
@@ -605,50 +672,34 @@ export const handleMergeExpression = (stationId, process, routes, stations) => {
             // NOTE, the recursive function only accepts an array, so we have to populate the first value with null.
             // This null is removed before the expression is returned \/
             startRouteExpression.push(
-                recursiveExpand([null, outgoingRoutes[0]._id])
+                recursiveExpand([null, outgoingRoutes[0]._id], [])
             );
         } else {
             nextRoutes = outgoingRoutes.map((route) => route._id);
             if (outgoingRoutes.some((route) => route.divergeType === "split")) {
                 startRouteExpression.push(
-                    recursiveExpand(["AND", ...nextRoutes])
+                    recursiveExpand(["AND", ...nextRoutes], [])
                 );
             } else {
                 startRouteExpression.push(
-                    recursiveExpand(["OR", ...nextRoutes])
+                    recursiveExpand(["OR", ...nextRoutes], [])
                 );
             }
         }
     }
 
-    startRouteExpression = startRouteExpression.filter((el) => el !== null);
+    const cleanedExpression = cleanExpression(startRouteExpression)
 
-    const recursivePrint = (exp) => {
-      for (var i=1; i<exp.length; i++) {
-        if (Array.isArray(exp[i])) {exp[i] = recursivePrint(exp[i])}
-        else return exp[i] = routes[exp[i]]?.name || ""
-      }
-      return exp
-    }
-    //console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(startRouteExpression))
-
-    if (
-        startRouteExpression.every(
-            (element, idx) =>
-                idx === 0 ||
-                JSON.stringify(element) ===
-                    JSON.stringify(startRouteExpression[1])
-        )
-    ) {
-        // If all the elements of an AND or OR are the same, then collapse it into a single node
-        return startRouteExpression[1];
-    } else {
-        return startRouteExpression;
-    }
+    
+    //console.log(!!stations && stations[stationId]?.name || stationId, recursivePrint(cleanedExpression))
+    
+    return cleanedExpression;
 };
 
-export const getNodeIncoming = (node, processRoutes) => {
-    return processRoutes.filter((route) => route.unload === node);
+export const getNodeIncoming = (node, processRoutes, filterLoopRoutes=false) => {
+    return processRoutes.filter((route) => {
+        return route.unload === node && (!filterLoopRoutes || !isLoopingRoute(route._id, processRoutes))
+    });
 };
 
 export const getNodeOutgoing = (node, processRoutes) => {
@@ -670,22 +721,25 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     const DFS = (node, routes, depth) => {
 
-        const incomingRoutes = getNodeIncoming(node, routes);
+        const incomingRoutes = getNodeIncoming(node, routes, true);
         const nonTraversedIncomingRoutes = incomingRoutes.filter(route => traveresedRoutes[route._id] === false)
 
         if (nonTraversedIncomingRoutes.length === 0) { // youve traversed all incoming routes, now add this station
             if (incomingRoutes.length > 1) { // This station was a merge node, that means move up one in depth
                 depth--;
             }
-            flattenedStations.push({
-                depth,
-                stationID: node
-            })
-        } else if (incomingRoutes.length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
+            if (flattenedStations.find(({stationID}) => stationID === node) === undefined) {
+                flattenedStations.push({
+                    depth,
+                    stationID: node
+                })
+            }
+            
+        } else if (incomingRoutes.filter(inRoute => !isLoopingRoute(inRoute._id, processRoutes)).length > 1) { // This is a merge node but we havent traversed all incoming routes, keep going until we have
             return
         }
 
-        const outgoingRoutes = getNodeOutgoing(node, routes);
+        const outgoingRoutes = getNodeOutgoing(node, routes).filter(outgoingRoute => !traveresedRoutes[outgoingRoute._id]);
         if (outgoingRoutes.length > 1) { // This is a diverging node, move down in depth
             depth++;
         }
@@ -718,5 +772,41 @@ export const flattenProcessStations = (processRoutes, stations) => {
 
     return flattenedStations;
 
+
+}
+
+const DFSFindCycleRoute = (routeId, routes, stack) => {
+
+    let node = stack[stack.length-1];
+    let outgoingRoutes = getNodeOutgoing(node, routes);
+
+    for (var outgoingRoute of outgoingRoutes) {
+        let nextNode = outgoingRoute.unload;
+        if (stack.includes(nextNode)) {
+            if (outgoingRoute._id === routeId) {
+                return true;
+            } else {
+                continue
+            }
+        }
+        let nextStack = deepCopy(stack);
+        nextStack.push(nextNode);
+        if (DFSFindCycleRoute(routeId, routes, nextStack)) return true
+    }
+
+    return false
+
+}
+
+export const isLoopingRoute = (routeId, processRoutes) => {
+
+    const startNodes = findProcessStartNodes(processRoutes);
+
+    for (var startNode of startNodes) {
+        let stack = [startNode];
+        if (DFSFindCycleRoute(routeId, processRoutes, stack)) return true
+        
+    }
+    return false
 
 }

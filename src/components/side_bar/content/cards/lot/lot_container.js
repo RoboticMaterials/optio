@@ -26,6 +26,7 @@ const LotContainer = (props) => {
     containerStyle,
     isPartial,
     onDeleteDisabledLot,
+    onRightClickDeleteLot,
     // quantity,
     ...rest
   } = props;
@@ -38,6 +39,7 @@ const LotContainer = (props) => {
     useSelector((state) => {
       return state.cardsReducer.cards[lotId];
     }) || {};
+  const stations = useSelector(state => state.stationsReducer.stations)
   const {
     bins,
     lotNumber,
@@ -58,15 +60,15 @@ const LotContainer = (props) => {
 
     const station = useSelector(state => state.stationsReducer.stations[binId]) || {}
 
+  const dashboard = useSelector(state => state.dashboardsReducer.dashboards[dashboardID]) || {}
   const processName = useMemo(() => process.name, [process]);
   const stationName = useMemo(() => station.name, [station]);
-
   const templateValues = useMemo(
     () => getCustomFields(lotTemplateId, lot, dashboardID),
-    [lotTemplateId, lot]
+    [lotTemplateId, lot, dashboard]
   );
 
-  if (!(binId in bins)) { return null }
+  if (bins === undefined || !(binId in bins)) { return null }
   const { count=0, ...partials } = bins[binId] || {};
 
   return (
@@ -75,6 +77,7 @@ const LotContainer = (props) => {
               <Lot
                   lotDisabled={(count < 1 && !!isDashboard) || isPartial}
                   onDeleteDisabledLot = {onDeleteDisabledLot}
+                  onRightClickDeleteLot = {onRightClickDeleteLot}
                   isDashboard={!!isDashboard}
                   stationName={stationName}
                   templateValues={templateValues}
@@ -85,13 +88,16 @@ const LotContainer = (props) => {
                   enableFlagSelector={enableFlagSelector}
                   name={name}
                   count={count}
+                  loopCount={lot.loopCount}
                   id={lotId}
                   isSelected={false}
                   selectable={false}
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{
-                      width: "80%",
+                      borderRadius: '.3rem',
+                      width: "100%",
+                      padding: !!isDashboard && '.2rem',
                       margin: ".5rem auto .5rem auto",
                       ...containerStyle,
                   }}
@@ -110,8 +116,9 @@ const LotContainer = (props) => {
                           lotNumber={lotNumber}
                           flags={flags || []}
                           enableFlagSelector={enableFlagSelector}
-                          name={name + ` (${routes[routeId]?.part})`}
+                          name={name + ` (${stations[routes[routeId]?.load]?.name})`}
                           count={quantity}
+                          loopCount={lot.loopCount}
                           id={lotId}
                           isSelected={false}
                           selectable={false}

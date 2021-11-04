@@ -138,3 +138,7 @@ export const postLocalSettings =  (settings) => {
 export const stopAPICalls = (bool) => {
     return { type: STOP_API_CALLS, payload: bool }
 }
+
+export const updateLocalSettingsState = (payload) => {
+  return { type: 'UPDATE_STATE', payload }
+}

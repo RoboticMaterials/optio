@@ -16,7 +16,7 @@ import { putStation } from '../../../../../../redux/actions/stations_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../../../methods/utils/utils'
-import { convertSecondsToHHMMSS } from '../../../../../../methods/utils/time_utils'
+import { convertSecondsToHHMMSS, convertHHMMSSStringToSeconds } from '../../../../../../methods/utils/time_utils'
 
 const StationsColumn = ((props) => {
     const {
@@ -51,7 +51,7 @@ const StationsColumn = ((props) => {
         if (stations[station_id].cycle_time_mode === 'auto' && !!stations[station_id]?.cycle_time) {
             time = convertSecondsToHHMMSS(stations[station_id].cycle_time);
         } else if (stations[station_id].cycle_time_mode === 'manual' && !!stations[station_id]?.manual_cycle_time) {
-            time = stations[station_id]?.manual_cycle_time;
+            time = convertSecondsToHHMMSS(stations[station_id]?.manual_cycle_time);
         }
 
         // Split the time up
@@ -64,7 +64,7 @@ const StationsColumn = ((props) => {
 
     const handleSaveCycleTime = (time) => {
         let station = deepCopy(stations[station_id])
-        station.manual_cycle_time = time
+        station.manual_cycle_time = convertHHMMSSStringToSeconds(time)
         dispatchPutStation(station)
     }
 
@@ -75,7 +75,7 @@ const StationsColumn = ((props) => {
     }
 
     const renderCycleTime = () => {
-        
+
         return (
             <>
                 <styled.divider />
@@ -150,14 +150,10 @@ const StationsColumn = ((props) => {
                         <styled.StationHeader>
                             <styled.HeaderRow
                                 style={{
-                                    marginBottom: "1rem"
+                                    marginBottom: "1rem",
+                                    justifyContent: 'center'
                                 }}
                             >
-                                <i className="fa fa-chevron-down" aria-hidden="true"
-                                    onClick={() => setCollapsed(true)}
-                                    style={{ marginRight: "1rem", cursor: "pointer" }}
-                                />
-
                                 <styled.LabelContainer>
                                     <styled.StationTitle>{stationName}</styled.StationTitle>
                                 </styled.LabelContainer>

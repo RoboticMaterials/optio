@@ -10,8 +10,6 @@ import { parseCondition } from '../../methods/utils/skills_utils.js'
 import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../methods/utils/color_utils';
 
 // import actions
-import { postStatus } from '../../redux/actions/status_actions'
-import * as taskQueueActions from '../../redux/actions/task_queue_actions'
 import { setWidth, setOpen} from "../../redux/actions/sidebar_actions";
 
 // import components
@@ -36,22 +34,16 @@ const StatusHeader = (props) => {
     //const [showRightMenu, setShowRightMenu] = useState(false)
     const [newNotification, setNewNotification] = useState(false)
 
-    const status = useSelector(state => state.statusReducer.status)
     const displayType = useSelector(state => state.notificationsReducer.hiddenNotifications)
     const notifications = useSelector(state => state.notificationsReducer.notifications)
 
     const sideBarWidth = useSelector(state => state.sidebarReducer.width)
     const toggle = useSelector(state => state.notificationsReducer.toggleNotificationTaskQueue)
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
-    const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
-    const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-    const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const deviceEnabled = false
-    const [initialRender, setInitialRender] = useState (null)
     const [statusBarPath, setStatusBarPath] = useState(``)
     const [rightCurvePoint, setRightCurvePoint] = useState(``)
     const [overlapStatus, setOverlapStatus] = useState('')
+    const [rightMenuOpen, setRightMenuOpen] = useState(false)
 
     const prevNotificationRef = useRef()
 
@@ -65,7 +57,6 @@ const StatusHeader = (props) => {
 
     const dispatch = useDispatch()
     const onHideNotifications = (displayType) => dispatch({ type: 'HIDDEN_NOTIFICATIONS', payload: displayType })
-    const onTaskQueueOpen = (props) => dispatch(taskQueueActions.taskQueueOpen(props))
     const onSetWidth = (props) => dispatch (setWidth(props))
     const onSetOpen = (props) => dispatch (setOpen(props))
 
@@ -82,7 +73,7 @@ const StatusHeader = (props) => {
         const pageWidth = window.innerWidth
         const windowWidth = size.width
 
-        if (windowWidth < 800 && isSideBarOpen && taskQueueOpen) {
+        if (windowWidth < 800 && isSideBarOpen && rightMenuOpen) {
             setRightCurvePoint(220)
             setOverlapStatus(true)
         }
@@ -101,10 +92,10 @@ const StatusHeader = (props) => {
             mergeHeight = 2
             leftMargin = 80
             rightMargin = !!params.widgetPage ? 80 : 160
-        } else if (!taskQueueOpen && sideBarWidth + 120 > pageWidth - 320) { // No notifications, overlaping containers
+        } else if (!rightMenuOpen && sideBarWidth + 120 > pageWidth - 320) { // No notifications, overlaping containers
             x = (pageWidth - sideBarWidth - 200) / 2
             mergeHeight = 5 + (sideBarWidth - pageWidth + 440) * 35 / 120
-        } else if (taskQueueOpen && sideBarWidth + 120 > pageWidth - 440) { // W/ notifications, overlapping containers
+        } else if (rightMenuOpen && sideBarWidth + 120 > pageWidth - 440) { // W/ notifications, overlapping containers
             x = (pageWidth - sideBarWidth - 320) / 2
             mergeHeight = 5 + (sideBarWidth - pageWidth + 560) * 35 / 220
         } else {
@@ -117,8 +108,8 @@ const StatusHeader = (props) => {
                 L0,40
                 L${isSideBarOpen && !widgetPage ? sideBarWidth : leftMargin},40
                 C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${Math.min(mergeHeight, 40)} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${Math.min(mergeHeight, 40)}
-                L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${Math.min(mergeHeight, 40)}
-                C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${Math.min(mergeHeight, 40)} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${Math.min(mergeHeight, 40)}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
+                L${pageWidth - (rightMenuOpen ? rightCurvePoint : rightMargin) - x},${Math.min(mergeHeight, 40)}
+                C${pageWidth - (rightMenuOpen ? rightCurvePoint : rightMargin) - x / 2},${Math.min(mergeHeight, 40)} ${rightMenuOpen ? `${pageWidth - rightCurvePoint},${Math.min(mergeHeight, 40)}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (rightMenuOpen ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
                 L${pageWidth},0
                 Z
@@ -175,18 +166,7 @@ const StatusHeader = (props) => {
         generatePath()
     })
     //This should work but the header path isn't updating on windowResize with these conditions...
-    // [sideBarWidth, isSideBarOpen, taskQueueOpen, window.onresize, window.innerWidth, params.widgetPage, windowWidth, sidebarOpenPath]
-
-    // Handles the play pause button
-    const handleTogglePlayPause = async () => {
-
-        //Flip the status to the opposite of the current value when the button is pressed
-        var status_clone = deepCopy(status);
-        const pause_status = !status_clone.pause_status;
-
-        //Post the status to the API
-        await dispatch(postStatus({ pause_status: pause_status }));
-    }
+    // [sideBarWidth, isSideBarOpen, rightMenuOpen, window.onresize, window.innerWidth, params.widgetPage, windowWidth, sidebarOpenPath]
 
 
     // Renders the left side of the header
@@ -216,38 +196,14 @@ const StatusHeader = (props) => {
      *
      */
     const renderRightContent = () => {
-        let pause_status = ''
-
-        // If there's no status available then set to blank object.
-        try {
-            pause_status = status.pause_status;
-        } catch (e) {
-            pause_status = false;
-        }
-
-        // Handles the icon type being displayed based on the pause_status in status
-        var playButtonClassName = "fas fa-";
-        pause_status ? playButtonClassName += 'play' : playButtonClassName += 'pause';
-
         return (
             <styled.RightContentContainer>
-
-                {/* Hide play pause button if it's not MirMapEnabled */}
-                {deviceEnabled &&
-                    <styled.PlayButton
-                        play={pause_status}
-                        windowWidth={windowWidth}
-                        widthBreakPoint={widthBreakPoint}
-                    >
-                        <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
-                    </styled.PlayButton>
-                }
 
                 {/* This hides the right menu container if the screen size is below a set point and widgets are open (params.widgetPage) */}
                 {(windowWidth < widthBreakPoint && !params.widgetPage) &&
                     <>
-                        <styled.RightMenuContainer checked={taskQueueOpen} onClick={() => {
-                            onTaskQueueOpen(!taskQueueOpen)
+                        <styled.RightMenuContainer checked={rightMenuOpen} onClick={() => {
+                            setRightMenuOpen(!rightMenuOpen)
                         }}>
 
                             {toggle === 'notifications' ?
@@ -256,16 +212,17 @@ const StatusHeader = (props) => {
                                     <styled.NotificationIcon className='far fa-bell' />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                //<styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <></>
 
                             }
 
 
                         </styled.RightMenuContainer>
 
-                        {(taskQueueOpen || newNotification) &&
+                        {(rightMenuOpen || newNotification) &&
                             <>
-                                <RightMenu showRightMenu={taskQueueOpen} newNotification={newNotification} overlapStatus={overlapStatus} />
+                                <RightMenu showRightMenu={rightMenuOpen} newNotification={newNotification} overlapStatus={overlapStatus} />
                             </>
                         }
                     </>
@@ -275,8 +232,8 @@ const StatusHeader = (props) => {
                 {/* Always renders if page is greater then break point */}
                 {windowWidth > widthBreakPoint &&
                     <>
-                        <styled.RightMenuContainer checked={taskQueueOpen} onClick={() =>
-                            onTaskQueueOpen(!taskQueueOpen)
+                        <styled.RightMenuContainer checked={rightMenuOpen} onClick={() =>
+                            setRightMenuOpen(!rightMenuOpen)
                         }>
 
                             {toggle === 'notifications' ?
@@ -285,15 +242,16 @@ const StatusHeader = (props) => {
                                     <styled.NotificationIcon className='far fa-bell' />
                                 </>
                                 :
-                                <styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                //<styled.NotificationIcon className='fa fa-tasks' style={{ marginBottom: '0rem' }} />
+                                <></>
 
                             }
 
                         </styled.RightMenuContainer>
 
-                        {(taskQueueOpen || newNotification) &&
+                        {(rightMenuOpen || newNotification) &&
                             <>
-                                <RightMenu showRightMenu={taskQueueOpen} newNotification={newNotification} />
+                                <RightMenu showRightMenu={rightMenuOpen} newNotification={newNotification} />
                             </>
                         }
                     </>
@@ -321,7 +279,7 @@ const StatusHeader = (props) => {
 
         }
         // If newNotification is true and showRightMenu is clicked, hide the new notifcation pop up
-        else if (taskQueueOpen && newNotification) {
+        else if (rightMenuOpen && newNotification) {
             setNewNotification(false)
         }
     }

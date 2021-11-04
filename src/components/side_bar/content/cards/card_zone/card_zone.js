@@ -14,11 +14,15 @@ import PropTypes from "prop-types"
 import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../../methods/utils/lot_utils";
 import { getLoadStationId, getUnloadStationId } from "../../../../../methods/utils/route_utils";
 
+//Actions
+import {putCard} from '../../../../../redux/actions/card_actions'
+
 // styles
 import * as styled from "./card_zone.style"
 import { isObject } from "../../../../../methods/utils/object_utils";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lot_contants";
+import { findProcessEndNodes } from "../../../../../methods/utils/processes_utils";
 
 
 const CardZone = ((props) => {
@@ -41,13 +45,16 @@ const CardZone = ((props) => {
     } = props
 
     const { height: windowHeight, width: windowWidth } = useWindowDimensions()
+    const dispatch = useDispatch()
 
     // redux state
     const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
     const showFinish = currentProcess.showFinish === undefined ? true: currentProcess.showFinish
     const showQueue = currentProcess.showQueue === undefined ? true: currentProcess.showQueue
 
+    const dispatchPutCard = (card,cardId) => dispatch(putCard(card, cardId))
     const routes = useSelector(state => { return state.tasksReducer.tasks })
+    const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
     const allCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
     const stations = useSelector(state => { return state.stationsReducer.stations })
     const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
@@ -68,24 +75,11 @@ const CardZone = ((props) => {
         name: processName = ""
     } = currentProcess || {}
 
-    const doesProcessEndInWarehouse = useMemo(() => {
+    const doesProcessEndInAllWarehouses = useMemo(() => {
         const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
+        const processEndNodes = findProcessEndNodes(processRoutes)
 
-        let loadStations = processRoutes.map(route => route.load);
-        let unloadStations = processRoutes.map(route => route.unload);
-
-        for (var i=0; i<unloadStations.length; i++) {
-            const unloadStationA = unloadStations[i];
-
-
-            if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
-                if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
-                    return stations[unloadStationA].type === 'warehouse'
-                }
-            }
-        }
-
-        return false;
+        return processEndNodes.map(nodeId => stations[nodeId]?.type).every(type => type === 'warehouse')
     }, [currentProcess.routes, stations])
     // need to loop through the process's routes first and get all station ids involved in the process
     // this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
@@ -238,7 +232,7 @@ const CardZone = ((props) => {
         // const pathsBoxHeight = 2*Math.max(...currentProcess.flattened_stations.map(node => node.depth))
         // const paths = (
         //     <div style={{zIndex: 1000, background: 'red', width: '400rem', top: 0, left: 0}}>
-        //     {/* <svg style={{background: 'rgba(0,0,0.3,0.3)', position: 'absolute'}} fill='yellow' viewBox={`0 0 ${100*pathsBoxWidth} ${100*pathsBoxHeight}`} width={`${pathsBoxWidth}rem`} height={`${pathsBoxHeight}rem`} > 
+        //     {/* <svg style={{background: 'rgba(0,0,0.3,0.3)', position: 'absolute'}} fill='yellow' viewBox={`0 0 ${100*pathsBoxWidth} ${100*pathsBoxHeight}`} width={`${pathsBoxWidth}rem`} height={`${pathsBoxHeight}rem`} >
         //         {currentProcess.routes.map(routeId => {
         //             const route = routes[routeId];
         //             const loadIdx = currentProcess.flattened_stations.findIndex(node => node.stationID === route.load)
@@ -261,7 +255,7 @@ const CardZone = ((props) => {
 
     return (
         <styled.Container style={{ background: 'white' }}>
-            
+
             <LotQueue
                 setSelectedCards={setSelectedCards}
                 selectedCards={selectedCards}
@@ -281,7 +275,7 @@ const CardZone = ((props) => {
 
             {renderStationColumns}
 
-            {!doesProcessEndInWarehouse &&
+            {!doesProcessEndInAllWarehouses &&
                 <FinishColumn
                     setSelectedCards={setSelectedCards}
                     selectedCards={selectedCards}

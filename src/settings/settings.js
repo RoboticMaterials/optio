@@ -22,18 +22,24 @@ export const apiIPAddress = () => {
      * If non local api is true, then the server is running on an IP address entered
      */
 
-    if (!!hostServerIpAddress) {
-        // If there is no api use the local host
-        if (nonLocalIp===false) {
-            return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
+    if (nonLocalIp === true) {
+        if (!!hostServerIpAddress) {
+            return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
+        } else if (window.location.hostname === 'localhost') {
+            return 'http://localhost:5000/api/'
         } else {
-            return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
-
+            return 'https://' + window.location.hostname + ':5000/api/'
         }
     } else {
-        return 'http://' + window.location.hostname + ':5000/api/'
+        if (window.location.hostname === 'localhost') {
+            return 'http://localhost:5000/api/'
+        } else {
+            return 'https://' + window.location.hostname + ':5000/api/'
+        }
     }
 
 };
 
 store.subscribe(apiIPAddress);
+
+// /home/ubuntu/.local/bin/gunicorn -w 5 -b :5000 --chdir /home/ubuntu/dev_rmstudio/rmengine/rest_api --certfile /etc/letsencrypt/live/dev.optio.cloud/fullchain.pem --keyfile /etc/letsencrypt/live/dev.optio.cloud/privkey.pem 'server:create_app()'

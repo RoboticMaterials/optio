@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // Import Actions
@@ -19,10 +19,12 @@ export default function TaskPaths(props) {
   );
   const positions = useSelector((state) => state.positionsReducer.positions);
   const stations = useSelector((state) => state.stationsReducer.stations);
+  const routes = useSelector(state => state.tasksReducer.tasks)
   const dispatch = useDispatch();
 
   let selectedTask = null;
 
+  
   // This sets the selected task to either whats in the reducer or whats being passed in through props
   // It would be using props because this task path is part of a process
   if (!!route) {
@@ -32,6 +34,15 @@ export default function TaskPaths(props) {
   } else {
     selectedTask = selectedTaskReducer;
   }
+
+  const isDirectLoop = useMemo(() => {
+    return (!!selectedTask && (Object.values(routes).find(route => (
+      selectedTask.load === route.unload && 
+      !!selectedTask.unload &&
+      selectedTask.unload === route.load
+    )) !== undefined))
+  }, [selectedTask, routes])
+
 
   const stateRef = useRef();
   stateRef.current = selectedTask;
@@ -188,6 +199,26 @@ export default function TaskPaths(props) {
               </g>
             </g>
           ))}
+
+          {isDirectLoop && // If there is a route for forward and one for backward, do the arrows both directions
+            dashes.slice(1).map((delta) => (
+              <g
+                key={`arrow-${delta}`}
+                transform={`translate(${
+                  x1 + (delta-0.5) * props.d3.scale * 10 * Math.cos(lineRot)
+                } ${y1 + (delta-0.5) * props.d3.scale * 10 * Math.sin(lineRot)})`}
+              >
+                <g
+                  viewBox="-50 -50 50 50"
+                  transform={`rotate(${arrowRot+180}) scale(${
+                    0.05 * props.d3.scale
+                  })`}
+                >
+                  <polygon points="-40,-50 -40,50 40,0" fill={dashColor} />
+                </g>
+              </g>
+            ))
+          }
         </g>
       </>
     );

@@ -13,10 +13,9 @@ import { useSelector } from "react-redux";
 import { FILTER_DATE_OPTIONS } from "../../components/basic/advanced_calendar_placeholder_button/advanced_calendar_placeholder_button";
 
 // Import external utils
-import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "./array_utils";
-import { capitalizeFirstLetter, isEqualCI, isString } from "./string_utils";
-import { getProcessStations, handleMergeExpression, findProcessStartNodes } from './processes_utils'
-import { getLoadStationId } from './route_utils'
+import { isArray, isNonEmptyArray } from "./array_utils";
+import { isEqualCI, isString } from "./string_utils";
+import { handleMergeExpression, } from './processes_utils'
 import { jsDateToString } from './card_utils'
 
 
@@ -214,7 +213,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
         //  lot number (treated as string when formatted)
         case LOT_FILTER_OPTIONS.lotNumber.label: {
             if (filterValue) {
-                const formattedLotNumber = formatLotNumber(lot.lotNumber)
+                const formattedLotNumber = formatLotNumber(lot.lotNum)
                 return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
             }
             return true
@@ -373,7 +372,7 @@ export const getLotField = (searchKey, searchValue, lot) => {
 
 export const formatLotNumber = (lotNumber) => {
     return (isString(lotNumber) || Number.isInteger(lotNumber)) ?
-        `RM-${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
+        `${parseInt(lotNumber).toLocaleString('en-US', { minimumIntegerDigits: 6, useGrouping: false })}`
         :
         ``
 }
@@ -427,10 +426,7 @@ export const getCardsInBin = (cards, binId, processId) => {
 }
 
 export const getAllTemplateFields = () => {
-    const lotTemplates = {
-        [BASIC_LOT_TEMPLATE_ID]: { ...BASIC_LOT_TEMPLATE },
-        ...(store.getState().lotTemplatesReducer.lotTemplates || {})
-    }
+    const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
 
     let templateFields = []
 
@@ -490,15 +486,13 @@ export const getAllTemplateFields = () => {
 * */
 export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-    const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
+    const lotTemplate = lotTemplates[lotTemplateId] || {}
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
     const dashboards = store.getState().dashboardsReducer.dashboards || {}
     const currentDashboard = dashboards[dashboardID]
-
     let customFieldValues = []
 
     const { syncWithTemplate } = lot || {}
-
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
@@ -507,9 +501,10 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
             const {
               fieldName,
               dataType,
-              _id
+              _id,
+              component,
             } = field
-            if(lot.lotTemplateId===template){
+            if((lot.lotTemplateId===template && component!=='INPUT_BOX') || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
                 fieldName,
@@ -1036,43 +1031,56 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
       let tempBin,
         currentBin = bins[unloadStationId];
       let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
-      if (!!currentBin) {
-        // The Bin for the destination already exists, update quantities
+      if(!traveledRoute){ //This handles dragging lot back into merge station. Just add to existing qty and keep excess parts the same
+        let totalQuantity = !!bins[unloadStationId]?.count
+          ? bins[unloadStationId].count + quantity
+          : quantity;
 
-        let existingQuantity = !!currentBin[traveledRoute._id]
-
-
-          ? currentBin[traveledRoute._id]
-          : 0;
-        tempBin = {
+        bins[unloadStationId] = {
           ...bins[unloadStationId],
-          [traveledRoute._id]: (existingQuantity += quantity),
+          count: totalQuantity,
         };
-
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
-      } else {
-        // The Bin for the destination does not exist, create is here
-
-        tempBin = {
-          [traveledRoute._id]: quantity,
-          count: 0
-        };
-
-        bins[unloadStationId] = handleMergeParts(
-          tempBin,
-          traveledRoute._id,
-          99999999,
-          unloadStationId,
-          process
-        );
       }
+      else{
+        if (!!currentBin) {
+          // The Bin for the destination already exists, update quantities
+
+          let existingQuantity = !!currentBin[traveledRoute._id]
+
+
+            ? currentBin[traveledRoute._id]
+            : 0;
+          tempBin = {
+            ...bins[unloadStationId],
+            [traveledRoute._id]: (existingQuantity += quantity),
+          };
+
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        } else {
+          // The Bin for the destination does not exist, create is here
+
+          tempBin = {
+            [traveledRoute._id]: quantity,
+            count: 0
+          };
+
+          bins[unloadStationId] = handleMergeParts(
+            tempBin,
+            traveledRoute._id,
+            99999999,
+            unloadStationId,
+            process
+          );
+        }
+      }
+
     } else {
       // Only one route enters station, don't worry about tracking parts at the station
       let totalQuantity = !!bins[unloadStationId]?.count
@@ -1088,11 +1096,52 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
 
 
 export const handleCurrentStationBins = (bins, quantity, loadStationId, process, routes) => {//Since parts are now consumed, only reduce count. dont need to touch parts.
-    if(quantity === bins[loadStationId]['count']) {
-      delete bins[loadStationId]['count'];
-    } else {
-      bins[loadStationId]['count'] -= quantity;
-    }
-    if(bins[loadStationId]['count'] === 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
+    bins[loadStationId].count -= quantity;
+    if(bins[loadStationId].count <= 0 && Object.keys(bins[loadStationId]).length === 1) delete bins[loadStationId]
     return bins;
   };
+
+
+export const createPastePayload = (table, fieldMapping) => {
+  return table.map((row, i) => {
+
+    let lotFields = {};
+    for (var j=0; j<row.length; j++) {
+      if (!!fieldMapping[j]) {
+        let { index: rangeIndex, ...field} = fieldMapping[j]
+        let { value } = row[j]
+
+        // Parse Data
+        if(field.dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+          let parsedDate = new Date(value)
+
+          if (field._id in lotFields) {
+            if (Array.isArray(lotFields[field._id].value)) {
+              // DATE_RANGE type is an array of values. If one of the values has been set this will be an array
+              // therefore, we just alter the array at the index that the field specifies
+              let dateArr = lotFields[field._id].value
+              dateArr.splice(rangeIndex, 0, parsedDate)
+              lotFields[field._id].value = dateArr
+              continue // Dont append a new field because one for this already exists
+            }
+          }
+          value = [null, null]
+          value[rangeIndex] = parsedDate
+        }
+        else if(field.dataType === FIELD_DATA_TYPES.INTEGER) {
+          value = parseInt(value)
+          if(!Number.isInteger(value)) value = null
+        }
+
+        lotFields[field._id] = {
+          ...field,
+          value
+        }
+      }
+    }
+
+    return lotFields
+
+
+  })
+}

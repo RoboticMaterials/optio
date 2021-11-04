@@ -12,50 +12,24 @@ import ContentHeader from '../../content_header/content_header'
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
-import SwitchField from "../../../../basic/form/switch_field/switch_field";
-
-import Switch from 'react-ios-switch'
-
 
 // Import actions
 import {
-    postTask,
-    putTask,
     deleteTask,
     setSelectedTask,
     setSelectedHoveringTask,
     setTaskAttributes,
 } from '../../../../../redux/actions/tasks_actions'
-import { setSelectedProcess, setProcessAttributes } from '../../../../../redux/actions/processes_actions'
-import { handlePostTaskQueue, postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
-import { autoAddRoute } from '../../../../../redux/actions/tasks_actions'
-
+import { setProcessAttributes } from '../../../../../redux/actions/processes_actions'
 
 // Import Utils
-import {
-    getLoadStationDashboard, autoGenerateRoute,
-    getRouteProcesses
-} from "../../../../../methods/utils/route_utils";
-import { isBrokenProcess, findProcessStartNodes, willRouteAdditionFixProcess, willRouteDeleteBreakProcess } from "../../../../../methods/utils/processes_utils";
-import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
+import { findProcessStartNodes } from "../../../../../methods/utils/processes_utils";
+import { isEmpty } from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
-
-// Constants
-import { defaultRoute, defaultTask } from '../../../../../constants/route_constants'
 
 // styles
 import * as styled from './process_field.style'
 import {ThemeContext} from "styled-components";
-import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
-import { throttle } from "../../../../../methods/utils/function_utils";
-import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_constants";
-import TaskAddedAlert
-    from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
-import { getSidebarDeviceType, isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
-import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
-import AddRouteButtonPath from '../../../../../graphics/svg/add_route_button_path'
-
 export const ProcessField = (props) => {
     const {
         formikProps,
@@ -120,19 +94,7 @@ export const ProcessField = (props) => {
         if (!!selectedTask.unload && formikSelectedTask === undefined) {
             let processRoutesCopy = values.routes;
 
-            // Set the new route's partname to be that of the preceeding route.
             const selectedTaskCopy = selectedTask
-            if (selectedTaskCopy.part === null) {
-                const preceedingRoutes = processRoutesCopy.filter(route => route._id !== selectedTask._id && route.unload === selectedTask.load)
-                let defaultName = values.name;
-                for (var preceedingRoute of preceedingRoutes) {
-                    if (!!preceedingRoute.part) {
-                        defaultName = preceedingRoute.part;
-                        break;
-                    }
-                }
-                selectedTaskCopy.part = defaultName;
-            }
 
             processRoutesCopy.push(selectedTaskCopy);
             setFieldValue('routes', processRoutesCopy)

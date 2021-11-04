@@ -7,7 +7,10 @@ import { putCard } from "../../../../../../redux/actions/card_actions";
 import {
 	setDroppingLotId,
 	setLotHovering,
-	setDraggingLotId
+	setDraggingLotId,
+	setDraggingStationId,
+	setDragFromBin,
+	setLotDivHeight,
 } from "../../../../../../redux/actions/card_page_actions";
 
 // components external
@@ -26,7 +29,7 @@ import * as styled from "./column.style";
 import { sortBy } from "../../../../../../methods/utils/card_utils";
 import { immutableDelete, immutableReplace, isArray, isNonEmptyArray } from "../../../../../../methods/utils/array_utils";
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../../../methods/utils/lot_utils";
-import {findProcessStartNodes, findProcessEndNode} from '../../../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
 const Column = ((props) => {
@@ -48,10 +51,12 @@ const Column = ((props) => {
 	} = props
 
 	// redux state
-	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
+	const draggingStationId = useSelector(state => state.cardPageReducer.draggingStationId) || null
+	const lotDivHeight = useSelector(state => state.cardPageReducer.lotDivHeight) || null
+	const dragFromBin = useSelector(state => state.cardPageReducer.dragFromBin) || null
 	const routes = useSelector(state => state.tasksReducer.tasks)
 	const stations = useSelector(state => state.stationsReducer.stations)
 	const processes = useSelector(state => state.processesReducer.processes)
@@ -60,14 +65,18 @@ const Column = ((props) => {
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
-	// console.log(shiftDetails)
-
 	// actions
+	const lotRef = useRef(null)
+	const dragContainerRef = useRef(null)
 	const dispatch = useDispatch()
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const dispatchSetLotDivHeight = (height) => dispatch(setLotDivHeight(height))
 	const dispatchSetDroppingLotId = async (lotId, binId) => await dispatch(setDroppingLotId(lotId, binId))
 	const dispatchSetLotHovering = async (lotId) => await dispatch(setLotHovering(lotId))
 	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
+	const dispatchSetDraggingStationId = async (stationId) => await dispatch(setDraggingStationId(stationId))
+	const dispatchSetDragFromBin = async (stationId) => await dispatch(setDragFromBin(stationId))
+
 
 	// component state
 	const [dragEnter, setDragEnter] = useState(false)
@@ -76,6 +85,9 @@ const Column = ((props) => {
 	const [cards, setCards] = useState([])
 	const [enableFlags, setEnableFlags] = useState(true)
 	const [isSourcee, setIsSource] = useState(false)
+	const [highlightStation, setHighlightStation] = useState(false)
+	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
+	const [inDropZone, setInDropZone] = useState(false)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -93,6 +105,7 @@ const Column = ((props) => {
 		setLotQuantitySummation(tempLotQuantitySummation)
 	}, [cards])
 
+
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
@@ -104,11 +117,21 @@ const Column = ((props) => {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
 			setCards(tempCards)
+
 		}
 		else {
 			setCards(props.cards)
 		}
 	}, [props.cards, sortMode, sortDirection])
+
+	useEffect(() => {
+		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
+			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id) //true means update last traversed station for merge functions
+			setAcceptDrop(accDrop)
+		}
+		if(!draggingLotId) setHighlightStation(null)
+
+	}, [draggingLotId])
 
 	//This function is now more limiting with split/merge
 	// -dont allow moving lot to next stations(s) if current station disperses a lot
@@ -117,58 +140,115 @@ const Column = ((props) => {
 	//-These limitations ensure dragging lots around in cardZone dont mess merge/split functionality
 	//-We should make it more flexible in the future with functions that handle the above cases...
 	//-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
-	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
-		if(!!payload){
-			const {
-				binId,
-				cardId,
-				process_id: oldProcessId,
-				...remainingPayload
-			} = payload
-			const processRoutes = processes[oldProcessId]?.routes?.map(routeId => routes[routeId])
+	const shouldAcceptDrop = (cardId, binId, station_id) => {
+		let lastStationTraversed = false
+		let oldProcessId = reduxCards[cardId].process_id
+
+		const process = processes[reduxCards[cardId].process_id]
+		const processRoutes = process.routes.map(routeId => routes[routeId])
+
+		if (reduxCards[cardId].process_id !== processId) return false
+		if (!!showCardEditor) return false
+
 			let startNodes = findProcessStartNodes(processRoutes, stations)
-			let endNode = findProcessEndNode(processRoutes)
-			if (oldProcessId !== processId) return false
-			if(!!showCardEditor) return false
+			let endNode = findProcessEndNodes(processRoutes)
+
+			if (oldProcessId !== processId) return [false, lastStationTraversed]
+			if(!!showCardEditor) return [false, lastStationTraversed]
 			//if (process[oldProcessId] === undefined) return false
 
-		 	if(binId === station_id) return true
-			for(const ind in processes[oldProcessId].routes){
-				let route = routes[processes[oldProcessId]?.routes[ind]]
-				if(route.unload === station_id && route.load ===binId && route.divergeType!=='split'){//Move lot forward in its route. Cannot be split route
-
-					return true
-				}
-
-				else if(route.unload === binId && route.load === station_id && route.divergeType!=='split'){//Move lot backwards provided the previous station isnt a split/merge route and routes arent merging into current station
-					const mergingRoutes = processes[oldProcessId].routes
-																.map(routeId => routes[routeId])
-																.filter(route => route.unload === binId)
-
-					const previousMergingRoutes = processes[oldProcessId].routes
-																.map(routeId => routes[routeId])
-																.filter(route => route.unload === station_id)
-
-					if(mergingRoutes.length === 1 && previousMergingRoutes === 1) return true
-				}
-				else if(binId==="QUEUE" && (Object.values(startNodes).length === 1 || processes[oldProcessId].startDivergeType!== "split")) {
-					for(const ind in startNodes){
-						if(station_id===startNodes[ind]) return true
-					}
-				}
-
-				else if(station_id==="FINISH") {
-					for(const ind in startNodes){
-						if(binId===endNode) return true
-					}
-				}
-
+		 	if(binId === station_id) {
+				//setHighlightStation(true)
+				return [true, lastStationTraversed]
 			}
 
-			return false
+			const forwardsTraverseCheck = (currentStationID) => {
+				if(endNode.includes(currentStationID) && station_id =='FINISH'){//If you can traverse to the end node, also allow finish column
+					setHighlightStation(true)
+					return true
+				}
+				else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
+					//if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
+					if(startNodes.includes(station_id)){
+						setHighlightStation(true)
+						return true
+					}
+					else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
+						for(const ind in startNodes){
+							const canMove = forwardsTraverseCheck(startNodes[ind])
+							if(!!canMove) return true
+						}
+					}
+				}
+				const nextRoutes = processRoutes.filter(route => route.load === currentStationID)
+				if(!!nextRoutes[0] && (!nextRoutes[0].divergeType || nextRoutes[0].divergeType!=='split')){//can't drag forward if station disperses lots
+					for(const ind in nextRoutes){
+						if(nextRoutes[ind].unload === station_id){
+							//If you are skipping over nodes and drag to a merge station we need to keep track of the station right before
+							//the merge station as merge functions need this to find routeTravelled
+							lastStationTraversed = nextRoutes[ind].load
+							setHighlightStation(true)
+							return true
+						}
+						else{
+							const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
+							if(mergingRoutes.length === 1){
+								const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
+								if(!!canMove) return true
+							}
+						}
+					}
+				}
+			}
 
-		}
-		else return false
+			const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
+				if(startNodes.includes(currentStationID) && station_id === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
+					setHighlightStation(true)
+					return true
+
+				}
+
+				else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
+					if(endNode.includes(station_id)){
+							setHighlightStation(true)
+							return true
+						}
+					else{
+						const canMove = backwardsTraverseCheck(endNode)
+						if(!!canMove) return true
+					}
+
+				}
+
+				const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
+				if(mergingRoutes.length===1){//Can't drag backwards from merge station
+					for(const ind in mergingRoutes){
+						const dispersingRoutes = processRoutes.filter((route) => route.load === mergingRoutes[ind].load);
+						if(mergingRoutes[ind].load === station_id) {
+							if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
+								setHighlightStation(true)
+								return true
+							}
+						}
+						else{
+								if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
+									const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
+									if(!!canMove) return true
+								}
+							}
+						}
+					}
+				}
+
+			let atMergeStation = false
+			const forwardsFound = forwardsTraverseCheck(binId)
+			if(!!forwardsFound) return [true, lastStationTraversed]
+
+			const backwardsFound = backwardsTraverseCheck(binId)
+			if(!!backwardsFound) return [true, lastStationTraversed]
+
+			return [false, lastStationTraversed]
+
 	}
 
 
@@ -178,6 +258,7 @@ const Column = ((props) => {
 
 
 	const onMouseLeave = (event) => {
+
 		dispatchSetLotHovering(null)
 	}
 
@@ -195,6 +276,24 @@ const Column = ((props) => {
 				}
 			}
 			if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
+			dispatchPutCard(submitLot, submitLot._id)
+	}
+
+	const handleRightClickDeleteLot = (card, binId) => {
+			let currLot = reduxCards[card.cardId]
+			let currBin = currLot.bins[binId]
+
+			currBin['count'] = 0
+
+			let submitLot = {
+				...currLot,
+				bins: {
+					...currLot.bins,
+					[binId]: currBin
+				}
+			}
+
+			if(Object.values(currBin).length===1) delete submitLot.bins[binId]
 			dispatchPutCard(submitLot, submitLot._id)
 	}
 
@@ -280,24 +379,12 @@ const Column = ((props) => {
 		}
 	}
 
-	const handleDrop = async (dropResult) => {
-		const { removedIndex, addedIndex, payload, element } = dropResult || {}
+	const handleDrop = async () => {
+			let [inDropZne, lastStn] = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
 
-		if (payload === null) { //  No new button, only reorder
-			return
-		} else {
-			if (addedIndex !== null) {
-				const {
-					binId,
-					cardId,
-					count,
-					// process_id: oldProcessId,
-					...remainingPayload
-				} = payload
-				await dispatchSetDroppingLotId(cardId, binId)
-
-				if (!(binId === station_id)) {
-					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
+			if(!!inDropZne){
+					const binId = dragFromBin
+					const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
 					const {
 						[binId]: movedBin,
@@ -306,7 +393,8 @@ const Column = ((props) => {
 
 					if (movedBin) {
 						let updatedLot = droppedCard
-						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, station_id, processes[updatedLot.process_id], routes, stations)
+						let stationBeforeMerge = !!lastStn ? lastStn : binId
+						updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, stationBeforeMerge, draggingStationId, processes[updatedLot.process_id], routes, stations)
 						updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[binId]?.count, binId, processes[updatedLot.process_id], routes)
 						if(!!updatedLot.bins[binId] && !updatedLot.bins[binId]['count']){
 							updatedLot.bins[binId] = {
@@ -319,65 +407,37 @@ const Column = ((props) => {
 						if(!!updatedLot.bins[binId] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[binId]).length === 1){
 							delete updatedLot.bins[binId]
 						}
-						dispatchPutCard(updatedLot, updatedLot._id)
-						await dispatchSetDroppingLotId(null, null)
+						let result = dispatchPutCard(updatedLot, updatedLot._id)
+
+						result.then((res) => {
+							dispatchSetDraggingLotId(null)
+							dispatchSetDragFromBin(null)
+						})
 				}
 			}
-		}
+			else{
+				dispatchSetDraggingLotId(null)
+				dispatchSetDragFromBin(null)
+			}
 	}
-}
 
 	const renderCards = () => {
 		return (
 				<styled.BodyContainer
-					dragEnter={dragEnter}
-				>
-					<Container
-						onDrop={async (DropResult) => {
-							await handleDrop(DropResult)
-							setDragEnter(false)
-						}}
-						shouldAcceptDrop={shouldAcceptDrop}
-						getGhostParent={() => document.body}
-						onDragStart={(dragStartParams, b, c) => {
-							const {
-								isSource,
-								payload,
-								willAcceptDrop
-							} = dragStartParams
-							setIsSource(isSource)
+					class = 'container'
+					style={{ overflow: "auto", height: "100%", padding: "1rem", pointerEvents: !!draggingLotId && 'none'
 
-							if (isSource && payload) {
-								const {
-									binId,
-									cardId
-								} = payload
+				 }}
 
-								dispatchSetDraggingLotId(cardId)
-							}
-						}}
-						onDragEnd={(dragEndParams) => {
-							const {
-								isSource,
-							} = dragEndParams
-
-							if (isSource) {
-								dispatchSetDraggingLotId(null)
-							}
-						}}
-						onDragEnter={() => {
-							setDragEnter(true)
-						}}
-						onDragLeave={() => {
-							setDragEnter(false)
-						}}
-						onDropReady={(dropResult) => { }}
-						groupName="process-cards"
-						getChildPayload={index =>
-							cards[index]
-						}
-						style={{ overflow: "auto", height: "100%", padding: "1rem 1rem 4rem 1rem", background:!!dragEnter &&!isSourcee? '#dedfe3' : '#f7f7fa'}}
 					>
+					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
+						<styled.DragToDiv
+						ref = {dragContainerRef}
+						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
+						class = 'dragToDiv'
+
+						/>
+					}
 						{cards.map((card, index) => {
 							const {
 								_id,
@@ -387,22 +447,12 @@ const Column = ((props) => {
 								object_id,
 								cardId,
 								flags,
-								lotNumber,
+								lotNum,
 								totalQuantity,
 								processName,
 								lotTemplateId,
 								...rest
 							} = card
-							// console.log(lotNumber, leadTime)
-
-							// const templateValues = getCustomFields(lotTemplateId, card)
-
-							// const lotName = lots[lot_id] ? lots[lot_id].name : null
-							// const objectName = objects[object_id] ? objects[object_id].name : null
-
-							const isSelected = getIsSelected(cardId, station_id)
-							const isDragging = draggingLotId === cardId
-							const isHovering = hoveringLotId === cardId
 
 							const isLastSelected = getIsLastSelected(cardId)
 
@@ -410,75 +460,112 @@ const Column = ((props) => {
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxCards[card.cardId].bins[card.binId]
+
 								return (
 									Object.keys(partBins).map((part) => {
 
 										const isPartial = part !== 'count' ? true : false
 										return (
+											<VisibilitySensor partialVisibility = {true} offset = {{bottom: 50, top: 50}}>
+												{({isVisible}) =>
+													<>
+														{!!isVisible ?
 														<>
 																{(partBins[part]>0 || (part === 'count' && partBins['count']>0)) &&
-																	<Draggable
-																		key={cardId}
+
+																	<styled.LotDiv
+																		id = 'item'
+																		ref = {lotRef}
+																		class = 'item'
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
+																		onDragStart = {(e)=>{
+																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
+																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
+																			}
+																			e.target.style.opacity = '.001'
+																			dispatchSetDraggingLotId(cardId)
+																			dispatchSetDragFromBin(station_id)
+
+																		}}
+																		onDragEnd = {(e)=>{
+																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
+																			else{
+																				dispatchSetDraggingLotId(null)
+																				dispatchSetDragFromBin(null)
+																			}
+																			e.target.style.opacity = '1'
+																		}}
+
 																		style={{
+																			background: 'transparent',
+																			borderRadius: '1rem',
+																			pointerEvents: 'none'
 																		}}
 																	>
-																		<div
-																			style={{
+																	<LotContainer
+																		isPartial = {isPartial}
+																		onDeleteDisabledLot = {() => {
+																			handleDeleteDisabledLot(card, card.binId, part)
+																		}}
+																		onRightClickDeleteLot = {()=>{
+																			handleRightClickDeleteLot(card, card.binId)
+																		}}
+																		glow={isLastSelected}
+																		enableFlagSelector={enableFlags}
+																		selectable={selectable}
+																		key={cardId}
+																		// processName={processName}
+																		totalQuantity={totalQuantity}
+																		lotNumber={lotNum}
+																		name={isPartial ? name + ` (${routes[part]?.part})` : name}
+																		count={isPartial ? partBins[part] : partBins['count']}
+																		leadTime={leadTime}
+																		id={cardId}
+																		flags={flags || []}
+																		index={index}
+																		lotId={cardId}
+																		binId={station_id}
+																		onClick={(e) => {
+																			const payload = getBetweenSelected(cardId)
 
-																			}}
-																		>
-																		<LotContainer
-																			isPartial = {isPartial}
-																			onDeleteDisabledLot = {() => {
-																				handleDeleteDisabledLot(card, card.binId, part)
-																			}}
-																			glow={isLastSelected}
-																			isFocused={isDragging || isHovering}
-																			enableFlagSelector={enableFlags}
-																			selectable={selectable}
-																			isSelected={isSelected}
-																			key={cardId}
-																			// processName={processName}
-																			totalQuantity={totalQuantity}
-																			lotNumber={lotNumber}
-																			name={isPartial ? name + ` (${routes[part]?.part})` : name}
-																			count={isPartial ? partBins[part] : partBins['count']}
-																			leadTime={leadTime}
-																			id={cardId}
-																			flags={flags || []}
-																			index={index}
-																			lotId={cardId}
-																			binId={station_id}
-																			onClick={(e) => {
-																				const payload = getBetweenSelected(cardId)
+																			onCardClick(
+																				e,
+																				{
+																					lotId: cardId,
+																					processId: processId,
+																					binId: station_id
+																				},
+																				payload
+																			)
+																		}}
+																		containerStyle={{
+																			border: draggingLotId === cardId && station_id === dragFromBin && '.1rem solid #b8b9bf',
+																			boxShadow: draggingLotId === cardId && station_id === dragFromBin && '2px 3px 2px 1px rgba(0,0,0,0.2)',
+																			borderRadius: '0.2rem',
+																			padding: '0.2rem',
+																			margin: '.4rem',
+																			width: '96%',
+																			pointerEvents: !!draggingLotId && draggingLotId !== cardId && 'none',
+																		}}
+																	/>
+																	</styled.LotDiv>
 
-																				onCardClick(
-																					e,
-																					{
-																						lotId: cardId,
-																						processId: processId,
-																						binId: station_id
-																					},
-																					payload
-																				)
-																			}}
-																			containerStyle={{
-																				marginBottom: "0.5rem",
-																			}}
-																		/>
-																		</div>
-																	</Draggable>
 															}
 													</>
+													:
+													<div style = {{minHeight:'15rem', width: '80%'}}>
+													...Loading
+													</div>
+											}
+										</>
+									}
+								</VisibilitySensor>
 										)
 									})
 								)
 							}
 						})}
-
-					</Container>
 				</styled.BodyContainer>
 		)
 	}
@@ -511,14 +598,31 @@ const Column = ((props) => {
 
 	else {
 		return (
+
 			<styled.StationContainer
+				onDragOver = {(e) => {
+				 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight + 4) + 'rem'
+				 dispatchSetDraggingStationId(station_id)
+				 if(!!acceptDrop){
+					 setInDropZone(true)
+				 }
+				 e.preventDefault()
+			 }}
+			 onDragLeave={(e) => {
+					 setInDropZone(false)
+					 dispatchSetDraggingStationId(null)
+					 if(!!dragContainerRef && !!dragContainerRef.current) dragContainerRef.current.style.minHeight = (lotDivHeight -1) + 'rem'
+			 }}
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
-				style={containerStyle}
+				style={{
+					...containerStyle
+				}}
 			>
-				{HeaderContent(numberOfLots, lotQuantitySummation)}
-
+				<div style = {{pointerEvents: !!draggingLotId && 'none'}}>
+					{HeaderContent(numberOfLots, lotQuantitySummation)}
+				</div>
 				{!showCardEditor &&
 					renderCards()
 				}

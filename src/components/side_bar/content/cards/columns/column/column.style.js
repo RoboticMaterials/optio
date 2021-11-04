@@ -9,11 +9,27 @@ export const RotationWrapperOuter = styled.div`
 export const RotationWrapperInner = styled.div`
   padding: 50% 0;
 `
+export const LotDiv = styled.div`
+
+`
+
+export const DragToDiv = styled.div`
+  width: 97%;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  margin-left: 0.5rem;
+  min-height: ${props => !props.dragDivHeight ? '10rem' : props.dragDivHeight};
+  background: ${props => props.theme.bg.tertiary};
+
+  border: 0.2rem solid #dedfe3;
+  border-radius: 0.2rem;
+`
+
 
 export const RotatedRouteName = styled.span`
   display: block;
   transform-origin: top left;
-  transform: rotate(90deg) translate(0, -110%); 
+  transform: rotate(90deg) translate(0, -110%);
   margin-top: -50%;
   max-width: 20rem;
   white-space: nowrap;
@@ -22,24 +38,24 @@ export const RotatedRouteName = styled.span`
 `
 
 export const StationContainerCss = css`
-	
+
 `
 
 export const StationContainer = styled.div`
     display: flex;
     flex-direction: column;
     min-height: ${minHeight};
-    
+
     width: ${props => props.isCollapsed ? "2rem" : props.maxWidth};
     max-width: ${props => props.isCollapsed ? "2rem" : props.maxWidth};
     min-width: ${props => props.isCollapsed ? "2rem" : props.maxWidth};
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     max-height: ${props => props.maxHeight && props.maxHeight};
-    
+
     border-radius: 0.5rem;
     overflow: hidden;
-    
+
     color: ${props => props.theme.bg.octonary};
 `
 
@@ -49,7 +65,7 @@ export const StationHeader = styled.div`
     width: 100%;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.secondary};   
+    background: ${props => props.theme.bg.secondary};
 `
 
 export const TitleContainer = styled.div`
@@ -71,10 +87,9 @@ export const StationLabel = styled.span`
 export const BodyContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	min-height: ${minHeight};
-	overflow: hidden;
-	background: ${props => props.theme.bg.secondary};
-	opacity: ${props => props.dragEnter ? 0.75 : 1};
+  height: 100%;
+	min-height: 10rem;
+  background: ${props => props.theme.bg.secondary};
 	border-bottom-right-radius: 0.5rem;
 	border-bottom-left-radius: 0.5rem;
 
@@ -82,5 +97,5 @@ export const BodyContainer = styled.div`
   // border-bottom: 0.2rem solid ${props => props.theme.schema.lots.solid};
   // border-right: 0.2rem solid ${props => props.theme.schema.lots.solid};
 
-	justify-content: center;
+	justify-content: start;
 `

@@ -20,48 +20,21 @@ import Portal from '../../../../../higher_order_components/portal'
 import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
-import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
-import IconButton from '../../../../basic/icon_button/icon_button'
 
 // Import Components
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-import LoadUnloadFields from './fields/load_unload_fields'
-import ObjectEditor from '../object_editor/object_editor'
 
 // Import utils
-import uuid from 'uuid'
-import { deepCopy } from '../../../../../methods/utils/utils'
-import { getPreviousRoute, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
-import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
-import * as objectActions from '../../../../../redux/actions/objects_actions'
-import { setFixingProcess, setEditingValues } from '../../../../../redux/actions/processes_actions'
-import { putStation } from '../../../../../redux/actions/stations_actions'
-import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
-import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-
-import { setSelectedHoveringTask, editingTask, setSelectedTask, showRouteConfirmation, setRouteConfirmationLocation, autoAddRoute, deleteRouteClean, deleteTask } from '../../../../../redux/actions/tasks_actions'
-import { processHover } from '../../../../../redux/actions/widget_actions'
-import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
-
+import { setEditingValues } from '../../../../../redux/actions/processes_actions'
+import { editingTask, setSelectedTask } from '../../../../../redux/actions/tasks_actions'
 import {
     buildDefaultRouteName,
-    getLoadStationId,
-    getRouteProcesses,
-    getUnloadStationId, isMiRTask,
-    isNextRouteViable, isOnlyHumanTask
 } from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
-import NumberField from '../../../../basic/form/number_field/number_field'
-import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
-import PropTypes from "prop-types";
-import { isObject } from "../../../../../methods/utils/object_utils";
-import useChange from "../../../../basic/form/useChange";
-import { removeTask } from "../../../../../redux/actions/tasks_actions";
-import { isArray } from "../../../../../methods/utils/array_utils";
+
 import usePrevious from "../../../../../hooks/usePrevious";
-import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskField = (props) => {
 
@@ -80,8 +53,6 @@ const TaskField = (props) => {
 
     const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
-    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false)
     const [enableSave, setEnableSave] = useState(false)
     const { tasks: routes, selectedTask: selectedRoute } = useSelector(state => state.tasksReducer)
     const { stations } = useSelector(state => state.stationsReducer)
@@ -89,8 +60,6 @@ const TaskField = (props) => {
     const [initialNameSet, setInitialNameSet] = useState(false)
 
     const dispatch = useDispatch()
-    const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
-    const dispatchDeleteTask = async (routeId) => await dispatch(deleteTask(routeId))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetEditingValues = (process) => dispatch(setEditingValues(process))
@@ -98,7 +67,6 @@ const TaskField = (props) => {
     const editingIdx = processRoutes.findIndex(route => route._id === selectedRoute._id)
     const editingRoute = processRoutes[editingIdx]
     const fieldName = `routes[${editingIdx}]`
-    const editedRoute = values.routes[editingIdx]
 
     const prevLoadStationId = usePrevious(editingRoute?.load)
     const prevUnloadStationId = usePrevious(editingRoute?.unload)
@@ -167,6 +135,8 @@ const TaskField = (props) => {
         }
       }
 
+      validateForm()
+
     }, [selectedRoute])
 
 
@@ -214,11 +184,11 @@ const TaskField = (props) => {
       dispatchSetEditingValues({...values, routes: updatedRoutes})
     }
 
-    const onRouteBack = async (id) => {
+    const onRouteBack = async (id, isNew) => {
         const updatedRoutes = []
         for(const ind in values.routes){
           if(values.routes[ind]._id === id){
-            if(!!routeCopy){
+            if(!!routeCopy && !isNew){
               updatedRoutes.push(routeCopy)
             }
           }
@@ -237,7 +207,6 @@ const TaskField = (props) => {
 
     }
 
-
     /**
      * checks if there are other routes with the same load location. This meeds the load
      * station is a diverging node and the user needs to decide whether its a split or choice.
@@ -245,10 +214,16 @@ const TaskField = (props) => {
     const isDivergingRoute = useMemo(() => {
         const isDiverging = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.load === selectedRoute.load) !== undefined
         if (isDiverging && editingRoute.divergeType === undefined) {
-            updateDivergingRoutes('split');
+            updateDivergingRoutes('choice');
         }
         return isDiverging;
     }, [processRoutes, editingRoute])
+
+    useEffect(() => {
+        if (!isDivergingRoute && !submitDisabled && !!editingRoute.unload) {
+            onSaveRoute()
+        }
+    }, [isDivergingRoute, submitDisabled])
 
     return (
         <>
@@ -262,7 +237,7 @@ const TaskField = (props) => {
                         button_2_text={"No"}
                         handleClose={() => setConfirmExitModal(null)}
                         handleOnClick1={() => {
-                          onRouteBack(selectedRoute._id)
+                          onRouteBack(selectedRoute._id, selectedRoute.isNew)
                        }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
@@ -272,7 +247,7 @@ const TaskField = (props) => {
                         content={'tasks'}
                         mode={'create'}
                         onClickBack={() => {
-                            onRouteBack(selectedRoute._id)
+                            onRouteBack(selectedRoute._id, selectedRoute.isNew)
                         }}
                     />
                     <div style={{ margin: '0.5rem 0.5rem 2rem 0' }}>
@@ -289,7 +264,7 @@ const TaskField = (props) => {
                             containerStyle={{marginBottom: '1rem'}}
                         />
 
-                        <styled.Title>Part Name</styled.Title>
+                        {/* <styled.Title>Part Name</styled.Title>
                         <TextField
                             placeholder='Name of transported part'
                             value={editingRoute.part}
@@ -300,25 +275,17 @@ const TaskField = (props) => {
                             style={{ fontSize: '1.2rem', fontWeight: '100' }}
                             textboxContainerStyle={{ border: "none" }}
                             containerStyle={{marginBottom: '1rem'}}
-                        />
+                        /> */}
 
 
                         {isDivergingRoute &&
                             <>
                                 <styled.Title style={{ alignSelf: 'center' }}>Diverging Type</styled.Title>
                                 <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem'}}>
-                                    <styled.DualSelectionButton
-                                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                        onClick={() => {
-                                            updateDivergingRoutes('split')
-                                        }}
-                                        selected={editingRoute.divergeType === 'split'}
-                                    >
-                                        Split
-                                    </styled.DualSelectionButton>
 
                                     <styled.DualSelectionButton
-                                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                        
                                         onClick={() => {
                                             updateDivergingRoutes('choice')
                                         }}
@@ -327,6 +294,16 @@ const TaskField = (props) => {
                                     >
                                         Choice
                                     </styled.DualSelectionButton>
+
+                                    <styled.DualSelectionButton
+                                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                        onClick={() => {
+                                            updateDivergingRoutes('split')
+                                        }}
+                                        selected={editingRoute.divergeType === 'split'}
+                                    >
+                                        Split
+                                    </styled.DualSelectionButton>                                    
 
                                 </styled.RowContainer>
                             </>
@@ -355,7 +332,7 @@ const TaskField = (props) => {
                             onClick={() => {
                                 onSaveRoute()
                             }}
-                        >Add Route</Button>
+                        >{selectedRoute.isNew ? 'Add Route' : 'Save Route'}</Button>
 
 
                         {/* Remove Task From Process Button */}

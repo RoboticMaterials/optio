@@ -18,9 +18,6 @@ import { setOpen } from "../../redux/actions/sidebar_actions"
 
 import { deepCopy } from '../../methods/utils/utils'
 
-// Import Utils
-import { DeviceItemTypes } from '../../methods/utils/device_utils'
-
 import * as styled from './widgets.style'
 import { connect } from 'formik';
 
@@ -48,7 +45,6 @@ const Widgets = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     // Info passed from workstations/device_locations via redux
@@ -108,110 +104,32 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-        history.push('/locations')
-        dispatchShowSideBar(true)
+        let dashboardID
 
-
-        if (!!selectedStation) {
-            dispatchSetEditingStation(true)
-            let copy = {}
-            selectedStation.children.forEach(child => {
-                copy[child] = positions[child]
-            })
-            dispatchSetSelectedStationChildrenCopy(copy)
-            dispatchSetSelectedStation(selectedStation)
-        }
-        else if (!!selectedPosition) {
-            dispatchSetEditingPosition(true)
-            dispatchSetSelectedPosition(selectedPosition)
-
+        // If there's no selected station, then see if theres a station in the url, if so, use that, else do nothing
+        if (!selectedLocation) {
+            if (!!stationID) {
+                dashboardID = stations[stationID].dashboards[0]
+            } else {
+                return null
+            }
+        } else {
+            dashboardID = selectedLocation.dashboards[0]
         }
 
-          onWidgetClose(true)
-          dispatchHoverStationInfo(null)
+        history.push('/locations/' + stationID + '/dashboards/' + dashboardID)
     }
 
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
     const renderWidgetButtons = useMemo(() => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
-        const device = devices[hoveringInfo.id]
 
         const Wrapper = !!widgetPage ? styled.EmptyDiv : styled.WidgetButtonWrapper;
 
-        // If device only show dashboards
-        if (!!device) {
-            return (
-                <>
-                    <WidgetButton
-                        id={stationID}
-                        type={'dashboards'}
-                        label={'Dashboards'}
-                        currentPage={widgetPage}
-                    />
-                </>
-
-            )
-        }
-
         // If the schema is a station then show these buttons, else it's a position
-        else if (location.schema === 'station') {
-            // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
-            if (!!location.device_id) {
-                const device = devices[location.device_id]
-                let deviceType = DeviceItemTypes['generic']
-
-                if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
-
-                return deviceType.widgetPages.map((page, ind) => {
-                    switch (page) {
-                        case 'statistics':
-                            return (
-                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
-                                        <WidgetButton
-                                        key={ind}
-                                        id={stationID}
-                                        type={'statistics'}
-                                        label={'Statistics'}
-                                        currentPage={widgetPage}
-                                        switcher={!!widgetPage}
-                                    />
-                                </Wrapper>
-                            )
-                        case 'dashboards':
-                            return (
-                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
-                                    <WidgetButton
-                                        key={ind}
-                                        id={stationID}
-                                        type={'dashboards'}
-                                        label={'Dashboards'}
-                                        currentPage={widgetPage}
-                                        switcher={!!widgetPage}
-                                    />
-                                </Wrapper>
-                            )
-                        case 'view':
-                            return (
-                                <Wrapper idx={ind} numItems={deviceType.widgetPages.length} radius={widgetRadius}>
-                                    <WidgetButton
-                                        key={ind}
-                                        id={stationID}
-                                        type={'view'}
-                                        label={'View'}
-                                        currentPage={widgetPage}
-                                        switcher={!!widgetPage}
-                                    />
-                                </Wrapper>
-                            )
-
-                        default:
-                            break;
-                    }
-
-                })
-
-            } else if (location.type === 'warehouse') {
+        if (location.schema === 'station') {
+            if (location.type === 'warehouse') {
                 return (
                     <>
                       <Wrapper idx={0} numItems={2} radius={widgetRadius}>
@@ -339,6 +257,30 @@ const Widgets = (props) => {
         }
     }, [selectedLocation, hoveringInfo])
 
+    const editLocation = () => {
+        history.push('/locations')
+        dispatchShowSideBar(true)
+
+
+        if (!!selectedStation) {
+            dispatchSetEditingStation(true)
+            let copy = {}
+            selectedStation.children.forEach(child => {
+                copy[child] = positions[child]
+            })
+            dispatchSetSelectedStationChildrenCopy(copy)
+            dispatchSetSelectedStation(selectedStation)
+        }
+        else if (!!selectedPosition) {
+            dispatchSetEditingPosition(true)
+            dispatchSetSelectedPosition(selectedPosition)
+
+        }
+
+          onWidgetClose(true)
+          dispatchHoverStationInfo(null)
+    }
+
     return (
         <Suspense fallback = {<></>}>
 
@@ -377,11 +319,13 @@ const Widgets = (props) => {
                             transitionName={'expand'}
                             transitionAppear={true}
                             transitionAppearTimeout={200}
+                            transitionEnterTimeout={200}
+                            transitionLeaveTimeout={200}
                         >
                             <styled.LocationOverlay scale={hoveringInfo.scale} onClick={() => onClickLocation()} />
                             <styled.WidgetButtonContainer widgetPage={widgetPage}>
                                 {renderWidgetButtons}
-                                <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                <styled.WidgetStationName onClick={editLocation}>{selectedLocation.name}</styled.WidgetStationName>
                             </styled.WidgetButtonContainer>
 
                         </CSSTransitionGroup>

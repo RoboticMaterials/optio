@@ -10,7 +10,6 @@ import TaskAddedAlert from './task_added_alert/task_added_alert'
 import DashboardsHeader from "../dashboards_header/dashboards_header";
 import DashboardLotList from './dashboard_lot_list/dashboard_lot_list'
 import DashboardLotPage from './dashboard_lot_page/dashboard_lot_page'
-import DashboardDevicePage from './dashboard_device_page/dashboard_device_page'
 import Button from '../../../../basic/button/button';
 
 // Import Modals
@@ -73,7 +72,6 @@ const DashboardScreen = (props) => {
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
     const routes = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const lots = useSelector(state => state.cardsReducer.cards)
     const processes = useSelector(state => state.processesReducer.processes)
     const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
@@ -132,10 +130,6 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
-
-        if (!!devices[stationID]) {
-            setIsDevice(true)
-        }
 
         dispatchGetProcesses()
         return () => {
@@ -280,6 +274,7 @@ const DashboardScreen = (props) => {
             case 'kickoff':
                 return (
                     <KickOffModal
+                        user={user}
                         isOpen={true}
                         stationID={stationID}
                         processID={selectedOperation.processID}
@@ -444,13 +439,7 @@ const DashboardScreen = (props) => {
                 isListView={showLotsList}
             />
 
-            {isDevice ?
-                <DashboardDevicePage
-                    handleTaskAlert={() => {
-
-                    }}
-                />
-                :
+            {
                 showLotsList ?
                     <DashboardLotList onCardClicked={handleLotClick}
                     />

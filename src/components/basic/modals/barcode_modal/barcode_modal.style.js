@@ -125,6 +125,13 @@ export const HoverContainer = styled.div`
 
 `
 
+export const BarcodeSVG = styled.svg`
+
+@media print {
+  @page { size: landscape; }
+  
+}`
+
 export const ListItemIcon = styled.i`
 
     font-size: 1.3rem;

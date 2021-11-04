@@ -319,7 +319,6 @@ const FormComponent = (props) => {
             const res = await dispatchDeleteCard(cardId, processId);
             setDeletedObject(res)
             if(Object.values(res).length>0){
-              console.log(res[0])
                close();
              }
 
@@ -745,29 +744,23 @@ const FormComponent = (props) => {
     };
 
     const operationButtons = useMemo(() => {
-        let btns = [
-            {
-                label: "Import XML",
-                onClick: onImportXML,
-            },
-            {
-                label: "Barcode",
-                onClick: () =>
-                    dispatchShowBarcodeModal(
-                        true
-                    ),
-            },
-        ]
+        let btns
 
-        if (formMode !== FORM_MODES.CREATE) {
-            btns.push({
-                label: "Lot History",
-                schema: "fields",
-                onClick: () => setShowHistory(true),
-            })
+        if (formMode === FORM_MODES.CREATE) {
+
+            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml' />
+
+        } else {
+
+            return (
+                <>
+                    <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
+                    <Button schema='fields' onClick={() => setShowHistory(true)} label='Lot History' />
+                </>
+            )
+
         }
 
-        return btns
     }, [formMode])
 
     const renderForm = () => {
@@ -790,11 +783,11 @@ const FormComponent = (props) => {
 
                 <BarcodeModal
                     isOpen={!!barcodeModal}
-                    title={"RM-" + lotNumber + " Barcode"}
+                    title={lotNumber + " Barcode"}
                     handleClose={() => {
                         dispatchShowBarcodeModal(false);
                     }}
-                    barcodeId={"RM-" + lotNumber}
+                    barcodeId={lotNumber}
                 />
                 <styled.Header>
                     {(content === CONTENT.CALENDAR ||
@@ -953,7 +946,7 @@ const FormComponent = (props) => {
                                                 Product Group:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
-                                                {lotTemplate.name}
+                                                {lotTemplate?.name}
                                             </styled.ContentValue>
                                         </div>
                                     </styled.IconRow>
@@ -969,11 +962,13 @@ const FormComponent = (props) => {
                                         </LabeledButton>
                                     )}
 
-                                    <DropdownMenuButton
+                                    {operationButtons}
+
+                                    {/* <DropdownMenuButton
                                         label={"Options"}
                                         schema={"lots"}
                                         buttons={operationButtons}
-                                    />
+                                    /> */}
                                 </styled.SubHeader>
 
                                 {(showProcessSelector || !values.processId) &&
@@ -986,7 +981,34 @@ const FormComponent = (props) => {
                                             Lot Number
                                         </styled.FieldLabel>
                                         <styled.LotNumber>
-                                            {formatLotNumber(lotNumber)}
+                                        <TextField
+                                            disabled={content !== null}
+                                            inputStyle={
+                                                content !== null
+                                                    ? {
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            style={
+                                                content !== null
+                                                    ? {
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            name={"lotNum"}
+                                            type={"text"}
+                                            placeholder={"Lot #"}
+                                            InputComponent={Textbox}
+                                            schema={"lots"}
+                                        />
                                         </styled.LotNumber>
                                     </styled.NameContainer>
 
@@ -1316,6 +1338,14 @@ const LotEditor = (props) => {
     } = props;
 
 
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        setFieldValue = () => { },
+    } = current || {}
 
     // redux state
     const cards = useSelector((state) => {
@@ -1350,7 +1380,7 @@ const LotEditor = (props) => {
     // get card object from redux by cardId
     const card = cards[cardId] || null;
     const [lotNumber, setLotNumber] = useState(
-        card && card.lotNumber !== null ? card.lotNumber : collectionCount
+        card && card.lotNum !== null ? card.lotNum : collectionCount
     );
 
     // extract card attributes
@@ -1373,8 +1403,12 @@ const LotEditor = (props) => {
     }, [props.cardId]);
 
     useEffect(() => {
+      setFieldValue('lotNum', lotNumber)
+    }, [lotNumber]);
+
+    useEffect(() => {
         setLotNumber(
-            card && card.lotNumber !== null ? card.lotNumber : collectionCount
+            card && card.lotNum !== null ? card.lotNum : collectionCount
         );
     }, [card, collectionCount]);
 
@@ -1457,6 +1491,7 @@ const LotEditor = (props) => {
                             moveCount: card?.bins[binId]?.count || 0,
                             moveLocation: [],
                             name: card ? card.name : ``,
+                            lotNum: card ? card.lotNum : null,
                             bins:
                                 card && card.bins
                                     ? card.bins
@@ -1464,7 +1499,7 @@ const LotEditor = (props) => {
                             fields: getFormCustomFields(
                                 useCardFields && !card?.syncWithTemplate
                                     ? card?.fields || []
-                                    : lotTemplate.fields,
+                                    : lotTemplate?.fields,
                                 card?.fields ? card?.fields : null
                             ),
                         }}
@@ -1520,6 +1555,7 @@ const LotEditor = (props) => {
                                     processId: selectedProcessId,
                                     [lotTemplateId]: templateValues,
                                     fields,
+                                    lotNum,
                                     syncWithTemplate,
                                 } = values || {};
 
@@ -1529,7 +1565,7 @@ const LotEditor = (props) => {
                                         var submitItem = {
                                             name,
                                             bins,
-                                            lotNumber,
+                                            lotNum,
                                             flags: isObject(card)
                                                 ? card.flags || []
                                                 : [],
@@ -1639,7 +1675,7 @@ const LotEditor = (props) => {
                                                 ? card.process_id || processId
                                                 : processId,
                                             lotTemplateId,
-                                            lotNumber,
+                                            lotNum,
                                             fields,
                                             syncWithTemplate,
                                             totalQuantity:
@@ -1664,7 +1700,7 @@ const LotEditor = (props) => {
                                                 ? processId
                                                 : selectedProcessId,
                                             lotTemplateId,
-                                            lotNumber,
+                                            lotNum,
                                             fields,
                                             totalQuantity: bins["QUEUE"]?.count,
                                             syncWithTemplate,
@@ -1673,6 +1709,7 @@ const LotEditor = (props) => {
                                         requestResult = await onPostCard(
                                             submitItem
                                         );
+
                                         if (!(requestResult instanceof Error)) {
                                             const { _id = null } =
                                                 requestResult || {};

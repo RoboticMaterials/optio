@@ -165,7 +165,6 @@ export const getDefaultFields = () => {
 export const BASIC_LOT_TEMPLATE = {
     fields: EMPTY_DEFAULT_FIELDS,
     name: "Basic",
-    _id: BASIC_LOT_TEMPLATE_ID
 }
 
 export const DEFAULT_NAME_DISPLAY_NAME = "Name"
@@ -183,7 +182,6 @@ export const LOT_PRIMARY_FIELD_IDS = [NAME_FIELD_ID, COUNT_FIELD_ID]
 
 export const NAME_FIELD = { fieldName: "name", _id: NAME_FIELD_ID, dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name" }
 export const COUNT_FIELD = { fieldName: "bins", _id: COUNT_FIELD_ID, fieldPath: ["QUEUE", "count"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity" }
-export const LOT_NUMBER_FIELD = { fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number" }
 
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
@@ -268,7 +266,7 @@ export const SORT_DIRECTIONS = {
 
 export const LOT_FILTER_OPTIONS = {
     name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
-    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "INTEGER" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "STRING" },
     flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
     processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
     quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},
@@ -277,7 +275,7 @@ export const LOT_FILTER_OPTIONS = {
 
 export const LOT_SORT_OPTIONS = {
     name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
-    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "INTEGER" },
+    lotNumber: { label: "Lot Number", fieldName: 'lotNumber', primary: true, dataType: "STRING" },
     flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
     processes: { label: "Processes", fieldName: 'process_id', primary: true, dataType: "PROCESSES"},
     quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},

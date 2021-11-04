@@ -1,750 +1,387 @@
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState, useMemo } from 'react'
+import { useDispatch, useSelector } from "react-redux";
+
+import PropTypes from "prop-types";
+import { Formik } from "formik";
+import set from "lodash/set";
+import ReactTooltip from 'react-tooltip';
 
 // components external
-import {Container, Draggable} from "react-smooth-dnd";
+import Spreadsheet from "react-spreadsheet";
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+
 
 // components internal
 import Button from "../button/button";
-import Textbox from "../textbox/textbox";
-import TextField from "../form/text_field/text_field";
-import ContainerWrapper from "../container_wrapper/container_wrapper";
+import DropDownSearch from '../drop_down_search_v2/drop_down_search'
 
-// constants
-import { FIELD_DATA_TYPES } from "../../../constants/lot_contants";
-import {
-	BASIC_FIELD_DEFAULTS,
-	LOT_PRIMARY_FIELD_IDS,
-	LOT_TEMPLATES_RESERVED_FIELD_NAMES
-} from "../../../constants/form_constants";
-
-// functions external
-import PropTypes from "prop-types";
-import set from "lodash/set";
-import {ThemeContext} from "styled-components";
-import {Formik} from "formik";
-
-// utils
-import {immutableDelete, isArray} from "../../../methods/utils/array_utils";
+//utils
 import { templateMapperSchema } from "../../../methods/utils/form_schemas";
-import {isObject} from "../../../methods/utils/object_utils";
-import {isEqualCI} from "../../../methods/utils/string_utils";
+import { deepCopy } from '../../../methods/utils/utils'
+import { createPastePayload } from '../../../methods/utils/lot_utils'
 
 // style
 import * as styled from './paste_mapper.style'
 
+// actions
+import { putLotTemplate } from '../../../redux/actions/lot_template_actions'
+import BackButton from '../back_button/back_button';
+import SimpleModal from '../modals/simple_modal/simple_modal';
+
+
 const PasteMapper = (props) => {
 
-	const {
-		schema,
-		onCancel,
-		availableFieldNames,
-		values,
-		errors,
-		touched,
-		setFieldValue,
-		setSelectedFieldNames,
-		onPreviewClick,
-		onCreateClick,
-		reset,
-		resetForm,
-		hidden
-	} = props
-
-	const {
-		table
-	} = values || {}
-
-	const {
-		selectedFieldNames
-	} = values || {}
-
-	useEffect(() => {
-		setSelectedFieldNames(selectedFieldNames)
-	}, [selectedFieldNames])
-
-	useEffect(() => {
-		if(reset) resetForm()
-	}, [reset])
-
-
-
-	const [fieldLabelsIndex, setFieldLabelsIndex] = useState()
-	const [fieldDirection, setFieldDirection] = useState(0)
-	// const [selectedFieldNames, setSelectedFieldNames] = useState([])
-	const [usedAvailableFieldNames, setUsedAvailableFieldNames] = useState(availableFieldNames.map((junk) => false))
-	const [isRow, setIsRow] = useState(fieldDirection === 0)
-
-	useEffect(() => {
-		setIsRow(fieldDirection === 0)
-	}, [fieldDirection])
-
-	useEffect(() => {
-		let tempFieldLabels = []
-
-		// rows
-		if(isRow) {
-			table.forEach((currCol, currColIndex) => {
-				const currFieldName = currCol[fieldLabelsIndex]
-
-				let payload = {
-					fieldName: "",
-					dataType: FIELD_DATA_TYPES.STRING
-				}
-
-				if(currFieldName) {
-
-					payload = {
-						fieldName: currFieldName,
-						dataType: FIELD_DATA_TYPES.STRING,
-						displayName: currFieldName,
-					}
-
-					for(const availableField of availableFieldNames) {
-						const {
-							fieldName: availableFieldName = "",
-							displayName: availableDisplayName = "",
-						} = availableField
-
-						if(isEqualCI(currFieldName, availableDisplayName)) {
-							payload = {...availableField}
-							break	// quit looping
-						}
-					}
-				}
-
-				tempFieldLabels.push(payload)
-			})
-		}
-
-		// columns
-		else {
-
-		}
-
-		setFieldValue("selectedFieldNames", tempFieldLabels)
-
-		// setSelectedFieldNames(tempFieldLabels)
-	}, [fieldLabelsIndex, fieldDirection])
-
-	useEffect(() => {
-		let tempUsedFieldNames = [...usedAvailableFieldNames]
-		availableFieldNames.forEach((currField, currIndex) => {
-			const {
-				fieldName: currAvailableFieldName = "",
-				dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
-				index: currAvailableIndex,
-				displayName: currAvailableDisplayName = "",
-			} = currField || {}
-
-
-			tempUsedFieldNames[currIndex] = false
-			for(const selectedField of selectedFieldNames) {
-				const {
-					fieldName: currSelectedFieldName = "",
-					dataType: currSelectedDataType = FIELD_DATA_TYPES.STRING,
-					index: currSelectedIndex,
-					displayName: currSelectedDisplayName = "",
-				} = selectedField || {}
-
-				if(currAvailableDataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					if(currAvailableIndex === currSelectedIndex && isEqualCI(currSelectedDisplayName.trim(),currAvailableDisplayName.trim())) {
-						tempUsedFieldNames[currIndex] = true
-						break // no need to keep looping
-					}
-
-				}
-
-				else {
-					if(isEqualCI(currSelectedDisplayName.trim(), currAvailableDisplayName.trim())) {
-						tempUsedFieldNames[currIndex] = true
-						break // no need to keep looping
-					}
-				}
-			}
-		})
-
-		// for(const availableField of availableFieldNames) {
-		// 	const {
-		// 		displayName: availableDisplayName = "",
-		// 	} = availableField
-		//
-		// 	if(isEqualCI(outputVal, availableDisplayName)) {
-		// 		mappedOutputVal = {...availableField}
-		// 		break	// quit looping
-		// 	}
-		// }
-
-		setUsedAvailableFieldNames(tempUsedFieldNames)
-	}, [availableFieldNames, selectedFieldNames])
-
-	const createPayload = () => {
-		let data = []
-		let templateValues = {}
-
-		table.forEach((currCol, currColIndex) => {
-			currCol
-				// if a row is being used for field names, filter out this row when creating payload
-				.filter((currItem, currItemIndex) => {
-					if((fieldLabelsIndex !== null) && (currItemIndex === fieldLabelsIndex)) return false
-					return true
-				})
-				.forEach((currItem, currItemIndex) => {
-					let destinationField = selectedFieldNames[currColIndex]
-					let tempDisplayName = destinationField?.displayName || ""
-
-					for(const availableField of availableFieldNames) {
-						const {
-							fieldName: currAvailableFieldName = "",
-							dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
-							index: currAvailableIndex,
-							displayName: currAvailableDisplayName = "",
-							field
-						} = availableField || {}
-
-						if(isEqualCI(tempDisplayName.trim(), currAvailableDisplayName)) destinationField = {...availableField}
-					}
-
-					let finalValue = currItem
-
-					const {
-						dataType = FIELD_DATA_TYPES.STRING,
-						index,
-						fieldPath,
-						fieldName = `undefined field ${currColIndex}`,
-						_id: fieldId
-					} = destinationField || {}
-
-					// check if field is from primary or secondary values
-					// let isPrimaryValue = false
-					// for(const primaryName in LOT_PRIMARY_FIELD_IDS) {
-					// 	if(isEqualCI(fieldName, primaryName)) {
-					// 		isPrimaryValue = true
-					// 	}
-					// }
-
-					const existingData = data[currItemIndex]
-					const {
-						[fieldId]: currentFieldData
-					} = existingData || {}
-
-
-					/*
-					* parse data
-					* */
-					if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-						console.log("date range field destinationField",destinationField)
-						let parsedDate = new Date(currItem)
-						if(isArray(currentFieldData)) {
-							finalValue = [...currentFieldData]
-							finalValue.splice(index, 0, parsedDate)
-						}
-						else {
-							finalValue = [parsedDate]
-						}
-					}
-					else if(dataType === FIELD_DATA_TYPES.INTEGER) {
-						finalValue = parseInt(finalValue)
-						if(!Number.isInteger(finalValue)) finalValue = BASIC_FIELD_DEFAULTS.NUMBER_FIELD
-					}
-
-					let constructedPath = {}
-					// if(isArray(fieldPath) && fieldPath.length > 0) {
-					//
-					// 	// finalValue = {
-					// 	// 	[fieldPath[fieldPath.length - 1]]: {
-					// 	// 		[fieldName]: finalValue
-					// 	// 	}
-					// 	// }
-					//
-					// 	fieldPath.forEach((currentPath, currPathIndex) => {
-					// 		// if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
-					//
-					// 		finalValue = {[currentPath]: finalValue}
-					// 	})
-					// }
-					// else {
-					//
-					// }
-					// else{
-						finalValue = {[fieldId]: {
-							...destinationField,
-							value: finalValue
-						}}
-					// }
-
-
-					// if(isPrimaryValue) {
-						if(existingData) {
-							data[currItemIndex] =  {
-								...existingData,
-								...finalValue
-							}
-						}
-						else {
-							data.push({...finalValue})
-						}
-					// }
-					// else {
-					//
-					// }
-				})
-		})
-
-		return data
-	}
-
-	// theme
-	const themeContext = useContext(ThemeContext);
-
-	const onMinusClick = (removeIndex) => {
-		let updatedTable = []
-		table.forEach((currCol, currColIndex) => {
-			if(isArray(currCol) && currCol.length > removeIndex) {
-				const trimmedCol = immutableDelete(currCol, removeIndex)
-				updatedTable.push(trimmedCol)
-			}
-			else {
-				updatedTable.push(currCol)
-			}
-		})
-
-		setFieldValue("table", updatedTable)
-	}
-
-	const renderTable = () => {
-		return (
-			<styled.Table>
-				{
-					<styled.Column style={{flex: 0, minWidth: "fit-content"}}>
-						{isArray(table[0]) && table[0].map((junk, currIndex) => {
-
-							const isSelected = isRow ? (currIndex === fieldLabelsIndex) : false
-
-							if(fieldDirection === 1) {
-								return(
-									<styled.ItemContainer>
-										<Textbox
-											placeholder={"Field name..."}
-											style={{
-												background: themeContext.bg.quaternary,
-												maxHeight: "2rem"
-											}}
-											textboxContainerStyle={{
-												maxHeight: "2rem"
-											}}
-
-										/>
-									</styled.ItemContainer>
-								)
-							}
-							else {
-								if(currIndex === 0) {
-									return(
-										<>
-											<styled.ItemContainer style={{background: "transparent", border: "none",maxHeight: "4rem", height: "4rem"}}>
-												{/*<div>Field Names</div>*/}
-											</styled.ItemContainer>
-											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
-
-												<styled.SelectButton
-													type={"button"}
-													onClick={(e) => {
-														e.preventDefault()
-														isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
-													}}
-													style={{marginRight: 0}}
-													color={'#57afff'}
-													selected={isSelected}
-													className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
-												/>
-												<styled.SelectButton
-													className={"fas fa-minus-circle"}
-													type={"button"}
-													color={themeContext.schema.error.solid}
-													onClick={(e) => {
-														e.preventDefault()
-														onMinusClick(currIndex)
-													}}
-												/>
-
-											</styled.ItemContainer>
-										</>
-									)
-								}
-								else {
-									return(
-										<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
-
-											{/* <styled.SelectButton
-												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
-												type={"button"}
-												selected={isSelected}
-												color={'#57afff'}
-												onClick={(e) => {
-													e.preventDefault()
-													isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
-												}}
-											/> */}
-											<styled.SelectButton
-												className={"fas fa-minus-circle"}
-												color={themeContext.schema.error.solid}
-												type={"button"}
-												onClick={(e) => {
-													e.preventDefault()
-													onMinusClick(currIndex)
-												}}
-											/>
-
-										</styled.ItemContainer>
-									)
-								}
-
-
-							}
-
-						})}
-					</styled.Column>
-
-				}
-				{table.map((currRow, currRowIndex) => {
-
-					return(
-						<styled.Column>
-							{currRow
-								// .filter((currItem, currItemIndex) => {
-								// 	const isSelected = isRow ? (currItemIndex === fieldLabelsIndex) : false
-								//
-								// 	if(!isSelected) return true
-								// 	return false
-								// })
-								.map((currItem, currItemIndex) => {
-									const isSelected = isRow ? (currItemIndex === fieldLabelsIndex) : false
-									return(
-										<>
-											{/**/}
-											{(currItemIndex === 0 && fieldDirection === 0) &&
-											<ContainerWrapper
-												showHighlight={false}
-												shiftable={false}
-												groupName="field_names"
-												onDragStart={(dragStartParams, b, c)=>{
-													const {
-														isSource,
-														payload,
-														willAcceptDrop
-													} = dragStartParams
-
-													if(isSource) {
-													}
-												}}
-												onDragEnd={(dragEndParams)=>{
-													const {
-														isSource,
-														payload,
-														willAcceptDrop
-													} = dragEndParams
-
-													if(isSource) {
-													}
-												}}
-												onDrop={(dropResult) => {
-													const {
-														removedIndex,
-														addedIndex,
-														payload
-													} = dropResult
-
-													if(removedIndex !== null) {
-														setFieldValue(`selectedFieldNames[${currRowIndex}]`,  {
-															fieldName: "",
-															dataType: FIELD_DATA_TYPES.STRING,
-															displayName: ""
-														})
-													}
-
-													if(addedIndex !== null) {
-														const {
-
-														} = payload || {}
-
-														setFieldValue(`selectedFieldNames[${currRowIndex}]`, payload)
-													}
-												}}
-												getChildPayload={index => {
-													// const selectedField = availableFieldNames[index]
-													// return selectedField
-													return values.selectedFieldNames[currRowIndex] || {}
-												}}
-												behaviour={"drop-zone"}
-												getGhostParent={()=>{
-													return document.body
-												}}
-												style={{minHeight: "4rem"}}
-											>
-												<styled.Receptacle></styled.Receptacle>
-
-												<Draggable>
-													<styled.FieldNameTab>
-														{/* <styled.Trapezoid/> */}
-														<styled.ReceptacleInner filled={!!values.selectedFieldNames[currRowIndex] && values.selectedFieldNames[currRowIndex].fieldName !== ""}/>
-														<TextField
-															inputComponent={"input"}
-															containerStyle={{
-																alignSelf: "center",
-																padding: "0 1rem",
-																flex: .9
-															}}
-															name={`selectedFieldNames[${currRowIndex}]`}
-															mapInput={(inputVal) => {
-																return isObject(inputVal) ? (inputVal.displayName) : ""
-															}}
-															mapOutput={(outputVal) => {
-																let mappedOutputVal = {
-																	dataType: FIELD_DATA_TYPES.STRING,
-																	...values.selectedFieldNames[currRowIndex],
-																	fieldName: outputVal,
-																	displayName: outputVal,
-																}
-
-																for(const availableField of availableFieldNames) {
-																	const {
-																		displayName: availableDisplayName = "",
-																	} = availableField
-
-																	if(isEqualCI(outputVal, availableDisplayName)) {
-																		mappedOutputVal = {...availableField}
-																		break	// quit looping
-																	}
-																}
-
-																return mappedOutputVal
-															}}
-															disabled
-															placeholder={"Field"}
-															style={{
-																background: 'transparent',
-																border: 'none !important',
-																maxHeight: "2rem",
-																color: themeContext.bg.octonary,
-																textAlign: 'center',
-																textDecoration: 'none !important'
-															}}
-
-															textboxContainerStyle={{
-																maxHeight: "2rem",
-															}}
-
-														/>
-													</styled.FieldNameTab>
-												</Draggable>
-											</ContainerWrapper>
-											}
-											<styled.ItemContainer schema={schema} selected={isSelected}>
-												<TextField
-													name={`table[${currRowIndex}][${currItemIndex}]`}
-													placeholder={"Enter data..."}
-													style={{
-														borderRadius: ".5rem",
-														flex: 1,
-														alignSelf: "stretch",
-														textAlign: "center",
-														padding: "0 .5rem",
-														display: "flex",
-														alignItems: "center",
-														justifyContent: "center",
-														background: "transparent",
-														fontSize: '0.8rem',
-														color: themeContext.bg.octonary
-													}}
-													inputComponent={"input"}
-												/>
-												{/*<styled.Cell cell={true}>*/}
-												{/*	{currItem}*/}
-												{/*</styled.Cell>*/}
-											</styled.ItemContainer>
-										</>
-									)
-								})}
-						</styled.Column>
-					)
-				})}
-			</styled.Table>
-		)
-	}
-
-	if(!hidden) {
-		return (
-
-			<styled.Container>
-				<styled.Header>
-					<styled.Title>Map Data</styled.Title>
-					{/*<ButtonGroup*/}
-					{/*	buttonViewCss={styled.buttonViewCss}*/}
-					{/*	buttons={["Row", "Column"]}*/}
-					{/*	selectedIndex={fieldDirection}*/}
-					{/*	onPress={(index)=>{*/}
-					{/*		setFieldDirection(index)*/}
-					{/*	}}*/}
-					{/*	containerCss={styled.buttonGroupContainerCss}*/}
-					{/*	buttonViewSelectedCss={styled.buttonViewSelectedCss}*/}
-					{/*	buttonCss={styled.buttonCss}*/}
-					{/*/>*/}
-					<styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
-				</styled.Header>
-
-				<styled.Body>
-					<styled.ContentContainer>
-						<styled.SectionTitle>Available Fields</styled.SectionTitle>
-
-						<styled.FieldNamesContainer style={{ }}>
-						<Container
-							groupName="field_names"
-							onDragStart={(dragStartParams, b, c)=>{
-								const {
-									isSource,
-									payload,
-									willAcceptDrop
-								} = dragStartParams
-
-								if(isSource) {
-								}
-							}}
-							onDragEnd={(dragEndParams)=>{
-								const {
-									isSource,
-									payload,
-									willAcceptDrop
-								} = dragEndParams
-
-								if(isSource) {
-								}
-							}}
-							onDrop={(dropResult) => {
-								const {
-									removedIndex,
-									addedIndex,
-									payload
-								} = dropResult
-
-							}}
-							getChildPayload={index => {
-								const selectedField = availableFieldNames[index]
-								const {
-									fieldName = ""
-								} = selectedField || {}
-
-								return selectedField
-							}}
-							getGhostParent={()=>{
-								return document.body
-							}}
-							behaviour={"drop-zone"}
-							style={{display: "flex", alignItems: "center", justifyContent: "center", minWidth: "fit-content", minHeight:"fit-content"}}
-						>
-							{availableFieldNames.map((currField, currIndex) => {
-
-								const {
-									fieldName: currFieldName = "",
-									type: currType = "",
-									displayName: currDisplayName = "",
-									description,
-									dataType
-								} = currField || {}
-
-								// const isDateRange = dataType === FIELD_DATA_TYPES.DATE_RANGE
-
-								const isUsed = usedAvailableFieldNames[currIndex]
-								return(
-									isUsed ?
-										<styled.FieldButton
-											disabled={isUsed}
-											style={{
-												// display: "table-cell",
-												// verticalAlign: "middle",
-											}}
-										>
-											<styled.FieldName>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
-											{description &&
-											<styled.FieldDescription>{description}</styled.FieldDescription>
-											}
-										</styled.FieldButton>
-										:
-										<Draggable
-											style={{
-												display: "table-cell",
-												verticalAlign: "middle",
-											}}
-											disabled={isUsed}
-											key={currIndex}
-										>
-											<styled.FieldButton
-												disabled={isUsed}
-											>
-											<styled.FieldName>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
-												{description &&
-												<styled.FieldDescription>{description}</styled.FieldDescription>
-												}
-											</styled.FieldButton>
-										</Draggable>
-								)
-							})}
-						</Container>
-						</styled.FieldNamesContainer>
-
-						<styled.SectionDescription>Drag one of the available fields onto a tab to map the values in that column to the field name.</styled.SectionDescription>
-					</styled.ContentContainer>
-
-					<styled.SectionBreak/>
-					<styled.TableContainer>
-						{renderTable()}
-					</styled.TableContainer>
-					<styled.SectionBreak/>
-				</styled.Body>
-
-
-
-				<styled.Footer>
-					<Button
-						type={"button"}
-						schema={schema}
-						label={"Preview Lots"}
-						onClick={()=>{
-							const payload = createPayload()
-							onCreateClick(payload)
-						}}
-						style={{minWidth: '14rem', minHeight: '3rem'}}
-					/>
-					{/*<Button*/}
-					{/*	type={"button"}*/}
-					{/*	schema={schema}*/}
-					{/*	label={"Preview Lots"}*/}
-					{/*	onClick={() => {*/}
-					{/*		const payload = createPayload()*/}
-					{/*		onPreviewClick(payload)*/}
-					{/*	}}*/}
-					{/*/>*/}
-					{/* <Button
-						schema={schema}
-						type={"button"}
-						label={"Cancel"}
-						onClick={onCancel}
-					/> */}
-				</styled.Footer>
-			</styled.Container>
-
-		)
-	}
-	else {
-		return null
-	}
-
-
+    const {
+        formikProps,
+        onPreviewClick,
+        onCreateClick,
+        onCancel,
+        availableFields,
+        lotTemplate
+    } = props
+
+    const {
+        values,
+    } = formikProps;
+
+    const [table, setTable] = useState(values.table)
+    const [disableMergeButton, setDisableMergeButton] = useState(false)
+    const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
+
+    const dispatch = useDispatch()
+    const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
+    const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
+
+    const fieldMapping = useMemo(() => {
+      let mapping = new Array(table[0].length).fill(null)
+      Object.keys(lotTemplate.uploadFieldMapping).forEach(key => {
+        mapping[lotTemplate.uploadFieldMapping[key]] = availableFields.find(field => field._id === key)
+      })
+      return mapping
+    }, [lotTemplate])
+
+    useEffect(() => {
+      // // For Alpen parser, determines if dropdown is disabled
+      // if(!!lotTemplate?.uploadFieldMapping){
+      //   const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
+      //   if(foundQtyField === 'LILIQuantity') {
+      //     console.log(foundQtyField)
+      //     setDisableMergeButton(false)
+      //   }
+      //   else setDisableMergeButton(true)
+      // }
+      // else{
+      //   return setDisableMergeButton(true)
+      // }
+    }, [lotTemplate])
+
+    const handleApplyLotTemplateFields = () => {
+
+      // let lotTemplateCopy = deepCopy(lotTemplate)
+      // if(!lotTemplateCopy.uploadFieldMapping){
+      //   lotTemplateCopy = {
+      //     ...lotTemplateCopy,
+      //     uploadFieldMapping: []
+      //   }
+      // }
+
+      // let fieldMappingCopy = deepCopy(fieldMapping)
+
+      // //Loop thgrough available fields and assign dropdown choices
+      // for(const i in availableFields){
+      //   fieldMappingCopy[i] = availableFields[i]
+      //   lotTemplateCopy.uploadFieldMapping[i] = availableFields[i]._id
+      // }
+      // setFieldMapping(fieldMappingCopy)
+      // dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+    }
+
+    const handleMergeIdenticalLots = () => {
+
+      // let tableCopy = deepCopy(table)
+      // for(let a = 0; a<tableCopy.length; a++){
+      //   for(let i = a+1; i<tableCopy.length; i++){
+      //     let match = true
+      //     let qtyIndex = null
+      //     for(const j in tableCopy[i]){
+      //       if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
+      //         qtyIndex = j
+      //       }
+      //       if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+      //         match = false
+      //         break
+      //       }
+      //     }
+      //     if(match === true){
+      //       if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
+      //         tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+      //         tableCopy.splice(i, 1)
+      //       }
+      //       else{
+      //         console.log('No qty field')
+      //       }
+      //     }
+
+      //   }
+      // }
+      // setTable(tableCopy)
+    }
+
+    const deleteRow = (row) => {
+      let tableCopy = deepCopy(table);
+      tableCopy.splice(row, 1)
+      setTable(tableCopy)
+    }
+
+    const addAbove = (row) => {
+        let tableCopy = deepCopy(table);
+        const numCols = tableCopy[0].length
+        const newRow = new Array(numCols).fill('')
+        tableCopy.splice(row, 0, newRow)
+        setTable(tableCopy)
+    }
+
+    const addBelow = (row) => {
+        let tableCopy = deepCopy(table);
+        const numCols = tableCopy[0].length
+        const newRow = new Array(numCols).fill('')
+        tableCopy.splice(row+1, 0, newRow)
+        setTable(tableCopy)
+    }
+
+    /**
+     * Auto Fill the dropdowns based on the first row of the table. The matcher will lower case
+     * and delete any spaces when comparing the strings
+     */
+    const autoComplete = () => {
+      const firstRow = table[0]
+
+      // Create mapping if one doesnt exist
+      let lotTemplateCopy = deepCopy(lotTemplate)
+      lotTemplateCopy = {
+        ...lotTemplateCopy,
+        uploadFieldMapping: {}
+      }
+
+      let formattedFieldNames = availableFields.map(field => field.displayName.toLowerCase().replace(/\s/g, ''));
+      let value, formattedValue, matchIdx;
+      for (var i in firstRow) {
+        value = firstRow[i].value
+        formattedValue = value.toLowerCase().replace(/\s/g, '')
+        matchIdx = formattedFieldNames.findIndex(formattedFieldName => formattedFieldName === formattedValue)
+        if (matchIdx !== -1) {
+          lotTemplateCopy.uploadFieldMapping[availableFields[matchIdx]?._id] = parseInt(i)
+        }
+      }
+
+      dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+      setShowAutoCompleteModal(false)
+    }
+
+    const renderColumnDropdown = ({ column }) => {
+
+      const unusedFields = availableFields.map(availField => {
+
+          let disabled = false;
+          if ((availField._id in lotTemplate.uploadFieldMapping) && (lotTemplate.uploadFieldMapping[availField._id] < table[0].length)) {
+            disabled = true;
+          }
+
+          return {
+              ...availField,
+              disabled,
+          }
+
+      })
+
+      const keyOfCol = Object.keys(lotTemplate.uploadFieldMapping).find(key => lotTemplate.uploadFieldMapping[key] === column)
+      const savedValue = !!keyOfCol ? [unusedFields.find(field => field._id === keyOfCol)] : []
+
+      return (
+          <td style={{minWidth: '4rem'}}>
+              <ContextMenuTrigger id={`context-menu-column-${column}`}>
+                  <DropDownSearch
+                      placeholder="Column Field"
+                      labelField="displayName"
+                      valueField="_id"
+                      options={unusedFields}
+                      disabledLabel={''}
+                      values={savedValue}
+                      dropdownGap={2}
+                      schema={'lots'}
+                      noDataLabel="No matches found"
+                      closeOnSelect="true"
+                      searchable={false}
+                      onClick={() => console.log("CLICK")}
+                      onChange={values => {
+
+                          // Save this value in the product group template for next time you paste
+                          let lotTemplateCopy = deepCopy(lotTemplate)
+                          if(!lotTemplateCopy.uploadFieldMapping){
+                            lotTemplateCopy = {
+                              ...lotTemplateCopy,
+                              uploadFieldMapping: {}
+                            }
+                          }
+                          const keyOfCol = Object.keys(lotTemplateCopy.uploadFieldMapping).find(key => lotTemplateCopy.uploadFieldMapping[key] === column)
+                          delete lotTemplateCopy.uploadFieldMapping[keyOfCol]
+                          lotTemplateCopy.uploadFieldMapping[values[0]?._id] = parseInt(column)
+                          dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                      }}
+                      className="w-100"
+                  />
+              </ContextMenuTrigger>
+
+              <ContextMenu id={`context-menu-column-${column}`}>
+                  <MenuItem onClick={() => {
+
+                      // Save this value in the product group template for next time you paste
+                      let lotTemplateCopy = deepCopy(lotTemplate)
+                      if(!!lotTemplateCopy.uploadFieldMapping){
+                        const keyOfCol = Object.keys(lotTemplateCopy.uploadFieldMapping).find(key => lotTemplateCopy.uploadFieldMapping[key] === column)
+                        delete lotTemplateCopy.uploadFieldMapping[keyOfCol]
+                        dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                      }
+
+                  }}>
+                      Clear
+                  </MenuItem>
+              </ContextMenu>
+          </td>
+      )
+  }
+
+    const renderRowLabel = ({ row }) => {
+        return (
+
+                <styled.RowLabelContainer>
+                    <ContextMenuTrigger id={`context-menu-${row}`}>
+                        <div style={{display: 'flex', width: '100%', flexGrow: '1', justifyContent: 'center', position: 'relative'}}>
+                          <styled.RowLabel>{row+1}</styled.RowLabel>
+                          {row === 0 &&
+                            <>
+                              <styled.AutoIcon className="fas fa-magic" data-tip data-for="autocomplete-tooltip" onClick={() => setShowAutoCompleteModal(true)}/>
+                              <ReactTooltip id="autocomplete-tooltip" effect="solid"><div style={{width: '10rem'}}>Auto fill columns based on values in the first row.</div></ReactTooltip>
+                            </>
+                          }
+                        </div>
+                    </ContextMenuTrigger>
+
+                    <ContextMenu id={`context-menu-${row}`}>
+                        <MenuItem onClick={() => deleteRow(row)}>
+                            Delete Row
+                        </MenuItem>
+                        <MenuItem onClick={() => addAbove(row)}>
+                            Add Row Above
+                        </MenuItem>
+                        <MenuItem onClick={() => addBelow(row)}>
+                            Add Row Below
+                        </MenuItem>
+                </ContextMenu>
+                </styled.RowLabelContainer>
+
+        )
+    }
+
+    const renderCornerCounter = () => {
+      const usedQty = Object.keys(lotTemplate.uploadFieldMapping).filter(key => lotTemplate.uploadFieldMapping[key] < table[0].length).length
+      return (
+        <styled.RowLabelContainer>
+          <styled.RowLabel style={{minWidth: '8rem'}}>
+            {usedQty}/{availableFields.length} used
+          </styled.RowLabel>
+        </styled.RowLabelContainer>
+      )
+    }
+
+    const Table = useMemo(() => {
+        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
+    }, [table, lotTemplate.uploadFieldMapping])
+
+    return (
+      <>
+        {showAutoCompleteModal && 
+          <SimpleModal 
+            isOpen={showAutoCompleteModal}
+            title="Confirm Auto Complete" 
+            onRequestClose={() => setShowAutoCompleteModal(false)}
+            onCloseButtonClick={() => setShowAutoCompleteModal(false)}
+            handleOnClick1={() => setShowAutoCompleteModal(false)}
+            handleOnClick2={autoComplete}
+            button_1_text="Cancel"
+            button_2_text="Confirm"
+            content="Are you sure you want to continue? This will overwrite dropdowns that have already been filled out."
+          />
+        }
+        <styled.Container>
+            <styled.Header>
+                <BackButton schema={'lots'} onClick={onCancel}/>
+                <styled.Title>Upload Lot Data</styled.Title>
+                <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
+            </styled.Header>
+
+            <styled.Body>
+                <styled.ContentContainer>
+                  {!!parseMode && parseMode === 'Alpen' &&
+                      <Button
+                          style={{maxWidth: '18rem', marginLeft: '2rem'}}
+                          secondary
+                          label={'Apply lot template fields'}
+                          onClick = {()=>{
+                            handleApplyLotTemplateFields()
+                          }}
+                          type="button"
+                      />
+                    }
+                    {!!parseMode && parseMode === 'Alpen' &&
+                      <Button
+                          style={{maxWidth: '18rem', marginLeft: '1rem'}}
+                          secondary
+                          disabled = {disableMergeButton}
+                          label={'Merge identical lots'}
+                          onClick = {()=>{
+                            handleMergeIdenticalLots()
+                          }}
+                          type="button"
+                          schema = {'lots'}
+                      />
+                    }
+
+                    <styled.SectionDescription style = {{flex: parseMode === 'Alpen' && '0.75'}}>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
+                </styled.ContentContainer>
+                <styled.SectionBreak />
+                <styled.TableContainer style={{backdropFilter: 'none !important'}}>
+                    {Table}
+                </styled.TableContainer>
+                <styled.SectionBreak/>
+            </styled.Body>
+
+
+
+            <styled.Footer>
+                <Button
+                    type={"button"}
+                    schema={'lots'}
+                    label={"Validate Lots"}
+                    onClick={()=>{
+                        const payload = createPastePayload(table, fieldMapping)
+                        onCreateClick(payload)
+                    }}
+                    style={{minWidth: '14rem', minHeight: '3rem'}}
+                />
+            </styled.Footer>
+        </styled.Container>
+      </>
+    )
 }
+
 
 export const PasteForm = (props) => {
 
 	const {
 		onPreviewClick,
+        onCreateClick,
+        onCancel,
 		hidden
 	} = props
 
@@ -753,6 +390,7 @@ export const PasteForm = (props) => {
 
 	const handlePreviewClick = (payload) => {
 		onPreviewClick && onPreviewClick(payload)
+
 	}
 
 
@@ -801,9 +439,9 @@ export const PasteForm = (props) => {
 			{formikProps =>
 				<PasteMapper
 					onPreviewClick={handlePreviewClick}
-					{...formikProps}
-					{...props}
+					formikProps={formikProps}
 					setSelectedFieldNames={setSelectedFieldNames}
+                    {...props}
 				/>
 			}
 		</Formik>
@@ -814,7 +452,7 @@ export const PasteForm = (props) => {
 PasteMapper.propTypes = {
 	table: PropTypes.arrayOf(	// array of array of strings
 		PropTypes.arrayOf(
-			PropTypes.string
+			PropTypes.object
 		)
 	)
 };

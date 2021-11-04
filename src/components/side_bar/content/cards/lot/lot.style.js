@@ -13,25 +13,22 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   // overflow: hidden;
-
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
-  border-radius: 0.4rem;
   color: ${props => props.theme.bg.octonary};
-
   outline: none;
   &:focus {
       outline: none;
   }
 
   // letter-spacing: 1.5px;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
 
   outline: none;
   user-select: none;
+  cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
+  pointer-events: ${props => !!props.isDashboard && !!props.disabled ? 'none' : 'auto'};
+  box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
 
-  cursor: pointer;
-  pointer-events: ${props => !!props.disabled ? 'none' : 'auto'};
   &:active{
         box-shadow: none;
         filter: brightness(100%);
@@ -39,9 +36,11 @@ export const Container = styled.div`
     }
 
   &:hover {
-    box-shadow: ${props => props.disabled ? '0px 1px 4px 0px rgba(0, 0, 0, 0.3)' : '1px 1px 7px 3px #b385ff'};
+    box-shadow: 2px 5px 5px 2px rgba(0,0,0,0.2);
+    //transform: translateY(-2px);
+    //cant transform or lot looks weird when dragging
   }
-
+  }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
 
@@ -52,6 +51,7 @@ export const Container = styled.div`
   // ${props => props.containerStyle};
 
   max-width: 30rem;
+
 `
 
 const selectedCss = css`
@@ -84,26 +84,39 @@ export const Row = styled.div`
     justify-content: space-between;
     padding: .25rem 0 .25rem 0;
 `
+export const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 10rem;
+    padding: 0.4rem;
+    background-color: ${props => !!props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
+    border-radius: 0rem 0.6rem 0rem .6rem;
+    justify-content: center;
+    align-content: center;
+    z-index: 5;
+
+`
 export const PartsRow = styled.div`
     display: flex;
     width: 100%;
     justify-content: space-between;
-    padding: .25rem 0 .25rem 0;
+    padding: 0rem 0 .25rem 0;
 `
 
 export const PartContainer = styled.div`
     display: flex;
-    height: 1.4rem;
-    max-width: 14rem;
-    min-width: 3rem;
+    height: 2.4rem;
+    width: 9rem;
     margin-left: .2rem;
     margin-top: .2rem;
+    padding-top: .5rem;
+    margin-bottom: 0.1rem;
 
     justify-content: center;
     z-index: 5000;
     pointer-events: auto;
     background: #F92644;
-    border-radius: 0.8rem;
+    border-radius: 0.4rem;
     color: ${props => props.theme.bg.primary};
 
     &:hover {
@@ -215,8 +228,9 @@ export const FlagsContainer = styled.div`
 export const HeaderBar = styled.div`
 	display: flex;
   flex-direction: column;
+  position: relative;
 
-  padding: 0.2rem 0.5rem 0.1rem 0.5rem;
+  padding: 0rem 0rem 0.1rem 0.5rem;
 `
 
 export const NameNumberContainer = styled.div`
@@ -225,15 +239,48 @@ export const NameNumberContainer = styled.div`
   flex-wrap: wrap;
 `
 
-
-
-
-
-
-
-
-
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 600;
+`
+
+export const LoopIndicator = styled.div`
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    background: white;
+    box-shadow: 1px 1px 4px 0px rgba(0,0,0,0.3);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+export const LoopIcon = styled.i`
+    color: #888;
+    font-size: 1.2rem;
+    transform: rotate(-70deg) scaleX(-1);
+`
+
+export const LoopCount = styled.div`
+    position: absolute;
+    top: 0.15rem;
+    right: 0.15rem;
+
+    height: 1rem;
+    width: 1rem;
+    border-radius: 0.5rem;
+    background: #888;
+    color: white;
+
+    font-size: 0.6rem;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white
 `

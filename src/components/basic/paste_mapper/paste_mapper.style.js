@@ -43,6 +43,7 @@ export const Container = styled.div`
     flex-direction: column;
     z-index: 5000;
     overflow: hidden;
+    min-height: 90vh;
     height: 90vh;
     width: 90vw;
     background: ${props => props.theme.bg.primary};
@@ -245,7 +246,7 @@ export const Cell = styled.div`
 
 export const ContentContainer = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
     align-self: stretch;
     padding: 1rem 0;
@@ -284,6 +285,7 @@ export const SectionDescription = styled.span`
     justify-content: center;
     align-items: center;
     display: flex;
+    flex: 1;
     flex-direction: column;
     font-size: ${props => props.theme.fontSize.sz4};
     //margin-bottom: 1rem;
@@ -391,4 +393,43 @@ export const buttonGroupContainerCss = css`
 	padding: 0;
 	margin: 0;
 
+
+
+`
+
+export const RowLabelContainer = styled.td`
+    background: #F6F6F6;
+    cursor: pointer;
+
+    // display: flex;
+    // jusify-content: center;
+    // align-content: center;
+
+    flex-grow: 1;
+    width: 100%;
+
+    border: 1px solid #E8E8E8;
+    border-collapse:collapse;
+
+
+`
+
+export const AutoIcon = styled.i`
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: 0.8rem;
+    color: ${props => props.theme.fg.primary};
+`
+
+export const RowLabel = styled.div`
+    font-size: 1rem;
+    color: #A3A3A3;
+    text-align: center;
+    padding: 0.2rem 0;
+
+    // width: 100%;
+    // height: 100%;
 `

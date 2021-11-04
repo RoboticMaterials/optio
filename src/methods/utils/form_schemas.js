@@ -9,8 +9,8 @@ import { convertCardDate } from "./card_utils";
 import { isEqualCI, isString } from "./string_utils";
 import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
-import { findProcessStartNodes, getNodeOutgoing } from './processes_utils';
-import { deepCopy } from './utils'
+import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression, getNodeIncoming } from './processes_utils';
+import { deepCopy, uuidv4 } from './utils'
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -654,10 +654,6 @@ export const routeSchema = Yup.object().shape({
         .min(1, '1 character minimum.')
         .max(75, '75 character maximum.')
         .required('Please enter a name.'),
-    part: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a part name.'),
     load: Yup.string().required('Select a load location'),
     unload: Yup.string().required('Select an unload location')
 })//.uniqueProperty('part', 'Route part names must be unique')
@@ -700,6 +696,53 @@ export const routesSchema = Yup.array().of(
 
 // }
 
+const findAndExpressions = (exp) => {
+    let andExpressions = [];
+
+    const recursiveFindAnd = (exp) => {
+        // Recursive function to find all AND expressions (split) in the merge expression
+       if (exp[0] === 'AND') {
+           andExpressions.push(exp)
+       };
+       for (var i=1; i<exp.length; i++) {
+           if (Array.isArray(exp[i])) {
+               if (recursiveFindAnd(exp[i])) {
+                   return true;
+               }
+           }
+       }
+       return false;
+    }
+
+    recursiveFindAnd(exp);
+}
+
+const doesExpressionConverge = (exp, routes, nodeId) => {
+
+    if (Array.isArray(exp)) {
+        if (exp[0] === 'AND') {
+            for (var i=1; i<exp.length; i++) {
+                if (!doesExpressionConverge(exp[i], routes, nodeId)) {
+                    return false
+                }
+            }
+            return true
+        } else {
+            for (var i=1; i<exp.length; i++) {
+                if (doesExpressionConverge(exp[i], routes, nodeId)) {
+                    return true
+                }
+            }
+            return false;
+        }
+        
+    } else {
+        return routes[exp].unload === nodeId
+    }
+
+}
+
+
 export const getProcessSchema = (stations) => Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -712,35 +755,68 @@ export const getProcessSchema = (stations) => Yup.object().shape({
             (route) => !(stations[route.load]?.type === 'warehouse' && stations[route.unload]?.type === 'warehouse')
         )
     ).test(
-        'doRoutesConverge',
-        'All routes of the process must converge at a single station',
+        'doesHaveStartNode',
+        'All processes must have at least one "Kick Off" station (The beginning of this process is ambiguous).',
         (routes) => {
-            let loadStations = routes.map(route => route.load);
-            let unloadStations = routes.map(route => route.unload);
-    
-            let numTerminalStations = 0;
-            for (var i=0; i<unloadStations.length; i++) {
-                const unloadStationA = unloadStations[i];
-    
-                if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
-                    if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
-                        numTerminalStations += 1;
-                    }
-                }
-            }
-    
-            return numTerminalStations === 1;
+            const startNodes = findProcessStartNodes(routes);
+            if (startNodes.length === 0) return false;
+            else return true
         }
     ).test(
-        'isProcessCyclic',
-        'Processes cannot contain loops. As a general rule, if your process contains a loops create a new "virtual" station to loop back to instead.',
+        'doesHaveEndNode',
+        'All processes must have at least one "Finish" station. This process has no end.',
         (routes) => {
+            const endNodes = findProcessEndNodes(routes);
+            if (endNodes.length === 0) return false;
+            else return true
+        }
+    ).test(
+        'doRoutesConverge',
+        'All split branches of the process must converge at a single station',
+        function (routes) {
+
+            const { startDivergeType } = this.parent
+
+            let normalizedRoutes = {}
+            routes.forEach(route => normalizedRoutes[route._id] = route)
+            let routeIds = routes.map(r=>r._id)
+
+            // const allNodes = routes.reduce((nodes, route) => {
+            //     if (!nodes.includes(route.load)) nodes.push(route.load)
+            //     if (!nodes.includes(route.unload)) nodes.push(route.unload)
+            //     return nodes
+            // }, [])
+            // allNodes.forEach(node => {
+            //     const mergeExp = handleMergeExpression(node, {startDivergeType, routes: routeIds}, normalizedRoutes, stations)
+            // })
+
+            // You can have multiple end nodes, as long as none of them are on a 'split' branch
+            const endNodes = findProcessEndNodes(routes);
+            for (var endNode of endNodes) {
+                const mergeExp = handleMergeExpression(endNode, {startDivergeType, routes: routeIds}, normalizedRoutes, stations, false)
+                if (mergeExp === null || !doesExpressionConverge(mergeExp, normalizedRoutes, endNode)) {
+                    return false;
+                }
+            }
+            return true
+        }
+    ).test(
+        'isProcessValidCyclic',
+        'This process contains a loop that loops back to a station that is not on the same branch. Looping routes must not loop back to stations that are before a splitting route.',
+        function (routes) {
+            // const { startDivergeType } = this.parent
+
             const startNodes = findProcessStartNodes(routes);
 
             for (var startNode of startNodes) {
                 let stack = [startNode];
-                let isCyclic = DFSContainsCycle(routes, stack)
-                if (isCyclic) return false;
+                let loopRoutes = DFSContainsCycle(routes, stack, [])
+                for (var loopRoute of loopRoutes) {
+                    const validConnectionStations = backTraverseUntilSplit(loopRoute.load, routes, [])
+                    if (!validConnectionStations.includes(loopRoute.unload)) {
+                        return false
+                    }
+                }
             }
 
             return true
@@ -749,20 +825,37 @@ export const getProcessSchema = (stations) => Yup.object().shape({
 
 })
 
-const DFSContainsCycle = (routes, stack) => {
+const backTraverseUntilSplit = (node, routes, visited) => {
+
+    visited.push(node);
+    const incomingRoutes = getNodeIncoming(node, routes, true)
+    for (var inRoute of incomingRoutes) {
+        if (inRoute.divergeType !== 'split') {
+            visited = backTraverseUntilSplit(inRoute.load, routes, visited);
+        }
+    }
+
+    return visited;
+
+}
+
+const DFSContainsCycle = (routes, stack, loopRoutes) => {
 
     let node = stack[stack.length-1];
     let outgoingRoutes = getNodeOutgoing(node, routes);
+
     for (var outgoingRoute of outgoingRoutes) {
         let nextNode = outgoingRoute.unload;
-        if (stack.includes(nextNode)) return true;
+        if (stack.includes(nextNode)) {
+            loopRoutes.push(outgoingRoute)
+            continue
+        }
         let nextStack = deepCopy(stack);
         nextStack.push(nextNode);
-        let isCyclic = DFSContainsCycle(routes, nextStack)
-        if (isCyclic) return true;
+        loopRoutes = DFSContainsCycle(routes, nextStack, deepCopy(loopRoutes))
     }
 
-    return false;
+    return loopRoutes
 
 }
 

@@ -25,6 +25,8 @@ import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 import { flattenProcessStations } from '../../../../../methods/utils/processes_utils';
+import { BASIC_LOT_TEMPLATE } from '../../../../../constants/lot_contants';
+import { deleteLotTemplate, postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
 
 const ProcessForm = (props) => {
 
@@ -48,12 +50,13 @@ const ProcessForm = (props) => {
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
-
+	const dispatchDeleteLotTemplate = async (ID) => await dispatch(deleteLotTemplate(ID))
 	const dispatchPostRoute = async (route) => await dispatch(postTask(route))
     const dispatchPutRoute = async (route) => await dispatch(putTask(route, route._id))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchSetProcessAttributes = async (id, attr) => await dispatch(setProcessAttributes(id, attr))
+	const dispatchPostLotTemplate = (lotTemplate) => dispatch(postLotTemplate(lotTemplate))
 	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
@@ -63,11 +66,9 @@ const ProcessForm = (props) => {
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-	const objects = useSelector(state => state.objectsReducer.objects)
 	const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
 	const stations = useSelector(state => state.stationsReducer.stations);
-	const editing = useSelector(state => state.processesReducer.editingProcess)
-	const pageInfoChanged = useSelector(state=> state.sidebarReducer.pageDataChanged)
+	const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
 	const [processCopy, setProcessCopy] = useState(selectedProcess)	// Initial process, used when changes are not to be saved (onBack)
 
 	useEffect(() => {
@@ -135,7 +136,7 @@ const ProcessForm = (props) => {
 		// if new, POST
 		if (remainingValues.new) {
 			delete remainingValues.new
-			await dispatchPostProcess({
+			const postedProcess = await dispatchPostProcess({
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMapId,
@@ -143,6 +144,8 @@ const ProcessForm = (props) => {
 				edited_at: currDate.getTime(),
 				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
 			})
+
+			dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: postedProcess._id})
 		}
 
 		// Else put
@@ -205,6 +208,10 @@ const ProcessForm = (props) => {
 			})
 		}
 
+		Object.values(lotTemplates)
+			.filter(lotTemplate => lotTemplate.processId === selectedProcess._id)
+			.forEach(lotTemplate => dispatchDeleteLotTemplate(lotTemplate._id))
+
 		await dispatchDeleteProcessClean(selectedProcess._id)
 
 		dispatchSetSelectedTask(null)
@@ -242,7 +249,7 @@ const ProcessForm = (props) => {
 				broken: selectedProcess ? selectedProcess.broken : false,
 				new: selectedProcess.new,
 				map_id: currentMapId,
-				startDivergeType: selectedProcess.new ? false: selectedProcess.startDivergeType,
+				startDivergeType: selectedProcess.new ? null: selectedProcess.startDivergeType,
 				showStatistics: selectedProcess.new ? true: selectedProcess.showStatistics,
 				showQueue: selectedProcess.new || selectedProcess.showQueue === undefined ? true: selectedProcess.showQueue,
 				showFinish: selectedProcess.new || selectedProcess.showFinish === undefined ? true: selectedProcess.showFinish,

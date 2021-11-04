@@ -10,23 +10,27 @@ const StatusListFooter = (props) => {
 		onCloseClick,
 		onShowMapperClick,
 		onCanceleClick,
-		onCreateAllClick
+		onCreateAllClick,
+		onCreateAllWithoutWarningClick,
 	} = props
 
 	return (
 		<styled.Container>
 			<Button
 				type={"button"}
-				label={"Create All"}
 				schema={"lots"}
-				onClick={onCreateAllClick}
+				label={"Create New Lots"}
+				secondary
+				onClick={onCreateAllWithoutWarningClick}
+				style={{height: '3rem', padding: '0 2rem'}}
 			/>
 
 			<Button
 				type={"button"}
+				label={"Create All Lots"}
 				schema={"lots"}
-				label={"Close"}
-				onClick={onCanceleClick}
+				onClick={onCreateAllClick}
+				style={{height: '3rem', padding: '0 2rem'}}
 			/>
 		</styled.Container>
 	);

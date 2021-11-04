@@ -29,8 +29,6 @@ import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_switcher/side_bar_switcher'))
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
-const TasksContent = lazy(() => import('../../components/side_bar/content/tasks/tasks_content'))
-const SchedulerContent = lazy(() => import('../../components/side_bar/content/scheduler/scheduler_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
 const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
@@ -128,17 +126,15 @@ const SideBar = (props) => {
     }, [barcode])
 
     useEffect(() => {
-        if(full.includes('RMShift-') || full.includes('ShiftrShiftm-') || full.includes('ShiftRShiftM-') || full.includes('rm-')) {
             const enter = full.substring(full.length-5)
-            if(enter === 'Enter'){
+            const enterEnter = full.substring(full.length-10)
+            if(enter === 'Enter' && enterEnter!== 'EnterEnter' && full.length>5){
                 setBarcode([])
-                const splitLot = full.split('-')
-                let lotId = parseInt(splitLot[1].slice(0,-5))
+                let lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)
                 onScanLot(lotId)
                 setFull('')
             }
-        }
 
     }, [full])
 
@@ -150,9 +146,8 @@ const SideBar = (props) => {
       let binCount = 0
       let statId = ""
       let lotFound = false
-
       Object.values(cards).forEach((card) => {
-        if(card.lotNumber === id){
+        if(card.lotNum == id){
           lotFound = true
           Object.values(stations).forEach((station) => {
             if(!!card.bins[station._id]){
@@ -352,14 +347,6 @@ const SideBar = (props) => {
             if ((id === "summary") || (id === "timeline")) {
                 content = <Cards id={id} />
             }
-            break
-
-        case 'tasks':
-            content = <TasksContent />
-            break
-
-        case 'scheduler':
-            content = <SchedulerContent />
             break
 
         case 'settings':

@@ -71,6 +71,8 @@ const defaultState = {
 
     localSettings: defaultLocalSettings,
 
+    authenticated: false,
+
     devicesEnabled: false,
     disableAll: false,
     enableAll: false,
@@ -200,7 +202,11 @@ const localReducer = (state = defaultState, action) => {
                 stopAPICalls: action.payload,
             }
 
-
+        case 'UPDATE_STATE':
+            return {
+                ...state,
+                ...action.payload
+            }
 
         // ~~~~~~~~~~~~~~~
         default:
