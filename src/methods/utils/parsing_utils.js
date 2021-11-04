@@ -102,11 +102,11 @@ export const parseXML = (content) => {
         });
     } else if (xml.getElementsByTagName("ViewItem").length !== 0) {
         var newXml = xml.getElementsByTagName("ViewItem");
-        //newXml[0].children.forEach((attribute, index, array) => {
-        //    header += attribute.name + "\t";
-        //});
+        newXml[0].children.forEach((attribute, index, array) => {
+            header += attribute.name + "\t";
+        });
 
-        //   csv += header + '\n'
+           csv += header + '\n'
 
         newXml.forEach((lot, index, array) => {
             let workOrderNumber = lot.children.find((att => att.name === 'WorkOrderNumber'))

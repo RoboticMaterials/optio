@@ -61,70 +61,41 @@ const PasteMapper = (props) => {
     }, [lotTemplate])
 
     useEffect(() => {
-      // // For Alpen parser, determines if dropdown is disabled
-      // if(!!lotTemplate?.uploadFieldMapping){
-      //   const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
-      //   if(foundQtyField === 'LILIQuantity') {
-      //     console.log(foundQtyField)
-      //     setDisableMergeButton(false)
-      //   }
-      //   else setDisableMergeButton(true)
-      // }
-      // else{
-      //   return setDisableMergeButton(true)
-      // }
+       // For Alpen parser, determines if dropdown is disabled
+       if(!!parseMode && parseMode === 'Alpen'){
+       if(!!lotTemplate?.uploadFieldMapping){
+         if(!!lotTemplate.uploadFieldMapping['COUNT_FIELD_ID']) setDisableMergeButton(false)
+         else return setDisableMergeButton(true)
+       }
+     }
     }, [lotTemplate])
-
-    const handleApplyLotTemplateFields = () => {
-
-      // let lotTemplateCopy = deepCopy(lotTemplate)
-      // if(!lotTemplateCopy.uploadFieldMapping){
-      //   lotTemplateCopy = {
-      //     ...lotTemplateCopy,
-      //     uploadFieldMapping: []
-      //   }
-      // }
-
-      // let fieldMappingCopy = deepCopy(fieldMapping)
-
-      // //Loop thgrough available fields and assign dropdown choices
-      // for(const i in availableFields){
-      //   fieldMappingCopy[i] = availableFields[i]
-      //   lotTemplateCopy.uploadFieldMapping[i] = availableFields[i]._id
-      // }
-      // setFieldMapping(fieldMappingCopy)
-      // dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-    }
 
     const handleMergeIdenticalLots = () => {
 
-      // let tableCopy = deepCopy(table)
-      // for(let a = 0; a<tableCopy.length; a++){
-      //   for(let i = a+1; i<tableCopy.length; i++){
-      //     let match = true
-      //     let qtyIndex = null
-      //     for(const j in tableCopy[i]){
-      //       if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
-      //         qtyIndex = j
-      //       }
-      //       if(tableCopy[i][j].value !== tableCopy[a][j].value) {
-      //         match = false
-      //         break
-      //       }
-      //     }
-      //     if(match === true){
-      //       if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
-      //         tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
-      //         tableCopy.splice(i, 1)
-      //       }
-      //       else{
-      //         console.log('No qty field')
-      //       }
-      //     }
+       let tableCopy = deepCopy(table)
+       for(let a = 0; a<tableCopy.length; a++){
+         for(let i = a+1; i<tableCopy.length; i++){
+           let match = true
+           let qtyIndex = lotTemplate.uploadFieldMapping['COUNT_FIELD_ID']
+           for(const j in tableCopy[i]){
+             if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+               match = false
+               break
+             }
+           }
+           if(match === true){
+             if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
+              tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+               tableCopy.splice(i, 1)
+             }
+             else{
+               console.log('No qty field')
+             }
+           }
 
-      //   }
-      // }
-      // setTable(tableCopy)
+         }
+       }
+       setTable(tableCopy)
     }
 
     const deleteRow = (row) => {
@@ -300,10 +271,10 @@ const PasteMapper = (props) => {
 
     return (
       <>
-        {showAutoCompleteModal && 
-          <SimpleModal 
+        {showAutoCompleteModal &&
+          <SimpleModal
             isOpen={showAutoCompleteModal}
-            title="Confirm Auto Complete" 
+            title="Confirm Auto Complete"
             onRequestClose={() => setShowAutoCompleteModal(false)}
             onCloseButtonClick={() => setShowAutoCompleteModal(false)}
             handleOnClick1={() => setShowAutoCompleteModal(false)}
@@ -322,17 +293,7 @@ const PasteMapper = (props) => {
 
             <styled.Body>
                 <styled.ContentContainer>
-                  {!!parseMode && parseMode === 'Alpen' &&
-                      <Button
-                          style={{maxWidth: '18rem', marginLeft: '2rem'}}
-                          secondary
-                          label={'Apply lot template fields'}
-                          onClick = {()=>{
-                            handleApplyLotTemplateFields()
-                          }}
-                          type="button"
-                      />
-                    }
+
                     {!!parseMode && parseMode === 'Alpen' &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
