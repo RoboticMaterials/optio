@@ -37,7 +37,6 @@ export const Container = styled.div`
 
   &:hover {
     box-shadow: 2px 5px 5px 2px rgba(0,0,0,0.2);
-    background: ${props => LightenDarkenColor(props.theme.bg.secondary,4)};
     //transform: translateY(-2px);
     //cant transform or lot looks weird when dragging
   }

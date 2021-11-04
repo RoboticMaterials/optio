@@ -105,7 +105,6 @@ const Column = ((props) => {
 		setLotQuantitySummation(tempLotQuantitySummation)
 	}, [cards])
 
-
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
@@ -128,6 +127,8 @@ const Column = ((props) => {
 		if(!draggingLotId) setHighlightStation(null)
 
 	}, [draggingLotId])
+
+
 
 	//This function is now more limiting with split/merge
 	// -dont allow moving lot to next stations(s) if current station disperses a lot
@@ -442,14 +443,12 @@ const Column = ((props) => {
 																{(partBins[part]>0 || (part === 'count' && partBins['count']>0)) &&
 
 																	<styled.LotDiv
-																		id = 'item'
+																		id = {'item'}
 																		ref = {lotRef}
 																		class = 'item'
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
-																			console.log(e.target.getBoundingClientRect())
-																			console.log(e.clientX)
 																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
 																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
 																			}

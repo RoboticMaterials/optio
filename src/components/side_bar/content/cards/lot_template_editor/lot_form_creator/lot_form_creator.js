@@ -429,16 +429,16 @@ const LotFormCreator = (props) => {
 							return (
 								<>
 								{currItem?._id !== selectedEditingField ?
-									<styled.ColumnFieldContainer
-									 style = {{margin: '1rem'}}
-									 selected = {false}
-									 onClick = {()=>{
-										setSelectedEditingField(currItem._id)
-									}}>
-										<styled.FieldName>{fieldName}</styled.FieldName>
-										{handleRenderComponentType(component, currItem._id)}
-									</styled.ColumnFieldContainer>
 
+										<styled.ColumnFieldContainer
+										 style = {{margin: '1rem'}}
+										 selected = {false}
+										 onClick = {()=>{
+											setSelectedEditingField(currItem._id)
+										}}>
+											<styled.FieldName>{fieldName}</styled.FieldName>
+											{handleRenderComponentType(component, currItem._id)}
+										</styled.ColumnFieldContainer>
 									:
 
 									<styled.ColumnFieldContainer
