@@ -112,23 +112,6 @@ const DashboardLotPage = (props) => {
    */
   useEffect(() => {
     const fromStation = !!warehouseID ? warehouseID : stationID
-    
-    // Track the WIP (by product group) that are currently at the station
-    let WIP = {}
-    Object.values(cards)
-      .filter(card => getIsCardAtBin(card, fromStation?._id))
-      .forEach(card => {
-          const {
-              bins = {},
-          } = card || {}
-
-          const quantity = bins[stationID]?.count
-          if (card.lotTemplateId in WIP) {
-            WIP[card.lotTemplateId] += quantity
-          } else {
-            WIP[card.lotTemplateId] = quantity
-          }
-      })
 
     // Set initial information for the touch event, the rest will be filled out on move
     setTouchEvent({
@@ -141,7 +124,7 @@ const DashboardLotPage = (props) => {
       sku: 'default',
       quantity: null,
       load_station_id: fromStation,
-      current_wip: WIP,
+      current_wip: null,
       unload_station_id: null,
       dashboard_id: dashboardID,
       user: user,
@@ -263,9 +246,28 @@ const DashboardLotPage = (props) => {
     // Create new touch Events
     for (var moveRoute of moveRoutes) {
       const fromStation = stations[moveRoute.load]
+
+      // Track the WIP (by product group) that are currently at the station
+      let WIP = {}
+      Object.values(cards)
+        .filter(card => getIsCardAtBin(card, fromStation?._id))
+        .forEach(card => {
+            const {
+                bins = {},
+            } = card || {}
+
+            const quantity = bins[stationID]?.count
+            if (card.lotTemplateId in WIP) {
+              WIP[card.lotTemplateId] += quantity
+            } else {
+              WIP[card.lotTemplateId] = quantity
+            }
+        })
+
       const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
         move_datetime: new Date().getTime(),
         route_id: (typeof moveRoute === 'string') ? moveRoute : moveRoute._id,
+        current_wip: WIP,
         unload_station_id: (typeof moveRoute === 'string') ? moveRoute : fromStation._id,
         quantity,
         type: 'move'

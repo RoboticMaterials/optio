@@ -18,6 +18,7 @@ const StatusList = (props) => {
 		onCreateClick,
 		onMergeClick,
 		onCreateAllClick,
+		onCreateAllWithoutWarningClick,
 		onBack,
 		displayNames,
 		mergeDisabled,
@@ -45,6 +46,7 @@ const StatusList = (props) => {
 				onCloseClick={onCloseClick}
 				onShowMapperClick={onShowMapperClick}
 				onCreateAllClick={onCreateAllClick}
+				onCreateAllWithoutWarningClick={onCreateAllWithoutWarningClick}
 			/>
 		</styled.Container>
 	)

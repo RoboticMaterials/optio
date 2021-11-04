@@ -411,8 +411,17 @@ export const RowLabelContainer = styled.td`
     border: 1px solid #E8E8E8;
     border-collapse:collapse;
 
-    // width: 100%;
 
+`
+
+export const AutoIcon = styled.i`
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: 0.8rem;
+    color: ${props => props.theme.fg.primary};
 `
 
 export const RowLabel = styled.div`

@@ -524,7 +524,7 @@ const LotEditorContainer = (props) => {
     /*
      * handles logic for creating a lot from mappedValues
      * */
-    const createLot = async (index, cb) => {
+    const createLot = async (index, cb, ignoreWarnings=true) => {
         if (!createdLot) setCreatedLot(true);
         const values = mappedValues[index];
         if (values._id) return; // lot was already created, don't try creating it again
@@ -548,6 +548,26 @@ const LotEditorContainer = (props) => {
         // re-run validation right before submitting to ensure there are no errors
         try {
             const validationResult = validateLot(values, index);
+            
+            if (!ignoreWarnings) {
+                if (Object.keys(mappedStatus[index]?.warnings || {}).length) {
+                    setMappedStatus((previous) => {
+                        const previousStatus = previous[index] || {};
+                        return immutableSet(
+                            previous,
+                            {
+                                ...previousStatus,
+                                resourceStatus: {
+                                    message: `Lot not created, lot already exists.`,
+                                    code: FORM_STATUS.CANCELLED,
+                                },
+                            },
+                            index
+                        );
+                    });
+                    return 
+                }
+            }
 
             const hasErrors = validationResult instanceof ValidationError;
 
@@ -968,7 +988,7 @@ const LotEditorContainer = (props) => {
                     {
                         ...previousStatus,
                         validationStatus: {
-                            message: `Successfully validated lot!`,
+                            message: `Successfully validated lot`,
                             code: FORM_STATUS.VALIDATION_SUCCESS,
                         },
                     },
@@ -1013,7 +1033,7 @@ const LotEditorContainer = (props) => {
                     {
                         ...previousStatus,
                         validationStatus: {
-                            message: `Error validating lot.`,
+                            message: `Error validating lot`,
                             code: FORM_STATUS.VALIDATION_ERROR,
                         },
                     },
@@ -1113,6 +1133,16 @@ const LotEditorContainer = (props) => {
                         }
                         for (let i = 0; i < mappedValues.length; i++) {
                             await createLot(i);
+                        }
+                        setPasteTable([]);
+                        props.close();
+                    }}
+                    onCreateAllWithoutWarningClick={async () => {
+                        for (let i = 0; i < mappedValues.length; i++) {
+                            setPending(i);
+                        }
+                        for (let i = 0; i < mappedValues.length; i++) {
+                            await createLot(i, null, false);
                         }
                         setPasteTable([]);
                     }}

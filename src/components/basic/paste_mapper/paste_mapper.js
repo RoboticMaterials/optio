@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
 import set from "lodash/set";
+import ReactTooltip from 'react-tooltip';
 
 // components external
 import Spreadsheet from "react-spreadsheet";
@@ -25,6 +26,8 @@ import * as styled from './paste_mapper.style'
 // actions
 import { putLotTemplate } from '../../../redux/actions/lot_template_actions'
 import BackButton from '../back_button/back_button';
+import SimpleModal from '../modals/simple_modal/simple_modal';
+
 
 const PasteMapper = (props) => {
 
@@ -44,6 +47,7 @@ const PasteMapper = (props) => {
     const [table, setTable] = useState(values.table)
     const [fieldMapping, setFieldMapping] = useState(new Array(availableFields.length).fill(null))
     const [disableMergeButton, setDisableMergeButton] = useState(false)
+    const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
     const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
@@ -119,7 +123,7 @@ const PasteMapper = (props) => {
                             if(!lotTemplateCopy.uploadFieldMapping){
                               lotTemplateCopy = {
                                 ...lotTemplateCopy,
-                                uploadFieldMapping: []
+                                uploadFieldMapping: new Array(availableFields.length).fill(null)
                               }
                             }
                             lotTemplateCopy.uploadFieldMapping[column] = values[0]?.displayName
@@ -224,12 +228,58 @@ const PasteMapper = (props) => {
       setTable(tableCopy)
     }
 
+    /**
+     * Auto Fill the dropdowns based on the first row of the table. The matcher will lower case
+     * and delete any spaces when comparing the strings
+     */
+    const autoComplete = () => {
+      const firstRow = table[0]
+      let tempFieldMap = new Array(availableFields.length).fill(null)
+
+      // Create mapping if one doesnt exist
+      let lotTemplateCopy = deepCopy(lotTemplate)
+      if(!lotTemplateCopy.uploadFieldMapping){
+        lotTemplateCopy = {
+          ...lotTemplateCopy,
+          uploadFieldMapping: new Array(availableFields.length).fill(null)
+        }
+      }
+
+      let formattedFields = availableFields.map(field => field.displayName.toLowerCase().replace(/\s/g, ''));
+      let value, formattedValue, matchIdx;
+      for (var i in firstRow) {
+        value = firstRow[i].value
+        formattedValue = value.toLowerCase().replace(/\s/g, '')
+        matchIdx = formattedFields.findIndex(formattedField => formattedField === formattedValue)
+        if (matchIdx !== -1) {
+          tempFieldMap[i] = availableFields[matchIdx]
+          lotTemplateCopy.uploadFieldMapping[i] = availableFields[matchIdx]?.displayName
+        }
+      }
+
+      // let tableCopy = deepCopy(table);
+      // tableCopy.splice(0, 1)
+      // setTable(tableCopy)
+
+      setFieldMapping(tempFieldMap)
+      dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+      setShowAutoCompleteModal(false)
+    }
+
     const renderRowLabel = ({ row }) => {
         return (
 
                 <styled.RowLabelContainer>
                     <ContextMenuTrigger id={`context-menu-${row}`}>
-                        <styled.RowLabel>{row+1}</styled.RowLabel>
+                        <div style={{display: 'flex', width: '100%', flexGrow: '1', justifyContent: 'center', position: 'relative'}}>
+                          <styled.RowLabel>{row+1}</styled.RowLabel>
+                          {row === 0 &&
+                            <>
+                              <styled.AutoIcon className="fas fa-magic" data-tip data-for="autocomplete-tooltip" onClick={() => setShowAutoCompleteModal(true)}/>
+                              <ReactTooltip id="autocomplete-tooltip" effect="solid"><div style={{width: '10rem'}}>Auto fill columns based on values in the first row.</div></ReactTooltip>
+                            </>
+                          }
+                        </div>
                     </ContextMenuTrigger>
 
                     <ContextMenu id={`context-menu-${row}`}>
@@ -248,11 +298,36 @@ const PasteMapper = (props) => {
         )
     }
 
+    const renderCornerCounter = () => {
+      const usedQty = fieldMapping.filter((field, ind) => field !== null).length
+      return (
+        <styled.RowLabelContainer>
+          <styled.RowLabel style={{minWidth: '8rem'}}>
+            {usedQty}/{availableFields.length} used
+          </styled.RowLabel>
+        </styled.RowLabelContainer>
+      )
+    }
+
     const Table = useMemo(() => {
-        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel}/>
+        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
     }, [table, fieldMapping])
 
     return (
+      <>
+        {showAutoCompleteModal && 
+          <SimpleModal 
+            isOpen={showAutoCompleteModal}
+            title="Confirm Auto Complete" 
+            onRequestClose={() => setShowAutoCompleteModal(false)}
+            onCloseButtonClick={() => setShowAutoCompleteModal(false)}
+            handleOnClick1={() => setShowAutoCompleteModal(false)}
+            handleOnClick2={autoComplete}
+            button_1_text="Cancel"
+            button_2_text="Confirm"
+            content="Are you sure you want to continue? This may overwrite dropdowns that have already been filled out and will delete this row."
+          />
+        }
         <styled.Container>
             <styled.Header>
                 <BackButton schema={'lots'} onClick={onCancel}/>
@@ -311,6 +386,7 @@ const PasteMapper = (props) => {
                 />
             </styled.Footer>
         </styled.Container>
+      </>
     )
 }
 
