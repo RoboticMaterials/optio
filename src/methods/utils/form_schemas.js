@@ -759,7 +759,6 @@ export const getProcessSchema = (stations) => Yup.object().shape({
         'All processes must have at least one "Kick Off" station (The beginning of this process is ambiguous).',
         (routes) => {
             const startNodes = findProcessStartNodes(routes);
-            console.log("START", startNodes)
             if (startNodes.length === 0) return false;
             else return true
         }

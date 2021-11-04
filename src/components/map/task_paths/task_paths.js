@@ -37,7 +37,8 @@ export default function TaskPaths(props) {
 
   const isDirectLoop = useMemo(() => {
     return (!!selectedTask && (Object.values(routes).find(route => (
-      selectedTask.load === route.unload &&
+      selectedTask.load === route.unload && 
+      !!selectedTask.unload &&
       selectedTask.unload === route.load
     )) !== undefined))
   }, [selectedTask, routes])

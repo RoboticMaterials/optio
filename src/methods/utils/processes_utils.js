@@ -195,12 +195,6 @@ export const getProcessStationsSorted = (process, routes) => {
         // get unload and load objects
         const { unload = {}, load = {} } = currRoute;
 
-        // get unload station id
-        const { station: unloadStationId } = unload;
-
-        // get load station id
-        const { station: loadStationId } = load;
-
         if (!stationIds.includes(currRoute.load)) {
             stationIds.push(currRoute.load);
         }

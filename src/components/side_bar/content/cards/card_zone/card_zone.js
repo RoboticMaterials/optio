@@ -22,6 +22,7 @@ import * as styled from "./card_zone.style"
 import { isObject } from "../../../../../methods/utils/object_utils";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../../../../constants/lot_contants";
+import { findProcessEndNodes } from "../../../../../methods/utils/processes_utils";
 
 
 const CardZone = ((props) => {
@@ -74,24 +75,11 @@ const CardZone = ((props) => {
         name: processName = ""
     } = currentProcess || {}
 
-    const doesProcessEndInWarehouse = useMemo(() => {
+    const doesProcessEndInAllWarehouses = useMemo(() => {
         const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
+        const processEndNodes = findProcessEndNodes(processRoutes)
 
-        let loadStations = processRoutes.map(route => route.load);
-        let unloadStations = processRoutes.map(route => route.unload);
-
-        for (var i=0; i<unloadStations.length; i++) {
-            const unloadStationA = unloadStations[i];
-
-
-            if (loadStations.find(loadStation => loadStation === unloadStationA) === undefined) {
-                if (unloadStations.slice(0, i).find(unloadStationB => unloadStationB === unloadStationA) === undefined) {
-                    return stations[unloadStationA].type === 'warehouse'
-                }
-            }
-        }
-
-        return false;
+        return processEndNodes.map(nodeId => stations[nodeId]?.type).every(type => type === 'warehouse')
     }, [currentProcess.routes, stations])
     // need to loop through the process's routes first and get all station ids involved in the process
     // this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
@@ -287,7 +275,7 @@ const CardZone = ((props) => {
 
             {renderStationColumns}
 
-            {!doesProcessEndInWarehouse &&
+            {!doesProcessEndInAllWarehouses &&
                 <FinishColumn
                     setSelectedCards={setSelectedCards}
                     selectedCards={selectedCards}

@@ -296,7 +296,7 @@ const PasteMapper = (props) => {
 
     const Table = useMemo(() => {
         return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
-    }, [table, lotTemplate])
+    }, [table, lotTemplate.uploadFieldMapping])
 
     return (
       <>
