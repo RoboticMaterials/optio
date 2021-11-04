@@ -206,58 +206,44 @@ const LotEditorContainer = (props) => {
     }, [props.cardId]);
 
     const handleSelectLotTemplate = (templateId) => {
-        let postNewTemplatePromise;
 
-        const processLotTemplates = Object.values(lotTemplates).filter(template => !!process && template.processId === process._id)
-        if (processLotTemplates.find(template => template.name === 'Basic') === undefined) {
-            // As of 10/14/21 when a process is created, it makes the Basic template.
-            // If the Basic template is not found this means the process was made prior to this update and the Basic
-            // template needs to be created
-
-            postNewTemplatePromise = dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: processId})
-        } else {
-          postNewTemplatePromise = Promise.resolve('Success')
+        if (templateId === null) {
+            templateId =
+                Object.values(lotTemplates).find(
+                    (lotTemplate) =>
+                        (!process || lotTemplate.processId === process._id) &&
+                        lotTemplate.name === "Basic"
+                )?._id || null;
         }
 
-        postNewTemplatePromise.then(() => {
-          if (templateId === null) {
-              templateId =
-                  Object.values(lotTemplates).find(
-                      (lotTemplate) =>
-                          (!process || lotTemplate.processId === process._id) &&
-                          lotTemplate.name === "Basic"
-                  )?._id || null;
-          }
+        let newTemplateId = templateId;
+        // if a template isn't provided by process, check if card has template id
+        if (isObject(card) && card?.lotTemplateId) {
+            if (!!templateId && templateId !== card.lotTemplateId) {
+                dispatchPutCard(
+                    { ...card, lotTemplateId: templateId },
+                    card._id
+                );
+            } else {
+                newTemplateId = card?.lotTemplateId;
+            }
+        }
 
-          let newTemplateId = templateId;
-          // if a template isn't provided by process, check if card has template id
-          if (isObject(card) && card?.lotTemplateId) {
-              if (!!templateId && templateId !== card.lotTemplateId) {
-                  dispatchPutCard(
-                      { ...card, lotTemplateId: templateId },
-                      card._id
-                  );
-              } else {
-                  newTemplateId = card?.lotTemplateId;
-              }
-          }
+        let template = lotTemplates[templateId];
 
-          let template = lotTemplates[templateId];
+        if (!isObject(card)) {
+            // If you're in editing mode, dont update lastUsedTemplateId
+            if (!!process)
+                dispatchPutProcess(
+                    {
+                        ...process,
+                        lastLotTemplateId: template?._id,
+                    },
+                    process._id
+                );
+        }
 
-          if (!isObject(card)) {
-              // If you're in editing mode, dont update lastUsedTemplateId
-              if (!!process)
-                  dispatchPutProcess(
-                      {
-                          ...process,
-                          lastLotTemplateId: template?._id,
-                      },
-                      process._id
-                  );
-          }
-
-          setLotTemplateId(template?._id);
-        })
+        setLotTemplateId(template?._id);
 
     };
 

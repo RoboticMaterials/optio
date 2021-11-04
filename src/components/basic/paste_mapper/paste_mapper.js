@@ -45,119 +45,92 @@ const PasteMapper = (props) => {
     } = formikProps;
 
     const [table, setTable] = useState(values.table)
-    const [fieldMapping, setFieldMapping] = useState(new Array(availableFields.length).fill(null))
     const [disableMergeButton, setDisableMergeButton] = useState(false)
     const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
+
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
     const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
-    useEffect(() => {
-        if (!!lotTemplate?.uploadFieldMapping) {
-            let originalFieldMapping = lotTemplate.uploadFieldMapping
-                .map(displayName => availableFields
-                    .find(field => field.displayName === displayName))
 
-            setFieldMapping(originalFieldMapping)
-        }
-    }, [])
-
-    useEffect(() => {
-      if(!!lotTemplate?.uploadFieldMapping){
-        const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
-        if(foundQtyField === 'LILIQuantity') {
-          console.log(foundQtyField)
-          setDisableMergeButton(false)
-        }
-        else setDisableMergeButton(true)
-      }
-      else{
-        return setDisableMergeButton(true)
-      }
+    const fieldMapping = useMemo(() => {
+      let mapping = new Array(table[0].length).fill(null)
+      Object.keys(lotTemplate.uploadFieldMapping).forEach(key => {
+        mapping[lotTemplate.uploadFieldMapping[key]] = availableFields.find(field => field._id === key)
+      })
+      return mapping
     }, [lotTemplate])
 
-    const renderColumnDropdown = ({ column }) => {
+    useEffect(() => {
+      // // For Alpen parser, determines if dropdown is disabled
+      // if(!!lotTemplate?.uploadFieldMapping){
+      //   const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
+      //   if(foundQtyField === 'LILIQuantity') {
+      //     console.log(foundQtyField)
+      //     setDisableMergeButton(false)
+      //   }
+      //   else setDisableMergeButton(true)
+      // }
+      // else{
+      //   return setDisableMergeButton(true)
+      // }
+    }, [lotTemplate])
 
-        const unusedFields = availableFields.map(availField => {
+    const handleApplyLotTemplateFields = () => {
 
-            let disabled = false;
+      // let lotTemplateCopy = deepCopy(lotTemplate)
+      // if(!lotTemplateCopy.uploadFieldMapping){
+      //   lotTemplateCopy = {
+      //     ...lotTemplateCopy,
+      //     uploadFieldMapping: []
+      //   }
+      // }
 
-            const usedValueIndex = fieldMapping.findIndex((field, ind) => field?.displayName === availField.displayName && ind !== column)
-            if (usedValueIndex !== -1 && usedValueIndex < table[0].length) {
-                disabled = true
-            }
+      // let fieldMappingCopy = deepCopy(fieldMapping)
 
-            return {
-                ...availField,
-                disabled,
-            }
+      // //Loop thgrough available fields and assign dropdown choices
+      // for(const i in availableFields){
+      //   fieldMappingCopy[i] = availableFields[i]
+      //   lotTemplateCopy.uploadFieldMapping[i] = availableFields[i]._id
+      // }
+      // setFieldMapping(fieldMappingCopy)
+      // dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+    }
 
-        })
+    const handleMergeIdenticalLots = () => {
 
-        const savedDName = (fieldMapping[column]?.displayName || null)
-        const savedValue = !!savedDName ? [unusedFields.find(field => field.displayName === savedDName)] : []
+      // let tableCopy = deepCopy(table)
+      // for(let a = 0; a<tableCopy.length; a++){
+      //   for(let i = a+1; i<tableCopy.length; i++){
+      //     let match = true
+      //     let qtyIndex = null
+      //     for(const j in tableCopy[i]){
+      //       if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
+      //         qtyIndex = j
+      //       }
+      //       if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+      //         match = false
+      //         break
+      //       }
+      //     }
+      //     if(match === true){
+      //       if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
+      //         tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+      //         tableCopy.splice(i, 1)
+      //       }
+      //       else{
+      //         console.log('No qty field')
+      //       }
+      //     }
 
-        return (
-            <td style={{minWidth: '4rem'}}>
-                <ContextMenuTrigger id={`context-menu-column-${column}`}>
-                    <DropDownSearch
-                        placeholder="Column Field"
-                        labelField="displayName"
-                        valueField="displayName"
-                        options={unusedFields}
-                        disabledLabel={''}
-                        values={savedValue}
-                        dropdownGap={2}
-                        schema={'lots'}
-                        noDataLabel="No matches found"
-                        closeOnSelect="true"
-                        searchable={false}
-                        onClick={() => console.log("CLICK")}
-                        onChange={values => {
-                            // Save this value locally to be used when creating the payload
-                            let fieldMappingCopy = deepCopy(fieldMapping)
-                            fieldMappingCopy[column] = values[0]
-                            setFieldMapping(fieldMappingCopy)
-
-                            // Save this value in the product group template for next time you paste
-                            let lotTemplateCopy = deepCopy(lotTemplate)
-                            if(!lotTemplateCopy.uploadFieldMapping){
-                              lotTemplateCopy = {
-                                ...lotTemplateCopy,
-                                uploadFieldMapping: new Array(availableFields.length).fill(null)
-                              }
-                            }
-                            lotTemplateCopy.uploadFieldMapping[column] = values[0]?.displayName
-                            dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-                        }}
-                        className="w-100"
-                    />
-                </ContextMenuTrigger>
-
-                <ContextMenu id={`context-menu-column-${column}`}>
-                    <MenuItem onClick={() => {
-                        let fieldMappingCopy = deepCopy(fieldMapping)
-                        fieldMappingCopy[column] = null
-                        setFieldMapping(fieldMappingCopy)
-
-                        // Save this value in the product group template for next time you paste
-                        let lotTemplateCopy = deepCopy(lotTemplate)
-                        if(lotTemplate && lotTemplate.uploadFieldMapping){
-                          lotTemplateCopy.uploadFieldMapping[column] = null
-                          dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-                        }
-
-                    }}>
-                        Clear
-                    </MenuItem>
-                </ContextMenu>
-            </td>
-        )
+      //   }
+      // }
+      // setTable(tableCopy)
     }
 
     const deleteRow = (row) => {
-        let tableCopy = deepCopy(table);
-        tableCopy.splice(row, 1)
-        setTable(tableCopy)
+      let tableCopy = deepCopy(table);
+      tableCopy.splice(row, 1)
+      setTable(tableCopy)
     }
 
     const addAbove = (row) => {
@@ -176,95 +149,107 @@ const PasteMapper = (props) => {
         setTable(tableCopy)
     }
 
-    const handleApplyLotTemplateFields = () => {
-
-      let lotTemplateCopy = deepCopy(lotTemplate)
-      if(!lotTemplateCopy.uploadFieldMapping){
-        lotTemplateCopy = {
-          ...lotTemplateCopy,
-          uploadFieldMapping: []
-        }
-      }
-
-      let fieldMappingCopy = deepCopy(fieldMapping)
-
-      //Loop thgrough available fields and assign dropdown choices
-      for(const i in availableFields){
-        fieldMappingCopy[i] = availableFields[i]
-        lotTemplateCopy.uploadFieldMapping[i] = availableFields[i].displayName
-      }
-      setFieldMapping(fieldMappingCopy)
-      dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-    }
-
-    const handleMergeIdenticalLots = () => {
-
-      let tableCopy = deepCopy(table)
-      for(let a = 0; a<tableCopy.length; a++){
-        for(let i = a+1; i<tableCopy.length; i++){
-          let match = true
-          let qtyIndex = null
-          for(const j in tableCopy[i]){
-            if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
-              qtyIndex = j
-            }
-            if(tableCopy[i][j].value !== tableCopy[a][j].value) {
-              match = false
-              break
-            }
-          }
-          if(match === true){
-            if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
-              tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
-              tableCopy.splice(i, 1)
-            }
-            else{
-              console.log('No qty field')
-            }
-          }
-
-        }
-      }
-      setTable(tableCopy)
-    }
-
     /**
      * Auto Fill the dropdowns based on the first row of the table. The matcher will lower case
      * and delete any spaces when comparing the strings
      */
     const autoComplete = () => {
       const firstRow = table[0]
-      let tempFieldMap = new Array(availableFields.length).fill(null)
 
       // Create mapping if one doesnt exist
       let lotTemplateCopy = deepCopy(lotTemplate)
-      if(!lotTemplateCopy.uploadFieldMapping){
-        lotTemplateCopy = {
-          ...lotTemplateCopy,
-          uploadFieldMapping: new Array(availableFields.length).fill(null)
-        }
+      lotTemplateCopy = {
+        ...lotTemplateCopy,
+        uploadFieldMapping: {}
       }
 
-      let formattedFields = availableFields.map(field => field.displayName.toLowerCase().replace(/\s/g, ''));
+      let formattedFieldNames = availableFields.map(field => field.displayName.toLowerCase().replace(/\s/g, ''));
       let value, formattedValue, matchIdx;
       for (var i in firstRow) {
         value = firstRow[i].value
         formattedValue = value.toLowerCase().replace(/\s/g, '')
-        matchIdx = formattedFields.findIndex(formattedField => formattedField === formattedValue)
+        matchIdx = formattedFieldNames.findIndex(formattedFieldName => formattedFieldName === formattedValue)
         if (matchIdx !== -1) {
-          tempFieldMap[i] = availableFields[matchIdx]
-          lotTemplateCopy.uploadFieldMapping[i] = availableFields[matchIdx]?.displayName
+          lotTemplateCopy.uploadFieldMapping[availableFields[matchIdx]?._id] = parseInt(i)
         }
       }
 
-      // let tableCopy = deepCopy(table);
-      // tableCopy.splice(0, 1)
-      // setTable(tableCopy)
-
-      setFieldMapping(tempFieldMap)
       dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
       setShowAutoCompleteModal(false)
     }
+
+    const renderColumnDropdown = ({ column }) => {
+
+      const unusedFields = availableFields.map(availField => {
+
+          let disabled = false;
+          if ((availField._id in lotTemplate.uploadFieldMapping) && (lotTemplate.uploadFieldMapping[availField._id] < table[0].length)) {
+            disabled = true;
+          }
+
+          return {
+              ...availField,
+              disabled,
+          }
+
+      })
+
+      const keyOfCol = Object.keys(lotTemplate.uploadFieldMapping).find(key => lotTemplate.uploadFieldMapping[key] === column)
+      const savedValue = !!keyOfCol ? [unusedFields.find(field => field._id === keyOfCol)] : []
+
+      return (
+          <td style={{minWidth: '4rem'}}>
+              <ContextMenuTrigger id={`context-menu-column-${column}`}>
+                  <DropDownSearch
+                      placeholder="Column Field"
+                      labelField="displayName"
+                      valueField="_id"
+                      options={unusedFields}
+                      disabledLabel={''}
+                      values={savedValue}
+                      dropdownGap={2}
+                      schema={'lots'}
+                      noDataLabel="No matches found"
+                      closeOnSelect="true"
+                      searchable={false}
+                      onClick={() => console.log("CLICK")}
+                      onChange={values => {
+
+                          // Save this value in the product group template for next time you paste
+                          let lotTemplateCopy = deepCopy(lotTemplate)
+                          if(!lotTemplateCopy.uploadFieldMapping){
+                            lotTemplateCopy = {
+                              ...lotTemplateCopy,
+                              uploadFieldMapping: {}
+                            }
+                          }
+                          const keyOfCol = Object.keys(lotTemplateCopy.uploadFieldMapping).find(key => lotTemplateCopy.uploadFieldMapping[key] === column)
+                          delete lotTemplateCopy.uploadFieldMapping[keyOfCol]
+                          lotTemplateCopy.uploadFieldMapping[values[0]?._id] = parseInt(column)
+                          dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                      }}
+                      className="w-100"
+                  />
+              </ContextMenuTrigger>
+
+              <ContextMenu id={`context-menu-column-${column}`}>
+                  <MenuItem onClick={() => {
+
+                      // Save this value in the product group template for next time you paste
+                      let lotTemplateCopy = deepCopy(lotTemplate)
+                      if(!!lotTemplateCopy.uploadFieldMapping){
+                        const keyOfCol = Object.keys(lotTemplateCopy.uploadFieldMapping).find(key => lotTemplateCopy.uploadFieldMapping[key] === column)
+                        delete lotTemplateCopy.uploadFieldMapping[keyOfCol]
+                        dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
+                      }
+
+                  }}>
+                      Clear
+                  </MenuItem>
+              </ContextMenu>
+          </td>
+      )
+  }
 
     const renderRowLabel = ({ row }) => {
         return (
@@ -299,7 +284,7 @@ const PasteMapper = (props) => {
     }
 
     const renderCornerCounter = () => {
-      const usedQty = fieldMapping.filter((field, ind) => field !== null).length
+      const usedQty = Object.keys(lotTemplate.uploadFieldMapping).filter(key => lotTemplate.uploadFieldMapping[key] < table[0].length).length
       return (
         <styled.RowLabelContainer>
           <styled.RowLabel style={{minWidth: '8rem'}}>
@@ -311,7 +296,7 @@ const PasteMapper = (props) => {
 
     const Table = useMemo(() => {
         return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
-    }, [table, fieldMapping])
+    }, [table, lotTemplate])
 
     return (
       <>
@@ -325,7 +310,7 @@ const PasteMapper = (props) => {
             handleOnClick2={autoComplete}
             button_1_text="Cancel"
             button_2_text="Confirm"
-            content="Are you sure you want to continue? This may overwrite dropdowns that have already been filled out and will delete this row."
+            content="Are you sure you want to continue? This will overwrite dropdowns that have already been filled out."
           />
         }
         <styled.Container>
@@ -467,7 +452,7 @@ export const PasteForm = (props) => {
 PasteMapper.propTypes = {
 	table: PropTypes.arrayOf(	// array of array of strings
 		PropTypes.arrayOf(
-			PropTypes.string
+			PropTypes.object
 		)
 	)
 };

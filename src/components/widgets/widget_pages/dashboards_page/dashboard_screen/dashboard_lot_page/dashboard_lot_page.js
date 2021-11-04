@@ -121,6 +121,7 @@ const DashboardLotPage = (props) => {
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
+      process_id: currentLot.process_id,
       sku: 'default',
       quantity: null,
       load_station_id: fromStation,

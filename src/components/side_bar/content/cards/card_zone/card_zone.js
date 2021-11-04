@@ -128,27 +128,6 @@ const CardZone = ((props) => {
 
     }, [currentProcess, routes])
 
-    ///Remove this once people are switched over. Assigns correct lot template ID and lot number to old cards
-    useEffect(() => {
-      for(const process in allCards){
-        for(const j in allCards[process]){
-          let card = allCards[process][j]
-
-          //find basic lot template id for this process
-          let templatt = Object.values(lotTemplates).find(template => template.name === 'Basic' && template.processId === process)
-          if(!!templatt && card.lotTemplateId === 'BASIC_LOT_TEMPLATE'){
-              let newCard = {
-              ...card,
-              lotTemplateId: templatt._id,
-              lotNum: card.lotNumber
-            }
-            //dispatchPutCard(newCard, card._id)
-          }
-        }
-      }
-
-    }, [])
-
 
     // now that the object keys have been made, loop through the process's cards and add them to the correct bins
     useEffect(() => {
