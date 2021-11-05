@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 
 import * as styled from "./lot_form_creator.style"
 import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
@@ -34,28 +34,15 @@ const LotFormCreator = (props) => {
 		setSelectedEditingField
 	} = props
 
-	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
+
 	const processes = useSelector(state => state.processesReducer.processes)
 	const [draggingRow, setDraggingRow] = useState(null)
 	const [hoveringRow, setHoveringRow] = useState(null)
+	const [draggingFieldId, setDraggingFieldId] = useState(null)
 	const {
 		fields: items = []
 	} = values || {}
 
-
-		useEffect(() => {
-			document.addEventListener('drag', onDrag)
-
-			return ()=> {
-				document.removeEventListener('drag', onDrag)
-			}
-		}, [])
-
-
-	const onDrag = (e) => {
-		console.log(e.target.getBoundingClientRect().top)
-		e.target.style.transform = 'translateY(20px)'
-	}
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
 		let found = false
@@ -446,13 +433,24 @@ const LotFormCreator = (props) => {
 								{currItem?._id !== selectedEditingField ?
 									<styled.ColumnFieldContainer
 										draggable = {true}
-										onDragStart = {(e)=>{
-											e.dataTransfer.setDragImage(e.target,9999999999,999999999)
+										style = {{
+											borderBottom: draggingFieldId === currItem._id && '.3rem solid #dedfe3',
+											borderLeft: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
+											borderRight: draggingFieldId === currItem._id && '0.2rem solid #dedfe3',
+											borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
+											margin: '1rem'
 										}}
-										onDragEnd = {()=>{
+										onDragStart = {(e)=>{
+											setDraggingFieldId(currItem._id)
+											e.target.style.opacity = '0.001'
+										}}
+										onDrag = {(e)=> {
 
 										}}
-									 style = {{margin: '1rem'}}
+										onDragEnd = {(e)=>{
+											setDraggingFieldId(null)
+											e.target.style.opacity = '1'
+										}}
 									 selected = {false}
 
 									 onClick = {()=>{

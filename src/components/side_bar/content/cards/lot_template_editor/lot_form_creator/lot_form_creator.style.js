@@ -49,7 +49,7 @@ export const ColumnFieldContainer = styled.div`
 	padding: 0.4rem .4rem 1rem 1rem;
 	border: 0.1rem solid ${props => props.theme.bg.primary};
 	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
-	border-radius: .5rem;
+	border-radius: .2rem;
   flex: 1;
 
 	&:hover {
