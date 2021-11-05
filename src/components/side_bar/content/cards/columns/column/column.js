@@ -508,7 +508,10 @@ const Column = ((props) => {
 																			)
 																		}}
 																		containerStyle={{
-																			border: draggingLotId === cardId && station_id === dragFromBin && '.1rem solid #b8b9bf',
+																			borderBottom: draggingLotId === cardId && station_id === dragFromBin && '.35rem solid #b8b9bf',
+																			borderRight: draggingLotId === cardId && station_id === dragFromBin && '.2rem solid #b8b9bf',
+																			borderLeft: draggingLotId === cardId && station_id === dragFromBin && '.1rem solid #b8b9bf',
+																			borderTop: draggingLotId === cardId && station_id === dragFromBin && '.05rem solid #b8b9bf',
 																			boxShadow: draggingLotId === cardId && station_id === dragFromBin && '2px 3px 2px 1px rgba(0,0,0,0.2)',
 																			borderRadius: '0.2rem',
 																			padding: '0.2rem',

@@ -42,6 +42,20 @@ const LotFormCreator = (props) => {
 		fields: items = []
 	} = values || {}
 
+
+		useEffect(() => {
+			document.addEventListener('drag', onDrag)
+
+			return ()=> {
+				document.removeEventListener('drag', onDrag)
+			}
+		}, [])
+
+
+	const onDrag = (e) => {
+		console.log(e.target.getBoundingClientRect().top)
+		e.target.style.transform = 'translateY(20px)'
+	}
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
 		let found = false
@@ -67,6 +81,7 @@ const LotFormCreator = (props) => {
 
 		return [indices, found]
 	}
+
 
 	const handleAddField = (componentType, dataType) => {
 
@@ -429,20 +444,29 @@ const LotFormCreator = (props) => {
 							return (
 								<>
 								{currItem?._id !== selectedEditingField ?
+									<styled.ColumnFieldContainer
+										draggable = {true}
+										onDragStart = {(e)=>{
+											e.dataTransfer.setDragImage(e.target,9999999999,999999999)
+										}}
+										onDragEnd = {()=>{
 
-										<styled.ColumnFieldContainer
-										 style = {{margin: '1rem'}}
-										 selected = {false}
-										 onClick = {()=>{
-											setSelectedEditingField(currItem._id)
-										}}>
-											<styled.FieldName>{fieldName}</styled.FieldName>
-											{handleRenderComponentType(component, currItem._id)}
-										</styled.ColumnFieldContainer>
+										}}
+									 style = {{margin: '1rem'}}
+									 selected = {false}
+
+									 onClick = {()=>{
+										setSelectedEditingField(currItem._id)
+									}}>
+										<styled.FieldName>{fieldName}</styled.FieldName>
+										{handleRenderComponentType(component, currItem._id)}
+									</styled.ColumnFieldContainer>
+
 									:
 
 									<styled.ColumnFieldContainer
 									 selected = {true}
+									 draggable = {true}
 									 style = {{margin: '1rem', flexDirection: 'row', justifyContent: 'spaceBetween'}}
 									 onClick = {()=>{
 										setSelectedEditingField(currItem._id)
