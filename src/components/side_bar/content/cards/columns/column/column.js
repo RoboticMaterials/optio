@@ -508,7 +508,7 @@ const Column = ((props) => {
 																			)
 																		}}
 																		containerStyle={{
-																			borderBottom: draggingLotId === cardId && station_id === dragFromBin && '.35rem solid #b8b9bf',
+																			borderBottom: draggingLotId === cardId && station_id === dragFromBin && '.25rem solid #b8b9bf',
 																			borderRight: draggingLotId === cardId && station_id === dragFromBin && '.2rem solid #b8b9bf',
 																			borderLeft: draggingLotId === cardId && station_id === dragFromBin && '.1rem solid #b8b9bf',
 																			borderTop: draggingLotId === cardId && station_id === dragFromBin && '.05rem solid #b8b9bf',

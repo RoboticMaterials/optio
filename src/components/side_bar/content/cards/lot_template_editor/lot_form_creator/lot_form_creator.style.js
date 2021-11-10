@@ -39,7 +39,16 @@ export const ComponentOptionContainer = styled.div`
 		transform: translateY(-4px)
 	}
 `
+export const DropContainer = styled.div`
+	width: ${props => props.divWidth};
+  height: ${props => props.divHeight};
+	margin-left: 1rem;
+	margin-right: 1rem;
+	background: ${props => props.theme.bg.secondary};
+	border: 0.1rem solid ${props => props.theme.bg.primary};
+	border-radius: .4rem;
 
+`
 
 export const ColumnFieldContainer = styled.div`
   display: flex;

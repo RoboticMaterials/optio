@@ -183,7 +183,7 @@ const FormComponent = (props) => {
 				{/*<LotTemplateEditorSidebar/>*/}
 
 				<styled.ScrollContainer>
-					<styled.SectionContainer style = {{margin: '2rem 4rem 1rem 4rem'}}>
+					<styled.SectionContainer style = {{margin: '2rem 15rem 1rem 15rem'}}>
 						<styled.FieldsHeader
 							style={disabledStyle}
 						>
@@ -231,6 +231,7 @@ const FormComponent = (props) => {
 									<LotFormCreator
 										{...formikProps}
 										preview={preview}
+										lotTemplateId = {lotTemplateId}
 										selectedEditingField = {selectedEditingField}
 										setSelectedEditingField = {setSelectedEditingField}
 									/>
