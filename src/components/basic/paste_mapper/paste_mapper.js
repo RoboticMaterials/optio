@@ -54,9 +54,11 @@ const PasteMapper = (props) => {
 
     const fieldMapping = useMemo(() => {
       let mapping = new Array(table[0].length).fill(null)
+      if(!!lotTemplate && lotTemplate.uploadFieldMapping){
       Object.keys(lotTemplate.uploadFieldMapping).forEach(key => {
         mapping[lotTemplate.uploadFieldMapping[key]] = availableFields.find(field => field._id === key)
       })
+    }
       return mapping
     }, [lotTemplate])
 
@@ -73,28 +75,57 @@ const PasteMapper = (props) => {
     const handleMergeIdenticalLots = () => {
 
        let tableCopy = deepCopy(table)
-       for(let a = 0; a<tableCopy.length; a++){
-         for(let i = a+1; i<tableCopy.length; i++){
-           let match = true
-           let qtyIndex = lotTemplate.uploadFieldMapping['COUNT_FIELD_ID']
-           for(const j in tableCopy[i]){
-             if(tableCopy[i][j].value !== tableCopy[a][j].value) {
-               match = false
-               break
+       if(!!parseMode && parseMode === 'Alpen' ){
+         for(let a = 0; a<tableCopy.length; a++){
+           for(let i = a+1; i<tableCopy.length; i++){
+             let match = true
+             let qtyIndex = lotTemplate.uploadFieldMapping['COUNT_FIELD_ID']
+             for(const j in tableCopy[i]){
+               if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+                 match = false
+                 break
+               }
+             }
+             if(match === true){
+               if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
+                tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+                 tableCopy.splice(i, 1)
+               }
+               else{
+                 console.log('No qty field')
+               }
              }
            }
-           if(match === true){
-             if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
-              tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
-               tableCopy.splice(i, 1)
-             }
-             else{
-               console.log('No qty field')
-             }
-           }
-
          }
        }
+       else if(!!parseMode && parseMode === 'YaleCordage' ){
+         //Get work order index for merge purposes
+         let workOrderIndex
+         for(const i in lotTemplate.fields){
+           for(const j in lotTemplate.fields[i]){
+             if(!!lotTemplate.fields[i][j] && lotTemplate.fields[i][j].fieldName === 'EIA_REF1'){
+               let workOrderId = lotTemplate.fields[i][j]._id
+               if(lotTemplate.uploadFieldMapping && lotTemplate.uploadFieldMapping[workOrderId]){
+                  workOrderIndex = lotTemplate.uploadFieldMapping[workOrderId]
+               }
+             }
+           }
+         }
+
+         for(let a = 0; a<tableCopy.length; a++){
+           for(let i = a+1; i<tableCopy.length; i++){
+             if(tableCopy[a][workOrderIndex].value === tableCopy[i][workOrderIndex].value){
+             for(const j in tableCopy[i]){
+               if(tableCopy[i][j].value !== tableCopy[a][j].value){
+                  tableCopy[a][j].value = tableCopy[a][j].value + ', ' + tableCopy[i][j].value
+               }
+             }
+             tableCopy.splice(i,1)
+             i--
+           }
+         }
+       }
+     }
        setTable(tableCopy)
     }
 
@@ -152,9 +183,8 @@ const PasteMapper = (props) => {
     const renderColumnDropdown = ({ column }) => {
 
       const unusedFields = availableFields.map(availField => {
-
           let disabled = false;
-          if ((availField._id in lotTemplate.uploadFieldMapping) && (lotTemplate.uploadFieldMapping[availField._id] < table[0].length)) {
+          if (!!lotTemplate.uploadFieldMapping && (availField._id in lotTemplate.uploadFieldMapping) && (lotTemplate.uploadFieldMapping[availField._id] < table[0].length)) {
             disabled = true;
           }
 
@@ -162,10 +192,9 @@ const PasteMapper = (props) => {
               ...availField,
               disabled,
           }
-
       })
 
-      const keyOfCol = Object.keys(lotTemplate.uploadFieldMapping).find(key => lotTemplate.uploadFieldMapping[key] === column)
+      const keyOfCol = !!lotTemplate.uploadFieldMapping? Object.keys(lotTemplate.uploadFieldMapping).find(key => lotTemplate.uploadFieldMapping[key] === column) : 0
       const savedValue = !!keyOfCol ? [unusedFields.find(field => field._id === keyOfCol)] : []
 
       return (
@@ -255,7 +284,7 @@ const PasteMapper = (props) => {
     }
 
     const renderCornerCounter = () => {
-      const usedQty = Object.keys(lotTemplate.uploadFieldMapping).filter(key => lotTemplate.uploadFieldMapping[key] < table[0].length).length
+      const usedQty = !!lotTemplate.uploadFieldMapping ? Object.keys(lotTemplate.uploadFieldMapping).filter(key => lotTemplate.uploadFieldMapping[key] < table[0].length).length : 0
       return (
         <styled.RowLabelContainer>
           <styled.RowLabel style={{minWidth: '8rem'}}>
@@ -294,7 +323,7 @@ const PasteMapper = (props) => {
             <styled.Body>
                 <styled.ContentContainer>
 
-                    {!!parseMode && parseMode === 'Alpen' &&
+                    {!parseMode &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
                           secondary
