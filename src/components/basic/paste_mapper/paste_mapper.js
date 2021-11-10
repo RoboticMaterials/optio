@@ -323,7 +323,7 @@ const PasteMapper = (props) => {
             <styled.Body>
                 <styled.ContentContainer>
 
-                    {!parseMode &&
+                    {!!parseMode && (parseMode === 'Alpen' || parseMode === 'YaleCordage') &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
                           secondary
