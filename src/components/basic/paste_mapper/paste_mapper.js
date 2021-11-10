@@ -92,7 +92,6 @@ const PasteMapper = (props) => {
                  tableCopy.splice(i, 1)
                }
                else{
-                 console.log('No qty field')
                }
              }
            }
