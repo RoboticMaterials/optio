@@ -102,8 +102,7 @@ export const OptionsContainer = styled.div`
     ::-webkit-scrollbar {
         display: none;
     }
-    
-`
+    `
 
 export const DefaultContentComponent = styled.div`
   position: relative;

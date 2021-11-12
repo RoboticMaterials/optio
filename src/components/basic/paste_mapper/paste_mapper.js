@@ -218,8 +218,9 @@ const PasteMapper = (props) => {
                       noDataLabel="No matches found"
                       closeOnSelect="true"
                       searchable={false}
-                      onClick={() => console.log("CLICK")}
                       onChange={values => {
+
+                        console.log("ANIOWN")
 
                           // Save this value in the product group template for next time you paste
                           let lotTemplateCopy = deepCopy(lotTemplate)
