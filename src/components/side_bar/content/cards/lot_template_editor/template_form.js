@@ -13,6 +13,7 @@ import Button from "../../../../basic/button/button";
 import BackButton from '../../../../basic/back_button/back_button';
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import CalendarPlaceholder from '../../../../basic/calendar_placeholder/calendar_placeholder'
+import WorkInstructionsModal from '../modals/work_instructions_modal/work_instructions_modal'
 
 // actions
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
@@ -88,6 +89,11 @@ const FormComponent = (props) => {
 	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
 	const [selectedEditingField, setSelectedEditingField] = useState(false)
+	const [showWorkInstructionsModal,setShowWorkInstructionModal] = useState(false)
+
+	const dispatch = useDispatch()
+	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
@@ -129,6 +135,25 @@ const FormComponent = (props) => {
 		formikProps.resetForm()
 	}, [lotTemplateId])
 
+
+	const handleSetWorkInstructionIds = async(stationID, fileID) => {
+
+		let workInst = lotTemplates[lotTemplateId].workInstructions ? lotTemplates[lotTemplateId].workInstructions : {}
+
+		let updatedWorkInst = {
+			...workInst,
+			[stationID]: fileID
+		}
+
+		let updatedLotTemplate = {
+			...lotTemplates[lotTemplateId],
+			workInstructions: updatedWorkInst
+		}
+		await dispatchPutLotTemplate(updatedLotTemplate, lotTemplateId)
+
+	}
+
+
 	return(
 		<styled.StyledForm>
 			<ConfirmDeleteModal
@@ -146,6 +171,16 @@ const FormComponent = (props) => {
 							setConfirmDeleteTemplateModal(null)
 					}}
 			/>
+
+			{!!showWorkInstructionsModal &&
+				<WorkInstructionsModal
+					values = {values}
+					lotTemplateId = {lotTemplateId}
+					showWorkInstructionsModal = {showWorkInstructionsModal}
+					setShowWorkInstructionModal = {setShowWorkInstructionModal}
+					setWorkInstructions = {handleSetWorkInstructionIds}
+				/>
+			}
 			<SubmitErrorHandler
 				submitCount={submitCount}
 				isValid={formikProps.isValid}
@@ -161,9 +196,9 @@ const FormComponent = (props) => {
 				>
 				</BackButton>
 
-				<div style={{marginRight: "auto"}}/>
+				<div style={{marginRight: "1rem"}}/>
 
-				<styled.TemplateNameContainer>
+				<styled.TemplateNameContainer style = {{maxWidth: '50%', marginRight: '45rem'}}>
 					<styled.TemplateLabel>Product Group Name:</styled.TemplateLabel>
 					<TextField
 						name={"name"}
@@ -172,6 +207,14 @@ const FormComponent = (props) => {
 						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
 						inputStyle={{background: themeContext.bg.tertiary}}
 						schema = {'lots'}
+					/>
+					<Button
+						onClick={() => {
+							setShowWorkInstructionModal(true)
+						}}
+						schema={"lots"}
+						style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+						label = {'Work Instructions'}
 					/>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}

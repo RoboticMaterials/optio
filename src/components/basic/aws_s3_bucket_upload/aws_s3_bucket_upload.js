@@ -7,8 +7,6 @@ const S3_BUCKET ='winstructions';
 const REGION ='us-west-1';
 
 
-
-
 AWS.config.update({
     accessKeyId: 'AKIAYKB6JQEJI3A35AFN',
     secretAccessKey: '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'
@@ -95,7 +93,6 @@ const AwsS3BucketUpload = () => {
             const params = {
                 Bucket: S3_BUCKET,
                 Key: key
-
             };
 
              const objects = myBucket

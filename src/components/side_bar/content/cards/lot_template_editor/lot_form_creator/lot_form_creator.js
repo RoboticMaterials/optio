@@ -5,6 +5,7 @@ import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../..
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
 //import DropContainer from "../drop_container/drop_container";
+import AWS from 'aws-sdk'
 import Textbox from "../../../../../basic/textbox/textbox";
 import Button from '../../../../../basic/button/button'
 import {Container} from "react-smooth-dnd";
@@ -17,7 +18,6 @@ import {useSelector, useDispatch} from "react-redux";
 import NumberInput from '../../../../../basic/number_input/number_input'
 import CheckboxField from '../../../../../basic/form/checkbox_field/checkbox_field'
 import {getProcessStations} from "../../../../../../methods/utils/processes_utils";
-import WorkInstructionsModal from '../../modals/work_instructions_modal/work_instructions_modal'
 const LotFormCreator = (props) => {
 
 	const {
@@ -55,8 +55,6 @@ const LotFormCreator = (props) => {
 	const [divHeight, setDivHeight] = useState(null)
 	const [divWidth, setDivWidth] = useState(null)
 	const [mouseOffset, setMouseOffset] = useState(null)
-	const [showWorkInstructionsModal,setShowWorkInstructionModal] = useState(false)
-	const [editingIndex, setEditingIndex] = useState(null)
 
 	const {
 		fields: items = []
@@ -98,29 +96,9 @@ const LotFormCreator = (props) => {
 		else newFields.splice(startIndex, 1)
 
 		//console.log(JSON.parse(JSON.stringify(newFields)))
-
 		setFieldValue("fields", newFields)
 		setFieldValue('changed')
 	}
-
-	const handleSetWorkInstructionIds = async(stationID, fileID) => {
-
-		let workInst = values.fields[editingIndex][0].workInstructions
-		workInst[stationID] = fileID
-
-		let updatedFields = values.fields
-		updatedFields[editingIndex][0].workInstructions = workInst
-
-		let updatedLotTemplate = {
-			...lotTemplates[lotTemplateId],
-			fields: updatedFields
-		}
-
-		await dispatchPutLotTemplate(updatedLotTemplate, lotTemplateId)
-
-
-	}
-
 
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
@@ -134,8 +112,6 @@ const LotFormCreator = (props) => {
 					found = true
 					if(newIndices.length > 0) indices = [...indices, ...newIndices]
 				}
-
-
 
 			} else {
 				if(currItem._id === id) {
@@ -317,15 +293,6 @@ const LotFormCreator = (props) => {
 							containerStyle={{ width: "23rem", userSelect: 'none', pointerEvents: 'none' }}
 						/>
 					</styled.ComponentOptionContainer>
-
-					<styled.ComponentOptionContainer
-						onClick = {()=> handleAddField('WORK_INSTRUCTIONS', 'FILE')}
-						style = {{flexDirection: 'row'}}
-						>
-						<styled.FieldName style = {{paddingTop: '.5rem'}}>work instructions</styled.FieldName>
-						<i class="far fa-file-alt" style = {{fontSize: '2.5rem', color: '#b8b9bf'}}></i>
-					</styled.ComponentOptionContainer>
-
 			</styled.RowContainer>
 		)
 	}
@@ -463,21 +430,6 @@ const LotFormCreator = (props) => {
 						}
 					</>
 				)
-
-				case 'WORK_INSTRUCTIONS':
-					return (
-						<styled.RowContainer
-						 style = {{
-							background: '#f7f7fa', width: '3rem',
-							boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
-							border: '0.1rem solid transparent',
-							borderRadius: '0.2rem',
-							padding: '0.5rem'
-						}}
-						>
-							<i class="far fa-file-alt" style = {{fontSize: '2.5rem', color: '#7e7e7e'}}></i>
-						</styled.RowContainer>
-					)
 			}
 		}
 
@@ -512,7 +464,6 @@ const LotFormCreator = (props) => {
 							const isOnlyItem = currRow.length === 1
 							return (
 								<>
-
 									<div
 										style = {{padding: '1rem'}}
 										onDragOver = {(e)=>{
@@ -530,6 +481,7 @@ const LotFormCreator = (props) => {
 											borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
 											flexDirection: selectedEditingField === currItem._id && 'row',
 											pointerEvents: dragOverId === currItem._id && 'none',
+
 										}}
 										onDragStart = {(e)=>{
 											setDivHeight(e.target.offsetHeight+5)
@@ -541,7 +493,7 @@ const LotFormCreator = (props) => {
 											e.target.style.opacity = '0.001'
 										}}
 										onDragEnd = {(e)=>{
-											handleDropField()
+											if(dragIndex) handleDropField()
 											setStartIndex(null)
 											setDragOverId(null)
 											setDragIndex(null)
@@ -553,7 +505,6 @@ const LotFormCreator = (props) => {
 
 									 onClick = {()=>{
 										setSelectedEditingField(currItem._id)
-										setEditingIndex(currRowIndex)
 									}}>
 										{currItem._id !== selectedEditingField ?
 											<>
@@ -583,18 +534,6 @@ const LotFormCreator = (props) => {
 													</styled.ColumnContainer>
 													<styled.OptionContainer>
 													<styled.RowContainer>
-													{component === 'WORK_INSTRUCTIONS' &&
-														<Button
-			                          style={{marginRight: '2rem'}}
-			                          secondary
-																schema = {'lots'}
-			                          label={'Add work instructions'}
-			                          onClick = {()=>{
-																	setShowWorkInstructionModal(true)
-			                          }}
-			                          type="button"
-			                      />
-													}
 													<CheckboxField
 														name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
 														css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}
@@ -668,17 +607,6 @@ const LotFormCreator = (props) => {
 
 	return (
 		<>
-			{!!showWorkInstructionsModal &&
-				<WorkInstructionsModal
-					fieldId = {selectedEditingField}
-					values = {values}
-					lotTemplateId = {lotTemplateId}
-					showWorkInstructionsModal = {showWorkInstructionsModal}
-					setShowWorkInstructionModal = {setShowWorkInstructionModal}
-					setWorkInstructions = {handleSetWorkInstructionIds}
-					editingIndex = {editingIndex}
-				/>
-			}
 			{mapContainers(items, true, items)}
 		</>
 	)

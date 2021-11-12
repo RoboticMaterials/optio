@@ -50,7 +50,6 @@ const WorkInstructionsModal = (props) => {
     showWorkInstructionsModal,
     lotTemplateId,
     setWorkInstructions,
-    editingIndex,
   } = props
 
   const onDocumentLoadSuccess = (numPages) => {
@@ -58,9 +57,13 @@ const WorkInstructionsModal = (props) => {
   }
 
   const handleFileInput = (e, id) => {
+    if(!!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[id]){
+      handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[id], id)
+    }
+
     let fileID = uuidv4()
       setSelectedFile(e.target.files[0]);
-      setStationFiles({
+      setStationFiles({//Keeps track of upload status percent at each station
         ...stationFiles,
         [id]: e.target.files[0].name
       })
@@ -78,8 +81,39 @@ const WorkInstructionsModal = (props) => {
           .on('httpUploadProgress', (evt) => {
               setProgress({
                 ...progress,
-                [id]: Math.round((evt.loaded / evt.total) * 100)
+               [id]: Math.round((evt.loaded / evt.total) * 100)
               })
+          })
+          .send((err) => {
+              if (err) console.log(err)
+          })
+
+      }
+
+  const handleUploadAll = (e) => {
+
+    let process = processes[values.processId]
+
+    for(const i in process.flattened_stations){
+      let id = process.flattened_stations[i].stationID
+
+      if(!!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[id]){
+        handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[id], id)
+      }
+      setWorkInstructions(id, e.target.files[0].name)
+    }
+
+      const params = {
+          ACL: 'public-read',
+          Body: e.target.files[0],
+          Bucket: S3_BUCKET,
+          Key: e.target.files[0].name,
+      };
+
+
+      myBucket.putObject(params)
+          .on('httpUploadProgress', (evt) => {
+
           })
           .send((err) => {
               if (err) console.log(err)
@@ -96,18 +130,24 @@ const WorkInstructionsModal = (props) => {
 
       };
 
-      for(const i in lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions){
-        console.log(i)
+      let usedElsewhere = false
+      for(const i in lotTemplates[lotTemplateId].workInstructions){//if file is used by other station dont delete from s3
+        if(lotTemplates[lotTemplateId].workInstructions[i] === key && stationID!==i){
+          usedElsewhere = true
+        }
       }
 
-      //const objects = myBucket
-      //  .deleteObject(params, function(err, data){
-      //    if(err)throw err
-      //  })
+      if(!usedElsewhere){
+        const objects = myBucket
+          .deleteObject(params, function(err, data){
+            if(err)throw err
+          })
+        }
 
-      //let template = lotTemplates[lotTemplateId]
-      //delete template.fields[editingIndex][0].workInstructions[stationID]
-      //await dispatchPutLotTemplate(template, lotTemplateId)
+
+      let template = lotTemplates[lotTemplateId]
+      delete template.workInstructions[stationID]
+      await dispatchPutLotTemplate(template, lotTemplateId)
       }
 
   const renderStationList = () => {
@@ -127,18 +167,18 @@ const WorkInstructionsModal = (props) => {
             <styled.FileContainer style = {{minWidth: '20rem', flex: '2'}}>
               <styled.ListItemTitle
               >
-              {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].fields[editingIndex] && lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions[station.stationID] ? 'Uploaded File:' : 'No File Uploaded'}
+              {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID] ? 'Uploaded File:' : 'No File Uploaded'}
               </styled.ListItemTitle>
                 <styled.RowContainer style = {{maxWidth: '17rem',}}>
                   <styled.ListItemTitle style = {{fontWeight: '600', padding: '.5rem 0.5rem 0.5rem 0.5rem'}}>
-                    {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].fields[editingIndex] && lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions[station.stationID]}
+                    {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID]}
                   </styled.ListItemTitle>
-                  {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].fields[editingIndex] && lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions[station.stationID] &&
+                  {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID] &&
                   <i
                     class = 'fas fa-minus-circle'
                     style = {{fontSize: '1.5rem', color: '#FF4B4B', cursor: 'pointer'}}
                     onClick = {()=>{
-                      handleDeleteFile(lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions[station.stationID], station.stationID)
+                      handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[station.stationID], station.stationID)
                     }}
                   />
                 }
@@ -153,7 +193,7 @@ const WorkInstructionsModal = (props) => {
                 style = {{position: 'absolute'}}
               />
               <styled.ListItemTitle style = {{position: 'absolute', paddingLeft: '2.2rem', paddingTop: '0.5rem'}}>
-              {!!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].fields[editingIndex] && !!lotTemplates[lotTemplateId].fields[editingIndex][0].workInstructions[station.stationID]? 'Change File' : 'Upload File'}
+              {!!lotTemplates[lotTemplateId] &&  !!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[station.stationID]? 'Change File' : 'Upload File'}
               </styled.ListItemTitle>
             </styled.UploadButton>
 
@@ -187,21 +227,36 @@ const WorkInstructionsModal = (props) => {
                 <styled.Title schema={'lots'}>Add Work Instructions</styled.Title>
                 <styled.CloseButton
                     className={'fas fa-times'}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', padding: '1rem' }}
                     onClick = {()=> {
                       setShowWorkInstructionModal(false)
                     }}
                 />
+
+            <styled.UploadAllButton>
+              <styled.ListItemTitle style = {{position: 'absolute'}}>Upload File To All Stations</styled.ListItemTitle>
+              <input
+                type="file"
+                style = {{position: 'relative', zIndex: '2', opacity: '0.001'}}
+                onChange={(e)=>{
+                    handleUploadAll(e)
+                  }}
+              />
+              <styled.ListItemIcon
+                className = 'fas fa-cloud-upload-alt'
+                style = {{position: 'absolute', left: '17.5rem'}}
+              />
+            </styled.UploadAllButton>
 
             <styled.ColumnContainer>
             {renderStationList()}
             </styled.ColumnContainer>
             <Button
               type={"button"}
-              schema={'objects'}
-              label={"Save"}
+              schema={'lots'}
+              label={"Close"}
               onClick={()=>{
-
+                setShowWorkInstructionModal(false)
               }}
               style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
             />

@@ -96,6 +96,23 @@ export const UploadButton = styled.div`
     padding: 0.2rem;
 `
 
+export const UploadAllButton = styled.div`
+    display: flex;
+    align-items: center;
+    min-height: 3rem;
+
+    border: 0.1rem solid transparent;
+    border-radius: 0.5rem;
+    background: ${props => props.theme.bg.primary};
+
+    box-shadow: 1px 2px 2px 2px rgba(0,0,0,0.15);
+    max-width: 18.5rem;
+
+    text-overflow: ellipsis;
+    justify-content: space-between;
+    margin: 0.5rem 0rem 0.5rem 1rem;
+    padding: 0.2rem;
+`
 
 export const ListItemTitle = styled.h1`
 
