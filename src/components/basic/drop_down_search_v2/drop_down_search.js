@@ -482,8 +482,9 @@ export class DropDownSearch extends Component {
   renderDropdown = (ItemComponent) =>
     this.props.portal ? (
       ReactDOM.createPortal(
+        
         <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
-        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)}
+          props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)}
          />,
         this.dropdownRoot
       )
