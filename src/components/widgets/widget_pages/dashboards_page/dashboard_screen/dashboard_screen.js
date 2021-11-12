@@ -171,6 +171,7 @@ const DashboardScreen = (props) => {
     }
 
     const handleLotClick = (lotId) => {
+        console.log("CLICK", user, trackUsers)
         if (user !== null || !trackUsers) {
             history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
         } else {
@@ -361,8 +362,6 @@ const DashboardScreen = (props) => {
                         await setUser(newUser);
                         setShowUserCheckinModal(false)
                         onSetTitle(newUser)
-                        // newUser !== null && checkinCallback[0]()
-                        // setCheckinCallback([() => {}])
                     }}
                     onClose={() => setShowUserCheckinModal(false)}/>
             }
@@ -439,25 +438,23 @@ const DashboardScreen = (props) => {
                 isListView={showLotsList}
             />
 
-            {
-                showLotsList ?
-                    <DashboardLotList onCardClicked={handleLotClick}
-                    />
-                    :
-                    <DashboardLotPage
-                        user={user}
-                        pushUndoHandler={handlePushUndoHandler}
-                        handleTaskAlert={(type, label, message) => {
-                            setAddTaskAlert({
-                                type: type,
-                                label: label,
-                                message: message,
-                            })
+            {showLotsList ?
+                <DashboardLotList onCardClicked={handleLotClick} />
+                :
+                <DashboardLotPage
+                    user={user}
+                    pushUndoHandler={handlePushUndoHandler}
+                    handleTaskAlert={(type, label, message) => {
+                        setAddTaskAlert({
+                            type: type,
+                            label: label,
+                            message: message,
+                        })
 
-                            // clear alert after timeout
-                            return setTimeout(() => setAddTaskAlert(null), alertDuration)
-                        }}
-                    />
+                        // clear alert after timeout
+                        return setTimeout(() => setAddTaskAlert(null), alertDuration)
+                    }}
+                />
             }
 
             <TaskAddedAlert
