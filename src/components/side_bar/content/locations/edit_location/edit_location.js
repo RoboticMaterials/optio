@@ -585,7 +585,7 @@ const EditLocation = (props) => {
                                     {/* Delete Location Button */}
                                     <Button
                                         type={"button"}
-                                        disabled={!values.locationName}
+                                        disabled={!values.locationName || Object.values(errors).length >0}
                                         schema={"locations"}
                                         onClick={() =>
                                             onSave(

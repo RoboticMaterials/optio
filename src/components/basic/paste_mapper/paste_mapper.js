@@ -47,84 +47,92 @@ const PasteMapper = (props) => {
     const [table, setTable] = useState(values.table)
     const [disableMergeButton, setDisableMergeButton] = useState(false)
     const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
+    const [fieldMapping, setFieldMappingCopy] = useState({})
 
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
     const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
 
-    const fieldMapping = useMemo(() => {
+    const mappedFields = useMemo(() => {
       let mapping = new Array(table[0].length).fill(null)
-      Object.keys(lotTemplate.uploadFieldMapping).forEach(key => {
-        mapping[lotTemplate.uploadFieldMapping[key]] = availableFields.find(field => field._id === key)
+      if(!!lotTemplate && fieldMapping){
+      Object.keys(fieldMapping).forEach(key => {
+        mapping[fieldMapping[key]] = availableFields.find(field => field._id === key)
       })
+    }
       return mapping
-    }, [lotTemplate])
+    }, [fieldMapping])
 
     useEffect(() => {
-      // // For Alpen parser, determines if dropdown is disabled
-      // if(!!lotTemplate?.uploadFieldMapping){
-      //   const foundQtyField = lotTemplate.uploadFieldMapping.find(field => field == 'LILIQuantity')
-      //   if(foundQtyField === 'LILIQuantity') {
-      //     console.log(foundQtyField)
-      //     setDisableMergeButton(false)
-      //   }
-      //   else setDisableMergeButton(true)
-      // }
-      // else{
-      //   return setDisableMergeButton(true)
-      // }
-    }, [lotTemplate])
+      // Determine if the uploadFieldMapping has changed
+      if (JSON.stringify(lotTemplate.uploadFieldMapping) !== JSON.stringify(fieldMapping)) {
+        setFieldMappingCopy(lotTemplate.uploadFieldMapping)
+      }
 
-    const handleApplyLotTemplateFields = () => {
-
-      // let lotTemplateCopy = deepCopy(lotTemplate)
-      // if(!lotTemplateCopy.uploadFieldMapping){
-      //   lotTemplateCopy = {
-      //     ...lotTemplateCopy,
-      //     uploadFieldMapping: []
-      //   }
-      // }
-
-      // let fieldMappingCopy = deepCopy(fieldMapping)
-
-      // //Loop thgrough available fields and assign dropdown choices
-      // for(const i in availableFields){
-      //   fieldMappingCopy[i] = availableFields[i]
-      //   lotTemplateCopy.uploadFieldMapping[i] = availableFields[i]._id
-      // }
-      // setFieldMapping(fieldMappingCopy)
-      // dispatchPutLotTemplate(lotTemplateCopy, lotTemplateCopy._id)
-    }
+       // For Alpen parser, determines if dropdown is disabled
+      if(!!parseMode && parseMode === 'Alpen'){
+        if(!!lotTemplate?.uploadFieldMapping){
+          if(!!lotTemplate?.uploadFieldMapping['COUNT_FIELD_ID']) setDisableMergeButton(false)
+          else return setDisableMergeButton(true)
+        }
+      }
+    }, [lotTemplate, fieldMapping])
 
     const handleMergeIdenticalLots = () => {
 
-      // let tableCopy = deepCopy(table)
-      // for(let a = 0; a<tableCopy.length; a++){
-      //   for(let i = a+1; i<tableCopy.length; i++){
-      //     let match = true
-      //     let qtyIndex = null
-      //     for(const j in tableCopy[i]){
-      //       if(lotTemplate?.uploadFieldMapping && lotTemplate.uploadFieldMapping[j] && lotTemplate.uploadFieldMapping[j] === 'LILIQuantity'){
-      //         qtyIndex = j
-      //       }
-      //       if(tableCopy[i][j].value !== tableCopy[a][j].value) {
-      //         match = false
-      //         break
-      //       }
-      //     }
-      //     if(match === true){
-      //       if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
-      //         tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
-      //         tableCopy.splice(i, 1)
-      //       }
-      //       else{
-      //         console.log('No qty field')
-      //       }
-      //     }
+       let tableCopy = deepCopy(table)
+       if(!!parseMode && parseMode === 'Alpen' ){
+         for(let a = 0; a<tableCopy.length; a++){
+           for(let i = a+1; i<tableCopy.length; i++){
+             let match = true
+             let qtyIndex = fieldMapping['COUNT_FIELD_ID']
+             for(const j in tableCopy[i]){
+               if(tableCopy[i][j].value !== tableCopy[a][j].value) {
+                 match = false
+                 break
+               }
+             }
+             if(match === true){
+               if(!!tableCopy[a] && !!tableCopy[a][qtyIndex]){
+                tableCopy[a][qtyIndex].value = (parseInt(tableCopy[a][qtyIndex].value) + parseInt(tableCopy[i][qtyIndex].value)).toString()
+                 tableCopy.splice(i, 1)
+               }
+               else{
+                 console.log('No qty field')
+               }
+             }
+           }
+         }
+       }
+       else if(!!parseMode && parseMode === 'YaleCordage' ){
+         //Get work order index for merge purposes
+         let workOrderIndex
+         for(const i in lotTemplate.fields){
+           for(const j in lotTemplate.fields[i]){
+             if(!!lotTemplate.fields[i][j] && lotTemplate.fields[i][j].fieldName === 'EIA_REF1'){
+               let workOrderId = lotTemplate.fields[i][j]._id
+               if(fieldMapping && fieldMapping[workOrderId]){
+                  workOrderIndex = fieldMapping[workOrderId]
+               }
+             }
+           }
+         }
 
-      //   }
-      // }
-      // setTable(tableCopy)
+         for(let a = 0; a<tableCopy.length; a++){
+           for(let i = a+1; i<tableCopy.length; i++){
+             if(tableCopy[a][workOrderIndex].value === tableCopy[i][workOrderIndex].value){
+             for(const j in tableCopy[i]){
+               if(tableCopy[i][j].value !== tableCopy[a][j].value){
+                  tableCopy[a][j].value = tableCopy[a][j].value + ', ' + tableCopy[i][j].value
+               }
+             }
+             tableCopy.splice(i,1)
+             i--
+           }
+         }
+       }
+     }
+       setTable(tableCopy)
     }
 
     const deleteRow = (row) => {
@@ -181,9 +189,8 @@ const PasteMapper = (props) => {
     const renderColumnDropdown = ({ column }) => {
 
       const unusedFields = availableFields.map(availField => {
-
           let disabled = false;
-          if ((availField._id in lotTemplate.uploadFieldMapping) && (lotTemplate.uploadFieldMapping[availField._id] < table[0].length)) {
+          if (!!fieldMapping && (availField._id in fieldMapping) && (fieldMapping[availField._id] < table[0].length)) {
             disabled = true;
           }
 
@@ -191,10 +198,9 @@ const PasteMapper = (props) => {
               ...availField,
               disabled,
           }
-
       })
 
-      const keyOfCol = Object.keys(lotTemplate.uploadFieldMapping).find(key => lotTemplate.uploadFieldMapping[key] === column)
+      const keyOfCol = !!fieldMapping? Object.keys(fieldMapping).find(key => fieldMapping[key] === column) : 0
       const savedValue = !!keyOfCol ? [unusedFields.find(field => field._id === keyOfCol)] : []
 
       return (
@@ -284,7 +290,7 @@ const PasteMapper = (props) => {
     }
 
     const renderCornerCounter = () => {
-      const usedQty = Object.keys(lotTemplate.uploadFieldMapping).filter(key => lotTemplate.uploadFieldMapping[key] < table[0].length).length
+      const usedQty = !!fieldMapping ? Object.keys(fieldMapping).filter(key => fieldMapping[key] < table[0].length).length : 0
       return (
         <styled.RowLabelContainer>
           <styled.RowLabel style={{minWidth: '8rem'}}>
@@ -296,14 +302,14 @@ const PasteMapper = (props) => {
 
     const Table = useMemo(() => {
         return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
-    }, [table, lotTemplate.uploadFieldMapping])
+    }, [table, fieldMapping])
 
     return (
       <>
-        {showAutoCompleteModal && 
-          <SimpleModal 
+        {showAutoCompleteModal &&
+          <SimpleModal
             isOpen={showAutoCompleteModal}
-            title="Confirm Auto Complete" 
+            title="Confirm Auto Complete"
             onRequestClose={() => setShowAutoCompleteModal(false)}
             onCloseButtonClick={() => setShowAutoCompleteModal(false)}
             handleOnClick1={() => setShowAutoCompleteModal(false)}
@@ -322,18 +328,8 @@ const PasteMapper = (props) => {
 
             <styled.Body>
                 <styled.ContentContainer>
-                  {!!parseMode && parseMode === 'Alpen' &&
-                      <Button
-                          style={{maxWidth: '18rem', marginLeft: '2rem'}}
-                          secondary
-                          label={'Apply lot template fields'}
-                          onClick = {()=>{
-                            handleApplyLotTemplateFields()
-                          }}
-                          type="button"
-                      />
-                    }
-                    {!!parseMode && parseMode === 'Alpen' &&
+
+                    {!!parseMode && (parseMode === 'Alpen' || parseMode === 'YaleCordage') &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
                           secondary
@@ -364,7 +360,7 @@ const PasteMapper = (props) => {
                     schema={'lots'}
                     label={"Validate Lots"}
                     onClick={()=>{
-                        const payload = createPastePayload(table, fieldMapping)
+                        const payload = createPastePayload(table, mappedFields)
                         onCreateClick(payload)
                     }}
                     style={{minWidth: '14rem', minHeight: '3rem'}}
