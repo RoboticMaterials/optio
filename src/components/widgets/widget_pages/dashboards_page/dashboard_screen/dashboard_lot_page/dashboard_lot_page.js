@@ -41,7 +41,6 @@ import {
   deleteCard
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
 
 const DashboardLotPage = (props) => {
   const {
@@ -70,7 +69,6 @@ const DashboardLotPage = (props) => {
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
-  const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
@@ -121,6 +119,7 @@ const DashboardLotPage = (props) => {
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
+      pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
       process_id: currentLot.process_id,
       sku: 'default',
       quantity: null,
@@ -275,7 +274,6 @@ const DashboardLotPage = (props) => {
       })
       await dispatchPostTouchEvent(updatedTouchEvent)
     }
-    dispatchUpdateStationCycleTime(loadStationID)
 
     // Move Alert (based on whether lot was split or not)
     if (moveRoutes.length > 1) {

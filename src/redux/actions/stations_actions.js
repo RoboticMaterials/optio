@@ -199,41 +199,6 @@ export const deleteStation = (ID) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export const updateStationCycleTime = (id) => {
-    return async dispatch => {
-        function onStart() {
-            dispatch({ type: UPDATE_STATION_CYCLE_TIME_STARTED });
-        }
-        function onSuccess(stationWithCycleTime) {
-            dispatch({ type: UPDATE_STATION_CYCLE_TIME_SUCCESS, payload: stationWithCycleTime });
-            return stationWithCycleTime;
-        }
-        function onError(error) {
-            dispatch({ type: UPDATE_STATION_CYCLE_TIME_FAILURE, payload: error });
-            return error;
-        }
-
-        try {
-            onStart();
-            const stationWithCycleTime = await api.updateStationCycleTime(id);
-            return onSuccess(stationWithCycleTime)
-        } catch (error) {
-            return onError(error)
-        }
-    }
-}
-
-
-// get Station Analytics
-// ******************************
-export const getStationAnalytics = async (id, timeSpan) => {
-    try {
-        const stationAnalytics = await api.getStationAnalytics(id, timeSpan);
-        return stationAnalytics
-    } catch (error) {
-    }
-};
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addStation = (station) => {
     return { type: ADD_STATION, payload: station }
