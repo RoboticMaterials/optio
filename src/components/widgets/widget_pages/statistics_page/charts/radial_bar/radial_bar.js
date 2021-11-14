@@ -26,7 +26,8 @@ const RadialBar = (props) => {
                 theme={theme}
                 colors={getColor}
                 data={data}
-                maxValue={100}
+                maxValue={Math.max(100, ...data.map(bar => bar.data[0].y))}
+                valueFormat={v => `${Math.round(v)}%`}
                 startAngle={-120}
                 endAngle={120}
                 innerRadius={0.6}

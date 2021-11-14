@@ -4,17 +4,15 @@ import { theme, defaultColors } from '../nivo_theme';
 
 const Bar = ({ data, keys, colors }) => {
 
-    keys = data[0]
-
     return (
         <ResponsiveBar
             theme={theme}
             colors={colors}
             data={data}
-            keys={[ 'Cool', 'HELLO REPORT BUTTON' ]}
+            keys={keys}
             indexBy="x"
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-            padding={0.85}
+            padding={0.5}
             valueScale={{ type: 'linear' }}
             indexScale={{ type: 'band', round: true }}
             borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}

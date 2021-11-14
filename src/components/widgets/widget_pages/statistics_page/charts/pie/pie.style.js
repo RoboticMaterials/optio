@@ -26,3 +26,16 @@ export const LegendLabel = styled.div`
     font-size: 1rem;
     color: #393975;
 `
+
+export const Label = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+    // font-weight: bold;
+    color: #393975;
+    text-align: center;
+`

@@ -74,7 +74,59 @@ export const ChartContainer = styled.div`
     position: relative;
 `
 
+export const NoData = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2rem;
+    font-weight: bold;
+    color: ${props => props.theme.bg.tertiary};
+`
+
 export const PieContainer = styled.div`
     width: 15rem;
     height: 15rem;
+    margin: 0 auto;
+`
+
+export const DualSelectionButtonContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-right: 2rem;
+    height: 1.4rem;
+    `
+
+export const DualSelectionButton = styled.button`
+    font-size: 0.8rem;
+    width: 8rem;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.activeColor: props.theme.bg.secondary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    transition: all 0.5s ease-out;
+`
+
+export const CheckboxLabel = styled.div`
+    line-height: 1.4rem;
+    margin-left: 0.3rem;
+    font-size: 0.8rem;
+    color: #393975;
 `

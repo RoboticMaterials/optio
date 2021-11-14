@@ -15,6 +15,11 @@ import Bar from './charts/bar/bar';
 import Pie from './charts/pie/pie';
 
 import { getStationStatistics } from '../../../../api/stations_api';
+import { DualSelectionButton } from '../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar.style';
+import Checkbox from '../../../basic/checkbox/checkbox';
+import { defaultColors } from './charts/nivo_theme';
+
+import { deepCopy } from '../../../../methods/utils/utils';
 
 const StatisticsPage = () => {
 
@@ -24,6 +29,11 @@ const StatisticsPage = () => {
     // State Management
     const [data, setData] = useState(null)
     const [cycleTimePG, setCycleTimePg] = useState(null)
+    const [showWIPChart, setShowWIPChart] = useState(false)
+    const [isCumulative, setIsCumulative] = useState(false)
+
+    const [originalThroughputData, setOriginalThroughputData] = useState([])
+    const [throughputData, setThroughputData] = useState([])
 
     // Selectors
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -33,7 +43,7 @@ const StatisticsPage = () => {
         const today = new Date()
         const yesterday = new Date(today)
 
-        yesterday.setDate(yesterday.getDate() - 2)
+        yesterday.setDate(yesterday.getDate() - 1)
 
         refreshData(today);
     }, [])
@@ -42,11 +52,37 @@ const StatisticsPage = () => {
     const refreshData = async (startDate, endDate) => {
         const tempData = await getStationStatistics(stationId, startDate, endDate)
         console.log(tempData)
-        if (!Object.keys(tempData).length == 0) {
+        if (!Object.keys(tempData).length == 0 && !!tempData.cycle_time) {
             setCycleTimePg(Object.keys(tempData.cycle_time)[0])
         }
+        setThroughputData(deepCopy(tempData.throughput))
         setData(tempData)
     }
+
+    useEffect(() => {
+        if (!data || !data.throughput) return []
+        
+        if (isCumulative) {
+            data.throughput.forEach((line, i) => {
+                let cumulation = 0;
+                for (var j in line.data) {
+                    cumulation += line.data[j].y;
+                    throughputData[i].data[j].y = cumulation;
+                }
+            })
+
+            setThroughputData(throughputData);
+        } else {
+            data.throughput.forEach((line, i) => {
+                for (var j in line.data) {
+                    throughputData[i].data[j].y = line.data[j].y;
+                }
+            })
+
+            setThroughputData(throughputData);
+        }
+
+    }, [data, isCumulative])
 
     const renderCycleTimeDropdown = useMemo(() => {
         const options = Object.keys(data?.cycle_time || {}).map(id => ({id, name: data.cycle_time[id].name}))
@@ -68,6 +104,39 @@ const StatisticsPage = () => {
             style={{maxWidth: '15rem', margin: '0.5rem 0', height: '2.3rem'}}
         />
     }, [data?.cycle_time, cycleTimePG])
+
+    const renderChart2Options = useMemo(() => {
+
+        return (
+            <div style={{margin: '0.4rem 0', display: 'flex'}}>
+                <styled.DualSelectionButtonContainer style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
+                    <styled.DualSelectionButton
+                        activeColor={defaultColors[0]}
+                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                        onClick={() => setShowWIPChart(false)}
+                        selected={!showWIPChart}
+                    >
+                        Throughput
+                    </styled.DualSelectionButton>
+                    <styled.DualSelectionButton
+                        activeColor={defaultColors[0]}
+                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                        onClick={() => setShowWIPChart(true)}
+                        selected={showWIPChart}
+                    >
+                        WIP
+                    </styled.DualSelectionButton>
+                </styled.DualSelectionButtonContainer>
+                {!showWIPChart && 
+                    <>
+                        <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
+                        <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
+                    </>
+                }
+            </div>
+        )
+
+    }, [showWIPChart, isCumulative])
     
     return (
         <styled.Page>
@@ -85,7 +154,10 @@ const StatisticsPage = () => {
                         <styled.CardLabel>Efficiency</styled.CardLabel>
                         <styled.ChartContainer>
                             {!!data ? 
-                                <RadialBar data={data.efficiency} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={46.3}/> :
+                                data.efficiency.length ?
+                                    <RadialBar data={data.efficiency} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={46.3}/>
+                                    : <styled.NoData>No Data</styled.NoData>
+                                :
                                 <ScaleLoader />
                             }
                         </styled.ChartContainer>
@@ -95,7 +167,10 @@ const StatisticsPage = () => {
                         <styled.CardLabel>OEE</styled.CardLabel>
                         <styled.ChartContainer style={{height: '16rem'}}>
                             {!!data ? 
-                                <RadialBar data={data.oee} icon='fas fa-rocket' centerLabel='OVERALL' centerValue={23.1}/> :
+                                data.oee.length ?
+                                    <RadialBar data={data.oee} icon='fas fa-rocket' centerLabel='OVERALL' centerValue={23.1}/>
+                                    : <styled.NoData>No Data</styled.NoData>
+                                :
                                 <ScaleLoader />
                             }
                         </styled.ChartContainer>
@@ -108,7 +183,12 @@ const StatisticsPage = () => {
                                 <>
                                     {renderCycleTimeDropdown}
                                     <div  style={{height: `${16-2.3}rem`}}>
-                                        <Line data={data.cycle_time[cycleTimePG].line_data} showLegend={false}/> 
+                                        {
+                                            data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
+                                            <Line data={data.cycle_time[cycleTimePG].line_data} showLegend={false} showAxes={false}/> 
+                                            : 
+                                            <styled.NoData>Not Enough Data</styled.NoData>
+                                        }
                                     </div>
                                 </>:
                                 <ScaleLoader />
@@ -120,10 +200,20 @@ const StatisticsPage = () => {
 
                 <styled.Row>
                     <styled.Card style={{flexGrow: 1}}>
-                        <styled.CardLabel>Throughput</styled.CardLabel>
-                        <styled.ChartContainer style={{height: '25rem'}}>
-                            {!!data && !!cycleTimePG ? 
-                                <Line data={data.throughput} height={'24rem'} showLegend={true}/> :
+                        <styled.CardLabel>{showWIPChart ? 'WIP' : 'Throughput'}</styled.CardLabel>
+                        {renderChart2Options}
+                        <styled.ChartContainer style={{height: '25.4rem'}}>
+
+                            {!!data ?
+                                showWIPChart ? 
+                                    data.wip.length > 1 ? 
+                                        <Line data={data.wip} showLegend={true}/> 
+                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                    :
+                                    throughputData.length > 1 ? 
+                                        <Line data={throughputData} showLegend={true}/> 
+                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                :
                                 <ScaleLoader />
                             }
                         </styled.ChartContainer>
@@ -135,7 +225,10 @@ const StatisticsPage = () => {
                         <styled.CardLabel>Station Reports</styled.CardLabel>
                         <styled.ChartContainer style={{height: '20rem'}}>
                             {!!data ? 
-                                <Bar data={data.reports.data} keys={Object.keys(data.reports.key_colors)} colors={Object.values(data.reports.key_colors)}/> :
+                                !!data.reports.data && data.reports.data.length ?
+                                    <Bar data={data.reports.data} keys={Object.keys(data.reports.key_colors)} colors={Object.values(data.reports.key_colors)}/>
+                                    : <styled.NoData>No Data</styled.NoData>
+                                :
                                 <ScaleLoader />
                             }
                         </styled.ChartContainer>
@@ -148,16 +241,16 @@ const StatisticsPage = () => {
                             {!!data ? 
                                 <>
                                     <styled.PieContainer>
-                                        <Pie data={data.reports_pie} />
+                                        <Pie data={data.reports_pie} label="Station Reports"/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.product_group_pie} />
+                                        <Pie data={data.process_pie} label="Processes"/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.reports_pie} />
+                                        <Pie data={data.product_group_pie} label="Product Groups"/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.reports_pie} />
+                                        <Pie data={data.out_station_pie} label="To Station"/>
                                     </styled.PieContainer>
                                 </> :
                                 <ScaleLoader />

@@ -9,6 +9,7 @@ const Line = (props) => {
         data,
         height,
         showLegend,
+        showAxes
     } = props
 
     return (
@@ -25,15 +26,15 @@ const Line = (props) => {
             lineWidth={3}
             axisTop={null}
             axisRight={null}
-            axisBottom={{
+            axisBottom={showAxes ? {
                 orient: 'bottom',
                 tickSize: 0,
                 tickPadding: 5,
                 tickRotation: 0,
                 legendOffset: 36,
                 legendPosition: 'middle'
-            }}
-            axisLeft={{
+            } : null}
+            axisLeft={showAxes ? {
                 orient: 'left',
                 tickSize: 0,
                 tickValues: 5,
@@ -42,7 +43,7 @@ const Line = (props) => {
                 legend: 'Count',
                 legendOffset: -40,
                 legendPosition: 'middle'
-            }}
+            } : null}
             enableGridX={false}
             enableGridY={false}
             enablePoints={false}
@@ -54,6 +55,7 @@ const Line = (props) => {
             enableSlices="x"
             crosshairType="bottom"
             useMesh={true}
+            animate={true}
             legends={showLegend ? [
                 {
                     anchor: 'bottom-right',
@@ -86,8 +88,8 @@ const Line = (props) => {
 
 Line.defaultProps = {
     data: [],
-    height: '10rem',
-    showLegend: true
+    showLegend: true,
+    showAxes: true
 }
 
 export default Line;

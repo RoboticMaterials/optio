@@ -119,6 +119,7 @@ const DashboardLotPage = (props) => {
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
+      map_id: currentLot.map_id,
       pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
       process_id: currentLot.process_id,
       sku: 'default',

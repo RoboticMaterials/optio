@@ -3,21 +3,22 @@ import { ResponsivePie } from '@nivo/pie'
 import * as styled from './pie.style'
 
 import { theme, defaultColors } from '../nivo_theme';
+import emptyData from './empty';
 
-const Pie = ({ data }) => {
+const Pie = ({ data, label }) => {
 
+    if (!data.length) {data = emptyData}
     const colors = data.map((slice, idx) => !!slice.color ? slice.color : defaultColors[idx % defaultColors.length])
 
     return (
 
-        <>
+        <div style={{position: 'relative', height: '100%'}}>
             <ResponsivePie
                 data={data}
                 theme={theme}
                 colors={colors}
-
                 margin={{ top: 8, right: 8, bottom: 8, left: 8 }}
-                innerRadius={0.85}
+                innerRadius={0.9}
                 padAngle={1}
                 cornerRadius={7}
                 activeOuterRadiusOffset={6}
@@ -33,6 +34,8 @@ const Pie = ({ data }) => {
                 arcLabelsTextColor={{ from: 'color', modifiers: [ [ 'darker', 2 ] ] }}
             />
 
+            <styled.Label>{label}</styled.Label>
+
             <styled.LegendContainer>
                 {data.map((slice, i) => (
                     <styled.LegendItem>
@@ -41,7 +44,7 @@ const Pie = ({ data }) => {
                     </styled.LegendItem>
                 ))}
             </styled.LegendContainer>
-        </>
+        </div>
     )
 }
 
