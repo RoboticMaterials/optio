@@ -72,7 +72,6 @@ const LotFormCreator = (props) => {
 //switch this over to binary search right now it just loops....
 	const dragIndexSearch = (length) => {
 		//let mid = Math.round(length/2)
-		//console.log(mid)
 		if(!!draggingFieldId){
 		for(const i in values.fields){
 			let ele = document.getElementById(values.fields[i][0]._id)
@@ -95,9 +94,8 @@ const LotFormCreator = (props) => {
 		if(startIndex<dragIndex) newFields.splice(startIndex-1, 1)
 		else newFields.splice(startIndex, 1)
 
-		//console.log(JSON.parse(JSON.stringify(newFields)))
 		setFieldValue("fields", newFields)
-		setFieldValue('changed')
+		setFieldValue("changed", true)
 	}
 
 	const findArrLocation = (id, arr, prev) => {
@@ -462,6 +460,7 @@ const LotFormCreator = (props) => {
 							const isLastItem = currItemIndex === currRow.length - 1
 							const indexPattern = [currRowIndex, currItemIndex]
 							const isOnlyItem = currRow.length === 1
+
 							return (
 								<>
 									<div

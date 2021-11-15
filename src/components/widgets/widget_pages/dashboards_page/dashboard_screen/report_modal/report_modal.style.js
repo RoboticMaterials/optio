@@ -80,24 +80,24 @@ export const Container = styled(Modal)`
 	transform: translate(-50%, -50%);
 	right: auto;
 	bottom: auto;
-	
+
 	position: absolute;
     display: flex;
     justify-content: center;
-	
+
 	z-index: 50;
-	
+
 	min-width: 95%;
 	max-width: 95%;
 	max-height: 95%;
 	// height: 95%;
-	
+
 	color: ${props => props.theme.bg.octonary};
-	
+
 	display: flex;
 	flex-direction: column;
     box-shadow: ${props => props.theme.cardShadow};
-	
+
 	color: ${props => props.theme.bg.octonary};
 	border-radius: 1rem;
 	overflow: hidden;
@@ -122,7 +122,7 @@ export const Header = styled.div`
 	margin: 0;
 	height: 3rem;
 	background: ${props => props.theme.bg.secondary};
-	
+
 `
 export const Label = styled.span`
 	padding-left: 1rem;
@@ -150,7 +150,7 @@ export const Title = styled.h2`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	
+
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `;
@@ -169,7 +169,7 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
 	overflow: hidden;
-	
+
 	background: ${props => props.theme.bg.primary};
 `
 
@@ -222,7 +222,7 @@ export const ButtonWidthContainer = styled.div`
 	justify-content: center;
   height: fit-content;
   min-height: fit-content;
-  	
+
 `
 
 export const ConditionText = styled.span`
@@ -242,18 +242,18 @@ export const RightContentContainer = styled.div`
     border-left: 1px solid ${props => props.theme.bg.secondary};
     height: 100%;
     // background-color: ${props => props.theme.bg.septenary};
-    
+
     // padding-left: 1rem;
     // border-top-right-radius: 0.6rem;
     // border-bottom-right-radius: 0.6rem;
-    
-    
+
+
 `
 
 export const ButtonContainer = styled.button`
   position: relative;
   user-select: none;
-  
+
   // flex layout
   display: flex;
   flex-direction: row;
@@ -265,21 +265,21 @@ export const ButtonContainer = styled.button`
   min-height: 4rem;
   line-height: 3rem;
   min-width: 80%;
-	
-  background: ${props => `linear-gradient(180deg, 
-                            ${LightenDarkenColor(props.background, 20)} 0%, 
-                            ${props.background} 50%, 
+
+  background: ${props => `linear-gradient(180deg,
+                            ${LightenDarkenColor(props.background, 20)} 0%,
+                            ${props.background} 50%,
                             ${LightenDarkenColor(props.background, -20)} 100%)`};
   border-radius: 0.6rem;
   padding: 0;
-	
-	
+
+
   // margins
   margin: .5rem 0 .5rem 0;
-	
+
   // padding
   // padding: 0.5rem 1rem 0.5rem 1rem;
-  
+
   outline: none;
   &:focus {
     outline: none;
@@ -291,7 +291,7 @@ export const ButtonContainer = styled.button`
   transition: all 0.1s ease 0s;
   cursor: pointer;
   outline: none;
-    
+
   &:hover {
     ${props => props.hoverable && !props.clickable &&
 	{
@@ -303,14 +303,14 @@ export const ButtonContainer = styled.button`
 
   ${props => props.clickable && !props.disabled &&
 	`&:active {
-      background: ${`linear-gradient(180deg, 
-          ${LightenDarkenColor(props.background, -20)} 0%, 
-          ${props.background} 50%, 
+      background: ${`linear-gradient(180deg,
+          ${LightenDarkenColor(props.background, -20)} 0%,
+          ${props.background} 50%,
           ${LightenDarkenColor(props.background, 20)} 100%)`
 	}
     }`
 }
-  
+
   ${props => props.disabled &&
 	{
 		color: props.theme.bg.quaternary,
@@ -338,7 +338,7 @@ export const AddNewButtonContainer = styled.div`
 
 export const ColorFieldContainer = styled.div`
 	position: relative;
-	
+
 `
 
 

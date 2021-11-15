@@ -17,6 +17,7 @@ import WarehouseModal from "../warehouse_modal/warehouse_modal";
 import LotFlags from "../../../../../side_bar/content/cards/lot/lot_flags/lot_flags";
 import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_box";
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
+import Button from '../../../../../basic/button/button'
 
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
@@ -357,6 +358,10 @@ const DashboardLotPage = (props) => {
     }
   }
 
+  const handleShowWorkInstructions = () => {
+
+  }
+
   const renderChildCards = useMemo(() => {
 
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId]);
@@ -463,18 +468,13 @@ const DashboardLotPage = (props) => {
       )}
       {renderRouteSelectorModal}
       <styled.LotBodyContainer>
-        <styled.LotHeader>
-          <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+        <styled.LotHeader style = {{minHeight: '1rem'}}>
         </styled.LotHeader>
-        <LotFlags
-          flags={currentLot?.flags}
-          containerStyle={{ alignSelf: "center" }}
-        />
-
         <DashboardLotFields
           currentLot={currentLot}
           stationID={stationID}
           warehouse={!!warehouseID}
+          onWorkInstructionsClick = {handleShowWorkInstructions}
         />
         {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} />}
         <div
@@ -488,6 +488,7 @@ const DashboardLotPage = (props) => {
           {renderChildCards}
         </div>
       </styled.LotBodyContainer>
+
       <styled.LotButtonContainer>
         <DashboardLotButtons
           handleMoveClicked={() => onMoveClicked()}

@@ -136,21 +136,29 @@ const FormComponent = (props) => {
 	}, [lotTemplateId])
 
 
-	const handleSetWorkInstructionIds = async(stationID, fileID) => {
+	const handleSetWorkInstructionIds = async(stationID, fileID, stations) => {
 
-		let workInst = lotTemplates[lotTemplateId].workInstructions ? lotTemplates[lotTemplateId].workInstructions : {}
-
-		let updatedWorkInst = {
-			...workInst,
-			[stationID]: fileID
+		let updatedWorkInst = lotTemplates[lotTemplateId].workInstructions ? lotTemplates[lotTemplateId].workInstructions : {}
+		if(!stations){
+			updatedWorkInst = {
+				...updatedWorkInst,
+				[stationID]: fileID
+			}
 		}
-
+		else{
+			for(const i in stations){
+				let id = stations[i].stationID
+				 updatedWorkInst = {
+					...updatedWorkInst,
+					[id]: fileID
+				}
+			}
+		}
 		let updatedLotTemplate = {
 			...lotTemplates[lotTemplateId],
 			workInstructions: updatedWorkInst
 		}
 		await dispatchPutLotTemplate(updatedLotTemplate, lotTemplateId)
-
 	}
 
 

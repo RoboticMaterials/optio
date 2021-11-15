@@ -78,13 +78,13 @@ const FieldSelectModal = (props) => {
       return (
         <>
           <styled.ListItem
-            style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center', minHeight: '2.5rem'}}
+            style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center', paddingLeft: '0rem'}}
           >
             <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
               {'Product Group: Basic Template'}
             </styled.ListItemTitle>
           </styled.ListItem>
-          <styled.ListItem style = {{minHeight: '2.5rem'}}>
+          <styled.ListItem>
             <Checkbox
               onClick = {()=> {
                 onCheckBoxClick(BASIC_DEFAULT_DESCIPTION_FIELD, 'Basic')
@@ -97,7 +97,7 @@ const FieldSelectModal = (props) => {
             </styled.ListItemTitle>
           </styled.ListItem>
 
-          <styled.ListItem style = {{minHeight: '2.5rem'}}>
+          <styled.ListItem>
             <Checkbox
               onClick = {()=> {
                 onCheckBoxClick(BASIC_DEFAULT_DATES_FIELD, 'Basic')
@@ -114,7 +114,7 @@ const FieldSelectModal = (props) => {
               {template.name !== 'Basic' &&
                 <>
                 <styled.ListItem
-                  style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center', minHeight: '2.5rem'}}
+                  style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center',paddingLeft: '0rem'}}
                 >
                   <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
                     {'Product Group: '+ template.name}
@@ -125,7 +125,7 @@ const FieldSelectModal = (props) => {
                 {template.fields.map((field, fieldIndex) =>
                   <>
                     {field.map((indField, ind) =>
-                      <styled.ListItem style = {{minHeight: '2.5rem'}}>
+                      <styled.ListItem>
                         <Checkbox
                           onClick = {()=> {
                             onCheckBoxClick(indField, template._id)
@@ -174,13 +174,14 @@ const FieldSelectModal = (props) => {
             </styled.ColumnContainer>
             <Button
               type={"button"}
-              schema={'objects'}
+							secondary
+              schema={'locations'}
               label={"Save"}
               onClick={()=>{
                 handlePutDashboard()
                 close()
               }}
-              style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
+              style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem',}}
             />
             </styled.BodyContainer>
         </styled.Container>

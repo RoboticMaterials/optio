@@ -96,12 +96,12 @@ const WorkInstructionsModal = (props) => {
 
     for(const i in process.flattened_stations){
       let id = process.flattened_stations[i].stationID
-
       if(!!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[id]){
         handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[id], id)
       }
-      setWorkInstructions(id, e.target.files[0].name)
     }
+      setWorkInstructions(process.flattened_stations, e.target.files[0].name, process.flattened_stations)
+
 
       const params = {
           ACL: 'public-read',
