@@ -48,7 +48,6 @@ export const parseCSV = (content, strDelimiter=',') => {
     }
 
     // Return the parsed data.
-    console.log(table)
     return( table );
 }
 
