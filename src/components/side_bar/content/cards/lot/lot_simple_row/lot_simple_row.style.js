@@ -18,6 +18,11 @@ export const Label = styled.span`
     font-weight: 600;
     margin-right: 0.5rem;
     line-height: 1.3rem;
+
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		
     color:  ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
 `

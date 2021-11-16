@@ -18,6 +18,7 @@ import LotFlags from "../../../../../side_bar/content/cards/lot/lot_flags/lot_fl
 import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_box";
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
 import Button from '../../../../../basic/button/button'
+import WorkInstructionsViewer from '../work_instructions_viewer/work_instructions_viewer'
 
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
@@ -100,6 +101,8 @@ const DashboardLotPage = (props) => {
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
+  const [showWorkInstructionsViewer, setShowWorkInstructionsViewer] = useState(false)
+  const [instructionsKey, setInstructionsKey] = useState(null)
   const [selectedFraction, setSelectedFraction] = useState('1')
   const [moveQuantity, setMoveQuantity] = useState(
     currentLot?.bins[loadStationID]?.count
@@ -358,8 +361,22 @@ const DashboardLotPage = (props) => {
     }
   }
 
-  const handleShowWorkInstructions = () => {
+  const handleShowWorkInstructions = (key) => {
+    setInstructionsKey(key)
+    setShowWorkInstructionsViewer(true)
+  }
 
+  const renderWorkInstructionsViewer = () => {
+      return (
+        <WorkInstructionsViewer
+          isOpen = {showWorkInstructionsViewer}
+          close = {()=>setShowWorkInstructionsViewer(false)}
+          setShowWorkInstructionsViewer = {setShowWorkInstructionsViewer}
+          showWorkInstructionsViewer = {showWorkInstructionsViewer}
+          stationID = {stationID}
+          lotTemplateId = {currentLot.lotTemplateId}
+        />
+      )
   }
 
   const renderChildCards = useMemo(() => {
@@ -466,6 +483,7 @@ const DashboardLotPage = (props) => {
           onSubmit={handleMergeWarehouseLot}
         />
       )}
+      {renderWorkInstructionsViewer()}
       {renderRouteSelectorModal}
       <styled.LotBodyContainer>
         <styled.LotHeader style = {{minHeight: '1rem'}}>

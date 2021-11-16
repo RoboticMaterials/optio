@@ -35,7 +35,7 @@ const DashboardLotFields = (props) => {
 
     const processes = useSelector(state => state.processesReducer.processes)
     const cards = useSelector(state => state.cardsReducer.cards)
-
+    const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
     // If its a warehouse then use station before this one
     const count = !!warehouse ? getBinCount(currentLot, getPreviousWarehouseStation(currentLot.process_id, stationID)._id) : getBinCount(currentLot, stationID)
 
@@ -52,11 +52,67 @@ const DashboardLotFields = (props) => {
 
             const key = `${fieldName}+dataType`
             const isLast = currIndex === arr.length - 1
-
-            switch (dataType) {
-                case FIELD_DATA_TYPES.STRING: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
+            if(!!value){
+              switch (dataType) {
+                  case FIELD_DATA_TYPES.STRING: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                value={value}
+                                isLast={isLast}
+                                labelStyle={{ fontSize: '1rem' }}
+                                countStyle={{ fontSize: '1rem' }}
+                            />
+                          </div>
+                      )
+                  }
+                  case FIELD_DATA_TYPES.EMAIL: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
+                            <LotSimpleRow
+                                key={key}
+                                label={fieldName}
+                                value={value}
+                                isLast={isLast}
+                                labelStyle={{ fontSize: '1rem' }}
+                                countStyle={{ fontSize: '1rem' }}
+                            />
+                          </div>
+                      )
+                  }
+                  case FIELD_DATA_TYPES.DATE: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
+                          <LotDateRow
+                              key={key}
+                              label={fieldName}
+                              isLast={isLast}
+                              date={value}
+                              labelStyle={{ fontSize: '1rem' }}
+                              dateStyle={{ fontSize: '1rem' }}
+                            />
+                          </div>
+                      )
+                  }
+                  case FIELD_DATA_TYPES.DATE_RANGE: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
+                          <LotDateRangeRow
+                              key={key}
+                              label={fieldName}
+                              isLast={isLast}
+                              dateRange={value}
+                              labelStyle={{ fontSize: '1rem' }}
+                              dateStyle={{ fontSize: '1rem' }}
+                            />
+                          </div>
+                      )
+                  }
+                  case FIELD_DATA_TYPES.URL: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
                           <LotSimpleRow
                               key={key}
                               label={fieldName}
@@ -64,81 +120,26 @@ const DashboardLotFields = (props) => {
                               isLast={isLast}
                               labelStyle={{ fontSize: '1rem' }}
                               countStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-                case FIELD_DATA_TYPES.EMAIL: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
+                            />
+                          </div>
+                      )
+                  }
+                  case FIELD_DATA_TYPES.INTEGER: {
+                      return (
+                        <div style = {{marginTop:'.5rem'}}>
                           <LotSimpleRow
                               key={key}
                               label={fieldName}
-                              value={value}
                               isLast={isLast}
+                              value={value}
                               labelStyle={{ fontSize: '1rem' }}
                               countStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-                case FIELD_DATA_TYPES.DATE: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
-                        <LotDateRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            date={value}
-                            labelStyle={{ fontSize: '1rem' }}
-                            dateStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-                case FIELD_DATA_TYPES.DATE_RANGE: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
-                        <LotDateRangeRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            dateRange={value}
-                            labelStyle={{ fontSize: '1rem' }}
-                            dateStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-                case FIELD_DATA_TYPES.URL: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            value={value}
-                            isLast={isLast}
-                            labelStyle={{ fontSize: '1rem' }}
-                            countStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-                case FIELD_DATA_TYPES.INTEGER: {
-                    return (
-                      <div style = {{marginTop:'.5rem'}}>
-                        <LotSimpleRow
-                            key={key}
-                            label={fieldName}
-                            isLast={isLast}
-                            value={value}
-                            labelStyle={{ fontSize: '1rem' }}
-                            countStyle={{ fontSize: '1rem' }}
-                          />
-                        </div>
-                    )
-                }
-            }
+                            />
+                          </div>
+                      )
+                  }
+              }
+          }
         })
 
     }, [currentLot])
@@ -151,12 +152,14 @@ const DashboardLotFields = (props) => {
             flags={currentLot?.flags}
             containerStyle={{ alignSelf: "center", flex: '1' }}
           />
+          {!!lotTemplates[currentLot.lotTemplateId].workInstructions && !!lotTemplates[currentLot.lotTemplateId].workInstructions[stationID] &&
           <Button
             secondary
             label = 'View Work Instructions'
-            style = {{flex: '3', maxWidth: '18rem', height: '3rem', color: '#5c6fff', border: 'none', boxShadow: '2px 2px 2px 2px rgba(0,0,0,0.2)'}}
+            style = {{flex: '3', maxWidth: '18rem', height: '2.5rem', color: '#5c6fff', border: 'none', boxShadow: '2px 2px 2px 2px rgba(0,0,0,0.2)'}}
             onClick = {()=>onWorkInstructionsClick()}
           />
+        }
         </div>
         <div style = {{marginTop:'0.5rem', marginBottom: '.8rem'}}>
           <LotSimpleRow
@@ -167,7 +170,7 @@ const DashboardLotFields = (props) => {
 
           <div style = {{marginTop:'0.5rem'}}>
             <LotSimpleRow
-                label={"Quantity"}
+                label={lotTemplates[currentLot.lotTemplateId].name === 'Basic' ? 'Quantity' : lotTemplates[currentLot.lotTemplateId].displayNames.count}
                 value={`${count}/${totalQuantity}`}
                 labelStyle={{ fontSize: '1rem' }}
                 countStyle={{ fontSize: '1rem' }}
