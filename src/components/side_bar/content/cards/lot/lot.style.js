@@ -155,6 +155,7 @@ export const NameContainer = styled.div`
 
 export const CardName = styled.span`
   white-space: nowrap;
+  white-space: pre-line !important;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
