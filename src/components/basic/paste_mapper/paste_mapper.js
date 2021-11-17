@@ -47,7 +47,7 @@ const PasteMapper = (props) => {
     const [table, setTable] = useState(values.table)
     const [disableMergeButton, setDisableMergeButton] = useState(false)
     const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
-    const [fieldMapping, setFieldMappingCopy] = useState({})
+    const [fieldMapping, setFieldMapping] = useState({})
 
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
@@ -57,7 +57,10 @@ const PasteMapper = (props) => {
       let mapping = new Array(table[0].length).fill(null)
       if(!!lotTemplate && fieldMapping){
       Object.keys(fieldMapping).forEach(key => {
-        mapping[fieldMapping[key]] = availableFields.find(field => field._id === key)
+        const foundField = availableFields.find(field => field._id === key)
+        if (!!foundField) {
+          mapping[fieldMapping[key]] = availableFields.find(field => field._id === key)
+        }
       })
     }
       return mapping
@@ -66,7 +69,7 @@ const PasteMapper = (props) => {
     useEffect(() => {
       // Determine if the uploadFieldMapping has changed
       if (JSON.stringify(lotTemplate.uploadFieldMapping) !== JSON.stringify(fieldMapping)) {
-        setFieldMappingCopy(lotTemplate.uploadFieldMapping)
+        setFieldMapping(lotTemplate.uploadFieldMapping)
       }
 
        // For Alpen parser, determines if dropdown is disabled
@@ -201,7 +204,7 @@ const PasteMapper = (props) => {
       })
 
       const keyOfCol = !!fieldMapping? Object.keys(fieldMapping).find(key => fieldMapping[key] === column) : 0
-      const savedValue = !!keyOfCol ? [unusedFields.find(field => field._id === keyOfCol)] : []
+      const savedValue = !!keyOfCol ? (unusedFields.find(field => field._id === keyOfCol) || null) : null
 
       return (
           <td style={{minWidth: '4rem'}}>
@@ -212,15 +215,13 @@ const PasteMapper = (props) => {
                       valueField="_id"
                       options={unusedFields}
                       disabledLabel={''}
-                      values={savedValue}
+                      values={!!savedValue ? [savedValue] : []}
                       dropdownGap={2}
                       schema={'lots'}
                       noDataLabel="No matches found"
                       closeOnSelect="true"
                       searchable={false}
                       onChange={values => {
-
-                        console.log("ANIOWN")
 
                           // Save this value in the product group template for next time you paste
                           let lotTemplateCopy = deepCopy(lotTemplate)
