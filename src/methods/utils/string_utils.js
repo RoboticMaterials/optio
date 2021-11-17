@@ -13,3 +13,6 @@ export const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+export const newlines = (str) => {
+    return str.split('\\n').map(s => <span>{s}<br/></span>)
+}
