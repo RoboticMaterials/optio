@@ -179,13 +179,27 @@ const StatisticsPage = () => {
                     <styled.Card style={{width: '50%'}}>
                         <styled.CardLabel>Cycle Time</styled.CardLabel>
                         <styled.ChartContainer style={{height: '16rem'}}>
-                            {!!data && !!cycleTimePG ? 
+                            {!!data ? 
                                 <>
                                     {renderCycleTimeDropdown}
                                     <div  style={{height: `${16-2.3}rem`}}>
                                         {
-                                            data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
-                                            <Line data={data.cycle_time[cycleTimePG].line_data} showLegend={false} showAxes={false}/> 
+                                            !!cycleTimePG && data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
+                                            <>
+                                                <div style={{height: '10rem'}}>
+                                                    <Line 
+                                                        data={data.cycle_time[cycleTimePG].line_data} 
+                                                        showLegend={false} 
+                                                        showAxes={false} 
+                                                        yFormat={v => `${Math.floor(v/60)}min ${Math.round(v%60)}sec`}
+                                                        margin={{top:10, right:2, bottom:10, left:2}}
+                                                    /> 
+                                                </div>
+                                                <div style={{height: '2rem'}}>
+                                                    <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
+                                                    <styled.CycleTime>{`${Math.floor(data.cycle_time[cycleTimePG].current/60)} min ${Math.round(data.cycle_time[cycleTimePG].current % 60)} sec`}</styled.CycleTime>
+                                                </div>
+                                            </>
                                             : 
                                             <styled.NoData>Not Enough Data</styled.NoData>
                                         }

@@ -130,3 +130,16 @@ export const CheckboxLabel = styled.div`
     font-size: 0.8rem;
     color: #393975;
 `
+
+export const CycleTimeLabel = styled.div`
+    line-height: 0.6rem;
+    font-size: 0.8rem;
+    color: #393975;
+`
+
+export const CycleTime = styled.div`
+    font-size: 1.8rem;
+    line-height: 2.6rem;
+    font-weight: bold;
+    color: #393975;
+`

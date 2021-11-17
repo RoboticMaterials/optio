@@ -7,9 +7,9 @@ const Line = (props) => {
 
     const {
         data,
-        height,
         showLegend,
-        showAxes
+        showAxes,
+        ...rest
     } = props
 
     return (
@@ -82,6 +82,7 @@ const Line = (props) => {
                     ]
                 }
             ] : []}
+            {...rest}
         />
     )
 }
