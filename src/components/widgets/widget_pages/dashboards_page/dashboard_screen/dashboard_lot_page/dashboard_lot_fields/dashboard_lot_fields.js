@@ -147,7 +147,7 @@ const DashboardLotFields = (props) => {
 
     return (
         <styled.LotFieldsContainer>
-        <div style = {{marginTop:'0.5rem', marginBottom: '1.2rem', display: 'flex', flexDirection: 'row', justifyContent: 'spaceAround'}}>
+        <div style = {{marginTop:'0.5rem', marginBottom: '1.2rem', display: 'flex', flexDirection: 'row', background: 'transparent', justifyContent: 'spaceAround'}}>
           <LotFlags
             flags={currentLot?.flags}
             containerStyle={{ alignSelf: "center", flex: '1' }}
@@ -164,7 +164,7 @@ const DashboardLotFields = (props) => {
         <div style = {{marginTop:'0.5rem', marginBottom: '.8rem'}}>
           <LotSimpleRow
               label={currentLot.name? currentLot.name : (currentLot.lotNum).toString()}
-              labelStyle={{fontSize: '1.5rem' }}
+              labelStyle={{fontSize: '1.3rem' }}
             />
           </div>
 

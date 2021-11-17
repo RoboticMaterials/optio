@@ -6,6 +6,12 @@ import { useParams, useHistory } from 'react-router-dom'
 import { uuidv4 } from '../../../../../../methods/utils/utils';
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 
+//3rd party libraries
+import FileViewer from 'react-file-viewer'
+import {Viewer, Worker} from '@react-pdf-viewer/core'
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+
 
 //S3 constants
 const S3_BUCKET ='winstructions';
@@ -37,9 +43,10 @@ const WorkInstructionsViewer = (props) => {
   const dispatch = useDispatch()
   const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 
-  const [uint8Array, setUint8Array] = useState(null)
   const [fileUrl, setFileUrl] = useState(null)
-  const [numPages, setNumPages] = useState(null);
+  const [file, setFile] = useState(null)
+  const [numPages, setNumPages] = useState(null)
+  const [fileType, setFileType] = useState(null)
 
   const {
     setShowWorkInstructionsViewer,
@@ -48,30 +55,60 @@ const WorkInstructionsViewer = (props) => {
     lotTemplateId
   } = props
 
+  const defaultLayoutPluginInstance = defaultLayoutPlugin({
+  })
+
   useEffect(() => {
 
     if(!!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[stationID]){
+      let key = lotTemplates[lotTemplateId].workInstructions[stationID]
+      let arr = key.split('.')
+      let type = arr[arr.length-1]
+      setFileType(type)
+
       const params = {
           Bucket: S3_BUCKET,
-          Key: lotTemplates[lotTemplateId].workInstructions[stationID]
-
+          Key: key
       };
 
      const objects = myBucket
       .getObject(params, function(err, data){
         if(err)throw err
-        var file = new Blob([data.Body], {type: 'application/pdf'})
-        setUint8Array(true)
-        var fileURL = URL.createObjectURL(file)
-        setFileUrl(fileURL)
-        //window.open(fileURL)
+        let file, fileURL
+        switch(type){
+          case 'mp4':
+           file = new Blob([data.Body], {type: 'video/mp4'})
+          case 'png':
+           file = new Blob([data.Body], {type: 'image/png'})
+          case 'pdf':
+           file = new Blob([data.Body], {type: 'application/pdf'})
+        }
+          fileURL = URL.createObjectURL(file)
+          setFile(file)
+          setFileUrl(fileURL)
       })
     }
-  }, [])
+  }, [showWorkInstructionsViewer])
 
 
   const onDocumentLoadSuccess = (numPages) => {
     setNumPages(numPages);
+  }
+
+  const renderWorkInstructions = () => {
+    switch(fileType) {
+      case 'mp4':
+        return (
+          <FileViewer fileType = 'mp4' filePath = {fileUrl}/>
+
+        )
+      case 'pdf':
+        return (
+          <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+            <Viewer fileUrl = {fileUrl} plugins = {[defaultLayoutPluginInstance]}/>
+          </Worker>
+        )
+    }
   }
 
 
@@ -88,7 +125,7 @@ const WorkInstructionsViewer = (props) => {
             }}
         >
             <styled.BodyContainer>
-                <styled.Title schema={'lots'}>{stations[stationID].name}  Work Instructions</styled.Title>
+                <styled.Title schema={'lots'}>{stations[stationID].name}</styled.Title>
                 <styled.CloseButton
                     className={'fas fa-times'}
                     style={{ cursor: 'pointer', padding: '1rem' }}
@@ -97,11 +134,13 @@ const WorkInstructionsViewer = (props) => {
                     }}
             />
 
-            <div>
+
+            <div style = {{overflow: 'auto', height: '100%', width: '99%', justifyContent: 'center',}}>
             {!!fileUrl &&
-              <iframe src = {fileUrl} style = {{width: '100%', minHeight: '80rem'}}/>
+              renderWorkInstructions()
             }
             </div>
+
             <Button
               type={"button"}
               schema={'lots'}

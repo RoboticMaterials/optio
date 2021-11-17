@@ -474,13 +474,13 @@ const LotFormCreator = (props) => {
 										id = {currItem._id}
 										draggable = {true}
 										style = {{
-											borderBottom: draggingFieldId === currItem._id && '.1rem solid #7e7e7e',
+											borderBottom: draggingFieldId === currItem._id && '.3rem solid #dedfe3',
 											borderLeft: draggingFieldId === currItem._id && currItem._id !==selectedEditingField && '0.1rem solid #dedfe3',
-											borderRight: draggingFieldId === currItem._id && '0.25rem solid #dedfe3',
+											borderRight: draggingFieldId === currItem._id && '0.3rem solid #dedfe3',
 											borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
 											flexDirection: selectedEditingField === currItem._id && 'row',
 											pointerEvents: dragOverId === currItem._id && 'none',
-
+											borderRadius: draggingFieldId === currItem._id && '0.2rem',
 										}}
 										onDragStart = {(e)=>{
 											setDivHeight(e.target.offsetHeight+5)

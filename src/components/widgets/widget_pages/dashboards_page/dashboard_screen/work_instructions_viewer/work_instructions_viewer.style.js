@@ -31,7 +31,7 @@ export const RowContainer = styled.div`
 
 export const Title = styled.h1`
     font-family: ${props => props.theme.font.primary};
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     margin: 1rem;
     font-weight: 500;
     color: ${props => props.theme.schema[props.schema].solid};

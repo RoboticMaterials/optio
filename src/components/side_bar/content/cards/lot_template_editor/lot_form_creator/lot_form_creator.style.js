@@ -58,11 +58,13 @@ export const ColumnFieldContainer = styled.div`
 	padding: 0.4rem .4rem 1rem 1rem;
 	border: 0.1rem solid ${props => props.theme.bg.primary};
 	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
-	border-radius: .2rem;
+	border-radius: .5rem;
   flex: 1;
 
 	&:hover {
-		border-bottom: ${props => !props.selected && '0.1rem solid #79797d'};
+		box-shadow: ${props => !props.selected && '3px 2px 5px 2px rgba(0,0,0,0.2)'};
+		background: ${props => !props.selected && LightenDarkenColor(props.theme.bg.secondary,3)};
+
 	}
 `
 
