@@ -421,7 +421,8 @@ const LotCreatorForm = (props) => {
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-			response = await dispatchPutLotTemplate({fields, name, displayNames, processId}, lotTemplateId)
+			let updatedTemplate = lotTemplate || {}
+			response = await dispatchPutLotTemplate({...updatedTemplate, fields, name, displayNames, processId}, lotTemplateId)
 		}
 
 		// // create (POST)
