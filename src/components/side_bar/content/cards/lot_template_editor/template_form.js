@@ -23,6 +23,7 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 import {LotFormSchema} from "../../../../../methods/utils/form_schemas";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import set from "lodash/set";
+import { deepCopy } from "../../../../../methods/utils/utils";
 
 // import styles
 import * as styled from "../card_editor/lot_editor.style"
@@ -421,8 +422,20 @@ const LotCreatorForm = (props) => {
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-			let updatedTemplate = lotTemplate || {}
-			response = await dispatchPutLotTemplate({...updatedTemplate, fields, name, displayNames, processId}, lotTemplateId)
+			let oldTemplate = deepCopy(lotTemplate) || {}
+
+			// If a field no longer exists, it should be removed from the fieldMapping if applicable
+			const flattenedFieldIds = ['COUNT_FIELD_ID', 'NAME_FIELD_ID', ...oldTemplate.fields.map(fieldArr => fieldArr.map(field => field._id)).flat()];
+			if (!!oldTemplate.uploadFieldMapping) {
+				console.log(flattenedFieldIds, oldTemplate.uploadFieldMapping)
+				Object.keys(oldTemplate.uploadFieldMapping).forEach(fieldId => {
+					if (!flattenedFieldIds.includes(fieldId)) {
+						delete oldTemplate.uploadFieldMapping[fieldId]
+					}
+				})
+			}
+
+			response = await dispatchPutLotTemplate({...oldTemplate, fields, name, displayNames, processId}, lotTemplateId)
 		}
 
 		// // create (POST)
