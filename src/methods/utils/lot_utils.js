@@ -484,7 +484,7 @@ export const getAllTemplateFields = () => {
 * Returns array of lots custom fields
 * Each field field includes dataType, fieldName, and value
 * */
-export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview) => {
+export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPreview, lotSelected) => {
     const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
     const lotTemplate = lotTemplates[lotTemplateId] || {}
     const stationBasedLots = store.getState().settingsReducer.settings.stationBasedLots || false
@@ -504,7 +504,7 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
               _id,
               component,
             } = field
-            if((lot.lotTemplateId===template && component!=='INPUT_BOX') || (lotTemplate.name === template)){
+            if((lot.lotTemplateId===template && (component!=='INPUT_BOX' || !lotSelected)) || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
                 fieldName,

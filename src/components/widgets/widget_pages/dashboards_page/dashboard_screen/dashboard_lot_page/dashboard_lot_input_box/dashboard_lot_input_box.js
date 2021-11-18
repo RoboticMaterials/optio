@@ -22,22 +22,27 @@ import { putCard } from '../../../../../../../redux/actions/card_actions'
 
 const DashboardLotInputBox = (props) => {
 
+
+
     const {
         currentLot,
+        onGetCards
     } = props
 
+    const processCards = useSelector(state => state.cardsReducer.processCards)
+    const card = processCards[currentLot.process_id][currentLot._id]
     useEffect(() => {
     }, [])
 
     const dispatch = useDispatch()
-    const dispatchPutCard = async (currentLot, ID) => await dispatch(putCard(currentLot, ID))
+    const dispatchPutCard = async (currentLot, iD) => await dispatch(putCard(currentLot, iD))
 
 
     // Since fields are nested arrays, you need to reference the location of the field in each array
     // That is also how the name of the formik component works: inputBox.firstIndex.secondIndex.input
     const onInitialValues = () => {
         let initialValues = {}
-        currentLot.fields.forEach((field, ind1) => {
+        card.fields.forEach((field, ind1) => {
             field.forEach((subField, ind2) => {
                 if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
                     initialValues = {
@@ -57,7 +62,7 @@ const DashboardLotInputBox = (props) => {
     }
 
     const onSave = (values) => {
-        let lotCopy = deepCopy(currentLot)
+        let lotCopy = deepCopy(card)
         const fieldValues = values.inputBox
         Object.keys(fieldValues).forEach((ind1) => {
             const subFieldValues = fieldValues[ind1]
@@ -66,7 +71,7 @@ const DashboardLotInputBox = (props) => {
                 lotCopy.fields[ind1][ind2].value = inputValue
             })
         })
-        dispatchPutCard(lotCopy, lotCopy._id)
+        const result = dispatchPutCard(lotCopy, lotCopy._id)
     }
 
 
@@ -83,8 +88,7 @@ const DashboardLotInputBox = (props) => {
                                 name={`inputBox.${ind1}.${ind2}.input`}
                                 InputComponent={Textbox}
                                 lines={5}
-                                placeholder='Schedule Name'
-
+                                placeholder='Add a Note...'
                             />
                             <Button
                                 schema={'dashboards'}
