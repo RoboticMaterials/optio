@@ -154,7 +154,6 @@ const ApiContainer = (props) => {
             data1,
             data2
         } = pageParams
-
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
         } else if (Object.keys(pageParams)[0] === 'stationID') {

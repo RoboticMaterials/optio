@@ -63,7 +63,6 @@ const DashboardsPage = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes })
     const routes = useSelector(state => { return state.tasksReducer.tasks })
     const stations = useSelector(state => state.stationsReducer.stations);
-
     const history = useHistory()
     const dashboard = dashboards[dashboardID]
     if (dashboard === undefined) {
