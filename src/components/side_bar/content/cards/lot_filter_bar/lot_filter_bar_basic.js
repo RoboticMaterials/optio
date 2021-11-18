@@ -16,8 +16,12 @@ import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants"
 // functions external
 import PropTypes from 'prop-types'
 import {ThemeContext} from "styled-components"
-import {useSelector} from "react-redux"
+import {useSelector, useDispatch} from "react-redux"
 import { isMobile } from "react-device-detect"
+
+//Actions
+import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+
 
 // utils
 import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils"
@@ -50,12 +54,15 @@ const LotFilterBarBasic = (props) => {
 
     // redux state
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
+    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
 
+    //dispatch
+    const dispatch = useDispatch()
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
     const [open, setOpen] = useState(true) // is filter options open ?
     const [valueMode, setValueMode] = useState()      // used as var in switch statement to control what component to render for entering filter value (ex: use a textbox for strings, calendar picker for dates)
-
     /*
     * This effect is used to set valueMode based on the current selected filter option (name / date type)
     * */
@@ -110,6 +117,11 @@ const LotFilterBarBasic = (props) => {
         setLotFilterOptions(tempLotFilterOptions)
     }, [lotTemplates])
 
+    useEffect(() => {
+
+
+    }, [])
+
 
 
     return (
@@ -148,6 +160,10 @@ const LotFilterBarBasic = (props) => {
 
                                 // updated selectedFilterOption
                                 setSelectedFilterOption(newFilterOption)
+                                dispatchPostLocalSettings({
+                                  ...localSettings,
+                                  lotSummaryFilterOption: newFilterOption
+                                })
                                 const {
                                     dataType
                                 } = newFilterOption
@@ -281,8 +297,13 @@ const LotFilterBarBasic = (props) => {
                                         placeholder='Filter lots...'
                                         onChange={(e) => {
                                             setLotFilterValue(e.target.value)
+                                            dispatchPostLocalSettings({
+                                              ...localSettings,
+                                              lotSummaryFilterValue: e.target.value
+                                            })
                                         }}
                                         focus={shouldFocusLotFilter}
+                                        value = {lotFilterValue}
                                         inputStyle={{
                                             height: "100%",
                                             background: themeContext.bg.tertiary,

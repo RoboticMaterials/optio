@@ -296,37 +296,13 @@ const DropContainer = (props) => {
 				</Container>
 
 				{/* Insert Into New Row Below*/}
-				{(right && !isThisFieldDragging) &&
-				<ContainerWrapper
-					onDrop={(dropResult)=>onRightDrop(id, dropResult)}
-					hovering={hoveringRight}
-					shouldAcceptDrop={()=>{return true}}
-					getGhostParent={()=>document.body}
-					groupName="lot_field_buttons"
-					isRow={false}
-					getChildPayload={index =>
-						index
-					}
-					showHighlight={false}
-					style={{alignSelf: "stretch"}}
-				/>
-				}
+
 			</styled.RowContainer>
 
 			{bottom &&
-			<ContainerWrapper
-				onDrop={(dropResult)=>onBottomDrop(dropResult)}
-				shouldAcceptDrop={()=>{return true}}
-				// getGhostParent={()=>document.body}
-				groupName="lot_field_buttons"
-				getChildPayload={index =>
-					index
-				}
-				style={{alignSelf: "stretch", display: "flex"}}
-			>
+
 				<styled.BottomContainer
 				/>
-			</ContainerWrapper>
 			}
 		</styled.ColumnContainer>
 

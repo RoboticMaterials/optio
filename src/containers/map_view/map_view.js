@@ -632,28 +632,17 @@ export class MapView extends Component {
 
                         // These 2 mouse events are used to remove the issue when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
                         onMouseEnter={() => {
-                            if (!!this.props.widgetLoaded) {
-                                // If there is a selected location and its not the right click menu location then hide
-                                // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
-                                    this.props.dispatchHoverStationInfo(null)
-                                    this.props.dispatchSetSelectedStation(null)
-                                    this.props.dispatchSetSelectedPosition(null)
-                                }
+                            if (!!this.props.selectedStation && !this.props.editingStation) {
+                                this.props.dispatchHoverStationInfo(null)
+                                this.props.dispatchSetSelectedStation(null)
+                                this.props.dispatchSetSelectedPosition(null)
                             }
                         }}
                         onMouseOver={() => {
-                            if (!!this.props.widgetLoaded) {
-                                // If there is a selected location and its not the right click menu location then hide
-                                // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position'))) {
-                                    this.props.dispatchHoverStationInfo(null)
-
-                                    if (!this.props.editingStation || !this.props.editingPosition) {
-                                        this.props.dispatchSetSelectedStation(null)
-                                        this.props.dispatchSetSelectedPosition(null)
-                                    }
-                                }
+                            if (!!this.props.selectedStation && !this.props.editingStation) {
+                                this.props.dispatchHoverStationInfo(null)
+                                this.props.dispatchSetSelectedStation(null)
+                                this.props.dispatchSetSelectedPosition(null)
                             }
                         }}
 

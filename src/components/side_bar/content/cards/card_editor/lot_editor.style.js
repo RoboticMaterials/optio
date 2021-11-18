@@ -16,8 +16,8 @@ export const Container = styled.div`
 
 export const Header = styled.div`
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	justify-content: start;
+	align-items: start;
 	padding: 1rem 0.5rem;
 	margin: 0;
 	background: ${props => props.theme.bg.secondary};
@@ -454,7 +454,7 @@ export const FieldsHeader = styled.div`
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
-  border-bottom: 2px solid ${props => props.theme.bg.secondary};
+  border-bottom: 3px solid ${props => props.theme.bg.secondary};
 	//padding: 1rem;
 `
 
@@ -747,14 +747,16 @@ export const TemplateNameContainer = styled.div`
   padding: 1rem 0;
   align-self: center;
   display: flex;
-  align-items: center;
+	flex-direction: row;
+  align-items: start;
 `
 
 export const TemplateLabel = styled.span`
 	margin-right: 1rem;
+	flex: 3;
   white-space: nowrap ;
   width: fit-content;
-  font-size: ${props => props.theme.fontSize.sz2};
+  font-size: ${props => props.theme.fontSize.sz3};
   font-family: ${props => props.theme.font.primary};
 `
 
