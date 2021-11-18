@@ -51,6 +51,7 @@ const LocationSvg = (props) => {
             id={rd3tClassName}
             className={rd3tClassName}
             style={{ fill: colour, stroke: colour }}
+            onMouseOver={e => e.stopPropagation()}
             onMouseEnter={() => {
                 handleMouseEnter()
                 if(!!isSelected) setColour(LightenDarkenColor('#5c6fff', -50))

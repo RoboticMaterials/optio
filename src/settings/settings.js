@@ -31,11 +31,11 @@ export const apiIPAddress = () => {
             return 'https://' + window.location.hostname + ':5000/api/'
         }
     } else {
-      if (window.location.hostname === 'localhost') {
-          return 'http://localhost:5000/api/'
-      } else {
-          return 'http://' + window.location.hostname + ':5000/api/'
-      }
+        if (window.location.hostname === 'localhost') {
+            return 'http://localhost:5000/api/'
+        } else {
+            return 'https://' + window.location.hostname + ':5000/api/'
+        }
     }
 
 };

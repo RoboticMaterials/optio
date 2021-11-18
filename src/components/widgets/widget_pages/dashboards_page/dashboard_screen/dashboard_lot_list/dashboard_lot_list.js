@@ -177,7 +177,7 @@ const DashboardLotList = (props) => {
               })
           }
 
-    }, [cards, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
+    }, [cards, onCardClicked, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
 
     return (
         <styled.LotListContainer>

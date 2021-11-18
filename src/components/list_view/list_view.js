@@ -129,18 +129,26 @@ const ListView = (props) => {
       setFull(barcode.join(''))
     }, [barcode])
 
+
+
     useEffect(() => {
+            let lotId
             const enter = full.substring(full.length-5)
             const enterEnter = full.substring(full.length-10)
             if(enter === 'Enter' && enterEnter!== 'EnterEnter' && full.length>5){
-                setBarcode([])
-                let lotId = parseInt(full.slice(0,-5))
+              setBarcode([])
+              if(full.includes('-')){
+                let arr = full.split ('-')
+                lotId = parseInt(arr[1].slice(0,-5))
+              }
+              else lotId = parseInt(full.slice(0,-5))
                 setLotNum(lotId)
                 onScanLot(lotId)
                 setFull('')
             }
 
     }, [full])
+
 
     const logKey = (e) => {
       setBarcode(barcode => [...barcode, e.key])

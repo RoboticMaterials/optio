@@ -184,11 +184,11 @@ const TaskField = (props) => {
       dispatchSetEditingValues({...values, routes: updatedRoutes})
     }
 
-    const onRouteBack = async (id) => {
+    const onRouteBack = async (id, isNew) => {
         const updatedRoutes = []
         for(const ind in values.routes){
           if(values.routes[ind]._id === id){
-            if(!!routeCopy){
+            if(!!routeCopy && !isNew){
               updatedRoutes.push(routeCopy)
             }
           }
@@ -206,7 +206,6 @@ const TaskField = (props) => {
         dispatchSetEditingValues(values)
 
     }
-
 
     /**
      * checks if there are other routes with the same load location. This meeds the load
@@ -238,7 +237,7 @@ const TaskField = (props) => {
                         button_2_text={"No"}
                         handleClose={() => setConfirmExitModal(null)}
                         handleOnClick1={() => {
-                          onRouteBack(selectedRoute._id)
+                          onRouteBack(selectedRoute._id, selectedRoute.isNew)
                        }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
@@ -248,7 +247,7 @@ const TaskField = (props) => {
                         content={'tasks'}
                         mode={'create'}
                         onClickBack={() => {
-                            onRouteBack(selectedRoute._id)
+                            onRouteBack(selectedRoute._id, selectedRoute.isNew)
                         }}
                     />
                     <div style={{ margin: '0.5rem 0.5rem 2rem 0' }}>
@@ -333,7 +332,7 @@ const TaskField = (props) => {
                             onClick={() => {
                                 onSaveRoute()
                             }}
-                        >Add Route</Button>
+                        >{selectedRoute.isNew ? 'Add Route' : 'Save Route'}</Button>
 
 
                         {/* Remove Task From Process Button */}

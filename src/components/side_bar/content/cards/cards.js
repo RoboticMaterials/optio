@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 // actions
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 
+
 // styles
 import * as styled from './cards.style'
 import { ThemeContext } from "styled-components";
@@ -60,6 +61,7 @@ const Cards = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
     // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
@@ -82,12 +84,10 @@ const Cards = (props) => {
         offsetTop: undefined,
     })
     // sorting
-    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
-
-    const [lotFilterValue, setLotFilterValue] = useState('')
-    const [selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
-
+    const [sortMode, setSortMode] = useState(!!localSettings.lotSummarySortValue ? localSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(!!localSettings.lotSummarySortDirection ? localSettings.lotSummarySortDirection : SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState(!!localSettings.lotSummaryFilterValue ? localSettings.lotSummaryFilterValue : '')
+    const [selectedFilterOption, setSelectedFilterOption ] = useState(!!localSettings.lotSummaryFilterOption ? localSettings.lotSummaryFilterOption : LOT_FILTER_OPTIONS.name)
     // filtering
     const [lotFilters, setLotFilters] = useState([])
     const handleAddLotFilter = (filter) => {
@@ -379,17 +379,12 @@ const Cards = (props) => {
                 <ZoneHeader
                     lotFilterValue={lotFilterValue}
                     sortDirection={sortDirection}
-                    setSortDirection={setSortDirection}
                     sortMode={sortMode}
                     setSortMode={setSortMode}
                     setLotFilterValue={setLotFilterValue}
                     selectedFilterOption={selectedFilterOption}
                     setSelectedFilterOption={setSelectedFilterOption}
-
-                    sortDirection={sortDirection}
                     setSortDirection={setSortDirection}
-                    sortMode={sortMode}
-                    setSortMode={setSortMode}
 
                     filters={lotFilters}
                     onAddFilter={handleAddLotFilter}
@@ -406,7 +401,7 @@ const Cards = (props) => {
 
             </div>
 
-            
+
             <styled.Body
                 id={"cards-body"}
             >
