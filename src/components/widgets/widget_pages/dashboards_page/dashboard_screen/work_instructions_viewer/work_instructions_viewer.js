@@ -99,7 +99,9 @@ const WorkInstructionsViewer = (props) => {
     switch(fileType) {
       case 'mp4':
         return (
-          <FileViewer fileType = 'mp4' filePath = {fileUrl}/>
+          <div style = {{paddingTop: '4rem', position: 'relative'}}>
+            <FileViewer fileType = 'mp4' filePath = {fileUrl}/>
+          </div>
 
         )
       case 'pdf':
@@ -113,43 +115,32 @@ const WorkInstructionsViewer = (props) => {
 
 
   return (
-
         <styled.Container
             isOpen={showWorkInstructionsViewer}
             contentLabel="Kick Off Modal"
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 },
             }}
         >
-            <styled.BodyContainer>
+            <styled.BodyContainer style = {{padding: '0rem', paddingLeft: '.7rem'}}>
                 <styled.Title schema={'lots'}>{stations[stationID].name}</styled.Title>
                 <styled.CloseButton
                     className={'fas fa-times'}
-                    style={{ cursor: 'pointer', padding: '1rem' }}
+                    style={{ cursor: 'pointer', padding: '1rem'}}
                     onClick = {()=> {
                       setShowWorkInstructionsViewer(false)
                     }}
             />
 
 
-            <div style = {{overflow: 'auto', height: '100%', width: '99%', justifyContent: 'center',}}>
+            <div style = {{overflow: 'auto', height: '100%', maxWidth: '100%', justifyContent: 'center'}}>
             {!!fileUrl &&
               renderWorkInstructions()
             }
             </div>
-
-            <Button
-              type={"button"}
-              schema={'lots'}
-              label={"Close"}
-              onClick={()=>{
-                setShowWorkInstructionsViewer(false)
-              }}
-              style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
-            />
             </styled.BodyContainer>
         </styled.Container>
     )
