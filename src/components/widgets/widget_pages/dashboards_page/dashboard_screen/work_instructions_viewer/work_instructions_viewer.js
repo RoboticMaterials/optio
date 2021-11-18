@@ -11,8 +11,7 @@ import FileViewer from 'react-file-viewer'
 import {Viewer, Worker} from '@react-pdf-viewer/core'
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-
-
+import ReactPlayer from 'react-player'
 //S3 constants
 const S3_BUCKET ='winstructions';
 const REGION ='us-west-1';
@@ -99,10 +98,11 @@ const WorkInstructionsViewer = (props) => {
     switch(fileType) {
       case 'mp4':
         return (
-          <div style = {{paddingTop: '4rem', position: 'relative'}}>
-            <FileViewer fileType = 'mp4' filePath = {fileUrl}/>
-          </div>
-
+          <ReactPlayer
+            url = {fileUrl}
+            fluid = {false}
+            controls = {true}
+          />
         )
       case 'pdf':
         return (
