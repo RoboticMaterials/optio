@@ -76,7 +76,6 @@ const DashboardScreen = (props) => {
     const processes = useSelector(state => state.processesReducer.processes)
     const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
     const trackUsers = useSelector(state => state.settingsReducer.settings?.trackUsers || false)
-
     const currentDashboard = dashboards[dashboardID]
     // actions
     const dispatch = useDispatch()
@@ -117,7 +116,7 @@ const DashboardScreen = (props) => {
             checkinCallback[0]()
         }
     }, [user])
-    
+
     useEffect(() => {
         setDashboardStation(stations[stationID] || {})
     }, [stations, stationID])
@@ -361,8 +360,6 @@ const DashboardScreen = (props) => {
                         await setUser(newUser);
                         setShowUserCheckinModal(false)
                         onSetTitle(newUser)
-                        // newUser !== null && checkinCallback[0]()
-                        // setCheckinCallback([() => {}])
                     }}
                     onClose={() => setShowUserCheckinModal(false)}/>
             }
@@ -439,25 +436,23 @@ const DashboardScreen = (props) => {
                 isListView={showLotsList}
             />
 
-            {
-                showLotsList ?
-                    <DashboardLotList onCardClicked={handleLotClick}
-                    />
-                    :
-                    <DashboardLotPage
-                        user={user}
-                        pushUndoHandler={handlePushUndoHandler}
-                        handleTaskAlert={(type, label, message) => {
-                            setAddTaskAlert({
-                                type: type,
-                                label: label,
-                                message: message,
-                            })
+            {showLotsList ?
+                <DashboardLotList onCardClicked={handleLotClick} />
+                :
+                <DashboardLotPage
+                    user={user}
+                    pushUndoHandler={handlePushUndoHandler}
+                    handleTaskAlert={(type, label, message) => {
+                        setAddTaskAlert({
+                            type: type,
+                            label: label,
+                            message: message,
+                        })
 
-                            // clear alert after timeout
-                            return setTimeout(() => setAddTaskAlert(null), alertDuration)
-                        }}
-                    />
+                        // clear alert after timeout
+                        return setTimeout(() => setAddTaskAlert(null), alertDuration)
+                    }}
+                />
             }
 
             <TaskAddedAlert

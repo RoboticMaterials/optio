@@ -18,6 +18,7 @@ import { FIELD_DATA_TYPES, FLAG_OPTIONS } from "../../../../../constants/lot_con
 // utils
 import { immutableDelete, immutableReplace, isArray } from "../../../../../methods/utils/array_utils"
 import { formatLotNumber } from "../../../../../methods/utils/lot_utils"
+import { newlines } from '../../../../../methods/utils/parsing_utils'
 
 // styles
 import * as styled from "./lot.style"

@@ -1,15 +1,54 @@
-export const parseCSV = (content, delim=',') => {
-    var rows = content.split("\n");
-    let table = [];
+export const parseCSV = (content, strDelimiter=',') => {
 
-    for (var y in rows) {
-        var cells = rows[y].split(delim);
-        if (cells.length) {
-            table.push(cells.map((cell) => ({ value: cell })));
+    // Create a regular expression to parse the CSV values.
+    var objPattern = new RegExp(
+        (
+            // Delimiters.
+            "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+
+            // Quoted fields.
+            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+
+            // Standard fields.
+            "([^\"\\" + strDelimiter + "\\r\\n]*))"
+        ),
+        "gi"
+    );  
+
+    var table = [[]]; // Table array with empty first row
+    var arrMatches = null; // Array to hold individual pattern matching groups
+
+    // Keep looping over the regular expression matches until we can no longer find a match.
+    while (arrMatches = objPattern.exec( content )){
+        // Get the delimiter that was found.
+        var strMatchedDelimiter = arrMatches[1];
+
+        // Check to see if the given delimiter has a length (is not the start of string) and if it matches
+        // field delimiter. If id does not, then we know that this delimiter is a row delimiter.
+        if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter) {
+            // Since we have reached a new row of data, add an empty row to our data array.
+            table.push( [] );
         }
+
+        var strMatchedValue;
+
+        // Now that we have our delimiter out of the way, let's check to see which kind of value we captured (quoted or unquoted).
+        if (arrMatches[2]){
+            // We found a quoted value. When we capture this value, unescape any double quotes.
+            strMatchedValue = arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ), "\"" );
+
+        } else {
+            // We found a non-quoted value.
+            strMatchedValue = arrMatches[ 3 ];
+
+        }
+
+        // Now that we have our value string, let's add it to the data array.
+        table[table.length - 1].push( {value: strMatchedValue} );
     }
 
-    return table;
+    // Return the parsed data.
+    return( table );
 }
 
 export const parseXML = (content) => {
@@ -102,11 +141,11 @@ export const parseXML = (content) => {
         });
     } else if (xml.getElementsByTagName("ViewItem").length !== 0) {
         var newXml = xml.getElementsByTagName("ViewItem");
-        //newXml[0].children.forEach((attribute, index, array) => {
-        //    header += attribute.name + "\t";
-        //});
+        newXml[0].children.forEach((attribute, index, array) => {
+            header += attribute.name + "\t";
+        });
 
-        //   csv += header + '\n'
+           csv += header + '\n'
 
         newXml.forEach((lot, index, array) => {
             let workOrderNumber = lot.children.find((att => att.name === 'WorkOrderNumber'))

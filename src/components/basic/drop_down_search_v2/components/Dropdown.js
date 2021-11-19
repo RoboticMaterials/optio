@@ -111,17 +111,17 @@ export const DefaultDropDownComponent = styled.div`
   display: flex;
   flex-direction: column;
   background: ${props => props.theme.bg.secondary};
-  border-radius: 2px;
   box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.1);
-//   max-height: ${({ dropdownHeight }) => dropdownHeight};
-//   height: auto;
-  overflow-x: visible;
-  overflow-y: scroll;
+
+  height: auto;
+  max-height: ${({ dropdownHeight }) => dropdownHeight};
+
+  overflow-x: hidden;
+  overflow-y: auto;
   z-index: 100;
 
-    ${props => props.css && props.css};
+//     ${props => props.css && props.css};
 
-  border-radius: 0.2rem;
 
   :focus {
     outline: none;

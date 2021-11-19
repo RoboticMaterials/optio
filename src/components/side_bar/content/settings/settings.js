@@ -27,7 +27,7 @@ import { ThemeContext } from 'styled-components';
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
-import { putDashboard } from '../../../../redux/actions/dashboards_actions'
+import { getDashboards, putDashboard } from '../../../../redux/actions/dashboards_actions'
 
 import { getStations } from '../../../../redux/actions/stations_actions';
 import { getProcesses } from '../../../../redux/actions/processes_actions';
@@ -54,6 +54,7 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+    const dispatchGetDashboards = () => dispatch(getDashboards())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
 
@@ -225,6 +226,7 @@ const Settings = () => {
 
         if (mapChange) {
             dispatchGetStations()
+            dispatchGetDashboards()
             dispatchGetProcesses()
             dispatchGetRoutes()
         }
@@ -500,12 +502,12 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={[Object.values(maps).find((map,ind) => {
+                        values={!!maps ? [Object.values(maps).find((map,ind) => {
                             if (!!localSettingsState && !!localSettingsState.currentMapId && !!maps.find(map => map._id === localSettingsState.currentMapId)) {
                                 return map._id === localSettingsState.currentMapId
                             }
                             else return ind===0
-                        })]}
+                        })] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
