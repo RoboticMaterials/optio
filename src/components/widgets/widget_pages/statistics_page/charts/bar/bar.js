@@ -18,6 +18,8 @@ const Bar = ({ data, keys, colors }) => {
             borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             axisTop={null}
             axisRight={null}
+            groupMode="grouped"
+            borderRadius={200/(data.length*Object.keys(colors).length)}
             axisBottom={{
                 tickSize: 0,
                 tickPadding: 5,

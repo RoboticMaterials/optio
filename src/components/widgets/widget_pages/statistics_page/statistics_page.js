@@ -7,12 +7,14 @@ import * as styled from './statistics_page.style'
 // Components
 import ScaleLoader from 'react-spinners/ScaleLoader'
 import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search';
+import Calendar from '../../../basic/calendar/calendar';
 
 // Charts
 import RadialBar from './charts/radial_bar/radial_bar';
 import Line from './charts/line/line';
 import Bar from './charts/bar/bar';
 import Pie from './charts/pie/pie';
+import Scale from './charts/scale/scale';
 
 import { getStationStatistics } from '../../../../api/stations_api';
 import { DualSelectionButton } from '../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar.style';
@@ -20,6 +22,22 @@ import Checkbox from '../../../basic/checkbox/checkbox';
 import { defaultColors } from './charts/nivo_theme';
 
 import { deepCopy } from '../../../../methods/utils/utils';
+import Popup from 'reactjs-popup';
+
+const emptyData = {
+    efficiency: {overall: 0, data: []},
+    oee: {overall: 0, data: []},
+    cycle_time: {},
+    throughput: [],
+    wip: [],
+    product_group_pie: [],
+    process_pie: [],
+    out_station_pie: [],
+    machine_utilization: [],
+    value_creating_time: [],
+    reports: [],
+    reports_pie: [],
+}
 
 const StatisticsPage = () => {
 
@@ -27,10 +45,12 @@ const StatisticsPage = () => {
     const stationId = params.stationID
 
     // State Management
+    const [dateRange, setDateRange] = useState([new Date(), undefined])
     const [data, setData] = useState(null)
-    const [cycleTimePG, setCycleTimePg] = useState(null)
+    const [cycleTimePG, setCycleTimePG] = useState(null)
     const [showWIPChart, setShowWIPChart] = useState(false)
     const [isCumulative, setIsCumulative] = useState(false)
+    const [showCalendar, setShowCalendar] = useState(false)
 
     const [originalThroughputData, setOriginalThroughputData] = useState([])
     const [throughputData, setThroughputData] = useState([])
@@ -40,23 +60,26 @@ const StatisticsPage = () => {
 
     // On Mount
     useEffect(() => {
-        const today = new Date()
-        const yesterday = new Date(today)
-
-        yesterday.setDate(yesterday.getDate() - 1)
-
-        refreshData(today);
-    }, [])
+        refreshData(dateRange);
+    }, [dateRange])
 
     // Helpers
-    const refreshData = async (startDate, endDate) => {
-        const tempData = await getStationStatistics(stationId, startDate, endDate)
+    const refreshData = async (dateRange) => {
+        const tempData = await getStationStatistics(stationId, dateRange[0], dateRange[1])
         console.log(tempData)
-        if (!Object.keys(tempData).length == 0 && !!tempData.cycle_time) {
-            setCycleTimePg(Object.keys(tempData.cycle_time)[0])
+        if (tempData === undefined) {
+            setData(emptyData)
+        } else {
+            await setCycleTimePG(null)
+            await setThroughputData(deepCopy(tempData.throughput))
+            await setData(tempData)
+            if (!!tempData.cycle_time && Object.keys(tempData.cycle_time).length > 0 ) {
+                console.log(Object.keys(tempData.cycle_time)[0])
+                await setCycleTimePG(Object.keys(tempData.cycle_time)[0])
+            }
+            
         }
-        setThroughputData(deepCopy(tempData.throughput))
-        setData(tempData)
+        
     }
 
     useEffect(() => {
@@ -99,7 +122,7 @@ const StatisticsPage = () => {
             closeOnSelect="true"
             searchable={false}
             onChange={values => {
-                setCycleTimePg(values[0].id)
+                !!values[0] && setCycleTimePG(values[0].id)
             }}
             style={{maxWidth: '15rem', margin: '0.5rem 0', height: '2.3rem'}}
         />
@@ -146,7 +169,35 @@ const StatisticsPage = () => {
 
             <styled.StatisticsContainer>    
 
-                <styled.TimePickerLabel>Tuesday, November 9</styled.TimePickerLabel>
+                {showCalendar &&
+                    <Popup
+                        open={showCalendar}
+                        closeOnDocumentClick={true}
+                        onClose={() => setShowCalendar(false)}
+                    >
+                        <Calendar
+                            selectRange={true}
+                            allowPartialRange={true}
+                            maxDate={new Date()}
+                            onChange={range => {
+                                if (range.length !== 2) return
+
+                                const startRange = new Date(range[0].getFullYear(),range[0].getMonth() , range[0].getDate())
+                                const endRange = new Date(range[1].getFullYear(),range[1].getMonth() , range[1].getDate())
+
+                                if (startRange.getTime() === endRange.getTime()) {
+                                    setDateRange([startRange, undefined])
+                                    setShowCalendar(false)
+                                } else {
+                                    setDateRange([startRange, endRange])
+                                    setShowCalendar(false)
+                                }
+                            }}
+                        />
+                    </Popup>
+                }
+
+                <styled.TimePickerLabel onClick={() => setShowCalendar(true)}>{`${dateRange[0].toLocaleDateString("en-US")} ${!!dateRange[1] ? `- ${dateRange[1].toLocaleDateString("en-US")}` : ''}`}</styled.TimePickerLabel>
 
                 <styled.Row>
 
@@ -154,8 +205,8 @@ const StatisticsPage = () => {
                         <styled.CardLabel>Efficiency</styled.CardLabel>
                         <styled.ChartContainer>
                             {!!data ? 
-                                data.efficiency.length ?
-                                    <RadialBar data={data.efficiency} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={46.3}/>
+                                data.efficiency.data.length ?
+                                    <RadialBar data={data.efficiency.data} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={data.efficiency.overall}/>
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
                                 <ScaleLoader />
@@ -167,8 +218,8 @@ const StatisticsPage = () => {
                         <styled.CardLabel>OEE</styled.CardLabel>
                         <styled.ChartContainer style={{height: '16rem'}}>
                             {!!data ? 
-                                data.oee.length ?
-                                    <RadialBar data={data.oee} icon='fas fa-rocket' centerLabel='OVERALL' centerValue={23.1}/>
+                                data.oee.data.length ?
+                                    <RadialBar data={data.oee.data} icon='fas fa-rocket' centerLabel='OVERALL' centerValue={data.oee.overall}/>
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
                                 <ScaleLoader />
@@ -183,9 +234,7 @@ const StatisticsPage = () => {
                                 <>
                                     {renderCycleTimeDropdown}
                                     <div  style={{height: `${16-2.3}rem`}}>
-                                        {
-                                            !!cycleTimePG && data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
-                                            <>
+                                        {!!cycleTimePG && !!data.cycle_time[cycleTimePG] && data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
                                                 <div style={{height: '10rem'}}>
                                                     <Line 
                                                         data={data.cycle_time[cycleTimePG].line_data} 
@@ -195,13 +244,15 @@ const StatisticsPage = () => {
                                                         margin={{top:10, right:2, bottom:10, left:2}}
                                                     /> 
                                                 </div>
-                                                <div style={{height: '2rem'}}>
-                                                    <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
-                                                    <styled.CycleTime>{`${Math.floor(data.cycle_time[cycleTimePG].current/60)} min ${Math.round(data.cycle_time[cycleTimePG].current % 60)} sec`}</styled.CycleTime>
-                                                </div>
-                                            </>
-                                            : 
-                                            <styled.NoData>Not Enough Data</styled.NoData>
+                                                : 
+                                                <styled.NoData style={{height: '10rem'}}>Not Enough Data</styled.NoData>
+                                        }
+                                        {
+                                            !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
+                                            <div style={{height: '2rem'}}>
+                                                <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
+                                                <styled.CycleTime>{`${Math.floor(data.cycle_time[cycleTimePG].current/60)} min ${Math.round(data.cycle_time[cycleTimePG].current % 60)} sec`}</styled.CycleTime>
+                                            </div>
                                         }
                                     </div>
                                 </>:
@@ -269,6 +320,33 @@ const StatisticsPage = () => {
                                 </> :
                                 <ScaleLoader />
                             }
+                        </styled.ChartContainer>
+                    </styled.Card>
+                </styled.Row>
+
+                <styled.Row>
+                    <styled.Card style={{width: '50%', maxWidth: '50%', height: '10rem', minHeight: '10rem'}}>
+                        <styled.CardLabel>Machine Utilization</styled.CardLabel>
+                        <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {!!data ? 
+                            !!data.machine_utilization ?
+                                <Scale data={[data.machine_utilization]} labels={['working', 'idle']}/>
+                                : <styled.NoData>No Data</styled.NoData>
+                            :
+                            <ScaleLoader />
+                        }
+                        </styled.ChartContainer>
+                    </styled.Card>
+                    <styled.Card style={{width: '50%', maxWidth: '50%', height: '10rem', minHeight: '10rem'}}>
+                        <styled.CardLabel>Value Creating Time</styled.CardLabel>
+                        <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {!!data ? 
+                            !!data.value_creating_time ?
+                                <Scale data={[data.value_creating_time]} labels={['working', 'idle']}/>
+                                : <styled.NoData>No Data</styled.NoData>
+                            :
+                            <ScaleLoader />
+                        }
                         </styled.ChartContainer>
                     </styled.Card>
                 </styled.Row>

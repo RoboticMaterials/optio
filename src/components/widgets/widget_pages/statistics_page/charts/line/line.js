@@ -1,7 +1,8 @@
-
+import { useState } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 
 import { theme, defaultColors } from '../nivo_theme';
+import { deepCopy } from '../../../../../../methods/utils/utils';
 
 const Line = (props) => {
 
@@ -12,11 +13,15 @@ const Line = (props) => {
         ...rest
     } = props
 
+    const [hiddenData, setHiddenData] = useState({})
+
+    console.log(data.map(dataset => ({...dataset, hidden: hiddenData[dataset.id] || false})))
+
     return (
         <ResponsiveLine
             theme={theme}
-            colors={defaultColors}
-            data={data}
+            colors={defaultColors.filter((color, i) => i >= data.length || !hiddenData[data[i].id])}
+            data={data.filter(dataset => !hiddenData[dataset.id])}
 
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
             xScale={{ type: 'point' }}
@@ -58,6 +63,7 @@ const Line = (props) => {
             animate={true}
             legends={showLegend ? [
                 {
+                    data: data.map((dataset, i) => ({color: defaultColors[i % defaultColors.length], hidden: hiddenData[dataset.id], id: dataset.id, label: dataset.id})),
                     anchor: 'bottom-right',
                     direction: 'column',
                     justify: false,
@@ -71,6 +77,14 @@ const Line = (props) => {
                     symbolSize: 12,
                     symbolShape: 'circle',
                     symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                    onClick: v => {
+                        console.log(v)
+                        if (hiddenData[v.id] === true) {
+                            setHiddenData({...hiddenData, [v.id]: false})
+                        } else {
+                            setHiddenData({...hiddenData, [v.id]: true})
+                        }
+                    },
                     effects: [
                         {
                             on: 'hover',

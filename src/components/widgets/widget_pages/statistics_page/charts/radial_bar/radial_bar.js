@@ -44,7 +44,7 @@ const RadialBar = (props) => {
             <styled.CenterContainer>
                 <styled.CenterIcon className={icon} />
                 <styled.CenterLabel>{centerLabel}</styled.CenterLabel>
-                <styled.CenterValue>{centerValue}%</styled.CenterValue>
+                <styled.CenterValue>{Math.round(centerValue*10)/10}%</styled.CenterValue>
             </styled.CenterContainer>
 
         </>
