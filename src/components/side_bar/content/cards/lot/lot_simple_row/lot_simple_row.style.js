@@ -37,4 +37,5 @@ export const Count = styled.span`
     color:  ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
     text-align: right;
+    max-width: 70%;
 `

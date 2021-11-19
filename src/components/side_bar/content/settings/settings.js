@@ -502,12 +502,12 @@ const Settings = () => {
                         labelField="name"
                         valueField="_id"
                         options={maps}
-                        values={[Object.values(maps).find((map,ind) => {
+                        values={!!maps ? [Object.values(maps).find((map,ind) => {
                             if (!!localSettingsState && !!localSettingsState.currentMapId && !!maps.find(map => map._id === localSettingsState.currentMapId)) {
                                 return map._id === localSettingsState.currentMapId
                             }
                             else return ind===0
-                        })]}
+                        })] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
