@@ -76,7 +76,6 @@ const LotEditorContainer = (props) => {
         dispatch(postLocalSettings(settings));
     const dispatchPutProcess = (process, processId) =>
         dispatch(putProcesses(process, processId));
-    const dispatchPostLotTemplate = (lotTemplate) => dispatch(postLotTemplate(lotTemplate))
 
     // redux state
     // const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })

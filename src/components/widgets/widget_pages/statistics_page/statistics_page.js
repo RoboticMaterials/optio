@@ -339,7 +339,7 @@ const StatisticsPage = () => {
                     </styled.Card>
                     <styled.Card style={{width: '50%', maxWidth: '50%', height: '10rem', minHeight: '10rem'}}>
                         <styled.CardLabel>Value Creating Time</styled.CardLabel>
-                        <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center', maxWidth: '100%'}}>
                         {!!data ? 
                             !!data.value_creating_time ?
                                 <Scale data={[data.value_creating_time]} labels={['working', 'idle']}/>
