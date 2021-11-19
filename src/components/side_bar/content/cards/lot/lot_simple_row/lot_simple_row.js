@@ -23,7 +23,7 @@ const LotSimpleRow = (props) => {
 			style={containerStyle}
 		>
 			<styled.Label style={labelStyle} >{capitalizeFirstLetter(label)}</styled.Label>
-			<styled.Count style={countStyle} >{newlines(value)}</styled.Count>
+			<styled.Count style={countStyle} >{!!value ? newlines(value) : ''}</styled.Count>
 		</styled.Row>
 	);
 };
