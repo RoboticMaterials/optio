@@ -14,7 +14,8 @@ export const size = {
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#f7f7fa',
+    // secondary: '#f7f7fa',
+    secondary: '#F6F7FB',
     tertiary: '#dedfe3',
     quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey

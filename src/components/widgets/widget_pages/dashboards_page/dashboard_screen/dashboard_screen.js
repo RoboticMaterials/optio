@@ -75,7 +75,6 @@ const DashboardScreen = (props) => {
     const processes = useSelector(state => state.processesReducer.processes)
     const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
     const trackUsers = useSelector(state => state.settingsReducer.settings?.trackUsers || false)
-
     const currentDashboard = dashboards[dashboardID]
     // actions
     const dispatch = useDispatch()
@@ -170,7 +169,6 @@ const DashboardScreen = (props) => {
     }
 
     const handleLotClick = (lotId) => {
-        console.log("CLICK", user, trackUsers)
         if (user !== null || !trackUsers) {
             history.push(`/locations/${stationID}/dashboards/${dashboardID}/lots/${lotId}`)
         } else {

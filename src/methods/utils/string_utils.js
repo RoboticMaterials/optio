@@ -14,5 +14,5 @@ export const capitalizeFirstLetter = (string) => {
 }
 
 export const newlines = (str) => {
-    return str.split('\\n').map(s => <span>{s}<br/></span>)
+    return str.split('\\n').map(s => <span>{s.replace('\\n', '')}<br/></span>)
 }

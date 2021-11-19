@@ -40,10 +40,10 @@ import { deepCopy } from "../../../../../../methods/utils/utils";
 import {
   postCard,
   putCard,
-  deleteCard
+  deleteCard,
+  getCards
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
 
 const DashboardLotPage = (props) => {
   const {
@@ -60,19 +60,21 @@ const DashboardLotPage = (props) => {
   const { stationID, dashboardID, lotID, warehouseID } = params || {};
 
   const cards = useSelector((state) => state.cardsReducer.cards);
+  const processCards = useSelector(state => state.cardsReducer.processCards)
   const routes = useSelector((state) => state.tasksReducer.tasks);
   const processes = useSelector((state) => state.processesReducer.processes);
   const stations = useSelector((state) => state.stationsReducer.stations);
   const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
-
   const dispatch = useDispatch();
   const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
+  const dispatchGetCards = async () => await dispatch(getCards())
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
-  const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
+
+
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
@@ -125,6 +127,8 @@ const DashboardLotPage = (props) => {
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
+      map_id: currentLot.map_id,
+      pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
       process_id: currentLot.process_id,
       sku: 'default',
       quantity: null,
@@ -182,7 +186,9 @@ const DashboardLotPage = (props) => {
     }
   };
 
-
+  const handleGetCards = async() => {
+    await dispatchGetCards()
+  }
   // Handles moving lot to next station
   const onMove = async (moveRoutes, quantity) => {
 
@@ -233,6 +239,12 @@ const DashboardLotPage = (props) => {
         lotCopy.bins = handleNextStationBins(lotCopy.bins, quantity, loadStationID, unloadStationId, process, routes, stations);
       }
     }
+
+    //do this as current lot doesnt update in time if dashboard text field is filled out and the entered note wont be saved
+    if(processCards[lotCopy.process_id] && processCards[lotCopy.process_id][lotCopy._id]){
+      currentLot.fields = processCards[lotCopy.process_id][lotCopy._id].fields
+    }
+
     dispatchPutCard(currentLot, lotID);
 
 
@@ -279,7 +291,6 @@ const DashboardLotPage = (props) => {
       })
       await dispatchPostTouchEvent(updatedTouchEvent)
     }
-    dispatchUpdateStationCycleTime(loadStationID)
 
     // Move Alert (based on whether lot was split or not)
     if (moveRoutes.length > 1) {
@@ -495,7 +506,7 @@ const DashboardLotPage = (props) => {
           warehouse={!!warehouseID}
           onWorkInstructionsClick = {handleShowWorkInstructions}
         />
-        {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} />}
+        {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} onGetCards = {handleGetCards} />}
         <div
           style={{
             width: "95%",

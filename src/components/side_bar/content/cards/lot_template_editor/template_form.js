@@ -51,6 +51,7 @@ import {
 	EMPTY_DEFAULT_FIELDS, getDefaultFields
 } from "../../../../../constants/lot_contants";
 import {ThemeContext} from "styled-components";
+import { putStation } from "../../../../../redux/actions/stations_actions";
 
 
 const disabledStyle = {
@@ -401,8 +402,11 @@ const LotCreatorForm = (props) => {
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+	const dispatchPutStation = async (station) => dispatch(putStation(station))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const processes = useSelector(state => state.processesReducer.processes)
+	const stations = useSelector(state => state.stationsReducer.stations)
 
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
@@ -515,6 +519,18 @@ const LotCreatorForm = (props) => {
 				} = createdLotTemplate || {}
 
 				dispatchSetSelectedLotTemplate(createdLotTemplateId)
+
+
+				// When new product group is created, we need to add an empty cycle time dict to each station that it might go through
+				const PGProcess = processes[processId];
+				PGProcess.flattened_stations.forEach(node => {
+					let stationCopy = deepCopy(stations[node.stationID])
+					if (!(createdLotTemplate._id in stationCopy.cycle_times)) {
+						stationCopy.cycle_times[createdLotTemplate._id] = CYCLE_TIME_DICT
+						dispatchPutStation(stationCopy)
+					}
+				})
+
 			}
 			else {
 				console.error("postResult",response)

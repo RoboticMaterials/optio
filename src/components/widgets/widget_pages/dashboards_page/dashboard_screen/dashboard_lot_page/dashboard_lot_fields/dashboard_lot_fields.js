@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import {useParams} from 'react-router-dom'
+import {useParams, useHistory} from 'react-router-dom'
 // Import Styles
 import * as styled from './dashboard_lot_fields.style'
 
@@ -34,7 +34,8 @@ const DashboardLotFields = (props) => {
     } = params
 
     const processes = useSelector(state => state.processesReducer.processes)
-    const cards = useSelector(state => state.cardsReducer.cards)
+    const history = useHistory()
+    const lotSelected = history.location.pathname.includes('lots')
     const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
     // If its a warehouse then use station before this one
     const count = !!warehouse ? getBinCount(currentLot, getPreviousWarehouseStation(currentLot.process_id, stationID)._id) : getBinCount(currentLot, stationID)
@@ -42,7 +43,7 @@ const DashboardLotFields = (props) => {
     const totalQuantity = getLotTotalQuantity(currentLot, currentLot)
     const processName = processes[currentLot.process_id]?.name
     const renderLotFields = useMemo(() => {
-        const fields = getCustomFields(currentLot.lotTemplateId, currentLot, dashboardID)
+        const fields = getCustomFields(currentLot.lotTemplateId, currentLot, dashboardID, true, lotSelected)
         return fields.map((field, currIndex, arr) => {
             const {
                 dataType,
