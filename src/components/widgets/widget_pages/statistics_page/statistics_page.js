@@ -33,8 +33,8 @@ const emptyData = {
     product_group_pie: [],
     process_pie: [],
     out_station_pie: [],
-    machine_utilization: [],
-    value_creating_time: [],
+    machine_utilization: {id: '', working: 0, idle: 0},
+    value_creating_time: {id: '', working: 0, idle: 0},
     reports: [],
     reports_pie: [],
 }
@@ -329,7 +329,7 @@ const StatisticsPage = () => {
                         <styled.CardLabel>Machine Utilization</styled.CardLabel>
                         <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {!!data ? 
-                            !!data.machine_utilization ?
+                            !!data.machine_utilization && Object.keys(data.machine_utilization).length ?
                                 <Scale data={[data.machine_utilization]} labels={['working', 'idle']}/>
                                 : <styled.NoData>No Data</styled.NoData>
                             :
@@ -341,7 +341,7 @@ const StatisticsPage = () => {
                         <styled.CardLabel>Value Creating Time</styled.CardLabel>
                         <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center', maxWidth: '100%'}}>
                         {!!data ? 
-                            !!data.value_creating_time ?
+                            !!data.value_creating_time && Object.keys(data.value_creating_time).length ?
                                 <Scale data={[data.value_creating_time]} labels={['working', 'idle']}/>
                                 : <styled.NoData>No Data</styled.NoData>
                             :
