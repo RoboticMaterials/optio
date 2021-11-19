@@ -66,7 +66,6 @@ const DashboardScreen = (props) => {
     } = params || {}
 
     const history = useHistory();
-
     // redux state
     // const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardID] })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
@@ -405,6 +404,7 @@ const DashboardScreen = (props) => {
                 </div>
             }
 
+            {!history.location.pathname.includes('lots') &&
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
@@ -427,7 +427,8 @@ const DashboardScreen = (props) => {
                 }}
 
             />
-
+          }
+          {!history.location.pathname.includes('lots') &&
             <style.UndoIcon
                 className="fas fa-undo"
                 disabled={undoHandlers.length === 0}
@@ -435,6 +436,7 @@ const DashboardScreen = (props) => {
                 isMobile={isMobile}
                 isListView={showLotsList}
             />
+          }
 
             {showLotsList ?
                 <DashboardLotList onCardClicked={handleLotClick} />

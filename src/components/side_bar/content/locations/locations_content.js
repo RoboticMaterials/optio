@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 // Import components
 import ContentList from '../content_list/content_list'
 import EditLocation from './edit_location/edit_location'
+import AwsS3BucketUpload from '../../../basic/aws_s3_bucket_upload/aws_s3_bucket_upload'
 
 // Import actions
 import { setEditingPosition, setSelectedPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
@@ -98,12 +99,13 @@ export default function LocationContent() {
         }
     }
 
-    
+
     return (
         (editingPosition || editingStation) ?
             <EditLocation />
 
             :
+            <>
             <ContentList
                 title={'Locations'}
                 schema={'locations'}
@@ -131,5 +133,6 @@ export default function LocationContent() {
                     dispatchSetEditingStation(true)
                 }}
             />
+            </>
     )
 }

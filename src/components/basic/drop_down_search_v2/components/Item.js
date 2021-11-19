@@ -126,11 +126,11 @@ export const DefaultItemComponent = styled.span`
   }
 
   ${({ disabled }) => disabled && `
-    color: #aaa; 
+    color: #aaa;
     &:hover {
       background: #eee;
     }
-    
+
   `}
 
   ${({ disabled }) =>

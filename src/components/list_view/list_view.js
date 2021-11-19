@@ -104,7 +104,7 @@ const ListView = (props) => {
         // hides dashboards page if url is NOT on widget page
         else {
             setShowDashboards(false)
-            setTitle('Locations')
+            setTitle('Dashboards')
         }
 
     }, [stationID])
@@ -269,6 +269,7 @@ const ListView = (props) => {
                                       />
                                   </BounceButton>
                                 }
+                                <styled.Title>{stations[stationID].name}</styled.Title>
                               </>
                                 :
                                 <BounceButton

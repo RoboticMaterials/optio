@@ -130,10 +130,8 @@ export const deleteLotTemplate = (id) => async (dispatch) => {
 // update
 // ******************************
 export const putLotTemplate = (lotTemplate, id) => async dispatch => {
-
     const callback = async () => {
         const response = await api.putLotTemplate(lotTemplate, id);
-
         return {
             lotTemplate: response,
         };

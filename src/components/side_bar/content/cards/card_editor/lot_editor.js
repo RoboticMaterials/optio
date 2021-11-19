@@ -35,7 +35,6 @@ import LotCreatorForm from "../lot_template_editor/template_form";
 import ConfirmDeleteModal from "../../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import BarcodeModal from "../../../../basic/modals/barcode_modal/barcode_modal";
 import LotHistory from '../lot_history/lot_history';
-
 // actions
 import {
     deleteCard,
@@ -780,7 +779,6 @@ const FormComponent = (props) => {
                         setConfirmDeleteModal(null);
                     }}
                 />
-
                 <BarcodeModal
                     isOpen={!!barcodeModal}
                     title={lotNumber + " Barcode"}
