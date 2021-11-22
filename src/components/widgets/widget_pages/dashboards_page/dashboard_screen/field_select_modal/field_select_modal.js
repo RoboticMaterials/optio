@@ -4,6 +4,7 @@ import { useParams, useHistory } from 'react-router-dom'
 
 // Import Style
 import * as styled from './field_select_modal.style'
+import { deepCopy } from '../../../../../../methods/utils/utils'
 import { putDashboard, getDashboards } from '../../../../../../redux/actions/dashboards_actions'
 import {BASIC_DEFAULT_DATES_FIELD, BASIC_DEFAULT_DESCIPTION_FIELD } from "../../../../../../constants/lot_contants";
 import {
@@ -34,7 +35,8 @@ const FieldSelectModal = (props) => {
     const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
-    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
+		const processes = useSelector(state => state.processesReducer.processes) || {}
     const currentDashboard = dashboards[dashboardID]
     const [selectedFields, setSelectedFields] = useState({})
 
@@ -75,6 +77,13 @@ const FieldSelectModal = (props) => {
 
     const renderFields = () => {
 
+			let templatesCopy = {}
+			for(const i in lotTemplates){
+				let stations = processes[lotTemplates[i].processId].flattened_stations
+				let containsStation = stations.find(station => station.stationID === stationID)
+				if(containsStation) templatesCopy[lotTemplates[i]._id] = lotTemplates[i]
+			}
+
       return (
         <>
           <styled.ListItem
@@ -109,7 +118,7 @@ const FieldSelectModal = (props) => {
             </styled.ListItemTitle>
           </styled.ListItem>
 
-          {Object.values(lotTemplates).map((template, index) =>
+          {Object.values(templatesCopy).map((template, index) =>
             <>
               {template.name !== 'Basic' &&
                 <>
