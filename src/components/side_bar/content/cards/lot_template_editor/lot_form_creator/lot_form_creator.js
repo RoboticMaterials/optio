@@ -448,7 +448,7 @@ const LotFormCreator = (props) => {
 							style={{flex: isLastRow && 1, display: isLastRow && "flex", flexDirection: "column"}}
 							key={currRowIndex}
 						>
-						<styled.ColumnContainer>
+						<styled.FieldRowContainer>
 							{currRow.map((currItem, currItemIndex) => {
 								const {
 									_id: dropContainerId,
@@ -463,7 +463,7 @@ const LotFormCreator = (props) => {
 								return (
 									<>
 										<div
-											style = {{padding: '1rem'}}
+											style = {{padding: '1rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
 												setClientY(e.clientY)
 												setDragOverId(currItem._id)
@@ -565,7 +565,7 @@ const LotFormCreator = (props) => {
 									</>
 								)
 							})}
-						</styled.ColumnContainer>
+						</styled.FieldRowContainer>
 						</div>
 					})}
 					{!!dragIndex && dragIndex>(Object.values(items).length) &&

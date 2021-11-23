@@ -24,6 +24,12 @@ export const ColumnContainer = styled.div`
   flex: 1;
 `
 
+export const FieldRowContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+
 export const ComponentOptionContainer = styled.div`
   display: flex;
   flex-direction: column;
