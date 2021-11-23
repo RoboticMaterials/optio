@@ -123,13 +123,7 @@ export const ScrollContainer = styled.div`
   //height: 50rem;
   flex-direction: column;
   //background: blue;
-
-
 `
-
-
-
-
 export const ProcessFieldContainer = styled.div`
   //margin-bottom: 1rem;
   display: flex;

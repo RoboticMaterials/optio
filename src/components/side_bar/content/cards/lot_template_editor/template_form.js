@@ -233,106 +233,107 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
+				<style.ColumnContainer>
 				{/*<LotTemplateEditorSidebar/>*/}
+					<styled.ScrollContainer style = {{marginLeft: '3%', marginRight: '3%'}}>
+						<styled.SectionContainer style = {{maxWidth: '100%', justifyContent: 'center'}}>
+							<styled.FieldsHeader
+								style={disabledStyle, {alignSelf: 'center'}}
+							>
 
-				<styled.ScrollContainer>
-					<styled.SectionContainer style = {{margin: '2rem 15rem 1rem 15rem'}}>
-						<styled.FieldsHeader
-							style={disabledStyle}
-						>
-
-						<style.ColumnContainer>
-							<style.ColumnFieldContainer
-								style = {{margin: '1rem', paddingLeft: '1.2rem'}}
-								onClick = {()=>setSelectedEditingField('NAME')}
-								selected = {selectedEditingField === 'NAME'}
-								>
-								{selectedEditingField === 'NAME' ?
-									<TextField
-										style={{
-											fontSize: '0.9rem',
-											whiteSpace: "nowrap" ,
-											marginRight: "2rem",
-											marginBottom: ".5rem",
-											width: "20rem"
-										}}
-										schema='lots'
-										inputStyle={{fontSize: '1rem'}}
-										name={"displayNames.name"}
-										InputComponent={Textbox}
-									/>
-									:
-									<style.FieldName>{values.displayNames.name}</style.FieldName>
-								}
-								<style.RowContainer
-								 style = {{
-								 	background: '#f7f7fa', width: selectedEditingField === 'NAME' ? '70%' : '20rem', height: '2rem',
-								 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
-								 	border: '0.1rem solid transparent',
-									borderRadius: '0.2rem',
-									padding: '0.5rem'
-								}}
-								>
-								<style.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</style.FieldName>
-								</style.RowContainer>
-							</style.ColumnFieldContainer>
-						</style.ColumnContainer>
-
-						</styled.FieldsHeader>
-						<styled.TheBody>
-							{loaded ?
-									<LotFormCreator
-										{...formikProps}
-										preview={preview}
-										lotTemplateId = {lotTemplateId}
-										selectedEditingField = {selectedEditingField}
-										setSelectedEditingField = {setSelectedEditingField}
-									/>
-
-								:
-								<FadeLoader
-									css={styled.FadeLoaderCSS}
-									height={5}
-									width={3}
-									loading={true}
-								/>
-							}
-
-						</styled.TheBody>
-					</styled.SectionContainer>
-
-					<styled.BodyContainer style={disabledStyle}>
-						<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-							<styled.ObjectInfoContainer>
-								{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
-								<TextField
-									name={"displayNames.count"}
-									InputComponent={Textbox}
-									placeholder = {'Enter a fieldname...'}
-									schema = {'lots'}
-									onChange = {()=> setSelectedEditingField(null)}
-									style={{
-										padding: '1rem',
-										display: "inline-flex",
-										fontWeight: "bold",
-										marginLeft: '1rem',
-										alignItems: "center",
-										textAlign: "center",
+							<style.ColumnContainer>
+								<style.ColumnFieldContainer
+									style = {{margin: '1rem', paddingLeft: '1.2rem'}}
+									onClick = {()=>setSelectedEditingField('NAME')}
+									selected = {selectedEditingField === 'NAME'}
+									>
+									{selectedEditingField === 'NAME' ?
+										<TextField
+											style={{
+												fontSize: '0.9rem',
+												whiteSpace: "nowrap" ,
+												marginRight: "2rem",
+												marginBottom: ".5rem",
+												width: "20rem"
+											}}
+											schema='lots'
+											inputStyle={{fontSize: '1rem'}}
+											name={"displayNames.name"}
+											InputComponent={Textbox}
+										/>
+										:
+										<style.FieldName>{values.displayNames.name}</style.FieldName>
+									}
+									<style.RowContainer
+									 style = {{
+									 	background: '#f7f7fa', width: selectedEditingField === 'NAME' ? '70%' : '20rem', height: '2rem',
+									 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+									 	border: '0.1rem solid transparent',
+										borderRadius: '0.2rem',
+										padding: '0.5rem'
 									}}
-								/>
-								<NumberInput
-									inputDisabled={true}
-									themeContext={themeContext}
-									minusDisabled={true}
-									plusDisabled={true}
-									containerSyle = {{pointerEvents: 'none', userSelect: 'none'}}
-									inputStyle = {{pointerEvents: 'none', userSelect: 'none'}}
-									buttonStyle = {{pointerEvents: 'none', userSelect: 'none'}}
-								/>
-							</styled.ObjectInfoContainer>
-						</div>
-					</styled.BodyContainer>
-				</styled.ScrollContainer>
+									>
+									<style.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</style.FieldName>
+									</style.RowContainer>
+								</style.ColumnFieldContainer>
+							</style.ColumnContainer>
+
+							</styled.FieldsHeader>
+							<styled.TheBody>
+								{loaded ?
+										<LotFormCreator
+											{...formikProps}
+											preview={preview}
+											lotTemplateId = {lotTemplateId}
+											selectedEditingField = {selectedEditingField}
+											setSelectedEditingField = {setSelectedEditingField}
+										/>
+
+									:
+									<FadeLoader
+										css={styled.FadeLoaderCSS}
+										height={5}
+										width={3}
+										loading={true}
+									/>
+								}
+
+							</styled.TheBody>
+						</styled.SectionContainer>
+
+						<styled.BodyContainer style={disabledStyle}>
+							<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+								<styled.ObjectInfoContainer>
+									{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
+									<TextField
+										name={"displayNames.count"}
+										InputComponent={Textbox}
+										placeholder = {'Enter a fieldname...'}
+										schema = {'lots'}
+										onChange = {()=> setSelectedEditingField(null)}
+										style={{
+											padding: '1rem',
+											display: "inline-flex",
+											fontWeight: "bold",
+											marginLeft: '1rem',
+											alignItems: "center",
+											textAlign: "center",
+										}}
+									/>
+									<NumberInput
+										inputDisabled={true}
+										themeContext={themeContext}
+										minusDisabled={true}
+										plusDisabled={true}
+										containerSyle = {{pointerEvents: 'none', userSelect: 'none'}}
+										inputStyle = {{pointerEvents: 'none', userSelect: 'none'}}
+										buttonStyle = {{pointerEvents: 'none', userSelect: 'none'}}
+									/>
+								</styled.ObjectInfoContainer>
+							</div>
+						</styled.BodyContainer>
+					</styled.ScrollContainer>
+				</style.ColumnContainer>
 			</styled.RowContainer>
 
 

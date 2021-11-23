@@ -46,8 +46,17 @@ export const DropContainer = styled.div`
 	margin-right: 1rem;
 	background: ${props => props.theme.bg.secondary};
 	border: 0.1rem solid ${props => props.theme.bg.primary};
-	border-radius: .4rem;
+	border-radius: .5rem;
 
+`
+export const FieldColumn = styled.div`
+	width: 50%;
+  height: 4rem;
+	margin-left: 1rem;
+	margin-right: 1rem;
+	background: ${props => props.theme.bg.secondary};
+	border: 0.1rem solid ${props => props.theme.bg.primary};
+	border-radius: .5rem;
 `
 
 export const ColumnFieldContainer = styled.div`
@@ -63,8 +72,6 @@ export const ColumnFieldContainer = styled.div`
 
 	&:hover {
 		box-shadow: ${props => !props.selected && '3px 2px 5px 2px rgba(0,0,0,0.2)'};
-		background: ${props => !props.selected && LightenDarkenColor(props.theme.bg.secondary,3)};
-
 	}
 `
 

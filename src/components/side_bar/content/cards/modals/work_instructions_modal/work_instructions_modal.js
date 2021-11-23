@@ -251,15 +251,6 @@ const WorkInstructionsModal = (props) => {
             <styled.ColumnContainer>
             {renderStationList()}
             </styled.ColumnContainer>
-            <Button
-              type={"button"}
-              schema={'lots'}
-              label={"Close"}
-              onClick={()=>{
-                setShowWorkInstructionModal(false)
-              }}
-              style={{minWidth: '14rem', minHeight: '3rem', marginTop: '2rem', marginLeft: '0rem', marginRight: '0rem', color: 'white'}}
-            />
             </styled.BodyContainer>
         </styled.Container>
     )

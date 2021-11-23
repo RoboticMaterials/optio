@@ -432,175 +432,175 @@ const LotFormCreator = (props) => {
 		}
 
 	const mapContainers = (items, mode, prevItems, indexPattern, thisIndex) => {
-
 		return (
-			<styled.ColumnContainer>
-				{dragIndex === 0 && startIndex !==1 &&
-					<styled.DropContainer
-						divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-						divWidth = {!!divWidth ? divWidth +'px' : '100%'}
-					/>
-				}
-				<div>
-				{items.map((currRow, currRowIndex) => {
+				<styled.ColumnContainer>
+					{dragIndex === 0 && startIndex !==1 &&
+						<styled.DropContainer
+							divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+							divWidth = {!!divWidth ? divWidth +'px' : '100%'}
+						/>
+					}
+					<div>
+					{items.map((currRow, currRowIndex) => {
 
-					const isLastRow = currRowIndex === items.length - 1
-					return <div
-						style={{flex: isLastRow && 1, display: isLastRow && "flex", flexDirection: "column"}}
-						key={currRowIndex}
-					>
-					<styled.ColumnContainer>
-						{currRow.map((currItem, currItemIndex) => {
-							const {
-								_id: dropContainerId,
-								component,
-								fieldName
-							} = currItem || {}
+						const isLastRow = currRowIndex === items.length - 1
+						return <div
+							style={{flex: isLastRow && 1, display: isLastRow && "flex", flexDirection: "column"}}
+							key={currRowIndex}
+						>
+						<styled.ColumnContainer>
+							{currRow.map((currItem, currItemIndex) => {
+								const {
+									_id: dropContainerId,
+									component,
+									fieldName
+								} = currItem || {}
 
-							const isLastItem = currItemIndex === currRow.length - 1
-							const indexPattern = [currRowIndex, currItemIndex]
-							const isOnlyItem = currRow.length === 1
+								const isLastItem = currItemIndex === currRow.length - 1
+								const indexPattern = [currRowIndex, currItemIndex]
+								const isOnlyItem = currRow.length === 1
 
-							return (
-								<>
-									<div
-										style = {{padding: '1rem'}}
-										onDragOver = {(e)=>{
-											setClientY(e.clientY)
-											setDragOverId(currItem._id)
-										}}
-										>
-									<styled.ColumnFieldContainer
-										id = {currItem._id}
-										draggable = {true}
-										style = {{
-											borderBottom: draggingFieldId === currItem._id && '.3rem solid #dedfe3',
-											borderLeft: draggingFieldId === currItem._id && currItem._id !==selectedEditingField && '0.1rem solid #dedfe3',
-											borderRight: draggingFieldId === currItem._id && '0.3rem solid #dedfe3',
-											borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
-											flexDirection: selectedEditingField === currItem._id && 'row',
-											pointerEvents: dragOverId === currItem._id && 'none',
-											borderRadius: draggingFieldId === currItem._id && '0.2rem',
-										}}
-										onDragStart = {(e)=>{
-											setDivHeight(e.target.offsetHeight+5)
-											setDivWidth(e.target.offsetWidth+5)
-											setStartIndex(currRowIndex+1)
-											setDraggingFieldId(currItem._id)
-											let offset = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
-											setMouseOffset(offset)
-											e.target.style.opacity = '0.001'
-										}}
-										onDragEnd = {(e)=>{
-											if(dragIndex) handleDropField()
-											setStartIndex(null)
-											setDragOverId(null)
-											setDragIndex(null)
-											setDraggingFieldId(null)
-											setMouseOffset(null)
-											e.target.style.opacity = '1'
-										}}
-									 selected = {currItem._id === selectedEditingField}
+								return (
+									<>
+										<div
+											style = {{padding: '1rem'}}
+											onDragOver = {(e)=>{
+												setClientY(e.clientY)
+												setDragOverId(currItem._id)
+											}}
+											>
+										<styled.ColumnFieldContainer
+											id = {currItem._id}
+											draggable = {true}
+											style = {{
+												borderBottom: draggingFieldId === currItem._id && '.3rem solid #dedfe3',
+												borderLeft: draggingFieldId === currItem._id && currItem._id !==selectedEditingField && '0.1rem solid #dedfe3',
+												borderRight: draggingFieldId === currItem._id && '0.3rem solid #dedfe3',
+												borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
+												boxShadow: draggingFieldId === currItem._id && 'none',
+												flexDirection: selectedEditingField === currItem._id && 'row',
+												pointerEvents: dragOverId === currItem._id && 'none',
+												borderRadius: draggingFieldId === currItem._id && '0.5rem',
+											}}
+											onDragStart = {(e)=>{
+												setDivHeight(e.target.offsetHeight+5)
+												setDivWidth(e.target.offsetWidth+5)
+												setStartIndex(currRowIndex+1)
+												setDraggingFieldId(currItem._id)
+												let offset = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
+												setMouseOffset(offset)
+												e.target.style.opacity = '0.001'
+											}}
+											onDragEnd = {(e)=>{
+												if(dragIndex) handleDropField()
+												setStartIndex(null)
+												setDragOverId(null)
+												setDragIndex(null)
+												setDraggingFieldId(null)
+												setMouseOffset(null)
+												e.target.style.opacity = '1'
+											}}
+										 selected = {currItem._id === selectedEditingField}
 
-									 onClick = {()=>{
-										setSelectedEditingField(currItem._id)
-									}}>
-										{currItem._id !== selectedEditingField ?
-											<>
-											<styled.FieldName>{fieldName}</styled.FieldName>
-											{handleRenderComponentType(component, currItem._id)}
-											</>
-											:
-											<>
-												<styled.ColumnContainer>
-												<TextField
-													style={{
-														fontSize: '1rem',
-														whiteSpace: "nowrap" ,
-														marginRight: "2rem",
-														marginBottom: ".5rem",
-														width: "20rem",
-														marginTop: '0.4rem'
-													}}
-													schema='lots'
-													focus = {true}
-													placeholder = {'Enter a field name...'}
-													inputStyle={{fontSize: '1rem'}}
-													name={`fields[${currRowIndex}][${currItemIndex}].fieldName`}
-													InputComponent={Textbox}
-												/>
+										 onClick = {()=>{
+											setSelectedEditingField(currItem._id)
+										}}>
+											{currItem._id !== selectedEditingField ?
+												<>
+												<styled.FieldName>{fieldName}</styled.FieldName>
 												{handleRenderComponentType(component, currItem._id)}
-													</styled.ColumnContainer>
-													<styled.OptionContainer>
-													<styled.RowContainer>
-													<CheckboxField
-														name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
-														css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}
+												</>
+												:
+												<>
+													<styled.ColumnContainer>
+													<TextField
+														style={{
+															fontSize: '1rem',
+															whiteSpace: "nowrap" ,
+															marginRight: "2rem",
+															marginBottom: ".5rem",
+															width: "20rem",
+															marginTop: '0.4rem'
+														}}
+														schema='lots'
+														focus = {true}
+														placeholder = {'Enter a field name...'}
+														inputStyle={{fontSize: '1rem'}}
+														name={`fields[${currRowIndex}][${currItemIndex}].fieldName`}
+														InputComponent={Textbox}
 													/>
-													<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>show in cards</styled.FieldName>
-													<CheckboxField
-														name={`fields[${currRowIndex}][${currItemIndex}].required`}
-														css = {{background: !!values.fields[currRowIndex][currItemIndex].required && '#924dff', border: '0.1rem solid #924dff'}}
-													/>
-													<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>required</styled.FieldName>
-													<i
-													className = 'fas fa-trash'
-													style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', cursor: 'pointer'}}
-													onClick = {()=> {
-														handleDeleteClick(currItem._id)
-													}}
-													/>
-												</styled.RowContainer>
-												</styled.OptionContainer>
-											</>
+													{handleRenderComponentType(component, currItem._id)}
+														</styled.ColumnContainer>
+														<styled.OptionContainer>
+														<styled.RowContainer>
+														<CheckboxField
+															name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
+															css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}
+														/>
+														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>show in cards</styled.FieldName>
+														<CheckboxField
+															name={`fields[${currRowIndex}][${currItemIndex}].required`}
+															css = {{background: !!values.fields[currRowIndex][currItemIndex].required && '#924dff', border: '0.1rem solid #924dff'}}
+														/>
+														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>required</styled.FieldName>
+														<i
+														className = 'fas fa-trash'
+														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', cursor: 'pointer'}}
+														onClick = {()=> {
+															handleDeleteClick(currItem._id)
+														}}
+														/>
+													</styled.RowContainer>
+													</styled.OptionContainer>
+												</>
+											}
+										</styled.ColumnFieldContainer>
+										</div>
+										{!!draggingFieldId && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && dragIndex!==startIndex && currRowIndex+2 !==startIndex &&
+											<styled.DropContainer
+												divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+												divWidth = {!!divWidth ? divWidth +'px' : '100%'}
+											/>
 										}
-									</styled.ColumnFieldContainer>
-									</div>
-									{!!draggingFieldId && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && dragIndex!==startIndex && currRowIndex+2 !==startIndex &&
-										<styled.DropContainer
-											divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-											divWidth = {!!divWidth ? divWidth +'px' : '100%'}
-										/>
-									}
-								</>
-							)
-						})}
-					</styled.ColumnContainer>
+									</>
+								)
+							})}
+						</styled.ColumnContainer>
+						</div>
+					})}
+					{!!dragIndex && dragIndex>(Object.values(items).length) &&
+						<styled.DropContainer
+							divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+							divWidth = {!!divWidth ? divWidth +'px' : '100%'}
+						/>
+					}
 					</div>
-				})}
-				{!!dragIndex && dragIndex>(Object.values(items).length) &&
-					<styled.DropContainer
-						divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-						divWidth = {!!divWidth ? divWidth +'px' : '100%'}
-					/>
-				}
-				</div>
-				<styled.ColumnFieldContainer
-				onDragOver = {(e)=>{
-					setDragIndex(items.length)
-				}}
-				 style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem', flexDirection: selectedEditingField !== 'ADDING' ? 'row' : 'column', maxHeight: selectedEditingField !== 'ADDING' ? '4rem' : '10rem'}}
-				 onClick = {()=>{
-					 if(selectedEditingField!=='ADDING'){
-						 setSelectedEditingField('ADDING')
-					 }
-				 }}
-				 selected = {selectedEditingField === 'ADDING'}
-				 >
-				 {selectedEditingField !== 'ADDING' ?
-				 	<>
-					 <i className = 'fas fa-plus' style = {{fontSize: '1.2rem', paddingRight: '.5rem'}}/>
-					 <styled.FieldName>Add New Field</styled.FieldName>
-				  </>
-				 	:
-					 <>
-						 <styled.FieldName style = {{marginBottom: '1rem'}}>Choose a component type</styled.FieldName>
-						 {handleRenderComponentOptions()}
-					 </>
-	 			 }
+					<styled.ColumnFieldContainer
+					onDragOver = {(e)=>{
+						setDragIndex(items.length)
+					}}
+					 style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem', flexDirection: selectedEditingField !== 'ADDING' ? 'row' : 'column', maxHeight: selectedEditingField !== 'ADDING' ? '4rem' : '10rem'}}
+					 onClick = {()=>{
+						 if(selectedEditingField!=='ADDING'){
+							 setSelectedEditingField('ADDING')
+						 }
+					 }}
+					 selected = {selectedEditingField === 'ADDING'}
+					 >
+					 {selectedEditingField !== 'ADDING' ?
+					 	<>
+						 <i className = 'fas fa-plus' style = {{fontSize: '1.2rem', paddingRight: '.5rem'}}/>
+						 <styled.FieldName>Add New Field</styled.FieldName>
+					  </>
+					 	:
+						 <>
+							 <styled.FieldName style = {{marginBottom: '1rem'}}>Choose a component type</styled.FieldName>
+							 {handleRenderComponentOptions()}
+						 </>
+		 			 }
 
-				</styled.ColumnFieldContainer>
-			</styled.ColumnContainer>
+					</styled.ColumnFieldContainer>
+				</styled.ColumnContainer>
 		)
 	}
 
