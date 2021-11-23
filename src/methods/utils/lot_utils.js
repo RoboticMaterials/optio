@@ -505,7 +505,14 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
               component,
             } = field
 
-            let foundId = lotTemplate.fields.find(tempField => tempField[0]._id === _id)
+            let foundId = false
+            for(const i in lotTemplate.fields){
+              let fieldExists = lotTemplate.fields[i].find(tempField => tempField._id === _id)
+              if(fieldExists){
+                foundId = true
+                break
+              }
+            }
             if((foundId && lot.lotTemplateId===template && (component!=='INPUT_BOX' || !lotSelected)) || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
