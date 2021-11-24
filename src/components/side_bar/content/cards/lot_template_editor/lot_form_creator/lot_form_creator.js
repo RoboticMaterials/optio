@@ -57,6 +57,7 @@ const LotFormCreator = (props) => {
 	const [divWidth, setDivWidth] = useState(null)
 	const [mouseOffsetY, setMouseOffsetY] = useState(null)
 	const [mouseOffsetX, setMouseOffsetX] = useState(null)
+	const [xDrag, setXDrag] = useState('left')
 
 	const {
 		fields: items = []
@@ -81,7 +82,8 @@ const LotFormCreator = (props) => {
 		if(!!draggingFieldId){
 		for(const i in values.fields){
 			let ele = document.getElementById(values.fields[i][0]._id)
-			if(!!ele && (ele.getBoundingClientRect().bottom + ele.getBoundingClientRect().top)/2 > (clientY + mouseOffsetY)){
+			let offset = xDrag === 'right' && !!ele ? ele.getBoundingClientRect().height : 0
+			if(!!ele && (ele.getBoundingClientRect().bottom + ele.getBoundingClientRect().top)/2 > (clientY + mouseOffsetY + (offset*.66))){
 					return parseInt(i)
 			}
 		}
@@ -91,10 +93,14 @@ const LotFormCreator = (props) => {
 	const handleSetDragColumnIndex = (length) => {
 		if(!!draggingFieldId){
 			let ele = document.getElementById('container')
-			if(!!ele && (ele.getBoundingClientRect().right + ele.getBoundingClientRect().left)/2 > (clientY + mouseOffsetY)){
-
-			}	}
-}
+			if(!!ele && ((ele.getBoundingClientRect().right + ele.getBoundingClientRect().left)/2 + 400) > (clientX + mouseOffsetX)){
+				setXDrag('left')
+			}
+			else{
+				 setXDrag('right')
+			 }
+		}
+	}
 
 	const handleDropField = () => {
 		let insertField = []
@@ -315,11 +321,12 @@ const LotFormCreator = (props) => {
 				return (
 							<styled.RowContainer
 							 style = {{
-							 	background: '#f7f7fa', width: fieldId === selectedEditingField ? '70%' : '20rem', height: '2rem',
+							 	background: '#f7f7fa', width: '50%', height: '2rem',
 							 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
 							 	border: '0.1rem solid transparent',
 								borderRadius: '0.2rem',
-								padding: '0.5rem'
+								padding: '0.5rem',
+								overflow: 'hidden',
 							}}
 							>
 							<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</styled.FieldName>
@@ -329,7 +336,7 @@ const LotFormCreator = (props) => {
 				return (
 					<styled.RowContainer
 					 style = {{
-					 	background: '#f7f7fa', width: fieldId === selectedEditingField ? '70%' : '20rem', height: '4rem',
+					 	background: '#f7f7fa', width: '50%', height: '4rem',
 					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
 					 	border: '0.1rem solid transparent',
 						borderRadius: '0.2rem',
@@ -447,7 +454,13 @@ const LotFormCreator = (props) => {
 
 	const mapContainers = (items, mode, prevItems, indexPattern, thisIndex) => {
 		return (
-				<styled.ColumnContainer id = 'container'>
+				<styled.ColumnContainer
+					id = 'container'
+				 	onDragOver = {(e)=> {
+						setClientY(e.clientY)
+						setClientX(e.clientX)
+					}}
+				>
 					{dragIndex === 0 && startIndex !==1 &&
 						<styled.DropContainer
 							divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
@@ -479,8 +492,6 @@ const LotFormCreator = (props) => {
 										<div
 											style = {{padding: '1rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
-												setClientY(e.clientY)
-												setClientX(e.clientX)
 												setDragOverId(currItem._id)
 											}}
 											>
@@ -496,6 +507,7 @@ const LotFormCreator = (props) => {
 												flexDirection: selectedEditingField === currItem._id && 'row',
 												pointerEvents: dragOverId === currItem._id && 'none',
 												borderRadius: draggingFieldId === currItem._id && '0.5rem',
+
 											}}
 											onDragStart = {(e)=>{
 												setDivHeight(e.target.offsetHeight+5)
@@ -537,7 +549,9 @@ const LotFormCreator = (props) => {
 															marginRight: "2rem",
 															marginBottom: ".5rem",
 															width: "20rem",
-															marginTop: '0.4rem'
+															marginTop: '0.4rem',
+															overflow: 'hidden',
+															textOverflow: 'ellipsis'
 														}}
 														schema='lots'
 														focus = {true}
@@ -554,7 +568,7 @@ const LotFormCreator = (props) => {
 															name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
 															css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}
 														/>
-														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>show in cards</styled.FieldName>
+														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>show field</styled.FieldName>
 														<CheckboxField
 															name={`fields[${currRowIndex}][${currItemIndex}].required`}
 															css = {{background: !!values.fields[currRowIndex][currItemIndex].required && '#924dff', border: '0.1rem solid #924dff'}}
@@ -573,11 +587,18 @@ const LotFormCreator = (props) => {
 											}
 										</styled.ColumnFieldContainer>
 										</div>
+										{!!draggingFieldId && xDrag === 'right' && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && dragIndex!==startIndex && currRowIndex+2 !==startIndex &&
+											<styled.DropContainer
+												style = {{marginTop: '1rem'}}
+												divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+												divWidth = {'50%'}
+											/>
+										}
 									</>
 								)
 							})}
 						</styled.FieldRowContainer>
-						{!!draggingFieldId && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && dragIndex!==startIndex && currRowIndex+2 !==startIndex &&
+						{!!draggingFieldId && xDrag === 'left' && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && dragIndex!==startIndex && currRowIndex+2 !==startIndex &&
 							<styled.DropContainer
 								divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
 								divWidth = {!!divWidth ? divWidth +'px' : '100%'}

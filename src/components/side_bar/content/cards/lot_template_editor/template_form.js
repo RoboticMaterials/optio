@@ -235,7 +235,7 @@ const FormComponent = (props) => {
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 				<style.ColumnContainer>
 				{/*<LotTemplateEditorSidebar/>*/}
-					<styled.ScrollContainer style = {{marginLeft: '3%', marginRight: '3%'}}>
+					<styled.ScrollContainer style = {{paddingLeft: '10%', paddingRight: '10%'}}>
 						<styled.SectionContainer style = {{maxWidth: '100%', justifyContent: 'center'}}>
 							<styled.FieldsHeader
 								style={disabledStyle, {alignSelf: 'center'}}
