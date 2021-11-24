@@ -111,7 +111,7 @@ const Column = ((props) => {
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
-		if(!draggingLotId){
+		if(!hideCard){
 		if (sortMode) {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
@@ -121,7 +121,7 @@ const Column = ((props) => {
 			setCards(props.cards)
 		}
 	}
-	}, [reduxCards, sortMode, sortDirection, hideCard, draggingLotId])
+}, [reduxCards, sortMode, sortDirection])
 
 
 	useEffect(() => {
@@ -406,6 +406,8 @@ const Column = ((props) => {
 
 						result.then((res) => {
 							dispatchSetHideCard(null)
+							dispatchSetDragFromBin(null)
+							dispatchSetDraggingStationId(null)
 					})
 				}
 			}
@@ -413,6 +415,7 @@ const Column = ((props) => {
 				dispatchSetDraggingLotId(null)
 				dispatchSetDragFromBin(null)
 				dispatchSetDraggingStationId(null)
+				dispatchSetHideCard(null)
 			}
 	}
 
@@ -488,6 +491,7 @@ const Column = ((props) => {
 																				dispatchSetDraggingLotId(null)
 																				dispatchSetDragFromBin(null)
 																				dispatchSetDraggingStationId(null)
+																				dispatchSetHideCard(null)
 																			}
 																			e.target.style.opacity = '1'
 																		}}
