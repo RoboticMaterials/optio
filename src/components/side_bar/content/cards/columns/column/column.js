@@ -106,21 +106,23 @@ const Column = ((props) => {
 
 		setNumberOfLots(tempNumberOfLots)
 		setLotQuantitySummation(tempLotQuantitySummation)
-	}, [cards])
+	}, [reduxCards])
 
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
+		if(!draggingLotId){
 		if (sortMode) {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
 			setCards(tempCards)
-
 		}
 		else {
 			setCards(props.cards)
 		}
-	}, [props.cards, sortMode, sortDirection])
+	}
+	}, [reduxCards, sortMode, sortDirection, hideCard, draggingLotId])
+
 
 	useEffect(() => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
@@ -403,9 +405,7 @@ const Column = ((props) => {
 						let result = dispatchPutCard(updatedLot, updatedLot._id)
 
 						result.then((res) => {
-							if(draggingLotId === tempDragId){
-
-						}
+							dispatchSetHideCard(null)
 					})
 				}
 			}
