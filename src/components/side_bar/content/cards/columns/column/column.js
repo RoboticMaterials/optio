@@ -354,7 +354,7 @@ const Column = ((props) => {
 
 	const handleDrop = async () => {
 			let [inDropZne, lastStn] = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
-
+			let tempDragId = draggingLotId
 			if(!!inDropZne){
 					const binId = dragFromBin
 					const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
@@ -383,9 +383,11 @@ const Column = ((props) => {
 						let result = dispatchPutCard(updatedLot, updatedLot._id)
 
 						result.then((res) => {
+							if(draggingLotId === tempDragId){
 							dispatchSetDraggingLotId(null)
 							dispatchSetDragFromBin(null)
-						})
+						}
+					})
 				}
 			}
 			else{
