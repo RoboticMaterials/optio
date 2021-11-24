@@ -88,6 +88,7 @@ const Column = ((props) => {
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
+	const [hideCard, setHideCard] = useState(false)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -425,6 +426,7 @@ const Column = ((props) => {
 								...rest
 							} = card
 
+							if(cardId === hideCard) return null
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
@@ -458,6 +460,9 @@ const Column = ((props) => {
 
 																		}}
 																		onDragEnd = {(e)=>{
+																			let moveCard = cards.find(card => card.cardId === draggingLotId)
+																			setHideCard(moveCard.cardId)
+
 																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
 																			else{
 																				dispatchSetDraggingLotId(null)
