@@ -384,6 +384,7 @@ const Column = ((props) => {
 
 						result.then((res) => {
 							if(draggingLotId === tempDragId){
+							setHideCard(null)
 							dispatchSetDraggingLotId(null)
 							dispatchSetDragFromBin(null)
 						}
@@ -391,6 +392,7 @@ const Column = ((props) => {
 				}
 			}
 			else{
+				setHideCard(null)
 				dispatchSetDraggingLotId(null)
 				dispatchSetDragFromBin(null)
 			}
@@ -401,7 +403,7 @@ const Column = ((props) => {
 				<styled.BodyContainer
 					class = 'container'
 					style={{ overflow: "auto", height: "100%", padding: "1rem",
-					 pointerEvents: !!draggingLotId && 'none',
+					 pointerEvents: !!draggingLotId && dragFromBin && 'none',
 				 }}
 
 					>
@@ -428,7 +430,7 @@ const Column = ((props) => {
 								...rest
 							} = card
 
-							if(cardId === hideCard) return null
+							if(!!hideCard && cardId === hideCard) return null
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
@@ -467,6 +469,7 @@ const Column = ((props) => {
 
 																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
 																			else{
+																				setHideCard(null)
 																				dispatchSetDraggingLotId(null)
 																				dispatchSetDragFromBin(null)
 																			}
@@ -524,7 +527,7 @@ const Column = ((props) => {
 																			padding: '0.2rem',
 																			margin: '.4rem',
 																			width: '96%',
-																			pointerEvents: !!draggingLotId && draggingLotId !== cardId && 'none',
+																			pointerEvents: !!draggingLotId && !!dragFromBin && draggingLotId !== cardId && 'none',
 																		}}
 																	/>
 																	</styled.LotDiv>
@@ -598,7 +601,7 @@ const Column = ((props) => {
 					...containerStyle
 				}}
 			>
-				<div style = {{pointerEvents: !!draggingLotId && 'none'}}>
+				<div style = {{pointerEvents: !!draggingLotId && !!dragFromBin && 'none'}}>
 					{HeaderContent(numberOfLots, lotQuantitySummation)}
 				</div>
 				{!showCardEditor &&
