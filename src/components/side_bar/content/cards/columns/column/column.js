@@ -11,6 +11,7 @@ import {
 	setDraggingStationId,
 	setDragFromBin,
 	setLotDivHeight,
+	setHideCard,
 } from "../../../../../../redux/actions/card_page_actions";
 
 // components external
@@ -21,6 +22,7 @@ import Lot from "../../lot/lot";
 
 // functions external
 import { useDispatch, useSelector } from "react-redux";
+import {deepCopy} from "../../../../../../methods/utils/utils";
 
 // styles
 import * as styled from "./column.style";
@@ -62,6 +64,7 @@ const Column = ((props) => {
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
 	const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
+	const hideCard = useSelector(state => state.cardPageReducer.hideCard)
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -76,7 +79,7 @@ const Column = ((props) => {
 	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
 	const dispatchSetDraggingStationId = async (stationId) => await dispatch(setDraggingStationId(stationId))
 	const dispatchSetDragFromBin = async (stationId) => await dispatch(setDragFromBin(stationId))
-
+	const dispatchSetHideCard = async (card) => await dispatch(setHideCard(card))
 
 	// component state
 	const [dragEnter, setDragEnter] = useState(false)
@@ -88,7 +91,6 @@ const Column = ((props) => {
 	const [highlightStation, setHighlightStation] = useState(false)
 	const [acceptDrop, setAcceptDrop] = useState(false)//checks if the station should accept the drop when hovering over it
 	const [inDropZone, setInDropZone] = useState(false)
-	const [hideCard, setHideCard] = useState(false)
 
 	useEffect(() => {
 		let tempLotQuantitySummation = 0
@@ -129,6 +131,22 @@ const Column = ((props) => {
 
 	}, [draggingLotId])
 
+	useEffect(() => {
+		if(draggingLotId === null && !!hideCard && station_id === dragFromBin && processId === hideCard.process_id){
+			let tempCards = deepCopy(cards)
+			let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
+			tempCards.splice(ind,1)
+			setCards(tempCards)
+		}
+	}, [draggingLotId])
+
+	useEffect(() => {
+		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
+			let tempCards = deepCopy(cards)
+			tempCards.push(hideCard)
+			setCards(tempCards)
+		}
+	}, [draggingLotId])
 
 
 	//This function is now more limiting with split/merge
@@ -364,6 +382,8 @@ const Column = ((props) => {
 						...remainingOldBins
 					} = oldBins || {}
 
+					dispatchSetDraggingLotId(null)
+
 					if (movedBin) {
 						let updatedLot = droppedCard
 						let stationBeforeMerge = !!lastStn ? lastStn : binId
@@ -384,17 +404,15 @@ const Column = ((props) => {
 
 						result.then((res) => {
 							if(draggingLotId === tempDragId){
-							setHideCard(null)
-							dispatchSetDraggingLotId(null)
-							dispatchSetDragFromBin(null)
+
 						}
 					})
 				}
 			}
 			else{
-				setHideCard(null)
 				dispatchSetDraggingLotId(null)
 				dispatchSetDragFromBin(null)
+				dispatchSetDraggingStationId(null)
 			}
 	}
 
@@ -430,7 +448,6 @@ const Column = ((props) => {
 								...rest
 							} = card
 
-							if(!!hideCard && cardId === hideCard) return null
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 							if(!!reduxCards[card.cardId]?.bins[card.binId]){
@@ -455,6 +472,8 @@ const Column = ((props) => {
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
+																			dispatchSetHideCard(card)
+
 																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
 																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
 																			}
@@ -464,14 +483,11 @@ const Column = ((props) => {
 
 																		}}
 																		onDragEnd = {(e)=>{
-																			let moveCard = cards.find(card => card.cardId === draggingLotId)
-																			setHideCard(moveCard.cardId)
-
 																			if(!!dragFromBin && !!draggingStationId && dragFromBin!==draggingStationId) handleDrop()
 																			else{
-																				setHideCard(null)
 																				dispatchSetDraggingLotId(null)
 																				dispatchSetDragFromBin(null)
+																				dispatchSetDraggingStationId(null)
 																			}
 																			e.target.style.opacity = '1'
 																		}}
