@@ -403,7 +403,7 @@ const Column = ((props) => {
 				<styled.BodyContainer
 					class = 'container'
 					style={{ overflow: "auto", height: "100%", padding: "1rem",
-					 pointerEvents: !!draggingLotId && dragFromBin && 'none',
+					 pointerEvents: !!draggingLotId && 'none',
 				 }}
 
 					>
@@ -527,7 +527,7 @@ const Column = ((props) => {
 																			padding: '0.2rem',
 																			margin: '.4rem',
 																			width: '96%',
-																			pointerEvents: !!draggingLotId && !!dragFromBin && draggingLotId !== cardId && 'none',
+																			pointerEvents: !!draggingLotId && draggingLotId !== cardId && 'none',
 																		}}
 																	/>
 																	</styled.LotDiv>
@@ -601,7 +601,7 @@ const Column = ((props) => {
 					...containerStyle
 				}}
 			>
-				<div style = {{pointerEvents: !!draggingLotId && !!dragFromBin && 'none'}}>
+				<div style = {{pointerEvents: !!draggingLotId && 'none'}}>
 					{HeaderContent(numberOfLots, lotQuantitySummation)}
 				</div>
 				{!showCardEditor &&
