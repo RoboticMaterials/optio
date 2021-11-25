@@ -19,6 +19,7 @@ export const DragToDiv = styled.div`
   margin-bottom: .5rem;
   margin-left: 0.5rem;
   min-height: ${props => !props.dragDivHeight ? '10rem' : props.dragDivHeight};
+  max-height: 70rem;
   background: ${props => props.theme.bg.tertiary};
 
   border: 0.2rem solid #dedfe3;
