@@ -74,8 +74,6 @@ const DashboardLotPage = (props) => {
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
   const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
 
-
-
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
   }, [warehouseID, stationID]);
@@ -517,6 +515,7 @@ const DashboardLotPage = (props) => {
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
           disabled={!moveQuantity || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
+          warehouseDisabled = {stations[stationID].type === 'warehouse'}
           onBlur = {()=> {
             if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
             if(moveQuantity>currentLot.bins[stationID]?.count) setMoveQuantity(currentLot.bins[stationID].count)
