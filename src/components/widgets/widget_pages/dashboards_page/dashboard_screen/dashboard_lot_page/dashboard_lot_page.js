@@ -136,7 +136,7 @@ const DashboardLotPage = (props) => {
       current_wip: null,
       unload_station_id: null,
       dashboard_id: dashboardID,
-      user: user,
+      operator: user,
       route_id: null
     })
   }, [])

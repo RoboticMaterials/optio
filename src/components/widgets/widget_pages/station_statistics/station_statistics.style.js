@@ -88,7 +88,7 @@ export const NoData = styled.div`
 
 export const PieContainer = styled.div`
     width: 15rem;
-    height: 15rem;
+    height: 20rem;
     margin: 0 auto;
 `
 

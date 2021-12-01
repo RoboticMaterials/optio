@@ -14,7 +14,6 @@ export const LocationDefaultAttributes = {
 }
 
 export const CYCLE_TIME_DICT = {
-    desired: 0,
     theoretical: 0,
     actual: 0,
     manual: 0,

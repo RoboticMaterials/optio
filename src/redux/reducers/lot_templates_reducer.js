@@ -63,14 +63,21 @@ export default function lotTemplatesReducer(state = defaultState, action) {
         pending: false,
       }
 
-      case SET + LOT_TEMPLATE + SELECTED: {
-        return {
-          ...state,
-          selectedLotTemplatesId: action.payload
-        }
+    case SET + LOT_TEMPLATE + SELECTED: {
+      return {
+        ...state,
+        selectedLotTemplatesId: action.payload
       }
+    }
+
+    case 'SET_LOT_TEMPLATE_ATTRIBUTES': {
+      return {
+        ...state,
+        lotTemplates: {...state.lotTemplates, [action.payload.id]: {...state.lotTemplates[action.payload.id], ...action.payload.attr}},
+      }
+    }
 
     default:
       return state
-  }
+    }
 }
