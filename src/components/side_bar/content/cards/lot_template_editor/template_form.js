@@ -495,7 +495,7 @@ const LotCreatorForm = (props) => {
 			// If a field no longer exists, it should be removed from the fieldMapping if applicable
 			const flattenedFieldIds = ['COUNT_FIELD_ID', 'NAME_FIELD_ID', ...oldTemplate.fields.map(fieldArr => fieldArr.map(field => field._id)).flat()];
 			if (!!oldTemplate.uploadFieldMapping) {
-				console.log(flattenedFieldIds, oldTemplate.uploadFieldMapping)
+				//console.log(flattenedFieldIds, oldTemplate.uploadFieldMapping)
 				Object.keys(oldTemplate.uploadFieldMapping).forEach(fieldId => {
 					if (!flattenedFieldIds.includes(fieldId)) {
 						delete oldTemplate.uploadFieldMapping[fieldId]

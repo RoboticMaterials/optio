@@ -48,8 +48,7 @@ export const ComponentOptionContainer = styled.div`
 export const DropContainer = styled.div`
 	width: ${props => props.divWidth};
   height: ${props => props.divHeight};
-	margin-left: 1rem;
-	margin-right: 1rem;
+	margin: 1.1rem;
 	background: ${props => props.theme.bg.secondary};
 	border: 0.1rem solid ${props => props.theme.bg.primary};
 	border-radius: .5rem;
@@ -74,6 +73,8 @@ export const ColumnFieldContainer = styled.div`
 	border: 0.1rem solid ${props => props.theme.bg.primary};
 	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
 	border-radius: .5rem;
+	margin: .1rem;
+	overflow: hidden;
   flex: 1;
 
 	&:hover {
@@ -100,6 +101,7 @@ export const FieldName = styled.span`
   font-family: ${props => props.theme.font.primary};
   justify-content: start;
   padding: 0rem 0.5rem 0.5rem 0.2rem;
+	z-index: 99999999;
 `
 
 
