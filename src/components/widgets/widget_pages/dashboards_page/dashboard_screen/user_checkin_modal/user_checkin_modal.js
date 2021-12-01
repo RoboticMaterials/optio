@@ -94,6 +94,16 @@ const UserCheckinModal = (props) => {
                                     setUserName('')
                                 }}
                                 showEdit={false}
+                                showDelete={true}
+                                onDeleteClick={() => {
+                                    let users = dashboard.users;
+                                    users.splice(ind, 1)
+
+                                    dispatchPutDashboard({
+                                        ...dashboard,
+                                        users
+                                    }, dashboard._id.$oid);
+                                }}
                                 style={{width: '100%', background: existingUser === user ? 'rgba(255,165,0, 0.2)' : 'white', border: existingUser === user && 'none'}}
                             />
                         ))}
