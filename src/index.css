@@ -24,6 +24,10 @@ body {
 
 }
 
+.ns-resize {
+  cursor: 'ns-resize !important';
+}
+
 /* Context menu css */
 
 nav.react-contextmenu {

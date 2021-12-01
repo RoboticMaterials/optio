@@ -28,6 +28,7 @@
     "bootstrap": "^4.6.0",
     "camaro": "^6.1.0",
     "core-js": "^3.9.1",
+    "d3": "^3.5.17",
     "d3-time-format": "^3.0.0",
     "disable-browser-back-navigation": "^0.1.0",
     "emailjs-com": "^3.2.0",

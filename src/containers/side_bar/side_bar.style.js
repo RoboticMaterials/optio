@@ -54,7 +54,7 @@ export const SidebarWrapper = styled.div`
     // width: auto;
     // flex-grow: 0;
 
-    background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
+    background-color: ${props => props.secondaryColor ? props.theme.bg.secondary : props.theme.bg.primary};
     overflow: hidden !important;
 `
 

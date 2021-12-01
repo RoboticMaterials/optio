@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
-import * as styled from './statistics_page.style'
+import * as styled from './station_statistics.style'
 
 // Components
 import ScaleLoader from 'react-spinners/ScaleLoader'
@@ -10,22 +10,22 @@ import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 import Calendar from '../../../basic/calendar/calendar';
 
 // Charts
-import RadialBar from './charts/radial_bar/radial_bar';
-import Line from './charts/line/line';
-import Bar from './charts/bar/bar';
-import Pie from './charts/pie/pie';
-import Scale from './charts/scale/scale';
+import RadialBar from '../../../basic/charts/radial_bar/radial_bar';
+import Line from '../../../basic/charts/line/line';
+import Bar from '../../../basic/charts/bar/bar';
+import Pie from '../../../basic/charts/pie/pie';
+import Scale from '../../../basic/charts/scale/scale';
 
 import { getStationStatistics } from '../../../../api/stations_api';
-import { DualSelectionButton } from '../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar.style';
 import Checkbox from '../../../basic/checkbox/checkbox';
-import { defaultColors } from './charts/nivo_theme';
+import { defaultColors } from '../../../basic/charts/nivo_theme';
 
 import { deepCopy } from '../../../../methods/utils/utils';
 import Popup from 'reactjs-popup';
+import { secondsToReadable } from '../../../../methods/utils/time_utils';
 
 const emptyData = {
-    efficiency: {overall: 0, data: []},
+    productivity: {overall: 0, data: []},
     oee: {overall: 0, data: []},
     cycle_time: {},
     throughput: [],
@@ -49,7 +49,7 @@ const StatisticsPage = () => {
     const [data, setData] = useState(null)
     const [cycleTimePG, setCycleTimePG] = useState(null)
     const [showWIPChart, setShowWIPChart] = useState(false)
-    const [isCumulative, setIsCumulative] = useState(false)
+    const [isCumulative, setIsCumulative] = useState(true)
     const [showCalendar, setShowCalendar] = useState(false)
 
     const [originalThroughputData, setOriginalThroughputData] = useState([])
@@ -202,11 +202,11 @@ const StatisticsPage = () => {
                 <styled.Row>
 
                     <styled.Card style={{width: '25%'}}>
-                        <styled.CardLabel>Efficiency</styled.CardLabel>
+                        <styled.CardLabel>Productivity</styled.CardLabel>
                         <styled.ChartContainer>
                             {!!data ? 
-                                data.efficiency.data.length ?
-                                    <RadialBar data={data.efficiency.data} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={data.efficiency.overall}/>
+                                data.productivity.data.length ?
+                                    <RadialBar data={data.productivity.data} icon='fas fa-bolt' centerLabel='OVERALL' centerValue={data.productivity.overall}/>
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
                                 <ScaleLoader />
@@ -251,7 +251,7 @@ const StatisticsPage = () => {
                                             !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
                                             <div style={{height: '2rem'}}>
                                                 <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
-                                                <styled.CycleTime>{`${Math.floor(data.cycle_time[cycleTimePG].current/60)} min ${Math.round(data.cycle_time[cycleTimePG].current % 60)} sec`}</styled.CycleTime>
+                                                <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].current)}</styled.CycleTime>
                                             </div>
                                         }
                                     </div>
@@ -271,7 +271,7 @@ const StatisticsPage = () => {
 
                             {!!data ?
                                 showWIPChart ? 
-                                    data.wip.length > 1 ? 
+                                    data.wip.length > 0 ? 
                                         <Line data={data.wip} showLegend={true}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                     :
@@ -315,8 +315,13 @@ const StatisticsPage = () => {
                                         <Pie data={data.product_group_pie} label="Product Groups"/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.out_station_pie} label="To Station"/>
+                                        <Pie data={data.operator_pie} label="Operators"/>
                                     </styled.PieContainer>
+                                    {data.out_station_pie.length > 1 &&
+                                        <styled.PieContainer>
+                                            <Pie data={data.out_station_pie} label="To Station"/>
+                                        </styled.PieContainer>
+                                    }
                                 </> :
                                 <ScaleLoader />
                             }

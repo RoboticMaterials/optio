@@ -1,10 +1,13 @@
 import styled from 'styled-components';
 
 export const LegendContainer = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
-    max-height: 6rem;
+    overflow-y: auto;
+    width: 100%;
+    max-height: 5.2rem;
 `
 
 export const LegendItem = styled.div`

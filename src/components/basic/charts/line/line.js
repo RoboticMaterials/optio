@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 
 import { theme, defaultColors } from '../nivo_theme';
-import { deepCopy } from '../../../../../../methods/utils/utils';
 
 const Line = (props) => {
 
@@ -14,8 +13,6 @@ const Line = (props) => {
     } = props
 
     const [hiddenData, setHiddenData] = useState({})
-
-    console.log(data.map(dataset => ({...dataset, hidden: hiddenData[dataset.id] || false})))
 
     return (
         <ResponsiveLine

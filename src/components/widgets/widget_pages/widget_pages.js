@@ -9,7 +9,7 @@ import WidgetPageHeader from './widget_page_header/widget_page_header'
 import useWindowSize from '../../../hooks/useWindowSize'
 
 import DashboardsPage from './dashboards_page/dashboards_page'
-import StatisticsPage from './statistics_page/statistics_page'
+import StationStatistics from './station_statistics/station_statistics'
 import TasksPage from './tasks_page/tasks_page'
 
 import log from "../../../logger"
@@ -72,7 +72,7 @@ const WidgetPages = (props) => {
                 />
                 <Route
                     path="/locations/:stationID/statistics"
-                    component={StatisticsPage}
+                    component={StationStatistics}
                 />
                 <Route
                     path="/locations/:stationID/tasks"
