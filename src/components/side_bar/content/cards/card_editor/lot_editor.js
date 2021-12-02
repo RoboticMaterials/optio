@@ -753,10 +753,10 @@ const FormComponent = (props) => {
         } else {
 
             return (
-                <>
+                <div>
                     <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
                     <Button schema='fields' onClick={() => setShowHistory(true)} label='Lot History' />
-                </>
+                </div>
             )
 
         }

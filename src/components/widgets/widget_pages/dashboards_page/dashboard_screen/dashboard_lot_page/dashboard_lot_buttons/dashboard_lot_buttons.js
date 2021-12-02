@@ -43,8 +43,8 @@ const DashboardLotButtons = (props) => {
     const [fractionClicked, setFractionClicked] = useState(true)
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
-        const color = '#90eaa8'
-        const textColor = '#1c933c'
+        const color = disabled ? '#dedfe3' : '#90eaa8'
+        const textColor = disabled ? '#999' : '#15702e'
         const iconColor = theme.main.bg.octonary
 
         const error = null
@@ -58,7 +58,7 @@ const DashboardLotButtons = (props) => {
                 titleStyle={{ color: textColor }}
                 iconColor={iconColor}
 
-                title={'Move'}
+                title={'Move Quantity'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleMoveClicked}
@@ -76,12 +76,12 @@ const DashboardLotButtons = (props) => {
 
     const renderFinishButton = () => {
         const iconClassName = "fas fa-flag-checkered"
-        const color = !!disabled || warehouseDisabled ? '#dedfe3': '#90eaa8'
-        const textColor = '#1c933c'
+        const color = disabled || warehouseDisabled ? '#dedfe3': '#90eaa8'
+        const textColor = disabled || warehouseDisabled ? '#999' : '#15702e'
 
         return (
             <DashboardButton
-                title={'Finish'}
+                title={'Finish Quantity'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleMoveClicked}
@@ -99,10 +99,10 @@ const DashboardLotButtons = (props) => {
 
 
         const color = '#ff9898'
-        const textColor = '#ff1818'
+        const textColor = '#8f0000'
         return (
             <DashboardButton
-                title={'Cancel'}
+                title={'Go Back'}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleCancel}

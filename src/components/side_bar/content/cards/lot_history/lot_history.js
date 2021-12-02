@@ -32,9 +32,7 @@ const LotHistory = (props) => {
     useEffect(() => {
         dispatchGetLotTouchEvents(lotId)
     }, [])
-
-    console.log(lotEvents)
-
+    
     const speed = (event) => {
         const cycleTime = (event.stop_time - event.start_time) / 1000*event.quantity; // ms to s
 
@@ -80,8 +78,8 @@ const LotHistory = (props) => {
                         <styled.Data>{stations[event.load_station_id]?.name || event.load_station_id}</styled.Data>
                         <styled.Data>{stations[event.unload_station_id]?.name || event.unload_station_id}</styled.Data>
                         <styled.Data>{event.quantity}</styled.Data>
-                        <styled.Data>{new Date(event.start_time).toLocaleString()}</styled.Data>
-                        <styled.Data>{new Date(event.stop_time).toLocaleString()}</styled.Data>
+                        <styled.Data>{new Date(event.start_datetime.$date).toLocaleString()}</styled.Data>
+                        <styled.Data>{new Date(event.move_datetime.$date).toLocaleString()}</styled.Data>
                         <styled.Data>{speed(event)}</styled.Data>
                         <styled.Data>{event.user}</styled.Data>
                         <styled.Data>{lotTemplates[event.product_group_id]?.name}</styled.Data>

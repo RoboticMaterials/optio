@@ -53,7 +53,8 @@ const Column = ((props) => {
 	} = props
 
 	// redux state
-	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
+	const allProcessCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
+	const reduxProcessCards = useMemo(() => allProcessCards[processId], [allProcessCards])
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 	const draggingStationId = useSelector(state => state.cardPageReducer.draggingStationId) || null
@@ -107,26 +108,26 @@ const Column = ((props) => {
 			setNumberOfLots(tempNumberOfLots)
 			setLotQuantitySummation(tempLotQuantitySummation)
 		}
-	}, [reduxCards])
+	}, [reduxProcessCards])
 
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
 		if(!hideCard){
-		if (sortMode) {
-			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
-			sortBy(tempCards, sortMode, sortDirection)
-			setCards(tempCards)
+			if (sortMode) {
+				let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
+				sortBy(tempCards, sortMode, sortDirection)
+				setCards(tempCards)
+			}
+			else {
+				setCards(props.cards)
+			}
 		}
-		else {
-			setCards(props.cards)
-		}
-	}
-}, [reduxCards, sortMode, sortDirection])
+	}, [reduxProcessCards, sortMode, sortDirection])
 
 
 	useEffect(() => {
-		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
+		if(!!draggingLotId && !!dragFromBin && !!reduxProcessCards[draggingLotId]){
 			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id)
 			setAcceptDrop(accDrop)
 		}
@@ -161,12 +162,12 @@ const Column = ((props) => {
 	//-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
 	const shouldAcceptDrop = (cardId, binId, station_id) => {
 		let lastStationTraversed = false
-		let oldProcessId = reduxCards[cardId].process_id
+		let oldProcessId = reduxProcessCards[cardId].process_id
 
-		const process = processes[reduxCards[cardId].process_id]
+		const process = processes[reduxProcessCards[cardId].process_id]
 		const processRoutes = process.routes.map(routeId => routes[routeId])
 
-		if (reduxCards[cardId].process_id !== processId) return false
+		if (reduxProcessCards[cardId].process_id !== processId) return false
 		if (!!showCardEditor) return false
 
 			let startNodes = findProcessStartNodes(processRoutes, stations)
@@ -277,12 +278,11 @@ const Column = ((props) => {
 
 
 	const onMouseLeave = (event) => {
-
 		dispatchSetLotHovering(null)
 	}
 
 	const handleDeleteDisabledLot = (card, binId, partId) => {
-			let currLot = reduxCards[card.cardId]
+			let currLot = reduxProcessCards[card.cardId]
 			let currBin = currLot.bins[binId]
 
 			delete currBin[partId]
@@ -299,7 +299,7 @@ const Column = ((props) => {
 	}
 
 	const handleRightClickDeleteLot = (card, binId) => {
-			let currLot = reduxCards[card.cardId]
+			let currLot = reduxProcessCards[card.cardId]
 			let currBin = currLot.bins[binId]
 
 			currBin['count'] = 0
@@ -378,7 +378,7 @@ const Column = ((props) => {
 			let tempDragId = draggingLotId
 			if(!!inDropZne){
 					const binId = dragFromBin
-					const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
+					const droppedCard = reduxProcessCards[draggingLotId] ? reduxProcessCards[draggingLotId] : {}
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
 					const {
 						[binId]: movedBin,
@@ -429,13 +429,13 @@ const Column = ((props) => {
 				 }}
 
 					>
-					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
-						<styled.DragToDiv
-						ref = {dragContainerRef}
-						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
-						class = 'dragToDiv'
-						/>
-					}
+						{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
+							<styled.DragToDiv
+								ref = {dragContainerRef}
+								dragDivHeight = {(!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem')}
+								class = 'dragToDiv'
+							/>
+						}
 						{cards.map((card, index) => {
 							const {
 								_id,
@@ -454,8 +454,8 @@ const Column = ((props) => {
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
-							if(!!reduxCards[card.cardId]?.bins[card.binId]){
-								let partBins = reduxCards[card.cardId].bins[card.binId]
+							if(!!reduxProcessCards[card.cardId]?.bins[card.binId]){
+								let partBins = reduxProcessCards[card.cardId].bins[card.binId]
 
 								return (
 									Object.keys(partBins).map((part) => {
