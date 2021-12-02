@@ -103,7 +103,7 @@ const LotHistory = (props) => {
                             <a href='#' onClick={() => {
                                 fetchEvents(child.lotID)
                                 history.push(`/lots/${child.lotID}/history`);
-                            }}>{lots[child.lotID]?.name + (i < event.merged_children.length-1 ? ',' : '')}</a>
+                            }}>{`${lots[child.lotID]?.name} (${child.mergedQuantity})` + (i < event.merged_children.length-1 ? ',' : '')}</a>
                         ))}</styled.Data>
                     </styled.EventRow>
                 ))}
