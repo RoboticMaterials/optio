@@ -41,6 +41,8 @@ const WarehouseModal = (props) => {
         onSubmitLabel,
 
         initialQuantity,
+        disableFilter,
+        sortFunction,
 
         warehouseID,
         stationID
@@ -74,12 +76,18 @@ const WarehouseModal = (props) => {
             sortBy(availableLots, dashboard.sort.mode, dashboard.sort.direction)
         }
 
+        if (sortFunction) {
+            availableLots = availableLots.sort(sortFunction)
+        }
+
         // Maps cards to rendering
         if (availableLots.length > 0) {
             return availableLots.map((lot, idx) => {
 
                 const templateValues = getCustomFields(lot.lotTemplateId, lot);
                 const processName = processes[lot.process_id]?.name;
+
+                const disabled = !!disableFilter ? disableFilter(lot) : false
 
                 return (
                     <Lot
@@ -90,6 +98,8 @@ const WarehouseModal = (props) => {
                         processName={processName}
                         flags={lot?.flags || []}
                         name={lot.name}
+                        lotDisabled={disabled}
+                        clickDisabled={disabled}
                         start_date={lot.start_date}
                         end_date={lot.end_date}
                         count={lot.bins[warehouseID]?.count || 0}
@@ -171,7 +181,8 @@ const WarehouseModal = (props) => {
 }
 
 WarehouseModal.defaultProps = {
-    onSubmitLabel: "Pull"
+    onSubmitLabel: "Pull",
+    disableFilter: () => false
 }
 
 export default WarehouseModal

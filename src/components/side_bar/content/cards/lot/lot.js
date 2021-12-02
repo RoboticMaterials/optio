@@ -50,6 +50,7 @@ const Lot = (props) => {
         processName,
         showCustomFields,
         lotDisabled,
+        clickDisabled,
         isDashboard,
         onDeleteDisabledLot,
         onRightClickDeleteLot,
@@ -205,6 +206,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            clickDisabled = {clickDisabled}
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}

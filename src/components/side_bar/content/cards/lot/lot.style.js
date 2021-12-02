@@ -25,10 +25,8 @@ export const Container = styled.div`
 
   outline: none;
   user-select: none;
-  // cursor: ${props => !!props.disabled ? 'auto' : 'pointer'};
-  // pointer-events: ${props => !!props.isDashboard && !!props.disabled ? 'none' : 'auto'};
-  cursor: pointer;
-  pointer-events: auto;
+  cursor: ${props => props.clickDisabled ? 'auto' : 'pointer'};
+  pointer-events: ${props => props.clickDisabled ? 'none' : 'auto'};
   
   box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
 
