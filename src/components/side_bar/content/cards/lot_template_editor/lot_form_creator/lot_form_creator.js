@@ -59,6 +59,8 @@ const LotFormCreator = (props) => {
 	const [mouseOffsetX, setMouseOffsetX] = useState(null)
 	const [xDrag, setXDrag] = useState(null)
 	const [multInRow, setMultInRow] = useState(null)
+	const [allowHomeDrop, setAllowHomeDrop] = useState(null)//once youve draggged out of 'home' position the drop box can be shown once you go back
+	//this prevents flickering when dragStart occurs
 
 	const {
 		fields: items = []
@@ -72,6 +74,18 @@ const LotFormCreator = (props) => {
 		handleSetDragColumnIndex()
 	}, [clientX])
 
+	useEffect(() => {
+		if(dragIndex && startIndex && (!multInRow || dragIndex!==startIndex)){
+			setAllowHomeDrop(true)
+			if(!multInRow){
+				let fieldDiv = document.getElementById(draggingFieldId)
+				let fieldContainer = document.getElementById(draggingFieldId + 'container')
+				fieldContainer.style.display = 'none'
+				fieldDiv.style.display = 'none'
+				fieldContainer.style.padding = '0.05rem'
+			}
+		}
+	}, [dragIndex])
 
 //This function finds the which index the dragging field is currently at
 // based on drag target midpoint and the bounding box of all fields on the page
@@ -84,8 +98,11 @@ const LotFormCreator = (props) => {
 		for(const i in values.fields){
 			if(values.fields[i]){
 				let ele = document.getElementById(values.fields[i][0]._id)
-				let offset = xDrag !== 'center' && !!ele ? ele.getBoundingClientRect().height : -20
-				if(!!ele && (ele.getBoundingClientRect().bottom + ele.getBoundingClientRect().top)/2 > (clientY + mouseOffsetY + (offset*.66))){
+				let offset = xDrag !== 'center' && !!ele ? ele.getBoundingClientRect().height : 0
+				let midY = (ele.getBoundingClientRect().bottom + ele.getBoundingClientRect().top)/2
+				let draggingY = clientY + mouseOffsetY + (offset*.66)
+				let deltaY = Math.abs(midY - draggingY)
+				if(!!ele && midY > draggingY) {
 					if(xDrag!=='center' && i == startIndex && values.fields[i][0]._id !==draggingFieldId && values.fields[i-1].length<2){
 					 return parseInt(i-1) //weird case for dragging to side of field 1 above dragging field
 					}
@@ -106,95 +123,95 @@ const LotFormCreator = (props) => {
 			let ele = document.getElementById('container')
 			if(!!ele){
 			let val = (ele.getBoundingClientRect().right + ele.getBoundingClientRect().left)/2
-			if((val-300) > (clientX + mouseOffsetX)){
+			if((val-270) > (clientX + mouseOffsetX)){
 				setXDrag('left')
 			}
-			else if((val + 300) < (clientX + mouseOffsetX)){
+			else if((val + 270) < (clientX + mouseOffsetX)){
 				setXDrag('right')
 			}
 			else if((val + 200) > (clientX + mouseOffsetX) && (val-200) < (clientX + mouseOffsetX)) {
 				setXDrag('center')
 			}
 			else{
-				 setXDrag('null')
+				 setXDrag(null)
 			 }
 		 }
 		}
 	}
 
 	const handleDropField = () => {
-		if(!!xDrag && dragIndex!==startIndex){
-		let column, insertIndex, startRow, existingInd, fromColumn
-		let multipleInRow = false
-		if(xDrag !== 'center'){
-			startRow = startIndex-1
-			if(startRow<dragIndex) insertIndex = dragIndex
-			else insertIndex = dragIndex-1
+		if(!!xDrag){
+			let column, insertIndex, startRow, existingInd, fromColumn
+			let multipleInRow = false
+			if(xDrag !== 'center'){
+				startRow = startIndex-1
+				if(startRow<dragIndex) insertIndex = dragIndex
+				else insertIndex = dragIndex-1
+				if(xDrag === 'left') column = 0
+				else if(xDrag === 'right') column = 1
+			}
+			else insertIndex = dragIndex
 
-			if(xDrag === 'left') column = 0
-			else if(xDrag === 'right') column = 1
-		}
-		else insertIndex = dragIndex
-
-		let insertField = []
-		for(const i in values.fields){
-			for(const j in values.fields[i]){
-				if(values.fields[i][j]._id === draggingFieldId){
-					if(values.fields[i].length>1){
-						multipleInRow = true
-						fromColumn = j
-					}
-					if(xDrag === 'left'){
-						existingInd = i
-						insertField.push(values.fields[i][j])
-						insertField.push(values.fields[dragIndex-1][0])
-					}
-					else if(xDrag === 'right'){
-						existingInd = i
-						insertField.push(values.fields[dragIndex-1][0])
-						insertField.push(values.fields[i][j])
-					}
-					else if (xDrag === 'center'){
-					 insertField.push(values.fields[i][j])
+			let insertField = []
+			for(const i in values.fields){
+				for(const j in values.fields[i]){
+					if(values.fields[i][j]._id === draggingFieldId){
+						if(values.fields[i].length>1){
+							multipleInRow = true
+							fromColumn = j
+						}
+						if(xDrag === 'left'){
+							existingInd = i
+							insertField.push(values.fields[i][j])
+							insertField.push(values.fields[dragIndex-1][0])
+						}
+						else if(xDrag === 'right'){
+							existingInd = i
+							insertField.push(values.fields[dragIndex-1][0])
+							insertField.push(values.fields[i][j])
+						}
+						else if (xDrag === 'center'){
+						 insertField.push(values.fields[i][j])
+						}
 					}
 				}
 			}
+			if(dragIndex!==startIndex || (multipleInRow && ((fromColumn == 1 && xDrag!='right') || (fromColumn == 0 && xDrag!='left')))){
+				let newFields = deepCopy(values.fields)
+				newFields.splice(insertIndex, 0, insertField)
+				if(xDrag!=='center'){
+					if(startRow<dragIndex){//dragging field downwards and to side
+						newFields.splice(insertIndex-1, 1)
+						if(!multipleInRow) newFields.splice(existingInd, 1)
+						else newFields[existingInd].splice(fromColumn, 1)
+					}
+					else{//dragging field upwards and to side
+						newFields.splice(insertIndex+1, 1)
+						if(!multipleInRow) newFields.splice(existingInd, 1)
+						else newFields[existingInd].splice(fromColumn, 1)
+					}
+				}
+				else{//dragging fields straight up and down
+					if(startIndex<dragIndex){//down
+						if(!multipleInRow) newFields.splice(startIndex-1, 1)
+						else newFields[startIndex-1].splice(fromColumn,1)
+					}
+					else if(startIndex>dragIndex){//up
+						if(!multipleInRow) newFields.splice(startIndex, 1)
+						else newFields[startIndex].splice(fromColumn,1)
+					}
+					else{
+						newFields[startIndex-1].splice(fromColumn,1)
+					}
+				}
+				setFieldValue("fields", newFields)
+				setFieldValue("changed", true)
+			}
 		}
-		let newFields = deepCopy(values.fields)
-		newFields.splice(insertIndex, 0, insertField)
-		if(xDrag!=='center'){
-			if(startRow<dragIndex){//dragging field downwards and to side
-				newFields.splice(insertIndex-1, 1)
-				if(!multipleInRow) newFields.splice(existingInd, 1)
-				else newFields[dragIndex].splice(fromColumn, 1)
-			}
-			else{//dragging field upwards and to side
-				newFields.splice(insertIndex+1, 1)
-				if(!multipleInRow) newFields.splice(existingInd, 1)
-				else newFields[existingInd].splice(fromColumn, 1)
-			}
-		}
-		else{//dragging fields straight up and down
-			if(startIndex<dragIndex){//down
-				if(!multipleInRow) newFields.splice(startIndex-1, 1)
-				else newFields[startIndex-1].splice(fromColumn,1)
-			}
-			else{//up
-				if(!multipleInRow) newFields.splice(startIndex, 1)
-				else newFields[startIndex-1].splice(fromColumn,1)
-			}
-		}
-
-		setFieldValue("fields", newFields)
-		setFieldValue("changed", true)
-
 		setStartIndex(null)
 		setDragOverId(null)
 		setDragIndex(null)
 	}
-}
-
-
 
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
@@ -535,14 +552,6 @@ const LotFormCreator = (props) => {
 				<styled.ColumnContainer
 					id = 'container'
 				 	onDragOver = {(e)=> {
-						if(!multInRow){
-							let fieldDiv = document.getElementById(draggingFieldId)
-							let fieldContainer = document.getElementById(draggingFieldId + 'container')
-							fieldContainer.style.display = 'none'
-							fieldDiv.style.display = 'none'
-							fieldContainer.style.padding = '0rem'
-						}
-
 						setClientY(e.clientY)
 						setClientX(e.clientX)
 					}}
@@ -604,7 +613,9 @@ const LotFormCreator = (props) => {
 											}}
 											onDragStart = {(e)=>{
 												setDivHeight(e.target.offsetHeight+5)
-												setDivWidth(e.target.offsetWidth+5)
+												let containerWidth = document.getElementById('container')
+												let width = containerWidth.getBoundingClientRect().width
+												setDivWidth(width*0.99)
 												setStartIndex(currRowIndex+1)
 												setDraggingFieldId(currItem._id)
 												if(currRow.length>1) setMultInRow(true)
@@ -624,7 +635,12 @@ const LotFormCreator = (props) => {
 												fieldContainer.style.display = 'flex'
 
 												if(dragIndex || dragIndex === 0) handleDropField()
-
+												else {
+													setStartIndex(null)
+													setDragOverId(null)
+													setDragIndex(null)
+												}
+												setAllowHomeDrop(null)
 												setDraggingFieldId(null)
 												setMouseOffsetY(null)
 												setMultInRow(null)
@@ -702,7 +718,7 @@ const LotFormCreator = (props) => {
 								)
 							})}
 						</styled.FieldRowContainer>
-						{!!draggingFieldId && xDrag === 'center' && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 &&
+						{!!draggingFieldId && xDrag === 'center' && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && allowHomeDrop &&
 							<styled.DropContainer
 								divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
 								divWidth = {!!divWidth ? divWidth +'px' : '100%'}
