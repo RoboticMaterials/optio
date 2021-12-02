@@ -36,6 +36,47 @@ export const Container = styled(Modal)`
   color: ${props => props.theme.bg.octonary};
 `;
 
+export const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 0.5rem;
+	margin: 0;
+  width: 100%;
+  border-radius 0.5rem 0.5rem 0 0;
+	background: ${props => props.theme.bg.secondary};
+	z-index: 10;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+`
+
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    //margin: 2rem;
+  	right: 2rem;
+  	position: absolute;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+
+`
+
+export const Title = styled.div`
+	flex: 2;
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+  	flex-direction: column;
+	font-size: ${props => props.theme.fontSize.sz2};
+	font-weight: ${props => props.theme.fontWeight.bold};
+	font-family: ${props => props.theme.font.primary};
+
+`
+
 export const PageSelector = styled.div`
 	display: flex;
   align-items: center;

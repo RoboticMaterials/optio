@@ -6,6 +6,7 @@ import React, {
     useCallback,
 } from "react";
 import { useFilePicker } from "use-file-picker";
+import { useHistory, useParams } from 'react-router-dom'
 // actions
 import { postCard, putCard } from "../../../../../redux/actions/card_actions";
 
@@ -17,6 +18,7 @@ import LotEditor from "./lot_editor";
 import StatusList from "../../../../basic/status_list/status_list";
 import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper";
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+import BackButton from "../../../../basic/back_button/back_button";
 
 // constants
 import {
@@ -63,9 +65,13 @@ import * as styled from "./lot_editor_container.style";
 import { postLocalSettings } from "../../../../../redux/actions/local_actions";
 import { putProcesses } from "../../../../../redux/actions/processes_actions";
 import { postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
+import LotHistory from "../lot_history/lot_history";
 
 const LotEditorContainer = (props) => {
     const { merge, processId } = props;
+
+    const params = useParams()
+    const history = useHistory()
 
     // actions
     const dispatch = useDispatch();
@@ -1075,8 +1081,6 @@ const LotEditorContainer = (props) => {
         [disablePasteModal]
     );
 
-    const convertToCSV = () => {};
-
     /*
      * callback function used in createLot when submit is called from inside lot editor
      *
@@ -1085,6 +1089,250 @@ const LotEditorContainer = (props) => {
     const onAddCallback = (id) => {
         setFieldValue("_id", id);
     };
+
+    const renderHeader = useMemo(() => {
+
+        let onBack, title;
+
+        switch (params.subpage) {
+            case 'editing':
+                onBack = null;
+                title = 'Editing Lot'
+                break;
+            case 'create':
+                onBack = null;
+                title = 'Creating Lot'
+            case 'paste':
+                onBack = () => history.push(`/lots/${params.id}/editing`)
+                title = 'Paste'
+                break;
+            case 'validate':
+                onBack = () => history.push(`/lots/${params.id}/paste`)
+                title = 'Validate Lots'
+                break;
+            case 'history':
+                onBack = () => history.push(`/lots/${params.id}/editing`)
+                title = 'Lot History'
+                break;
+        }
+
+        return (
+            <styled.Header>
+                {!!onBack && 
+                    <div style={{ position: "absolute" }}>
+                        <BackButton
+                            onClick={onBack}
+                        ></BackButton>
+                    </div>
+                }
+
+                <styled.Title>{title}</styled.Title>
+
+                <styled.CloseIcon
+                    className="fa fa-times"
+                    aria-hidden="true"
+                    onClick={() => history.push('/lots/summary')}
+                />
+            </styled.Header>
+        )
+
+    })
+
+    const renderContent = useMemo(() => {
+
+        switch (params.subpage) {
+
+            case 'paste':
+                return (
+                    <PasteForm
+                        hidden={pasteMapperHidden}
+                        reset={resetPasteTable}
+                        availableFields={[...fieldNameArr]}
+                        onCancel={() => {
+                            setShowPasteMapper(false);
+                            setPasteMapperHidden(true);
+                            setPasteTable([]); // clear table
+                            setShowStatusList(false); // display statusList
+                            setSelectedIndex(null);
+                            setMappedValues([]);
+                        }}
+                        table={pasteTable}
+                        lotTemplate={lotTemplate}
+                        onCreateClick={(payload) => {
+                            handlePasteFormCreateClick(payload);
+                        }}
+                    />
+                )
+
+            case 'validate':
+                return (
+                    <StatusList
+                        displayNames={lotTemplate?.displayNames || {}}
+                        onItemClick={(item) => {
+                            setSelectedIndex(item.index);
+                            setShowStatusListLazy(false);
+                        }}
+                        onCreateClick={createLot}
+                        onMergeClick={mergeLot}
+                        mergeDisabled={mergeDisabled}
+                        onCreateAllClick={async () => {
+                            for (let i = 0; i < mappedValues.length; i++) {
+                                setPending(i);
+                            }
+                            for (let i = 0; i < mappedValues.length; i++) {
+                                await createLot(i);
+                            }
+                            setPasteTable([]);
+                            props.close();
+                        }}
+                        onCreateAllWithoutWarningClick={async () => {
+                            for (let i = 0; i < mappedValues.length; i++) {
+                                setPending(i);
+                            }
+                            for (let i = 0; i < mappedValues.length; i++) {
+                                await createLot(i, null, false);
+                            }
+                            setPasteTable([]);
+                        }}
+                        onCanceleClick={() => {
+                            setShowStatusList(false);
+                            setPasteTable([]);
+                            setSelectedIndex(null);
+                            setMappedValues([]);
+
+                            if (createdLot) {
+                                props.close();
+                            }
+                        }}
+                        onBack={() => {
+                            setShowPasteMapper(true);
+                            setPasteMapperHidden(false);
+                            setShowStatusList(false);
+                        }}
+                        onShowMapperClick={() => {
+                            setShowStatusList(false);
+                            setShowPasteMapper(true);
+                            setPasteMapperHidden(false);
+                        }}
+                        data={mappedValues.map((currValue, currIndex) => {
+                            const { name } = currValue;
+
+                            const wholeVal = mappedValues[currIndex];
+
+                            const { _id } = wholeVal;
+
+                            const currStatus = mappedStatus[currIndex] || {};
+                            return {
+                                errors: mappedErrors[currIndex] || {},
+                                title: name,
+                                created: !!_id,
+                                ...currStatus,
+                                index: currIndex,
+                            };
+                        })}
+                    />
+                )
+
+            case 'history':
+                return <LotHistory />
+
+            default:
+                return (
+                    <LotEditor
+                        cardNames={cardNames}
+                        lotTemplateName={lotTemplateName}
+                        merge={merge}
+                        onAddClick={() => {
+                            /*
+                            * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create
+                            * Therefore, before createLot is called, mappedValues must be updated.
+                            *
+                            * If you call setMappedValues and then directly call createLot, createLot will run before mappedValues is updated.
+                            *
+                            * Therefore, instead of directly calling createLot, lazyCreate is set to true. A useEffect hook listens for changes to lazyCreate, and then calls createLot when lazyCreate is true. This ensures mappedValues is updated before createLot is called
+                            *
+                            *
+                            * */
+                            // const newValue = convertLotToExcel(values, lotTemplateId)						// convert form values format to mapped excel format
+                            setMappedValues(
+                                immutableReplace(mappedValues, values, selectedIndex)
+                            ); // update mapped state
+                            setMappedErrors(
+                                immutableReplace(mappedErrors, errors, selectedIndex)
+                            ); // update mapped state
+                            setMappedTouched(
+                                immutableReplace(mappedTouched, touched, selectedIndex)
+                            ); // update mapped state
+                            setLazyCreate(true); // have to submit in round-about way in order to ensure other state variables are up-to-date first
+                        }}
+                        collectionCount={parseInt(collectionCount + 1)}
+                        lotTemplateId={lotTemplateId}
+                        lotTemplate={lotTemplate}
+                        cardId={params.subpage === 'create' ? null : params.id}
+                        processId={params.subpage === 'create' ? params.id : cards[params.id]?.process_id}
+                        onSelectLotTemplate={handleSelectLotTemplate}
+                        showProcessSelector={false}
+                        hidden={showStatusList || showPasteMapper}
+                        onShowCreateStatusClick={() => {
+                            setShowStatusList(true);
+                            setSelectedIndex(null);
+                        }}
+                        onImportXML={() => {
+                            //convertToCSV()
+                            openFileSelector();
+                        }}
+                        disabledAddButton={
+                            isArray(mappedValues) && mappedValues.length > 0
+                        }
+                        formRef={formRef}
+                        showCreationStatusButton={
+                            isArray(mappedValues) && mappedValues.length > 0
+                        }
+                        showPasteIcon={isNonEmptyArray(pasteTable)}
+                        onPasteIconClick={() => {
+                            setShowPasteMapper(true);
+                            setPasteMapperHidden(false);
+                            setResetPasteTable(true);
+                            setTimeout(() => {
+                                setResetPasteTable(false);
+                            }, 250);
+                            setDisablePasteModal(false);
+                        }}
+                        onValidate={handleValidate}
+                        footerContent={() =>
+                            isArray(mappedValues) &&
+                            mappedValues.length > 0 && (
+                                <styled.PageSelector>
+                                    <styled.PageSelectorButton
+                                        className="fas fa-chevron-left"
+                                        onClick={() => {
+                                            if (selectedIndex > 0) {
+                                                setSelectedIndex(selectedIndex - 1);
+                                            }
+                                        }}
+                                    />
+                                    <styled.PageSelectorText>
+                                        {selectedIndex + 1}/{mappedValues.length}
+                                    </styled.PageSelectorText>
+                                    <styled.PageSelectorButton
+                                        className="fas fa-chevron-right"
+                                        onClick={() => {
+                                            if (
+                                                selectedIndex <
+                                                mappedValues.length - 1
+                                            ) {
+                                                setSelectedIndex(selectedIndex + 1);
+                                            }
+                                        }}
+                                    />
+                                </styled.PageSelector>
+                            )
+                        }
+                    />
+                )
+        }
+
+    })
 
     return (
         <styled.Container
@@ -1103,101 +1351,6 @@ const LotEditorContainer = (props) => {
                 content: {},
             }}
         >
-            {showStatusList && (
-                <StatusList
-                    displayNames={lotTemplate?.displayNames || {}}
-                    onItemClick={(item) => {
-                        setSelectedIndex(item.index);
-                        setShowStatusListLazy(false);
-                    }}
-                    onCreateClick={createLot}
-                    onMergeClick={mergeLot}
-                    mergeDisabled={mergeDisabled}
-                    onCreateAllClick={async () => {
-                        for (let i = 0; i < mappedValues.length; i++) {
-                            setPending(i);
-                        }
-                        for (let i = 0; i < mappedValues.length; i++) {
-                            await createLot(i);
-                        }
-                        setPasteTable([]);
-                        props.close();
-                    }}
-                    onCreateAllWithoutWarningClick={async () => {
-                        for (let i = 0; i < mappedValues.length; i++) {
-                            setPending(i);
-                        }
-                        for (let i = 0; i < mappedValues.length; i++) {
-                            await createLot(i, null, false);
-                        }
-                        setPasteTable([]);
-                    }}
-                    onCanceleClick={() => {
-                        setShowStatusList(false);
-                        setPasteTable([]);
-                        setSelectedIndex(null);
-                        setMappedValues([]);
-
-                        if (createdLot) {
-                            props.close();
-                        }
-                    }}
-                    onBack={() => {
-                        setShowPasteMapper(true);
-                        setPasteMapperHidden(false);
-                        setShowStatusList(false);
-                    }}
-                    onShowMapperClick={() => {
-                        setShowStatusList(false);
-                        setShowPasteMapper(true);
-                        setPasteMapperHidden(false);
-                    }}
-                    data={mappedValues.map((currValue, currIndex) => {
-                        const { name } = currValue;
-
-                        const wholeVal = mappedValues[currIndex];
-
-                        const { _id } = wholeVal;
-
-                        const currStatus = mappedStatus[currIndex] || {};
-                        return {
-                            errors: mappedErrors[currIndex] || {},
-                            title: name,
-                            created: !!_id,
-                            ...currStatus,
-                            index: currIndex,
-                        };
-                    })}
-                />
-            )}
-            {showPasteMapper && (
-                <PasteForm
-                    hidden={pasteMapperHidden}
-                    reset={resetPasteTable}
-                    availableFields={[...fieldNameArr]}
-                    onCancel={() => {
-                        setShowPasteMapper(false);
-                        setPasteMapperHidden(true);
-                        setPasteTable([]); // clear table
-                        setShowStatusList(false); // display statusList
-                        setSelectedIndex(null);
-                        setMappedValues([]);
-                    }}
-                    table={pasteTable}
-                    lotTemplate={lotTemplate}
-                    // onPreviewClick={(payload) => {
-                    // 	// setShowPasteMapper(false)
-                    // 	// setShowProcessSelector(true)
-                    // 	setMappedValues(payload)
-                    // 	setSelectedIndex(0)
-                    // 	setPasteMapperHidden(true)
-                    // }}
-                    onCreateClick={(payload) => {
-                        handlePasteFormCreateClick(payload);
-                    }}
-                />
-            )}
-
             {showSimpleModal && (
                 <SimpleModal
                     isOpen={true}
@@ -1239,107 +1392,10 @@ const LotEditorContainer = (props) => {
                 </SimpleModal>
             )}
 
-            <LotEditor
-                cardNames={cardNames}
-                lotTemplateName={lotTemplateName}
-                merge={merge}
-                onAddClick={() => {
-                    /*
-                     * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create
-                     * Therefore, before createLot is called, mappedValues must be updated.
-                     *
-                     * If you call setMappedValues and then directly call createLot, createLot will run before mappedValues is updated.
-                     *
-                     * Therefore, instead of directly calling createLot, lazyCreate is set to true. A useEffect hook listens for changes to lazyCreate, and then calls createLot when lazyCreate is true. This ensures mappedValues is updated before createLot is called
-                     *
-                     *
-                     * */
-                    // const newValue = convertLotToExcel(values, lotTemplateId)						// convert form values format to mapped excel format
-                    setMappedValues(
-                        immutableReplace(mappedValues, values, selectedIndex)
-                    ); // update mapped state
-                    setMappedErrors(
-                        immutableReplace(mappedErrors, errors, selectedIndex)
-                    ); // update mapped state
-                    setMappedTouched(
-                        immutableReplace(mappedTouched, touched, selectedIndex)
-                    ); // update mapped state
-                    setLazyCreate(true); // have to submit in round-about way in order to ensure other state variables are up-to-date first
-                }}
-                collectionCount={parseInt(collectionCount + 1)}
-                lotTemplateId={lotTemplateId}
-                lotTemplate={lotTemplate}
-                processId={processId}
-                onSelectLotTemplate={handleSelectLotTemplate}
-                showProcessSelector={
-                    props.showProcessSelector ||
-                    (isArray(mappedValues) && mappedValues.length > 0)
-                }
-                hidden={showStatusList || showPasteMapper}
-                onShowCreateStatusClick={() => {
-                    setShowStatusList(true);
-                    setSelectedIndex(null);
-                }}
-                onImportXML={() => {
-                    //convertToCSV()
-                    openFileSelector();
-                }}
-                disabledAddButton={
-                    isArray(mappedValues) && mappedValues.length > 0
-                }
-                formRef={formRef}
-                showCreationStatusButton={
-                    isArray(mappedValues) && mappedValues.length > 0
-                }
-                showPasteIcon={isNonEmptyArray(pasteTable)}
-                onPasteIconClick={() => {
-                    setShowPasteMapper(true);
-                    setPasteMapperHidden(false);
-                    setResetPasteTable(true);
-                    setTimeout(() => {
-                        setResetPasteTable(false);
-                    }, 250);
-                    setDisablePasteModal(false);
-                }}
-                {...props}
-                cardId={
-                    props.cardId !== null
-                        ? props.cardId
-                        : values._id
-                        ? values._id
-                        : null
-                }
-                onValidate={handleValidate}
-                footerContent={() =>
-                    isArray(mappedValues) &&
-                    mappedValues.length > 0 && (
-                        <styled.PageSelector>
-                            <styled.PageSelectorButton
-                                className="fas fa-chevron-left"
-                                onClick={() => {
-                                    if (selectedIndex > 0) {
-                                        setSelectedIndex(selectedIndex - 1);
-                                    }
-                                }}
-                            />
-                            <styled.PageSelectorText>
-                                {selectedIndex + 1}/{mappedValues.length}
-                            </styled.PageSelectorText>
-                            <styled.PageSelectorButton
-                                className="fas fa-chevron-right"
-                                onClick={() => {
-                                    if (
-                                        selectedIndex <
-                                        mappedValues.length - 1
-                                    ) {
-                                        setSelectedIndex(selectedIndex + 1);
-                                    }
-                                }}
-                            />
-                        </styled.PageSelector>
-                    )
-                }
-            />
+            {renderHeader}
+            
+            {renderContent}
+
         </styled.Container>
     );
 };

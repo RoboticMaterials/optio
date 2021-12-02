@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef, useContext, memo, lazy, Suspense} from 'react';
+import { useHistory, useParams } from 'react-router-dom'
 
 // external functions
-import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
 // internal components
@@ -54,17 +54,24 @@ const Cards = (props) => {
         id
     } = props
 
+    let params = useParams()
+    const history = useHistory()
+
     // theme
     const themeContext = useContext(ThemeContext)
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
-    const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
-    const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     // actions
     const dispatch = useDispatch()
-    const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+    const onShowCardEditor = (card) => {
+        if (card) {
+            history.push(`/lots/${card.cardId}/editing`)
+        } else {
+            history.push('/lots/summary')
+        }
+    }
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
     // internal state
@@ -316,7 +323,7 @@ const Cards = (props) => {
         * No special key pressed, open editor
         * */
         else {
-            onShowCardEditor(true)
+            onShowCardEditor({ cardId: lotId, processId, binId })
             setSelectedCard({ cardId: lotId, processId, binId })
         }
     }
@@ -330,8 +337,7 @@ const Cards = (props) => {
     }
 
     const handleAddLotClick = (processId) => {
-        onShowCardEditor(true)
-        setSelectedCard({ cardId: null, processId, binId: null })
+        history.push(`/lots/${processId}/create`)
     }
 
     return (
@@ -358,16 +364,16 @@ const Cards = (props) => {
             />
             }
 
-            {showCardEditor &&
+            {params.id !== 'summary' &&
                 <LotEditorContainer
-                    isOpen={showCardEditor}
+                    isOpen={params.id !== 'summary'}
                     onAfterOpen={null}
                     cardId={selectedCard ? selectedCard.cardId : null}
-                    processId={selectedCard ? selectedCard.processId : null}
+                    processId={params.subpage === 'create' ? params.id : (selectedCard ? selectedCard.processId : null)}
                     binId={selectedCard ? selectedCard.binId : null}
                     close={()=>{
-                        onShowCardEditor(false)
                         setSelectedCard(null)
+                        onShowCardEditor(false)
                     }}
                 />
             }
@@ -412,52 +418,43 @@ const Cards = (props) => {
                     />
                 }
 
-                {
-                    {
-                        'summary':
-                            <SummaryZone
+                {params.page === 'lots' ?
+                    <SummaryZone
+                        setSelectedCards={setSelectedCards}
+                        selectedCards={selectedCards}
+                        selectedProcesses={selectedProcesses}
+
+                        sortMode={sortMode}
+                        sortDirection={sortDirection}
+
+                        lotFilters={lotFilters}
+
+                        handleCardClick={handleCardClick}
+                        handleAddLotClick={handleAddLotClick}
+
+                        selectedProcesses={selectedProcesses}
+                        lotFilterValue={lotFilterValue}
+                        selectedFilterOption={selectedFilterOption}
+                    />
+                    : params.page === 'processes' ? 
+
+                        <styled.CardZoneContainer ref={zoneRef}>
+                            <CardZone
+                                handleAddLotClick={handleAddLotClick}
                                 setSelectedCards={setSelectedCards}
                                 selectedCards={selectedCards}
-                                selectedProcesses={selectedProcesses}
-
-                                sortMode={sortMode}
-                                sortDirection={sortDirection}
-
-                                lotFilters={lotFilters}
-
                                 handleCardClick={handleCardClick}
-                                setShowCardEditor={onShowCardEditor}
-                                showCardEditor={showCardEditor}
-                                handleAddLotClick={handleAddLotClick}
-
-                                selectedProcesses={selectedProcesses}
+                                processId={params.id}
+                                setLotFilterValue={setLotFilterValue}
                                 lotFilterValue={lotFilterValue}
                                 selectedFilterOption={selectedFilterOption}
-                            />,
-                        'timeline':
-                            <div
-                                handleCardClick={handleCardClick}
-                                initialProcesses={[currentProcess]}
-                            />
-                    }[id] ||
-                    <styled.CardZoneContainer ref={zoneRef}>
-                        <CardZone
-                            handleAddLotClick={handleAddLotClick}
-                            setSelectedCards={setSelectedCards}
-                            selectedCards={selectedCards}
-                            setShowCardEditor={onShowCardEditor}
-                            showCardEditor={showCardEditor}
-                            handleCardClick={handleCardClick}
-                            processId={id}
-                            setLotFilterValue={setLotFilterValue}
-                            lotFilterValue={lotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
 
-                            lotFilters={lotFilters}
-                            sortMode={sortMode}
-                            sortDirection={sortDirection}
-                        />
-                    </styled.CardZoneContainer>
+                                lotFilters={lotFilters}
+                                sortMode={sortMode}
+                                sortDirection={sortDirection}
+                            />
+                        </styled.CardZoneContainer>
+                        : null
                 }
             </styled.Body>
         </styled.Container>
