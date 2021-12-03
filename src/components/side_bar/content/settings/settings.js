@@ -71,7 +71,6 @@ const Settings = () => {
         currentMap,
         maps
     } = mapReducer
-
     const [serverSettingsState, setServerSettingsState] = useState(serverSettings)
     const [emailSettingsState, setEmailSettingsState] = useState(serverSettings.emailNotifications)
     const [localSettingsState, setLocalSettingsState] = useState({})

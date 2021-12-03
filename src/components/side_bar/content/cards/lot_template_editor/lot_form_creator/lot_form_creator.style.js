@@ -4,24 +4,21 @@ import { hexToRGBA, LightenDarkenColor } from '../../../../../../methods/utils/c
 
 export const RowContainer = styled.div`
 	display: flex;
-
-  	//flex: 1;
-  	//align-self: stretch;
-  //background: cyan;
+	flex-direction: row;
   align-items: center;
 
-
-
-  //padding: .5rem;
-
-
-	// margin-bottom: 1rem;
 `
 
 export const ColumnContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+`
+export const DropDownContainer = styled.div`
+	width: 50%;
+	margin-left: 1.5rem;
+	margin-bottom: 2rem;
+	margin-top: 1.2rem;
 `
 
 export const FieldRowContainer = styled.div`
@@ -74,11 +71,11 @@ export const ColumnFieldContainer = styled.div`
 	border-left: ${props => !!props.selected && '0.4rem solid #924dff'};
 	border-radius: .5rem;
 	margin: .1rem;
-	overflow: hidden;
   flex: 1;
 
 	&:hover {
 		box-shadow: ${props => !props.selected && '3px 2px 5px 2px rgba(0,0,0,0.2)'};
+		cursor: ${props => !props.selected && 'pointer'}
 	}
 `
 
@@ -101,9 +98,8 @@ export const FieldName = styled.span`
   font-family: ${props => props.theme.font.primary};
   justify-content: start;
   padding: 0rem 0.5rem 0.5rem 0.2rem;
-	z-index: 99999999;
+	z-index: 1;
 `
-
 
 export const ExtraStyledContainer = styled.div`
   && .smooth-dnd-container {

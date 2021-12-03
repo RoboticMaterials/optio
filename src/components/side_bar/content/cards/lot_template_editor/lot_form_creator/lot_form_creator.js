@@ -10,16 +10,17 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import Button from '../../../../../basic/button/button'
 import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
+import DropDownIcon from '../../../../../basic/drop_down_icon/drop_down_icon'
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import CalendarPlaceholder from '../../../../../basic/calendar_placeholder/calendar_placeholder'
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
+import {FIELD_TYPES, ICONS} from '../../../../../../constants/lot_template_constants'
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector, useDispatch} from "react-redux";
 import NumberInput from '../../../../../basic/number_input/number_input'
 import CheckboxField from '../../../../../basic/form/checkbox_field/checkbox_field'
 import {getProcessStations} from "../../../../../../methods/utils/processes_utils";
 const LotFormCreator = (props) => {
-
 	const {
 		preview,
 		formMode,
@@ -38,10 +39,8 @@ const LotFormCreator = (props) => {
 		lotTemplateId
 	} = props
 
-
 	const processes = useSelector(state => state.processesReducer.processes)
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-
 	const dispatch = useDispatch()
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 
@@ -59,6 +58,8 @@ const LotFormCreator = (props) => {
 	const [mouseOffsetX, setMouseOffsetX] = useState(null)
 	const [xDrag, setXDrag] = useState(null)
 	const [multInRow, setMultInRow] = useState(null)
+	const [showComponentDropdown, setShowComponentDropdown] = useState(null)
+	const [changeFieldTypes, setChangeFieldTypes] = useState(null)
 	const [allowHomeDrop, setAllowHomeDrop] = useState(null)//once youve draggged out of 'home' position the drop box can be shown once you go back
 	//this prevents flickering when dragStart occurs
 
@@ -73,6 +74,25 @@ const LotFormCreator = (props) => {
 	useEffect(() => {
 		handleSetDragColumnIndex()
 	}, [clientX])
+
+	useEffect(() => {//when changing field dont show the current fieldtype in dropdown
+		let removeType
+		for(const i in values.fields){
+			for(const j in values.fields[i]){
+				if(values.fields[i][j]._id === selectedEditingField) {
+					removeType = values.fields[i][j].component
+					break
+				}
+			}
+		}
+
+		let ind = FIELD_TYPES.findIndex(field => field.type === removeType)
+		let updatedFields = deepCopy(FIELD_TYPES)
+		if(ind>-1) updatedFields.splice(ind,1)
+		setChangeFieldTypes(updatedFields)
+
+	}, [selectedEditingField])
+
 
 	useEffect(() => {
 		if(dragIndex && startIndex && (!multInRow || dragIndex!==startIndex)){
@@ -137,6 +157,23 @@ const LotFormCreator = (props) => {
 			 }
 		 }
 		}
+	}
+
+	const handleChangeFieldType = (componentType, dataType)=> {
+		let newFields = values.fields
+		for(const i in values.fields){
+			for(const j in values.fields[i]){
+				if(values.fields[i][j]._id === selectedEditingField) {
+					let changedField = values.fields[i][j]
+					changedField.dataType = dataType
+					changedField.component = componentType
+					newFields[i][j] = changedField
+					break
+				}
+			}
+		}
+		setFieldValue("fields", newFields)
+		setFieldValue("changed", true)
 	}
 
 	const handleDropField = () => {
@@ -340,76 +377,6 @@ const LotFormCreator = (props) => {
 		setFieldValue("fields", updatedData, true)
 	}
 
-	const handleRenderComponentOptions = () => {
-		return (
-			<styled.RowContainer>
-			<styled.ComponentOptionContainer
-				onClick = {()=> {
-					handleAddField('TEXT_BOX', 'STRING')
-				}}
-				>
-				<styled.RowContainer
-				 style = {{
-					background: '#f7f7fa', width: '100%', height: '2rem',
-					boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
-					border: '0.1rem solid transparent',
-					borderRadius: '0.2rem',
-					padding: '0.5rem',
-					marginRight: '1rem'
-				}}
-				>
-				<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</styled.FieldName>
-				</styled.RowContainer>
-				</styled.ComponentOptionContainer>
-
-				<styled.ComponentOptionContainer onClick = {()=> handleAddField('TEXT_BOX_BIG', 'STRING')}>
-					<styled.RowContainer
-					 style = {{
-						background: '#f7f7fa', width: '100%', height: '4rem',
-						boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
-						border: '0.1rem solid transparent',
-						borderRadius: '0.2rem',
-						padding: '0.5rem',
-						marginRight: '1rem'
-					}}
-					>
-					<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6',}}>multi-line input...</styled.FieldName>
-					</styled.RowContainer>
-				</styled.ComponentOptionContainer>
-
-				<styled.ComponentOptionContainer onClick = {()=> handleAddField('NUMBER_INPUT', 'INTEGER')}>
-					<NumberInput
-						containerSyle = {{pointerEvents: 'none', userSelect: 'none', width: '15%'}}
-						inputStyle = {{pointerEvents: 'none', userSelect: 'none'}}
-						buttonStyle = {{pointerEvents: 'none', userSelect: 'none'}}
-						inputDisabled={false}
-						minusDisabled={false}
-						plusDisabled={false}
-					/>
-				</styled.ComponentOptionContainer>
-
-				<styled.ComponentOptionContainer onClick = {()=> handleAddField('CALENDAR_SINGLE', 'DATE')}>
-					<CalendarPlaceholder
-							usable={false}
-							selectRange = {false}
-							defaultText = {'start date'}
-							containerStyle={{ width: "23rem", userSelect: 'none', pointerEvents: 'none', marginTop: '0.5rem' }}
-					/>
-				</styled.ComponentOptionContainer>
-
-				<styled.ComponentOptionContainer onClick = {()=> handleAddField('CALENDAR_START_END', 'DATE_RANGE')}>
-					<CalendarPlaceholder
-							usable={false}
-							selectRange = {true}
-							defaultStartText = {'start date'}
-							defaultEndText = {'end date'}
-							containerStyle={{ width: "23rem", userSelect: 'none', pointerEvents: 'none' }}
-						/>
-					</styled.ComponentOptionContainer>
-			</styled.RowContainer>
-		)
-	}
-
 	const handleRenderComponentType = (component, fieldId) => {
 		switch(component) {
 			case 'TEXT_BOX':
@@ -424,7 +391,7 @@ const LotFormCreator = (props) => {
 								overflow: 'hidden',
 							}}
 							>
-							<styled.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</styled.FieldName>
+							<styled.FieldName style= {{zIndex: '1',fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem', overflow: 'hidden'}}>single-line input...</styled.FieldName>
 							</styled.RowContainer>
 				)
 			case 'TEXT_BOX_BIG':
@@ -615,7 +582,7 @@ const LotFormCreator = (props) => {
 												setDivHeight(e.target.offsetHeight+5)
 												let containerWidth = document.getElementById('container')
 												let width = containerWidth.getBoundingClientRect().width
-												setDivWidth(width*0.99)
+												setDivWidth(width*0.98)
 												setStartIndex(currRowIndex+1)
 												setDraggingFieldId(currItem._id)
 												if(currRow.length>1) setMultInRow(true)
@@ -681,25 +648,44 @@ const LotFormCreator = (props) => {
 													{handleRenderComponentType(component, currItem._id)}
 														</styled.ColumnContainer>
 														<styled.OptionContainer>
-														<styled.RowContainer>
+														<styled.RowContainer style = {{justifyContent: 'end'}}>
+														<styled.FieldName style = {{margin: '0.4rem 0rem 0rem 0.2rem'}}>show</styled.FieldName>
 														<CheckboxField
 															name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
 															css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}
 														/>
-														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>show field</styled.FieldName>
+														<styled.FieldName style = {{margin: '0.4rem 0rem 0rem 1.5rem'}}>require</styled.FieldName>
 														<CheckboxField
 															name={`fields[${currRowIndex}][${currItemIndex}].required`}
 															css = {{background: !!values.fields[currRowIndex][currItemIndex].required && '#924dff', border: '0.1rem solid #924dff'}}
 														/>
-														<styled.FieldName style = {{margin: '0.3rem 0.8rem 0rem 0.2rem'}}>required</styled.FieldName>
 														<i
 														className = 'fas fa-trash'
-														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', cursor: 'pointer'}}
+														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', marginLeft: '1.5rem', cursor: 'pointer'}}
 														onClick = {()=> {
 															handleDeleteClick(currItem._id)
 														}}
 														/>
 													</styled.RowContainer>
+													<styled.DropDownContainer style = {{minWidth: '22rem', paddingRight: '.5rem'}}>
+														 <DropDownIcon
+																 placeholder="Change field type"
+																 schema = {'lots'}
+																 labelField="name"
+																 valueField="name"
+																 options={changeFieldTypes}
+																 icons = {ICONS}
+																 height = {'2rem'}
+																 values={[]}
+																 dropdownGap={5}
+																 noDataLabel="No matches found"
+																 closeOnSelect="true"
+																 setFieldType = {(item, dataType)=>{
+																	 handleChangeFieldType(item,dataType)
+																 }}
+																 className="w-100"
+														 />
+													 </styled.DropDownContainer>
 													</styled.OptionContainer>
 												</>
 											}
@@ -727,28 +713,25 @@ const LotFormCreator = (props) => {
 						</div>
 					})}
 					</div>
-					<styled.ColumnFieldContainer
-					 style = {{margin: '1rem', paddingTop: '1.2rem', paddingLeft: '1.2rem', flexDirection: selectedEditingField !== 'ADDING' ? 'row' : 'column', maxHeight: selectedEditingField !== 'ADDING' ? '4rem' : '10rem'}}
-					 onClick = {()=>{
-						 if(selectedEditingField!=='ADDING'){
-							 setSelectedEditingField('ADDING')
-						 }
-					 }}
-					 selected = {selectedEditingField === 'ADDING'}
-					 >
-					 {selectedEditingField !== 'ADDING' ?
-					 	<>
-						 <i className = 'fas fa-plus' style = {{fontSize: '1.2rem', paddingRight: '.5rem'}}/>
-						 <styled.FieldName>Add New Field</styled.FieldName>
-					  </>
-					 	:
-						 <>
-							 <styled.FieldName style = {{marginBottom: '1rem'}}>Choose a component type</styled.FieldName>
-							 {handleRenderComponentOptions()}
-						 </>
-		 			 }
-
-					</styled.ColumnFieldContainer>
+					<styled.DropDownContainer>
+						 <DropDownIcon
+								 placeholder="Add a new field"
+								 schema = {'lots'}
+								 labelField="name"
+								 valueField="name"
+								 options={FIELD_TYPES}
+								 icons = {ICONS}
+								 values={[]}
+								 height = {'4rem'}
+								 dropdownGap={5}
+								 noDataLabel="No matches found"
+								 closeOnSelect="true"
+								 setFieldType = {(item, dataType)=>{
+									 handleAddField(item, dataType)
+								 }}
+								 className="w-100"
+						 />
+					 </styled.DropDownContainer>
 				</styled.ColumnContainer>
 		)
 	}

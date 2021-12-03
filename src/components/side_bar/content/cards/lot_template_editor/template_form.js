@@ -14,7 +14,6 @@ import BackButton from '../../../../basic/back_button/back_button';
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import CalendarPlaceholder from '../../../../basic/calendar_placeholder/calendar_placeholder'
 import WorkInstructionsModal from '../modals/work_instructions_modal/work_instructions_modal'
-
 // actions
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
