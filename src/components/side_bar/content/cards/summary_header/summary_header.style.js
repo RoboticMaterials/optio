@@ -3,7 +3,7 @@ import * as commonCss from "../../../../../common_css/layout";
 
 export const Header = styled.div`
 	${commonCss.headerStyle};
-	padding: .25rem 1rem;
+	padding: .25rem 0.5rem;
   display: flex;
   align-items: center;
   

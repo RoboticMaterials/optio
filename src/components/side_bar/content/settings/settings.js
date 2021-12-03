@@ -260,7 +260,7 @@ const Settings = () => {
         return (
             <>
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Track Users</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Track Operators</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.trackUsers ? serverSettingsState.trackUsers : false}
                         onChange={() => {

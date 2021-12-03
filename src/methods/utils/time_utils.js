@@ -232,3 +232,27 @@ export const convertSecondsToHHMMSS = (seconds) => {
     const date = new Date(seconds * 1000).toISOString().substr(11, 8)
     return date
 }
+
+export const secondsToReadable = (seconds, short=false) => {
+
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.round(seconds % 60)
+
+    let readable = '';
+    if (short) {
+        if (days) readable += `${days}d `;
+        if (hours) readable += `${hours}h `;
+        if (!days) readable += `${minutes}m`;
+        if (!days && !hours) readable += ` ${remainingSeconds}s`;
+    } else {
+        if (days) readable += `${days} days `;
+        if (hours) readable += `${hours} hrs `;
+        if (!days) readable += `${minutes} min`;
+        if (!days && !hours) readable += ` ${remainingSeconds} sec`;
+    }
+
+    return readable;
+
+}

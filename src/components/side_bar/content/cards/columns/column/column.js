@@ -11,6 +11,7 @@ import {
 	setDraggingStationId,
 	setDragFromBin,
 	setLotDivHeight,
+	setHideCard,
 } from "../../../../../../redux/actions/card_page_actions";
 
 // components external
@@ -21,6 +22,7 @@ import Lot from "../../lot/lot";
 
 // functions external
 import { useDispatch, useSelector } from "react-redux";
+import {deepCopy} from "../../../../../../methods/utils/utils";
 
 // styles
 import * as styled from "./column.style";
@@ -62,6 +64,7 @@ const Column = ((props) => {
 	const processes = useSelector(state => state.processesReducer.processes)
 	const kickoffDashboards = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards})
 	const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
+	const hideCard = useSelector(state => state.cardPageReducer.hideCard)
 	const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -76,7 +79,7 @@ const Column = ((props) => {
 	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
 	const dispatchSetDraggingStationId = async (stationId) => await dispatch(setDraggingStationId(stationId))
 	const dispatchSetDragFromBin = async (stationId) => await dispatch(setDragFromBin(stationId))
-
+	const dispatchSetHideCard = async (card) => await dispatch(setHideCard(card))
 
 	// component state
 	const [dragEnter, setDragEnter] = useState(false)
@@ -103,21 +106,23 @@ const Column = ((props) => {
 
 		setNumberOfLots(tempNumberOfLots)
 		setLotQuantitySummation(tempLotQuantitySummation)
-	}, [cards])
+	}, [reduxCards])
 
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
+		if(!hideCard){
 		if (sortMode) {
 			let tempCards = [...props.cards] // *** MAKE MODIFIABLE COPY OF CARDS TO ALLOW SORTING ***
 			sortBy(tempCards, sortMode, sortDirection)
 			setCards(tempCards)
-
 		}
 		else {
 			setCards(props.cards)
 		}
-	}, [props.cards, sortMode, sortDirection])
+	}
+}, [reduxCards, sortMode, sortDirection])
+
 
 	useEffect(() => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxCards[draggingLotId]){
@@ -128,6 +133,22 @@ const Column = ((props) => {
 
 	}, [draggingLotId])
 
+	useEffect(() => {
+		if(draggingLotId === null && !!hideCard && station_id === dragFromBin && processId === hideCard.process_id){
+			let tempCards = deepCopy(cards)
+			let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
+			tempCards.splice(ind,1)
+			setCards(tempCards)
+		}
+	}, [draggingLotId])
+
+	useEffect(() => {
+		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
+			let tempCards = deepCopy(cards)
+			tempCards.push(hideCard)
+			setCards(tempCards)
+		}
+	}, [draggingLotId])
 
 
 	//This function is now more limiting with split/merge
@@ -353,7 +374,7 @@ const Column = ((props) => {
 
 	const handleDrop = async () => {
 			let [inDropZne, lastStn] = shouldAcceptDrop(draggingLotId, dragFromBin, draggingStationId)
-
+			let tempDragId = draggingLotId
 			if(!!inDropZne){
 					const binId = dragFromBin
 					const droppedCard = reduxCards[draggingLotId] ? reduxCards[draggingLotId] : {}
@@ -362,6 +383,8 @@ const Column = ((props) => {
 						[binId]: movedBin,
 						...remainingOldBins
 					} = oldBins || {}
+
+					dispatchSetDraggingLotId(null)
 
 					if (movedBin) {
 						let updatedLot = droppedCard
@@ -382,14 +405,17 @@ const Column = ((props) => {
 						let result = dispatchPutCard(updatedLot, updatedLot._id)
 
 						result.then((res) => {
-							dispatchSetDraggingLotId(null)
+							dispatchSetHideCard(null)
 							dispatchSetDragFromBin(null)
-						})
+							dispatchSetDraggingStationId(null)
+					})
 				}
 			}
 			else{
 				dispatchSetDraggingLotId(null)
 				dispatchSetDragFromBin(null)
+				dispatchSetDraggingStationId(null)
+				dispatchSetHideCard(null)
 			}
 	}
 
@@ -449,6 +475,8 @@ const Column = ((props) => {
 																		onMouseEnter={(event) => onMouseEnter(event, cardId)}
 																		onMouseLeave={onMouseLeave}
 																		onDragStart = {(e)=>{
+																			dispatchSetHideCard(card)
+
 																			if(!!lotRef && !!lotRef.current && !!lotRef.current.offsetHeight){
 																				dispatchSetLotDivHeight(lotRef.current.offsetHeight/16)
 																			}
@@ -462,6 +490,8 @@ const Column = ((props) => {
 																			else{
 																				dispatchSetDraggingLotId(null)
 																				dispatchSetDragFromBin(null)
+																				dispatchSetDraggingStationId(null)
+																				dispatchSetHideCard(null)
 																			}
 																			e.target.style.opacity = '1'
 																		}}

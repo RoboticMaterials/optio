@@ -7,16 +7,17 @@ import emptyData from './empty';
 
 const Pie = ({ data, label }) => {
 
-    if (!data.length) {data = emptyData}
+    if (!data || !data.length) {data = emptyData}
     const colors = data.map((slice, idx) => !!slice.color ? slice.color : defaultColors[idx % defaultColors.length])
 
     return (
 
-        <div style={{position: 'relative', height: '100%'}}>
+        <div style={{position: 'relative', height: '100%', width: '100%', height: '14rem'}}>
             <ResponsivePie
                 data={data}
                 theme={theme}
                 colors={colors}
+                sortByValue={true}
                 margin={{ top: 8, right: 8, bottom: 8, left: 8 }}
                 innerRadius={0.9}
                 padAngle={1}

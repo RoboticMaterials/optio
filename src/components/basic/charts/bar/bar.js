@@ -24,7 +24,7 @@ const Bar = ({ data, keys, colors }) => {
                 tickSize: 0,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'country',
+                legend: '',
                 legendPosition: 'middle',
                 legendOffset: 32
             }}
@@ -33,7 +33,7 @@ const Bar = ({ data, keys, colors }) => {
                 tickPadding: 5,
                 tickRotation: 0,
                 tickValues: 5,
-                legend: 'food',
+                legend: 'instances',
                 legendPosition: 'middle',
                 legendOffset: -40
             }}

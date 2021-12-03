@@ -1,7 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar'
-import { capitalizeFirstLetter } from '../../../../../../methods/utils/string_utils';
+import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils'
 
 const Scale = ({ data, labels }) => {
+
 
     const totalTime = (Math.abs(data[0].working) + Math.abs(data[0].idle))
 
