@@ -5,7 +5,7 @@ import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../..
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 import {arraysEqual, uuidv4, deepCopy} from "../../../../../../methods/utils/utils";
 //import DropContainer from "../drop_container/drop_container";
-import AWS from 'aws-sdk'
+import AWS from 'aws-sdk/global'
 import Textbox from "../../../../../basic/textbox/textbox";
 import Button from '../../../../../basic/button/button'
 import {Container} from "react-smooth-dnd";
@@ -62,7 +62,6 @@ const LotFormCreator = (props) => {
 	const [changeFieldTypes, setChangeFieldTypes] = useState(null)
 	const [allowHomeDrop, setAllowHomeDrop] = useState(null)//once youve draggged out of 'home' position the drop box can be shown once you go back
 	//this prevents flickering when dragStart occurs
-
 	const {
 		fields: items = []
 	} = values || {}
@@ -91,7 +90,7 @@ const LotFormCreator = (props) => {
 		if(ind>-1) updatedFields.splice(ind,1)
 		setChangeFieldTypes(updatedFields)
 
-	}, [selectedEditingField])
+	}, [selectedEditingField, values])
 
 
 	useEffect(() => {
@@ -124,7 +123,7 @@ const LotFormCreator = (props) => {
 				let deltaY = Math.abs(midY - draggingY)
 				if(!!ele && midY > draggingY) {
 					if(xDrag!=='center' && i == startIndex && values.fields[i][0]._id !==draggingFieldId && values.fields[i-1].length<2){
-					 return parseInt(i-1) //weird case for dragging to side of field 1 above dragging field
+					 return parseInt(i) //weird case for dragging to side of field 1 above dragging field
 					}
 					else return parseInt(i)
 				}
@@ -661,7 +660,7 @@ const LotFormCreator = (props) => {
 														/>
 														<i
 														className = 'fas fa-trash'
-														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', marginLeft: '1.5rem', cursor: 'pointer'}}
+														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', marginLeft: '2rem', cursor: 'pointer'}}
 														onClick = {()=> {
 															handleDeleteClick(currItem._id)
 														}}
