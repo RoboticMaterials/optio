@@ -380,14 +380,7 @@ const DashboardLotPage = (props) => {
 
   const renderWorkInstructionsViewer = () => {
       return (
-        <WorkInstructionsViewer
-          isOpen = {showWorkInstructionsViewer}
-          close = {()=>setShowWorkInstructionsViewer(false)}
-          setShowWorkInstructionsViewer = {setShowWorkInstructionsViewer}
-          showWorkInstructionsViewer = {showWorkInstructionsViewer}
-          stationID = {stationID}
-          lotTemplateId = {currentLot.lotTemplateId}
-        />
+        <></>
       )
   }
 

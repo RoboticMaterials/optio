@@ -6,12 +6,6 @@ import { uuidv4 } from '../../../../../../methods/utils/utils';
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 
 //3rd party libraries
-import FileViewer from 'react-file-viewer'
-import {Viewer as ImgViewer} from 'react-viewer'
-import {Viewer, Worker} from '@react-pdf-viewer/core'
-import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import ReactPlayer from 'react-player'
 //S3 constants
 const S3_BUCKET ='winstructions';
 const REGION ='us-west-1';
