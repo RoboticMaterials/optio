@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
+import AWS from 'aws-sdk'
 
 import { useSelector, useDispatch} from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
@@ -11,7 +12,15 @@ const S3_BUCKET ='winstructions';
 const REGION ='us-west-1';
 
 //AWS config keys
+AWS.config.update({
+    accessKeyId: 'AKIAYKB6JQEJI3A35AFN',
+    secretAccessKey: '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'
+})
 
+const myBucket = new AWS.S3({
+    params: { Bucket: S3_BUCKET},
+    region: REGION,
+})
 
 // Import Style
 import * as styled from './work_instructions_modal.style'
@@ -27,6 +36,7 @@ const WorkInstructionsModal = (props) => {
 
   const dispatch = useDispatch()
   const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
+
   const [progress , setProgress] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [uint8Array, setUint8Array] = useState(null)
@@ -67,6 +77,16 @@ const WorkInstructionsModal = (props) => {
       };
 
 
+      myBucket.putObject(params)
+          .on('httpUploadProgress', (evt) => {
+              setProgress({
+                ...progress,
+               [id]: Math.round((evt.loaded / evt.total) * 100)
+              })
+          })
+          .send((err) => {
+              if (err) console.log(err)
+          })
 
       }
 
@@ -91,7 +111,13 @@ const WorkInstructionsModal = (props) => {
       };
 
 
+      myBucket.putObject(params)
+          .on('httpUploadProgress', (evt) => {
 
+          })
+          .send((err) => {
+              if (err) console.log(err)
+          })
 
       }
 
@@ -111,6 +137,12 @@ const WorkInstructionsModal = (props) => {
         }
       }
 
+      if(!usedElsewhere){
+        const objects = myBucket
+          .deleteObject(params, function(err, data){
+            if(err)throw err
+          })
+        }
 
 
       let template = lotTemplates[lotTemplateId]
