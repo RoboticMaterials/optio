@@ -5,7 +5,6 @@ import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../..
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 import {arraysEqual, uuidv4, deepCopy} from "../../../../../../methods/utils/utils";
 //import DropContainer from "../drop_container/drop_container";
-import AWS from 'aws-sdk/global'
 import Textbox from "../../../../../basic/textbox/textbox";
 import Button from '../../../../../basic/button/button'
 import {Container} from "react-smooth-dnd";
