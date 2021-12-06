@@ -1,2 +1,0 @@
-(this["webpackJsonprmstudio_2.0"]=this["webpackJsonprmstudio_2.0"]||[]).push([[44],{2053:function(t,n,e){"use strict";e.r(n);var u=e(1),o=(e(41),e(1399),e(194),e(8));n.default=function(){return document.onmousemove=function(t){},Object(u.useEffect)((function(){})),Object(o.jsx)(o.Fragment,{})}}}]);
-//# sourceMappingURL=44.390f1623.chunk.js.map
