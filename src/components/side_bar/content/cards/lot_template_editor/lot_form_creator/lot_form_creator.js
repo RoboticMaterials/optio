@@ -58,14 +58,12 @@ const LotFormCreator = (props) => {
 	const [mouseOffsetX, setMouseOffsetX] = useState(null)
 	const [xDrag, setXDrag] = useState(null)
 	const [multInRow, setMultInRow] = useState(null)
-	const [showComponentDropdown, setShowComponentDropdown] = useState(null)
 	const [changeFieldTypes, setChangeFieldTypes] = useState(null)
 	const [allowHomeDrop, setAllowHomeDrop] = useState(null)//once youve draggged out of 'home' position the drop box can be shown once you go back
 	//this prevents flickering when dragStart occurs
 	const {
 		fields: items = []
 	} = values || {}
-
 	useEffect(() => {
 		setDragIndex(dragIndexSearch(values.fields.length))
 	}, [clientY])
@@ -94,15 +92,13 @@ const LotFormCreator = (props) => {
 
 
 	useEffect(() => {
-		if(dragIndex && startIndex && (!multInRow || dragIndex!==startIndex)){
-			setAllowHomeDrop(true)
-			if(!multInRow){
+		if(dragIndex && startIndex){
+				setAllowHomeDrop(true)
 				let fieldDiv = document.getElementById(draggingFieldId)
 				let fieldContainer = document.getElementById(draggingFieldId + 'container')
 				fieldContainer.style.display = 'none'
 				fieldDiv.style.display = 'none'
 				fieldContainer.style.padding = '0.05rem'
-			}
 		}
 	}, [dragIndex])
 
@@ -116,16 +112,22 @@ const LotFormCreator = (props) => {
 		if(!!draggingFieldId){
 		for(const i in values.fields){
 			if(values.fields[i]){
-				let ele = document.getElementById(values.fields[i][0]._id)
+				let ele = document.getElementById(values.fields[i][0]?._id)
+				if(ele?.getBoundingClientRect().width === 0 && values.fields[i].length>1) ele = document.getElementById(values.fields[i][1]._id)
 				let offset = xDrag !== 'center' && !!ele ? ele.getBoundingClientRect().height : 0
-				let midY = (ele.getBoundingClientRect().bottom + ele.getBoundingClientRect().top)/2
+				let midY = (ele?.getBoundingClientRect().bottom + ele?.getBoundingClientRect().top)/2
 				let draggingY = clientY + mouseOffsetY + (offset*.66)
 				let deltaY = Math.abs(midY - draggingY)
 				if(!!ele && midY > draggingY) {
 					if(xDrag!=='center' && i == startIndex && values.fields[i][0]._id !==draggingFieldId && values.fields[i-1].length<2){
-					 return parseInt(i) //weird case for dragging to side of field 1 above dragging field
+					 return parseInt(i-1) //weird case for dragging to side of field 1 above dragging field
 					}
-					else return parseInt(i)
+					else{
+					 return parseInt(i)
+				 }
+				}
+				else if(i == values.fields.length-1 && startIndex===values.fields.length && values.fields[i].length<2){//dragging from end
+					return values.fields.length-1
 				}
 			}
 		}
@@ -212,7 +214,7 @@ const LotFormCreator = (props) => {
 					}
 				}
 			}
-			if(dragIndex!==startIndex || (multipleInRow && ((fromColumn == 1 && xDrag!='right') || (fromColumn == 0 && xDrag!='left')))){
+			if(dragIndex!==startIndex || xDrag === 'center'){
 				let newFields = deepCopy(values.fields)
 				newFields.splice(insertIndex, 0, insertField)
 				if(xDrag!=='center'){
@@ -243,7 +245,15 @@ const LotFormCreator = (props) => {
 				setFieldValue("fields", newFields)
 				setFieldValue("changed", true)
 			}
-		}
+			else if(multipleInRow && ((fromColumn == 1 && xDrag=='left') || (fromColumn == 0 && xDrag=='right'))){
+				let newFields = deepCopy(values.fields)
+				let updatedField = []
+				updatedField[0] = newFields[startIndex-1][1]//swaparooooo
+				updatedField[1] = newFields[startIndex-1][0]
+				newFields[startIndex-1] = updatedField
+				setFieldValue("fields", newFields)
+				setFieldValue("changed", true)
+			}		}
 		setStartIndex(null)
 		setDragOverId(null)
 		setDragIndex(null)
@@ -358,8 +368,6 @@ const LotFormCreator = (props) => {
 		return item
 
 	}
-
-	const handleCenterDrop = (id, dropResult) => {}
 
 	const handleDeleteClick = (id) => {
 		const [selected, indexPattern, finalIndex, isRow] = getSelected(id)
@@ -543,17 +551,18 @@ const LotFormCreator = (props) => {
 									component,
 									fieldName
 								} = currItem || {}
+
 								const isLastItem = currItemIndex === currRow.length - 1
 								const indexPattern = [currRowIndex, currItemIndex]
 								const isOnlyItem = currRow.length === 1
 								return (
 									<>
-									{!!draggingFieldId && xDrag === 'left' && !!startIndex && !!dragIndex && values.fields[dragIndex-1].length===1
+									{!!draggingFieldId && xDrag === 'left' && !!startIndex && !!dragIndex && currItem._id!==draggingFieldId && (currRow.length<2 || startIndex ===dragIndex)
 									 && dragIndex === currRowIndex+1 &&
 										<styled.DropContainer
 											style = {{marginTop: '1rem'}}
 											divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-											divWidth = {'50%'}
+											divWidth = {'48%'}
 										/>
 									}
 										<div
@@ -691,12 +700,12 @@ const LotFormCreator = (props) => {
 										</styled.ColumnFieldContainer>
 										</div>
 
-										{!!draggingFieldId && xDrag === 'right' && !!startIndex && !!dragIndex && values.fields[dragIndex-1].length===1
+										{!!draggingFieldId && xDrag === 'right' && !!startIndex && !!dragIndex && currItem._id!==draggingFieldId && (currRow.length<2 || startIndex ===dragIndex)
 										 && dragIndex === currRowIndex+1 &&
 											<styled.DropContainer
 												style = {{marginTop: '1rem'}}
 												divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-												divWidth = {'50%'}
+												divWidth = {'48%'}
 											/>
 										}
 									</>

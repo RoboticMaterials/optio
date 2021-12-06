@@ -134,18 +134,15 @@ const Column = ((props) => {
 	}, [draggingLotId])
 
 	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === dragFromBin && processId === hideCard.process_id){
+		if(draggingLotId === null && !!hideCard && processId === hideCard.process_id){
 			let tempCards = deepCopy(cards)
-			let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
-			tempCards.splice(ind,1)
-			setCards(tempCards)
-		}
-	}, [draggingLotId])
-
-	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
-			let tempCards = deepCopy(cards)
-			tempCards.push(hideCard)
+			if(station_id === dragFromBin){
+				let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
+				tempCards.splice(ind,1)
+			}
+			else if(station_id === draggingStationId){
+				tempCards.push(hideCard)
+			}
 			setCards(tempCards)
 		}
 	}, [draggingLotId])
