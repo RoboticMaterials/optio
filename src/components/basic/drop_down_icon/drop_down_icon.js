@@ -484,14 +484,14 @@ export class DropDownIcon extends Component {
 
         <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
           props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)}
-          icons = {this.props.icons} setfieldType = {this.props.setFieldType}
+          icons = {this.props.options} setfieldType = {this.props.setFieldType}
          />,
         this.dropdownRoot
       )
     ) : (
         <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent}
          props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter}
-         icons = {this.props.icons} setfieldType = {this.props.setFieldType}
+         icons = {this.props.options} setfieldType = {this.props.setFieldType}
          onMouseLeave = {(item) => this.props.onMouseLeave} />
       );
 

@@ -143,7 +143,7 @@ const ListView = (props) => {
               }
               else lotId = parseInt(full.slice(0,-5))
                 setLotNum(lotId)
-                onScanLot(lotId)
+                if(!!lotId) onScanLot(lotId)
                 setFull('')
             }
 

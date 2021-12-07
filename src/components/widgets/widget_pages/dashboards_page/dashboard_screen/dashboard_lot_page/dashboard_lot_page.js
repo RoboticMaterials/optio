@@ -67,6 +67,7 @@ const DashboardLotPage = (props) => {
   const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
+  const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
   const dispatch = useDispatch();
   const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
@@ -504,7 +505,6 @@ const DashboardLotPage = (props) => {
           currentLot={currentLot}
           stationID={stationID}
           warehouse={!!warehouseID}
-          onWorkInstructionsClick = {handleShowWorkInstructions}
         />
         {!!lotContainsInput && <DashboardLotInputBox currentLot={currentLot} onGetCards = {handleGetCards} />}
         <div
@@ -518,7 +518,16 @@ const DashboardLotPage = (props) => {
           {renderChildCards}
         </div>
       </styled.LotBodyContainer>
-
+      {!!lotTemplates[currentLot.lotTemplateId].workInstructions && !!lotTemplates[currentLot.lotTemplateId].workInstructions[stationID] &&
+      <Button
+        schema = {'locations'}
+        label = 'View Work Instructions'
+        style = {{width: '35rem', alignSelf: 'center',
+                  minHeight: '4rem', borderRadius: '.5rem',
+                  marginBottom: '2rem', boxShadow: '2px 3px 2px 1px rgba(0,0,0,0.2)'}}
+        onClick = {handleShowWorkInstructions}
+      />
+    }
       <styled.LotButtonContainer>
         <DashboardLotButtons
           handleMoveClicked={() => onMoveClicked()}

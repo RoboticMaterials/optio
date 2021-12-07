@@ -57,8 +57,8 @@ const LotFormCreator = (props) => {
 	const [mouseOffsetY, setMouseOffsetY] = useState(null)
 	const [mouseOffsetX, setMouseOffsetX] = useState(null)
 	const [xDrag, setXDrag] = useState(null)
-	const [multInRow, setMultInRow] = useState(null)
 	const [changeFieldTypes, setChangeFieldTypes] = useState(null)
+	const [newFieldChosen, setNewFieldChosen] = useState(null)
 	const [allowHomeDrop, setAllowHomeDrop] = useState(null)//once youve draggged out of 'home' position the drop box can be shown once you go back
 	//this prevents flickering when dragStart occurs
 	const {
@@ -87,8 +87,8 @@ const LotFormCreator = (props) => {
 		let updatedFields = deepCopy(FIELD_TYPES)
 		if(ind>-1) updatedFields.splice(ind,1)
 		setChangeFieldTypes(updatedFields)
-
-	}, [selectedEditingField, values])
+		setNewFieldChosen(false)
+	}, [selectedEditingField, values, newFieldChosen])
 
 
 	useEffect(() => {
@@ -175,9 +175,10 @@ const LotFormCreator = (props) => {
 		}
 		setFieldValue("fields", newFields)
 		setFieldValue("changed", true)
+		setNewFieldChosen(true)
 	}
 
-	const handleDropField = () => {
+	const handleDropField = () => {//rewrite this function... kept adding for edge cases and it became a mess
 		if(!!xDrag){
 			let column, insertIndex, startRow, existingInd, fromColumn
 			let multipleInRow = false
@@ -198,12 +199,12 @@ const LotFormCreator = (props) => {
 							multipleInRow = true
 							fromColumn = j
 						}
-						if(xDrag === 'left'){
+						if(xDrag === 'left' && values.fields[dragIndex-1]?.length<2){
 							existingInd = i
 							insertField.push(values.fields[i][j])
 							insertField.push(values.fields[dragIndex-1][0])
 						}
-						else if(xDrag === 'right'){
+						else if(xDrag === 'right' && values.fields[dragIndex-1]?.length<2){
 							existingInd = i
 							insertField.push(values.fields[dragIndex-1][0])
 							insertField.push(values.fields[i][j])
@@ -214,10 +215,11 @@ const LotFormCreator = (props) => {
 					}
 				}
 			}
-			if(dragIndex!==startIndex || xDrag === 'center'){
+			if((dragIndex!==startIndex && insertField.length>0) || xDrag === 'center'){
 				let newFields = deepCopy(values.fields)
 				newFields.splice(insertIndex, 0, insertField)
 				if(xDrag!=='center'){
+					let toDouble = false
 					if(startRow<dragIndex){//dragging field downwards and to side
 						newFields.splice(insertIndex-1, 1)
 						if(!multipleInRow) newFields.splice(existingInd, 1)
@@ -253,7 +255,8 @@ const LotFormCreator = (props) => {
 				newFields[startIndex-1] = updatedField
 				setFieldValue("fields", newFields)
 				setFieldValue("changed", true)
-			}		}
+			}
+		}
 		setStartIndex(null)
 		setDragOverId(null)
 		setDragIndex(null)
@@ -566,7 +569,7 @@ const LotFormCreator = (props) => {
 										/>
 									}
 										<div
-											id = {currItem._id + 'container'}
+											id = {currItem?._id + 'container'}
 											style = {{padding: '1.2rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
 												setDragOverId(currItem._id)
@@ -593,8 +596,6 @@ const LotFormCreator = (props) => {
 												setDivWidth(width*0.98)
 												setStartIndex(currRowIndex+1)
 												setDraggingFieldId(currItem._id)
-												if(currRow.length>1) setMultInRow(true)
-
 												let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
 												let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
@@ -618,7 +619,6 @@ const LotFormCreator = (props) => {
 												setAllowHomeDrop(null)
 												setDraggingFieldId(null)
 												setMouseOffsetY(null)
-												setMultInRow(null)
 												e.target.style.opacity = '1'
 											}}
 										 selected = {currItem._id === selectedEditingField}
@@ -682,7 +682,6 @@ const LotFormCreator = (props) => {
 																 labelField="name"
 																 valueField="name"
 																 options={changeFieldTypes}
-																 icons = {ICONS}
 																 height = {'2rem'}
 																 values={[]}
 																 dropdownGap={5}
@@ -728,7 +727,6 @@ const LotFormCreator = (props) => {
 								 labelField="name"
 								 valueField="name"
 								 options={FIELD_TYPES}
-								 icons = {ICONS}
 								 values={[]}
 								 height = {'4rem'}
 								 dropdownGap={5}

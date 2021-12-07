@@ -138,7 +138,7 @@ const SideBar = (props) => {
               }
               else lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)
-                onScanLot(lotId)
+                if(!!lotId) onScanLot(lotId)
                 setFull('')
             }
 
@@ -265,7 +265,7 @@ const SideBar = (props) => {
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
         }
-        
+
 
         setPrevParams(params)
 

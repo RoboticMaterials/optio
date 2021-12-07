@@ -523,14 +523,13 @@ const LotCreatorForm = (props) => {
 
 				// When new product group is created, we need to add an empty cycle time dict to each station that it might go through
 				const PGProcess = processes[processId];
-				PGProcess.flattened_stations.forEach(node => {
+				PGProcess?.flattened_stations.forEach(node => {
 					let stationCopy = deepCopy(stations[node.stationID])
 					if (!(createdLotTemplate._id in stationCopy.cycle_times)) {
 						stationCopy.cycle_times[createdLotTemplate._id] = CYCLE_TIME_DICT
 						dispatchPutStation(stationCopy)
 					}
 				})
-
 			}
 			else {
 				console.error("postResult",response)

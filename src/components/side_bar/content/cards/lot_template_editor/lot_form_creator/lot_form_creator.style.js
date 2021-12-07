@@ -14,6 +14,7 @@ export const ColumnContainer = styled.div`
   flex-direction: column;
   flex: 1;
 `
+
 export const DropDownContainer = styled.div`
 	width: 50%;
 	margin-left: 1.5rem;
@@ -25,7 +26,6 @@ export const FieldRowContainer = styled.div`
   display: flex;
   flex-direction: row;
 `
-
 
 export const ComponentOptionContainer = styled.div`
   display: flex;

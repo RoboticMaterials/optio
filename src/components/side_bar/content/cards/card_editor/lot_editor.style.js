@@ -108,7 +108,7 @@ export const SectionContainer = styled.div`
 
 export const TheBody = styled.div`
   position: relative;
-  overflow: auto;
+  overflow: visible;
   flex: 1;
   display: flex;
   flex-direction: column;
