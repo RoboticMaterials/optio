@@ -13,9 +13,7 @@ export async function getLotTouchEvents(lotID) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + '/lot/' + lotID, 
-            headers: {
-                'X-API-Key': '123456',
-            },
+            headers: getHeaders(),
         });
         // Success 🎉
         const data = response.data;
@@ -34,10 +32,7 @@ export async function deleteTouchEvent(ID) {
         const response = await axios({
             method: 'DELETE',
             url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-            },
+            headers: getHeaders(),
         });
 
         // Success 🎉

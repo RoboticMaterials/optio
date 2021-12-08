@@ -19,9 +19,9 @@ export const DragToDiv = styled.div`
   margin-bottom: .5rem;
   margin-left: 0.5rem;
   min-height: ${props => !props.dragDivHeight ? '10rem' : props.dragDivHeight};
+  max-height: 70rem;
   background: ${props => props.theme.bg.tertiary};
 
-  border: 0.2rem solid #dedfe3;
   border-radius: 0.2rem;
 `
 
@@ -98,4 +98,6 @@ export const BodyContainer = styled.div`
   // border-right: 0.2rem solid ${props => props.theme.schema.lots.solid};
 
 	justify-content: start;
+
+  transition: height 100ms;
 `
