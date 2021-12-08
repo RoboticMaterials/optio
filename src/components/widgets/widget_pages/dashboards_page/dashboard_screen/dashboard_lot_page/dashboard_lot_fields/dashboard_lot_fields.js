@@ -153,14 +153,6 @@ const DashboardLotFields = (props) => {
             flags={currentLot?.flags}
             containerStyle={{ alignSelf: "center", flex: '1' }}
           />
-          {!!lotTemplates[currentLot.lotTemplateId].workInstructions && !!lotTemplates[currentLot.lotTemplateId].workInstructions[stationID] &&
-          <Button
-            secondary
-            label = 'View Work Instructions'
-            style = {{flex: '3', maxWidth: '18rem', height: '2.5rem', color: '#5c6fff', border: 'none', boxShadow: '2px 2px 2px 2px rgba(0,0,0,0.2)'}}
-            onClick = {()=>onWorkInstructionsClick()}
-          />
-        }
         </div>
         <div style = {{marginTop:'0.5rem', marginBottom: '.8rem'}}>
           <LotSimpleRow

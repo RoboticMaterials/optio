@@ -108,7 +108,7 @@ export const SectionContainer = styled.div`
 
 export const TheBody = styled.div`
   position: relative;
-  overflow: auto;
+  overflow: visible;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -123,13 +123,7 @@ export const ScrollContainer = styled.div`
   //height: 50rem;
   flex-direction: column;
   //background: blue;
-
-
 `
-
-
-
-
 export const ProcessFieldContainer = styled.div`
   //margin-bottom: 1rem;
   display: flex;

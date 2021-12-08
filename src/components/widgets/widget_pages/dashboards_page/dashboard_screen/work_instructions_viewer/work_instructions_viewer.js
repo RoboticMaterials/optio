@@ -7,7 +7,7 @@ import { uuidv4 } from '../../../../../../methods/utils/utils';
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 
 //3rd party libraries
-import FileViewer from 'react-file-viewer'
+import {Viewer as ImgViewer} from 'react-viewer'
 import {Viewer, Worker} from '@react-pdf-viewer/core'
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
@@ -102,6 +102,7 @@ const WorkInstructionsViewer = (props) => {
             url = {fileUrl}
             fluid = {false}
             controls = {true}
+            width = '98%'
           />
         )
       case 'pdf':
@@ -109,6 +110,11 @@ const WorkInstructionsViewer = (props) => {
           <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
             <Viewer fileUrl = {fileUrl} plugins = {[defaultLayoutPluginInstance]}/>
           </Worker>
+        )
+
+      case 'png':
+        return (
+          <></>
         )
     }
   }
