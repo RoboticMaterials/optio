@@ -525,8 +525,9 @@ const LotCreatorForm = (props) => {
 				const PGProcess = processes[processId];
 				PGProcess?.flattened_stations.forEach(node => {
 					let stationCopy = deepCopy(stations[node.stationID])
-					if (!(createdLotTemplate._id in stationCopy.cycle_times)) {
-						stationCopy.cycle_times[createdLotTemplate._id] = CYCLE_TIME_DICT
+					if(!stationCopy.cycle_times) stationCopy.cycle_times = []
+					if (!stationCopy.cycle_times[lotTemplate._id]) {
+						stationCopy.cycle_times[lotTemplate._id] = CYCLE_TIME_DICT
 						dispatchPutStation(stationCopy)
 					}
 				})

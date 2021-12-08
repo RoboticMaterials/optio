@@ -276,7 +276,7 @@ const LotFormCreator = (props) => {
 				}
 
 			} else {
-				if(currItem._id === id) {
+				if(currItem?._id === id) {
 					found = true
 					indices = [...indices, currIndex]
 				}
@@ -408,7 +408,7 @@ const LotFormCreator = (props) => {
 				return (
 					<styled.RowContainer
 					 style = {{
-					 	background: '#f7f7fa', width: '50%', height: '4rem',
+					 	background: '#f7f7fa', width: '50%', height: '3.5rem',
 					 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
 					 	border: '0.1rem solid transparent',
 						borderRadius: '0.2rem',
@@ -560,42 +560,44 @@ const LotFormCreator = (props) => {
 								const isOnlyItem = currRow.length === 1
 								return (
 									<>
-									{!!draggingFieldId && xDrag === 'left' && !!startIndex && !!dragIndex && currItem._id!==draggingFieldId && (currRow.length<2 || startIndex ===dragIndex)
+									{!!draggingFieldId && xDrag === 'left' && !!startIndex && !!dragIndex && currItem?._id!==draggingFieldId && allowHomeDrop && (currRow.length<2 || startIndex ===dragIndex)
 									 && dragIndex === currRowIndex+1 &&
 										<styled.DropContainer
 											style = {{marginTop: '1rem'}}
 											divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-											divWidth = {'48%'}
+											divWidth = {startIndex === dragIndex ? divWidth +'px' : '48%'}
 										/>
 									}
 										<div
 											id = {currItem?._id + 'container'}
 											style = {{padding: '1.2rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
-												setDragOverId(currItem._id)
+												setDragOverId(currItem?._id)
 											}}
 											>
 										<styled.ColumnFieldContainer
-											id = {currItem._id}
+											id = {currItem?._id}
 											draggable = {true}
 											style = {{
-												borderBottom: draggingFieldId === currItem._id && '.3rem solid #dedfe3',
-												borderLeft: draggingFieldId === currItem._id && currItem._id !==selectedEditingField && '0.1rem solid #dedfe3',
-												borderRight: draggingFieldId === currItem._id && '0.3rem solid #dedfe3',
-												borderTop: draggingFieldId === currItem._id && '0.1rem solid #dedfe3',
-												boxShadow: draggingFieldId === currItem._id && 'none',
-												flexDirection: selectedEditingField === currItem._id && 'row',
-												pointerEvents: dragOverId === currItem._id && 'none',
-												borderRadius: draggingFieldId === currItem._id && '0.5rem',
-												margin: draggingFieldId === currItem._id && '0rem',
+												borderBottom: draggingFieldId === currItem?._id && '.3rem solid #dedfe3',
+												borderLeft: draggingFieldId === currItem?._id && currItem?._id !==selectedEditingField && '0.1rem solid #dedfe3',
+												borderRight: draggingFieldId === currItem?._id && '0.3rem solid #dedfe3',
+												borderTop: draggingFieldId === currItem?._id && '0.1rem solid #dedfe3',
+												boxShadow: draggingFieldId === currItem?._id && 'none',
+												flexDirection: selectedEditingField === currItem?._id && 'row',
+												pointerEvents: dragOverId === currItem?._id && 'none',
+												borderRadius: draggingFieldId === currItem?._id && '0.5rem',
+												margin: draggingFieldId === currItem?._id && '0.1rem',
 											}}
 											onDragStart = {(e)=>{
 												setDivHeight(e.target.offsetHeight+5)
 												let containerWidth = document.getElementById('container')
-												let width = containerWidth.getBoundingClientRect().width
+												let itemWidth = document.getElementById(currItem?._id)
+												let width = currRow.length === 2 ? itemWidth.getBoundingClientRect().width + containerWidth.getBoundingClientRect().width*0.014 : containerWidth.getBoundingClientRect().width
+
 												setDivWidth(width*0.98)
 												setStartIndex(currRowIndex+1)
-												setDraggingFieldId(currItem._id)
+												setDraggingFieldId(currItem?._id)
 												let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
 												let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
@@ -610,7 +612,9 @@ const LotFormCreator = (props) => {
 												fieldDiv.style.display = 'flex'
 												fieldContainer.style.display = 'flex'
 
-												if(dragIndex || dragIndex === 0) handleDropField()
+												if(!!currItem && !(dragIndex === startIndex && xDrag==='center') && (dragIndex || dragIndex === 0)){
+													handleDropField()
+												}
 												else {
 													setStartIndex(null)
 													setDragOverId(null)
@@ -621,16 +625,16 @@ const LotFormCreator = (props) => {
 												setMouseOffsetY(null)
 												e.target.style.opacity = '1'
 											}}
-										 selected = {currItem._id === selectedEditingField}
+										 selected = {currItem?._id === selectedEditingField}
 
 										 onClick = {()=>{
-											setSelectedEditingField(currItem._id)
+											setSelectedEditingField(currItem?._id)
 											}}
 										>
-											{currItem._id !== selectedEditingField ?
+											{currItem?._id !== selectedEditingField ?
 												<>
 												<styled.FieldName>{fieldName}</styled.FieldName>
-												{handleRenderComponentType(component, currItem._id)}
+												{handleRenderComponentType(component, currItem?._id)}
 												</>
 												:
 												<>
@@ -653,7 +657,7 @@ const LotFormCreator = (props) => {
 														name={`fields[${currRowIndex}][${currItemIndex}].fieldName`}
 														InputComponent={Textbox}
 													/>
-													{handleRenderComponentType(component, currItem._id)}
+													{handleRenderComponentType(component, currItem?._id)}
 														</styled.ColumnContainer>
 														<styled.OptionContainer>
 														<styled.RowContainer style = {{justifyContent: 'end'}}>
@@ -671,7 +675,7 @@ const LotFormCreator = (props) => {
 														className = 'fas fa-trash'
 														style = {{color: '#7e7e7e', fontSize: '1.2rem', marginRight: '0.5rem', marginLeft: '2rem', cursor: 'pointer'}}
 														onClick = {()=> {
-															handleDeleteClick(currItem._id)
+															handleDeleteClick(currItem?._id)
 														}}
 														/>
 													</styled.RowContainer>
@@ -699,12 +703,13 @@ const LotFormCreator = (props) => {
 										</styled.ColumnFieldContainer>
 										</div>
 
-										{!!draggingFieldId && xDrag === 'right' && !!startIndex && !!dragIndex && currItem._id!==draggingFieldId && (currRow.length<2 || startIndex ===dragIndex)
+										{!!draggingFieldId && xDrag === 'right' && !!startIndex && !!dragIndex && currItem?._id!==draggingFieldId && allowHomeDrop && (currRow.length<2 || startIndex ===dragIndex)
 										 && dragIndex === currRowIndex+1 &&
 											<styled.DropContainer
 												style = {{marginTop: '1rem'}}
-												divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-												divWidth = {'48%'}
+												divHeight = {!!divHeight ? divHeight +'px' : '7rem'}
+												divWidth = {startIndex === dragIndex ? divWidth +'px' : '48%'}
+
 											/>
 										}
 									</>
@@ -713,8 +718,8 @@ const LotFormCreator = (props) => {
 						</styled.FieldRowContainer>
 						{!!draggingFieldId && xDrag === 'center' && !!startIndex && !!dragIndex && dragIndex === currRowIndex+1 && allowHomeDrop &&
 							<styled.DropContainer
-								divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-								divWidth = {!!divWidth ? divWidth +'px' : '100%'}
+								divHeight = {!!divHeight ? divHeight +'px' : '7rem'}
+								divWidth = {'98%'}
 							/>
 						}
 						</div>

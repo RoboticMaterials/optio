@@ -64,6 +64,7 @@ export const FieldColumn = styled.div`
 export const ColumnFieldContainer = styled.div`
   display: flex;
   flex-direction: column;
+	min-height: 7rem;
 	background: ${props => props.theme.bg.primary};
 	box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.2);
 	padding: 0.4rem .4rem 1rem 1rem;

@@ -6,12 +6,3 @@ export const FIELD_TYPES = [
   {name: 'Single Date', type: 'CALENDAR_SINGLE', dataType: 'DATE', icon: 'fas fa-calendar'},
   {name: 'Quantity', type: 'NUMBER_INPUT', dataType: 'INTEGER', icon: 'fas fa-plus-square'},
 ]
-
-export const ICONS = [
-  {name: 'fas fa-grip-lines'},
-  {name: 'fas fa-align-justify'},
-  {name: 'fas fa-columns'},
-  {name: 'fas fa-calendar-alt'},
-  {name: 'fas fa-calendar'},
-  {name: 'fas fa-plus-square'}
-]
