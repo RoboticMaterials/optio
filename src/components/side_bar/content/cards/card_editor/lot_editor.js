@@ -994,6 +994,7 @@ const FormComponent = (props) => {
                                             style={
                                                 content !== null
                                                     ? {
+                                                          width: '100%',
                                                           background:
                                                               "transparent",
                                                           border: "none",

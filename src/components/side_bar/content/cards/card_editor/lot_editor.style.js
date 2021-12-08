@@ -470,7 +470,7 @@ export const ContentValue = styled.span`
 // `
 
 export const FieldLabel = styled.span`
-	font-size: ${props => props.theme.fontSize.sz3};
+	font-size: 1rem;
 	font-weight: ${props => props.theme.fontWeight.bold};
 	font-family: ${props => props.theme.font.primary};
 	white-space: nowrap ;
