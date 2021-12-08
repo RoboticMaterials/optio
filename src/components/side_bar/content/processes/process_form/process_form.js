@@ -168,7 +168,7 @@ const ProcessForm = (props) => {
 
 		// When a process changes, we need to go through every station involved and make sure they 
 		// have a cycle time dict for every product group in the process.
-		lotTemplates.forEach(lotTemplate => {
+		Object.values(lotTemplates).forEach(lotTemplate => {
 			if (lotTemplate.processId !== savedProcess._id) return
 			else {
 				for (var node of nodes) {

@@ -30,15 +30,38 @@ export const LegendLabel = styled.div`
     color: #393975;
 `
 
-export const Label = styled.div`
+export const PieHeader = styled.div`
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+`
+
+export const Label = styled.div`
     font-size: 1.4rem;
     line-height: 1.8rem;
     // font-weight: bold;
     color: #393975;
     text-align: center;
+`
+
+export const TooltipIcon = styled.i`
+    font-size: 0.6rem;
+    color: white;
+    background: #ccc;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    line-height: 1rem;
+`
+
+export const Tooltip = styled.div`
+    width: 14rem;
 `

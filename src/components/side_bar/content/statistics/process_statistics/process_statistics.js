@@ -7,6 +7,7 @@ import * as styled from './process_statistics.style'
 import { ThemeContext } from 'styled-components';
 
 // Components
+import ReactTooltip from 'react-tooltip';
 import ScaleLoader from 'react-spinners/ScaleLoader'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search';
 import Calendar from '../../../../basic/calendar/calendar';
@@ -15,7 +16,7 @@ import BackButton from '../../../../basic/back_button/back_button';
 import Popup from 'reactjs-popup';
 
 // Charts
-import { defaultColors } from '../../../../basic/charts/nivo_theme';
+import { defaultColors, tooltipProps } from '../../../../basic/charts/nivo_theme';
 import BalanceBar from '../../../../basic/charts/balance_bar/balance_bar';
 import Line from '../../../../basic/charts/line/line';
 
@@ -23,11 +24,15 @@ import { getProcessStatistics } from '../../../../../api/processes_api';
 import { deepCopy } from '../../../../../methods/utils/utils';
 import { secondsToReadable } from '../../../../../methods/utils/time_utils';
 
+import descriptions from './descriptions';
+import Portal from '../../../../../higher_order_components/portal';
+
 const emptyData = {
-    production_rates: {},
+    production_rates: {total: null, data: []},
     lead_time: 0,
-    current_wip: {},
+    current_wip: {total: null, data: []},
     throughput: [],
+    total_throughputs: {total: null, data: []},
     wip: [],
     balance: []
 }
@@ -82,28 +87,30 @@ const ProcessStatistics = ({ id }) => {
         }
     }
 
-    useEffect(() => {
-        if (!data || !data.throughput) return []
-        
+    const toggleCumulative = async () => {
+        let throughputDataCopy = deepCopy(throughputData)
         if (isCumulative) {
-            data.throughput.forEach((line, i) => {
+            await data.throughput.forEach(async (line, i) => {
                 let cumulation = 0;
                 for (var j in line.data) {
                     cumulation += line.data[j].y;
-                    throughputData[i].data[j].y = cumulation;
+                    throughputDataCopy[i].data[j].y = cumulation;
                 }
             })
-
-            setThroughputData(throughputData);
         } else {
-            data.throughput.forEach((line, i) => {
+            await data.throughput.forEach(async (line, i) => {
                 for (var j in line.data) {
-                    throughputData[i].data[j].y = line.data[j].y;
+                    throughputDataCopy[i].data[j].y = line.data[j].y;
                 }
             })
-
-            setThroughputData(throughputData);
         }
+        setThroughputData(throughputDataCopy);
+    }
+
+    useEffect(() => {
+        if (!data || !data.throughput) return []
+        
+        toggleCumulative();
 
     }, [data, isCumulative])
 
@@ -129,16 +136,17 @@ const ProcessStatistics = ({ id }) => {
         />
     }, [data?.balance, balancePG])
 
-    const renderChart2Options = useMemo(() => {
-
-        return (
-            <div style={{margin: '0.4rem 0', display: 'flex'}}>
-                <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
-                <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
-            </div>
-        )
-
-    }, [showWIPChart, isCumulative])
+    const renderHeader = (label, stat) => (
+        <styled.CardHeader>
+            <styled.CardLabel>{label}</styled.CardLabel>
+            <styled.TooltipIcon className="fas fa-info"  data-tip data-for={`${stat}-tooltip`} />
+            <Portal>
+                <ReactTooltip id={`${stat}-tooltip`} {...tooltipProps}>
+                    <styled.Tooltip dangerouslySetInnerHTML={{__html:descriptions[stat]}}></styled.Tooltip>
+                </ReactTooltip>
+            </Portal>
+        </styled.CardHeader>
+    )
 
     return (
         <styled.Page>
@@ -179,9 +187,9 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{width: '33.33%'}}>
-                        <styled.CardLabel>Throughput</styled.CardLabel>
+                        {renderHeader('Throughput', 'throughput')}
                         {!!data ? 
-                            'total' in data.total_throughputs ?
+                            !!data.total_throughputs && 'total' in data.total_throughputs ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Finished Product</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{data.total_throughputs.total} Parts</styled.PrimaryValue>
@@ -200,9 +208,9 @@ const ProcessStatistics = ({ id }) => {
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
-                        <styled.CardLabel>Production Rate</styled.CardLabel>
+                        {renderHeader('Production Rate', 'productionRate')}
                         {!!data ? 
-                            'total' in data.production_rates ?
+                            !!data.production_rates && 'total' in data.production_rates ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>1 Part Every</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{secondsToReadable(data.production_rates.total)}</styled.PrimaryValue>
@@ -221,7 +229,7 @@ const ProcessStatistics = ({ id }) => {
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
-                        <styled.CardLabel>Work in Process</styled.CardLabel>
+                        {renderHeader('Work in Process', 'wip')}
                         {!!data ? 
                             'total' in data.current_wip ?
                                 <styled.ChartContainer>
@@ -242,7 +250,7 @@ const ProcessStatistics = ({ id }) => {
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
-                        <styled.CardLabel>Lead Time</styled.CardLabel>
+                    {renderHeader('Lead Time', 'leadTime')}
                         {!!data ? 
                             'total' in data.production_rates ?
                                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%'}}>
@@ -258,7 +266,7 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{flexGrow: 1}}>
-                        <styled.CardLabel>Line Balance</styled.CardLabel>
+                        {renderHeader('Line Balance', 'balance')}
                         <styled.ChartContainer style={{height: '26rem'}}>
                             {!!data ? 
                                 !!data.balance && !!balancePG && data.balance[balancePG].length ?
@@ -273,10 +281,12 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{flexGrow: 1}}>
-                        <styled.CardLabel>Throughput</styled.CardLabel>
-                        {renderChart2Options}
+                        {renderHeader('Throughput', 'throughput')}
+                        <div style={{margin: '0.4rem 0', display: 'flex'}}>
+                            <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
+                            <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
+                        </div>
                         <styled.ChartContainer style={{height: '25.4rem'}}>
-
                             {!!data ?
                                 throughputData.length > 1 ? 
                                     <Line data={throughputData} showLegend={true}/> 
