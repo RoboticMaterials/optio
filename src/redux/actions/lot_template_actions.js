@@ -119,6 +119,7 @@ export const deleteLotTemplate = (id) => async (dispatch) => {
             id
         };
     }
+
     //
     const actionName = DELETE + LOT_TEMPLATE;
     const payload = await api_action(actionName, callback, dispatch, {id});

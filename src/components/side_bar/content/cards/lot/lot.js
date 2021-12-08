@@ -50,6 +50,7 @@ const Lot = (props) => {
         processName,
         showCustomFields,
         lotDisabled,
+        clickDisabled,
         isDashboard,
         onDeleteDisabledLot,
         onRightClickDeleteLot,
@@ -208,6 +209,7 @@ const Lot = (props) => {
     return (
         <styled.Container
             disabled = {lotDisabled}
+            clickDisabled = {clickDisabled}
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
@@ -308,7 +310,7 @@ const Lot = (props) => {
 
             <styled.ContentContainer hasLeadTime={!!leadTime}>
                 <LotSimpleRow
-                    label= {lotTemplates[lot.lotTemplateId].name === 'Basic' ? 'Quantity' : lotTemplates[lot.lotTemplateId].displayNames.count}
+                    label= {lotTemplates[lot.lotTemplateId]?.name === 'Basic' ? 'Quantity' : lotTemplates[lot.lotTemplateId]?.displayNames?.count || 'Quantity'}
                     value={`${count}/${totalQuantity}`}
                 />
 

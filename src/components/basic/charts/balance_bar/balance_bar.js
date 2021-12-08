@@ -62,6 +62,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
 
         reverseScaleY.current = (px) => maxBarValue * (innerHeight - px) / innerHeight
         setChartHeight(innerHeight)
+
         
         return (
             <>
@@ -113,7 +114,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
         taktGroup.classed(activeClassName, false);
     }
 
-    // console.log(takt)
+    console.log(data)
 
     return (
         <div ref={chartContainerRef} style={{width: '100%', height: '100%', paddingTop: '1rem'}}>
@@ -160,7 +161,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     indexScale={{ type: 'band', round: true }}
                     borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
                     axisTop={null}
-                    maxValue={Math.max(maxBarValue, productGroup?.taktTime)}
+                    maxValue={Math.max(maxBarValue, productGroup?.taktTime || 0)}
                     axisRight={null}
                     groupMode="grouped"
                     axisBottom={{
@@ -191,6 +192,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     labelSkipHeight={12}
                     labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
                     legends={[]}
+                    animate={false}
                 />
         </div>
     </div>

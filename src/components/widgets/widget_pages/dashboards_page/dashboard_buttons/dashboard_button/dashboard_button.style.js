@@ -10,7 +10,7 @@ export const Container = styled.button`
     // flex layout
     flex-direction: row;
 
-    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary, -50)};
+    box-shadow: ${props => !props.disabled && `0 9px 2px -4px ${LightenDarkenColor(props.theme.bg.secondary, -50)}`};
     height: 4rem;
     // line-height: 4rem;
     margin-bottom: 1rem;
@@ -26,7 +26,7 @@ export const Container = styled.button`
 
 export const ConditionText = styled.span`
     ${conditionTextCss};
-
+    font-weight: bold;
     flex-grow: 1;
 `
 

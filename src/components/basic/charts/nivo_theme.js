@@ -25,3 +25,12 @@ export const theme = {
 }
 
 export const defaultColors = ['#8577FF', '#01F0E2', '#FEBA69', '#FF718B', '#349CFB', '#AC1FFC']
+
+export const tooltipProps = {
+    backgroundColor: '#ededf5',
+    arrowColor: '#ededf5',
+    textColor: '#222',
+    place: 'bottom',
+    effect: 'solid',
+    multiline: true
+}

@@ -45,7 +45,6 @@ const PasteMapper = (props) => {
     const [disableMergeButton, setDisableMergeButton] = useState(false)
     const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
     const [fieldMapping, setFieldMapping] = useState({})
-
     const dispatch = useDispatch()
     const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
     const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
@@ -104,20 +103,14 @@ const PasteMapper = (props) => {
            }
          }
        }
-       else if(!!parseMode && parseMode === 'YaleCordage' ){
+       else if(!!parseMode && parseMode === 'YaleCordage'){
          //Get work order index for merge purposes
          let workOrderIndex
-         for(const i in lotTemplate.fields){
-           for(const j in lotTemplate.fields[i]){
-             if(!!lotTemplate.fields[i][j] && lotTemplate.fields[i][j].fieldName === 'EIA_REF1'){
-               let workOrderId = lotTemplate.fields[i][j]._id
-               if(fieldMapping && fieldMapping[workOrderId]){
-                  workOrderIndex = fieldMapping[workOrderId]
-               }
-             }
-           }
+         if(fieldMapping && fieldMapping['NAME_FIELD_ID']){
+            workOrderIndex = fieldMapping['NAME_FIELD_ID']
          }
 
+         if(workOrderIndex){
          for(let a = 0; a<tableCopy.length; a++){
            for(let i = a+1; i<tableCopy.length; i++){
              if(tableCopy[a][workOrderIndex].value === tableCopy[i][workOrderIndex].value){
@@ -131,6 +124,7 @@ const PasteMapper = (props) => {
            }
          }
        }
+      }
      }
        setTable(tableCopy)
     }
@@ -320,7 +314,7 @@ const PasteMapper = (props) => {
             <styled.Body>
                 <styled.ContentContainer>
 
-                    {!!parseMode && (parseMode === 'Alpen' || parseMode === 'YaleCordage') &&
+                    {!!parseMode && (parseMode === 'YaleCordage' || parseMode === 'Alpen') &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
                           secondary

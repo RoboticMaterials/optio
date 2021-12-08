@@ -496,7 +496,7 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
     // if sync with template, use fields from template. Otherwise use fields from lot
     const fields = syncWithTemplate ? (lotTemplate.fields) : (lot?.fields || lotTemplate.fields)
     if(!!stationBasedLots && !!currentDashboard && !!currentDashboard.fields){
-      Object.keys(currentDashboard.fields).forEach((template) =>{
+      Object.keys(currentDashboard.fields).forEach((template) => {
           Object.values(currentDashboard.fields[template]).forEach((field) =>{
             const {
               fieldName,
@@ -504,12 +504,21 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
               _id,
               component,
             } = field
-            if((lot.lotTemplateId===template && (component!=='INPUT_BOX' || !lotSelected)) || (lotTemplate.name === template)){
+
+            let foundId = false
+            for(const i in lotTemplate.fields){
+              let fieldExists = lotTemplate.fields[i].find(tempField => tempField._id === _id)
+              if(fieldExists){
+                foundId = true
+                break
+              }
+            }
+            if((foundId && lot.lotTemplateId===template && (component!=='INPUT_BOX' || !lotSelected)) || (lotTemplate.name === template)){
               customFieldValues.push({
                 dataType,
                 fieldName,
                 value: getLotField('_id', _id, lot)?.value
-                })
+              })
             }
           })
         })

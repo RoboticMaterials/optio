@@ -115,6 +115,7 @@ export const EmptyChildLot = styled.div`
     border: 0.2rem solid ${props => props.theme.bg.quaternary};
     background: ${props => props.theme.bg.tertiary};
     border-radius: 0.4rem;
+    margin-bottom: 0.5rem;
 
     justify-content: center;
     align-items: center;
@@ -126,6 +127,12 @@ export const EmptyChildLot = styled.div`
     color: ${props => props.theme.bg.quaternary};
     font-size: ${props => props.theme.fontSize.sz2};
     font-weight: 800;
+`
+
+export const EmptySplitMergeLot = styled(EmptyChildLot)`
+    border: 0.2rem solid #84a8e3;
+    background: #ccd9f0;
+    color: #84a8e3;
 `
 
 export const PlusSymbol = styled.i`

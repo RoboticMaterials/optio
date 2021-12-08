@@ -19,11 +19,13 @@ const ContentListItem = (props) => {
         inQueue,
 
         showEdit,
+        showDelete,
         style,
 
         onClick,
         onIconClick,
         onEditClick,
+        onDeleteClick,
         onMouseEnter,
         onMouseLeave,
     } = props;
@@ -150,6 +152,14 @@ const ContentListItem = (props) => {
                             className='fas fa-edit'
                             onClick={() => onEditClick(element)}
                             style={{ color: theme.bg.quaternary }}
+                        />
+                    }
+
+                    {showDelete &&
+                        <styled.ListItemIcon
+                            className="far fa-minus-square"
+                            onClick={() => onDeleteClick(element)}
+                            style = {{color: 'orange' }}
                         />
                     }
 
