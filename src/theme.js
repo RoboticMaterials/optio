@@ -14,7 +14,8 @@ export const size = {
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#f7f7fa',
+    // secondary: '#f7f7fa',
+    secondary: '#F6F7FB',
     tertiary: '#dedfe3',
     quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
@@ -167,7 +168,8 @@ export const theme = {
                 iconName: "fas fa-object-group"
             },
             statistics: {
-                solid: "#54AAFF",
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(30, 156, 215, 0.95) 0%, rgba(0, 91, 151, 0.95) 100%)',
+                solid: '#1e9cd7'
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',

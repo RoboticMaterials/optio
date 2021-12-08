@@ -248,9 +248,6 @@ const DashboardsHeader = (props) => {
                   </>
                 }
 
-
-                <styled.Title>{name}</styled.Title>
-
                 {!mobileMode &&
                     <styled.LockIcon
                         className={!currentDashboard.locked ? 'fas fa-lock-open' : 'fas fa-lock'}

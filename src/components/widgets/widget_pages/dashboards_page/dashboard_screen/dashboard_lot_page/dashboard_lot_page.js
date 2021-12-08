@@ -17,6 +17,8 @@ import WarehouseModal from "../warehouse_modal/warehouse_modal";
 import LotFlags from "../../../../../side_bar/content/cards/lot/lot_flags/lot_flags";
 import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_box";
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
+import Button from '../../../../../basic/button/button'
+import WorkInstructionsViewer from '../work_instructions_viewer/work_instructions_viewer'
 
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
@@ -44,7 +46,6 @@ import {
   getCards
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { updateStationCycleTime } from '../../../../../../redux/actions/stations_actions';
 
 const recursiveFindAndRoutes = (exp, andNodes) => {
   for (var i=1; i<exp.length; i++) {
@@ -81,13 +82,13 @@ const DashboardLotPage = (props) => {
   const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
+  const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
   const dispatch = useDispatch();
   const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
   const dispatchGetCards = async () => await dispatch(getCards())
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
-  const dispatchUpdateStationCycleTime = async (Id) => await dispatch(updateStationCycleTime(Id))
 
   let [currentLot, setCurrentLot] = useState(cards[lotID])
   const currentProcess = useRef(processes[currentLot?.process_id]).current
@@ -142,6 +143,8 @@ const DashboardLotPage = (props) => {
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
+  const [showWorkInstructionsViewer, setShowWorkInstructionsViewer] = useState(false)
+  const [instructionsKey, setInstructionsKey] = useState(null)
   const [selectedFraction, setSelectedFraction] = useState('1')
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
@@ -162,6 +165,8 @@ const DashboardLotPage = (props) => {
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
+      map_id: currentLot.map_id,
+      pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
       process_id: currentLot.process_id,
       sku: 'default',
       quantity: null,
@@ -169,7 +174,7 @@ const DashboardLotPage = (props) => {
       current_wip: null,
       unload_station_id: null,
       dashboard_id: dashboardID,
-      user: user,
+      operator: user,
       route_id: null
     })
   }, [])
@@ -339,7 +344,6 @@ const DashboardLotPage = (props) => {
       })
       await dispatchPostTouchEvent(updatedTouchEvent)
     }
-    dispatchUpdateStationCycleTime(loadStationID)
 
     // Move Alert (based on whether lot was split or not)
     if (moveRoutes.length > 1) {
@@ -453,6 +457,24 @@ const DashboardLotPage = (props) => {
         setMoveQuantity(parseInt(arr.join('')))
       }
     }
+  }
+
+  const handleShowWorkInstructions = (key) => {
+    setInstructionsKey(key)
+    setShowWorkInstructionsViewer(true)
+  }
+
+  const renderWorkInstructionsViewer = () => {
+      return (
+        <WorkInstructionsViewer
+          isOpen = {showWorkInstructionsViewer}
+          close = {()=>setShowWorkInstructionsViewer(false)}
+          setShowWorkInstructionsViewer = {setShowWorkInstructionsViewer}
+          showWorkInstructionsViewer = {showWorkInstructionsViewer}
+          stationID = {stationID}
+          lotTemplateId = {currentLot.lotTemplateId}
+        />
+      )
   }
 
   const renderChildCards = useMemo(() => {
@@ -570,16 +592,11 @@ const DashboardLotPage = (props) => {
           onSubmit={handlePullWarehouseLot}
         />
       )}
+      {renderWorkInstructionsViewer()}
       {renderRouteSelectorModal}
       <styled.LotBodyContainer>
-        <styled.LotHeader>
-          <styled.LotTitle>{currentLot?.name}</styled.LotTitle>
+        <styled.LotHeader style = {{minHeight: '1rem'}}>
         </styled.LotHeader>
-        <LotFlags
-          flags={currentLot?.flags}
-          containerStyle={{ alignSelf: "center" }}
-        />
-
         <DashboardLotFields
           currentLot={currentLot}
           stationID={stationID}
@@ -597,6 +614,16 @@ const DashboardLotPage = (props) => {
           {renderChildCards}
         </div>
       </styled.LotBodyContainer>
+      {!!lotTemplates[currentLot.lotTemplateId].workInstructions && !!lotTemplates[currentLot.lotTemplateId].workInstructions[stationID] &&
+      <Button
+        schema = {'locations'}
+        label = 'View Work Instructions'
+        style = {{width: '35rem', alignSelf: 'center',
+                  minHeight: '4rem', borderRadius: '.5rem',
+                  marginBottom: '2rem', boxShadow: '2px 3px 2px 1px rgba(0,0,0,0.2)'}}
+        onClick = {handleShowWorkInstructions}
+      />
+    }
       <styled.LotButtonContainer>
         <DashboardLotButtons
           handleMoveClicked={() => onMoveClicked()}

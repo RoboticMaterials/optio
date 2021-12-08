@@ -5,10 +5,10 @@ export const LotFieldsContainer = styled.div`
     width: 100%;
     max-width: 50rem;
     background: ${props => props.theme.bg.primary};
-    box-shadow: ${props => props.theme.cardShadow};
+    box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
 
     padding: 1rem;
-    border-radius: .5rem;
+    border-radius: .3rem;
     align-self: center;
 
     margin-bottom: 2rem;

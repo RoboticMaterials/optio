@@ -130,10 +130,8 @@ export const deleteLotTemplate = (id) => async (dispatch) => {
 // update
 // ******************************
 export const putLotTemplate = (lotTemplate, id) => async dispatch => {
-
     const callback = async () => {
         const response = await api.putLotTemplate(lotTemplate, id);
-
         return {
             lotTemplate: response,
         };
@@ -149,3 +147,7 @@ export const putLotTemplate = (lotTemplate, id) => async dispatch => {
 export const setSelectedLotTemplate = (lotTemplateId) => async dispatch => {
      dispatch({ type: SET + LOT_TEMPLATE + SELECTED, payload: lotTemplateId })
 };
+
+export const setLotTemplateAttributes = (id, attr) => async dispatch => {
+    dispatch({ type: 'SET_LOT_TEMPLATE_ATTRIBUTES', payload: { id, attr } })
+}

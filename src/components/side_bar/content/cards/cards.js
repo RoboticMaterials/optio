@@ -49,11 +49,6 @@ const ZoneHeader = lazy(() => import("./zone_header/zone_header"))
 
 const Cards = (props) => {
 
-    // extract props
-    const {
-        id
-    } = props
-
     let params = useParams()
     const history = useHistory()
 
@@ -65,17 +60,11 @@ const Cards = (props) => {
     const localSettings = useSelector(state => state.localReducer.localSettings)
     // actions
     const dispatch = useDispatch()
-    const onShowCardEditor = (card) => {
-        if (card) {
-            history.push(`/lots/${card.cardId}/editing`)
-        } else {
-            history.push('/lots/summary')
-        }
-    }
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+    const [previousProcessId, setPreviousProcessId] = useState(null)
     const [showMoveModal, setShowMoveModal] = useState(false)
     const [selectedCards, setSelectedCards] = useState([])
     const [selectedCard, setSelectedCard] = useState(null)
@@ -106,6 +95,23 @@ const Cards = (props) => {
         let filtersCopy = deepCopy(lotFilters);
         filtersCopy = filtersCopy.filter(filter => filter._id !== removeFilterID)
         setLotFilters(filtersCopy)
+    }
+
+    const onShowCardEditor = (card) => {
+        if (card) {
+            if (params.page === 'processes') {
+                setPreviousProcessId(params.id)
+            }
+            history.push(`/lots/${card.cardId}/editing`)
+        } else {
+            if (!!previousProcessId) {
+                history.push(`/processes/${previousProcessId}/lots`)
+                setPreviousProcessId(null)
+            } else {
+                history.push('/lots/summary')
+            }
+            
+        }
     }
 
     // internal component state
@@ -160,46 +166,6 @@ const Cards = (props) => {
 
     }, [zoneRef, window.innerHeight]);
 
-    /*
-    * This effect updates internal component state basted on the {id} props
-    *
-    * The value of {id} can take on 1 of 3 types of values, {"summary"}, {"timeline"}, or the id of a process
-    *
-    * The content of the page changes based on the value of id, and this useEffect updates internal component state in order to achieve this
-    *
-    * the value of {id} should produce the following content:
-    *   {"summary"} - render content for the summary zone
-    *   {"timeline"} - render content for timeline zone *** CURRENTLY DISABLED ***
-    *   a process id - render lot content for the corresponding process
-    *
-    * @param {id} string - id of content to display
-    *
-    * */
-    useEffect(() => {
-
-        // update internal state based on id
-        switch (id) {
-
-            // summary zone
-            case "summary":
-                setTitle("Lots Summary")
-                setIsProcessView(false)
-                break
-
-            // timeline zone
-            case "timeline":
-                setTitle("Timeline Zone")
-                setIsProcessView(false)
-                break
-
-            // otherwise assume id is the id of a specific process
-            default:
-                setIsProcessView(true)
-                setCurrentProcess(processes[id])
-                setTitle(processes[id]?.name)
-                break
-        }
-    }, [id]);
 
 
     /*
@@ -340,6 +306,8 @@ const Cards = (props) => {
         history.push(`/lots/${processId}/create`)
     }
 
+    console.log(params)
+
     return (
       <Suspense fallback = {<></>}>
         <styled.Container>
@@ -364,7 +332,7 @@ const Cards = (props) => {
             />
             }
 
-            {params.id !== 'summary' &&
+            {params.id !== 'summary' && params.subpage !== 'lots' && 
                 <LotEditorContainer
                     isOpen={params.id !== 'summary'}
                     onAfterOpen={null}
@@ -377,10 +345,12 @@ const Cards = (props) => {
                     }}
                 />
             }
-            <SummaryHeader
-                showBackButton={isProcessView}
-                title={title}
-            />
+            {params.page === 'processes' &&
+                <SummaryHeader
+                    showBackButton={isProcessView}
+                    title={title}
+                />
+            }
             <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
                 <ZoneHeader
                     lotFilterValue={lotFilterValue}
@@ -398,7 +368,6 @@ const Cards = (props) => {
 
                     selectedProcesses={selectedProcesses}
                     setSelectedProcesses={setSelectedProcesses}
-                    zone={id}
                     selectedLots={selectedCards}
                     onDeleteClick={handleDeleteClick}
                     onMoveClick={handleMoveClick}

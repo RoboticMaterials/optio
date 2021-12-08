@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
 import set from "lodash/set";
-import ReactTooltip from 'react-tooltip';
 
 // components external
 import Spreadsheet from "react-spreadsheet";
@@ -26,8 +25,6 @@ import * as styled from './paste_mapper.style'
 // actions
 import { putLotTemplate } from '../../../redux/actions/lot_template_actions'
 import BackButton from '../back_button/back_button';
-import SimpleModal from '../modals/simple_modal/simple_modal';
-
 
 const PasteMapper = (props) => {
 
@@ -258,15 +255,7 @@ const PasteMapper = (props) => {
 
                 <styled.RowLabelContainer>
                     <ContextMenuTrigger id={`context-menu-${row}`}>
-                        <div style={{display: 'flex', width: '100%', flexGrow: '1', justifyContent: 'center', position: 'relative'}}>
-                          <styled.RowLabel>{row+1}</styled.RowLabel>
-                          {row === 0 &&
-                            <>
-                              <styled.AutoIcon className="fas fa-magic" data-tip data-for="autocomplete-tooltip" onClick={() => setShowAutoCompleteModal(true)}/>
-                              <ReactTooltip id="autocomplete-tooltip" effect="solid"><div style={{width: '10rem'}}>Auto fill columns based on values in the first row.</div></ReactTooltip>
-                            </>
-                          }
-                        </div>
+                        <styled.RowLabel>{row+1}</styled.RowLabel>
                     </ContextMenuTrigger>
 
                     <ContextMenu id={`context-menu-${row}`}>
@@ -297,7 +286,7 @@ const PasteMapper = (props) => {
     }
 
     const Table = useMemo(() => {
-        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel} CornerIndicator={renderCornerCounter}/>
+        return <Spreadsheet data={table} ColumnIndicator={renderColumnDropdown} RowIndicator={renderRowLabel}/>
     }, [table, fieldMapping])
 
     return (
@@ -366,6 +355,7 @@ const PasteMapper = (props) => {
       </>
     )
 }
+
 
 
 export const PasteForm = (props) => {

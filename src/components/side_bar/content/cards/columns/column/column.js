@@ -34,7 +34,7 @@ import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handl
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
-const Column = ((props) => {
+const Column = (props) => {
 
 	const {
 		station_id,
@@ -110,7 +110,6 @@ const Column = ((props) => {
 		}
 	}, [reduxProcessCards])
 
-	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
 		if(!hideCard){
@@ -131,23 +130,18 @@ const Column = ((props) => {
 			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id)
 			setAcceptDrop(accDrop)
 		}
-		if(!draggingLotId) setHighlightStation(null)
-
 	}, [draggingLotId])
 
 	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === dragFromBin && processId === hideCard.process_id){
+		if(draggingLotId === null && !!hideCard && processId === hideCard.process_id){
 			let tempCards = deepCopy(cards)
-			let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
-			tempCards.splice(ind,1)
-			setCards(tempCards)
-		}
-	}, [draggingLotId])
-
-	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
-			let tempCards = deepCopy(cards)
-			tempCards.push(hideCard)
+			if(station_id === dragFromBin){
+				let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
+				tempCards.splice(ind,1)
+			}
+			else if(station_id === draggingStationId){
+				tempCards.push(hideCard)
+			}
 			setCards(tempCards)
 		}
 	}, [draggingLotId])
@@ -429,13 +423,13 @@ const Column = ((props) => {
 				 }}
 
 					>
-						{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
-							<styled.DragToDiv
-								ref = {dragContainerRef}
-								dragDivHeight = {(!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem')}
-								class = 'dragToDiv'
-							/>
-						}
+					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
+						<styled.DragToDiv
+						ref = {dragContainerRef}
+						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
+						class = 'dragToDiv'
+						/>
+					}
 						{cards.map((card, index) => {
 							const {
 								_id,
@@ -453,7 +447,7 @@ const Column = ((props) => {
 							} = card
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
-							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
+							const selectable = (hoveringLotId !== null) || (draggingLotId !== null)// || isSelectedCardsNotEmpty
 							if(!!reduxProcessCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxProcessCards[card.cardId].bins[card.binId]
 
@@ -632,6 +626,6 @@ const Column = ((props) => {
 		)
 	}
 
-})
+}
 
 export default Column

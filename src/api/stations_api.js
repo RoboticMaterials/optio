@@ -95,15 +95,23 @@ export async function putStation(station, ID) {
     }
 }
 
-export async function getStationAnalytics(id, timeSpan) {
+export async function getStationStatistics(id, startDate, endDate) {
+    const startUTC = startDate.getTime();
+    const endUTC = !!endDate ? endDate.getTime() : null;
+
+    let url = apiIPAddress() + operator + '/' + id + `/statistics`
+    url += `?start_date=${startUTC}`
+    if (!!endUTC) {
+        url += `&end_date=${endUTC}`
+    }
+
     try {
         const response = await axios({
-            method: 'PUT',
-            url: apiIPAddress() + operator + '/' + id + '/stats',
+            method: 'GET',
+            url,
             headers: getHeaders(),
-            // A timespan is {time_span: 'day', index: 0}
-            data: timeSpan
         });
+        
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
@@ -114,24 +122,4 @@ export async function getStationAnalytics(id, timeSpan) {
     } catch (error) {
         handleError(error);
     }
-}
-
-export async function updateStationCycleTime(id) {
-    try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator + '/' + id + '/cycle_time',
-            headers: getHeaders(),
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
-
-
-    } catch (error) {
-        handleError(error);
-    }
-
-
 }

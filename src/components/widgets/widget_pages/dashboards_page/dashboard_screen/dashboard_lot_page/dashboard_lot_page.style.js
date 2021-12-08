@@ -8,8 +8,8 @@ import { isMobile } from "react-device-detect"
 import { ModalContainerCSS, BodyContainerCSS } from '../../../../../../common_css/modal_css'
 
 export const ModalContainer = styled(ModalContainerCSS)`
-    height: auto;   
-    
+    height: auto;
+
 `
 
 export const BodyContainer = styled(BodyContainerCSS)`
