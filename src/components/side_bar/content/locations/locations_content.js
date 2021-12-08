@@ -98,12 +98,13 @@ export default function LocationContent() {
         }
     }
 
-    
+
     return (
         (editingPosition || editingStation) ?
             <EditLocation />
 
             :
+            <>
             <ContentList
                 title={'Locations'}
                 schema={'locations'}
@@ -131,5 +132,6 @@ export default function LocationContent() {
                     dispatchSetEditingStation(true)
                 }}
             />
+            </>
     )
 }

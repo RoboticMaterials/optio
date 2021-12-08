@@ -26,7 +26,10 @@ import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 import { flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 import { BASIC_LOT_TEMPLATE } from '../../../../../constants/lot_contants';
+import { CYCLE_TIME_DICT } from '../../../../../constants/location_constants';
 import { deleteLotTemplate, postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
+import { deepCopy } from '../../../../../methods/utils/utils';
+import { putStation } from '../../../../../redux/actions/stations_actions';
 
 const ProcessForm = (props) => {
 
@@ -53,6 +56,7 @@ const ProcessForm = (props) => {
 	const dispatchDeleteLotTemplate = async (ID) => await dispatch(deleteLotTemplate(ID))
 	const dispatchPostRoute = async (route) => await dispatch(postTask(route))
     const dispatchPutRoute = async (route) => await dispatch(putTask(route, route._id))
+	const dispatchPutStation = async (station) => await dispatch(putStation(station))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchSetProcessAttributes = async (id, attr) => await dispatch(setProcessAttributes(id, attr))
@@ -133,31 +137,49 @@ const ProcessForm = (props) => {
 
 		const currDate = new Date();
 
+		const nodes = flattenProcessStations(remainingValues.routes, stations)
+		let savedProcess;
+
 		// if new, POST
 		if (remainingValues.new) {
 			delete remainingValues.new
-			const postedProcess = await dispatchPostProcess({
+			savedProcess = await dispatchPostProcess({
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMapId,
 				created_at: currDate.getTime(),
 				edited_at: currDate.getTime(),
-				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
+				flattened_stations: nodes
 			})
 
-			dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: postedProcess._id})
+			await dispatchPostLotTemplate({...BASIC_LOT_TEMPLATE, processId: savedProcess._id})
 		}
 
 		// Else put
 		else {
-			await dispatchPutProcess({
+			savedProcess = await dispatchPutProcess({
 				...remainingValues,
 				routes: mappedRoutes,
 				map_id: currentMapId,
 				edited_at: currDate.getTime(),
-				flattened_stations: flattenProcessStations(remainingValues.routes, stations)
+				flattened_stations: nodes
 			})
 		}
+
+		// When a process changes, we need to go through every station involved and make sure they 
+		// have a cycle time dict for every product group in the process.
+		Object.values(lotTemplates).forEach(lotTemplate => {
+			if (lotTemplate.processId !== savedProcess._id) return
+			else {
+				for (var node of nodes) {
+					let stationCopy = deepCopy(stations[node.stationID])
+					if (!(lotTemplate._id in stationCopy.cycle_times)) {
+						stationCopy.cycle_times[lotTemplate._id] = CYCLE_TIME_DICT
+						dispatchPutStation(stationCopy)
+					}
+				}
+			}
+		})
 
 		// close editor
 		if(close) {

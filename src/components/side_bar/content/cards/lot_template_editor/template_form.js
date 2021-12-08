@@ -12,12 +12,14 @@ import Textbox from "../../../../basic/textbox/textbox";
 import Button from "../../../../basic/button/button";
 import BackButton from '../../../../basic/back_button/back_button';
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-
+import CalendarPlaceholder from '../../../../basic/calendar_placeholder/calendar_placeholder'
+import WorkInstructionsModal from '../modals/work_instructions_modal/work_instructions_modal'
 // actions
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 // constants
 import {FORM_MODES} from "../../../../../constants/scheduler_constants";
+import { CYCLE_TIME_DICT } from '../../../../../constants/location_constants'
 
 // utils
 import {LotFormSchema} from "../../../../../methods/utils/form_schemas";
@@ -27,10 +29,11 @@ import { deepCopy } from "../../../../../methods/utils/utils";
 
 // import styles
 import * as styled from "../card_editor/lot_editor.style"
+import * as style from './lot_form_creator/lot_form_creator.style'
 
 // logger
 import log from '../../../../../logger'
-import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
+//import LotTemplateEditorSidebar from "./lot_template_editor_sidebar/lot_template_editor_sidebar";
 import LotFormCreator from "./lot_form_creator/lot_form_creator";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import {
@@ -48,6 +51,7 @@ import {
 	EMPTY_DEFAULT_FIELDS, getDefaultFields
 } from "../../../../../constants/lot_contants";
 import {ThemeContext} from "styled-components";
+import { putStation } from "../../../../../redux/actions/stations_actions";
 
 
 const disabledStyle = {
@@ -86,7 +90,12 @@ const FormComponent = (props) => {
 	// component state
 	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
+	const [selectedEditingField, setSelectedEditingField] = useState(false)
+	const [showWorkInstructionsModal,setShowWorkInstructionModal] = useState(false)
 
+	const dispatch = useDispatch()
+	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
@@ -128,6 +137,33 @@ const FormComponent = (props) => {
 		formikProps.resetForm()
 	}, [lotTemplateId])
 
+
+	const handleSetWorkInstructionIds = async(stationID, fileID, stations) => {
+
+		let updatedWorkInst = lotTemplates[lotTemplateId].workInstructions ? lotTemplates[lotTemplateId].workInstructions : {}
+		if(!stations){
+			updatedWorkInst = {
+				...updatedWorkInst,
+				[stationID]: fileID
+			}
+		}
+		else{
+			for(const i in stations){
+				let id = stations[i].stationID
+				 updatedWorkInst = {
+					...updatedWorkInst,
+					[id]: fileID
+				}
+			}
+		}
+		let updatedLotTemplate = {
+			...lotTemplates[lotTemplateId],
+			workInstructions: updatedWorkInst
+		}
+		await dispatchPutLotTemplate(updatedLotTemplate, lotTemplateId)
+	}
+
+
 	return(
 		<styled.StyledForm>
 			<ConfirmDeleteModal
@@ -145,6 +181,16 @@ const FormComponent = (props) => {
 							setConfirmDeleteTemplateModal(null)
 					}}
 			/>
+
+			{!!showWorkInstructionsModal &&
+				<WorkInstructionsModal
+					values = {values}
+					lotTemplateId = {lotTemplateId}
+					showWorkInstructionsModal = {showWorkInstructionsModal}
+					setShowWorkInstructionModal = {setShowWorkInstructionModal}
+					setWorkInstructions = {handleSetWorkInstructionIds}
+				/>
+			}
 			<SubmitErrorHandler
 				submitCount={submitCount}
 				isValid={formikProps.isValid}
@@ -156,20 +202,29 @@ const FormComponent = (props) => {
 				<BackButton
 					secondary
 					onClick={close}
-					schema={'error'}
+					schema={'lots'}
 				>
 				</BackButton>
 
-				<div style={{marginRight: "auto"}}/>
+				<div style={{marginRight: "1rem"}}/>
 
-				<styled.TemplateNameContainer>
-					<styled.TemplateLabel>Product Group Name</styled.TemplateLabel>
+				<styled.TemplateNameContainer style = {{maxWidth: '50%', marginRight: '45rem'}}>
+					<styled.TemplateLabel>Product Group Name:</styled.TemplateLabel>
 					<TextField
 						name={"name"}
 						placeholder={"Enter template name..."}
 						InputComponent={Textbox}
 						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
 						inputStyle={{background: themeContext.bg.tertiary}}
+						schema = {'lots'}
+					/>
+					<Button
+						onClick={() => {
+							setShowWorkInstructionModal(true)
+						}}
+						schema={"lots"}
+						style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+						label = {'Work Instructions'}
 					/>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
@@ -178,97 +233,107 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
-				<LotTemplateEditorSidebar/>
+				<style.ColumnContainer>
+				{/*<LotTemplateEditorSidebar/>*/}
+					<styled.ScrollContainer style = {{paddingLeft: '10%', paddingRight: '10%'}}>
+						<styled.SectionContainer style = {{maxWidth: '100%', justifyContent: 'center'}}>
+							<styled.FieldsHeader
+								style={disabledStyle, {alignSelf: 'center'}}
+							>
 
-				<styled.ScrollContainer>
-					<styled.SectionContainer>
-						<styled.FieldsHeader
-							style={disabledStyle}
-						>
-							<styled.NameContainer>
-								{/*<styled.LotName>Lot Name</styled.LotName>*/}
-								<TextField
+							<style.ColumnContainer>
+								<style.ColumnFieldContainer
+									style = {{margin: '1rem', paddingLeft: '1.2rem'}}
+									onClick = {()=>setSelectedEditingField('NAME')}
+									selected = {selectedEditingField === 'NAME'}
+									>
+									{selectedEditingField === 'NAME' ?
+										<TextField
+											style={{
+												fontSize: '0.9rem',
+												whiteSpace: "nowrap" ,
+												marginRight: "2rem",
+												marginBottom: ".5rem",
+												width: "20rem"
+											}}
+											schema='lots'
+											inputStyle={{fontSize: '1rem'}}
+											name={"displayNames.name"}
+											InputComponent={Textbox}
+										/>
+										:
+										<style.FieldName>{values.displayNames.name}</style.FieldName>
+									}
+									<style.RowContainer
+									 style = {{
+									 	background: '#f7f7fa', width: selectedEditingField === 'NAME' ? '70%' : '20rem', height: '2rem',
+									 	boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)',
+									 	border: '0.1rem solid transparent',
+										borderRadius: '0.2rem',
+										padding: '0.5rem'
+									}}
+									>
+									<style.FieldName style= {{fontSize: '0.9rem', opacity: '0.6', marginTop: '0.4rem'}}>single-line input...</style.FieldName>
+									</style.RowContainer>
+								</style.ColumnFieldContainer>
+							</style.ColumnContainer>
 
-									style={{
-										fontSize: themeContext.fontSize.sz3,
-										fontWeight: themeContext.fontWeight.bold,
-										whiteSpace: "nowrap" ,
-										marginRight: "2rem",
-										marginBottom: ".5rem",
-										width: "20rem"
-									}}
-										schema='lots'
-									inputStyle={{fontSize: '1rem'}}
-									name={"displayNames.name"}
-									InputComponent={Textbox}
-								/>
-								<div
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										width: "100%",
-										position: "relative",
-										display: "flex",
-									}}
-								>
-									<Textbox
-										style={{flex: 1}}
-										usable={false}
-										schema='lots'
-										textboxContainerStyle={{flex: 1}}
-										inputStyle={{flex: 1, pointerEvents: 'none'}}
-										type="text"
-										placeholder="Enter name..."
-										InputComponent={Textbox}
+							</styled.FieldsHeader>
+							<styled.TheBody>
+								{loaded ?
+										<LotFormCreator
+											{...formikProps}
+											preview={preview}
+											lotTemplateId = {lotTemplateId}
+											selectedEditingField = {selectedEditingField}
+											setSelectedEditingField = {setSelectedEditingField}
+										/>
+
+									:
+									<FadeLoader
+										css={styled.FadeLoaderCSS}
+										height={5}
+										width={3}
+										loading={true}
 									/>
-								</div>
-							</styled.NameContainer>
-						</styled.FieldsHeader>
-						<styled.TheBody>
-							{loaded ?
-								<LotFormCreator
-									{...formikProps}
-									preview={preview}
-								/>
+								}
 
-								:
-								<FadeLoader
-									css={styled.FadeLoaderCSS}
-									height={5}
-									width={3}
-									loading={true}
-								/>
-							}
+							</styled.TheBody>
+						</styled.SectionContainer>
 
-
-						</styled.TheBody>
-					</styled.SectionContainer>
-
-					<styled.BodyContainer style={disabledStyle}>
-						<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-							<styled.ObjectInfoContainer>
-								{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
-								<TextField
-									name={"displayNames.count"}
-									InputComponent={Textbox}
-									style={{
-										display: "inline-flex",
-										marginRight: "1rem",
-										fontWeight: "bold",
-										alignItems: "center",
-										textAlign: "center",
-									}}
-								/>
-								<NumberInput
-									inputDisabled={true}
-									themeContext={themeContext}
-									minusDisabled={true}
-									plusDisabled={true}
-								/>
-							</styled.ObjectInfoContainer>
-						</div>
-					</styled.BodyContainer>
-				</styled.ScrollContainer>
+						<styled.BodyContainer style={disabledStyle}>
+							<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+								<styled.ObjectInfoContainer>
+									{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
+									<TextField
+										name={"displayNames.count"}
+										InputComponent={Textbox}
+										placeholder = {'Enter a fieldname...'}
+										schema = {'lots'}
+										onChange = {()=> setSelectedEditingField(null)}
+										style={{
+											padding: '1rem',
+											display: "inline-flex",
+											fontWeight: "bold",
+											marginLeft: '1rem',
+											alignItems: "center",
+											textAlign: "center",
+										}}
+									/>
+									<NumberInput
+										inputDisabled={true}
+										themeContext={themeContext}
+										minusDisabled={true}
+										plusDisabled={true}
+										containerSyle = {{pointerEvents: 'none', userSelect: 'none'}}
+										inputStyle = {{pointerEvents: 'none', userSelect: 'none'}}
+										buttonStyle = {{pointerEvents: 'none', userSelect: 'none'}}
+									/>
+								</styled.ObjectInfoContainer>
+							</div>
+						</styled.BodyContainer>
+					</styled.ScrollContainer>
+				</style.ColumnContainer>
 			</styled.RowContainer>
 
 
@@ -338,8 +403,11 @@ const LotCreatorForm = (props) => {
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+	const dispatchPutStation = async (station) => dispatch(putStation(station))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const processes = useSelector(state => state.processesReducer.processes)
+	const stations = useSelector(state => state.stationsReducer.stations)
 
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
@@ -427,7 +495,7 @@ const LotCreatorForm = (props) => {
 			// If a field no longer exists, it should be removed from the fieldMapping if applicable
 			const flattenedFieldIds = ['COUNT_FIELD_ID', 'NAME_FIELD_ID', ...oldTemplate.fields.map(fieldArr => fieldArr.map(field => field._id)).flat()];
 			if (!!oldTemplate.uploadFieldMapping) {
-				console.log(flattenedFieldIds, oldTemplate.uploadFieldMapping)
+				//console.log(flattenedFieldIds, oldTemplate.uploadFieldMapping)
 				Object.keys(oldTemplate.uploadFieldMapping).forEach(fieldId => {
 					if (!flattenedFieldIds.includes(fieldId)) {
 						delete oldTemplate.uploadFieldMapping[fieldId]
@@ -452,6 +520,17 @@ const LotCreatorForm = (props) => {
 				} = createdLotTemplate || {}
 
 				dispatchSetSelectedLotTemplate(createdLotTemplateId)
+
+
+				// When new product group is created, we need to add an empty cycle time dict to each station that it might go through
+				const PGProcess = processes[processId];
+				PGProcess?.flattened_stations.forEach(node => {
+					let stationCopy = deepCopy(stations[node.stationID])
+					if (!(createdLotTemplate._id in stationCopy.cycle_times)) {
+						stationCopy.cycle_times[createdLotTemplate._id] = CYCLE_TIME_DICT
+						dispatchPutStation(stationCopy)
+					}
+				})
 			}
 			else {
 				console.error("postResult",response)
@@ -460,7 +539,7 @@ const LotCreatorForm = (props) => {
 
 		return response;
 	}
-	
+
 
 	return(
 		<styled.Container

@@ -32,7 +32,8 @@ const LocationsContent = lazy(() => import('../../components/side_bar/content/lo
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
 const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
-const Statistics = lazy(() => import('../../components/side_bar/content/statistics/statistics'))
+const StatisticsSelector = lazy(() => import('../../components/side_bar/content/statistics/statistics_selector'))
+const ProcessStatistics = lazy(() => import('../../components/side_bar/content/statistics/process_statistics/process_statistics'))
 
 const SideBar = (props) => {
 
@@ -137,7 +138,7 @@ const SideBar = (props) => {
               }
               else lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)
-                onScanLot(lotId)
+                if(!!lotId) onScanLot(lotId)
                 setFull('')
             }
 
@@ -250,22 +251,21 @@ const SideBar = (props) => {
         const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
 
         const time = Date.now()
-        if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
-
+        if ((page === "processes" && subpage === 'lots') || page === "lots" || page === "statistics") {
             if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 
-        }
-        else if ((((prevSubpage === "lots") || (prevSubpage === 'statistics') || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots" || prevPage === "statistics")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
+        } else if (page === 'settings') {
+            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+            setPageWidth(600)
+            dispatchSetWidth(600)
+        } else if (!!prevWidth) {
             setPageWidth(prevWidth)
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
         }
-        else if (page === 'settings') {
-            setPageWidth(600)
-            dispatchSetWidth(600)
-        }
+
 
         setPrevParams(params)
 
@@ -330,17 +330,9 @@ const SideBar = (props) => {
             content = <LocationsContent />
             break
 
-        // Commented out for now
-        // case '/objects':
-        //     content = <ObjectsContent />
-        //     break
-
         case 'processes':
             if (subpage === "lots") {
                 content = <Cards id={id} />
-            }
-            else if (subpage === 'statistics') {
-                content = <Statistics />
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
@@ -359,7 +351,11 @@ const SideBar = (props) => {
             break
 
         case 'statistics':
-            content = <Statistics />
+            if (subpage === 'statistics') {
+                content = <ProcessStatistics id={id} />
+            } else {
+                content = <StatisticsSelector />
+            }
             break
 
         default:
@@ -468,7 +464,7 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex", }} open={showSideBar}>
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && subpage !== 'statistics'}>
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}
@@ -479,9 +475,9 @@ const SideBar = (props) => {
                         key="sidebar-content"
                         style={{}}
                     >
-                    <Suspense fallback = {null}>
-                      {content}
-                    </Suspense>
+                        <Suspense fallback = {null}>
+                            {content}
+                        </Suspense>
                         <DraggableCore key="handle" onDrag={handleDrag} >
                             <styled.ResizeBar>
                                 <styled.ResizeHandle content={mode}></styled.ResizeHandle>

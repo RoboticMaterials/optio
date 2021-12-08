@@ -42,7 +42,7 @@ const LotContainer = (props) => {
   const stations = useSelector(state => state.stationsReducer.stations)
   const {
     bins,
-    lotNumber,
+    lotNum,
     lotTemplateId,
     totalQuantity,
     name,
@@ -82,7 +82,7 @@ const LotContainer = (props) => {
                   stationName={stationName}
                   templateValues={templateValues}
                   totalQuantity={totalQuantity}
-                  lotNumber={lotNumber}
+                  lotNumber={lotNum}
                   processName={processName}
                   flags={flags || []}
                   enableFlagSelector={enableFlagSelector}

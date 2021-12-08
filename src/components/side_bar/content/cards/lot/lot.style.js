@@ -22,13 +22,13 @@ export const Container = styled.div`
   }
 
   // letter-spacing: 1.5px;
-
   outline: none;
   user-select: none;
   cursor: ${props => props.clickDisabled ? 'auto' : 'pointer'};
   pointer-events: ${props => props.clickDisabled ? 'none' : 'auto'};
   
   box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
+  border: 0.2rem solid transparent;
 
   &:active{
         box-shadow: none;
@@ -91,7 +91,7 @@ export const ColumnContainer = styled.div`
     width: 10rem;
     padding: 0.4rem;
     background-color: ${props => !!props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
-    border-radius: 0rem 0.6rem 0rem .6rem;
+    border-radius: 0rem 0rem 0rem .3rem;
     justify-content: center;
     align-content: center;
     z-index: 5;
@@ -156,6 +156,7 @@ export const NameContainer = styled.div`
 
 export const CardName = styled.span`
   white-space: nowrap;
+  white-space: pre-line !important;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;

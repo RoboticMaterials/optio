@@ -133,6 +133,7 @@ const CalendarPlaceholder = (props) => {
 				:
 				<PlaceholderButton
 					schema={schema}
+					containerStyle={{backgroundColor: !usable && '#f7f7fa', boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)'}}
 					usable={usable}
 					onClick={() => {
 						if(usable) {
@@ -163,6 +164,7 @@ const CalendarPlaceholder = (props) => {
 				:
 				<PlaceholderButton
 					schema={schema}
+					containerStyle={{backgroundColor: !usable && '#f7f7fa', boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)'}}
 					usable={usable}
 					onClick={() => {
 						if(usable) {
@@ -205,7 +207,7 @@ const CalendarPlaceholder = (props) => {
 				<PlaceholderButton
 					usable={usable}
 					schema={schema}
-					containerStyle={containerStyle}
+					containerStyle={{backgroundColor: !usable && '#f7f7fa', boxShadow: '1px 1px 1px 1px rgba(0,0,0,0.2)'}}
 					onClick={() => {
 						if(usable) {
 							onClick()

@@ -10,6 +10,7 @@ import Button from '../../../../basic/button/button'
 
 // styles
 import * as styled from "./summary_header.style"
+import BackButton from '../../../../basic/back_button/back_button'
 
 const SummaryHeader = (props) => {
     const {
@@ -29,30 +30,13 @@ const SummaryHeader = (props) => {
     return (
         <styled.Header>
             {showBackButton ?
-                <styled.MenuButton
-                    style={{ marginRight: "auto" }}
-                    className="fas fa-chevron-left"
-                    aria-hidden="true"
-                    onClick={() => {
+                <BackButton onClick={() => {
                         history.replace('/processes')
-                    }
-                    }
+                    }} 
                 />
+
                 :
                 <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
-            }
-            {!!title && (page === 'processes') &&
-                <Button
-                    label={title.includes('Statistics') ? 'Lots' : 'Statistics'}
-                    schema={title.includes('Statistics') ? 'lots' : 'statistics'}
-                    secondary
-                    onClick={() => {
-                        title.includes('Statistics') ?
-                            history.push('/' + page + '/' + id + "/lots")
-                            :
-                            history.push('/' + page + '/' + id + "/statistics")
-                    }}
-                />
             }
             <styled.TitleContainer style={{}}>
                 <styled.Title>{title ? title : "untitled"}</styled.Title>

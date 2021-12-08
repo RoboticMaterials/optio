@@ -371,95 +371,100 @@ const Cards = (props) => {
                     }}
                 />
             }
-            <SummaryHeader
-                showBackButton={isProcessView}
-                title={title}
-            />
-            <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
-                <ZoneHeader
-                    lotFilterValue={lotFilterValue}
-                    sortDirection={sortDirection}
-                    sortMode={sortMode}
-                    setSortMode={setSortMode}
-                    setLotFilterValue={setLotFilterValue}
-                    selectedFilterOption={selectedFilterOption}
-                    setSelectedFilterOption={setSelectedFilterOption}
-                    setSortDirection={setSortDirection}
-
-                    filters={lotFilters}
-                    onAddFilter={handleAddLotFilter}
-                    onRemoveFilter={handleRemoveLotFilter}
-
-                    selectedProcesses={selectedProcesses}
-                    setSelectedProcesses={setSelectedProcesses}
-                    zone={id}
-                    selectedLots={selectedCards}
-                    onDeleteClick={handleDeleteClick}
-                    onMoveClick={handleMoveClick}
-                    onClearClick={()=>setSelectedCards([])}
+            {!showCardEditor &&
+              <>
+                <SummaryHeader
+                    showBackButton={isProcessView}
+                    title={title}
                 />
 
-            </div>
+              <div style={{display: 'flex', padding: "1rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap", borderBottom: `1px solid ${themeContext.bg.tertiary}`}}>
+                  <ZoneHeader
+                      lotFilterValue={lotFilterValue}
+                      sortDirection={sortDirection}
+                      sortMode={sortMode}
+                      setSortMode={setSortMode}
+                      setLotFilterValue={setLotFilterValue}
+                      selectedFilterOption={selectedFilterOption}
+                      setSelectedFilterOption={setSelectedFilterOption}
+                      setSortDirection={setSortDirection}
+
+                      filters={lotFilters}
+                      onAddFilter={handleAddLotFilter}
+                      onRemoveFilter={handleRemoveLotFilter}
+
+                      selectedProcesses={selectedProcesses}
+                      setSelectedProcesses={setSelectedProcesses}
+                      zone={id}
+                      selectedLots={selectedCards}
+                      onDeleteClick={handleDeleteClick}
+                      onMoveClick={handleMoveClick}
+                      onClearClick={()=>setSelectedCards([])}
+                  />
+
+              </div>
 
 
-            <styled.Body
-                id={"cards-body"}
-            >
-                {showMenu &&
-                    <CardMenu
-                        currentProcess={currentProcess}
-                        close={() => setShowMenu(false)}
-                    />
-                }
+              <styled.Body
+                  id={"cards-body"}
+              >
+                  {showMenu &&
+                      <CardMenu
+                          currentProcess={currentProcess}
+                          close={() => setShowMenu(false)}
+                      />
+                  }
 
-                {
-                    {
-                        'summary':
-                            <SummaryZone
-                                setSelectedCards={setSelectedCards}
-                                selectedCards={selectedCards}
-                                selectedProcesses={selectedProcesses}
+                  {
+                      {
+                          'summary':
+                              <SummaryZone
+                                  setSelectedCards={setSelectedCards}
+                                  selectedCards={selectedCards}
+                                  selectedProcesses={selectedProcesses}
 
-                                sortMode={sortMode}
-                                sortDirection={sortDirection}
+                                  sortMode={sortMode}
+                                  sortDirection={sortDirection}
 
-                                lotFilters={lotFilters}
+                                  lotFilters={lotFilters}
 
-                                handleCardClick={handleCardClick}
-                                setShowCardEditor={onShowCardEditor}
-                                showCardEditor={showCardEditor}
-                                handleAddLotClick={handleAddLotClick}
+                                  handleCardClick={handleCardClick}
+                                  setShowCardEditor={onShowCardEditor}
+                                  showCardEditor={showCardEditor}
+                                  handleAddLotClick={handleAddLotClick}
 
-                                selectedProcesses={selectedProcesses}
-                                lotFilterValue={lotFilterValue}
-                                selectedFilterOption={selectedFilterOption}
-                            />,
-                        'timeline':
-                            <div
-                                handleCardClick={handleCardClick}
-                                initialProcesses={[currentProcess]}
-                            />
-                    }[id] ||
-                    <styled.CardZoneContainer ref={zoneRef}>
-                        <CardZone
-                            handleAddLotClick={handleAddLotClick}
-                            setSelectedCards={setSelectedCards}
-                            selectedCards={selectedCards}
-                            setShowCardEditor={onShowCardEditor}
-                            showCardEditor={showCardEditor}
-                            handleCardClick={handleCardClick}
-                            processId={id}
-                            setLotFilterValue={setLotFilterValue}
-                            lotFilterValue={lotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
+                                  selectedProcesses={selectedProcesses}
+                                  lotFilterValue={lotFilterValue}
+                                  selectedFilterOption={selectedFilterOption}
+                              />,
+                          'timeline':
+                              <div
+                                  handleCardClick={handleCardClick}
+                                  initialProcesses={[currentProcess]}
+                              />
+                      }[id] ||
+                      <styled.CardZoneContainer ref={zoneRef}>
+                          <CardZone
+                              handleAddLotClick={handleAddLotClick}
+                              setSelectedCards={setSelectedCards}
+                              selectedCards={selectedCards}
+                              setShowCardEditor={onShowCardEditor}
+                              showCardEditor={showCardEditor}
+                              handleCardClick={handleCardClick}
+                              processId={id}
+                              setLotFilterValue={setLotFilterValue}
+                              lotFilterValue={lotFilterValue}
+                              selectedFilterOption={selectedFilterOption}
 
-                            lotFilters={lotFilters}
-                            sortMode={sortMode}
-                            sortDirection={sortDirection}
-                        />
-                    </styled.CardZoneContainer>
-                }
-            </styled.Body>
+                              lotFilters={lotFilters}
+                              sortMode={sortMode}
+                              sortDirection={sortDirection}
+                          />
+                      </styled.CardZoneContainer>
+                  }
+              </styled.Body>
+            </>
+          }
         </styled.Container>
         </Suspense>
     )
