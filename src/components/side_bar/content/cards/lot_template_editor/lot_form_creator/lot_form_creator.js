@@ -178,7 +178,7 @@ const LotFormCreator = (props) => {
 		setNewFieldChosen(true)
 	}
 
-	const handleDropField = () => {//rewrite this function... kept adding for edge cases and it became a mess
+	const handleDropField = (e) => {//rewrite this function... kept adding for edge cases and it became a mess
 		if(!!xDrag){
 			let column, insertIndex, startRow, existingInd, fromColumn
 			let multipleInRow = false
@@ -260,6 +260,7 @@ const LotFormCreator = (props) => {
 		setStartIndex(null)
 		setDragOverId(null)
 		setDragIndex(null)
+		e.target.style.opacity = '1'
 	}
 
 	const findArrLocation = (id, arr, prev) => {
@@ -575,6 +576,7 @@ const LotFormCreator = (props) => {
 												setDragOverId(currItem?._id)
 											}}
 											>
+										<div id = {'emptyDiv'}/>
 										<styled.ColumnFieldContainer
 											id = {currItem?._id}
 											draggable = {true}
@@ -606,6 +608,9 @@ const LotFormCreator = (props) => {
 												e.target.style.opacity = '0.001'
 											}}
 											onDragEnd = {(e)=>{
+												let ele = document.getElementById('emptyDiv')
+												e.dataTransfer.setDragImage(ele,0,0)
+												
 												let fieldContainer = document.getElementById(draggingFieldId + 'container')
 												let fieldDiv = document.getElementById(draggingFieldId)
 												fieldContainer.style.padding = '1.2rem'
@@ -613,17 +618,17 @@ const LotFormCreator = (props) => {
 												fieldContainer.style.display = 'flex'
 
 												if(!!currItem && !(dragIndex === startIndex && xDrag==='center') && (dragIndex || dragIndex === 0)){
-													handleDropField()
+													handleDropField(e)
 												}
 												else {
 													setStartIndex(null)
 													setDragOverId(null)
 													setDragIndex(null)
+													e.target.style.opacity = '1'
 												}
 												setAllowHomeDrop(null)
 												setDraggingFieldId(null)
 												setMouseOffsetY(null)
-												e.target.style.opacity = '1'
 											}}
 										 selected = {currItem?._id === selectedEditingField}
 
