@@ -1,10 +1,12 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect, useContext, useRef} from "react";
 
 // external functions
 import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import uuid from "uuid";
 import FadeLoader from "react-spinners/FadeLoader"
+import ReactTooltip from "react-tooltip";
 
 // internal components
 import TextField from "../../../../basic/form/text_field/text_field";
@@ -83,10 +85,13 @@ const FormComponent = (props) => {
 		formikProps,
 		loaded
 	} = props
-
 	const themeContext = useContext(ThemeContext)
-
 	useChange()
+
+	//tooltip
+	const ref = useRef()
+	const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+
 	// component state
 	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
@@ -171,6 +176,7 @@ const FormComponent = (props) => {
 					title={"Are you sure you want to delete this Lot Template?"}
 					button_1_text={"Yes"}
 					button_2_text={"No"}
+
 					handleClose={()=>setConfirmDeleteTemplateModal(null)}
 					handleOnClick1={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -218,14 +224,27 @@ const FormComponent = (props) => {
 						inputStyle={{background: themeContext.bg.tertiary}}
 						schema = {'lots'}
 					/>
-					<Button
-						onClick={() => {
-							setShowWorkInstructionModal(true)
-						}}
-						schema={"lots"}
-						style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
-						label = {'Work Instructions'}
-					/>
+					<div data-tip data-for={toolTipId} style = {{justifyContent: 'center', alignSelf: 'center', marginLeft: '10rem'}}>
+						{!lotTemplateId &&
+						 <ReactTooltip
+								 id={toolTipId}
+								 place="bottom"
+						 >
+								 <div>
+								 	The product template must be created before work instructions can be accessed
+								 </div>
+						 </ReactTooltip>
+					 }
+						<Button
+							onClick={() => {
+								setShowWorkInstructionModal(true)
+							}}
+							schema={"lots"}
+							disabled = {!!lotTemplateId ? false : true}
+							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+							label = {'Work Instructions'}
+						/>
+					</div>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
@@ -406,6 +425,8 @@ const LotCreatorForm = (props) => {
 	const dispatchPutStation = async (station) => dispatch(putStation(station))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const selectedLotTemplatesId = useSelector(state => state.lotTemplatesReducer.selectedLotTemplatesId)
+	console.log(selectedLotTemplatesId)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const stations = useSelector(state => state.stationsReducer.stations)
 

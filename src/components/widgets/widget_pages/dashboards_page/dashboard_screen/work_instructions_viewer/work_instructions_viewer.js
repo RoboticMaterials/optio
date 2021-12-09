@@ -7,7 +7,9 @@ import { uuidv4 } from '../../../../../../methods/utils/utils';
 import {putLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 
 //3rd party libraries
-import {Viewer as ImgViewer} from 'react-viewer'
+import Lightbox from 'react-awesome-lightbox'
+import "react-awesome-lightbox/build/style.css";
+
 import {Viewer, Worker} from '@react-pdf-viewer/core'
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
@@ -114,8 +116,8 @@ const WorkInstructionsViewer = (props) => {
 
       case 'png':
         return (
-          <></>
-        )
+          <Lightbox image = {[fileUrl]} onClose = {()=> setShowWorkInstructionsViewer(false)}/>
+          )
     }
   }
 
