@@ -175,8 +175,6 @@ const FormComponent = (props) => {
     const cardHistory = useSelector((state) => {
         return state.cardsReducer.cardHistories[cardId];
     });
-    const selectedLotTemplatesId = useSelector(state => state.lotTemplatesReducer.selectedLotTemplatesId)
-    console.log(selectedLotTemplatesId)
     const routes = useSelector((state) => {
         return state.tasksReducer.tasks;
     });

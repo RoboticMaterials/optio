@@ -426,7 +426,6 @@ const LotCreatorForm = (props) => {
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 	const selectedLotTemplatesId = useSelector(state => state.lotTemplatesReducer.selectedLotTemplatesId)
-	console.log(selectedLotTemplatesId)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const stations = useSelector(state => state.stationsReducer.stations)
 
