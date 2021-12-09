@@ -106,15 +106,13 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
             y: parseInt(taktPx + event.dy)
         })
 
-        setTakt(Math.round(reverseScaleY.current(taktPx + event.dy)/5)*5)
+        setTakt(Math.ceil(reverseScaleY.current(taktPx + event.dy)/5)*5)
     }
     
     function dragended() {
         var taktGroup = select(this)
         taktGroup.classed(activeClassName, false);
     }
-
-    console.log(data)
 
     return (
         <div ref={chartContainerRef} style={{width: '100%', height: '100%', paddingTop: '1rem'}}>
@@ -129,7 +127,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                         <styled.Value style={{color: "#8aa9ff"}}>{secondsToReadable(takt, true)}</styled.Value>
                     </styled.Col>
                     <styled.Col>
-                        <styled.Label>Theoretical Production Rate</styled.Label>
+                        <styled.Label>Bottleneck Production Rate</styled.Label>
                         <styled.Value style={{color: "#ff8a8a"}}>{secondsToReadable(maxBarValue, true)}</styled.Value>
                     </styled.Col>
                 </styled.Row>
@@ -145,6 +143,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     />
                 </styled.Col>
             </styled.Row>
+            
             <div style={{height: '20rem'}}>
                 <ResponsiveBar
                     theme={theme}
