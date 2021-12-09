@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom';
 
 // Import Styles
@@ -23,6 +23,7 @@ import Line from '../../../../basic/charts/line/line';
 import { getProcessStatistics } from '../../../../../api/processes_api';
 import { deepCopy } from '../../../../../methods/utils/utils';
 import { secondsToReadable } from '../../../../../methods/utils/time_utils';
+import { getLotTemplates } from '../../../../../redux/actions/lot_template_actions';
 
 import descriptions from './descriptions';
 import Portal from '../../../../../higher_order_components/portal';
@@ -30,7 +31,7 @@ import Portal from '../../../../../higher_order_components/portal';
 const emptyData = {
     production_rates: {total: null, data: []},
     lead_time: 0,
-    current_wip: {total: null, data: []},
+    wip: {total: null, data: []},
     throughput: [],
     total_throughputs: {total: null, data: []},
     wip: [],
@@ -64,17 +65,28 @@ const ProcessStatistics = ({ id }) => {
     // Selectors
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    // Dispatches
+    const dispatch = useDispatch()
+    const dispatchGetProductTemplates = () => dispatch(getLotTemplates())
+
     // On Mount
     useEffect(() => {
+        dispatchGetProductTemplates()
         refreshData(dateRange);
     }, [dateRange])
 
     // Helpers
     const refreshData = async (dateRange) => {
+        setBalancePG(null)
+        setData(null)
+        setThroughputData([])
         const tempData = await getProcessStatistics(id, dateRange[0], dateRange[1])
         console.log(tempData)
         if (tempData === undefined) {
+            setBalancePG(null)
             setData(emptyData)
+            setThroughputData([])
+            alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             if (!(balancePG in tempData.balance)) {
                 await setBalancePG(null)
@@ -86,6 +98,12 @@ const ProcessStatistics = ({ id }) => {
             }
         }
     }
+
+    useEffect(() => {
+        if (!!data && Object.keys(data.balance).length && (!balancePG || !(balancePG in data.balance))) {
+            setBalancePG(Object.keys(data.balance)[0])
+        }
+    }, [data, balancePG])
 
     const toggleCumulative = async () => {
         let throughputDataCopy = deepCopy(throughputData)
@@ -115,7 +133,7 @@ const ProcessStatistics = ({ id }) => {
     }, [data, isCumulative])
 
     const renderProductGroupDropdown = useMemo(() => {
-        const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id].name}))
+        const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id]?.name || id}))
 
         return <DropDownSearch
             placeholder="Product Group"
@@ -134,7 +152,7 @@ const ProcessStatistics = ({ id }) => {
             style={{maxWidth: '15rem', margin: '0.5rem 0', height: '2.3rem'}}
             className="w-100"
         />
-    }, [data?.balance, balancePG])
+    }, [data?.balance, balancePG, productGroups])
 
     const renderHeader = (label, stat) => (
         <styled.CardHeader>
@@ -231,11 +249,11 @@ const ProcessStatistics = ({ id }) => {
                     <styled.Card style={{width: '33.33%'}}>
                         {renderHeader('Work in Process', 'wip')}
                         {!!data ? 
-                            'total' in data.current_wip ?
+                            'total' in data.wip ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Total</styled.PrimaryLabel>
-                                    <styled.PrimaryValue>{data.current_wip.total} Parts</styled.PrimaryValue>
-                                    {data.current_wip.data.map((datum, i) => (
+                                    <styled.PrimaryValue>{data.wip.total} Parts</styled.PrimaryValue>
+                                    {data.wip.data.map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>

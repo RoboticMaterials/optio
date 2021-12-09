@@ -35,7 +35,7 @@ import { getLotTemplates } from '../../../../redux/actions/lot_template_actions'
 
 const emptyData = {
     productivity: {overall: 0, data: []},
-    oee: {overall: 0, data: []},
+    oee: {partials: {}, total_qty: 0},
     cycle_time: {},
     throughput: [],
     wip: [],
@@ -51,7 +51,6 @@ const emptyData = {
 const OEETick = (props) => {
 
     const {
-        numBars,
         label,
         theoreticalCycleTime,
         setTheoreticalCycleTime
@@ -65,7 +64,7 @@ const OEETick = (props) => {
     return (
         <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y})`}>
             <foreignObject x="-5" y="-12" width="20" height="20" >
-                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `${3.5/numBars}rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
+                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `0.8rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
                 <Portal>
                     <ReactTooltip id={`${label}-oee-timepicker`} {...tooltipProps} globalEventOff='click' place="left" clickable={true}>
                         <styled.TimePickerTooltip>
@@ -132,6 +131,7 @@ const StatisticsPage = () => {
         console.log(tempData)
         if (tempData === undefined) {
             setData(emptyData)
+            alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             await setCycleTimePG(null)
             await setThroughputData(deepCopy(tempData.throughput))
@@ -231,6 +231,11 @@ const StatisticsPage = () => {
 
     }, [showWIPChart, isCumulative])
 
+    /**
+     * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
+     * are generated on the backend but since the OEE is relative to the theoretical cycle time (which is set on this graph) we need to calculate the actual 
+     * ratio on this page.
+     */
     const renderOEEBarsMemo = useMemo(() => {
         // This needs to be in a memo, otherwise the tooltip will close when the time picker is clicked
 
@@ -273,10 +278,9 @@ const StatisticsPage = () => {
                     icon='fas fa-rocket' 
                     centerLabel='OVERALL' 
                     centerValue={100 * oee_weighted_sum / data.oee.total_qty}
-                    radialAxisStart
+                    // radialAxisStart
                     radialAxisEnd={{ tickComponent: (d) => (
                         <OEETick 
-                            numBars={oee_data.length}
                             theoreticalCycleTime={theoreticalCycleTimes[d.label].theoreticalCycleTime} 
                             setTheoreticalCycleTime={(val) => setTheoreticalCycleTime(theoreticalCycleTimes[d.label].pgId, val)} 
                             {...d} 
@@ -350,7 +354,7 @@ const StatisticsPage = () => {
                                         icon='fas fa-bolt' 
                                         centerLabel='OVERALL' 
                                         centerValue={data.productivity.overall} 
-                                        radialAxisStart
+                                        // radialAxisStart
                                     />
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
