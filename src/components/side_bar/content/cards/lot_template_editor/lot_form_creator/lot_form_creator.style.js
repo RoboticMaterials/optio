@@ -62,6 +62,12 @@ export const FieldColumn = styled.div`
 `
 
 export const ColumnFieldContainer = styled.div`
+
+	-webkit-transition-property: none;
+	-moz-transition-property: none;
+	-o-transition-property: none;
+	transition-property: none;
+
   display: flex;
   flex-direction: column;
 	min-height: 7rem;
@@ -75,12 +81,6 @@ export const ColumnFieldContainer = styled.div`
 	border-radius: .5rem;
 	margin: .1rem;
   flex: 1;
-
-	&:active{
-				box-shadow: none;
-				filter: brightness(100%);
-				cursor: grabbing;
-		}
 
 	&:hover {
 		box-shadow: ${props => !props.selected && '3px 2px 5px 2px rgba(0,0,0,0.2)'};
