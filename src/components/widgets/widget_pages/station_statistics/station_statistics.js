@@ -16,6 +16,7 @@ import Line from '../../../basic/charts/line/line';
 import Bar from '../../../basic/charts/bar/bar';
 import Pie from '../../../basic/charts/pie/pie';
 import Scale from '../../../basic/charts/scale/scale';
+import Scatter from '../../../basic/charts/scatter/scatter';
 
 import { getStationStatistics } from '../../../../api/stations_api';
 import Checkbox from '../../../basic/checkbox/checkbox';
@@ -419,7 +420,10 @@ const StatisticsPage = () => {
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                     :
                                     throughputData.length > 1 ? 
-                                        <Line data={throughputData} showLegend={true}/> 
+                                        isCumulative ? 
+                                            <Line data={throughputData} showLegend={true}/> 
+                                            :
+                                            <Scatter data={throughputData} showLegend={true}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
