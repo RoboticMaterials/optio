@@ -532,6 +532,8 @@ const LotFormCreator = (props) => {
 				 	onDragOver = {(e)=> {
 						setClientY(e.clientY)
 						setClientX(e.clientX)
+						e.preventDefault()
+						e.dataTransfer.dropEffect = 'none'
 					}}
 				>
 					{dragIndex === 0 && startIndex !==1 &&
@@ -573,6 +575,7 @@ const LotFormCreator = (props) => {
 											id = {currItem?._id + 'container'}
 											style = {{padding: '1.2rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
+												e.preventDefault()
 												setDragOverId(currItem?._id)
 											}}
 											>
@@ -608,6 +611,7 @@ const LotFormCreator = (props) => {
 												e.target.style.opacity = '0.001'
 											}}
 											onDragEnd = {(e)=>{
+												e.preventDefault()
 												let ele = document.getElementById('emptyDiv')
 												e.dataTransfer.setDragImage(ele,0,0)
 

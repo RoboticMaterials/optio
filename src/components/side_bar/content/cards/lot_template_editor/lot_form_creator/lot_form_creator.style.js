@@ -63,11 +63,6 @@ export const FieldColumn = styled.div`
 
 export const ColumnFieldContainer = styled.div`
 
-	-webkit-transition-property: none;
-	-moz-transition-property: none;
-	-o-transition-property: none;
-	transition-property: none;
-
   display: flex;
   flex-direction: column;
 	min-height: 7rem;
