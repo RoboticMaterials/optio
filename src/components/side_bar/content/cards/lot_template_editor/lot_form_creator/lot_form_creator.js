@@ -610,14 +610,16 @@ const LotFormCreator = (props) => {
 											onDragEnd = {(e)=>{
 												let ele = document.getElementById('emptyDiv')
 												e.dataTransfer.setDragImage(ele,0,0)
-												
+
 												let fieldContainer = document.getElementById(draggingFieldId + 'container')
 												let fieldDiv = document.getElementById(draggingFieldId)
 												fieldContainer.style.padding = '1.2rem'
 												fieldDiv.style.display = 'flex'
 												fieldContainer.style.display = 'flex'
-
-												if(!!currItem && !(dragIndex === startIndex && xDrag==='center') && (dragIndex || dragIndex === 0)){
+												if(!!currItem && (dragIndex !== startIndex || xDrag==='center') && (dragIndex || dragIndex === 0)){
+													handleDropField(e)
+												}
+												else if(currItem && currRow.length>1 && dragIndex === startIndex){
 													handleDropField(e)
 												}
 												else {
