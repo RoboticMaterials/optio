@@ -205,7 +205,7 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{width: '33.33%'}}>
-                        {renderHeader('Throughput', 'throughput')}
+                        {renderHeader('Throughput', 'totalThroughput')}
                         {!!data ? 
                             !!data.total_throughputs && 'total' in data.total_throughputs ?
                                 <styled.ChartContainer>
