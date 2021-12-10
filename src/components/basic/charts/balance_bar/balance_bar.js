@@ -37,7 +37,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
     const reverseScaleY = useRef(() => 0)
     const [barContainerWidth, setBarContainerWidth] = useState(1)
     const [chartHeight, setChartHeight] = useState(0)
-    const [takt, setTakt] = useState(productGroup.taktTime || maxBarValue)
+    const [takt, setTakt] = useState(productGroup?.taktTime || maxBarValue)
     
 
     useEffect(() => {
