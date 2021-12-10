@@ -533,7 +533,6 @@ const LotFormCreator = (props) => {
 						setClientY(e.clientY)
 						setClientX(e.clientX)
 						e.preventDefault()
-						e.dataTransfer.dropEffect = 'none'
 					}}
 				>
 					{dragIndex === 0 && startIndex !==1 &&
@@ -612,8 +611,6 @@ const LotFormCreator = (props) => {
 											}}
 											onDragEnd = {(e)=>{
 												e.preventDefault()
-												let ele = document.getElementById('emptyDiv')
-												e.dataTransfer.setDragImage(ele,0,0)
 
 												let fieldContainer = document.getElementById(draggingFieldId + 'container')
 												let fieldDiv = document.getElementById(draggingFieldId)
