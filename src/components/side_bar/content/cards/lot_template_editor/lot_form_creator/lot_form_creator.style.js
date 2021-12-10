@@ -65,6 +65,8 @@ export const ColumnFieldContainer = styled.div`
   display: flex;
   flex-direction: column;
 	min-height: 7rem;
+	pointer-events: auto;
+	user-select: none;
 	background: ${props => props.theme.bg.primary};
 	box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.2);
 	padding: 0.4rem .4rem 1rem 1rem;
@@ -73,6 +75,12 @@ export const ColumnFieldContainer = styled.div`
 	border-radius: .5rem;
 	margin: .1rem;
   flex: 1;
+
+	&:active{
+				box-shadow: none;
+				filter: brightness(100%);
+				cursor: grabbing;
+		}
 
 	&:hover {
 		box-shadow: ${props => !props.selected && '3px 2px 5px 2px rgba(0,0,0,0.2)'};
