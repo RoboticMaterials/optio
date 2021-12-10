@@ -616,7 +616,7 @@ const LotFormCreator = (props) => {
 												fieldContainer.style.padding = '1.2rem'
 												fieldDiv.style.display = 'flex'
 												fieldContainer.style.display = 'flex'
-												if(!!currItem && (dragIndex !== startIndex || xDrag==='center') && (dragIndex || dragIndex === 0)){
+												if(!!currItem && (dragIndex !== startIndex) && (dragIndex || dragIndex === 0)){
 													handleDropField(e)
 												}
 												else if(currItem && currRow.length>1 && dragIndex === startIndex){
