@@ -49,6 +49,11 @@ const emptyData = {
     reports_pie: [],
 }
 
+const formatTimeString = (UTCSeconds) => {
+    var m = new Date(UTCSeconds)
+    return m.getHours() + ":" + m.getMinutes().toString().padStart(2, '0')
+}
+
 const OEETick = (props) => {
 
     const {
@@ -91,6 +96,8 @@ const OEETick = (props) => {
         </g>
     )
 }
+
+
 
 const StatisticsPage = () => {
 
@@ -145,29 +152,34 @@ const StatisticsPage = () => {
         
     }
 
+    const toggleCumulative = async () => {
+        let throughputDataCopy = []
+        if (isCumulative) {
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
+            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
+
+            await data.throughput.forEach(async (line, i) => {
+                let cumulation = 0;
+                let newLineData = []
+                for (var j in line.data) {
+                    if (j == 0 && line.data[j].x !== minTime) {
+                        newLineData.push({x: minTime, y: 0})
+                    }
+                    cumulation += line.data[j].y;
+                    newLineData.push({x: line.data[j].x, y: cumulation})
+                }
+                newLineData.push({x: maxTime, y: cumulation})
+                throughputDataCopy.push({...line, data: newLineData})
+            })
+        } else {
+            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
+        }
+        setThroughputData(throughputDataCopy);
+    }
+
     useEffect(() => {
         if (!data || !data.throughput) return []
-        
-        if (isCumulative) {
-            data.throughput.forEach((line, i) => {
-                let cumulation = 0;
-                for (var j in line.data) {
-                    cumulation += line.data[j].y;
-                    throughputData[i].data[j].y = cumulation;
-                }
-            })
-
-            setThroughputData(throughputData);
-        } else {
-            data.throughput.forEach((line, i) => {
-                for (var j in line.data) {
-                    throughputData[i].data[j].y = line.data[j].y;
-                }
-            })
-
-            setThroughputData(throughputData);
-        }
-
+        toggleCumulative();
     }, [data, isCumulative])
 
     const renderCycleTimeDropdown = useMemo(() => {
@@ -372,7 +384,7 @@ const StatisticsPage = () => {
                     </styled.Card>
 
                     <styled.Card style={{width: '50%'}}>
-                        {renderHeader('Cycle Time', 'cycleTime')}
+                        {renderHeader('Production Time', 'cycleTime')}
                         <styled.ChartContainer style={{height: '16rem'}}>
                             {!!data ? 
                                 <>
@@ -386,6 +398,7 @@ const StatisticsPage = () => {
                                                         showAxes={false} 
                                                         yFormat={v => secondsToReadable(v)}
                                                         margin={{top:10, right:2, bottom:10, left:2}}
+                                                        xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}
                                                     /> 
                                                 </div>
                                                 : 
@@ -394,7 +407,7 @@ const StatisticsPage = () => {
                                         {
                                             !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
                                             <div style={{height: '2rem'}}>
-                                                <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
+                                                <styled.CycleTimeLabel>1 Part Every</styled.CycleTimeLabel>
                                                 <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].current)}</styled.CycleTime>
                                             </div>
                                         }
@@ -416,14 +429,11 @@ const StatisticsPage = () => {
                             {!!data ?
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
-                                        <Line data={data.wip} showLegend={true}/> 
+                                        <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                     :
                                     throughputData.length > 1 ? 
-                                        isCumulative ? 
-                                            <Line data={throughputData} showLegend={true}/> 
-                                            :
-                                            <Scatter data={throughputData} showLegend={true}/> 
+                                        <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
