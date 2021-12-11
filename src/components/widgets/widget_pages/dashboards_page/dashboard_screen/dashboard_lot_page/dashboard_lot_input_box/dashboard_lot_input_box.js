@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { FieldArray, Form, Formik } from 'formik'
+import { useParams } from 'react-router-dom'
 
 // Import Style
 import * as styled from './dashboard_lot_input_box.style'
@@ -28,7 +29,14 @@ const DashboardLotInputBox = (props) => {
         currentLot,
         onGetCards
     } = props
+    const params = useParams()
 
+    const {
+      dashboardID
+    } = params
+
+    const dashboard = useSelector(state => state.dashboardsReducer.dashboards[dashboardID]) || {}
+    const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
     const processCards = useSelector(state => state.cardsReducer.processCards)
     const card = processCards[currentLot.process_id][currentLot._id]
     useEffect(() => {
@@ -80,7 +88,7 @@ const DashboardLotInputBox = (props) => {
         return currentLot.fields.map((field, ind1) => {
             return field.map((subField, ind2) => {
                 if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
-
+                  if(stationBasedLots === true && dashboard.fields && dashboard.fields[currentLot.lotTemplateId] && !!dashboard.fields[currentLot.lotTemplateId][subField._id]){
                     return (
                         <styled.Container key={`${ind1}.container.${ind2}`}>
                             <styled.Title>{subField.fieldName}</styled.Title>
@@ -99,6 +107,7 @@ const DashboardLotInputBox = (props) => {
                             </Button>
                         </styled.Container>
                     )
+                  }
                 }
             })
         })
