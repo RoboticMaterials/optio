@@ -88,7 +88,7 @@ const DashboardLotInputBox = (props) => {
         return currentLot.fields.map((field, ind1) => {
             return field.map((subField, ind2) => {
                 if (subField?.component === FIELD_COMPONENT_NAMES.INPUT_BOX) {
-                  if(stationBasedLots === true && dashboard.fields && dashboard.fields[currentLot.lotTemplateId] && !!dashboard.fields[currentLot.lotTemplateId][subField._id]){
+                  if((stationBasedLots === true && dashboard.fields && dashboard.fields[currentLot.lotTemplateId] && !!dashboard.fields[currentLot.lotTemplateId][subField._id]) || !stationBasedLots) {
                     return (
                         <styled.Container key={`${ind1}.container.${ind2}`}>
                             <styled.Title>{subField.fieldName}</styled.Title>
