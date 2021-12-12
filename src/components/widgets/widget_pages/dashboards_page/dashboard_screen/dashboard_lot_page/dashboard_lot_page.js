@@ -54,9 +54,10 @@ const recursiveFindAndRoutes = (exp, andNodes) => {
         andNodes.push(exp[i]);
       }
     } else {
-      andNodes = [...andNodes, recursiveFindAndRoutes(exp[i], deepCopy(andNodes))];
+      andNodes = [...andNodes, ...recursiveFindAndRoutes(exp[i], deepCopy(andNodes))];
     }
   }
+  console.log(andNodes)
   return andNodes
 }
 
@@ -115,7 +116,9 @@ const DashboardLotPage = (props) => {
     // Case 2: A split process merges at this node, consider every node downstream of the AND expression
     const mergeExpression = handleMergeExpression(stationID, currentProcess, routes, stations)
     if (!mergeExpression) return []
+    console.log(mergeExpression)
     const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
+    console.log(andRoutes)
     return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
   }, [currentLot.bins[stationID]])
   
