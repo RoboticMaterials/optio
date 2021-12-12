@@ -316,7 +316,7 @@ const ProcessStatistics = ({ id }) => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
                                 throughputData.length > 1 ? 
-                                    <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
+                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
