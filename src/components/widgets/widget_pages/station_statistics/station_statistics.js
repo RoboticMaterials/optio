@@ -16,7 +16,6 @@ import Line from '../../../basic/charts/line/line';
 import Bar from '../../../basic/charts/bar/bar';
 import Pie from '../../../basic/charts/pie/pie';
 import Scale from '../../../basic/charts/scale/scale';
-import Scatter from '../../../basic/charts/scatter/scatter';
 
 import { getStationStatistics } from '../../../../api/stations_api';
 import Checkbox from '../../../basic/checkbox/checkbox';
