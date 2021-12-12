@@ -109,6 +109,7 @@ const ProcessStatistics = ({ id }) => {
     }, [data, balancePG])
 
     const toggleCumulative = async () => {
+        if (!data || !data.throughput) return
         let throughputDataCopy = []
         if (isCumulative) {
             const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
