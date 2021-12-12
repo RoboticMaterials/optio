@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 
 import { theme, defaultColors } from '../nivo_theme';
@@ -45,6 +45,7 @@ const Line = (props) => {
     } = props
 
     const [hiddenData, setHiddenData] = useState({})
+    const xMin = useMemo(() => data.reduce((currMin, line) => Math.min(currMin, line.data[0].x), data[0]?.data[0]?.x || Number.POSITIVE_INFINITY), [data])
 
     return (
         <ResponsiveLine
@@ -52,7 +53,7 @@ const Line = (props) => {
             colors={defaultColors.filter((color, i) => i >= data.length || !hiddenData[data[i].id])}
             data={data.filter(dataset => !hiddenData[dataset.id])}
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'linear', min: data.reduce((currMin, line) => Math.min(currMin, line.data[0].x), data[0].data[0].x) }}
+            xScale={{ type: 'linear', min:  xMin}}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
             yFormat=" >-.0f"
             curve="monotoneX"
