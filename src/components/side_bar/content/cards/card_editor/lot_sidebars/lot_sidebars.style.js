@@ -73,7 +73,7 @@ export const LotTemplateButton = styled.div`
   background: transparent;
   padding: 0rem 1rem;
 
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   border: ${props =>  props.error ? '0.1rem solid red' : 'none'};
 
   box-shadow: ${props => props.theme.cardShadow};
@@ -86,7 +86,7 @@ export const LotTemplateButton = styled.div`
 export const TemplateIcon = styled.div`
 	  font-size: 1.6rem;
   	position: relative;
-  	color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
+  	color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.quinary};
     margin-right: 1rem;
 
 `

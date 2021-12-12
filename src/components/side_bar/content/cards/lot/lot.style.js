@@ -6,13 +6,12 @@ import { commonClickableIcon, commonIcon, glow, iconButtonCss } from "../../../.
 import { hexToRGBA, LightenDarkenColor } from '../../../../../methods/utils/color_utils'
 
 export const Container = styled.div`
- 	margin: 10px; // prevents glow from being cut off
+ 	margin: 10px;
   height: fit-content;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // overflow: hidden;
   background: ${props => !props.disabled ? props.theme.bg.primary : props.theme.bg.tertiary};
   ${props => props.disabled && 'opacity: 0.7;'}
   color: ${props => props.theme.bg.octonary};
@@ -21,12 +20,11 @@ export const Container = styled.div`
       outline: none;
   }
 
-  // letter-spacing: 1.5px;
   outline: none;
   user-select: none;
   cursor: ${props => props.clickDisabled ? 'auto' : 'pointer'};
   pointer-events: ${props => props.clickDisabled ? 'none' : 'auto'};
-  
+
   box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
   border: 0.2rem solid transparent;
 
@@ -38,18 +36,10 @@ export const Container = styled.div`
 
   &:hover {
     box-shadow: 2px 5px 5px 2px rgba(0,0,0,0.2);
-    //transform: translateY(-2px);
-    //cant transform or lot looks weird when dragging
-  }
   }
 
   ${props => props.isSelected && `box-shadow: 0px 0px 2px 3px ${hexToRGBA(props.theme.schema.lots.solid, 0.7)} !important;`}
 
-  // ${props => (props.selectable && !(props.isSelected || props.isFocused)) && notSelectedCss};
-  // ${props => props.glow && glowCss};
-  // ${props => props.isFocused && focusedCss};
-  // ${props => props.isSelected && selectedCss};
-  // ${props => props.containerStyle};
 
   max-width: 30rem;
 

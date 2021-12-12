@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom';
 
 // Import Styles
@@ -23,6 +23,7 @@ import Line from '../../../../basic/charts/line/line';
 import { getProcessStatistics } from '../../../../../api/processes_api';
 import { deepCopy } from '../../../../../methods/utils/utils';
 import { secondsToReadable } from '../../../../../methods/utils/time_utils';
+import { getLotTemplates } from '../../../../../redux/actions/lot_template_actions';
 
 import descriptions from './descriptions';
 import Portal from '../../../../../higher_order_components/portal';
@@ -30,14 +31,17 @@ import Portal from '../../../../../higher_order_components/portal';
 const emptyData = {
     production_rates: {total: null, data: []},
     lead_time: 0,
-    current_wip: {total: null, data: []},
+    wip: {total: null, data: []},
     throughput: [],
     total_throughputs: {total: null, data: []},
     wip: [],
     balance: []
 }
 
-const takt = 600;
+const formatTimeString = (UTCSeconds) => {
+    var m = new Date(UTCSeconds);
+    return m.getHours() + ":" + m.getMinutes().toString().padStart(2, '0')
+}
 
 const ProcessStatistics = ({ id }) => {
 
@@ -64,17 +68,28 @@ const ProcessStatistics = ({ id }) => {
     // Selectors
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    // Dispatches
+    const dispatch = useDispatch()
+    const dispatchGetProductTemplates = () => dispatch(getLotTemplates())
+
     // On Mount
     useEffect(() => {
+        dispatchGetProductTemplates()
         refreshData(dateRange);
     }, [dateRange])
 
     // Helpers
     const refreshData = async (dateRange) => {
+        setBalancePG(null)
+        setData(null)
+        setThroughputData([])
         const tempData = await getProcessStatistics(id, dateRange[0], dateRange[1])
         console.log(tempData)
         if (tempData === undefined) {
+            setBalancePG(null)
             setData(emptyData)
+            setThroughputData([])
+            alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             if (!(balancePG in tempData.balance)) {
                 await setBalancePG(null)
@@ -87,22 +102,33 @@ const ProcessStatistics = ({ id }) => {
         }
     }
 
+    useEffect(() => {
+        if (!!data && Object.keys(data.balance).length && (!balancePG || !(balancePG in data.balance))) {
+            setBalancePG(Object.keys(data.balance)[0])
+        }
+    }, [data, balancePG])
+
     const toggleCumulative = async () => {
-        let throughputDataCopy = deepCopy(throughputData)
+        let throughputDataCopy = []
         if (isCumulative) {
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
+            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
+
             await data.throughput.forEach(async (line, i) => {
                 let cumulation = 0;
+                let newLineData = []
                 for (var j in line.data) {
+                    if (j == 0 && line.data[j].x !== minTime) {
+                        newLineData.push({x: minTime, y: 0})
+                    }
                     cumulation += line.data[j].y;
-                    throughputDataCopy[i].data[j].y = cumulation;
+                    newLineData.push({x: line.data[j].x, y: cumulation})
                 }
+                newLineData.push({x: maxTime, y: cumulation})
+                throughputDataCopy.push({...line, data: newLineData})
             })
         } else {
-            await data.throughput.forEach(async (line, i) => {
-                for (var j in line.data) {
-                    throughputDataCopy[i].data[j].y = line.data[j].y;
-                }
-            })
+            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
         }
         setThroughputData(throughputDataCopy);
     }
@@ -115,7 +141,7 @@ const ProcessStatistics = ({ id }) => {
     }, [data, isCumulative])
 
     const renderProductGroupDropdown = useMemo(() => {
-        const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id].name}))
+        const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id]?.name || id}))
 
         return <DropDownSearch
             placeholder="Product Group"
@@ -134,7 +160,7 @@ const ProcessStatistics = ({ id }) => {
             style={{maxWidth: '15rem', margin: '0.5rem 0', height: '2.3rem'}}
             className="w-100"
         />
-    }, [data?.balance, balancePG])
+    }, [data?.balance, balancePG, productGroups])
 
     const renderHeader = (label, stat) => (
         <styled.CardHeader>
@@ -187,7 +213,7 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{width: '33.33%'}}>
-                        {renderHeader('Throughput', 'throughput')}
+                        {renderHeader('Throughput', 'totalThroughput')}
                         {!!data ? 
                             !!data.total_throughputs && 'total' in data.total_throughputs ?
                                 <styled.ChartContainer>
@@ -231,11 +257,11 @@ const ProcessStatistics = ({ id }) => {
                     <styled.Card style={{width: '33.33%'}}>
                         {renderHeader('Work in Process', 'wip')}
                         {!!data ? 
-                            'total' in data.current_wip ?
+                            'total' in data.wip ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Total</styled.PrimaryLabel>
-                                    <styled.PrimaryValue>{data.current_wip.total} Parts</styled.PrimaryValue>
-                                    {data.current_wip.data.map((datum, i) => (
+                                    <styled.PrimaryValue>{data.wip.total} Parts</styled.PrimaryValue>
+                                    {data.wip.data.map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -289,7 +315,7 @@ const ProcessStatistics = ({ id }) => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
                                 throughputData.length > 1 ? 
-                                    <Line data={throughputData} showLegend={true}/> 
+                                    <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />

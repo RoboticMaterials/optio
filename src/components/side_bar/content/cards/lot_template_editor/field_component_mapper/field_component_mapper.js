@@ -48,9 +48,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
                     {preview ?
                         <styled.TextContainer>
@@ -93,9 +93,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
                     {preview ?
                         <styled.TextContainer>
@@ -143,9 +143,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
                     {preview ?
                         <styled.TextContainer>
@@ -196,9 +196,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
                     {preview ?
                         <NumberInput
@@ -235,9 +235,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
 
                     {preview ?
@@ -270,9 +270,9 @@ const FieldComponentMapper = (props) => {
                     }}
                 >
                     {displayName ?
-                        <styled.Label>{displayName}:</styled.Label>
+                        <styled.Label>{displayName}</styled.Label>
                         :
-                        fieldName && <styled.Label>{fieldName}:</styled.Label>
+                        fieldName && <styled.Label>{fieldName}</styled.Label>
                     }
 
                     {preview ?

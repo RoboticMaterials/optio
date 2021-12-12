@@ -24,3 +24,15 @@ export const Value = styled.div`
     font-size: 2rem;
     font-weight: bold;
 `
+
+export const NoData = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2rem;
+    font-weight: bold;
+    color: ${props => props.theme.bg.tertiary};
+`

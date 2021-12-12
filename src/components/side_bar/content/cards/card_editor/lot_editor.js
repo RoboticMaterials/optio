@@ -941,7 +941,7 @@ const FormComponent = (props) => {
 
                                         <div>
                                             <styled.ContentTitle>
-                                                Product Group:{" "}
+                                                Product Template:{" "}
                                             </styled.ContentTitle>
                                             <styled.ContentValue>
                                                 {lotTemplate?.name}
@@ -994,6 +994,7 @@ const FormComponent = (props) => {
                                             style={
                                                 content !== null
                                                     ? {
+                                                          width: '100%',
                                                           background:
                                                               "transparent",
                                                           border: "none",
@@ -1473,6 +1474,7 @@ const LotEditor = (props) => {
                         lotTemplateId={selectedLotTemplatesId}
                         close={() => {
                             setShowLotTemplateEditor(false);
+                            dispatchSetSelectedLotTemplate(null)
                         }}
                         processId={processId}
                     />

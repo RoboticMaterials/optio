@@ -166,14 +166,15 @@ const ProcessForm = (props) => {
 			})
 		}
 
-		// When a process changes, we need to go through every station involved and make sure they 
+		// When a process changes, we need to go through every station involved and make sure they
 		// have a cycle time dict for every product group in the process.
 		Object.values(lotTemplates).forEach(lotTemplate => {
 			if (lotTemplate.processId !== savedProcess._id) return
 			else {
 				for (var node of nodes) {
 					let stationCopy = deepCopy(stations[node.stationID])
-					if (!(lotTemplate._id in stationCopy.cycle_times)) {
+					if(!stationCopy.cycle_times) stationCopy.cycle_times = []
+					if (!stationCopy.cycle_times[lotTemplate._id]) {
 						stationCopy.cycle_times[lotTemplate._id] = CYCLE_TIME_DICT
 						dispatchPutStation(stationCopy)
 					}

@@ -16,6 +16,7 @@ import Line from '../../../basic/charts/line/line';
 import Bar from '../../../basic/charts/bar/bar';
 import Pie from '../../../basic/charts/pie/pie';
 import Scale from '../../../basic/charts/scale/scale';
+import Scatter from '../../../basic/charts/scatter/scatter';
 
 import { getStationStatistics } from '../../../../api/stations_api';
 import Checkbox from '../../../basic/checkbox/checkbox';
@@ -35,7 +36,7 @@ import { getLotTemplates } from '../../../../redux/actions/lot_template_actions'
 
 const emptyData = {
     productivity: {overall: 0, data: []},
-    oee: {overall: 0, data: []},
+    oee: {partials: {}, total_qty: 0},
     cycle_time: {},
     throughput: [],
     wip: [],
@@ -48,10 +49,14 @@ const emptyData = {
     reports_pie: [],
 }
 
+const formatTimeString = (UTCSeconds) => {
+    var m = new Date(UTCSeconds)
+    return m.getHours() + ":" + m.getMinutes().toString().padStart(2, '0')
+}
+
 const OEETick = (props) => {
 
     const {
-        numBars,
         label,
         theoreticalCycleTime,
         setTheoreticalCycleTime
@@ -65,7 +70,7 @@ const OEETick = (props) => {
     return (
         <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y})`}>
             <foreignObject x="-5" y="-12" width="20" height="20" >
-                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `${3.5/numBars}rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
+                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `0.8rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
                 <Portal>
                     <ReactTooltip id={`${label}-oee-timepicker`} {...tooltipProps} globalEventOff='click' place="left" clickable={true}>
                         <styled.TimePickerTooltip>
@@ -91,6 +96,8 @@ const OEETick = (props) => {
         </g>
     )
 }
+
+
 
 const StatisticsPage = () => {
 
@@ -132,6 +139,7 @@ const StatisticsPage = () => {
         console.log(tempData)
         if (tempData === undefined) {
             setData(emptyData)
+            alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             await setCycleTimePG(null)
             await setThroughputData(deepCopy(tempData.throughput))
@@ -144,29 +152,34 @@ const StatisticsPage = () => {
         
     }
 
+    const toggleCumulative = async () => {
+        let throughputDataCopy = []
+        if (isCumulative) {
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
+            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
+
+            await data.throughput.forEach(async (line, i) => {
+                let cumulation = 0;
+                let newLineData = []
+                for (var j in line.data) {
+                    if (j == 0 && line.data[j].x !== minTime) {
+                        newLineData.push({x: minTime, y: 0})
+                    }
+                    cumulation += line.data[j].y;
+                    newLineData.push({x: line.data[j].x, y: cumulation})
+                }
+                newLineData.push({x: maxTime, y: cumulation})
+                throughputDataCopy.push({...line, data: newLineData})
+            })
+        } else {
+            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
+        }
+        setThroughputData(throughputDataCopy);
+    }
+
     useEffect(() => {
         if (!data || !data.throughput) return []
-        
-        if (isCumulative) {
-            data.throughput.forEach((line, i) => {
-                let cumulation = 0;
-                for (var j in line.data) {
-                    cumulation += line.data[j].y;
-                    throughputData[i].data[j].y = cumulation;
-                }
-            })
-
-            setThroughputData(throughputData);
-        } else {
-            data.throughput.forEach((line, i) => {
-                for (var j in line.data) {
-                    throughputData[i].data[j].y = line.data[j].y;
-                }
-            })
-
-            setThroughputData(throughputData);
-        }
-
+        toggleCumulative();
     }, [data, isCumulative])
 
     const renderCycleTimeDropdown = useMemo(() => {
@@ -231,6 +244,11 @@ const StatisticsPage = () => {
 
     }, [showWIPChart, isCumulative])
 
+    /**
+     * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
+     * are generated on the backend but since the OEE is relative to the theoretical cycle time (which is set on this graph) we need to calculate the actual 
+     * ratio on this page.
+     */
     const renderOEEBarsMemo = useMemo(() => {
         // This needs to be in a memo, otherwise the tooltip will close when the time picker is clicked
 
@@ -273,10 +291,9 @@ const StatisticsPage = () => {
                     icon='fas fa-rocket' 
                     centerLabel='OVERALL' 
                     centerValue={100 * oee_weighted_sum / data.oee.total_qty}
-                    radialAxisStart
+                    // radialAxisStart
                     radialAxisEnd={{ tickComponent: (d) => (
                         <OEETick 
-                            numBars={oee_data.length}
                             theoreticalCycleTime={theoreticalCycleTimes[d.label].theoreticalCycleTime} 
                             setTheoreticalCycleTime={(val) => setTheoreticalCycleTime(theoreticalCycleTimes[d.label].pgId, val)} 
                             {...d} 
@@ -350,7 +367,7 @@ const StatisticsPage = () => {
                                         icon='fas fa-bolt' 
                                         centerLabel='OVERALL' 
                                         centerValue={data.productivity.overall} 
-                                        radialAxisStart
+                                        // radialAxisStart
                                     />
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
@@ -367,7 +384,7 @@ const StatisticsPage = () => {
                     </styled.Card>
 
                     <styled.Card style={{width: '50%'}}>
-                        {renderHeader('Cycle Time', 'cycleTime')}
+                        {renderHeader('Production Time', 'cycleTime')}
                         <styled.ChartContainer style={{height: '16rem'}}>
                             {!!data ? 
                                 <>
@@ -381,6 +398,7 @@ const StatisticsPage = () => {
                                                         showAxes={false} 
                                                         yFormat={v => secondsToReadable(v)}
                                                         margin={{top:10, right:2, bottom:10, left:2}}
+                                                        xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}
                                                     /> 
                                                 </div>
                                                 : 
@@ -389,7 +407,7 @@ const StatisticsPage = () => {
                                         {
                                             !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
                                             <div style={{height: '2rem'}}>
-                                                <styled.CycleTimeLabel>Product Group Cycle Time</styled.CycleTimeLabel>
+                                                <styled.CycleTimeLabel>1 Part Every</styled.CycleTimeLabel>
                                                 <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].current)}</styled.CycleTime>
                                             </div>
                                         }
@@ -411,11 +429,11 @@ const StatisticsPage = () => {
                             {!!data ?
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
-                                        <Line data={data.wip} showLegend={true}/> 
+                                        <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                     :
                                     throughputData.length > 1 ? 
-                                        <Line data={throughputData} showLegend={true}/> 
+                                        <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />

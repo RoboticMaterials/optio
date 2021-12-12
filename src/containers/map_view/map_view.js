@@ -18,6 +18,7 @@ import { getMap, getMaps } from '../../redux/actions/map_actions'
 import { postSettings } from '../../redux/actions/settings_actions'
 import { getStations, updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
+import { setSelectedHoveringTask } from '../../redux/actions/tasks_actions'
 
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
@@ -83,8 +84,6 @@ export class MapView extends Component {
 
     componentDidMount() {
 
-
-
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
@@ -148,6 +147,10 @@ export class MapView extends Component {
         //     this.refreshMap()
         // }
         //this.checkForMapLoad() //test
+
+        if(!this.props.editingProcess){
+          this.props.dispatchSetSelectedHoveringTask(null)
+        }
 
         if(!this.state.currentMap || this.props.localSettings.currentMapId !== this.state.currentMap._id){
           this.checkForMapLoad()
@@ -813,6 +816,7 @@ const mapStateToProps = function (state) {
         selectedPosition: state.positionsReducer.selectedPosition,
         editingStation: state.stationsReducer.editingStation,
         editingPosition: state.positionsReducer.editingPosition,
+        editingProcess: state.processesReducer.editingProcess,
 
         selectedTask: state.tasksReducer.selectedTask,
         selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
@@ -843,6 +847,7 @@ const mapDispatchToProps = dispatch => {
         dispatchSetPositionAttributes: (id, attr) => dispatch(setPositionAttributes(id, attr)),
         dispatchSetSelectedStation: (station) => dispatch(setSelectedStation(station)),
         dispatchSetSelectedPosition: (position) => dispatch(setSelectedPosition(position)),
+        dispatchSetSelectedHoveringTask: (task) => dispatch(setSelectedHoveringTask(task)),
 
         dispatchHoverStationInfo: (info) => dispatch(hoverStationInfo(info)),
         dispatchWidgetLoaded: (bool) => dispatch(widgetLoaded(bool)),

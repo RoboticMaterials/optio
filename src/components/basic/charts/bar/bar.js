@@ -4,8 +4,6 @@ import { theme, defaultColors } from '../nivo_theme';
 
 const Bar = ({ data, keys, colors }) => {
 
-    console.log(data)
-
     return (
         <ResponsiveBar
             theme={theme}

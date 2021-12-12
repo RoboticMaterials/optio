@@ -4,6 +4,7 @@ import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/comm
 import {containerLayout} from "../../../../../common_css/layout";
 import SyncProblemIcon from "@material-ui/icons/SyncProblem";
 import SyncIcon from "@material-ui/icons/Sync";
+import { LightenDarkenColor} from '../../../../../methods/utils/color_utils'
 
 export const rowCss = css`
 	// margin-bottom: 1rem;
@@ -245,7 +246,7 @@ const mainCss = css`
 	position: relative;
 
 	overflow: hidden;
-	background: ${props => props.theme.bg.primary};
+	background: ${props => LightenDarkenColor(props.theme.bg.secondary,6)};
 	flex: 1;
 	justify-content: space-between;
 `
@@ -253,7 +254,7 @@ const mainCss = css`
 export const StyledForm = styled(Form)`
     ${mainCss};
 
-	transition: all .5s ease;
+	transition: all .1s ease;
 	filter: ${props => props.loading && "blur(5px)"};
 `;
 
@@ -470,7 +471,7 @@ export const ContentValue = styled.span`
 // `
 
 export const FieldLabel = styled.span`
-	font-size: ${props => props.theme.fontSize.sz3};
+	font-size: 1rem;
 	font-weight: ${props => props.theme.fontWeight.bold};
 	font-family: ${props => props.theme.font.primary};
 	white-space: nowrap ;
