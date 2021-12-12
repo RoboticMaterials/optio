@@ -429,11 +429,11 @@ const StatisticsPage = () => {
                             {!!data ?
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
-                                        <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
+                                        <Line data={data.wip.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                     :
                                     throughputData.length > 1 ? 
-                                        <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
+                                        <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
