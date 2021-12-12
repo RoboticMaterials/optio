@@ -54,7 +54,7 @@ const recursiveFindAndRoutes = (exp, andNodes) => {
         andNodes.push(exp[i]);
       }
     } else {
-      andNodes = [...andNodes, recursiveFindAndNodes(exp[i], deepCopy(andNodes))];
+      andNodes = [...andNodes, recursiveFindAndRoutes(exp[i], deepCopy(andNodes))];
     }
   }
   return andNodes

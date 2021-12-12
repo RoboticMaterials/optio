@@ -3,12 +3,44 @@ import { ResponsiveLine } from '@nivo/line'
 
 import { theme, defaultColors } from '../nivo_theme';
 
+// https://nivo.rocks/storybook/?path=/story/line--custom-line-style
+const DashedSolidLine = ({ series, lineGenerator, xScale, yScale }) => {
+    return series.map(({ id, data, color, dashed=false }, index) => (
+      <path
+        key={id}
+        d={lineGenerator(
+          data.map((d) => ({
+            x: xScale(d.data.x),
+            y: yScale(d.data.y)
+          }))
+        )}
+        fill="none"
+        stroke={color}
+        style={
+          dashed === true
+            ? {
+                // simulate line will dash stroke when index is even
+                strokeDasharray: "6, 4",
+                strokeWidth: 2
+              }
+            : {
+                // simulate line with solid stroke
+                faceColor: 'white',
+                background: 'white',
+                strokeWidth: 3
+              }
+        }
+      />
+    ));
+  };
+
 const Line = (props) => {
 
     const {
         data,
         showLegend,
         showAxes,
+        legendToggle,
         ...rest
     } = props
 
@@ -19,9 +51,8 @@ const Line = (props) => {
             theme={theme}
             colors={defaultColors.filter((color, i) => i >= data.length || !hiddenData[data[i].id])}
             data={data.filter(dataset => !hiddenData[dataset.id])}
-
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
+            xScale={{ type: 'linear', min: data.reduce((currMin, line) => Math.min(currMin, line.data[0].x), data[0].data[0].x) }}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
             yFormat=" >-.0f"
             curve="monotoneX"
@@ -34,7 +65,9 @@ const Line = (props) => {
                 tickPadding: 5,
                 tickRotation: 0,
                 legendOffset: 36,
-                legendPosition: 'middle'
+                legendPosition: 'middle',
+                scale: 'linear',
+                format: rest?.xFormat
             } : null}
             axisLeft={showAxes ? {
                 orient: 'left',
@@ -48,16 +81,30 @@ const Line = (props) => {
             } : null}
             enableGridX={false}
             enableGridY={false}
-            enablePoints={false}
-            pointSize={10}
+            enablePoints={true}
+            pointSize={8}
             pointColor={{ theme: 'background' }}
             pointBorderWidth={2}
             pointBorderColor={{ from: 'serieColor' }}
             pointLabelYOffset={-12}
-            enableSlices="x"
-            crosshairType="bottom"
+            // enableSlices="x"
+            // crosshairType="bottom"
             useMesh={true}
             animate={true}
+            layers={[
+                // includes all default layers
+                "grid",
+                "markers",
+                "axes",
+                "areas",
+                "crosshair",
+                "line",
+                "slices",
+                DashedSolidLine, // add the custome layer here
+                "points",
+                "mesh",
+                "legends",
+              ]}
             legends={showLegend ? [
                 {
                     data: data.map((dataset, i) => ({color: defaultColors[i % defaultColors.length], hidden: hiddenData[dataset.id], id: dataset.id, label: dataset.id})),
@@ -75,7 +122,7 @@ const Line = (props) => {
                     symbolShape: 'circle',
                     symbolBorderColor: 'rgba(0, 0, 0, .5)',
                     onClick: v => {
-                        console.log(v)
+                        if (!legendToggle) return
                         if (hiddenData[v.id] === true) {
                             setHiddenData({...hiddenData, [v.id]: false})
                         } else {
@@ -101,6 +148,7 @@ const Line = (props) => {
 Line.defaultProps = {
     data: [],
     showLegend: true,
+    legendToggle: true,
     showAxes: true
 }
 

@@ -38,7 +38,10 @@ const emptyData = {
     balance: []
 }
 
-const takt = 600;
+const formatTimeString = (UTCSeconds) => {
+    var m = new Date(UTCSeconds);
+    return m.getHours() + ":" + m.getMinutes().toString().padStart(2, '0')
+}
 
 const ProcessStatistics = ({ id }) => {
 
@@ -106,21 +109,26 @@ const ProcessStatistics = ({ id }) => {
     }, [data, balancePG])
 
     const toggleCumulative = async () => {
-        let throughputDataCopy = deepCopy(throughputData)
+        let throughputDataCopy = []
         if (isCumulative) {
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
+            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
+
             await data.throughput.forEach(async (line, i) => {
                 let cumulation = 0;
+                let newLineData = []
                 for (var j in line.data) {
+                    if (j == 0 && line.data[j].x !== minTime) {
+                        newLineData.push({x: minTime, y: 0})
+                    }
                     cumulation += line.data[j].y;
-                    throughputDataCopy[i].data[j].y = cumulation;
+                    newLineData.push({x: line.data[j].x, y: cumulation})
                 }
+                newLineData.push({x: maxTime, y: cumulation})
+                throughputDataCopy.push({...line, data: newLineData})
             })
         } else {
-            await data.throughput.forEach(async (line, i) => {
-                for (var j in line.data) {
-                    throughputDataCopy[i].data[j].y = line.data[j].y;
-                }
-            })
+            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
         }
         setThroughputData(throughputDataCopy);
     }
@@ -205,7 +213,7 @@ const ProcessStatistics = ({ id }) => {
 
                 <styled.Row>
                     <styled.Card style={{width: '33.33%'}}>
-                        {renderHeader('Throughput', 'throughput')}
+                        {renderHeader('Throughput', 'totalThroughput')}
                         {!!data ? 
                             !!data.total_throughputs && 'total' in data.total_throughputs ?
                                 <styled.ChartContainer>
@@ -307,7 +315,7 @@ const ProcessStatistics = ({ id }) => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
                                 throughputData.length > 1 ? 
-                                    <Line data={throughputData} showLegend={true}/> 
+                                    <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
