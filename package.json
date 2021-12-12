@@ -116,7 +116,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "pre-start": "node ./scripts/pre-start.js",
     "start": "node ./scripts/pre-start.js && PORT=80 react-scripts start",
-    "build": "node ./scripts/pre-start.js && node ./scripts/postinstall.js && react-scripts --max_old_space_size=4096 build",
+    "build": "node ./scripts/pre-start.js && node ./scripts/postinstall.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "postinstall": "node ./scripts/postinstall.js",
