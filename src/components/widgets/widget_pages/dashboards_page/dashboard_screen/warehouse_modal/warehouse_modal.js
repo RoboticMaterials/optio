@@ -125,7 +125,7 @@ const WarehouseModal = (props) => {
         {!!selectedLot &&
             <QuantityModal
                 validationSchema={quantityOneSchema}
-                initialValue={initialQuantity}
+                initialValue={Math.min(initialQuantity, selectedLot.bins[warehouseID]?.count || 0)}
                 maxValue={selectedLot.bins[warehouseID]?.count || 0}
                 minValue={1}
                 infoText={`${selectedLot.bins[warehouseID]?.count || 0} items available.`}
