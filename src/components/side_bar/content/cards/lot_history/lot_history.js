@@ -34,14 +34,13 @@ const LotHistory = (props) => {
     }, [])
     
     const speed = (event) => {
-        const cycleTime = (event.stop_time - event.start_time) / 1000*event.quantity; // ms to s
+        const cycleTime = (event.move_datetime.$date - event.start_datetime.$date) / 1000*event.quantity; // ms to s
 
-        let stationCycleTime = null;
-        if (stations[event.load_station_id].cycle_time_mode === 'auto' && !!stations[event.load_station_id]?.cycle_time) {
-            stationCycleTime = stations[event.load_station_id].cycle_time;
-        } else if (stations[event.load_station_id].cycle_time_mode === 'manual' && !!stations[event.load_station_id]?.manual_cycle_time) {
-            stationCycleTime = stations[event.load_station_id]?.manual_cycle_time;
-        }
+        
+
+        const productTemplateId = lotTemplates[event.product_group_id]._id
+        const loadStation = stations[event.load_station_id]
+        const stationCycleTime = loadStation?.cycle_times[productTemplateId]?.actual || 0
 
         const speedStatus = (cycleTime < stationCycleTime) ? 1 : -1
         const speedLabel = speedStatus === 1 ? `Fast -${Math.round(stationCycleTime-cycleTime)}s` : `Slow +${Math.round(cycleTime-stationCycleTime)}s`
@@ -70,7 +69,7 @@ const LotHistory = (props) => {
                     <styled.Label>Move Time</styled.Label>
                     <styled.Label>Speed</styled.Label>
                     <styled.Label>Operator</styled.Label>
-                    <styled.Label>Product Group</styled.Label>
+                    <styled.Label>Product</styled.Label>
                     <styled.Label>SKU / Product</styled.Label>
                 </styled.HeaderRow>
                 {lotEvents[lotId]?.map(event => (

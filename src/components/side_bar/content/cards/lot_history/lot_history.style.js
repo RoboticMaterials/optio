@@ -71,7 +71,7 @@ export const Flag = styled.div`
     font-weight: bold;
 
     background: ${props => props.speedStatus===1 ? '#D3FDDA' : '#FEE2E8'};
-    color: ${props => props.speedStatus===1 ? '#81d690' : '#ff6363'};
+    color: ${props => props.speedStatus===1 ? '#6ab076' : '#ff6363'};
 `
 
 export const Info = styled.h1`

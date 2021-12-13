@@ -57,7 +57,6 @@ const recursiveFindAndRoutes = (exp, andNodes) => {
       andNodes = [...andNodes, ...recursiveFindAndRoutes(exp[i], deepCopy(andNodes))];
     }
   }
-  console.log(andNodes)
   return andNodes
 }
 
@@ -116,9 +115,7 @@ const DashboardLotPage = (props) => {
     // Case 2: A split process merges at this node, consider every node downstream of the AND expression
     const mergeExpression = handleMergeExpression(stationID, currentProcess, routes, stations)
     if (!mergeExpression) return []
-    console.log(mergeExpression)
     const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
-    console.log(andRoutes)
     return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
   }, [currentLot.bins[stationID]])
   
@@ -208,7 +205,6 @@ const DashboardLotPage = (props) => {
 
 
   const onBack = () => {
-    Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
     history.push(`/locations/${stationID}/dashboards/${dashboardID}`);
   };
 
@@ -431,6 +427,7 @@ const DashboardLotPage = (props) => {
     } else {
       mergeLotCopy.bins[openWarehouse].count -= quantity;
     }
+    console.log(mergeLotCopy)
     dispatchPutCard(mergeLotCopy, mergeLot._id);
 
     setMergedLotsRevertStates(mergedLotsRevertStatesCopy)
@@ -577,7 +574,6 @@ const DashboardLotPage = (props) => {
     }
   }
   
-
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -590,7 +586,7 @@ const DashboardLotPage = (props) => {
           disableFilter={(lot) => incomingSplitMergeRoutes.map(route => route.load).includes(openWarehouse) && currentLot._id !== lot._id} // If you're merging from a split branch, only allow merging of the same lot id
           sortFunction={(lot, nextLot) => incomingSplitMergeRoutes.map(route => route.load).includes(openWarehouse) && currentLot._id !== lot._id ? 1 : -1}
           stationID={stationID}
-          initialQuantity={Math.min(currentLot.bins[warehouseID]?.count, currentLot.bins[stationID]?.count)}
+          initialQuantity={currentLot.bins[stationID]?.count}
           onSubmitLabel={"Merge"}
           onSubmit={handlePullWarehouseLot}
         />
@@ -633,7 +629,10 @@ const DashboardLotPage = (props) => {
           fractionMove = {fractionMove}
           onFractionClick = {(fraction) => onFractionClick(fraction)}
           selectedFraction = {selectedFraction}
-          handleCancel={() => onBack()}
+          handleCancel={() => {
+            Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
+            onBack()
+          }}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}
           onInputChange = {(e) =>{
