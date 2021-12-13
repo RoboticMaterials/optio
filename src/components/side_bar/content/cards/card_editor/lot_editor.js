@@ -1470,6 +1470,7 @@ const LotEditor = (props) => {
                 {showLotTemplateEditor && (
                     <LotCreatorForm
                         isOpen={true}
+                        setSelectedTemplate = {onSelectLotTemplate}
                         onAfterOpen={null}
                         lotTemplateId={selectedLotTemplatesId}
                         close={() => {
