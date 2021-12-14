@@ -17,8 +17,6 @@ const LotQueue = ((props) => {
 		cards,
 		onAddLotClick,
 		processId,
-		setShowCardEditor,
-		showCardEditor,
 		maxHeight,
 		sortMode,
 		sortDirection,
