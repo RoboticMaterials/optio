@@ -13,7 +13,7 @@ export const parseCSV = (content, strDelimiter=',') => {
             "([^\"\\" + strDelimiter + "\\r\\n]*))"
         ),
         "gi"
-    );  
+    );
 
     var table = [[]]; // Table array with empty first row
     var arrMatches = null; // Array to hold individual pattern matching groups
@@ -142,7 +142,8 @@ export const parseXML = (content) => {
     } else if (xml.getElementsByTagName("ViewItem").length !== 0) {
         var newXml = xml.getElementsByTagName("ViewItem");
         newXml[0].children.forEach((attribute, index, array) => {
-            header += attribute.name + "\t";
+            header += attribute.name
+            if(newXml[0].children.length - index > 1) header+='\t'
         });
 
            csv += header + '\n'
@@ -152,7 +153,9 @@ export const parseXML = (content) => {
             if(workOrderNumber.value.includes(' 1of')){
             var row = "";
             lot.children.forEach((child, index, array) => {
-                row += child.value + "\t";
+                row += child.value
+                if(lot.children.length - index > 1) row +='\t'
+
             });
 
             csv += row + "\n";
@@ -160,8 +163,6 @@ export const parseXML = (content) => {
         });
 
     }
-
-    //console.log("!!", csv);
 
     var rows = csv.split("\n");
     let table = [];

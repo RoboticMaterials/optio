@@ -146,9 +146,9 @@ const StatisticsPage = () => {
             if (!!tempData.cycle_time && Object.keys(tempData.cycle_time).length > 0 ) {
                 await setCycleTimePG(Object.keys(tempData.cycle_time)[0])
             }
-            
+
         }
-        
+
     }
 
     const toggleCumulative = async () => {
@@ -233,7 +233,7 @@ const StatisticsPage = () => {
                         WIP
                     </styled.DualSelectionButton>
                 </styled.DualSelectionButtonContainer>
-                {!showWIPChart && 
+                {!showWIPChart &&
                     <>
                         <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
                         <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
@@ -246,7 +246,7 @@ const StatisticsPage = () => {
 
     /**
      * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
-     * are generated on the backend but since the OEE is relative to the theoretical cycle time (which is set on this graph) we need to calculate the actual 
+     * are generated on the backend but since the OEE is relative to the theoretical cycle time (which is set on this graph) we need to calculate the actual
      * ratio on this page.
      */
     const renderOEEBarsMemo = useMemo(() => {
@@ -286,17 +286,17 @@ const StatisticsPage = () => {
             })
 
             return (
-                <RadialBar 
-                    data={oee_data} 
-                    icon='fas fa-rocket' 
-                    centerLabel='OVERALL' 
+                <RadialBar
+                    data={oee_data}
+                    icon='fas fa-rocket'
+                    centerLabel='OVERALL'
                     centerValue={100 * oee_weighted_sum / data.oee.total_qty}
                     // radialAxisStart
                     radialAxisEnd={{ tickComponent: (d) => (
-                        <OEETick 
-                            theoreticalCycleTime={theoreticalCycleTimes[d.label].theoreticalCycleTime} 
-                            setTheoreticalCycleTime={(val) => setTheoreticalCycleTime(theoreticalCycleTimes[d.label].pgId, val)} 
-                            {...d} 
+                        <OEETick
+                            theoreticalCycleTime={theoreticalCycleTimes[d.label].theoreticalCycleTime}
+                            setTheoreticalCycleTime={(val) => setTheoreticalCycleTime(theoreticalCycleTimes[d.label].pgId, val)}
+                            {...d}
                         />
                     )}}
                 />
@@ -316,14 +316,14 @@ const StatisticsPage = () => {
             </ReactTooltip>
         </styled.CardHeader>
     )
-    
+
     return (
         <styled.Page>
             <styled.Header>
                 <styled.StationName>{stations[stationId].name}</styled.StationName>
             </styled.Header>
 
-            <styled.StatisticsContainer>    
+            <styled.StatisticsContainer>
 
                 {showCalendar &&
                     <Popup
@@ -360,13 +360,13 @@ const StatisticsPage = () => {
                     <styled.Card style={{width: '25%'}}>
                         {renderHeader('Productivity', 'productivity')}
                         <styled.ChartContainer>
-                            {!!data ? 
+                            {!!data ?
                                 data.productivity.data.length ?
-                                    <RadialBar 
-                                        data={data.productivity.data} 
-                                        icon='fas fa-bolt' 
-                                        centerLabel='OVERALL' 
-                                        centerValue={data.productivity.overall} 
+                                    <RadialBar
+                                        data={data.productivity.data}
+                                        icon='fas fa-bolt'
+                                        centerLabel='OVERALL'
+                                        centerValue={data.productivity.overall}
                                         // radialAxisStart
                                     />
                                     : <styled.NoData>No Data</styled.NoData>
@@ -386,22 +386,22 @@ const StatisticsPage = () => {
                     <styled.Card style={{width: '50%'}}>
                         {renderHeader('Production Time', 'cycleTime')}
                         <styled.ChartContainer style={{height: '16rem'}}>
-                            {!!data ? 
+                            {!!data ?
                                 <>
                                     {renderCycleTimeDropdown}
                                     <div  style={{height: `${16-2.3}rem`}}>
                                         {!!cycleTimePG && !!data.cycle_time[cycleTimePG] && data.cycle_time[cycleTimePG].line_data[0].data.length > 1 ?
                                                 <div style={{height: '10rem'}}>
-                                                    <Line 
-                                                        data={data.cycle_time[cycleTimePG].line_data} 
-                                                        showLegend={false} 
-                                                        showAxes={false} 
+                                                    <Line
+                                                        data={data.cycle_time[cycleTimePG].line_data}
+                                                        showLegend={false}
+                                                        showAxes={false}
                                                         yFormat={v => secondsToReadable(v)}
                                                         margin={{top:10, right:2, bottom:10, left:2}}
                                                         xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}
-                                                    /> 
+                                                    />
                                                 </div>
-                                                : 
+                                                :
                                                 <styled.NoData style={{height: '10rem'}}>Not Enough Data</styled.NoData>
                                         }
                                         {
@@ -427,6 +427,15 @@ const StatisticsPage = () => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
 
                             {!!data ?
+<<<<<<< HEAD
+                                showWIPChart ?
+                                    data.wip.length > 0 ?
+                                        <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/>
+                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                    :
+                                    throughputData.length > 1 ?
+                                        <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/>
+=======
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
                                         <Line data={data.wip.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
@@ -434,6 +443,7 @@ const StatisticsPage = () => {
                                     :
                                     throughputData.length > 1 ? 
                                         <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
+>>>>>>> 2dab0dd111e529e66c41e21a853fd2ec3a83bddc
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
@@ -446,7 +456,7 @@ const StatisticsPage = () => {
                     <styled.Card style={{flexGrow: 1}}>
                         {renderHeader('Station Reports', 'stationReports')}
                         <styled.ChartContainer style={{height: '20rem'}}>
-                            {!!data ? 
+                            {!!data ?
                                 !!data.reports.data && data.reports.data.length ?
                                     <Bar data={data.reports.data} keys={Object.keys(data.reports.key_colors)} colors={Object.values(data.reports.key_colors)}/>
                                     : <styled.NoData>No Data</styled.NoData>
@@ -460,7 +470,7 @@ const StatisticsPage = () => {
                 <styled.Row>
                     <styled.Card style={{flexGrow: 1}}>
                         <styled.ChartContainer style={{display: 'flex', flexDirection: 'row', height: '20rem', maxHeight: '26rem', justifyContent: 'space-between'}}>
-                            {!!data ? 
+                            {!!data ?
                                 <>
                                     <styled.PieContainer>
                                         <Pie data={data.reports_pie} label="Station Reports" stat="stationReportsPie" description={descriptions.stationReportsPie}/>
@@ -490,7 +500,7 @@ const StatisticsPage = () => {
                     <styled.Card style={{width: '50%', maxWidth: '50%', height: '10rem', minHeight: '10rem'}}>
                         {renderHeader('Machine Utilization', 'machineUtilization')}
                         <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        {!!data ? 
+                        {!!data ?
                             !!data.machine_utilization && Object.keys(data.machine_utilization).length ?
                                 <Scale data={[data.machine_utilization]} labels={['working', 'idle']} valueFormat={v => secondsToReadable(v)}/>
                                 : <styled.NoData>No Data</styled.NoData>
@@ -502,7 +512,7 @@ const StatisticsPage = () => {
                     <styled.Card style={{width: '50%', maxWidth: '50%', height: '10rem', minHeight: '10rem'}}>
                         {renderHeader('Value Creating Time', 'valueCreatingTime')}
                         <styled.ChartContainer style={{display: 'flex', justifyContent: 'center', alignItems: 'center', maxWidth: '100%'}}>
-                        {!!data ? 
+                        {!!data ?
                             !!data.value_creating_time && Object.keys(data.value_creating_time).length ?
                                 <Scale data={[data.value_creating_time]} labels={['working', 'idle']} valueFormat={v => secondsToReadable(v)}/>
                                 : <styled.NoData>No Data</styled.NoData>

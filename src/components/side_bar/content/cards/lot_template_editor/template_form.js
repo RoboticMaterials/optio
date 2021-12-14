@@ -73,6 +73,7 @@ const FormComponent = (props) => {
 
 	const {
 		formMode,
+		setSelectedTemplate,
 		lotTemplateId,
 		close,
 		onDeleteClick,
@@ -411,7 +412,8 @@ const LotCreatorForm = (props) => {
 		processOptions,
 		showProcessSelector,
 		lotTemplateId,
-		processId
+		processId,
+		setSelectedTemplate,
 	} = props
 
 	// actions
@@ -439,9 +441,10 @@ const LotCreatorForm = (props) => {
 	*
 	* */
 	const handleDeleteClick = async () => {
-
+		let basicTemplate = Object.values(lotTemplates).find(template => template.processId === processId && template.name === 'Basic')
 		dispatchDeleteLotTemplate(lotTemplateId)
 		dispatchSetSelectedLotTemplate(null)
+		setSelectedTemplate(basicTemplate._id)
 
 		// close()
 	}
@@ -666,6 +669,7 @@ const LotCreatorForm = (props) => {
 							processOptions={processOptions}
 							showProcessSelector={showProcessSelector}
 							lotTemplateId={lotTemplateId}
+							setSelectedTemplate = {setSelectedTemplate}
 						/>
 					)
 				}}
