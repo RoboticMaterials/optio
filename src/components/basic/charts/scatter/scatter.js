@@ -1,62 +1,29 @@
-import { useState, useMemo } from 'react'
-import { ResponsiveLine } from '@nivo/line'
+import { useState } from 'react'
+import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
 import { theme, defaultColors } from '../nivo_theme';
 
-// https://nivo.rocks/storybook/?path=/story/line--custom-line-style
-const DashedSolidLine = ({ series, lineGenerator, xScale, yScale }) => {
-    return series.map(({ id, data, color, dashed=false }, index) => (
-      <path
-        key={id}
-        d={lineGenerator(
-          data.map((d) => ({
-            x: xScale(d.data.x),
-            y: yScale(d.data.y)
-          }))
-        )}
-        fill="none"
-        stroke={color}
-        style={
-          dashed === true
-            ? {
-                // simulate line will dash stroke when index is even
-                strokeDasharray: "6, 4",
-                strokeWidth: 2
-              }
-            : {
-                // simulate line with solid stroke
-                faceColor: 'white',
-                background: 'white',
-                strokeWidth: 3
-              }
-        }
-      />
-    ));
-  };
-
-const Line = (props) => {
+const ScatterPlot = (props) => {
 
     const {
         data,
         showLegend,
-        showAxes,
         legendToggle,
+        showAxes,
         ...rest
     } = props
 
     const [hiddenData, setHiddenData] = useState({})
-    const xMin = useMemo(() => data.reduce((currMin, line) => Math.min(currMin, line.data[0].x), data[0]?.data[0]?.x || Number.POSITIVE_INFINITY), [data])
 
     return (
-        <ResponsiveLine
+        <ResponsiveScatterPlot
             theme={theme}
             colors={defaultColors.filter((color, i) => i >= data.length || !hiddenData[data[i].id])}
             data={data.filter(dataset => !hiddenData[dataset.id])}
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'linear', min:  xMin}}
+            xScale={{ type: 'linear', min: data.reduce((currMin, line) => Math.min(currMin, line.data[0].x), data[0].data[0].x) }}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
             yFormat=" >-.0f"
-            curve="monotoneX"
             lineWidth={3}
             axisTop={null}
             axisRight={null}
@@ -67,7 +34,6 @@ const Line = (props) => {
                 tickRotation: 0,
                 legendOffset: 36,
                 legendPosition: 'middle',
-                scale: 'linear',
                 format: rest?.xFormat
             } : null}
             axisLeft={showAxes ? {
@@ -82,30 +48,16 @@ const Line = (props) => {
             } : null}
             enableGridX={false}
             enableGridY={false}
-            enablePoints={true}
-            pointSize={8}
+            enablePoints={false}
+            pointSize={10}
             pointColor={{ theme: 'background' }}
             pointBorderWidth={2}
             pointBorderColor={{ from: 'serieColor' }}
             pointLabelYOffset={-12}
             // enableSlices="x"
-            // crosshairType="bottom"
+            crosshairType="bottom"
             useMesh={true}
             animate={true}
-            layers={[
-                // includes all default layers
-                "grid",
-                "markers",
-                "axes",
-                "areas",
-                "crosshair",
-                "line",
-                "slices",
-                DashedSolidLine, // add the custome layer here
-                "points",
-                "mesh",
-                "legends",
-              ]}
             legends={showLegend ? [
                 {
                     data: data.map((dataset, i) => ({color: defaultColors[i % defaultColors.length], hidden: hiddenData[dataset.id], id: dataset.id, label: dataset.id})),
@@ -146,11 +98,11 @@ const Line = (props) => {
     )
 }
 
-Line.defaultProps = {
+ScatterPlot.defaultProps = {
     data: [],
     showLegend: true,
-    legendToggle: true,
+    legendToggle: false,
     showAxes: true
 }
 
-export default Line;
+export default ScatterPlot;

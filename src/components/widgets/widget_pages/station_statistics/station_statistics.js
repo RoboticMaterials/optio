@@ -16,7 +16,6 @@ import Line from '../../../basic/charts/line/line';
 import Bar from '../../../basic/charts/bar/bar';
 import Pie from '../../../basic/charts/pie/pie';
 import Scale from '../../../basic/charts/scale/scale';
-//import Scatter from '../../../basic/charts/scatter/scatter';
 
 import { getStationStatistics } from '../../../../api/stations_api';
 import Checkbox from '../../../basic/checkbox/checkbox';
@@ -153,6 +152,7 @@ const StatisticsPage = () => {
     }
 
     const toggleCumulative = async () => {
+        if (!data || !data.throughput) return
         let throughputDataCopy = []
         if (isCumulative) {
             const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
@@ -427,6 +427,7 @@ const StatisticsPage = () => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
 
                             {!!data ?
+<<<<<<< HEAD
                                 showWIPChart ?
                                     data.wip.length > 0 ?
                                         <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/>
@@ -434,6 +435,15 @@ const StatisticsPage = () => {
                                     :
                                     throughputData.length > 1 ?
                                         <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/>
+=======
+                                showWIPChart ? 
+                                    data.wip.length > 0 ? 
+                                        <Line data={data.wip.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
+                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                    :
+                                    throughputData.length > 1 ? 
+                                        <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
+>>>>>>> 2dab0dd111e529e66c41e21a853fd2ec3a83bddc
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
