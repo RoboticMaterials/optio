@@ -427,15 +427,6 @@ const StatisticsPage = () => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
 
                             {!!data ?
-<<<<<<< HEAD
-                                showWIPChart ?
-                                    data.wip.length > 0 ?
-                                        <Line data={data.wip} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/>
-                                        : <styled.NoData>Not Enough Data</styled.NoData>
-                                    :
-                                    throughputData.length > 1 ?
-                                        <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/>
-=======
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
                                         <Line data={data.wip.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
@@ -443,7 +434,6 @@ const StatisticsPage = () => {
                                     :
                                     throughputData.length > 1 ? 
                                         <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
->>>>>>> 2dab0dd111e529e66c41e21a853fd2ec3a83bddc
                                         : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
