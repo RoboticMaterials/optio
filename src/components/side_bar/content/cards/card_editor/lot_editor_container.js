@@ -68,7 +68,7 @@ import { postLotTemplate } from '../../../../../redux/actions/lot_template_actio
 import LotHistory from "../lot_history/lot_history";
 
 const LotEditorContainer = (props) => {
-    const { merge, processId } = props;
+    const { merge, onClose } = props;
 
     const params = useParams()
     const history = useHistory()
@@ -1102,15 +1102,15 @@ const LotEditorContainer = (props) => {
                 onBack = null;
                 title = 'Creating Lot'
             case 'paste':
-                onBack = () => history.push(`/lots/${params.id}/editing`)
+                onBack = () => history.goBack() //history.push(`/lots/${params.id}/editing`)
                 title = 'Paste'
                 break;
             case 'validate':
-                onBack = () => history.push(`/lots/${params.id}/paste`)
+                onBack = () => history.goBack() //history.push(`/lots/${params.id}/paste`)
                 title = 'Validate Lots'
                 break;
             case 'history':
-                onBack = () => history.push(`/lots/${params.id}/editing`)
+                onBack = () => history.goBack() //history.push(`/lots/${params.id}/editing`)
                 title = 'Lot History'
                 break;
         }
@@ -1130,7 +1130,7 @@ const LotEditorContainer = (props) => {
                 <styled.CloseIcon
                     className="fa fa-times"
                     aria-hidden="true"
-                    onClick={() => history.push('/lots/summary')}
+                    onClick={() => onClose()}
                 />
             </styled.Header>
         )

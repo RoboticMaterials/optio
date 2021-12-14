@@ -98,6 +98,7 @@ const Cards = (props) => {
     }
 
     const onShowCardEditor = (card) => {
+        console.log("TRIGGER", card)
         if (card) {
             if (params.page === 'processes') {
                 setPreviousProcessId(params.id)
@@ -303,10 +304,11 @@ const Cards = (props) => {
     }
 
     const handleAddLotClick = (processId) => {
+        if (params.page === 'processes') {
+            setPreviousProcessId(params.id)
+        }
         history.push(`/lots/${processId}/create`)
     }
-
-    console.log(params)
 
     return (
       <Suspense fallback = {<></>}>
@@ -339,7 +341,7 @@ const Cards = (props) => {
                     cardId={selectedCard ? selectedCard.cardId : null}
                     processId={params.subpage === 'create' ? params.id : (selectedCard ? selectedCard.processId : null)}
                     binId={selectedCard ? selectedCard.binId : null}
-                    close={()=>{
+                    onClose={()=>{
                         setSelectedCard(null)
                         onShowCardEditor(false)
                     }}
