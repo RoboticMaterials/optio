@@ -310,7 +310,7 @@ const Lot = (props) => {
 
             <styled.ContentContainer hasLeadTime={!!leadTime}>
                 <LotSimpleRow
-                    label= {lotTemplates[lot.lotTemplateId].name === 'Basic' ? 'Quantity' : lotTemplates[lot.lotTemplateId].displayNames.count}
+                    label= {lotTemplates[lot.lotTemplateId]?.name === 'Basic' ? 'Quantity' : lotTemplates[lot.lotTemplateId]?.displayNames?.count || 'Quantity'}
                     value={`${count}/${totalQuantity}`}
                 />
 

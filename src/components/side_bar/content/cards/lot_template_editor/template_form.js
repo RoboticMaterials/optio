@@ -1,10 +1,12 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect, useContext, useRef} from "react";
 
 // external functions
 import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import uuid from "uuid";
 import FadeLoader from "react-spinners/FadeLoader"
+import ReactTooltip from "react-tooltip";
 
 // internal components
 import TextField from "../../../../basic/form/text_field/text_field";
@@ -19,6 +21,7 @@ import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 // constants
 import {FORM_MODES} from "../../../../../constants/scheduler_constants";
+import { CYCLE_TIME_DICT } from '../../../../../constants/location_constants'
 
 // utils
 import {LotFormSchema} from "../../../../../methods/utils/form_schemas";
@@ -82,10 +85,13 @@ const FormComponent = (props) => {
 		formikProps,
 		loaded
 	} = props
-
 	const themeContext = useContext(ThemeContext)
-
 	useChange()
+
+	//tooltip
+	const ref = useRef()
+	const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+
 	// component state
 	const [preview, ] = useState(false)
 	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
@@ -170,6 +176,7 @@ const FormComponent = (props) => {
 					title={"Are you sure you want to delete this Lot Template?"}
 					button_1_text={"Yes"}
 					button_2_text={"No"}
+
 					handleClose={()=>setConfirmDeleteTemplateModal(null)}
 					handleOnClick1={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -217,21 +224,34 @@ const FormComponent = (props) => {
 						inputStyle={{background: themeContext.bg.tertiary}}
 						schema = {'lots'}
 					/>
-					<Button
-						onClick={() => {
-							setShowWorkInstructionModal(true)
-						}}
-						schema={"lots"}
-						style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
-						label = {'Work Instructions'}
-					/>
+					<div data-tip data-for={toolTipId} style = {{justifyContent: 'center', alignSelf: 'center', marginLeft: '10rem'}}>
+						{!lotTemplateId &&
+						 <ReactTooltip
+								 id={toolTipId}
+								 place="bottom"
+						 >
+								 <div>
+								 	The product template must be created before work instructions can be accessed
+								 </div>
+						 </ReactTooltip>
+					 }
+						<Button
+							onClick={() => {
+								setShowWorkInstructionModal(true)
+							}}
+							schema={"lots"}
+							disabled = {!!lotTemplateId ? false : true}
+							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+							label = {'Work Instructions'}
+						/>
+					</div>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
 
 			</styled.Header>
 
-			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
+			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden", marginTop: '1rem'}}>
 				<style.ColumnContainer>
 				{/*<LotTemplateEditorSidebar/>*/}
 					<styled.ScrollContainer style = {{paddingLeft: '10%', paddingRight: '10%'}}>
@@ -405,6 +425,7 @@ const LotCreatorForm = (props) => {
 	const dispatchPutStation = async (station) => dispatch(putStation(station))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const selectedLotTemplatesId = useSelector(state => state.lotTemplatesReducer.selectedLotTemplatesId)
 	const processes = useSelector(state => state.processesReducer.processes)
 	const stations = useSelector(state => state.stationsReducer.stations)
 
@@ -526,8 +547,9 @@ const LotCreatorForm = (props) => {
 				PGProcess?.flattened_stations.forEach(node => {
 					let stationCopy = deepCopy(stations[node.stationID])
 					if(!stationCopy.cycle_times) stationCopy.cycle_times = []
-					if (!stationCopy.cycle_times[lotTemplate._id]) {
-						stationCopy.cycle_times[lotTemplate._id] = CYCLE_TIME_DICT
+					let id = lotTemplate ? lotTemplate._id : createdLotTemplateId
+					if (!stationCopy.cycle_times[id]) {
+						stationCopy.cycle_times[id] = CYCLE_TIME_DICT
 						dispatchPutStation(stationCopy)
 					}
 				})

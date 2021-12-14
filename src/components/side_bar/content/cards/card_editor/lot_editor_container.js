@@ -539,7 +539,7 @@ const LotEditorContainer = (props) => {
         // re-run validation right before submitting to ensure there are no errors
         try {
             const validationResult = validateLot(values, index);
-            
+
             if (!ignoreWarnings) {
                 if (Object.keys(mappedStatus[index]?.warnings || {}).length) {
                     setMappedStatus((previous) => {
@@ -556,7 +556,7 @@ const LotEditorContainer = (props) => {
                             index
                         );
                     });
-                    return 
+                    return
                 }
             }
 

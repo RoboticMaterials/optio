@@ -113,7 +113,7 @@ const LotContainer = (props) => {
                           stationName={stationName}
                           templateValues={templateValues}
                           totalQuantity={totalQuantity}
-                          lotNumber={lotNumber}
+                          lotNumber={lotNum}
                           flags={flags || []}
                           enableFlagSelector={enableFlagSelector}
                           name={name + ` (${stations[routes[routeId]?.load]?.name})`}

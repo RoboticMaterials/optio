@@ -1,11 +1,12 @@
 import { ResponsivePie } from '@nivo/pie'
+import ReactTooltip from 'react-tooltip';
 
 import * as styled from './pie.style'
 
-import { theme, defaultColors } from '../nivo_theme';
+import { theme, defaultColors, tooltipProps } from '../nivo_theme';
 import emptyData from './empty';
 
-const Pie = ({ data, label }) => {
+const Pie = ({ data, label, stat, description }) => {
 
     if (!data || !data.length) {data = emptyData}
     const colors = data.map((slice, idx) => !!slice.color ? slice.color : defaultColors[idx % defaultColors.length])
@@ -35,7 +36,13 @@ const Pie = ({ data, label }) => {
                 arcLabelsTextColor={{ from: 'color', modifiers: [ [ 'darker', 2 ] ] }}
             />
 
-            <styled.Label>{label}</styled.Label>
+            <styled.PieHeader>
+                <styled.TooltipIcon className="fas fa-info"  data-tip data-for={`${stat}-tooltip`} />
+                <ReactTooltip id={`${stat}-tooltip`} {...tooltipProps} place="top">
+                    <styled.Tooltip dangerouslySetInnerHTML={{__html:description}}></styled.Tooltip>
+                </ReactTooltip>
+                <styled.Label>{label}</styled.Label>
+            </styled.PieHeader>
 
             <styled.LegendContainer>
                 {data.map((slice, i) => (

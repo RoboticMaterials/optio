@@ -504,7 +504,6 @@ export const getCustomFields = (lotTemplateId, lot, dashboardID, includeNonPrevi
               _id,
               component,
             } = field
-
             let foundId = false
             for(const i in lotTemplate.fields){
               let fieldExists = lotTemplate.fields[i].find(tempField => tempField._id === _id)

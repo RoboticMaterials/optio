@@ -74,7 +74,6 @@ const TaskField = (props) => {
     const errors = (typeof formikErrors?.routes === 'object') && formikErrors.routes
     const errorCount = Object.keys(errors).length // get number of field errors
     const submitDisabled = ((errorCount > 0) || (!enableSave))// || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
     useEffect(() => {
         // The changes to load an unload only happen on the map so we need to reflect
         // the changes in formik when they occur
@@ -219,11 +218,12 @@ const TaskField = (props) => {
         return isDiverging;
     }, [processRoutes, editingRoute])
 
-    useEffect(() => {
-        if (!isDivergingRoute && !submitDisabled && !!editingRoute.unload) {
-            onSaveRoute()
-        }
-    }, [isDivergingRoute, submitDisabled])
+    //This useEffect made onSaveRoute happend every time a keyboard key is pressed
+    //useEffect(() => {
+    //    if (!isDivergingRoute && !submitDisabled && !!editingRoute.unload) {
+    //        onSaveRoute()
+    //    }
+  //}, [isDivergingRoute, submitDisabled])
 
     return (
         <>
@@ -285,7 +285,7 @@ const TaskField = (props) => {
 
                                     <styled.DualSelectionButton
                                         style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                        
+
                                         onClick={() => {
                                             updateDivergingRoutes('choice')
                                         }}
@@ -303,7 +303,7 @@ const TaskField = (props) => {
                                         selected={editingRoute.divergeType === 'split'}
                                     >
                                         Split
-                                    </styled.DualSelectionButton>                                    
+                                    </styled.DualSelectionButton>
 
                                 </styled.RowContainer>
                             </>

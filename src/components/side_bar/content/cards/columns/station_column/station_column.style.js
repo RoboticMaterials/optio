@@ -43,7 +43,7 @@ export const StationHeader = styled.div`
     justify-content: center;
     align-items: center;
     background: ${props => props.theme.bg.secondary};
-    padding: .5rem 1rem;
+    padding: .5rem 1.5rem;
 `
 
 export const HeaderRow = styled.div`

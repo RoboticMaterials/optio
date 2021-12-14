@@ -11,7 +11,8 @@ const RadialBar = (props) => {
         height,
         icon,
         centerLabel,
-        centerValue
+        centerValue,
+        ...rest
     } = props;
 
 
@@ -39,6 +40,7 @@ const RadialBar = (props) => {
                 circularAxisOuter={null}
                 legends={[]}
                 margin={{ bottom: -40 }}
+                {...rest}
             />
 
             <styled.CenterContainer>

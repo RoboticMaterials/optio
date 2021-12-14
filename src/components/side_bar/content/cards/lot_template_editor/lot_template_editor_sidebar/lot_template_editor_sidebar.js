@@ -73,50 +73,6 @@ const LotTemplateEditorSidebar = (props) => {
             <style.ListContainer>
                 <Container
                     groupName="lot_field_buttons"
-                    onDragStart={(dragStartParams)=>{
-                        const {
-                            isSource,
-                            payload,
-                            willAcceptDrop
-                        } = dragStartParams
-
-                        const {
-                            component,
-                            key,
-                            _id
-                        } = payload
-
-                        if(isSource) {
-                            dispatchSetFieldDragging(_id)
-                        }
-
-                    }}
-                    onDragEnd={(dragEndParams)=>{
-                        const {
-                            isSource,
-                            payload,
-                            willAcceptDrop
-                        } = dragEndParams
-
-                        const {
-                            component,
-                            key,
-                            _id
-                        } = payload
-
-                        if(isSource) {
-                            dispatchSetFieldDragging(null)
-                        }
-                    }}
-                    onDrop={(dropResult,b) => {
-                        const {
-                            addedIndex,
-                            payload,
-                            removedIndex
-                        } = dropResult
-
-                        dispatchSetFieldDragging(null)
-                    }}
                     getChildPayload={index => {
                         const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         const payload = {
@@ -128,9 +84,7 @@ const LotTemplateEditorSidebar = (props) => {
                         }
                         return payload
                     }}
-                    getGhostParent={()=>{
-                        return document.body
-                    }}
+
                     style={{
                         position: "relative",
                         alignSelf: "stretch",
@@ -144,37 +98,7 @@ const LotTemplateEditorSidebar = (props) => {
                         flexDirection: 'column'
                     }}
                 >
-                {
-                    Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS).map((currOption, currIndex) => {
-                        const key = currOption[0]
-                        const value = currOption[1]
-                        return <Draggable
-                            key={currIndex}
-                            style={{
-                                marginBottom: "1.5rem",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
 
-                                width: 'fit-content',
-
-                                background: themeContext.bg.secondary,
-                                boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.3)',
-                                padding: '1rem',
-                                borderRadius: '0.5rem',
-                                zIndex: 12,
-                                cursor: 'move'
-                            }}
-                        >
-                            <div style={{width: "fit-content"}}>
-                                <FieldComponentMapper
-                                    component={value.component}
-                                    usable={false}
-                                />
-                            </div>
-                        </Draggable>
-                    })
-                }
                 </Container>
             </style.ListContainer>
         )

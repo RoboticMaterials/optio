@@ -178,7 +178,7 @@ const LotFormCreator = (props) => {
 		setNewFieldChosen(true)
 	}
 
-	const handleDropField = () => {//rewrite this function... kept adding for edge cases and it became a mess
+	const handleDropField = (e) => {//rewrite this function... kept adding for edge cases and it became a mess
 		if(!!xDrag){
 			let column, insertIndex, startRow, existingInd, fromColumn
 			let multipleInRow = false
@@ -260,6 +260,7 @@ const LotFormCreator = (props) => {
 		setStartIndex(null)
 		setDragOverId(null)
 		setDragIndex(null)
+		e.target.style.opacity = '1'
 	}
 
 	const findArrLocation = (id, arr, prev) => {
@@ -531,6 +532,7 @@ const LotFormCreator = (props) => {
 				 	onDragOver = {(e)=> {
 						setClientY(e.clientY)
 						setClientX(e.clientX)
+						e.preventDefault()
 					}}
 				>
 					{dragIndex === 0 && startIndex !==1 &&
@@ -572,9 +574,11 @@ const LotFormCreator = (props) => {
 											id = {currItem?._id + 'container'}
 											style = {{padding: '1.2rem', display: 'flex', flex: '1'}}
 											onDragOver = {(e)=>{
+												e.preventDefault()
 												setDragOverId(currItem?._id)
 											}}
 											>
+										<div id = {'emptyDiv'}/>
 										<styled.ColumnFieldContainer
 											id = {currItem?._id}
 											draggable = {true}
@@ -606,24 +610,28 @@ const LotFormCreator = (props) => {
 												e.target.style.opacity = '0.001'
 											}}
 											onDragEnd = {(e)=>{
+												e.preventDefault()
+
 												let fieldContainer = document.getElementById(draggingFieldId + 'container')
 												let fieldDiv = document.getElementById(draggingFieldId)
 												fieldContainer.style.padding = '1.2rem'
 												fieldDiv.style.display = 'flex'
 												fieldContainer.style.display = 'flex'
-
-												if(!!currItem && !(dragIndex === startIndex && xDrag==='center') && (dragIndex || dragIndex === 0)){
-													handleDropField()
+												if(!!currItem && (dragIndex !== startIndex) && (dragIndex || dragIndex === 0)){
+													handleDropField(e)
+												}
+												else if(currItem && currRow.length>1 && dragIndex === startIndex){
+													handleDropField(e)
 												}
 												else {
 													setStartIndex(null)
 													setDragOverId(null)
 													setDragIndex(null)
+													e.target.style.opacity = '1'
 												}
 												setAllowHomeDrop(null)
 												setDraggingFieldId(null)
 												setMouseOffsetY(null)
-												e.target.style.opacity = '1'
 											}}
 										 selected = {currItem?._id === selectedEditingField}
 

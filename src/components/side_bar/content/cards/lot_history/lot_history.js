@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as styled from './lot_history.style'
 
 import {getLotTouchEvents} from '../../../../../api/touch_events_api'
+import { secondsToReadable } from '../../../../../methods/utils/time_utils';
 
 const LotHistory = (props) => {
 
@@ -44,17 +45,15 @@ const LotHistory = (props) => {
         let speedStatus;
         let speedLabel;
         try {
-            const cycleTime = (event.stop_time - event.start_time) / 1000*event.quantity; // ms to s
+            const cycleTime = (event.move_datetime.$date - event.start_datetime.$date) / 1000*event.quantity; // ms to s
 
-            let stationCycleTime = null;
-            if (stations[event.load_station_id].cycle_time_mode === 'auto' && !!stations[event.load_station_id]?.cycle_time) {
-                stationCycleTime = stations[event.load_station_id].cycle_time;
-            } else if (stations[event.load_station_id].cycle_time_mode === 'manual' && !!stations[event.load_station_id]?.manual_cycle_time) {
-                stationCycleTime = stations[event.load_station_id]?.manual_cycle_time;
-            }
+            const productTemplateId = lotTemplates[event.product_group_id]._id
+            const loadStation = stations[event.load_station_id]
+            const stationCycleTime = loadStation?.cycle_times[productTemplateId]?.actual || 0
+            
 
-            speedStatus = (cycleTime < stationCycleTime) ? 1 : -1
-            speedLabel = speedStatus === 1 ? `Fast -${Math.round(stationCycleTime-cycleTime)}s` : `Slow +${Math.round(cycleTime-stationCycleTime)}s`
+            speedStatus = (cycleTime <= stationCycleTime) ? 1 : -1
+            speedLabel = speedStatus === 1 ? `Fast -${secondsToReadable(stationCycleTime-cycleTime)}` : `Slow +${secondsToReadable(cycleTime-stationCycleTime)}s`
         } catch (error) {
             speedStatus = -1
             speedLabel = '?'
@@ -84,7 +83,7 @@ const LotHistory = (props) => {
                     <styled.Label>Move Time</styled.Label>
                     <styled.Label>Speed</styled.Label>
                     <styled.Label>Operator</styled.Label>
-                    <styled.Label>Product Group</styled.Label>
+                    <styled.Label>Product</styled.Label>
                     <styled.Label>SKU / Product</styled.Label>
                     <styled.Label>Merged Lots</styled.Label>
                 </styled.HeaderRow>

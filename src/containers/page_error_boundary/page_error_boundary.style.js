@@ -6,6 +6,10 @@ export const Container = styled.div`
     flex-grow: 1;
     justify-content: center;
     align-items: center;
+
+    width: 100%;
+    height: 100%;
+    position: fixed;
 `;
 
 export const Label = styled.h1`

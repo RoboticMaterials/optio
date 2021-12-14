@@ -37,7 +37,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
     const reverseScaleY = useRef(() => 0)
     const [barContainerWidth, setBarContainerWidth] = useState(1)
     const [chartHeight, setChartHeight] = useState(0)
-    const [takt, setTakt] = useState(productGroup.taktTime || maxBarValue)
+    const [takt, setTakt] = useState(productGroup?.taktTime || maxBarValue)
     
 
     useEffect(() => {
@@ -62,6 +62,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
 
         reverseScaleY.current = (px) => maxBarValue * (innerHeight - px) / innerHeight
         setChartHeight(innerHeight)
+
         
         return (
             <>
@@ -105,15 +106,13 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
             y: parseInt(taktPx + event.dy)
         })
 
-        setTakt(Math.round(reverseScaleY.current(taktPx + event.dy)/5)*5)
+        setTakt(Math.ceil(reverseScaleY.current(taktPx + event.dy)/5)*5)
     }
     
     function dragended() {
         var taktGroup = select(this)
         taktGroup.classed(activeClassName, false);
     }
-
-    // console.log(takt)
 
     return (
         <div ref={chartContainerRef} style={{width: '100%', height: '100%', paddingTop: '1rem'}}>
@@ -128,7 +127,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                         <styled.Value style={{color: "#8aa9ff"}}>{secondsToReadable(takt, true)}</styled.Value>
                     </styled.Col>
                     <styled.Col>
-                        <styled.Label>Theoretical Production Rate</styled.Label>
+                        <styled.Label>Bottleneck Production Rate</styled.Label>
                         <styled.Value style={{color: "#ff8a8a"}}>{secondsToReadable(maxBarValue, true)}</styled.Value>
                     </styled.Col>
                 </styled.Row>
@@ -144,6 +143,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     />
                 </styled.Col>
             </styled.Row>
+            
             <div style={{height: '20rem'}}>
                 <ResponsiveBar
                     theme={theme}
@@ -160,7 +160,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     indexScale={{ type: 'band', round: true }}
                     borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
                     axisTop={null}
-                    maxValue={Math.max(maxBarValue, productGroup?.taktTime)}
+                    maxValue={Math.max(maxBarValue, productGroup?.taktTime || 0)}
                     axisRight={null}
                     groupMode="grouped"
                     axisBottom={{
@@ -191,6 +191,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     labelSkipHeight={12}
                     labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
                     legends={[]}
+                    animate={false}
                 />
         </div>
     </div>

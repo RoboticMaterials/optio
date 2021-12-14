@@ -884,21 +884,31 @@ const FormComponent = (props) => {
                                                     place="top"
                                                     effect="solid"
                                                 >
-                                                    <div
-                                                        style={{
-                                                            maxWidth:
-                                                                "20rem",
-                                                        }}
-                                                    >
-                                                        When sync is
-                                                        enabled, this lot's
-                                                        fields will
-                                                        automatically update
-                                                        when its template is
-                                                        changed.
-                                                    </div>
-                                                </ReactTooltip>
-                                            </>
+                                                        <div
+                                                            style={{
+                                                                maxWidth:
+                                                                    "20rem",
+                                                            }}
+                                                        >
+                                                            When sync is
+                                                            enabled, this lot's
+                                                            fields will
+                                                            automatically update
+                                                            when its template is
+                                                            changed.
+                                                        </div>
+                                                    </ReactTooltip>
+                                                </>
+                                            </div>
+                                        {/* </LabeledButton> */}
+
+                                        <div>
+                                            <styled.ContentTitle>
+                                                Product Template:{" "}
+                                            </styled.ContentTitle>
+                                            <styled.ContentValue>
+                                                {lotTemplate?.name}
+                                            </styled.ContentValue>
                                         </div>
                                     </LabeledButton>
 
@@ -932,91 +942,92 @@ const FormComponent = (props) => {
                                 /> */}
                             </styled.SubHeader>
 
-                            {(showProcessSelector || !values.processId) &&
-                                renderProcessSelector()}
-                            {!!values.processId && renderSelectedProcess()}
+                                {(showProcessSelector || !values.processId) &&
+                                    renderProcessSelector()}
+                                {!!values.processId && renderSelectedProcess()}
 
-                            <styled.RowContainer>
-                                <styled.NameContainer style={{ flex: 0 }}>
-                                    <styled.FieldLabel>
-                                        Lot Number
-                                    </styled.FieldLabel>
-                                    <styled.LotNumber>
-                                    <TextField
-                                        disabled={content !== null}
-                                        inputStyle={
-                                            content !== null
-                                                ? {
-                                                        background:
-                                                            "transparent",
-                                                        border: "none",
-                                                        boxShadow: "none",
-                                                    }
-                                                : {}
-                                        }
-                                        style={
-                                            content !== null
-                                                ? {
-                                                        background:
-                                                            "transparent",
-                                                        border: "none",
-                                                        boxShadow: "none",
-                                                    }
-                                                : {}
-                                        }
-                                        name={"lotNum"}
-                                        type={"text"}
-                                        placeholder={"Lot #"}
-                                        InputComponent={Textbox}
-                                        schema={"lots"}
-                                    />
-                                    </styled.LotNumber>
-                                </styled.NameContainer>
+                                <styled.RowContainer>
+                                    <styled.NameContainer style={{ flex: 0 }}>
+                                        <styled.FieldLabel>
+                                            Lot Number
+                                        </styled.FieldLabel>
+                                        <styled.LotNumber>
+                                        <TextField
+                                            disabled={content !== null}
+                                            inputStyle={
+                                                content !== null
+                                                    ? {
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            style={
+                                                content !== null
+                                                    ? {
+                                                          width: '100%',
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            name={"lotNum"}
+                                            type={"text"}
+                                            placeholder={"Lot #"}
+                                            InputComponent={Textbox}
+                                            schema={"lots"}
+                                        />
+                                        </styled.LotNumber>
+                                    </styled.NameContainer>
 
-                                <styled.NameContainer>
-                                    <styled.FieldLabel>
-                                        {getDisplayName(
-                                            lotTemplate,
-                                            "name",
-                                            DEFAULT_NAME_DISPLAY_NAME
-                                        )}
-                                    </styled.FieldLabel>
-                                    <TextField
-                                        disabled={content !== null}
-                                        inputStyle={
-                                            content !== null
-                                                ? {
-                                                        background:
-                                                            "transparent",
-                                                        border: "none",
-                                                        boxShadow: "none",
-                                                    }
-                                                : {}
-                                        }
-                                        style={
-                                            content !== null
-                                                ? {
-                                                        background:
-                                                            "transparent",
-                                                        border: "none",
-                                                        boxShadow: "none",
-                                                    }
-                                                : {}
-                                        }
-                                        name={"name"}
-                                        type={"text"}
-                                        placeholder={"Enter name..."}
-                                        InputComponent={Textbox}
-                                        schema={"lots"}
-                                    />
-                                </styled.NameContainer>
-                            </styled.RowContainer>
-                        </styled.FieldsHeader>
+                                    <styled.NameContainer>
+                                        <styled.FieldLabel>
+                                            {getDisplayName(
+                                                lotTemplate,
+                                                "name",
+                                                DEFAULT_NAME_DISPLAY_NAME
+                                            )}
+                                        </styled.FieldLabel>
+                                        <TextField
+                                            disabled={content !== null}
+                                            inputStyle={
+                                                content !== null
+                                                    ? {
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            style={
+                                                content !== null
+                                                    ? {
+                                                          background:
+                                                              "transparent",
+                                                          border: "none",
+                                                          boxShadow: "none",
+                                                      }
+                                                    : {}
+                                            }
+                                            name={"name"}
+                                            type={"text"}
+                                            placeholder={"Enter name..."}
+                                            InputComponent={Textbox}
+                                            schema={"lots"}
+                                        />
+                                    </styled.NameContainer>
+                                </styled.RowContainer>
+                            </styled.FieldsHeader>
 
-                        {content === null && renderMainContent()}
-                        {content === CONTENT.MOVE && renderMoveContent()}
-                    </styled.ScrollContainer>
-                </styled.RowContainer>
+                            {content === null && renderMainContent()}
+                            {content === CONTENT.MOVE && renderMoveContent()}
+                        </styled.ScrollContainer>
+                    </styled.RowContainer>
 
                 <styled.Footer>
                     {/* render buttons for appropriate content */}
@@ -1427,6 +1438,7 @@ const LotEditor = (props) => {
                         lotTemplateId={selectedLotTemplatesId}
                         close={() => {
                             setShowLotTemplateEditor(false);
+                            dispatchSetSelectedLotTemplate(null)
                         }}
                         processId={processId}
                     />

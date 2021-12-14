@@ -110,6 +110,7 @@ const Column = (props) => {
 		}
 	}, [reduxProcessCards])
 
+	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
 		if(!hideCard){
@@ -133,15 +134,9 @@ const Column = (props) => {
 	}, [draggingLotId])
 
 	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && processId === hideCard.process_id){
+		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
 			let tempCards = deepCopy(cards)
-			if(station_id === dragFromBin){
-				let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
-				tempCards.splice(ind,1)
-			}
-			else if(station_id === draggingStationId){
-				tempCards.push(hideCard)
-			}
+			tempCards.push(hideCard)
 			setCards(tempCards)
 		}
 	}, [draggingLotId])
@@ -423,13 +418,13 @@ const Column = (props) => {
 				 }}
 
 					>
-					{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
-						<styled.DragToDiv
-						ref = {dragContainerRef}
-						dragDivHeight = {!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem'}
-						class = 'dragToDiv'
-						/>
-					}
+						{(!!highlightStation && !!draggingLotId && station_id!==dragFromBin) &&
+							<styled.DragToDiv
+								ref = {dragContainerRef}
+								dragDivHeight = {(!!lotDivHeight ? (lotDivHeight-1) + 'rem' : '10rem')}
+								class = 'dragToDiv'
+							/>
+						}
 						{cards.map((card, index) => {
 							const {
 								_id,
@@ -498,6 +493,7 @@ const Column = (props) => {
 																		}}
 																	>
 																	<LotContainer
+																		key={'lot-container-' + isPartial ? name + ` (${routes[part]?.part})` : name}
 																		isPartial = {isPartial}
 																		onDeleteDisabledLot = {() => {
 																			handleDeleteDisabledLot(card, card.binId, part)

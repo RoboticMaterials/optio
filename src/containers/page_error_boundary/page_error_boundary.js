@@ -37,25 +37,26 @@ class PageErrorBoundary extends React.Component {
 
     render() {
         if (this.state.hasError) {
+            console.log(this.state)
             // You can render any custom fallback UI
             return (
                 <styled.Container>
                     <styled.Label>
                         Oops! Something went wrong... {this.state.error}
                     </styled.Label>
-                    <styled.ReloadButton
+                    {/* <styled.ReloadButton
                         onClick={this.handleReloadPage}
                         className="btn btn-outline-danger"
                     >
                         Reload Page
                     </styled.ReloadButton>
-                    <styled.Text style={{color: 'lightgrey', marginTop: '1rem'}} onClick={() => this.setState({showTrace: !this.state.showTrace})}>Show Stack Trace</styled.Text>
+                    <styled.Text style={{color: 'grey', marginTop: '1rem', cursor: 'pointer'}} onClick={() => this.setState({showTrace: !this.state.showTrace})}>Trace</styled.Text>
                     {this.state.showTrace &&
                         <>
-                            <styled.Text>{this.state.error}</styled.Text>
-                            <styled.Text>{this.state.info}</styled.Text>
+                            <styled.Text>{this.state.error?.stack || 'NA'}</styled.Text>
+                            <styled.Text>{this.state.info?.componentStack || 'NA'}</styled.Text>
                         </>
-                    }
+                    } */}
                 </styled.Container>
             );
         } else {

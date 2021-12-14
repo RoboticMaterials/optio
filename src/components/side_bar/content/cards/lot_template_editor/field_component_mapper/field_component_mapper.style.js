@@ -18,8 +18,9 @@ export const TextContainer = styled.div`
 `
 
 export const Label = styled.span`
-	font-size: ${props => props.theme.fontSize.sz3};
-	//margin-right: 1rem;
+	font-size: 1rem;
+	margin-left: 0.4rem;
+	margin-bottom: 0.2rem;
 `
 
 export const RequiredText = styled.span`

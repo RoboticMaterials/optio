@@ -40,7 +40,7 @@ const TemplateSelectorSidebar = (props) => {
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
-    
+
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
     const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
@@ -64,12 +64,12 @@ const TemplateSelectorSidebar = (props) => {
                             onTemplateEditClick(null)
                         }}
                         style={{
-                            marginBottom: '1rem',
+                            margin: '0rem 0rem 1rem 0rem',
                             height: '3rem',
                         }}
                     >
                         <i style={{marginRight: '1rem'}} className="fa fa-plus" aria-hidden="true"/>
-                        Create Product Group
+                        Create Product Template
                     </Button>
                 }
                 {
@@ -98,9 +98,8 @@ const TemplateSelectorSidebar = (props) => {
                             }}
                         >
                             <style.TemplateIcon
-                                // style={{marginRight: "5rem"}}
                                 isSelected={isSelected}
-                                className={SIDE_BAR_MODES.TEMPLATES.iconName}
+                                className={'fas fa-file-alt'}
                             />
 
 
@@ -134,7 +133,7 @@ const TemplateSelectorSidebar = (props) => {
     return (
             <style.SidebarContent
                 key="sidebar-content"
-                style={{ width: width, minWidth: 350 }}
+                style={{ width: width, minWidth: 400 }}
             >
                 {getTemplateButtons()}
 

@@ -1,7 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar'
 import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils'
 
-const Scale = ({ data, labels }) => {
+const Scale = ({ data, labels, ...rest }) => {
 
 
     const totalTime = (Math.abs(data[0].working) + Math.abs(data[0].idle))
@@ -30,6 +30,7 @@ const Scale = ({ data, labels }) => {
                     axisLeft={null}
                     enableGridY={false}
                     enableLabel={false}
+                    {...rest}
                 />
             </div>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingLeft: '1rem', minWidth: '5rem'}}>

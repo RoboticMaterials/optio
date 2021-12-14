@@ -71,10 +71,33 @@ export const Card = styled.div`
     margin: 1rem;
 `
 
+export const CardHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+
 export const CardLabel = styled.div`
     text-align: left;
     color: #393975;
+    font-size: 1rem;
+    height: 1.4rem;
     font-weight: 600;
+`
+
+export const TooltipIcon = styled.i`
+    font-size: 0.8rem;
+    color: white;
+    background: #ccc;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    line-height: 1.4rem;
+`
+
+export const Tooltip = styled.div`
+    max-width: 14rem;
 `
 
 export const ChartContainer = styled.div`
