@@ -34,8 +34,8 @@ import { putStation } from '../../../../redux/actions/stations_actions';
 import { getLotTemplates } from '../../../../redux/actions/lot_template_actions';
 
 const emptyData = {
-    productivity: {overall: 0, data: []},
-    oee: {partials: {}, total_qty: 0},
+    partials: {}, 
+    total_quantity: 0,
     cycle_time: {},
     throughput: [],
     wip: [],
@@ -57,10 +57,11 @@ const OEETick = (props) => {
 
     const {
         label,
-        theoreticalCycleTime,
-        setTheoreticalCycleTime
+        CTObj,
+        setCTObj
     } = props;
 
+    const theoreticalCycleTime = CTObj.theoretical || 0
     const hours = Math.floor(theoreticalCycleTime / 3600)
     const minutes = Math.floor((theoreticalCycleTime - hours*3600) / 60)
     const seconds = Math.floor(theoreticalCycleTime % 60)
@@ -203,11 +204,9 @@ const StatisticsPage = () => {
         />
     }, [data?.cycle_time, cycleTimePG])
 
-    const setTheoreticalCycleTime = (pgId, newTheoreticalCycleTime) => {
-        console.log(station, pgId, station.cycle_times[pgId])
-
+    const setCycleTimeObj = (pgId, CTObj) => {
         let stationCopy = deepCopy(station)
-        stationCopy.cycle_times[pgId].theoretical = newTheoreticalCycleTime
+        stationCopy.cycle_times[pgId] = CTObj
         dispatchPutStation(stationCopy)
     }
 
@@ -244,6 +243,68 @@ const StatisticsPage = () => {
 
     }, [showWIPChart, isCumulative])
 
+    const renderProductivityBarsMemo = useMemo(() => {
+        // This needs to be in a memo, otherwise the tooltip will close
+
+        if (!data) return <ScaleLoader />
+        else if (!Object.values(data.partials).length) return <styled.NoData>No Data</styled.NoData>
+        else {
+            var weighted_sum = 0;
+            var labelsMap = {}
+            let prod_data = Object.keys(data.partials).map(pgId => {
+                const productGroup = productGroups[pgId];
+                const pgName = !!productGroup ? productGroup.name : '???';
+                const pgProcessName = !!productGroup && !!processes[productGroup.processId] ? processes[productGroup.processId].name : '???';
+                const label = `${pgName} (${pgProcessName})`;
+
+                const CTObj = station.cycle_times[pgId]
+
+                let compareValue;
+                switch (CTObj.mode) {
+                    case 'auto':
+                        compareValue = CTObj.historical || 0;
+                        break;
+                    case 'manual': 
+                        compareValue = CTObj.manual || 0;
+                        break;
+                    case 'takt': 
+                        compareValue = productGroup.taktTime || 0
+                }
+                const partial = data.partials[pgId].value;
+                const pgQuantity = data.partials[pgId].quantity;
+
+                labelsMap[label] = pgId
+
+                const prod = compareValue * partial
+                weighted_sum += prod * pgQuantity
+                return {
+                    'id': label,
+                    'data': [{
+                        'x': '',
+                        'y': prod * 100
+                    }]
+                }
+
+            })
+
+            return (
+                <RadialBar
+                    data={prod_data}
+                    icon='fas fa-bolt'
+                    centerLabel='OVERALL'
+                    centerValue={100 * weighted_sum / data.total_quantity}
+                    radialAxisEnd={{ tickComponent: (d) => (
+                        <OEETick
+                            CTObj={station.cycle_times[labelsMap[d.label]]}
+                            setCycleTimeObj={(obj) => setCycleTimeObj(labelsMap[d.label], obj)}
+                            {...d}
+                        />
+                    )}}
+                />
+            )
+        }
+    })
+
     /**
      * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
      * are generated on the backend but since the OEE is relative to the theoretical cycle time (which is set on this graph) we need to calculate the actual
@@ -253,28 +314,24 @@ const StatisticsPage = () => {
         // This needs to be in a memo, otherwise the tooltip will close when the time picker is clicked
 
         if (!data) return <ScaleLoader />
-        else if (!Object.values(data.oee.partials).length) return <styled.NoData>No Data</styled.NoData>
+        else if (!Object.values(data.partials).length) return <styled.NoData>No Data</styled.NoData>
         else {
-
-            var oee_weighted_sum = 0;
-            var theoreticalCycleTimes = {}
-            let oee_data = Object.keys(data.oee.partials).map(pgId => {
+            var weighted_sum = 0;
+            var labelsMap = {}
+            let oee_data = Object.keys(data.partials).map(pgId => {
                 const productGroup = productGroups[pgId];
                 const pgName = !!productGroup ? productGroup.name : '???';
                 const pgProcessName = !!productGroup && !!processes[productGroup.processId] ? processes[productGroup.processId].name : '???';
                 const label = `${pgName} (${pgProcessName})`;
 
                 const theoreticalCycleTime = station.cycle_times[pgId]?.theoretical || 0;
-                const oeePartial = data.oee.partials[pgId].value;
-                const pgQuantity = data.oee.partials[pgId].quantity;
+                const partial = data.partials[pgId].value;
+                const pgQuantity = data.partials[pgId].quantity;
 
-                theoreticalCycleTimes[label] = {
-                    theoreticalCycleTime,
-                    pgId
-                }
+                labelsMap[label] = pgId
 
-                const oee = theoreticalCycleTime * oeePartial
-                oee_weighted_sum += oee * pgQuantity
+                const oee = theoreticalCycleTime * partial
+                weighted_sum += oee * pgQuantity
                 return {
                     'id': label,
                     'data': [{
@@ -290,21 +347,17 @@ const StatisticsPage = () => {
                     data={oee_data}
                     icon='fas fa-rocket'
                     centerLabel='OVERALL'
-                    centerValue={100 * oee_weighted_sum / data.oee.total_qty}
-                    // radialAxisStart
+                    centerValue={100 * weighted_sum / data.total_quantity}
                     radialAxisEnd={{ tickComponent: (d) => (
                         <OEETick
-                            theoreticalCycleTime={theoreticalCycleTimes[d.label].theoreticalCycleTime}
-                            setTheoreticalCycleTime={(val) => setTheoreticalCycleTime(theoreticalCycleTimes[d.label].pgId, val)}
+                            CTObj={station.cycle_times[labelsMap[d.label]]}
+                            setCycleTimeObj={(obj) => setCycleTimeObj(labelsMap[d.label], obj)}
                             {...d}
                         />
                     )}}
                 />
             )
-
-
         }
-
     }, [data, stations])
 
     const renderHeader = (label, stat) => (
@@ -353,26 +406,18 @@ const StatisticsPage = () => {
                     </Popup>
                 }
 
-                <styled.TimePickerLabel onClick={() => setShowCalendar(true)}>{`${dateRange[0].toLocaleDateString("en-US")} ${!!dateRange[1] ? `- ${dateRange[1].toLocaleDateString("en-US")}` : ''}`}</styled.TimePickerLabel>
+                <styled.TimePickerLabel 
+                    onClick={() => setShowCalendar(true)}
+                >
+                    {`${dateRange[0].toLocaleDateString("en-US")} ${!!dateRange[1] ? `- ${dateRange[1].toLocaleDateString("en-US")}` : ''}`}
+                </styled.TimePickerLabel>
 
                 <styled.Row>
 
                     <styled.Card style={{width: '25%'}}>
                         {renderHeader('Productivity', 'productivity')}
                         <styled.ChartContainer>
-                            {!!data ?
-                                data.productivity.data.length ?
-                                    <RadialBar
-                                        data={data.productivity.data}
-                                        icon='fas fa-bolt'
-                                        centerLabel='OVERALL'
-                                        centerValue={data.productivity.overall}
-                                        // radialAxisStart
-                                    />
-                                    : <styled.NoData>No Data</styled.NoData>
-                                :
-                                <ScaleLoader />
-                            }
+                            {renderProductivityBarsMemo}
                         </styled.ChartContainer>
                     </styled.Card>
 
