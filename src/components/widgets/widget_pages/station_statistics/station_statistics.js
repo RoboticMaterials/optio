@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 import moment from 'moment'
+import { InputGroup, FormControl, DropdownButton, Dropdown } from 'react-bootstrap'
 
 import * as styled from './station_statistics.style'
 
@@ -24,6 +25,7 @@ import { defaultColors, tooltipProps } from '../../../basic/charts/nivo_theme';
 
 import { deepCopy } from '../../../../methods/utils/utils';
 import Popup from 'reactjs-popup';
+import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils';
 import { convertHHMMSSStringToSeconds, convertSecondsToHHMMSS, secondsToReadable } from '../../../../methods/utils/time_utils';
 import ReactTooltip from 'react-tooltip';
 
@@ -53,42 +55,77 @@ const formatTimeString = (UTCSeconds) => {
     return m.getHours() + ":" + m.getMinutes().toString().padStart(2, '0')
 }
 
+const convertProductionRateToCycleTime = (quantity, timescale, dailyWorkingSeconds) => {
+    switch (timescale) {
+        case 'hour':
+            return 3600 / quantity;
+        case 'day':
+            return dailyWorkingSeconds / quantity
+        case 'week':
+            return 5 * dailyWorkingSeconds / quantity
+        case 'month':
+            return 20 * dailyWorkingSeconds / quantity
+        case 'year':
+            return 5 * 52 * dailyWorkingSeconds / quantity
+    }
+}
+
+const convertCycleTimeToProductionRate = (cycleTime, dailyWorkingSeconds) => {
+    if (cycleTime > 20 * dailyWorkingSeconds) {
+        return {quantity: Math.round((5 * 52 * dailyWorkingSeconds) / cycleTime), timescale: 'year'}
+    } else if (cycleTime > 5 * dailyWorkingSeconds) {
+        return {quantity: Math.round((20 * dailyWorkingSeconds) / cycleTime), timescale: 'month'}
+    } else if (cycleTime > dailyWorkingSeconds) {
+        return {quantity: Math.round((5 * dailyWorkingSeconds) / cycleTime), timescale: 'week'}
+    } else if (cycleTime > 3600) {
+        return {quantity: Math.round(dailyWorkingSeconds / cycleTime), timescale: 'day'}
+    } else if (cycleTime > 60) {
+        return {quantity: Math.round(3600 / cycleTime), timescale: 'hour'}
+    } else {
+        return {quantity: Math.round(60 / cycleTime), timescale: 'minute'}
+    }
+}
+
 const OEETick = (props) => {
 
     const {
         label,
-        CTObj,
-        setCTObj
+        initialQuantity,
+        initialTimescale,
+        onSave
     } = props;
 
-    const theoreticalCycleTime = CTObj.theoretical || 0
-    const hours = Math.floor(theoreticalCycleTime / 3600)
-    const minutes = Math.floor((theoreticalCycleTime - hours*3600) / 60)
-    const seconds = Math.floor(theoreticalCycleTime % 60)
-    const formatted = moment().set({ 'hour': hours, 'minute': minutes, 'second': seconds })
+    const [quantity, setQuantity] = useState(initialQuantity);
+    const [timescale, setTimescale] = useState(initialTimescale)
 
     return (
         <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y})`}>
             <foreignObject x="-5" y="-12" width="20" height="20" >
                 <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `0.8rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
                 <Portal>
-                    <ReactTooltip id={`${label}-oee-timepicker`} {...tooltipProps} globalEventOff='click' place="left" clickable={true}>
+                    <ReactTooltip id={`${label}-oee-timepicker`} {...tooltipProps} globalEventOff='click' place="left" clickable={true} globalEventOff="">
                         <styled.TimePickerTooltip>
-                            <div style={{fontWeight: 'bold'}}>Min Cycle Time</div>
+                            <div style={{fontWeight: 'bold'}}>Maximum Production Rate</div>
                             <div style={{color: '#8e8e9c'}}>{label}</div>
-                            <TimePicker
-                                showHours={true}
-                                showMinutes={true}
-                                value={formatted}
-                                onChange={(val) => {
-                                    const formattedVal = val.format('HH:mm:ss')
-                                    const valSeconds = convertHHMMSSStringToSeconds(formattedVal)
-                                    setTheoreticalCycleTime(valSeconds)
-                                }}
-                                style={{width: '5.5rem'}}
-                                allowEmpty={false}
-                            />
-                            {/* <Button label="Save" containerStyle={{height: '1.5rem'}}/> */}
+
+                            <InputGroup className="mb-3 mt-3">
+                                <FormControl className="input-sm" ariaLabel="Production Rate" type="number" min="0" onChange={e => setQuantity(e.target.value)} value={quantity} />
+                                <InputGroup.Text>per</InputGroup.Text>
+                                <DropdownButton
+                                    onSelect={e => setTimescale(e)}
+                                    variant='light'
+                                    title={capitalizeFirstLetter(timescale)}
+                                    id={`timescale-${label}`}
+                                >
+                                    <Dropdown.Item href="#" eventKey='minute'>Minute</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='hour'>Hour</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='day'>Day</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='week'>Week</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='month'>Month</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='year'>Year</Dropdown.Item>
+                                </DropdownButton>
+                            </InputGroup>
+                            <Button label="Save" style={{height: '1.5rem', width: '12rem', margin: '0'}} onClick={() => onSave(parseFloat(quantity), timescale)}/>
                         </styled.TimePickerTooltip>
                     </ReactTooltip>
                 </Portal>
@@ -287,23 +324,36 @@ const StatisticsPage = () => {
 
             })
 
+            const dailyWorkingSeconds = data?.daily_working_seconds || 0;
+
             return (
                 <RadialBar
                     data={prod_data}
                     icon='fas fa-bolt'
                     centerLabel='OVERALL'
                     centerValue={100 * weighted_sum / data.total_quantity}
-                    radialAxisEnd={{ tickComponent: (d) => (
-                        <OEETick
-                            CTObj={station.cycle_times[labelsMap[d.label]]}
-                            setCycleTimeObj={(obj) => setCycleTimeObj(labelsMap[d.label], obj)}
+                    radialAxisEnd={{ tickComponent: (d) => {
+                        const cycleTimeObj = station.cycle_times[labelsMap[d.label]]
+                        const { quantity, timescale } = convertCycleTimeToProductionRate(cycleTimeObj.theoretical, dailyWorkingSeconds)
+
+                        return <OEETick
+                            key={`prod-tick-${labelsMap[d.label]}`}
+                            initialQuantity={quantity}
+                            initialTimescale={timescale}
+                            onSave={(quantity, timescale) => {
+                                const cycleTime = convertProductionRateToCycleTime(quantity, timescale, dailyWorkingSeconds)
+                                setCycleTimeObj(labelsMap[d.label], {
+                                    ...cycleTimeObj,
+                                    theoretical: cycleTime
+                                })
+                            }}
                             {...d}
                         />
-                    )}}
+                    }}}
                 />
             )
         }
-    })
+    }, [data, stations])
 
     /**
      * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
@@ -342,19 +392,32 @@ const StatisticsPage = () => {
 
             })
 
+            const dailyWorkingSeconds = data?.daily_working_seconds || 0;
+
             return (
                 <RadialBar
                     data={oee_data}
                     icon='fas fa-rocket'
                     centerLabel='OVERALL'
                     centerValue={100 * weighted_sum / data.total_quantity}
-                    radialAxisEnd={{ tickComponent: (d) => (
-                        <OEETick
-                            CTObj={station.cycle_times[labelsMap[d.label]]}
-                            setCycleTimeObj={(obj) => setCycleTimeObj(labelsMap[d.label], obj)}
+                    radialAxisEnd={{ tickComponent: (d) => {
+                        const cycleTimeObj = station.cycle_times[labelsMap[d.label]]
+                        const { quantity, timescale } = convertCycleTimeToProductionRate(cycleTimeObj.theoretical, dailyWorkingSeconds)
+
+                        return <OEETick
+                            key={`oee-tick-${labelsMap[d.label]}`}
+                            initialQuantity={quantity}
+                            initialTimescale={timescale}
+                            onSave={(newQuantity, newTimescale) => {
+                                const cycleTime = convertProductionRateToCycleTime(newQuantity, newTimescale, dailyWorkingSeconds)
+                                setCycleTimeObj(labelsMap[d.label], {
+                                    ...cycleTimeObj,
+                                    theoretical: cycleTime
+                                })
+                            }}
                             {...d}
                         />
-                    )}}
+                    }}}
                 />
             )
         }

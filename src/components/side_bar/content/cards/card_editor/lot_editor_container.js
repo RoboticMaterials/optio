@@ -1241,6 +1241,7 @@ const LotEditorContainer = (props) => {
                         cardNames={cardNames}
                         lotTemplateName={lotTemplateName}
                         merge={merge}
+                        close={onClose}
                         onAddClick={() => {
                             /*
                             * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create

@@ -177,4 +177,5 @@ export const TimePickerTooltip = styled.div`
     align-items: center;
 
     text-align: center;
+    max-width: 14rem;
 `
