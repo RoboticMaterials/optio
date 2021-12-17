@@ -1102,15 +1102,15 @@ const LotEditorContainer = (props) => {
                 onBack = null;
                 title = 'Creating Lot'
             case 'paste':
-                onBack = () => history.goBack() //history.push(`/lots/${params.id}/editing`)
+                onBack = () => history.push(`/lots/${params.id}/editing`)
                 title = 'Paste'
                 break;
             case 'validate':
-                onBack = () => history.goBack() //history.push(`/lots/${params.id}/paste`)
+                onBack = () => history.push(`/lots/${params.id}/paste`)
                 title = 'Validate Lots'
                 break;
             case 'history':
-                onBack = () => history.goBack() //history.push(`/lots/${params.id}/editing`)
+                onBack = () => history.push(`/lots/${params.id}/editing`)
                 title = 'Lot History'
                 break;
         }
@@ -1241,6 +1241,7 @@ const LotEditorContainer = (props) => {
                         cardNames={cardNames}
                         lotTemplateName={lotTemplateName}
                         merge={merge}
+                        close={onClose}
                         onAddClick={() => {
                             /*
                             * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create

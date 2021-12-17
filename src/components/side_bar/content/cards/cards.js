@@ -98,7 +98,6 @@ const Cards = (props) => {
     }
 
     const onShowCardEditor = (card) => {
-        console.log("TRIGGER", card)
         if (card) {
             if (params.page === 'processes') {
                 setPreviousProcessId(params.id)

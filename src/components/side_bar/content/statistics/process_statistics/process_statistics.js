@@ -178,7 +178,7 @@ const ProcessStatistics = ({ id }) => {
     return (
         <styled.Page>
             <styled.Header>
-                <BackButton onClick={() => history.replace('/statistics')} containerStyle={{position: 'absolute', left: '1.5rem'}}/>
+                <BackButton onClick={() => history.push('/statistics')} containerStyle={{position: 'absolute', left: '1.5rem'}}/>
                 {currentProcess.name}
             </styled.Header>
             <styled.StatisticsContainer>
