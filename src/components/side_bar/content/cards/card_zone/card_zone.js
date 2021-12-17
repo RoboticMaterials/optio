@@ -31,8 +31,6 @@ const CardZone = ((props) => {
     const {
         handleCardClick,
         processId,
-        setShowCardEditor,
-        showCardEditor,
         maxHeight,
         lotFilters,
         lotFilterValue,
@@ -264,8 +262,6 @@ const CardZone = ((props) => {
                 sortDirection={sortDirection}
                 maxHeight={maxHeight}
                 station_id={"QUEUE"}
-                setShowCardEditor={setShowCardEditor}
-                showCardEditor={showCardEditor}
                 stationName={"Queue"}
                 processId={processId}
                 cards={queue}
@@ -284,8 +280,6 @@ const CardZone = ((props) => {
                     sortDirection={sortDirection}
                     maxHeight={maxHeight}
                     station_id={"FINISH"}
-                    setShowCardEditor={setShowCardEditor}
-                    showCardEditor={showCardEditor}
                     stationName={"Finished"}
                     processId={processId}
                     cards={finished}
@@ -299,11 +293,9 @@ const CardZone = ((props) => {
 // Specifies propTypes
 CardZone.propTypes = {
     handleCardClick: PropTypes.func,
-    setShowCardEditor: PropTypes.func,
     processId: PropTypes.string,
     lotFilters: PropTypes.array,
     lotFilterValue: PropTypes.any,
-    showCardEditor: PropTypes.bool,
     maxHeight: PropTypes.any
 }
 
@@ -311,8 +303,6 @@ CardZone.propTypes = {
 CardZone.defaultProps = {
     handleCardClick: () => { },
     processId: null,
-    setShowCardEditor: () => { },
-    showCardEditor: false,
     maxHeight: null,
     lotFilterValue: "",
     selectedFilterOption: LOT_FILTER_OPTIONS.name,

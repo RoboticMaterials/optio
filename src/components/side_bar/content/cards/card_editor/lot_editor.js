@@ -6,6 +6,8 @@ import React, {
     useCallback,
     useMemo
 } from "react";
+import { useHistory, useParams } from 'react-router-dom'
+
 
 // api
 
@@ -145,6 +147,8 @@ const FormComponent = (props) => {
         merge,
     } = props;
 
+    const history = useHistory()
+
     const { _id: cardId, syncWithTemplate } = values || {};
 
     const { fields: cardFields = [] } = card || {};
@@ -172,9 +176,6 @@ const FormComponent = (props) => {
     const currentProcess = useSelector((state) => {
         return state.processesReducer.processes[processId];
     });
-    const cardHistory = useSelector((state) => {
-        return state.cardsReducer.cardHistories[cardId];
-    });
     const routes = useSelector((state) => {
         return state.tasksReducer.tasks;
     });
@@ -199,12 +200,10 @@ const FormComponent = (props) => {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [templateFieldsChanged, setTemplateFieldsChanged] = useState(false);
     const [loadingTemplateValues, setLoadingTemplateValues] = useState(false);
-    const [deletedObject, setDeletedObject] = useState({})
 
     const [showFieldModal, setShowFieldModal] = useState(false);
     const [checkedCardAndTemplateFields, setCheckedCardAndTemplateFields] =
         useState(false);
-    const [showHistory, setShowHistory] = useState(false);
 
     const [warningValues, setWarningValues] = useState();
 
@@ -754,7 +753,7 @@ const FormComponent = (props) => {
             return (
                 <div>
                     <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
-                    <Button schema='fields' onClick={() => setShowHistory(true)} label='Lot History' />
+                    <Button schema='fields' onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
                 </div>
             )
 
@@ -787,140 +786,104 @@ const FormComponent = (props) => {
                     }}
                     barcodeId={lotNumber}
                 />
-                <styled.Header>
-                    {(content === CONTENT.CALENDAR ||
-                        content === CONTENT.HISTORY ||
-                        content === CONTENT.MOVE) && (
-                        <div style={{ position: "absolute" }}>
-                            <BackButton
-                                onClick={() => setContent(null)}
-                                schema={"error"}
-                                secondary
-                            ></BackButton>
-                        </div>
+                
+
+                <styled.RowContainer
+                    style={{
+                        flex: 1,
+                        alignItems: "stretch",
+                        overflow: "hidden",
+                    }}
+                >
+                    {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
+                        <TemplateSelectorSidebar
+                            showFields={false}
+                            onTemplateSelectClick={onSelectLotTemplate}
+                            onTemplateEditClick={() => {
+                                setShowLotTemplateEditor(true);
+                            }}
+                            onCloseClick={() => {
+                                setShowTemplateSelector(
+                                    !showTemplateSelector
+                                );
+                            }}
+                            selectedLotTemplatesId={lotTemplateId}
+                            processId={processId}
+                        />
                     )}
 
-                    {content === CONTENT.HISTORY && (
-                        <styled.Title>Lot History</styled.Title>
-                    )}
-                    {content === CONTENT.MOVE && (
-                        <styled.Title>Move Lot</styled.Title>
-                    )}
-                    {content !== CONTENT.HISTORY &&
-                        content !== CONTENT.MOVE && (
-                            <styled.Title>
-                                {formMode === FORM_MODES.CREATE
-                                    ? "Create Lot"
-                                    : "Lot Info"}
-                            </styled.Title>
-                        )}
+                    <styled.ScrollContainer>
+                        <styled.FieldsHeader>
+                            <styled.SubHeader>
+                                <styled.IconRow>
+                                    {isMobile && !showTemplateSelector && (
+                                        <LabeledButton label={"Template"}>
+                                            <styled.TemplateButton
+                                                type={"button"}
+                                                className={
+                                                    showTemplateSelector
+                                                        ? "fas fa-times"
+                                                        : SIDE_BAR_MODES
+                                                                .TEMPLATES
+                                                                .iconName
+                                                }
+                                                color={
+                                                    themeContext.schema.lots
+                                                        .solid
+                                                }
+                                                onClick={() => {
+                                                    setShowTemplateSelector(
+                                                        true
+                                                    );
+                                                    //onSelectLotTemplate(lotTemplateId)
+                                                }}
+                                            />
+                                        </LabeledButton>
+                                    )}
 
-                    <styled.CloseIcon
-                        className="fa fa-times"
-                        aria-hidden="true"
-                        onClick={close}
-                    />
-                </styled.Header>
-
-                {showHistory ? (
-                    <LotHistory lotId={cardId} />
-                ) : (
-                    <styled.RowContainer
-                        style={{
-                            flex: 1,
-                            alignItems: "stretch",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
-                            <TemplateSelectorSidebar
-                                showFields={false}
-                                onTemplateSelectClick={onSelectLotTemplate}
-                                onTemplateEditClick={() => {
-                                    setShowLotTemplateEditor(true);
-                                }}
-                                onCloseClick={() => {
-                                    setShowTemplateSelector(
-                                        !showTemplateSelector
-                                    );
-                                }}
-                                selectedLotTemplatesId={lotTemplateId}
-                                processId={processId}
-                            />
-                        )}
-
-                        <styled.ScrollContainer>
-                            <styled.FieldsHeader>
-                                <styled.SubHeader>
-                                    <styled.IconRow>
-                                        {isMobile && !showTemplateSelector && (
-                                            <LabeledButton label={"Template"}>
-                                                <styled.TemplateButton
-                                                    type={"button"}
-                                                    className={
-                                                        showTemplateSelector
-                                                            ? "fas fa-times"
-                                                            : SIDE_BAR_MODES
-                                                                  .TEMPLATES
-                                                                  .iconName
-                                                    }
-                                                    color={
-                                                        themeContext.schema.lots
-                                                            .solid
-                                                    }
-                                                    onClick={() => {
-                                                        setShowTemplateSelector(
-                                                            true
-                                                        );
-                                                        //onSelectLotTemplate(lotTemplateId)
-                                                    }}
-                                                />
-                                            </LabeledButton>
-                                        )}
-
-                                        <LabeledButton>
-                                            <div // Neccessary because tooltips cannot be dynamically generated. Need a parent component for render
-                                                data-tip
-                                                data-for={toolTipId}
-                                            >
-                                                <>
-                                                    {templateFieldsChanged ? (
-                                                        <WobbleButton
-                                                            repeat={false}
-                                                        >
-                                                            <styled.SyncProblem
-                                                                style={{
-                                                                    fontSize: 40,
-                                                                    color: "#fc9003",
-                                                                }}
-                                                                onClick={() =>
-                                                                    setShowFieldModal(
-                                                                        true
-                                                                    )
-                                                                }
-                                                            />
-                                                        </WobbleButton>
-                                                    ) : (
-                                                        <styled.Sync
-                                                            sync={
-                                                                values.syncWithTemplate
-                                                            }
+                                    <LabeledButton>
+                                        <div // Neccessary because tooltips cannot be dynamically generated. Need a parent component for render
+                                            data-tip
+                                            data-for={toolTipId}
+                                        >
+                                            <>
+                                                {templateFieldsChanged ? (
+                                                    <WobbleButton
+                                                        repeat={false}
+                                                    >
+                                                        <styled.SyncProblem
                                                             style={{
                                                                 fontSize: 40,
+                                                                color: "#fc9003",
                                                             }}
                                                             onClick={() =>
-                                                                setFieldValue(
-                                                                    "syncWithTemplate",
-                                                                    !values.syncWithTemplate
+                                                                setShowFieldModal(
+                                                                    true
                                                                 )
                                                             }
                                                         />
-                                                    )}
-                                                    <ReactTooltip
-                                                        id={toolTipId}
-                                                        place="top"
-                                                        effect="solid"
-                                                    >
+                                                    </WobbleButton>
+                                                ) : (
+                                                    <styled.Sync
+                                                        sync={
+                                                            values.syncWithTemplate
+                                                        }
+                                                        style={{
+                                                            fontSize: 40,
+                                                        }}
+                                                        onClick={() =>
+                                                            setFieldValue(
+                                                                "syncWithTemplate",
+                                                                !values.syncWithTemplate
+                                                            )
+                                                        }
+                                                    />
+                                                )}
+                                                <ReactTooltip
+                                                    id={toolTipId}
+                                                    place="top"
+                                                    effect="solid"
+                                                >
                                                         <div
                                                             style={{
                                                                 maxWidth:
@@ -937,7 +900,7 @@ const FormComponent = (props) => {
                                                     </ReactTooltip>
                                                 </>
                                             </div>
-                                        </LabeledButton>
+                                        {/* </LabeledButton> */}
 
                                         <div>
                                             <styled.ContentTitle>
@@ -947,27 +910,37 @@ const FormComponent = (props) => {
                                                 {lotTemplate?.name}
                                             </styled.ContentValue>
                                         </div>
-                                    </styled.IconRow>
+                                    </LabeledButton>
 
-                                    {showPasteIcon && (
-                                        <LabeledButton label={"Pasted Data"}>
-                                            <styled.PasteIcon
-                                                type={"button"}
-                                                className="fas fa-paste"
-                                                color={"#ffc20a"}
-                                                onClick={onPasteIconClick}
-                                            />
-                                        </LabeledButton>
-                                    )}
+                                    <div>
+                                        <styled.ContentTitle>
+                                            Product Group:{" "}
+                                        </styled.ContentTitle>
+                                        <styled.ContentValue>
+                                            {lotTemplate?.name}
+                                        </styled.ContentValue>
+                                    </div>
+                                </styled.IconRow>
 
-                                    {operationButtons}
+                                {showPasteIcon && (
+                                    <LabeledButton label={"Pasted Data"}>
+                                        <styled.PasteIcon
+                                            type={"button"}
+                                            className="fas fa-paste"
+                                            color={"#ffc20a"}
+                                            onClick={onPasteIconClick}
+                                        />
+                                    </LabeledButton>
+                                )}
 
-                                    {/* <DropdownMenuButton
-                                        label={"Options"}
-                                        schema={"lots"}
-                                        buttons={operationButtons}
-                                    /> */}
-                                </styled.SubHeader>
+                                {operationButtons}
+
+                                {/* <DropdownMenuButton
+                                    label={"Options"}
+                                    schema={"lots"}
+                                    buttons={operationButtons}
+                                /> */}
+                            </styled.SubHeader>
 
                                 {(showProcessSelector || !values.processId) &&
                                     renderProcessSelector()}
@@ -1055,7 +1028,6 @@ const FormComponent = (props) => {
                             {content === CONTENT.MOVE && renderMoveContent()}
                         </styled.ScrollContainer>
                     </styled.RowContainer>
-                )}
 
                 <styled.Footer>
                     {/* render buttons for appropriate content */}
@@ -1321,6 +1293,7 @@ const LotEditor = (props) => {
         showPasteIcon,
         onSubmit,
         close,
+        cardId,
         processId,
         processOptions,
         showProcessSelector,
@@ -1335,7 +1308,6 @@ const LotEditor = (props) => {
         cardNames,
         merge,
     } = props;
-
 
     const {
         current
@@ -1364,16 +1336,15 @@ const LotEditor = (props) => {
         dispatch(setSelectedLotTemplate(id));
 
     // component state
-    const [cardId, setCardId] = useState(props.cardId); //cardId and binId are stored as internal state but initialized from props (if provided)
     const [binId, setBinId] = useState(props.binId || "QUEUE");
     const [content, setContent] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const [formMode] = useState(
-        props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
+        cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
     ); // if cardId was passed, update existing. Otherwise create new
     const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false);
     const [useCardFields, setUseCardFields] = useState(
-        props.cardId ? true : false
+        cardId ? true : false
     );
 
     // get card object from redux by cardId
@@ -1392,14 +1363,7 @@ const LotEditor = (props) => {
         if (cardId) {
             const result = await onGetCard(cardId);
         }
-        // if(!loaded) {
-        // 	setLoaded(true)
-        // }
     };
-
-    useEffect(() => {
-        setCardId(props.cardId);
-    }, [props.cardId]);
 
     useEffect(() => {
       setFieldValue('lotNum', lotNumber)
@@ -1470,6 +1434,7 @@ const LotEditor = (props) => {
                 {showLotTemplateEditor && (
                     <LotCreatorForm
                         isOpen={true}
+                        setSelectedTemplate = {onSelectLotTemplate}
                         onAfterOpen={null}
                         lotTemplateId={selectedLotTemplatesId}
                         close={() => {

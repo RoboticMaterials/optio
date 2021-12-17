@@ -34,7 +34,7 @@ import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handl
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../../../methods/utils/processes_utils'
 import LotContainer from "../../lot/lot_container";
 
-const Column = ((props) => {
+const Column = (props) => {
 
 	const {
 		station_id,
@@ -130,17 +130,6 @@ const Column = ((props) => {
 		if(!!draggingLotId && !!dragFromBin && !!reduxProcessCards[draggingLotId]){
 			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id)
 			setAcceptDrop(accDrop)
-		}
-		if(!draggingLotId) setHighlightStation(null)
-
-	}, [draggingLotId])
-
-	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === dragFromBin && processId === hideCard.process_id){
-			let tempCards = deepCopy(cards)
-			let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
-			tempCards.splice(ind,1)
-			setCards(tempCards)
 		}
 	}, [draggingLotId])
 
@@ -453,7 +442,7 @@ const Column = ((props) => {
 							} = card
 
 							// const isSelected = (draggingLotId !== null) ? () : ()
-							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
+							const selectable = (hoveringLotId !== null) || (draggingLotId !== null)// || isSelectedCardsNotEmpty
 							if(!!reduxProcessCards[card.cardId]?.bins[card.binId]){
 								let partBins = reduxProcessCards[card.cardId].bins[card.binId]
 
@@ -504,6 +493,7 @@ const Column = ((props) => {
 																		}}
 																	>
 																	<LotContainer
+																		key={'lot-container-' + isPartial ? name + ` (${routes[part]?.part})` : name}
 																		isPartial = {isPartial}
 																		onDeleteDisabledLot = {() => {
 																			handleDeleteDisabledLot(card, card.binId, part)
@@ -632,6 +622,6 @@ const Column = ((props) => {
 		)
 	}
 
-})
+}
 
 export default Column

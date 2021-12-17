@@ -62,7 +62,11 @@ export const Flag = styled.div`
     height: 1.5rem;
     border-radius: 0.75rem;
     font-size: 0.8rem;
-    max-width: 6rem;
+    // max-width: 6rem;
+
+    width: fit-content;
+    padding: 0rem 1rem;
+    
     justify-content: center;
     text-align: center;
     align-content: center;
@@ -71,7 +75,7 @@ export const Flag = styled.div`
     font-weight: bold;
 
     background: ${props => props.speedStatus===1 ? '#D3FDDA' : '#FEE2E8'};
-    color: ${props => props.speedStatus===1 ? '#81d690' : '#ff6363'};
+    color: ${props => props.speedStatus===1 ? '#6ab076' : '#ff6363'};
 `
 
 export const Info = styled.h1`
