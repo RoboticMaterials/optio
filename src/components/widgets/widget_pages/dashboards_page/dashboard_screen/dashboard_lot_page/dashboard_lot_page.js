@@ -120,8 +120,6 @@ const DashboardLotPage = (props) => {
   }, [currentLot.bins[stationID]])
   
 
-  // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
-  // but dashboard lot page is still mounted
   
   
   const routeOptions = useMemo(() => {
@@ -149,6 +147,20 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
+
+
+  const handleBack = () => {
+    Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
+    onBack();
+  }
+
+  // Catch leaving the page
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBack);
+    return () => {
+      window.removeEventListener("beforeunload", handleBack);
+    };
+  }, []);
 
   /**
    * Start building a touch event on component mount. If this screen persists until the card is moved
@@ -629,10 +641,7 @@ const DashboardLotPage = (props) => {
           fractionMove = {fractionMove}
           onFractionClick = {(fraction) => onFractionClick(fraction)}
           selectedFraction = {selectedFraction}
-          handleCancel={() => {
-            Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
-            onBack()
-          }}
+          handleCancel={handleBack}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}
           onInputChange = {(e) =>{
