@@ -15,6 +15,11 @@ body {
   overscroll-behavior: contain;
 
 }
+
+.__react_component_tooltip.show {
+  opacity: 0.98 !important;
+}
+
 .dragging-ghost-hidden{
   visibility: hidden;
 }

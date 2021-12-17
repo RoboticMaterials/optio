@@ -32,5 +32,5 @@ export const tooltipProps = {
     textColor: '#222',
     place: 'bottom',
     effect: 'solid',
-    multiline: true
+    multiline: true,
 }
