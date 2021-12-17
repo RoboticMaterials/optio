@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 import moment from 'moment'
@@ -22,6 +22,7 @@ import { getStationStatistics } from '../../../../api/stations_api';
 import Checkbox from '../../../basic/checkbox/checkbox';
 import Button from '../../../basic/button/button';
 import { defaultColors, tooltipProps } from '../../../basic/charts/nivo_theme';
+import Switch from 'react-ios-switch';
 
 import { deepCopy } from '../../../../methods/utils/utils';
 import Popup from 'reactjs-popup';
@@ -86,25 +87,135 @@ const convertCycleTimeToProductionRate = (cycleTime, dailyWorkingSeconds) => {
     }
 }
 
+const ProdTick = (props) => {
+
+    const {
+        numBars,
+        label,
+        CTObj,
+        processTaktTime,
+        onSave,
+        dailyWorkingSeconds,
+    } = props;
+
+    const tooltipRef = useRef(null)
+
+    const [mode, setMode] = useState(CTObj.mode)
+    const [quantity, setQuantity] = useState(0);
+    const [timescale, setTimescale] = useState('hour')
+
+    useEffect(() => {
+        let compareSeconds = 0;
+        let newMode = CTObj.mode || 'auto'
+        switch (CTObj.mode) {
+            case "takt":
+                compareSeconds = processTaktTime;                
+            case "manual":
+                compareSeconds = CTObj.manual;
+            default:
+                compareSeconds = CTObj.historical;
+        }
+
+        const { quantity: newQuantity, timescale: newTimescale } = convertCycleTimeToProductionRate(compareSeconds, dailyWorkingSeconds);
+
+        setMode(CTObj.mode)
+        setQuantity(newQuantity);
+        setTimescale(newTimescale);
+    }, [CTObj])
+    
+
+    return (
+        <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y}) scale(${Math.exp(-0.15*(numBars-1))})`}>
+            <foreignObject x={`${numBars-14}`} y="-12" width="22" height="22" >
+                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `1.2rem`, background:'white', padding: '2px'}} data-event='click' data-tip data-for={`${label}-prod-timepicker`} />
+                <Portal>
+                    
+                    <ReactTooltip ref={tooltipRef} id={`${label}-prod-timepicker`} {...tooltipProps} place="left" clickable={true}>
+                        <styled.TimePickerTooltip>
+                            <i style={{color: 'grey', cursor: 'pointer', position: 'absolute', top: '0.5rem', right: '0.5rem'}} className='fas fa-times' onClick={() => {tooltipRef.current.tooltipRef = null; tooltipRef.current.hideTooltip()}}/>
+                            <styled.TooltipIcon className="fas fa-info" onMouseEnter={() => ReactTooltip.rebuild()} data-tip data-for={`prod-tooltip-${label}`} style={{position: 'absolute', top: '0.5rem', left: '0.5rem'}}/>
+                            <ReactTooltip id={`prod-tooltip-${label}`} {...tooltipProps}>
+                                <styled.Tooltip style={{textAlign: 'left', maxWidth: '20rem'}} dangerouslySetInnerHTML={{__html:descriptions.productivitySettings}}></styled.Tooltip>
+                            </ReactTooltip>
+                            <div style={{fontWeight: 'bold'}}>Desired Takt</div>
+                            <div style={{color: '#8e8e9c', marginBottom: '1rem'}}>{label}</div>
+
+                            <styled.DualSelectionButtonContainer style={{ justifyContent: 'center', width: '100%', alignContent: 'center', marginBottom: '0.5rem'}}>
+                                <styled.DualSelectionButton activeColor={defaultColors[0]} style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                    onClick={() => setMode('takt')}
+                                    selected={mode === 'takt'}
+                                >
+                                    Process Takt
+                                </styled.DualSelectionButton>
+                                <styled.DualSelectionButton activeColor={defaultColors[0]} style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                    onClick={() => setMode('auto')}
+                                    selected={mode === 'auto' || mode === 'manual'}
+                                >
+                                    Station Takt
+                                </styled.DualSelectionButton>
+                            </styled.DualSelectionButtonContainer>
+
+                            <div style={{display: 'flex', width: '100%', justifyContent: 'center'}}>
+                                <div style={{fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', width: '4rem', justifyContent: 'flex-end', alignItems: 'center'}}>Auto</div>
+                                    <Switch
+                                        checked={mode === 'manual' || mode === 'takt'}
+                                        disabled={mode === 'takt'}   
+                                        onChange={val => val === true ? setMode('manual') : setMode('auto')}
+                                        offColor={defaultColors[1]}
+                                        onColor={defaultColors[2]}
+                                        style={{margin: '0 0.5rem'}}
+                                    />
+                                 <div style={{fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', width: '4rem', justifyContent: 'flex-start', alignItems: 'center'}}>Manual</div>
+                            </div>
+                            <InputGroup className="mb-3 mt-3">
+                                <FormControl className="input-sm" ariaLabel="Production Rate" type="number" min="0" disabled={mode !== 'manual'} onChange={e => setQuantity(e.target.value)} value={quantity} />
+                                <InputGroup.Text>per</InputGroup.Text>
+                                <DropdownButton
+                                    onSelect={e => setTimescale(e)}
+                                    variant='light'
+                                    title={timescale}
+                                    id={`timescale-${label}`}
+                                    disabled={mode !== 'manual'}
+                                >
+                                    <Dropdown.Item href="#" eventKey='minute'>Minute</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='hour'>Hour</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='day'>Day</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='week'>Week</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='month'>Month</Dropdown.Item>
+                                    <Dropdown.Item href="#" eventKey='year'>Year</Dropdown.Item>
+                                </DropdownButton>
+                            </InputGroup>
+                            <Button label="Save" style={{height: '1.5rem', width: '12rem', margin: '0'}} onClick={() => onSave(parseFloat(quantity), timescale, mode)}/>
+                        </styled.TimePickerTooltip>
+                    </ReactTooltip>
+                </Portal>
+            </foreignObject>
+        </g>
+    )
+}
+
 const OEETick = (props) => {
 
     const {
+        numBars,
         label,
         initialQuantity,
         initialTimescale,
         onSave
     } = props;
 
+    const tooltipRef = useRef(null);
     const [quantity, setQuantity] = useState(initialQuantity);
-    const [timescale, setTimescale] = useState(initialTimescale)
+    const [timescale, setTimescale] = useState(initialTimescale);
 
     return (
-        <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y})`}>
-            <foreignObject x="-5" y="-12" width="20" height="20" >
-                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `0.8rem`}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
+        <g transform={`rotate(${props.rotation}) translate(${props.textX}, ${props.y}) scale(${Math.exp(-0.15*(numBars-1))})`}>
+            <foreignObject x={`${numBars-14}`} y="-12" width="22" height="22" >
+                <i className="fas fa-cog" style={{color: '#c0c0cc', cursor: 'pointer', fontSize: `1.2rem`, background:'white', padding: '2px'}} data-event='click' data-tip data-for={`${label}-oee-timepicker`} />
                 <Portal>
-                    <ReactTooltip id={`${label}-oee-timepicker`} {...tooltipProps} globalEventOff='click' place="left" clickable={true} globalEventOff="">
+                    <ReactTooltip ref={tooltipRef} id={`${label}-oee-timepicker`} {...tooltipProps} place="left" clickable={true}>
                         <styled.TimePickerTooltip>
+                        <i style={{color: 'grey', cursor: 'pointer', position: 'absolute', top: '0.5rem', right: '0.5rem'}} className='fas fa-times' onClick={() => {tooltipRef.current.tooltipRef = null; tooltipRef.current.hideTooltip()}}/>
                             <div style={{fontWeight: 'bold'}}>Maximum Production Rate</div>
                             <div style={{color: '#8e8e9c'}}>{label}</div>
 
@@ -251,18 +362,14 @@ const StatisticsPage = () => {
 
         return (
             <div style={{margin: '0.4rem 0', display: 'flex'}}>
-                <styled.DualSelectionButtonContainer style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <styled.DualSelectionButton
-                        activeColor={defaultColors[0]}
-                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                <styled.DualSelectionButtonContainer style={{ justifyContent: 'center', marginBottom: '0.5rem', marginRight: '2rem', width: '16rem' }}>
+                    <styled.DualSelectionButton activeColor={defaultColors[0]} style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                         onClick={() => setShowWIPChart(false)}
                         selected={!showWIPChart}
                     >
                         Throughput
                     </styled.DualSelectionButton>
-                    <styled.DualSelectionButton
-                        activeColor={defaultColors[0]}
-                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                    <styled.DualSelectionButton activeColor={defaultColors[0]} style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                         onClick={() => setShowWIPChart(true)}
                         selected={showWIPChart}
                     >
@@ -334,18 +441,29 @@ const StatisticsPage = () => {
                     centerValue={100 * weighted_sum / data.total_quantity}
                     radialAxisEnd={{ tickComponent: (d) => {
                         const cycleTimeObj = station.cycle_times[labelsMap[d.label]]
-                        const { quantity, timescale } = convertCycleTimeToProductionRate(cycleTimeObj.theoretical, dailyWorkingSeconds)
 
-                        return <OEETick
+                        return <ProdTick
                             key={`prod-tick-${labelsMap[d.label]}`}
-                            initialQuantity={quantity}
-                            initialTimescale={timescale}
-                            onSave={(quantity, timescale) => {
-                                const cycleTime = convertProductionRateToCycleTime(quantity, timescale, dailyWorkingSeconds)
-                                setCycleTimeObj(labelsMap[d.label], {
-                                    ...cycleTimeObj,
-                                    theoretical: cycleTime
-                                })
+                            numBars={prod_data.length}
+                            CTObj={cycleTimeObj}
+                            processTaktTime={productGroups[d.label]?.taktTime || 0}
+                            dailyWorkingSeconds={dailyWorkingSeconds}
+                            onSave={(quantity, timescale, mode) => {
+
+                                if (mode === 'manual') {
+                                    const cycleTime = convertProductionRateToCycleTime(quantity, timescale, dailyWorkingSeconds)
+                                    setCycleTimeObj(labelsMap[d.label], {
+                                        ...cycleTimeObj,
+                                        manual: cycleTime,
+                                        mode
+                                    })
+                                } else {
+                                    setCycleTimeObj(labelsMap[d.label], {
+                                        ...cycleTimeObj,
+                                        mode
+                                    })
+                                }
+                                
                             }}
                             {...d}
                         />
@@ -405,6 +523,7 @@ const StatisticsPage = () => {
                         const { quantity, timescale } = convertCycleTimeToProductionRate(cycleTimeObj.theoretical, dailyWorkingSeconds)
 
                         return <OEETick
+                            numBars={oee_data.length}
                             key={`oee-tick-${labelsMap[d.label]}`}
                             initialQuantity={quantity}
                             initialTimescale={timescale}
@@ -432,6 +551,12 @@ const StatisticsPage = () => {
             </ReactTooltip>
         </styled.CardHeader>
     )
+
+    const productionRate = useMemo(() => {
+        if (!data || !data.cycle_time || !data.cycle_time[cycleTimePG] || !data.cycle_time[cycleTimePG].current) return ''
+        const {quantity, timescale} = convertCycleTimeToProductionRate(data.cycle_time[cycleTimePG].current)
+        return `${quantity} parts per ${capitalizeFirstLetter(timescale)}`
+    }, )
 
     return (
         <styled.Page>
@@ -515,7 +640,7 @@ const StatisticsPage = () => {
                                         {
                                             !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
                                             <div style={{height: '2rem'}}>
-                                                <styled.CycleTimeLabel>1 Part Every</styled.CycleTimeLabel>
+                                                <styled.CycleTimeLabel>{productionRate}</styled.CycleTimeLabel>
                                                 <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].current)}</styled.CycleTime>
                                             </div>
                                         }

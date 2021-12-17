@@ -121,13 +121,12 @@ export const DualSelectionButtonContainer = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-right: 2rem;
     height: 1.4rem;
     `
 
 export const DualSelectionButton = styled.button`
     font-size: 0.8rem;
-    width: 8rem;
+    width: 50%;
     border: none;
     font-family: ${props => props.theme.font.primary};
 

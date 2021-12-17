@@ -32,13 +32,13 @@ const LotHistory = (props) => {
 
     const fetchEvents = async (lotId) => {
         const events = await getLotTouchEvents(lotId)
-        console.log(events)
         setLotTouchEvents(events)
     }
 
     useEffect(() => {
         fetchEvents(lotId)
-    }, [])
+        console.log(history)
+    }, [lotId])
     
     
     const speed = (event) => {
