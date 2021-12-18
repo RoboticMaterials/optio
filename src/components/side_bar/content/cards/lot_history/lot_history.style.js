@@ -62,7 +62,11 @@ export const Flag = styled.div`
     height: 1.5rem;
     border-radius: 0.75rem;
     font-size: 0.8rem;
-    max-width: 6rem;
+    // max-width: 6rem;
+
+    width: fit-content;
+    padding: 0rem 1rem;
+    
     justify-content: center;
     text-align: center;
     align-content: center;

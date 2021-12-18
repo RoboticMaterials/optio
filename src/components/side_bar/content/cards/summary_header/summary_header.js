@@ -31,7 +31,7 @@ const SummaryHeader = (props) => {
         <styled.Header>
             {showBackButton ?
                 <BackButton onClick={() => {
-                        history.replace('/processes')
+                        history.push('/processes')
                     }} 
                 />
 

@@ -44,7 +44,7 @@ class PageErrorBoundary extends React.Component {
                     <styled.Label>
                         Oops! Something went wrong... {this.state.error}
                     </styled.Label>
-                    <styled.ReloadButton
+                    {/* <styled.ReloadButton
                         onClick={this.handleReloadPage}
                         className="btn btn-outline-danger"
                     >
@@ -56,7 +56,7 @@ class PageErrorBoundary extends React.Component {
                             <styled.Text>{this.state.error?.stack || 'NA'}</styled.Text>
                             <styled.Text>{this.state.info?.componentStack || 'NA'}</styled.Text>
                         </>
-                    }
+                    } */}
                 </styled.Container>
             );
         } else {
