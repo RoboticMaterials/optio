@@ -159,6 +159,7 @@ const DashboardLotPage = (props) => {
     window.addEventListener("beforeunload", handleBack);
     return () => {
       window.removeEventListener("beforeunload", handleBack);
+      handleBack();
     };
   }, []);
 
@@ -378,6 +379,7 @@ const DashboardLotPage = (props) => {
 
     // Exit page
     if (exitOnFinish) {
+      await setMergedLotsRevertStates({})
       onBack();
     }
 
