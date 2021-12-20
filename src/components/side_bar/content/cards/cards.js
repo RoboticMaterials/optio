@@ -59,6 +59,7 @@ const Cards = (props) => {
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
+    const processCards = useSelector(state=> state.cardsReducer.processCards)
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
     const currentMapId = useSelector(state => state.settingsReducer.settings.currentMapId)
     const localSettings = useSelector(state => state.localReducer.localSettings)
@@ -169,7 +170,6 @@ const Cards = (props) => {
     *
     * */
     useEffect(() => {
-
         // update internal state based on id
         switch (id) {
 

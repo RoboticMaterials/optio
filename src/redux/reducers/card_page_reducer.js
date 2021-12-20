@@ -1,5 +1,5 @@
 import { SET } from "../types/prefixes"
-import {LOT_DRAGGING, COLUMN_HOVERING, HIDE_CARD, LOT_HOVERING, FIELD_DRAGGING, SET_SIZE, LOT_DROPPING, DRAGGING_STATION_ID, DRAG_FROM_BIN, LOT_DIV_HEIGHT} from "../types/ui_types"
+import {LOT_DRAGGING, COLUMN_HOVERING, HIDE_CARD, LOT_HOVERING, FIELD_DRAGGING, SET_CLIENTY, SET_SIZE, LOT_DROPPING, DRAGGING_STATION_ID, DRAG_FROM_BIN, LOT_DIV_HEIGHT} from "../types/ui_types"
 
 
 const defaultState = {
@@ -14,6 +14,7 @@ const defaultState = {
 	dragFromBin: null,
 	lotDivHeight: 160,
 	hideCard: null,
+	clientY: null,
 
 }
 
@@ -31,6 +32,12 @@ const cardPageReducer = (state = defaultState, action) => {
 			return {
 				...state,
 				draggingLotId: action.payload.lotId
+			}
+
+		case SET_CLIENTY:
+			return {
+				...state,
+				clientY: action.payload.clientY
 			}
 
 		case SET + HIDE_CARD:

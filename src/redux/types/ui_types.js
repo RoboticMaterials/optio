@@ -8,3 +8,4 @@ export const DRAGGING_STATION_ID = "DRAGGING_STATION_ID"
 export const DRAG_FROM_BIN = "DRAG_FROM_BIN"
 export const LOT_DIV_HEIGHT = 'LOT_DIV_HEIGHT'
 export const HIDE_CARD = 'HIDE_CARD'
+export const SET_CLIENTY = 'SET_CLIENTY'

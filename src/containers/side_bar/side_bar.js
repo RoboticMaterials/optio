@@ -31,9 +31,11 @@ const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_sw
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
-const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
+import Cardss from "../../components/side_bar/content/cards/cardss"
 const StatisticsSelector = lazy(() => import('../../components/side_bar/content/statistics/statistics_selector'))
 const ProcessStatistics = lazy(() => import('../../components/side_bar/content/statistics/process_statistics/process_statistics'))
+const LotSummarySelector = lazy(() => import('../../components/side_bar/content/cards/lot_summary_selector/lot_summary_selector'))
+
 
 const SideBar = (props) => {
 
@@ -341,8 +343,10 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            if ((id === "summary") || (id === "timeline")) {
-                content = <Cards id={id} />
+            if (subpage === 'lots') {
+                content = <Cardss id = {id}/>
+            } else {
+                content = <LotSummarySelector/>
             }
             break
 
@@ -464,7 +468,7 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && subpage !== 'statistics'}>
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && page!=='lots' && subpage !== 'statistics' && subpage!=='lots'}>
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}
