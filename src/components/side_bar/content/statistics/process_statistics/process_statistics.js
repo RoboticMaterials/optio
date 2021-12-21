@@ -109,6 +109,7 @@ const ProcessStatistics = ({ id }) => {
     }, [data, balancePG])
 
     const toggleCumulative = async () => {
+        if (!data || !data.throughput) return
         let throughputDataCopy = []
         if (isCumulative) {
             const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
@@ -177,7 +178,7 @@ const ProcessStatistics = ({ id }) => {
     return (
         <styled.Page>
             <styled.Header>
-                <BackButton onClick={() => history.replace('/statistics')} containerStyle={{position: 'absolute', left: '1.5rem'}}/>
+                <BackButton onClick={() => history.push('/statistics')} containerStyle={{position: 'absolute', left: '1.5rem'}}/>
                 {currentProcess.name}
             </styled.Header>
             <styled.StatisticsContainer>
@@ -315,7 +316,7 @@ const ProcessStatistics = ({ id }) => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
                                 throughputData.length > 1 ? 
-                                    <Line data={throughputData} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
+                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />

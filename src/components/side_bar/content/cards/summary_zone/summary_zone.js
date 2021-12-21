@@ -23,8 +23,6 @@ const SummaryZone = ((props) => {
     // extract props
     const {
         handleCardClick,
-        setShowCardEditor,
-        showCardEditor,
         selectedCards,
         selectedProcesses,
 
@@ -83,8 +81,6 @@ const SummaryZone = ((props) => {
                         selectedFilterOption = {selectedFilterOption}
       									sortDirection={sortDirection}
       									lotFilters={lotFilters}
-      									setShowCardEditor={setShowCardEditor}
-      									showCardEditor={showCardEditor}
       									maxHeight={"50rem"}
       									processId={processId}
       									handleCardClick={handleCardClick}

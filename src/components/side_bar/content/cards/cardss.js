@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 import {throttle, debounce} from 'lodash'
+import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
+
 // styles
 import * as styled from './cardss.style'
 import { ThemeContext } from "styled-components";
@@ -32,6 +34,7 @@ const Cardss = (props) => {
     const themeContext = useContext(ThemeContext)
     const process = useSelector(state => state.processesReducer.processes)[id] || {}
     const processCards = useSelector(state => state.cardsReducer.processCards)[id] || {}
+    const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const localSettings = useSelector(state => state.localReducer.localSettings)
 
@@ -45,19 +48,28 @@ const Cardss = (props) => {
     const [draggingStationId, setDraggingStationId] = useState(null)
     const [orderedIds, setOrderedIds] = useState(null)
     const [startIndex, setStartIndex] = useState(null)
+    const [startStationId, setStartStationId] = useState(null)
     const [clientY, setClientY] = useState(null)
   	const [clientX, setClientX] = useState(null)
     const [divHeight, setDivHeight] = useState(null)
+    const [divWidth, setDivWidth] = useState(null)
     const [dragIndex, setDragIndex] = useState(null)
     const [allowHomeDrop, setAllowHomeDrop] = useState(null)
     const [mouseOffsetY, setMouseOffsetY] = useState(null)
   	const [mouseOffsetX, setMouseOffsetX] = useState(null)
-
+    const [dropNodes, setDropNodes] = useState([])
 
     useEffect(() => {
       if(processCards) setCards(processCards)
   	}, [processCards])
 
+    useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
+  		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
+          setAllowHomeDrop(true)
+  				let fieldDiv = document.getElementById(draggingLotId)
+  				fieldDiv.style.display = 'none'
+  		}
+  	}, [dragIndex, clientY])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       let tempIds = []
@@ -75,14 +87,7 @@ const Cardss = (props) => {
     }, [])
 
     useEffect(() => {
-  		if(dragIndex && startIndex){
-  				setAllowHomeDrop(true)
-  				let lotDiv = document.getElementById(draggingLotId)
-  		}
-  	}, [dragIndex])
-
-    useEffect(() => {
-      setDragIndex(dragIndexSearch())
+      setDragIndex(dragIndexSearch(draggingStationId))
     }, [clientY])
 
     useEffect(() => {//how many cards are in each column
@@ -114,27 +119,143 @@ const Cardss = (props) => {
 
     const onDragClient = (e) => {
       setClientY(e.clientY)
-      console.log(e.clientY)
     }
 
 
-    const debouncedDrag = useCallback(throttle(onDragClient, 80), []);
+    const debouncedDrag = useCallback(throttle(onDragClient, 50), []);
 
-    const dragIndexSearch = () => {
-      if(!!draggingLotId && !!draggingStationId){
-        for(const i in orderedIds[id][draggingStationId]){
-          let ele = document.getElementById(orderedIds[id][draggingStationId][i])
+    const dragIndexSearch = (stationId) => {
+      if(!!draggingLotId && !!stationId){
+        for(const i in orderedIds[id][stationId]){
+          let ele = document.getElementById(orderedIds[id][stationId][i])
           let midY = (ele?.getBoundingClientRect().bottom + ele?.getBoundingClientRect().top)/2
           let draggingY = clientY + mouseOffsetY
           if(!!ele && midY> draggingY){
             return parseInt(i)
           }
+          else if(i == orderedIds[id][stationId].length-1){
+            return orderedIds[id][stationId].length
+          }
         }
+        if(!orderedIds[id][stationId] || [id][stationId].length ===0) return 0
       }
     }
 
     const handleAddLotClick = (processId) => {
         setShowLotEditor(true)
+    }
+
+
+    //This function is now more limiting with split/merge
+    // -dont allow moving lot to next stations(s) if current station disperses a lot
+    //-dont allow movinga lot backwards if the previous node has routes merging into it or if it disperses a lot
+    //-dont allow moving lot back if current node has routes merging into it
+    //-These limitations ensure dragging lots around in cardZone dont mess merge/split functionality
+    //-We should make it more flexible in the future with functions that handle the above cases...
+    //-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
+    const shouldAcceptDrop = (cardId, startId, currId) => {
+      let lastStationTraversed = false
+      let tempDropNodes = dropNodes
+      const processRoutes = process.routes.map(routeId => routes[routeId])
+
+      let startNodes = findProcessStartNodes(processRoutes, stations)
+      let endNode = findProcessEndNodes(processRoutes)
+
+      if(startId === currId) {
+        tempDropNodes.push(currId)
+      }
+
+        const forwardsTraverseCheck = (currentStationID) => {
+          if(endNode.includes(currentStationID) && currId =='FINISH'){//If you can traverse to the end node, also allow finish column
+            tempDropNodes.push(currId)
+          }
+          else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
+            //if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
+            if(startNodes.includes(currId)){
+              tempDropNodes.push(currId)
+            }
+            else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
+              for(const ind in startNodes){
+                const canMove = forwardsTraverseCheck(startNodes[ind])
+                if(!!canMove) tempDropNodes.push(currId)
+              }
+            }
+          }
+          const nextRoutes = processRoutes.filter(route => route.load === currentStationID)
+          if(!!nextRoutes[0] && (!nextRoutes[0].divergeType || nextRoutes[0].divergeType!=='split')){//can't drag forward if station disperses lots
+            for(const ind in nextRoutes){
+              if(nextRoutes[ind].unload === currId){
+                //If you are skipping over nodes and drag to a merge station we need to keep track of the station right before
+                //the merge station as merge functions need this to find routeTravelled
+                lastStationTraversed = nextRoutes[ind].load
+                tempDropNodes.push(currId)
+              }
+              else{
+                const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
+                if(mergingRoutes.length === 1){
+                  const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
+                  if(!!canMove) tempDropNodes.push(currId)
+                }
+              }
+            }
+          }
+        }
+
+        const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
+          if(startNodes.includes(currentStationID) && currId === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
+            tempDropNodes.push(currId)
+          }
+
+          else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
+            if(endNode.includes(currId)){
+              tempDropNodes.push(currId)
+              }
+            else{
+              const canMove = backwardsTraverseCheck(endNode)
+              if(!!canMove) tempDropNodes.push(currId)
+            }
+          }
+
+          const mergingRoutes = processRoutes.filter((route) => route.unload === currentStationID);
+          if(mergingRoutes.length===1){//Can't drag backwards from merge station
+            for(const ind in mergingRoutes){
+              const dispersingRoutes = processRoutes.filter((route) => route.load === mergingRoutes[ind].load);
+              if(mergingRoutes[ind].load === currId) {
+                if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
+                  tempDropNodes.push(currId)
+                }
+              }
+              else{
+                  if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
+                    const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
+                    if(!!canMove) tempDropNodes.push(currId)
+                  }
+                }
+              }
+            }
+          }
+          forwardsTraverseCheck(startId)
+          backwardsTraverseCheck(startId)
+          setDropNodes(tempDropNodes)
+        }
+
+    const handleDrop = () => {
+      if(dragFromStation === draggingStationId){//dragging within column
+        if((!!dragIndex || dragIndex === 0) && dragIndex !== startIndex+1){//drop zone existst and not dropping in home position
+          let newIds = orderedIds
+          newIds[id][draggingStationId].splice(dragIndex, 0, newIds[id][draggingStationId][startIndex])
+          if(dragIndex<=startIndex){//dragging up
+            newIds[id][draggingStationId].splice(startIndex+1,1)
+          }
+          else{//dragging down
+            newIds[id][draggingStationId].splice(startIndex,1)
+          }
+          setOrderedIds(newIds)
+        }
+      }
+      else if((dragIndex || dragIndex ===0) && dragFromStation!==draggingStationId){
+
+      }
     }
 
     const renderHeaderContent = (stationId) => {
@@ -167,22 +288,22 @@ const Cardss = (props) => {
 
     const renderCards = (stationId) => {
       if(orderedIds && orderedIds[id] && orderedIds[id][stationId]){
+
         return(
           orderedIds[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
             return (
                 <styled.CardContainer
-                  id = {cardId}
                   onMouseOver = {()=>setHoveringCard(card)}
                   onMouseLeave = {()=>setHoveringCard(null)}
                   onClick = {()=>setShowLotEditor(true)}
                   draggable = {true}
                   onDragStart = {(e)=>{
+                    setDivHeight(e.target.offsetHeight)
+                    setDivWidth(e.target.offsetWidth)
                     setDraggingLotId(card._id)
                     setDragFromStation(stationId)
                     setStartIndex(index)
-                    setDivHeight(e.target.offsetHeight)
-
                     let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
                     let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
@@ -191,8 +312,15 @@ const Cardss = (props) => {
 
                     e.target.style.opacity = '0.001'
 
+                    for(const i in process.flattened_stations){
+                      shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
+                    }
+
                   }}
                   onDragEnd = {(e)=>{
+                    handleDrop()
+                    let lotDiv = document.getElementById(draggingLotId)
+                    lotDiv.style.display = 'flex'//restore
                     setDraggingLotId(null)
                     setDragIndex(null)
                     setStartIndex(null)
@@ -200,10 +328,18 @@ const Cardss = (props) => {
                     setMouseOffsetY(null)
                     setDragFromStation(null)
                     setDraggingStationId(null)
+                    setDropNodes([])
                     e.target.style.opacity = '1'
                     e.target.style.display = 'flex'
                   }}
                 >
+                {dragIndex === 0 && index === 0 && draggingStationId === stationId && allowHomeDrop &&
+                  <styled.DropContainer
+                    divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                    divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+                  />
+                }
+                <div id = {cardId}>
                   <LotContainer
                     containerStyle = {{margin: '0.5rem'}}
                     selectable={true}
@@ -220,16 +356,31 @@ const Cardss = (props) => {
                       borderLeft: draggingLotId === card._id && stationId === dragFromStation && '.1rem solid #b8b9bf',
                       borderTop: draggingLotId === card._id && stationId === dragFromStation && '.05rem solid #b8b9bf',
                       boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
-                      borderRadius: '0.3rem',
+                      borderRadius: '0.2rem',
                       padding: '0.2rem',
                       margin: '.4rem',
                       width: '96%',
                       pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                     }}
-                  />
+                    />
+                  </div>
+                  {dragIndex === index+1 && draggingStationId === stationId && allowHomeDrop &&
+                    <styled.DropContainer
+                      divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                      divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+                    />
+                  }
                 </styled.CardContainer>
               )
             })
+          )
+        }
+        else if(orderedIds && orderedIds[id] && !orderedIds[id][stationId] && draggingStationId===stationId){
+          return (
+              <styled.DropContainer
+                divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+              />
           )
         }
       }
@@ -240,13 +391,18 @@ const Cardss = (props) => {
           return (
             <div
               onDragEnter = {(e)=>{
+                setDragIndex(dragIndexSearch(station.stationID))
                 setDraggingStationId(station.stationID)
               }}
             >
-              <styled.ColumnContainer>
+              <styled.ColumnContainer
+                disabled = {!dropNodes.includes(station.stationID) && draggingLotId}
+              >
                 {renderHeaderContent(station.stationID)}
-                <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
-                    {renderCards(station.stationID)}
+                <styled.StationColumnContainer
+                  maxHeight = {viewHeight?.toString() + 'px'}
+                >
+                  {renderCards(station.stationID)}
                 </styled.StationColumnContainer>
               </styled.ColumnContainer>
             </div>
@@ -256,29 +412,41 @@ const Cardss = (props) => {
     }
     const renderQueue = () => {
       return (
-        <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
-         {renderHeaderContent('QUEUE')}
-          <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
-              {renderCards('QUEUE')}
-          </styled.StationColumnContainer>
-          <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
-          <i className = 'fas fa-plus' style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
-            <styled.AddLot>
-              Add New Lot
-            </styled.AddLot>
-          </styled.AddLotContainer>
-        </styled.ColumnContainer>
+        <div
+          onDragEnter = {(e)=>{
+            setDraggingStationId('QUEUE')
+          }}
+        >
+          <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
+           {renderHeaderContent('QUEUE')}
+            <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
+                {renderCards('QUEUE')}
+            </styled.StationColumnContainer>
+            <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
+            <i className = 'fas fa-plus' style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
+              <styled.AddLot>
+                Add New Lot
+              </styled.AddLot>
+            </styled.AddLotContainer>
+          </styled.ColumnContainer>
+        </div>
       )
     }
 
     const renderFinish = () => {
       return (
-        <styled.ColumnContainer>
-         {renderHeaderContent('FINISH')}
-          <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
-              {renderCards('FINISH')}
-          </styled.StationColumnContainer>
-        </styled.ColumnContainer>
+        <div
+          onDragEnter = {(e)=>{
+            setDraggingStationId('FINISH')
+          }}
+        >
+          <styled.ColumnContainer>
+           {renderHeaderContent('FINISH')}
+            <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
+                {renderCards('FINISH')}
+            </styled.StationColumnContainer>
+          </styled.ColumnContainer>
+        </div>
       )
     }
 

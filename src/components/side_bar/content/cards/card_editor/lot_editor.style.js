@@ -242,7 +242,7 @@ const mainCss = css`
 	height: 100%;
 	// max-height: 100%;
 	// overflow-x: hidden;
-	border-radius: .5rem;
+	border-radius: 0 0 0.5rem 0.5rem;
 	position: relative;
 
 	overflow: hidden;
@@ -253,8 +253,12 @@ const mainCss = css`
 
 export const StyledForm = styled(Form)`
     ${mainCss};
+<<<<<<< HEAD
+	transition: all .5s ease;
+=======
 
 	transition: all .1s ease;
+>>>>>>> 2dab0dd111e529e66c41e21a853fd2ec3a83bddc
 	filter: ${props => props.loading && "blur(5px)"};
 `;
 
@@ -574,7 +578,6 @@ export const SubHeader = styled.div`
   background: ${props => props.theme.bg.primary};
   padding: 0.5rem;
   border-bottom: 3px solid ${props => props.theme.bg.secondary};
-
 `
 export const IconRow = styled.div`
   ${rowCss2};

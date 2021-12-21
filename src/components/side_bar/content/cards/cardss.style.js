@@ -27,7 +27,20 @@ export const AddLotContainer = styled.div`
 `
 
 export const CardContainer = styled.div`
-    margin: 0rem .5rem 0rem .5rem;
+    margin: 0rem .5rem .5rem .5rem;
+`
+
+export const DropContainer = styled.div`
+	width: ${props => props.divWidth};
+  height: ${props => props.divHeight};
+	margin: 0.5rem 0.3rem 0.3rem 0.5rem;
+
+  align-self: center;
+  justify-self: center;
+	background: ${props => LightenDarkenColor(props.theme.bg.tertiary,15)};
+	border: 0.1rem solid ${props => LightenDarkenColor(props.theme.bg.tertiary,15)};
+	border-radius: .3rem;
+
 `
 
 export const ColumnContainer = styled.div`
@@ -36,6 +49,7 @@ export const ColumnContainer = styled.div`
     border-radius: 0.4rem;
     height: fit-content;
     background-color: ${props =>props.theme.bg.secondary};
+    opacity: ${props => props.disabled && '0.5'}
 `
 
 export const HeaderContainer = styled.div`

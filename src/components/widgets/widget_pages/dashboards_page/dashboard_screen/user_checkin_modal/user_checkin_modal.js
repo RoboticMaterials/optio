@@ -57,6 +57,10 @@ const UserCheckinModal = (props) => {
                     handleClose={() => setConfirmDeleteOperatorIdx(null)}
                     handleOnClick1={() => {
                         let users = dashboard.users;
+
+                        if (users[confirmDeleteOperatorIdx] === existingUser) {
+                            setExistingUser(null)
+                        }
                         users.splice(confirmDeleteOperatorIdx, 1)
 
                         dispatchPutDashboard({

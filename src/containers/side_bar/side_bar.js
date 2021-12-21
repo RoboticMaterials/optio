@@ -334,7 +334,7 @@ const SideBar = (props) => {
 
         case 'processes':
             if (subpage === "lots") {
-                content = <Cards id={id} />
+                content = <Cards />
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
