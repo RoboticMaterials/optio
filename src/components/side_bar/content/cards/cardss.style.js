@@ -28,12 +28,14 @@ export const AddLotContainer = styled.div`
 
 export const CardContainer = styled.div`
     margin: 0rem .5rem .5rem .5rem;
+    justify-content: center;
+    align-content: center;
 `
 
 export const DropContainer = styled.div`
-	width: ${props => props.divWidth};
+	width: 22rem;
   height: ${props => props.divHeight};
-	margin: 0.5rem 0.3rem 0.3rem 0.5rem;
+	margin: 0.5rem 0.3rem 0.3rem 0.3rem;
 
   align-self: center;
   justify-self: center;
@@ -49,7 +51,8 @@ export const ColumnContainer = styled.div`
     border-radius: 0.4rem;
     height: fit-content;
     background-color: ${props =>props.theme.bg.secondary};
-    opacity: ${props => props.disabled && '0.5'}
+    opacity: ${props => props.disabled && '0.4'};
+    pointer-events: ${props => props.disabled && 'none'};
 `
 
 export const HeaderContainer = styled.div`
@@ -79,8 +82,10 @@ export const StationColumnContainer = styled.div`
     overflow: auto;
     border-radius: .4rem;
     background-color: ${props =>props.theme.bg.secondary};
-    justify-content: start;
-    align-content: start;
+    justify-content: center;
+    align-content: center;
+    pointer-events: ${props => props.disabled && 'none'};
+
 `
 
 export const StationName = styled.span`

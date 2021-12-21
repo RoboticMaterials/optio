@@ -10,6 +10,7 @@ import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 import {throttle, debounce} from 'lodash'
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
+import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from './cardss.style'
@@ -30,6 +31,7 @@ const Cardss = (props) => {
     const size = useWindowSize()
     const viewHeight = size.height*0.8
     const dispatch = useDispatch()
+    const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const themeContext = useContext(ThemeContext)
     const process = useSelector(state => state.processesReducer.processes)[id] || {}
@@ -66,7 +68,7 @@ const Cardss = (props) => {
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
           setAllowHomeDrop(true)
-  				let fieldDiv = document.getElementById(draggingLotId)
+  				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.display = 'none'
   		}
   	}, [dragIndex, clientY])
@@ -122,12 +124,12 @@ const Cardss = (props) => {
     }
 
 
-    const debouncedDrag = useCallback(throttle(onDragClient, 50), []);
+    const debouncedDrag = useCallback(throttle(onDragClient, 60), []);
 
     const dragIndexSearch = (stationId) => {
       if(!!draggingLotId && !!stationId){
         for(const i in orderedIds[id][stationId]){
-          let ele = document.getElementById(orderedIds[id][stationId][i])
+          let ele = document.getElementById(orderedIds[id][stationId][i] + stationId)
           let midY = (ele?.getBoundingClientRect().bottom + ele?.getBoundingClientRect().top)/2
           let draggingY = clientY + mouseOffsetY
           if(!!ele && midY> draggingY){
@@ -137,7 +139,7 @@ const Cardss = (props) => {
             return orderedIds[id][stationId].length
           }
         }
-        if(!orderedIds[id][stationId] || [id][stationId].length ===0) return 0
+        if(!orderedIds[id][stationId] || orderedIds[id][stationId].length ===0) return 0
       }
     }
 
@@ -163,21 +165,27 @@ const Cardss = (props) => {
 
       if(startId === currId) {
         tempDropNodes.push(currId)
+        return currId
       }
 
         const forwardsTraverseCheck = (currentStationID) => {
           if(endNode.includes(currentStationID) && currId =='FINISH'){//If you can traverse to the end node, also allow finish column
             tempDropNodes.push(currId)
+            return currId
           }
           else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
             //if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
             if(startNodes.includes(currId)){
               tempDropNodes.push(currId)
+              return currId
             }
             else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
               for(const ind in startNodes){
                 const canMove = forwardsTraverseCheck(startNodes[ind])
-                if(!!canMove) tempDropNodes.push(currId)
+                if(!!canMove){
+                  tempDropNodes.push(currId)
+                  return currId
+                }
               }
             }
           }
@@ -189,12 +197,16 @@ const Cardss = (props) => {
                 //the merge station as merge functions need this to find routeTravelled
                 lastStationTraversed = nextRoutes[ind].load
                 tempDropNodes.push(currId)
+                return currId
               }
               else{
                 const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
                 if(mergingRoutes.length === 1){
                   const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
-                  if(!!canMove) tempDropNodes.push(currId)
+                  if(!!canMove) {
+                    tempDropNodes.push(currId)
+                    return currId
+                  }
                 }
               }
             }
@@ -204,15 +216,18 @@ const Cardss = (props) => {
         const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
           if(startNodes.includes(currentStationID) && currId === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
             tempDropNodes.push(currId)
+            return currId
           }
 
           else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
             if(endNode.includes(currId)){
               tempDropNodes.push(currId)
+              return currId
               }
             else{
               const canMove = backwardsTraverseCheck(endNode)
               if(!!canMove) tempDropNodes.push(currId)
+              return currId
             }
           }
 
@@ -223,20 +238,27 @@ const Cardss = (props) => {
               if(mergingRoutes[ind].load === currId) {
                 if(dispersingRoutes.length === 1 || dispersingRoutes[0].divergeType!=='split' || !dispersingRoutes[0].divergeType ){
                   tempDropNodes.push(currId)
+                  return currId
                 }
               }
               else{
                   if(dispersingRoutes.length === 1 || !dispersingRoutes[0].divergeType || dispersingRoutes[0].divergeType!=='split'){
                     const canMove = backwardsTraverseCheck(mergingRoutes[ind].load)
-                    if(!!canMove) tempDropNodes.push(currId)
+                    if(!!canMove) {
+                      tempDropNodes.push(currId)
+                      return currId
+                    }
                   }
                 }
               }
             }
           }
-          forwardsTraverseCheck(startId)
-          backwardsTraverseCheck(startId)
           setDropNodes(tempDropNodes)
+          let lastTraversedForwards = forwardsTraverseCheck(startId)
+          if(!!lastTraversedForwards) return lastTraversedForwards
+
+          let lastTraversedBackwards = backwardsTraverseCheck(startId)
+          if(!!lastTraversedBackwards) return lastTraversedBackwards
         }
 
     const handleDrop = () => {
@@ -254,7 +276,33 @@ const Cardss = (props) => {
         }
       }
       else if((dragIndex || dragIndex ===0) && dragFromStation!==draggingStationId){
+        //update ID array
+        let newIds = orderedIds
+        if(!newIds[id][draggingStationId]) newIds[id][draggingStationId] = []
+        if(!newIds[id][draggingStationId].includes(draggingLotId)){
+          newIds[id][draggingStationId].splice(dragIndex, 0, newIds[id][dragFromStation][startIndex])
+        }
+        newIds[id][dragFromStation].splice(startIndex,1)
+        if(newIds[id][dragFromStation].length === 0) delete newIds[id][dragFromStation]
+        setOrderedIds(newIds)
 
+        //post new lot bins
+        let lastStn = shouldAcceptDrop(draggingLotId, dragFromStation, draggingStationId)
+        let updatedLot = cards[draggingLotId]
+        let stationBeforeMerge = !!lastStn ? lastStn : dragFromStation
+        updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[dragFromStation]?.count, stationBeforeMerge, draggingStationId, process, routes, stations)
+        updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[dragFromStation]?.count, dragFromStation, process, routes)
+        if(!!updatedLot.bins[dragFromStation] && !updatedLot.bins[dragFromStation]['count']){
+          updatedLot.bins[dragFromStation] = {
+            ...updatedLot.bins[dragFromStation],
+            count: 0
+          }
+        }
+        //Bin exists but nothing in it. Delete the bin as this messes various things up.
+        if(!!updatedLot.bins[dragFromStation] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[dragFromStation]).length === 1){
+          delete updatedLot.bins[dragFromStation]
+        }
+        let result = dispatchPutCard(updatedLot, updatedLot._id)
       }
     }
 
@@ -310,7 +358,7 @@ const Cardss = (props) => {
                     setMouseOffsetY(offsetY)
                     setMouseOffsetX(offsetX)
 
-                    e.target.style.opacity = '0.001'
+                    e.target.style.opacity = '0.5'
 
                     for(const i in process.flattened_stations){
                       shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
@@ -319,7 +367,7 @@ const Cardss = (props) => {
                   }}
                   onDragEnd = {(e)=>{
                     handleDrop()
-                    let lotDiv = document.getElementById(draggingLotId)
+                    let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                     lotDiv.style.display = 'flex'//restore
                     setDraggingLotId(null)
                     setDragIndex(null)
@@ -339,7 +387,7 @@ const Cardss = (props) => {
                     divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
                   />
                 }
-                <div id = {cardId}>
+                <div id = {cardId + stationId}>
                   <LotContainer
                     containerStyle = {{margin: '0.5rem'}}
                     selectable={true}
@@ -347,7 +395,7 @@ const Cardss = (props) => {
                     totalQuantity={card.totalQuantity}
                     lotNumber={card.lotNum}
                     name={card.name}
-                    count={card.bins[stationId].count}
+                    count={!!card.bins[stationId] ? card.bins[stationId].count : 1}
                     lotId={card._id}
                     binId={stationId}
                     containerStyle={{
@@ -359,7 +407,7 @@ const Cardss = (props) => {
                       borderRadius: '0.2rem',
                       padding: '0.2rem',
                       margin: '.4rem',
-                      width: '96%',
+                      width: '22rem',
                       pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                     }}
                     />
@@ -390,6 +438,7 @@ const Cardss = (props) => {
         Object.values(process.flattened_stations).map((station) => {
           return (
             <div
+              style = {{pointerEvents: !dropNodes.includes(station.stationID) && draggingLotId && 'none'}}
               onDragEnter = {(e)=>{
                 setDragIndex(dragIndexSearch(station.stationID))
                 setDraggingStationId(station.stationID)

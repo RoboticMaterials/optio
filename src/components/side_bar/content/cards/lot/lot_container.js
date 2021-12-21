@@ -68,7 +68,7 @@ const LotContainer = (props) => {
     [lotTemplateId, lot, dashboard]
   );
 
-  if (bins === undefined || !(binId in bins)) { return null }
+  if (bins === undefined) { return null }
   const { count=0, ...partials } = bins[binId] || {};
 
   return (
