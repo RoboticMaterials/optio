@@ -220,26 +220,22 @@ const Cardss = (props) => {
 
       if(startId === currId) {
         tempDropNodes.push(currId)
-        return currId
       }
 
         const forwardsTraverseCheck = (currentStationID) => {
           if(endNode.includes(currentStationID) && currId =='FINISH'){//If you can traverse to the end node, also allow finish column
             tempDropNodes.push(currId)
-            return currId
           }
           else if(currentStationID === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)){
             //if lot is in queue and station is one of the the start nodes and start disperse isnt split then allow move
             if(startNodes.includes(currId)){
               tempDropNodes.push(currId)
-              return currId
             }
             else{//If the station is not one of the start nodes still traverse forwards from all the start nodes to see if you can get to station
               for(const ind in startNodes){
                 const canMove = forwardsTraverseCheck(startNodes[ind])
                 if(!!canMove){
                   tempDropNodes.push(currId)
-                  return currId
                 }
               }
             }
@@ -252,7 +248,6 @@ const Cardss = (props) => {
                 //the merge station as merge functions need this to find routeTravelled
                 lastStationTraversed = nextRoutes[ind].load
                 tempDropNodes.push(currId)
-                return currId
               }
               else{
                 const mergingRoutes = processRoutes.filter((route) => route.unload === nextRoutes[ind].unload);
@@ -260,7 +255,6 @@ const Cardss = (props) => {
                   const canMove = forwardsTraverseCheck(nextRoutes[ind].unload)
                   if(!!canMove) {
                     tempDropNodes.push(currId)
-                    return currId
                   }
                 }
               }
@@ -271,18 +265,15 @@ const Cardss = (props) => {
         const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
           if(startNodes.includes(currentStationID) && currId === 'QUEUE' && (process.startDivergeType!=='split' || startNodes.length ===1)) {//can traverse back to queue
             tempDropNodes.push(currId)
-            return currId
           }
 
           else if(currentStationID === 'FINISH'){//dragging from Finish. Can drag into traversed stations provided theyre not a merge station
             if(endNode.includes(currId)){
               tempDropNodes.push(currId)
-              return currId
               }
             else{
               const canMove = backwardsTraverseCheck(endNode)
               if(!!canMove) tempDropNodes.push(currId)
-              return currId
             }
           }
 
@@ -308,12 +299,11 @@ const Cardss = (props) => {
               }
             }
           }
+          forwardsTraverseCheck(startId)
+          backwardsTraverseCheck(startId)
           setDropNodes(tempDropNodes)
-          let lastTraversedForwards = forwardsTraverseCheck(startId)
-          if(!!lastTraversedForwards) return lastTraversedForwards
+          return lastStationTraversed
 
-          let lastTraversedBackwards = backwardsTraverseCheck(startId)
-          if(!!lastTraversedBackwards) return lastTraversedBackwards
         }
 
     const handleDrop = () => {
@@ -357,7 +347,7 @@ const Cardss = (props) => {
         if(!!updatedLot.bins[dragFromStation] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[dragFromStation]).length === 1){
           delete updatedLot.bins[dragFromStation]
         }
-        let result = dispatchPutCard(updatedLot, updatedLot._id)
+        //let result = dispatchPutCard(updatedLot, updatedLot._id)
       }
     }
 
@@ -395,7 +385,6 @@ const Cardss = (props) => {
           orderedIds[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
             let partBins = card.bins[stationId] || {}
-            console.log(partBins)
             if(Object.values(partBins).length === 1){
               return (
                 <styled.CardContainer
