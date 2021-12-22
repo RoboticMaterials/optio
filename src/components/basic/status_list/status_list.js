@@ -26,10 +26,10 @@ const StatusList = (props) => {
 
 	return (
 		<styled.Container>
-			<StatusListHeader
+			{/* <StatusListHeader
 				onBack={onBack}
 				onCanceleClick={onCanceleClick}
-			/>
+			/> */}
 
 			<StatusListBody
 				displayNames={displayNames}

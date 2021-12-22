@@ -21,10 +21,11 @@ export const Container = styled(Modal)`
   
   min-width: 95%;
   max-width: 95%;
-  max-height: 95%;
+  // max-height: 95%;
+  height: 95%;
   
   // height: ${props => props.formEditor && "95%"};
-  min-height: 95%;
+  // min-height: 95%;
   // height: 95%;
   
   color: ${props => props.theme.bg.octonary};

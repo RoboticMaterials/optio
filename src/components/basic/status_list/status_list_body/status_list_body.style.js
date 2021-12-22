@@ -1,13 +1,20 @@
 import styled, {css} from "styled-components"
 import {bodyStyle, containerLayout, textSpanStyle} from "../../../../common_css/layout";
 
+
 export const Container = styled.div`
-  //padding: 1rem;
-  //background: green;
-  ${containerLayout};
-  ${bodyStyle};
-  overflow-y: auto;
-  overflow-x: hidden;
+display: flex;
+${containerLayout};
+align-self: center;
+overflow: hidden;
+// border-radius: 0 0 1rem 1rem;
+flex-direction: column;
+z-index: 5000;
+overflow: auto;
+// min-height: 90vh;
+// height: 100%;
+width: 100%;
+background: ${props => props.theme.bg.primary};
 `
 
 export const RowTitles = styled.div`

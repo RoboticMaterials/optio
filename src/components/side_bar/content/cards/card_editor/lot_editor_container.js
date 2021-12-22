@@ -341,7 +341,7 @@ const LotEditorContainer = (props) => {
             let newLot = convertPastePayloadToLot(
                 currMappedLot,
                 lotTemplate,
-                props.processId
+                params.id
             ); // convert to lot format
             tempMappedValues.push(newLot);
 
@@ -1101,8 +1101,9 @@ const LotEditorContainer = (props) => {
             case 'create':
                 onBack = null;
                 title = 'Creating Lot'
+                break;
             case 'paste':
-                onBack = () => history.push(`/lots/${params.id}/editing`)
+                onBack = () => history.push(`/lots/${params.id}/create`)
                 title = 'Paste'
                 break;
             case 'validate':
@@ -1182,7 +1183,7 @@ const LotEditorContainer = (props) => {
                                 await createLot(i);
                             }
                             setPasteTable([]);
-                            props.close();
+                            history.push(`/lots/summary`)
                         }}
                         onCreateAllWithoutWarningClick={async () => {
                             for (let i = 0; i < mappedValues.length; i++) {
@@ -1200,7 +1201,7 @@ const LotEditorContainer = (props) => {
                             setMappedValues([]);
 
                             if (createdLot) {
-                                props.close();
+                                history.push(`/lots/${params.id}/editing`)
                             }
                         }}
                         onBack={() => {
@@ -1339,7 +1340,7 @@ const LotEditorContainer = (props) => {
             isOpen={true}
             onRequestClose={() => {
                 // close()
-                props.close();
+                history.push('/lots/summary')
             }}
             contentLabel="Lot Editor Form"
             style={{
@@ -1371,6 +1372,7 @@ const LotEditorContainer = (props) => {
                             setResetPasteTable(false);
                         }, 250);
                         setDisablePasteModal(false);
+                        history.push(`/lots/${params.id}/paste`)
                     }}
                     handleOnClick1={() => {
                         setShowSimpleModal(false);
@@ -1392,6 +1394,7 @@ const LotEditorContainer = (props) => {
                 </SimpleModal>
             )}
 
+            
             {renderHeader}
             
             {renderContent}
