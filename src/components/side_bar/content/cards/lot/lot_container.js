@@ -29,7 +29,8 @@ const LotContainer = (props) => {
     onRightClickDeleteLot,
     // quantity,
     ...rest
-  } = props;
+  } = props
+
   const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
@@ -49,6 +50,7 @@ const LotContainer = (props) => {
     flags,
     process_id: processId,
   } = lot || {};
+
   const routes = useSelector((state) => {
     return state.tasksReducer.tasks;
   });
@@ -103,36 +105,41 @@ const LotContainer = (props) => {
                   }}
               />
           }
-          {Object.entries(partials).map(([routeId, quantity]) => (
-              <>
-                  {0<quantity && !!isDashboard &&
-                      <Lot
-                          lotDisabled={true}
-                          isDashboard={!!isDashboard}
-                          processName={processName}
-                          stationName={stationName}
-                          templateValues={templateValues}
-                          totalQuantity={totalQuantity}
-                          lotNumber={lotNum}
-                          flags={flags || []}
-                          enableFlagSelector={enableFlagSelector}
-                          name={name + ` (${stations[routes[routeId]?.load]?.name})`}
-                          count={quantity}
-                          loopCount={lot.loopCount}
-                          id={lotId}
-                          isSelected={false}
-                          selectable={false}
-                          onClick={() => {}}
-                          {...rest}
-                          containerStyle={{
-                          width: "80%",
-                          margin: ".5rem auto .5rem auto",
-                          ...containerStyle,
-                          }}
-                      />
-                  }
-              </>
-          ))}
+          {Object.values(partials)>0 &&
+            <>
+            {Object.entries(partials).map(([routeId, quantity]) => (
+                <>
+                    {0<quantity && !!isDashboard &&
+                        <Lot
+                            lotDisabled={true}
+                            isDashboard={!!isDashboard}
+                            processName={processName}
+                            stationName={stationName}
+                            templateValues={templateValues}
+                            totalQuantity={totalQuantity}
+                            lotNumber={lotNum}
+                            flags={flags || []}
+                            enableFlagSelector={enableFlagSelector}
+                            name={name + ` (${stations[routes[routeId]?.load]?.name})`}
+                            count={quantity}
+                            loopCount={lot.loopCount}
+                            id={lotId}
+                            isSelected={false}
+                            selectable={false}
+                            onClick={() => {}}
+                            {...rest}
+                            containerStyle={{
+                            width: "80%",
+                            margin: ".5rem auto .5rem auto",
+                            ...containerStyle,
+                            }}
+                        />
+                    }
+                </>
+            ))
+          }
+        </>
+      }
     </styled.LotFamilyContainer>
   )
 };

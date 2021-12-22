@@ -82,8 +82,8 @@ export const StationColumnContainer = styled.div`
     overflow: auto;
     border-radius: .4rem;
     background-color: ${props =>props.theme.bg.secondary};
-    justify-content: center;
-    align-content: center;
+    justify-content: start;
+    align-content: start;
     pointer-events: ${props => props.disabled && 'none'};
 
 `

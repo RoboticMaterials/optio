@@ -20,8 +20,8 @@ export const Body = styled.div`
 	// max-width: 50%;
 	overflow: hidden;
 	position: relative;
-	
-	
+
+
 	background: ${props => props.theme.bg.secondary};
   box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
@@ -29,19 +29,19 @@ export const Body = styled.div`
 export const CardZoneContainer = styled.div`
   //flex: 1;
   //position: relative;
-  
+
   display: flex;
   align-items: stretch;
-  
+
 
   background: ${props => props.theme.bg.primary};
   box-shadow: ${props => props.theme.cardShadow};
-  
+
   margin: 1.5rem;
   border-radius: 0.5rem;
 
   overflow-x: scroll;
-  
+
   //background: red;
 
   /* Let's get this party started */
@@ -83,24 +83,17 @@ export const AddCardButton = styled.button`
 // LIST
 export const RoutesListContainer = styled.div`
     background: green;
-    
+
     width: 100%;
     overflow: scroll;
-    
-    
+
+
     display: flex;
     flex-direction: row;
     flex: 1;
     justify-content: flex-start;
-    
+
     padding: 1rem;
     padding-right: 5rem;
     padding-bottom: 5rem;
 `
-
-
-
-
-
-
-

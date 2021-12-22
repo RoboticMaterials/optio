@@ -90,6 +90,7 @@ const SideBar = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
+    const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -343,8 +344,8 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            if (subpage === 'lots') {
-                content = <Cardss id = {id}/>
+            if (!!subpage && !!summaryProcess) {
+                content = <Cardss id = {summaryProcess}/>
             } else {
                 content = <LotSummarySelector/>
             }

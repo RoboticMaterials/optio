@@ -9,3 +9,4 @@ export const DRAG_FROM_BIN = "DRAG_FROM_BIN"
 export const LOT_DIV_HEIGHT = 'LOT_DIV_HEIGHT'
 export const HIDE_CARD = 'HIDE_CARD'
 export const SET_CLIENTY = 'SET_CLIENTY'
+export const SUMMARY_PROCESS = 'SUMMARY_PROCESS'
