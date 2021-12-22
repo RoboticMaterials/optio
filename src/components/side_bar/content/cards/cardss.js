@@ -65,7 +65,7 @@ const Cardss = (props) => {
     const [previousProcessId, setPreviousProcessId] = useState(null)
     useEffect(() => {
         if(processCards) setCards(processCards)
-  	}, [])
+  	}, [params.subpage])
 
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
@@ -347,7 +347,7 @@ const Cardss = (props) => {
         if(!!updatedLot.bins[dragFromStation] && updatedLot.bins[binId]['count'] === 0 && Object.values(updatedLot.bins[dragFromStation]).length === 1){
           delete updatedLot.bins[dragFromStation]
         }
-        //let result = dispatchPutCard(updatedLot, updatedLot._id)
+        let result = dispatchPutCard(updatedLot, updatedLot._id)
       }
     }
 
