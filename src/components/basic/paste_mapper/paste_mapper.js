@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useRef, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from 'react-router-dom'
 
 import PropTypes from "prop-types";
 import { Formik } from "formik";
@@ -40,6 +41,9 @@ const PasteMapper = (props) => {
     const {
         values,
     } = formikProps;
+
+    const history = useHistory();
+    const params = useParams();
 
     const [table, setTable] = useState(values.table)
     const [disableMergeButton, setDisableMergeButton] = useState(false)
@@ -305,11 +309,11 @@ const PasteMapper = (props) => {
           />
         }
         <styled.Container>
-            <styled.Header>
+            {/* <styled.Header>
                 <BackButton schema={'lots'} onClick={onCancel}/>
                 <styled.Title>Upload Lot Data</styled.Title>
                 <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
-            </styled.Header>
+            </styled.Header> */}
 
             <styled.Body>
                 <styled.ContentContainer>
@@ -347,6 +351,7 @@ const PasteMapper = (props) => {
                     onClick={()=>{
                         const payload = createPastePayload(table, mappedFields)
                         onCreateClick(payload)
+                        history.push(`/lots/${params.id}/validate`)
                     }}
                     style={{minWidth: '14rem', minHeight: '3rem'}}
                 />

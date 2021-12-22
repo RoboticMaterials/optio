@@ -792,7 +792,8 @@ const FormComponent = (props) => {
                     style={{
                         flex: 1,
                         alignItems: "stretch",
-                        overflow: "hidden",
+                        overflow: "auto",
+                        height: '100%',
                     }}
                 >
                     {showTemplateSelector && formMode === FORM_MODES.CREATE &&(
@@ -1209,7 +1210,7 @@ const FormComponent = (props) => {
     };
 
     return (
-        <>
+        <styled.Container>
             {showFieldModal && (
                 <SimpleModal
                     content={
@@ -1266,7 +1267,7 @@ const FormComponent = (props) => {
                 onSubmitError={() => {}}
                 formik={formikProps}
             />
-        </>
+        </styled.Container>
     );
 };
 

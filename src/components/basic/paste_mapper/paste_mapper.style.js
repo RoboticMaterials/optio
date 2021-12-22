@@ -39,13 +39,13 @@ export const Container = styled.div`
     ${containerLayout};
     align-self: center;
     overflow: hidden;
-    border-radius: 1rem;
+    border-radius: 0 0 1rem 1rem;
     flex-direction: column;
     z-index: 5000;
-    overflow: hidden;
-    min-height: 90vh;
-    height: 90vh;
-    width: 90vw;
+    overflow: auto;
+    // min-height: 90vh;
+    // height: 100%;
+    width: 100%;
     background: ${props => props.theme.bg.primary};
 `
 
@@ -109,9 +109,6 @@ export const TableContainer = styled.div`
     padding: 1rem;
     overflow: auto;
     flex: 1;
-
-
-
     ${scrollCss};
 
 

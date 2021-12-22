@@ -117,13 +117,19 @@ export const TheBody = styled.div`
 `
 
 export const ScrollContainer = styled.div`
-  position: relative;
-  overflow: auto;
-  flex: 1;
-  display: flex;
-  //height: 50rem;
-  flex-direction: column;
-  //background: blue;
+	position: relative;
+	overflow: auto;
+	flex: 1;
+	display: flex;
+	// height: 50rem;
+	flex-direction: column;
+	//background: blue;
+	display: flex;
+
+	z-index: 5000;
+	height: 100%;
+	width: 100%;
+	// background: ${props => props.theme.bg.primary};
 `
 export const ProcessFieldContainer = styled.div`
   //margin-bottom: 1rem;
@@ -132,6 +138,7 @@ export const ProcessFieldContainer = styled.div`
   padding: 1rem;
   padding-bottom: 0;
   //width: auto;
+  
 `
 
 
@@ -252,14 +259,18 @@ const mainCss = css`
 `
 
 export const StyledForm = styled(Form)`
-    ${mainCss};
-<<<<<<< HEAD
-	transition: all .5s ease;
-=======
-
-	transition: all .1s ease;
->>>>>>> 2dab0dd111e529e66c41e21a853fd2ec3a83bddc
-	filter: ${props => props.loading && "blur(5px)"};
+	display: flex;
+	${containerLayout};
+	align-self: center;
+	overflow: hidden;
+	border-radius: 0 0 1rem 1rem;
+	flex-direction: column;
+	z-index: 5000;
+	overflow: hidden;
+	// min-height: 90vh;
+	height: 100%;
+	width: 100%;
+	background: ${props => props.theme.bg.primary};
 `;
 
 export const SubContainer = styled.div`
