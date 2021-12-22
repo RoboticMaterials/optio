@@ -83,6 +83,14 @@ const Cardss = (props) => {
             if(!tempIds[id][statId]) tempIds[id][statId] = []
             tempIds[id][statId].push(cards[j]._id)
           }
+          if(!!processCards[j].bins['QUEUE']){
+            if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
+            tempIds[id]['QUEUE'].push(cards[j]._id)
+          }
+          if(!!processCards[j].bins['FINISH']){
+            if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
+            tempIds[id]['FINISH'].push(cards[j]._id)
+          }
         }
       }
       setOrderedIds(tempIds)
@@ -95,14 +103,28 @@ const Cardss = (props) => {
     useEffect(() => {//how many cards are in each column
       let tempCardCount = {}
       let tempPartCount = {}
+
+      let queueCardCount = 0
+      let queuePartCount = 0
+      let finishCardCount = 0
+      let finishPartCount = 0
       for(const i in process.flattened_stations){
         let cardCount = 0
         let partCount = 0
+
         let id = process.flattened_stations[i].stationID
         for(const j in cards){
           if(!!cards[j].bins[id]){
             cardCount+=1
             partCount+=cards[j].bins[id].count
+          }
+          if(!!cards[j].bins['QUEUE']){
+            queueCardCount+=1
+            queuePartCount+=cards[j].bins['QUEUE'].count
+          }
+          if(!!cards[j].bins['FINISH']){
+            finishCardCount+=1
+            finishPartCount+=cards[j].bins['FINISH'].count
           }
         }
         tempCardCount = {
@@ -113,6 +135,18 @@ const Cardss = (props) => {
           ...tempPartCount,
           [id]: partCount
         }
+      }
+
+      tempPartCount = {
+        ...tempPartCount,
+        ['QUEUE']: queuePartCount,
+        ['FINISH']: finishPartCount
+      }
+
+      tempCardCount = {
+        ...tempPartCount,
+        ['QUEUE']: queueCardCount,
+        ['FINISH']: finishCardCount
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
@@ -358,7 +392,7 @@ const Cardss = (props) => {
                     setMouseOffsetY(offsetY)
                     setMouseOffsetX(offsetX)
 
-                    e.target.style.opacity = '0.5'
+                    e.target.style.opacity = '0.001'
 
                     for(const i in process.flattened_stations){
                       shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
