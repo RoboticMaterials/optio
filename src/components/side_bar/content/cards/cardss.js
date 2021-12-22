@@ -4,7 +4,7 @@ import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
 
 // external functions
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
@@ -29,6 +29,9 @@ const Cardss = (props) => {
     } = props
 
     const size = useWindowSize()
+    let params = useParams()
+    const history = useHistory()
+
     const viewHeight = size.height*0.8
     const dispatch = useDispatch()
     const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
@@ -60,6 +63,7 @@ const Cardss = (props) => {
     const [mouseOffsetY, setMouseOffsetY] = useState(null)
   	const [mouseOffsetX, setMouseOffsetX] = useState(null)
     const [dropNodes, setDropNodes] = useState([])
+    const [previousProcessId, setPreviousProcessId] = useState(null)
 
     useEffect(() => {
       if(processCards) setCards(processCards)
@@ -83,11 +87,11 @@ const Cardss = (props) => {
             if(!tempIds[id][statId]) tempIds[id][statId] = []
             tempIds[id][statId].push(cards[j]._id)
           }
-          if(!!processCards[j].bins['QUEUE']){
+          if(!!processCards[j].bins['QUEUE'] && i == 0){
             if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
             tempIds[id]['QUEUE'].push(cards[j]._id)
           }
-          if(!!processCards[j].bins['FINISH']){
+          if(!!processCards[j].bins['FINISH'] && i == 0){
             if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
             tempIds[id]['FINISH'].push(cards[j]._id)
           }
@@ -118,11 +122,11 @@ const Cardss = (props) => {
             cardCount+=1
             partCount+=cards[j].bins[id].count
           }
-          if(!!cards[j].bins['QUEUE']){
+          if(!!cards[j].bins['QUEUE'] && i == 0){
             queueCardCount+=1
             queuePartCount+=cards[j].bins['QUEUE'].count
           }
-          if(!!cards[j].bins['FINISH']){
+          if(!!cards[j].bins['FINISH'] && i == 0){
             finishCardCount+=1
             finishPartCount+=cards[j].bins['FINISH'].count
           }
@@ -144,7 +148,7 @@ const Cardss = (props) => {
       }
 
       tempCardCount = {
-        ...tempPartCount,
+        ...tempCardCount,
         ['QUEUE']: queueCardCount,
         ['FINISH']: finishCardCount
       }
@@ -178,9 +182,28 @@ const Cardss = (props) => {
     }
 
     const handleAddLotClick = (processId) => {
-        setShowLotEditor(true)
+      if (params.page === 'processes') {
+          setPreviousProcessId(params.id)
+      }
+      history.push(`/lots/${id}/create`)
     }
 
+    const onShowCardEditor = (card) => {
+        if (card) {
+            if (params.page === 'processes') {
+                setPreviousProcessId(params.id)
+            }
+            history.push(`/lots/${card.cardId}/editing`)
+        } else {
+            if (!!previousProcessId) {
+                history.push(`/processes/${previousProcessId}/lots`)
+                setPreviousProcessId(null)
+            } else {
+                history.push('/lots/summary')
+            }
+
+        }
+    }
 
     //This function is now more limiting with split/merge
     // -dont allow moving lot to next stations(s) if current station disperses a lot
@@ -555,7 +578,7 @@ const Cardss = (props) => {
             debouncedDrag(e)
           }}
         >
-          {showLotEditor &&
+          {params.id !== 'summary' && params.subpage !== 'lots' &&
             renderLotEditor()
           }
           {renderQueue()}
