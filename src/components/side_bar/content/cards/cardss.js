@@ -86,19 +86,21 @@ const Cardss = (props) => {
       if(!orderedCardIds[id]){
         let tempIds = {}
         tempIds[id] = {}
+        if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
+        if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
+
         for(const i in process.flattened_stations){
           let statId = process.flattened_stations[i].stationID
           if(!tempIds[id][statId]) tempIds[id][statId] = []
+
           for(const j in processCards){
             if(!!processCards[j].bins[statId]){
               tempIds[id][statId].push(cards[j]._id)
             }
             if(!!processCards[j].bins['QUEUE'] && i == 0){
-              if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
               tempIds[id]['QUEUE'].push(cards[j]._id)
             }
             if(!!processCards[j].bins['FINISH'] && i == 0){
-              if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
               tempIds[id]['FINISH'].push(cards[j]._id)
             }
           }
@@ -191,7 +193,7 @@ const Cardss = (props) => {
             return orderedIds[id][stationId].length
           }
         }
-        if(!orderedIds[id][stationId] || orderedIds[id][stationId].length ===0) return 0
+        return 0
       }
     }
 
@@ -436,7 +438,7 @@ const Cardss = (props) => {
     }
 
     const renderCards = (stationId) => {
-      if(orderedIds && orderedIds[id] && orderedIds[id][stationId]){
+      if(orderedIds && orderedIds[id] && orderedIds[id][stationId] && orderedIds[id][stationId].length>0){
         return(
           orderedIds[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
@@ -636,7 +638,7 @@ const Cardss = (props) => {
           })
         )
       }
-        else if(orderedIds && orderedIds[id] && !orderedIds[id][stationId] && draggingStationId===stationId){
+        else if(orderedIds && orderedIds[id] && draggingStationId===stationId){
           return (
               <styled.DropContainer
                 divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
@@ -676,6 +678,7 @@ const Cardss = (props) => {
       return (
         <div
           onDragEnter = {(e)=>{
+            setDragIndex(dragIndexSearch('QUEUE'))
             setDraggingStationId('QUEUE')
           }}
         >
@@ -699,6 +702,7 @@ const Cardss = (props) => {
       return (
         <div
           onDragEnter = {(e)=>{
+            setDragIndex(dragIndexSearch('FINISH'))
             setDraggingStationId('FINISH')
           }}
         >

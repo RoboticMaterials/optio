@@ -174,8 +174,6 @@ const FormComponent = (props) => {
         await dispatch(putCard(card, ID));
     const dispatchDeleteCard = async (cardId, processId) =>
         await dispatch(deleteCard(cardId, processId));
-    const dispatchPostSettings = (settings) =>
-         dispatch(postSettings(settings));
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool));
     const dispatchPostLocalSettings = (settings) =>
         dispatch(postLocalSettings(settings));
@@ -1340,6 +1338,8 @@ const LotEditor = (props) => {
     const onPostCard = async (card) => await dispatch(postCard(card));
     const onGetCard = async (cardId) => await dispatch(getCard(cardId));
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID));
+    const dispatchPostSettings = (settings) =>
+         dispatch(postSettings(settings));
     const dispatchGetLotTemplates = async () =>
         await dispatch(getLotTemplates());
     const dispatchSetSelectedLotTemplate = (id) =>
