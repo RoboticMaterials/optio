@@ -131,15 +131,32 @@ const Column = (props) => {
 			let accDrop = shouldAcceptDrop(draggingLotId, dragFromBin, station_id)
 			setAcceptDrop(accDrop)
 		}
+<<<<<<< Updated upstream
+	}, [draggingLotId])
+=======
+		if(!draggingLotId) setHighlightStation(null)
+
 	}, [draggingLotId])
 
 	useEffect(() => {
-		if(draggingLotId === null && !!hideCard && station_id === draggingStationId && processId === hideCard.process_id){
-			let tempCards = deepCopy(cards)
-			tempCards.push(hideCard)
-			setCards(tempCards)
+		if(draggingLotId === null && !!hideCard && processId === hideCard.process_id){
+>>>>>>> Stashed changes
+
+			if(station_id ===draggingStationId){
+				let tempCards = deepCopy(cards)
+				tempCards.push(hideCard)
+				setCards(tempCards)
+			}
+			else if(station_id===dragFromBin){
+				let tempCards = deepCopy(cards)
+				let ind = tempCards.findIndex(card => card.cardId === hideCard.cardId)
+				tempCards.splice(ind,1)
+				setCards(tempCards)
+			}
 		}
+		if(!!draggingStationId) setDraggingStationId(null)
 	}, [draggingLotId])
+
 
 
 	//This function is now more limiting with split/merge
@@ -397,7 +414,6 @@ const Column = (props) => {
 						result.then((res) => {
 							dispatchSetHideCard(null)
 							dispatchSetDragFromBin(null)
-							dispatchSetDraggingStationId(null)
 					})
 				}
 			}
