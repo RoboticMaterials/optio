@@ -37,6 +37,8 @@ import LotCreatorForm from "../lot_template_editor/template_form";
 import ConfirmDeleteModal from "../../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import BarcodeModal from "../../../../basic/modals/barcode_modal/barcode_modal";
 import LotHistory from '../lot_history/lot_history';
+import { deepCopy } from '../../../../../methods/utils/utils'
+
 // actions
 import {
     deleteCard,
@@ -49,6 +51,10 @@ import {
     getLotTemplates,
     setSelectedLotTemplate,
 } from "../../../../../redux/actions/lot_template_actions";
+
+import {
+  postSettings
+} from '../../../../../redux/actions/settings_actions'
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
 
 // constants
@@ -168,6 +174,8 @@ const FormComponent = (props) => {
         await dispatch(putCard(card, ID));
     const dispatchDeleteCard = async (cardId, processId) =>
         await dispatch(deleteCard(cardId, processId));
+    const dispatchPostSettings = (settings) =>
+         dispatch(postSettings(settings));
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool));
     const dispatchPostLocalSettings = (settings) =>
         dispatch(postLocalSettings(settings));
@@ -786,7 +794,7 @@ const FormComponent = (props) => {
                     }}
                     barcodeId={lotNumber}
                 />
-                
+
 
                 <styled.RowContainer
                     style={{
@@ -1325,6 +1333,8 @@ const LotEditor = (props) => {
     const selectedLotTemplatesId = useSelector((state) => {
         return state.lotTemplatesReducer.selectedLotTemplatesId;
     });
+    const orderedCardIds = useSelector(state => state.settingsReducer.settings.orderedCardIds) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     // actions
     const dispatch = useDispatch();
     const onPostCard = async (card) => await dispatch(postCard(card));
@@ -1670,11 +1680,17 @@ const LotEditor = (props) => {
                                             totalQuantity: bins["QUEUE"]?.count,
                                             syncWithTemplate,
                                         };
-
                                         requestResult = await onPostCard(
                                             submitItem
                                         );
-
+                                        if(orderedCardIds && serverSettings){//update orderdIds
+                                          let tempIds = deepCopy(orderedCardIds)
+                                          tempIds[processId]['QUEUE'].push(requestResult._id)
+                                          dispatchPostSettings({
+                                            ...serverSettings,
+                                            orderedCardIds: tempIds
+                                          })
+                                        }
                                         if (!(requestResult instanceof Error)) {
                                             const { _id = null } =
                                                 requestResult || {};

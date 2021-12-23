@@ -11,6 +11,7 @@ import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_ac
 import {throttle, debounce} from 'lodash'
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
+import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 
 // styles
 import * as styled from './cardss.style'
@@ -20,6 +21,7 @@ import useWindowSize from '../../../../hooks/useWindowSize'
 import {isEmpty} from "../../../../methods/utils/object_utils";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import { deepCopy } from '../../../../methods/utils/utils'
+import { isArray } from "../../../../methods/utils/array_utils";
 
 
 const Cardss = (props) => {
@@ -31,16 +33,19 @@ const Cardss = (props) => {
     const size = useWindowSize()
     let params = useParams()
     const history = useHistory()
-    const viewHeight = size.height*0.8
+    const viewHeight = size.height*0.7
+
     const dispatch = useDispatch()
     const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
 
     const themeContext = useContext(ThemeContext)
     const process = useSelector(state => state.processesReducer.processes)[id] || {}
+    const orderedCardIds = useSelector(state => state.settingsReducer.settings.orderedCardIds) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     const processCards = useSelector(state => state.cardsReducer.processCards)[id] || {}
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings)
 
     const [cards, setCards] = useState(processCards)
     const [showLotEditor, setShowLotEditor] = useState(false)
@@ -64,8 +69,10 @@ const Cardss = (props) => {
     const [dropNodes, setDropNodes] = useState([])
     const [previousProcessId, setPreviousProcessId] = useState(null)
     useEffect(() => {
+      if(JSON.stringify(cards) !== JSON.stringify(processCards)) {
         if(processCards) setCards(processCards)
-  	}, [params.subpage])
+      }
+  	}, [])
 
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
@@ -76,27 +83,36 @@ const Cardss = (props) => {
   	}, [dragIndex, clientY])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
-      let tempIds = []
-      tempIds[id] = []
-      for(const i in process.flattened_stations){
-        let statId = process.flattened_stations[i].stationID
-        for(const j in processCards){
-          if(!!processCards[j].bins[statId]){
-            if(!tempIds[id][statId]) tempIds[id][statId] = []
-            tempIds[id][statId].push(cards[j]._id)
-          }
-          if(!!processCards[j].bins['QUEUE'] && i == 0){
-            if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
-            tempIds[id]['QUEUE'].push(cards[j]._id)
-          }
-          if(!!processCards[j].bins['FINISH'] && i == 0){
-            if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
-            tempIds[id]['FINISH'].push(cards[j]._id)
+      if(!orderedCardIds[id]){
+        let tempIds = {}
+        tempIds[id] = {}
+        for(const i in process.flattened_stations){
+          let statId = process.flattened_stations[i].stationID
+          if(!tempIds[id][statId]) tempIds[id][statId] = []
+          for(const j in processCards){
+            if(!!processCards[j].bins[statId]){
+              tempIds[id][statId].push(cards[j]._id)
+            }
+            if(!!processCards[j].bins['QUEUE'] && i == 0){
+              if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
+              tempIds[id]['QUEUE'].push(cards[j]._id)
+            }
+            if(!!processCards[j].bins['FINISH'] && i == 0){
+              if(!tempIds[id]['FINISH']) tempIds[id]['FINISH'] = []
+              tempIds[id]['FINISH'].push(cards[j]._id)
+            }
           }
         }
+        dispatchPostSettings({
+          ...serverSettings,
+          orderedCardIds: tempIds
+        })
+        setOrderedIds(tempIds)
       }
-      setOrderedIds(tempIds)
-    }, [])
+      else{
+        setOrderedIds(orderedCardIds)
+      }
+    }, [orderedCardIds])
 
     useEffect(() => {
       setDragIndex(dragIndexSearch(draggingStationId))
@@ -260,6 +276,7 @@ const Cardss = (props) => {
               }
             }
           }
+
         }
 
         const backwardsTraverseCheck = (currentStationID) => {//dragging into Queue, make sure kickoff isnt dispersed
@@ -317,6 +334,10 @@ const Cardss = (props) => {
           else{//dragging down
             newIds[id][draggingStationId].splice(startIndex,1)
           }
+          dispatchPostSettings({
+            ...serverSettings,
+            orderedCardIds: newIds
+          })
           setOrderedIds(newIds)
         }
       }
@@ -348,7 +369,42 @@ const Cardss = (props) => {
           delete updatedLot.bins[dragFromStation]
         }
         let result = dispatchPutCard(updatedLot, updatedLot._id)
-      }
+     }
+    }
+
+    const handleRightClickDeleteLot = (card, binId, partId) => {
+        let currLot = processCards[card._id]
+        let currBin = currLot.bins[binId]
+        if(!!partId){
+          delete currBin[partId]
+        }
+        else currBin['count'] = 0
+
+        let submitLot = {
+          ...currLot,
+          bins: {
+            ...currLot.bins,
+            [binId]: currBin
+          }
+        }
+        if(!!partId){
+          if(Object.values(currBin).length===1 && currBin['count'] === 0) delete submitLot.bins[binId]
+        }
+        else if(Object.values(currBin).length===1) delete submitLot.bins[binId]
+
+        //update our id array
+        for(const i in orderedIds[id][binId]){
+          if(orderedIds[id][binId][i] === card._id){
+            let tempIds = deepCopy(orderedIds)
+            tempIds[id][binId].splice(i,1)
+            setOrderedIds(tempIds)
+            dispatchPostSettings({
+              ...serverSettings,
+              orderedCardIds: tempIds
+            })
+          }
+        }
+        dispatchPutCard(submitLot, submitLot._id)
     }
 
     const renderHeaderContent = (stationId) => {
@@ -438,6 +494,12 @@ const Cardss = (props) => {
                     containerStyle = {{margin: '0.5rem'}}
                     selectable={true}
                     key={card._id}
+                    onClick = {()=> {
+                      onShowCardEditor(card)
+                    }}
+                    onRightClickDeleteLot = {()=>{
+                      handleRightClickDeleteLot(card, stationId)
+                    }}
                     totalQuantity={card.totalQuantity}
                     lotNumber={card.lotNum}
                     name={card.name}
@@ -478,7 +540,7 @@ const Cardss = (props) => {
                             onMouseOver = {()=>setHoveringCard(card)}
                             onMouseLeave = {()=>setHoveringCard(null)}
                             onClick = {()=>setShowLotEditor(true)}
-                            draggable = {true}
+                            draggable = {isPartial ? false : true}
                             onDragStart = {(e)=>{
                               setDivHeight(e.target.offsetHeight)
                               setDivWidth(e.target.offsetWidth)
@@ -526,6 +588,12 @@ const Cardss = (props) => {
                               selectable={true}
                               isPartial = {isPartial}
                               key={card._id}
+                              onDeleteDisabledLot = {() => {
+                                handleRightClickDeleteLot(card, stationId, part)
+                              }}
+                              onRightClickDeleteLot = {()=>{
+                                handleRightClickDeleteLot(card, stationId)
+                              }}
                               enableFlagSelector={true}
                               totalQuantity={card.totalQuantity}
                               lotNumber={card.lotNum}

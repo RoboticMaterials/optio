@@ -1,3 +1,4 @@
+import {useEffect} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,6 +15,9 @@ const LotSummarySelector = (props) => {
     const dispatchSetSummaryProcess = (processId) => dispatch(setSummaryProcess(processId))
     const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
+    useEffect(() => {
+      history.push("/lots/summary")
+    }, [])
     return (
         <styled.Page>
             <styled.Header>Processes</styled.Header>
