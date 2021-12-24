@@ -33,8 +33,7 @@ const Cardss = (props) => {
     const size = useWindowSize()
     let params = useParams()
     const history = useHistory()
-    const viewHeight = size.height*0.7
-
+    const viewHeight = size.height*0.8
     const dispatch = useDispatch()
     const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -67,13 +66,12 @@ const Cardss = (props) => {
     const [mouseOffsetY, setMouseOffsetY] = useState(null)
   	const [mouseOffsetX, setMouseOffsetX] = useState(null)
     const [dropNodes, setDropNodes] = useState([])
+    const [update, setUpdate] = useState(true)
     const [previousProcessId, setPreviousProcessId] = useState(null)
-    console.log(dragIndex)
-    useEffect(() => {
-      if(JSON.stringify(cards) !== JSON.stringify(processCards)) {
-        if(processCards) setCards(processCards)
-      }
-  	}, [orderedCardIds])
+    const dragIdRef = useRef(draggingLotId)
+    const [activeTimeout, setActiveTimeout] = useState(false)
+    const [currTimeout, setCurrTimeout] = useState(null)
+    dragIdRef.current = draggingLotId
 
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
@@ -84,6 +82,11 @@ const Cardss = (props) => {
   	}, [dragIndex, clientY])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
+      if((JSON.stringify(processCards)!==JSON.stringify(cards)) && update) {
+        console.log('here')
+        if(processCards) setCards(processCards)
+      }
+
       if(!orderedCardIds[id]){
         let tempIds = {}
         tempIds[id] = {}
@@ -113,9 +116,11 @@ const Cardss = (props) => {
         setOrderedIds(tempIds)
       }
       else{
-        setOrderedIds(orderedCardIds)
+        if(JSON.stringify(orderedCardIds) !== JSON.stringify(orderedIds) && update) {
+          setOrderedIds(orderedCardIds)
+        }
       }
-    }, [orderedCardIds])
+    }, [processCards, orderedCardIds])
 
     useEffect(() => {
       setDragIndex(dragIndexSearch(draggingStationId))
@@ -171,7 +176,7 @@ const Cardss = (props) => {
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
-  	}, [cards])
+  	}, [cards, processCards])
 
 
     const onDragClient = (e) => {
@@ -220,6 +225,14 @@ const Cardss = (props) => {
             }
 
         }
+    }
+
+    const handleSetUpdate = () => {
+      if(!dragIdRef.current){
+        setUpdate(true)
+        setActiveTimeout(false)
+      }
+      else setTimeout(handleSetUpdate,1000)
     }
 
     //This function is now more limiting with split/merge
@@ -337,11 +350,11 @@ const Cardss = (props) => {
           else{//dragging down
             newIds[id][draggingStationId].splice(startIndex,1)
           }
+          setOrderedIds(newIds)
           dispatchPostSettings({
             ...serverSettings,
             orderedCardIds: newIds
           })
-          setOrderedIds(newIds)
         }
       }
       else if((dragIndex || dragIndex ===0) && dragFromStation!==draggingStationId){
@@ -354,7 +367,10 @@ const Cardss = (props) => {
         newIds[id][dragFromStation].splice(startIndex,1)
         if(newIds[id][dragFromStation].length === 0) delete newIds[id][dragFromStation]
         setOrderedIds(newIds)
-
+        dispatchPostSettings({
+          ...serverSettings,
+          orderedCardIds: newIds
+        })
         //post new lot bins
         let lastStn = shouldAcceptDrop(draggingLotId, dragFromStation, draggingStationId)
         let updatedLot = cards[draggingLotId]
@@ -443,16 +459,18 @@ const Cardss = (props) => {
         return(
           orderedIds[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
-            if(!!card){
-              let partBins = card.bins[stationId] || {}
+              let partBins = card?.bins[stationId] || {}
               if(Object.values(partBins).length === 1){
                 return (
                   <styled.CardContainer
-                    onMouseOver = {()=>setHoveringCard(card)}
+                    onMouseOver = {()=>{
+                      setHoveringCard(card)
+                    }}
                     onMouseLeave = {()=>setHoveringCard(null)}
                     onClick = {()=>setShowLotEditor(true)}
                     draggable = {true}
                     onDragStart = {(e)=>{
+                      setUpdate(false)
                       setDivHeight(e.target.offsetHeight)
                       setDivWidth(e.target.offsetWidth)
                       setDraggingLotId(card._id)
@@ -473,6 +491,14 @@ const Cardss = (props) => {
                     }}
                     onDragEnd = {(e)=>{
                       handleDrop()
+                      if(!activeTimeout){
+                        setActiveTimeout(true)
+                      }
+                      else{
+                        clearTimeout(currTimeout)
+                      }
+                      let timeout = setTimeout(handleSetUpdate, 2000)
+                      setCurrTimeout(timeout)
                       let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                       lotDiv.style.display = 'flex'//restore
                       setDraggingLotId(null)
@@ -518,7 +544,7 @@ const Cardss = (props) => {
                         boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
                         borderRadius: '0.2rem',
                         padding: '0.2rem',
-                        margin: '.4rem',
+                        margin: '.5rem',
                         width: '22rem',
                         pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                       }}
@@ -541,11 +567,14 @@ const Cardss = (props) => {
                         <>
                           {(partBins[part]>0 || (part === 'count' && partBins['count']>0)) &&
                             <styled.CardContainer
-                              onMouseOver = {()=>setHoveringCard(card)}
+                              onMouseOver = {()=>{
+                                setHoveringCard(card)
+                              }}
                               onMouseLeave = {()=>setHoveringCard(null)}
                               onClick = {()=>setShowLotEditor(true)}
                               draggable = {isPartial ? false : true}
                               onDragStart = {(e)=>{
+                                setUpdate(false)
                                 setDivHeight(e.target.offsetHeight)
                                 setDivWidth(e.target.offsetWidth)
                                 setDraggingLotId(card._id)
@@ -566,6 +595,7 @@ const Cardss = (props) => {
                               }}
                               onDragEnd = {(e)=>{
                                 handleDrop()
+                                setTimeout(handleSetUpdate, 3000)
                                 let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                                 lotDiv.style.display = 'flex'//restore
                                 setDraggingLotId(null)
@@ -637,7 +667,6 @@ const Cardss = (props) => {
                   })
                 )
               }
-            }
           })
         )
       }

@@ -118,10 +118,10 @@ const DashboardLotPage = (props) => {
     const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
     return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
   }, [currentLot.bins[stationID]])
-  
 
-  
-  
+
+
+
   const routeOptions = useMemo(() => {
     return Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
@@ -384,7 +384,7 @@ const DashboardLotPage = (props) => {
     }
 
     return lotCopy
-    
+
   };
 
   const handlePullWarehouseLot = async (mergeLotID, quantity) => {
@@ -418,7 +418,7 @@ const DashboardLotPage = (props) => {
         mergedQuantity: quantity,
       })
     }
-    
+
 
     pushUndoHandler({
       message: `Are you sure you want to unmerge ${mergeLotCopy?.name} from ${currentLot?.name}?`,
@@ -434,14 +434,13 @@ const DashboardLotPage = (props) => {
     if (!(mergeLot._id in mergedLotsRevertStates)) {
       mergedLotsRevertStatesCopy[mergeLot._id] = mergeLot
     }
-    
+
     // Remove the quantity from the original merge lot
     if (mergeLotCopy.bins[openWarehouse].count - quantity < 1) {
       delete mergeLotCopy.bins[openWarehouse];
     } else {
       mergeLotCopy.bins[openWarehouse].count -= quantity;
     }
-    console.log(mergeLotCopy)
     dispatchPutCard(mergeLotCopy, mergeLot._id);
 
     setMergedLotsRevertStates(mergedLotsRevertStatesCopy)
@@ -587,7 +586,7 @@ const DashboardLotPage = (props) => {
       break
     }
   }
-  
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (

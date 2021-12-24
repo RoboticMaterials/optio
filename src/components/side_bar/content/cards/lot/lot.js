@@ -179,7 +179,7 @@ const Lot = (props) => {
 
     const renderFlags = () => {
         return (
-          <styled.PartsRow>
+          <styled.PartsRow onClick = {(e)=>e.stopPropagation()}>
               <LotFlags
                   flags={flags}
               />
@@ -188,7 +188,8 @@ const Lot = (props) => {
                 <i
                  className = {'fas fa-chevron-up'}
                  style = {{marginBottom: '.3rem', fontSize: '1.2rem', marginLeft: '0.4rem'}}
-                 onClick = {() => {
+                 onClick = {(e) => {
+                   setCardHover(true)
                    setShowRightClickMenu(false)
 
                  }}
@@ -220,7 +221,9 @@ const Lot = (props) => {
             isSelected={isSelected}
             onClick={onClick}
             style={{
-              ...containerStyle
+              ...containerStyle,
+              padding: showRightClickMenu ? '0rem' : '0.2rem'
+
             }}
             onMouseEnter = {()=>setCardHover(true)}
             onMouseLeave = {() =>setCardHover(false)}
