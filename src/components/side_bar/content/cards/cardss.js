@@ -87,7 +87,6 @@ const Cardss = (props) => {
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id]){
-        console.log('1')
         let tempIds = {}
         tempIds[id] = {}
         if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
@@ -117,11 +116,9 @@ const Cardss = (props) => {
         setCards(processCards)
       }
       else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        console.log('3')
         setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update){
-        console.log('2')
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)
           //remove ids for queue
@@ -222,7 +219,7 @@ const Cardss = (props) => {
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
-  	}, [])
+  	}, [draggingLotId])
 
 
     const onDragClient = (e) => {
@@ -741,10 +738,9 @@ const Cardss = (props) => {
           )
         })
       )
-    },[draggingStationId, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderQueue = useMemo(() => {
-      console.log('quueu')
       return (
         <div
           onDragEnter = {(e)=>{
@@ -766,7 +762,7 @@ const Cardss = (props) => {
           </styled.ColumnContainer>
         </div>
       )
-    },[draggingStationId, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderFinish = useMemo(() => {
       return (
@@ -784,7 +780,7 @@ const Cardss = (props) => {
           </styled.ColumnContainer>
         </div>
       )
-    },[draggingStationId, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderLotEditor = () => {
       return (
