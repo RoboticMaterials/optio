@@ -1682,14 +1682,6 @@ const LotEditor = (props) => {
                                         requestResult = await onPostCard(
                                             submitItem
                                         );
-                                        if(orderedCardIds && serverSettings){//update orderdIds
-                                          let tempIds = deepCopy(orderedCardIds)
-                                          tempIds[processId]['QUEUE'].push(requestResult._id)
-                                          dispatchPostSettings({
-                                            ...serverSettings,
-                                            orderedCardIds: tempIds
-                                          })
-                                        }
                                         if (!(requestResult instanceof Error)) {
                                             const { _id = null } =
                                                 requestResult || {};
