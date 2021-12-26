@@ -70,9 +70,6 @@ export const ColumnContainer = styled.div`
   padding: .25rem 1rem 0 1rem;
   border-radius: .4rem;
   // height: fit-content;
-  
-  margin-bottom: 1rem;
-  
 `
 
 export const ExpandContractIcon = styled.button`
@@ -115,19 +112,19 @@ export const ItemContainer = styled.div`
 	display: flex;
 	align-items: center;
   flex: 1;
-	
+
 	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
 		flex-wrap: wrap;
 	}
-  
-  
+
+
 `
 
 export const FlagsContainer = styled.div`
 	display: flex;
   overflow-x: auto;
   flex: 1;
-  
+
   ${scrollCss};
 `
 
@@ -135,7 +132,7 @@ export const rotateButtonContainerCss = css`
   border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem;
   box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
-  background: ${props => props.theme.bg.tertiary};
+  background: ${props => props.theme.bg.secondary};
 `
 
 export const rotateButtonIconCss = css`
@@ -158,13 +155,12 @@ const selectedCss = css`
 
 export const FlagButton = styled.button`
 	${iconButtonCss};
-	${commonClickableIcon};	
+	${commonClickableIcon};
 	${props => props.selected && selectedCss};
 `
 
 export const ArrowButton = styled.button`
 	${iconButtonCss};
-	${commonClickableIcon};	
+	${commonClickableIcon};
 	${props => props.selected && selectedCss};
 `
-

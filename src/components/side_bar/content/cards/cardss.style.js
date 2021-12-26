@@ -6,10 +6,40 @@ import { hexToRGBA, LightenDarkenColor } from '../../../../methods/utils/color_u
 export const Container = styled.div`
   justify-content: start;
   display: flex;
-  overflow-x: scroll;
   flex-direction: row;
+  min-height: 100%
   width: 100%;
 `
+const scrollCss = css`
+::-webkit-scrollbar {
+        width: 12px;
+        height: 5px;
+        margin: 1rem;
+        background: transparent;
+        border: none;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    ::-webkit-scrollbar-track:hover {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: ${props => props.theme.bg.quaternary};
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: ${props => props.theme.bg.quaternary};
+
+    }
+`
+
 export const AddLotContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -31,7 +61,12 @@ export const CardContainer = styled.div`
     justify-content: center;
     align-content: center;
 `
+export const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow-x: scroll;
 
+`
 export const DropContainer = styled.div`
 	width: 22rem;
   height: ${props => props.divHeight};
@@ -72,13 +107,14 @@ export const RowContainer = styled.div`
     justify-content: end;
     margin-bottom: 0.2rem;
 `
+
 export const StationColumnContainer = styled.div`
     display: flex;
     flex-direction: column;
     width: 24rem;
     margin-top: .5rem;
     min-height: 1rem;
-    max-height: ${props => !!props.maxHeight && props.maxHeight};
+    max-height: ${props => props.maxHeight};
     overflow: auto;
     border-radius: .4rem;
     background-color: ${props =>props.theme.bg.secondary};
@@ -86,6 +122,7 @@ export const StationColumnContainer = styled.div`
     align-content: start;
     pointer-events: ${props => props.disabled && 'none'};
 
+    ${scrollCss};
 `
 
 export const StationName = styled.span`

@@ -92,7 +92,7 @@ export const PartsRow = styled.div`
     width: 100%;
     justify-content: space-between;
     padding: 0rem 0 .25rem 0;
-    z-index: 999999;
+    z-index: 1;
 `
 
 export const PartContainer = styled.div`
@@ -105,7 +105,7 @@ export const PartContainer = styled.div`
     margin-bottom: 0.1rem;
 
     justify-content: center;
-    z-index: 5000;
+    z-index: 1;
     pointer-events: auto;
     background: #F92644;
     border-radius: 0.4rem;
