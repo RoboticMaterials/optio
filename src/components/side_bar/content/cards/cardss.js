@@ -219,7 +219,7 @@ const Cardss = (props) => {
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
-  	}, [draggingLotId])
+  	}, [draggingLotId,cards])
 
 
     const onDragClient = (e) => {

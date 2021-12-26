@@ -265,7 +265,7 @@ export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 * @param {string} sortMode - string identifier of mode to sort by
 * */
 export const sortBy = (arr, sortMode, sortDirection) => {
-
+	console.log(arr)
 	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
 	const {
@@ -278,6 +278,7 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 	} = sortMode
 
 	arr.sort((itemA, itemB) => {
+
 		let fieldA, fieldB
 
 		if(primary) {
