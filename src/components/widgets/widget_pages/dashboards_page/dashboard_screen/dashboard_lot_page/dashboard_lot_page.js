@@ -158,8 +158,8 @@ const DashboardLotPage = (props) => {
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
     return () => {
-      window.removeEventListener("beforeunload", handleBack);
       handleBack();
+      window.removeEventListener("beforeunload", handleBack);
     };
   }, []);
 
@@ -432,7 +432,7 @@ const DashboardLotPage = (props) => {
     // If the user hits go back, we have to revert all changes we made to the lot
     const mergedLotsRevertStatesCopy = deepCopy(mergedLotsRevertStates)
     if (!(mergeLot._id in mergedLotsRevertStates)) {
-      mergedLotsRevertStatesCopy[mergeLot._id] = mergeLot
+      mergedLotsRevertStatesCopy[mergeLot._id] = deepCopy(mergeLot)
     }
     
     // Remove the quantity from the original merge lot
