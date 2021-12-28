@@ -166,7 +166,7 @@ const SideBarButton = (props) => {
                     mode={mode}
                 >
                     <style.SideBarButtonIcon
-                        className={'fas fa-layer-group'}
+                        className={'far fa-window-restore'}
                         onClick={() => {
                             if (currentMode === 'lots') {
                                 props.setShowSideBarPage(mode)

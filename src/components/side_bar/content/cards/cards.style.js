@@ -1,106 +1,142 @@
-import styled from 'styled-components'
-import {Calendar} from "react-calendar";
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import '../../../../index.css';
+import styled, { css } from "styled-components";
+
+import { commonClickableIcon, commonIcon, glow, iconButtonCss } from "../../../../common_css/common_css";
+import { hexToRGBA, LightenDarkenColor } from '../../../../methods/utils/color_utils'
+
 export const Container = styled.div`
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    flex: 1;
-    overflow:hidden;
-    font-style: ${props => props.theme.font.primary};
-`
-
-
-
-export const Body = styled.div`
-	display: flex;
-	flex: 1;
-  //width: 100%;
-	// max-width: 50%;
-	overflow: hidden;
-	position: relative;
-	
-	
-	background: ${props => props.theme.bg.secondary};
-  box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
-`
-
-export const CardZoneContainer = styled.div`
-  //flex: 1;
-  //position: relative;
-  
+  justify-content: start;
   display: flex;
-  align-items: stretch;
-  
-
-  background: ${props => props.theme.bg.primary};
-  box-shadow: ${props => props.theme.cardShadow};
-  
-  margin: 1.5rem;
-  border-radius: 0.5rem;
-
-  overflow-x: scroll;
-  
-  //background: red;
-
-  /* Let's get this party started */
-  ::-webkit-scrollbar {
-    height: 8px;
-  }
-  /* Track */
-  ::-webkit-scrollbar-track {
-    -webkit-background: rgba(0,0,0,0.1);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    &:hover {
-      background: rgba(0,0,0,0.1);
+  flex-direction: row;
+  min-height: 100%
+  width: 100%;
+`
+const scrollCss = css`
+::-webkit-scrollbar {
+        width: 12px;
+        height: 5px;
+        margin: 1rem;
+        background: transparent;
+        border: none;
     }
-  }
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.2);
-  }
-  ::-webkit-scrollbar-thumb:window-inactive {
-    // background: rgba(255,255,255,0.2);
-  }
 
-  // border: 1px solid green;
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    ::-webkit-scrollbar-track:hover {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: ${props => props.theme.bg.quaternary};
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: ${props => props.theme.bg.quaternary};
+
+    }
 `
 
+export const AddLotContainer = styled.div`
+  display: flex;
+  flex-direction: row;
 
+  justify-content: start;
+  background-color: ${props =>LightenDarkenColor(props.theme.bg.tertiary,15)};
+  border-radius: 0.4rem;
+  margin: 0.5rem 1rem 0.5rem 1rem;
+  padding-left: 1rem;
 
+  &:hover {
+    cursor: pointer;
+    background-color: ${props =>LightenDarkenColor(props.theme.bg.tertiary,10)};
+  }
+`
 
+export const CardContainer = styled.div`
+    margin: 0rem .5rem .5rem .5rem;
+    justify-content: center;
+    align-content: center;
+`
+export const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow-x: scroll;
 
-export const AddCardButton = styled.button`
+`
+export const DropContainer = styled.div`
+	width: 22rem;
+  height: ${props => props.divHeight};
+	margin: 0.5rem 0.3rem 0.3rem 0.3rem;
+
+  align-self: center;
+  justify-self: center;
+	background: ${props => LightenDarkenColor(props.theme.bg.tertiary,15)};
+	border: 0.1rem solid ${props => LightenDarkenColor(props.theme.bg.tertiary,15)};
+	border-radius: .3rem;
 
 `
 
+export const ColumnContainer = styled.div`
+    margin: 1rem;
+    padding: .5rem 0rem 1.5rem 0rem;
+    border-radius: 0.4rem;
+    height: fit-content;
+    background-color: ${props =>props.theme.bg.secondary};
+    opacity: ${props => props.disabled && '0.4'};
+    pointer-events: ${props => props.disabled && 'none'};
+`
 
-
-// LIST
-export const RoutesListContainer = styled.div`
-    background: green;
-    
-    width: 100%;
-    overflow: scroll;
-    
-    
+export const HeaderContainer = styled.div`
     display: flex;
     flex-direction: row;
-    flex: 1;
-    justify-content: flex-start;
-    
-    padding: 1rem;
-    padding-right: 5rem;
-    padding-bottom: 5rem;
+    justify-content: space-between;
+    margin: 0rem .8rem 0rem 1rem;
+`
+export const ColumnHeader = styled.div`
+    display: flex;
+    flex-direction: column;
 `
 
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin-bottom: 0.2rem;
+`
 
+export const StationColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 24rem;
+    margin-top: .5rem;
+    min-height: 1rem;
+    max-height: ${props => props.maxHeight};
+    overflow: auto;
+    border-radius: .4rem;
+    background-color: ${props =>props.theme.bg.secondary};
+    justify-content: start;
+    align-content: start;
+    pointer-events: ${props => props.disabled && 'none'};
 
+    ${scrollCss};
+`
 
+export const StationName = styled.span`
+    font-size: ${props => props.theme.fontSize.sz3};
+    font-weight: bold;
+    margin: 0.5rem;
+`
 
+export const AddLot = styled.span`
+    font-size: 1rem;
+    margin: 1rem;
+`
 
+export const LotCount = styled.span`
+    font-size: 1rem;
 
+`

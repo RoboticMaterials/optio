@@ -123,7 +123,7 @@ const LotSortBar = (props) => {
                                 borderBottomRightRadius: 0,
                                 minWidth: "10rem",
                                 maxWidth: "15rem",
-                                background: themeContext.bg.tertiary
+                                background: themeContext.bg.secondary
                             }}
                         />
                         <RotateButton

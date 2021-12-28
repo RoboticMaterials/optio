@@ -1117,9 +1117,10 @@ const LotEditorContainer = (props) => {
 
         return (
             <styled.Header>
-                {!!onBack && 
+                {!!onBack &&
                     <div style={{ position: "absolute" }}>
                         <BackButton
+                            schema = {'lots'}
                             onClick={onBack}
                         ></BackButton>
                     </div>
@@ -1393,7 +1394,7 @@ const LotEditorContainer = (props) => {
             )}
 
             {renderHeader}
-            
+
             {renderContent}
 
         </styled.Container>

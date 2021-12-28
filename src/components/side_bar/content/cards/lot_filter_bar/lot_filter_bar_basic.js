@@ -137,10 +137,6 @@ const LotFilterBarBasic = (props) => {
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
             >
-                <styled.ExpandContractIcon
-                    className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
-                    onClick={()=>setOpen(!open)}
-                />
                 Filter
             </styled.Description>
 
@@ -189,7 +185,7 @@ const LotFilterBarBasic = (props) => {
                                 minWidth: "12rem",
                                 maxWidth: "12rem",
                                 overflow: 'visible',
-                                background: themeContext.bg.tertiary,
+                                background: themeContext.bg.secondary,
                             }}
                             containerStyle={{
                                 marginRight: "1rem",
@@ -286,7 +282,7 @@ const LotFilterBarBasic = (props) => {
                                             style={{
                                                 minWidth: "10rem",
                                                 flex: 1,
-                                                background: themeContext.bg.tertiary,
+                                                background: themeContext.bg.secondary,
                                                 alignSelf: "stretch",
                                             }}
                                         />
@@ -306,7 +302,7 @@ const LotFilterBarBasic = (props) => {
                                         value = {lotFilterValue}
                                         inputStyle={{
                                             height: "100%",
-                                            background: themeContext.bg.tertiary,
+                                            background: themeContext.bg.secondary,
                                         }}
                                         style={{
                                             alignSelf: "stretch",

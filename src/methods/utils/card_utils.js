@@ -265,7 +265,109 @@ export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 * @param {string} sortMode - string identifier of mode to sort by
 * */
 export const sortBy = (arr, sortMode, sortDirection) => {
+	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
+	const {
+		dataType,
+		label,
+		index,
+		fieldName,
+		primary,
+		_id: fieldId,
+	} = sortMode
+
+	arr.sort((itemA, itemB) => {
+
+		let fieldA, fieldB
+
+		if(primary) {
+			fieldA = itemA[fieldName]
+			fieldB = itemB[fieldName]
+		}
+		else {
+			fieldA = getLotField("fieldName", fieldName, itemA)?.value
+			fieldB = getLotField("fieldName", fieldName, itemB)?.value
+		}
+
+		switch(dataType) {
+			case FIELD_DATA_TYPES.URL: {
+				// not yet implemented
+				break
+			}
+			case FIELD_DATA_TYPES.EMAIL: {
+				// not yet implemented
+				break
+			}
+			case FIELD_DATA_TYPES.DATE: {
+				if(!fieldA) return 1
+				if(!fieldB) return -1
+				if(isAscending) {
+					return new Date(fieldA) - new Date(fieldB);
+				}
+				else {
+					return new Date(fieldB) - new Date(fieldA);
+				}
+
+				break
+
+			}
+			case FIELD_DATA_TYPES.DATE_RANGE: {
+				if(!fieldA) return 1
+				if(!fieldB) return -1
+
+				const valA = fieldA[index]
+				const valB = fieldB[index]
+
+				if(!valA) return 1
+				if(!valB) return -1
+				if(isAscending) {
+					return new Date(valA) - new Date(valB);
+				}
+				else {
+					return new Date(valB) - new Date(valA);
+				}
+
+				break
+			}
+			case FIELD_DATA_TYPES.STRING: {
+				if(!fieldA) return 1
+				if(!fieldB) return -1
+
+				if(isAscending) {
+					if(fieldA >= fieldB) return 1
+					return -1
+				}
+				else {
+					if(fieldA >= fieldB) return -1
+					return 1
+				}
+
+				break
+			}
+			case FIELD_DATA_TYPES.INTEGER: {
+				if(fieldA === null) return 1
+
+				if(isAscending) {
+					if(fieldA >= fieldB) return 1
+					return -1
+				}
+				else {
+					if(fieldA >= fieldB) return -1
+					return 1
+				}
+
+				break
+			}
+			default: {
+				break
+			}
+		}
+	})
+
+	return arr
+}
+
+export const sortBySummary = (arr, sortMode, sortDirection) => {
 	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
 	const {

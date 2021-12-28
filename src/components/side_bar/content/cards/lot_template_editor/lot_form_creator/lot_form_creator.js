@@ -531,6 +531,7 @@ const LotFormCreator = (props) => {
 					id = 'container'
 				 	onDragOver = {(e)=> {
 						setClientY(e.clientY)
+						console.log(e.clientY)
 						setClientX(e.clientX)
 						e.preventDefault()
 					}}
