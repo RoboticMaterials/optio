@@ -221,7 +221,7 @@ const ApiContainer = (props) => {
         await onGetDashboards()
         await onGetTasks()
         await onGetProcesses()
-        //await onGetCards()
+        await onGetCards()
         await onGetLotTemplates()
 
         await onGetLoggers()
