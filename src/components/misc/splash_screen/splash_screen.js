@@ -42,7 +42,6 @@ const SplashScreen = (props) => {
         apiError
     } = props
 
-
     const dispatch = useDispatch()
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const apiAddress = localSettings.non_local_api_ip
