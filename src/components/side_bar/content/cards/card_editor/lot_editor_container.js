@@ -1120,6 +1120,7 @@ const LotEditorContainer = (props) => {
                 {!!onBack &&
                     <div style={{ position: "absolute" }}>
                         <BackButton
+                            schema = {'lots'}
                             onClick={onBack}
                         ></BackButton>
                     </div>

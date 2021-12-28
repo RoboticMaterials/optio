@@ -31,7 +31,7 @@ const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_sw
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
-import Cardss from "../../components/side_bar/content/cards/cardss"
+import Cards from "../../components/side_bar/content/cards/cards"
 const StatisticsSelector = lazy(() => import('../../components/side_bar/content/statistics/statistics_selector'))
 const ProcessStatistics = lazy(() => import('../../components/side_bar/content/statistics/process_statistics/process_statistics'))
 const LotSummarySelector = lazy(() => import('../../components/side_bar/content/cards/lot_summary_selector/lot_summary_selector'))
@@ -335,7 +335,7 @@ const SideBar = (props) => {
 
         case 'processes':
             if (subpage === "lots") {
-                content = <Cards />
+                content = <> </>
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
@@ -345,7 +345,7 @@ const SideBar = (props) => {
 
         case 'lots':
             if (!!subpage && !!summaryProcess) {
-                content = <Cardss id = {summaryProcess}/>
+                content = <Cards id = {summaryProcess}/>
             } else {
                 content = <LotSummarySelector/>
             }
