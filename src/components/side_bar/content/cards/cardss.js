@@ -3,6 +3,7 @@ import React, {useEffect, useState, useRef, useContext, memo, useCallback, useMe
 import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
 import ZoneHeader from './zone_header/zone_header'
+import BackButton from '../../../../components/basic/back_button/back_button'
 
 // external functions
 import { useHistory, useParams } from 'react-router-dom'
@@ -12,6 +13,7 @@ import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_ac
 import {throttle, debounce} from 'lodash'
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
+import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../methods/utils/lot_utils";
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 
 // styles
@@ -52,6 +54,7 @@ const Cardss = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const localSettings = useSelector(state => state.localReducer.localSettings)
+    const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
 
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!localSettings.lotSummarySortValue ?
@@ -105,9 +108,13 @@ const Cardss = (props) => {
     const [activeTimeout, setActiveTimeout] = useState(false)
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
-
     //sorting state
-    const [wildCards, setWildCards] = useState(null)
+    const [sortedCards, setSortedCards] = useState(null)
+    const [needsSortUpdate, setNeedsSortUpdate] = useState(false)
+    const [isMount, setIsMount] = useState(true)
+
+    //filtering
+    const [filteredIds, setFilteredIds] = useState(null)
 
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
@@ -118,7 +125,8 @@ const Cardss = (props) => {
   	}, [dragIndex, clientY])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
-      if(!orderedCardIds[id]){
+      if(!orderedCardIds[id] || needsSortUpdate){
+        let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
         if(!tempIds[id]['QUEUE']) tempIds[id]['QUEUE'] = []
@@ -128,15 +136,15 @@ const Cardss = (props) => {
           let statId = process.flattened_stations[i].stationID
           tempIds[id][statId] = []
 
-          for(const j in processCards){
-            if(!!processCards[j].bins[statId]){
-              tempIds[id][statId].push(processCards[j]._id)
+          for(const j in tempCards){
+            if(!!tempCards[j].bins[statId]){
+              tempIds[id][statId].push(tempCards[j]._id)
             }
-            if(!!processCards[j].bins['QUEUE'] && i == 0){
-              tempIds[id]['QUEUE'].push(processCards[j]._id)
+            if(!!tempCards[j].bins['QUEUE'] && i == 0){
+              tempIds[id]['QUEUE'].push(tempCards[j]._id)
             }
-            if(!!processCards[j].bins['FINISH'] && i == 0){
-              tempIds[id]['FINISH'].push(processCards[j]._id)
+            if(!!tempCards[j].bins['FINISH'] && i == 0){
+              tempIds[id]['FINISH'].push(tempCards[j]._id)
             }
           }
         }
@@ -144,14 +152,15 @@ const Cardss = (props) => {
           ...serverSettings,
           orderedCardIds: tempIds
         })
+        if(needsSortUpdate) setNeedsSortUpdate(false)
         setOrderedIds(tempIds)
         setCards(processCards)
       }
       else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
         setOrderedIds(orderedCardIds)
       }
-      else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update){
-        console.log('if I come up while dropping a card from drag bad things have happened')
+      else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === ''){
+        //console.log('if I come up while dropping a card from drag bad things have happened')
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)
           //remove ids for queue
@@ -203,14 +212,50 @@ const Cardss = (props) => {
     }, [clientY])
 
     useEffect(() => {//updates orderedIds when sort is changed
-        if (sortMode) {
-          let tempCards = [cards[0]]
+        if (sortMode && !isMount) {
+          console.log('firing')
+          let tempCards = []
+          Object.values(cards).forEach((card) => {
+            tempCards.push(card)
+          })
           sortBySummary(tempCards, sortMode, sortDirection)
-          setWildCards(tempCards)
+
+          let sortCards = {}
+          for(let i = 0; i<tempCards.length; i++){
+            sortCards[tempCards[i]._id] = tempCards[i]
+          }
+          setSortedCards(sortCards)
+          setNeedsSortUpdate(true)
         }
-        else {
+    }, [sortMode, sortDirection])
+
+    useEffect(() => {//updates orderedIds when filter is changed
+      if(orderedIds && cards){
+        let tempCards = {}
+        for(const i in orderedIds[id]){
+          for(const j in orderedIds[id][i]){
+            let tempCard = processCards[orderedIds[id][i][j]]
+            const totalQuantity = getLotTotalQuantity(tempCard)
+
+            //filtering magic
+            var matchesFilter = false
+            if(!!multipleFilters){
+              matchesFilter = lotFilters.reduce((matchesAll, filter) => matchesAll && checkCardMatchesFilter(tempCard, filter), true)
+            }
+            else{
+              matchesFilter = getMatchesFilter(tempCard, lotFilterValue, selectedFilterOption)
+            }
+            if(matchesFilter) tempCards[tempCard._id] = tempCard
+          }
         }
-    }, [sortMode, sortDirection, cards])
+        if(lotFilterValue!== '' || Object.values(tempCards).length>0) setCards(tempCards)
+      }
+
+    }, [lotFilterValue, selectedFilterOption, lotFilters])
+
+    useEffect(() => {
+      setIsMount(false)
+    },[])
 
     useEffect(() => {//how many cards are in each column
       let tempCardCount = {}
@@ -268,7 +313,6 @@ const Cardss = (props) => {
     const onDragClient = (e) => {
       setClientY(e.clientY)
     }
-
 
     const debouncedDrag = useCallback(throttle(onDragClient, 20), []);
 
@@ -506,7 +550,6 @@ const Cardss = (props) => {
 
 
         if(Object.values(submitLot.bins).length === 0) {
-          console.log('here')
           dispatchDeleteCard(card._id)
         }
         else dispatchPutCard(submitLot, submitLot._id)
@@ -542,8 +585,9 @@ const Cardss = (props) => {
 
     const renderCards = (stationId) => {
       if(orderedIds && cards && orderedIds[id] && orderedIds[id][stationId] && orderedIds[id][stationId].length>0){
+        let ids = orderedIds
         return(
-          orderedIds[id][stationId].map((cardId, index) => {
+          ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
               let partBins = card?.bins[stationId] || {}
               if(Object.values(partBins).length === 1){
@@ -596,6 +640,7 @@ const Cardss = (props) => {
                       setDropNodes([])
                       e.target.style.opacity = '1'
                       e.target.style.display = 'flex'
+                      e.preventDefault()
                     }}
                   >
                   {dragIndex === 0 && index === 0 && draggingStationId === stationId && allowHomeDrop &&
@@ -699,6 +744,7 @@ const Cardss = (props) => {
                                 setDropNodes([])
                                 e.target.style.opacity = '1'
                                 e.target.style.display = 'flex'
+                                e.preventDefault()
                               }}
                             >
                             {dragIndex === 0 && index === 0 && draggingStationId === stationId && allowHomeDrop
@@ -799,7 +845,7 @@ const Cardss = (props) => {
           )
         })
       )
-    },[draggingStationId, viewHeight, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, viewHeight, orderedIds, filteredIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderQueue = useMemo(() => {
       return (
@@ -823,7 +869,7 @@ const Cardss = (props) => {
           </styled.ColumnContainer>
         </div>
       )
-    },[draggingStationId, viewHeight, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, viewHeight, orderedIds, filteredIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderFinish = useMemo(() => {
       return (
@@ -841,7 +887,7 @@ const Cardss = (props) => {
           </styled.ColumnContainer>
         </div>
       )
-    },[draggingStationId, viewHeight, orderedIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, viewHeight, orderedIds, filteredIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
 
     const renderLotEditor = () => {
       return (
@@ -859,9 +905,16 @@ const Cardss = (props) => {
       )
     }
 
-    const renderFilterSortBar = () => {
+    const renderFilterSortBar = useMemo(() => {
       return (
         <div style={{marginLeft: '0.5rem', display: 'flex', padding: ".5rem 0rem 0rem 0.5rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap"}}>
+          <BackButton
+            containerStyle = {{alignSelf: 'center'}}
+            schema = {'lots'}
+            onClick = {() => {
+              history.push('/lots/summary')
+            }}
+             />
             <ZoneHeader
                 lotFilterValue={lotFilterValue}
                 sortDirection={sortDirection}
@@ -882,12 +935,12 @@ const Cardss = (props) => {
             />
         </div>
       )
-    }
+    },[lotFilterValue, sortDirection, sortMode, selectedFilterOption, lotFilters, cards])
 
     return (
       <styled.PageContainer
       >
-        {renderFilterSortBar()}
+        {renderFilterSortBar}
         <styled.Container
           style = {{height: size.height}}
           onDragOver = {(e) => {

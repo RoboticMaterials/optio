@@ -378,9 +378,8 @@ export const sortBySummary = (arr, sortMode, sortDirection) => {
 		primary,
 		_id: fieldId,
 	} = sortMode
-console.log(arr)
+
 	arr.sort((itemA, itemB) => {
-		console.log('here')
 		let fieldA, fieldB
 
 		if(primary) {
