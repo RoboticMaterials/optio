@@ -198,7 +198,7 @@ const DashboardLotList = (props) => {
                   onAddFilter={filter => handleAddFilter(filter)}
                   onRemoveFilter={filterId => handleRemoveFilter(filterId)}
 
-                  containerStyle={{}}
+                  containerStyle={{marginBottom: '1rem'}}
               />
             }
             <styled.LotCardContainer>

@@ -269,6 +269,7 @@ const ApiContainer = (props) => {
             }, 10000),
             setInterval(() => {
                 onGetCards();
+                onGetSettings();
             }, 1000)
         ])
     }
