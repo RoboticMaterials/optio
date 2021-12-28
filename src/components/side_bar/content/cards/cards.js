@@ -159,7 +159,7 @@ const Cards = (props) => {
       else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
         setOrderedIds(orderedCardIds)
       }
-      else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === ''){
+      else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
         //console.log('if I come up while dropping a card from drag bad things have happened')
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)
