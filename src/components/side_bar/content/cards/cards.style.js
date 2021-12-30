@@ -64,6 +64,7 @@ export const CardContainer = styled.div`
 export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   overflow-x: scroll;
 
 `

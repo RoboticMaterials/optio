@@ -4,9 +4,11 @@ import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
 import ZoneHeader from './zone_header/zone_header'
 import BackButton from '../../../../components/basic/back_button/back_button'
+import ReactTooltip from "react-tooltip";
 
 // external functions
 import { useHistory, useParams } from 'react-router-dom'
+import uuid from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
@@ -53,20 +55,18 @@ const Cards = (props) => {
     const processCards = useSelector(state => state.cardsReducer.processCards)[id] || {}
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings)
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
 
     //filter & sort state
-    const [sortMode, setSortMode] = useState(!!localSettings.lotSummarySortValue ?
-       localSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
-    const [sortDirection, setSortDirection] = useState(!!localSettings.lotSummarySortDirection ?
-       localSettings.lotSummarySortDirection : SORT_DIRECTIONS.ASCENDING)
-    const [lotFilterValue, setLotFilterValue] = useState(!!localSettings.lotSummaryFilterValue ?
-      localSettings.lotSummaryFilterValue : '')
-    const [selectedFilterOption, setSelectedFilterOption ] = useState(!!localSettings.lotSummaryFilterOption ?
-       localSettings.lotSummaryFilterOption : LOT_FILTER_OPTIONS.name)
+    const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
+       serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(!!serverSettings.lotSummarySortDirection ?
+       serverSettings.lotSummarySortDirection : SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState(!!serverSettings.lotSummaryFilterValue ?
+      serverSettings.lotSummaryFilterValue : '')
+    const [selectedFilterOption, setSelectedFilterOption ] = useState(!!serverSettings.lotSummaryFilterOption ?
+       serverSettings.lotSummaryFilterOption : LOT_FILTER_OPTIONS.name)
     const [lotFilters, setLotFilters] = useState([])
-
     const handleAddLotFilter = (filter) => {
         let filtersCopy = deepCopy(lotFilters);
         filtersCopy.push(filter);
@@ -108,11 +108,11 @@ const Cards = (props) => {
     const [activeTimeout, setActiveTimeout] = useState(false)
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
+
     //sorting state
     const [sortedCards, setSortedCards] = useState(null)
     const [needsSortUpdate, setNeedsSortUpdate] = useState(false)
-    const [isMount, setIsMount] = useState(true)
-
+    const [sortChanged, setSortChanged] = useState(false)
     //filtering
     const [filteredIds, setFilteredIds] = useState(null)
 
@@ -157,7 +157,8 @@ const Cards = (props) => {
         setCards(processCards)
       }
       else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        setOrderedIds(orderedCardIds)
+        if(sortedCards) setSortedCards(null)//it wants to setOrderedIds right after re sorting which causes glitch. this if statement gets rid of the glitch
+        else setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
         //console.log('if I come up while dropping a card from drag bad things have happened')
@@ -212,8 +213,7 @@ const Cards = (props) => {
     }, [clientY])
 
     useEffect(() => {//updates orderedIds when sort is changed
-        if (sortMode && !isMount) {
-          console.log('firing')
+        if (sortMode && sortChanged) {
           let tempCards = []
           Object.values(cards).forEach((card) => {
             tempCards.push(card)
@@ -226,6 +226,7 @@ const Cards = (props) => {
           }
           setSortedCards(sortCards)
           setNeedsSortUpdate(true)
+          setSortChanged(false)
         }
     }, [sortMode, sortDirection])
 
@@ -252,10 +253,6 @@ const Cards = (props) => {
       }
 
     }, [lotFilterValue, selectedFilterOption, lotFilters])
-
-    useEffect(() => {
-      setIsMount(false)
-    },[])
 
     useEffect(() => {//how many cards are in each column
       let tempCardCount = {}
@@ -365,7 +362,7 @@ const Cards = (props) => {
       }
       else {
         clearTimeout(currTimeout)
-        let timeout = setTimeout(handleSetUpdate,2000)
+        let timeout = setTimeout(handleSetUpdate, 4000)
         setCurrTimeout(timeout)
 
       }
@@ -523,6 +520,9 @@ const Cards = (props) => {
         if(!!updatedLot.bins[dragFromStation] && updatedLot.bins[dragFromStation]['count'] === 0 && Object.values(updatedLot.bins[dragFromStation]).length === 1){
           delete updatedLot.bins[dragFromStation]
         }
+        let newCards = deepCopy(cards)
+        newCards[updatedLot._id] = updatedLot
+        setCards(newCards)
         let result = dispatchPutCard(updatedLot, updatedLot._id)
      }
      setDraggingLotId(null)
@@ -567,10 +567,10 @@ const Cards = (props) => {
           </styled.StationName>
           <styled.ColumnHeader>
             <styled.RowContainer>
-              <styled.LotCount>
-              {cardCount[stationId]}
-              </styled.LotCount>
-              <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem'}}/>
+                <styled.LotCount>
+                {cardCount[stationId]}
+                </styled.LotCount>
+                <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem'}}/>
             </styled.RowContainer>
             <styled.RowContainer>
               <styled.LotCount>
@@ -627,7 +627,7 @@ const Cards = (props) => {
                       else{
                         clearTimeout(currTimeout)
                       }
-                      let timeout = setTimeout(handleSetUpdate, 2000)
+                      let timeout = setTimeout(handleSetUpdate, 4000)
                       setCurrTimeout(timeout)
                       let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                       lotDiv.style.display = 'flex'//restore
@@ -731,7 +731,7 @@ const Cards = (props) => {
                                 else{
                                   clearTimeout(currTimeout)
                                 }
-                                let timeout = setTimeout(handleSetUpdate, 2000)
+                                let timeout = setTimeout(handleSetUpdate, 4000)
                                 setCurrTimeout(timeout)
                                 let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                                 lotDiv.style.display = 'flex'//restore
@@ -924,7 +924,7 @@ const Cards = (props) => {
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
                 setSortDirection={setSortDirection}
-
+                setSortChanged = {setSortChanged}
                 filters={lotFilters}
                 onAddFilter={handleAddLotFilter}
                 onRemoveFilter={handleRemoveLotFilter}

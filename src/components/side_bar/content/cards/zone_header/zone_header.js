@@ -45,7 +45,7 @@ const ZoneHeader = (props) => {
 		setSortDirection,
 		setSortMode,
 		sortMode,
-
+		setSortChanged,
 		lotFilterValue,
 		setLotFilterValue,
 		selectedFilterOption,
@@ -113,7 +113,7 @@ const ZoneHeader = (props) => {
 					setSortMode={setSortMode}
 					sortDirection={sortDirection}
 					setSortDirection={setSortDirection}
-
+					setSortChanged = {setSortChanged}
 					columnCss={columnCss3}
 					containerCss={containerCss}
 					dropdownCss={dropdownCss}

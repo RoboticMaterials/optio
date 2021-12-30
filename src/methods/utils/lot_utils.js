@@ -1036,7 +1036,6 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
       );
       let tempBin,
         currentBin = bins[unloadStationId];
-        console.log(stations[loadStationId].name)
       let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
       if(!traveledRoute){ //This handles dragging lot back into merge station. Just add to existing qty and keep excess parts the same
         let totalQuantity = !!bins[unloadStationId]?.count

@@ -19,7 +19,6 @@ export default function ContentList(props) {
     const {
         executeTask,
         hideHeader,
-        handleCardView,
         elements,
         schema,
 
@@ -66,7 +65,7 @@ export default function ContentList(props) {
             case "tasks":
                 return (inQ) => !inQ && executeTask();
             case "processes":
-                return (element) => handleCardView(element);
+            return () => {};
         }
     }, [schema]);
 
