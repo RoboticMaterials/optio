@@ -20,7 +20,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { isMobile } from "react-device-detect"
 
 //Actions
-import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+import {postSettings} from '../../../../../redux/actions/settings_actions'
 
 
 // utils
@@ -54,11 +54,11 @@ const LotFilterBarBasic = (props) => {
 
     // redux state
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
 
     //dispatch
     const dispatch = useDispatch()
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
     const [open, setOpen] = useState(true) // is filter options open ?
@@ -156,8 +156,8 @@ const LotFilterBarBasic = (props) => {
 
                                 // updated selectedFilterOption
                                 setSelectedFilterOption(newFilterOption)
-                                dispatchPostLocalSettings({
-                                  ...localSettings,
+                                dispatchPostSettings({
+                                  ...serverSettings,
                                   lotSummaryFilterOption: newFilterOption
                                 })
                                 const {
@@ -293,8 +293,8 @@ const LotFilterBarBasic = (props) => {
                                         placeholder='Filter lots...'
                                         onChange={(e) => {
                                             setLotFilterValue(e.target.value)
-                                            dispatchPostLocalSettings({
-                                              ...localSettings,
+                                            dispatchPostSettings({
+                                              ...serverSettings,
                                               lotSummaryFilterValue: e.target.value
                                             })
                                         }}

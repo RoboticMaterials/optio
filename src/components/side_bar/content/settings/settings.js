@@ -28,7 +28,7 @@ import { ThemeContext } from 'styled-components';
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 import { getDashboards, putDashboard } from '../../../../redux/actions/dashboards_actions'
-
+import {getCards} from '../../../../redux/actions/card_actions'
 import { getStations } from '../../../../redux/actions/stations_actions';
 import { getProcesses } from '../../../../redux/actions/processes_actions';
 import { getTasks } from '../../../../redux/actions/tasks_actions';
@@ -57,7 +57,7 @@ const Settings = () => {
     const dispatchGetDashboards = () => dispatch(getDashboards())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
-
+    const dispatchGetCards = () => dispatch(getCards())
     const dispatchGetStations = () => dispatch(getStations())
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetRoutes = () => dispatch(getTasks())
@@ -228,6 +228,7 @@ const Settings = () => {
             dispatchGetDashboards()
             dispatchGetProcesses()
             dispatchGetRoutes()
+            dispatchGetCards()
         }
     }
 
