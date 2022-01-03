@@ -68,6 +68,7 @@ RotateButton.propTypes = {
 	rotationTime: PropTypes.number,
 	onStateOne: PropTypes.func,
 	onStateTwo: PropTypes.func,
+	setSortChanged: PropTypes.func,
 }
 
 RotateButton.defaultProps = {
@@ -75,6 +76,7 @@ RotateButton.defaultProps = {
 	rotationTime: 500,
 	onStateOne: () => {},
 	onStateTwo: () => {},
+	setSortChanged:() => {},
 	schema: "default"
 }
 

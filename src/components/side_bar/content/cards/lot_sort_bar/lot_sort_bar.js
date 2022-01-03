@@ -163,12 +163,15 @@ LotSortBar.propTypes = {
     setSortMode: PropTypes.func,
     sortMode: PropTypes.any,
     setSortDirection: PropTypes.func,
+    setSortChanged: PropTypes.func,
 }
 
 LotSortBar.defaultProps = {
     sortMode: {},
     setSortMode: () => { },
-    setSortDirection: () => { }
+    setSortDirection: () => { },
+    setSortChanged: () => { }
+
 }
 
 export default LotSortBar
