@@ -465,7 +465,7 @@ export const sortBySummary = (arr, sortMode, sortDirection) => {
 			}
 		}
 	})
-
+	console.log(arr)
 	return arr
 }
 

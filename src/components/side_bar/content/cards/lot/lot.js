@@ -69,6 +69,7 @@ const Lot = (props) => {
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
     const [popupOpen, setPopupOpen] = useState(false)
+
     const [showRightClickMenu, setShowRightClickMenu] = useState(false)
     const [cardHover, setCardHover] = useState(false)
     useEffect(() => {
@@ -179,7 +180,7 @@ const Lot = (props) => {
 
     const renderFlags = () => {
         return (
-          <styled.PartsRow onClick = {(e)=>e.stopPropagation()}>
+          <styled.PartsRow>
               <LotFlags
                   flags={flags}
               />
@@ -191,6 +192,7 @@ const Lot = (props) => {
                  onClick = {(e) => {
                    setCardHover(true)
                    setShowRightClickMenu(false)
+                   e.stopPropagation()
 
                  }}
                  />

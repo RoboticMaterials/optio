@@ -122,7 +122,7 @@ const Cards = (props) => {
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.display = 'none'
   		}
-  	}, [dragIndex, clientY])
+  	}, [dragIndex, clientY, clientX])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
@@ -601,7 +601,7 @@ const Cards = (props) => {
                     draggable = {true}
                     onDragStart = {(e)=>{
                       setUpdate(false)
-                      setDivHeight(e.target.offsetHeight)
+                      setDivHeight(e.target.offsetHeight+3)
                       setDivWidth(e.target.offsetWidth)
                       setDraggingLotId(card._id)
                       setDragFromStation(stationId)
@@ -654,6 +654,7 @@ const Cards = (props) => {
                       containerStyle = {{margin: '0.5rem'}}
                       selectable={true}
                       key={card._id}
+                      enableFlagSelector={true}
                       onClick = {()=> {
                         onShowCardEditor(card)
                       }}
@@ -907,32 +908,35 @@ const Cards = (props) => {
 
     const renderFilterSortBar = useMemo(() => {
       return (
-        <div style={{marginLeft: '0.5rem', display: 'flex', padding: ".5rem 0rem 0rem 0.5rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap"}}>
-          <BackButton
-            containerStyle = {{alignSelf: 'center'}}
-            schema = {'lots'}
-            onClick = {() => {
-              history.push('/lots/summary')
-            }}
-             />
-            <ZoneHeader
-                lotFilterValue={lotFilterValue}
-                sortDirection={sortDirection}
-                sortMode={sortMode}
-                setSortMode={setSortMode}
-                setLotFilterValue={setLotFilterValue}
-                selectedFilterOption={selectedFilterOption}
-                setSelectedFilterOption={setSelectedFilterOption}
-                setSortDirection={setSortDirection}
-                setSortChanged = {setSortChanged}
-                filters={lotFilters}
-                onAddFilter={handleAddLotFilter}
-                onRemoveFilter={handleRemoveLotFilter}
+        <div style = {{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+          <div style={{marginLeft: '0.5rem', display: 'flex', padding: ".5rem 0rem 0rem 0.5rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap"}}>
+            <BackButton
+              containerStyle = {{alignSelf: 'center'}}
+              schema = {'lots'}
+              onClick = {() => {
+                history.push('/lots/summary')
+              }}
+               />
+              <ZoneHeader
+                  lotFilterValue={lotFilterValue}
+                  sortDirection={sortDirection}
+                  sortMode={sortMode}
+                  setSortMode={setSortMode}
+                  setLotFilterValue={setLotFilterValue}
+                  selectedFilterOption={selectedFilterOption}
+                  setSelectedFilterOption={setSelectedFilterOption}
+                  setSortDirection={setSortDirection}
+                  setSortChanged = {setSortChanged}
+                  filters={lotFilters}
+                  onAddFilter={handleAddLotFilter}
+                  onRemoveFilter={handleRemoveLotFilter}
 
-                selectedProcesses={process}
-                selectedLots={cards}
-                onClearClick={()=>setCards([])}
-            />
+                  selectedProcesses={process}
+                  selectedLots={cards}
+                  onClearClick={()=>setCards([])}
+              />
+          </div>
+          <styled.StationName style = {{alignSelf: 'center', position: 'absolute', left: '50%', fontSize: '1.8rem'}}>{process.name}</styled.StationName>
         </div>
       )
     },[lotFilterValue, sortDirection, sortMode, selectedFilterOption, lotFilters, cards])
