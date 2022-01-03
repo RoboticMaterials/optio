@@ -57,6 +57,7 @@ const ApiContainer = (props) => {
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
 
 
     // States
@@ -117,7 +118,7 @@ const ApiContainer = (props) => {
             updateCurrentPage();
         }
 
-    })
+    },[params])
 
     const updateCurrentPage = () => {
 
@@ -188,12 +189,7 @@ const ApiContainer = (props) => {
                 break
 
             case 'processes':
-                if (data2 === "lots") {
-                    setKanbanIntervals()
-                } else {
-                    setProcessPageIntervals()
-                }
-
+                setProcessPageIntervals()
                 break
 
             default:
@@ -256,9 +252,6 @@ const ApiContainer = (props) => {
                 onGetProcesses();
                 onGetTasks();
             }, 5000),
-            setInterval(() => {
-                onGetCards();
-            }, 1000)
         ])
     }
 
@@ -288,7 +281,7 @@ const ApiContainer = (props) => {
             }, 5000),
             setInterval(() => {
                 onGetCards();
-            }, 1000)
+            }, 10000)
         ])
     }
 
