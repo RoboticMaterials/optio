@@ -22,6 +22,7 @@ const LotContainer = (props) => {
   const {
     lotId,
     binId,
+    onCardClick,
     enableFlagSelector,
     containerStyle,
     isPartial,
@@ -94,6 +95,7 @@ const LotContainer = (props) => {
                   id={lotId}
                   isSelected={false}
                   selectable={false}
+                  onCardClick = {onCardClick}
                   onClick={() => {}}
                   {...rest}
                   containerStyle={{

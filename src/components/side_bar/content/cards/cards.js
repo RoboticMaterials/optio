@@ -654,7 +654,7 @@ const Cards = (props) => {
                       containerStyle = {{margin: '0.5rem'}}
                       selectable={true}
                       key={card._id}
-                      onClick = {()=> {
+                      onCardClick = {()=> {
                         onShowCardEditor(card)
                       }}
                       onRightClickDeleteLot = {()=>{

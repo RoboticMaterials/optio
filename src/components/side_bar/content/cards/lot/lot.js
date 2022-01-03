@@ -54,6 +54,7 @@ const Lot = (props) => {
         isDashboard,
         onDeleteDisabledLot,
         onRightClickDeleteLot,
+        onCardClick,
         dragging
     } = props
 
@@ -311,7 +312,7 @@ const Lot = (props) => {
 
             </styled.HeaderBar>
 
-            <styled.ContentContainer hasLeadTime={!!leadTime}>
+            <styled.ContentContainer hasLeadTime={!!leadTime} onClick = {onCardClick}>
                 <LotSimpleRow
                     label= {lotTemplates[lot.lotTemplateId]?.name === 'Basic' ? 'Quantity' : lotTemplates[lot.lotTemplateId]?.displayNames?.count || 'Quantity'}
                     value={`${count}/${totalQuantity}`}
