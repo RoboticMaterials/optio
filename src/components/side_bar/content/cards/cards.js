@@ -108,14 +108,12 @@ const Cards = (props) => {
     const [activeTimeout, setActiveTimeout] = useState(false)
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
-
     //sorting state
     const [sortedCards, setSortedCards] = useState(null)
     const [needsSortUpdate, setNeedsSortUpdate] = useState(false)
     const [sortChanged, setSortChanged] = useState(false)
     //filtering
     const [filteredIds, setFilteredIds] = useState(null)
-
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
           setAllowHomeDrop(true)
@@ -236,7 +234,7 @@ const Cards = (props) => {
         for(const i in orderedIds[id]){
           for(const j in orderedIds[id][i]){
             let tempCard = processCards[orderedIds[id][i][j]]
-            const totalQuantity = getLotTotalQuantity(tempCard)
+            const totalQuantity = !!tempCard ? getLotTotalQuantity(tempCard) : 0
 
             //filtering magic
             var matchesFilter = false
