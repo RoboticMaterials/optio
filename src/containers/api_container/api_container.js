@@ -234,6 +234,7 @@ const ApiContainer = (props) => {
         setPageDataIntervals([
             setInterval(async () => {
                 await onGetStations()
+                await onGetSettings();
                 await onGetTasks()
                 await onGetDashboards();
                 await onGetCards()
