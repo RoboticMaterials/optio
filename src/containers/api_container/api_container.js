@@ -67,6 +67,7 @@ const ApiContainer = (props) => {
 
     const [pageDataIntervals, setPageDataIntervals] = useState([])
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
+    const [localParams, setLocalParams] = useState(params)
     const params = useParams()
 
     useEffect(() => {
@@ -113,11 +114,14 @@ const ApiContainer = (props) => {
     }, [MiRMapEnabled])
 
     useEffect(() => {
-        if (stopAPICalls !== true) {
-          setPageDataIntervals([])
-            updateCurrentPage();
+      if(JSON.stringify(params) !==JSON.stringify(localParams)){
+        setLocalParams(params)
+        pageDataIntervals.forEach(interval => clearInterval(interval));
+        setPageDataIntervals([])
+          if (stopAPICalls !== true) {
+              updateCurrentPage();
+          }
         }
-
     },[params])
 
     const updateCurrentPage = () => {
@@ -138,7 +142,7 @@ const ApiContainer = (props) => {
 
                 // update data interval to get data for new currentPage
                 setDataInterval(currentPageRouter);
-          //  }
+            //}
     }
 
 
@@ -275,13 +279,13 @@ const ApiContainer = (props) => {
 
     const setKanbanIntervals = () => {
         setPageDataIntervals([
-            setInterval(() => {
-                onGetProcesses();
+            setInterval(async() => {
+                await onGetProcesses();
             }, 10000),
-            setInterval(() => {
-                onGetCards();
-                onGetSettings();
-            }, 2000)
+            setInterval(async() => {
+                await onGetCards();
+                await onGetSettings();
+            }, 1000)
         ])
     }
 
