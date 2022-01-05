@@ -252,7 +252,7 @@ const ListView = (props) => {
                                       onClick={() => {
                                           setShowDashboards(false)
                                           setTitle('Locations')
-                                          history.push('/locations')
+                                          history.push('/locations/locations')
                                       }}
                                       containerStyle={{
                                           color: "black",
