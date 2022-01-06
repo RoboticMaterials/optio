@@ -56,6 +56,7 @@ const Cards = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
+    const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
 
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
@@ -564,20 +565,52 @@ const Cards = (props) => {
             {name}
           </styled.StationName>
           <styled.ColumnHeader>
-            <styled.RowContainer>
+          <div data-tip data-for = {'lots-' + stationId}>
+            <ReactTooltip
+                id={'lots-' + stationId}
+                place="right"
+                effect="solid"
+                offset = {{top: 70, left: 95}}
+                backgroundColor = '#FFFFFF'
+                textColor = '#363636'
+                border = 'true'
+                >
+                <styled.LotCount>Number of </styled.LotCount>
+                <styled.LotCount style = {{color: '#924dff'}}>lots </styled.LotCount>
+                <styled.LotCount>at current station</styled.LotCount>
+              </ReactTooltip>
+              <styled.RowContainer>
                 <styled.LotCount>
-                {cardCount[stationId]}
+                {partCount[stationId]}
                 </styled.LotCount>
-                <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem'}}/>
-            </styled.RowContainer>
-            <styled.RowContainer>
-              <styled.LotCount>
-              {partCount[stationId]}
-              </styled.LotCount>
-              <i className = 'far fa-lemon' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem'}}/>
-            </styled.RowContainer>
+                <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
+              </styled.RowContainer>
+            </div>
+
+            <div data-tip data-for = {'parts-' + stationId}>
+              <ReactTooltip
+                  id={'parts-' + stationId}
+                  place="right"
+                  effect="solid"
+                  offset = {{top: 70, left: 95}}
+                  backgroundColor = '#FFFFFF'
+                  textColor = '#363636'
+                  border = 'true'
+                  >
+                  <styled.LotCount>Number of </styled.LotCount>
+                  <styled.LotCount style = {{color: '#924dff'}}>parts </styled.LotCount>
+                  <styled.LotCount>at current station</styled.LotCount>
+                </ReactTooltip>
+                <styled.RowContainer>
+                  <styled.LotCount>
+                  {partCount[stationId]}
+                  </styled.LotCount>
+                  <i className = 'fas fa-splotch' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
+                </styled.RowContainer>
+              </div>
           </styled.ColumnHeader>
         </styled.HeaderContainer>
+
       )
     }
 
