@@ -71,8 +71,6 @@ export const theme = {
         cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
         // cardShadow: '0 1px 0 0 rgba(0,0,0,0.1)',
         cardShadowBold: '0px 0px 8px 2px rgba(0,0,0,0.1)',
-
-
         font: {
             primary: 'Montserrat'
         },
@@ -91,18 +89,6 @@ export const theme = {
             bold: '700',
             normal: '100',
         },
-
-        // minWidth: {
-        //   tiny: `(min-width: ${size.tiny})`,
-        //   mobileS: `(min-width: ${size.mobileS})`,
-        //   mobileM: `(min-width: ${size.mobileM})`,
-        //   mobileL: `(min-width: ${size.mobileL})`,
-        //   tablet: `(min-width: ${size.tablet})`,
-        //   laptop: `(min-width: ${size.laptop})`,
-        //   laptopL: `(min-width: ${size.laptopL})`,
-        //   desktop: `(min-width: ${size.desktop})`,
-        //   desktopL: `(min-width: ${size.desktop})`
-        // },
         widthBreakpoint: {
             tiny: `${size.tiny}`,
             mobileS: `${size.mobileS}`,

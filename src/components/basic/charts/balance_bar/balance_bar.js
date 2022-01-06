@@ -46,7 +46,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
     }, [chartContainerRef])
 
     useEffect(() => {
-        setTakt(productGroup.taktTime || maxBarValue)
+        setTakt(productGroup?.taktTime || maxBarValue)
     }, [productGroup])
 
     const padding = useMemo(() => {
@@ -72,7 +72,7 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     <text x={innerWidth - bubbleHeight*5 + bubbleHeight*5/3} y={bubbleHeight/2 + 5}>Bottleneck</text>
                 </svg>
 
-                <svg className="takt-line-group" style={{pointer: "ns-resize !important"}} x={0} y={yScale(productGroup.taktTime || maxBarValue) - bubbleHeight/2}>
+                <svg className="takt-line-group" style={{pointer: "ns-resize !important"}} x={0} y={yScale(productGroup?.taktTime || maxBarValue) - bubbleHeight/2}>
                     <defs>
                         <style>{`.takt-line-group { cursor: ns-resize; } text{fill: white; font-size: 0.75rem; font-weight: 600;}`}</style>
                     </defs>
@@ -163,14 +163,15 @@ const Bar = ({ productGroupId, data, renderDropdown }) => {
                     maxValue={Math.max(maxBarValue, productGroup?.taktTime || 0)}
                     axisRight={null}
                     groupMode="grouped"
-                    axisBottom={{
-                        tickSize: 0,
-                        tickPadding: 5,
-                        tickRotation: 0,
-                        legend: '',
-                        legendPosition: 'middle',
-                        legendOffset: 32
-                    }}
+                    // axisBottom={{
+                    //     tickSize: 0,
+                    //     tickPadding: 5,
+                    //     tickRotation: 0,
+                    //     legend: '',
+                    //     legendPosition: 'middle',
+                    //     legendOffset: 32
+                    // }}
+                    axisBottom={null}
                     axisLeft={{
                         tickSize: 0,
                         tickPadding: 5,
