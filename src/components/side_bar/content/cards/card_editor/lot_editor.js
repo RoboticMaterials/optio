@@ -752,7 +752,7 @@ const FormComponent = (props) => {
 
         if (formMode === FORM_MODES.CREATE) {
 
-            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml' />
+            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml'/>
 
         } else {
 
@@ -908,14 +908,7 @@ const FormComponent = (props) => {
                                             </div>
                                         {/* </LabeledButton> */}
 
-                                        <div>
-                                            <styled.ContentTitle>
-                                                Product Template:{" "}
-                                            </styled.ContentTitle>
-                                            <styled.ContentValue>
-                                                {lotTemplate?.name}
-                                            </styled.ContentValue>
-                                        </div>
+
                                     </LabeledButton>
 
                                     <div>
@@ -1314,7 +1307,6 @@ const LotEditor = (props) => {
         cardNames,
         merge,
     } = props;
-
     const {
         current
     } = formRef || {}
@@ -1440,19 +1432,6 @@ const LotEditor = (props) => {
     if (loaded) {
         return (
             <>
-                {showLotTemplateEditor && (
-                    <LotCreatorForm
-                        isOpen={true}
-                        setSelectedTemplate = {onSelectLotTemplate}
-                        onAfterOpen={null}
-                        lotTemplateId={selectedLotTemplatesId}
-                        close={() => {
-                            setShowLotTemplateEditor(false);
-                            dispatchSetSelectedLotTemplate(null)
-                        }}
-                        processId={processId}
-                    />
-                )}
                 <styled.Container>
                     <Formik
                         innerRef={formRef}
@@ -1726,7 +1705,6 @@ const LotEditor = (props) => {
                                 // return true
                             };
 
-                            if (hidden || showLotTemplateEditor) return null;
                             return (
                                 <FormComponent
                                     useCardFields={useCardFields}
