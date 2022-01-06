@@ -116,7 +116,6 @@ const ApiContainer = (props) => {
 
     useEffect(() => {
       if(JSON.stringify(params) !==JSON.stringify(localParams) || JSON.stringify(localPath) !== JSON.stringify(history.location.pathname)) {
-        console.log('heree')
         setLocalPath(history.location.pathname)
         setLocalParams(params)
         pageDataIntervals.forEach(interval => clearInterval(interval));

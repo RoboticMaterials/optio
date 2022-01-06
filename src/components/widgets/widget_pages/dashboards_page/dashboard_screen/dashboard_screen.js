@@ -128,7 +128,6 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
-        console.log('eee')
         dispatchGetProcesses()
         return () => {
             onDashboardOpen(false)

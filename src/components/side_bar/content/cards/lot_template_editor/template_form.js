@@ -206,23 +206,15 @@ const FormComponent = (props) => {
 			/>
 			<styled.Header>
 				{/*<styled.Title>*/}
-				<BackButton
-					secondary
-					onClick={close}
-					schema={'lots'}
-				>
-				</BackButton>
+				<div style={{marginRight: "1rem", marginLeft: '11%'}}/>
 
-				<div style={{marginRight: "1rem"}}/>
-
-				<styled.TemplateNameContainer style = {{maxWidth: '50%', marginRight: '45rem'}}>
-					<styled.TemplateLabel>Product Group Name:</styled.TemplateLabel>
+					<styled.TemplateLabel style = {{marginTop: '0.2rem'}}>Product Group Name:</styled.TemplateLabel>
 					<TextField
 						name={"name"}
 						placeholder={"Enter template name..."}
 						InputComponent={Textbox}
-						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
-						inputStyle={{background: themeContext.bg.tertiary}}
+						style={{maxWidth: '60%', fontSize: themeContext.fontSize.sz2}}
+						inputStyle={{background: themeContext.bg.secondary}}
 						schema = {'lots'}
 					/>
 					<div data-tip data-for={toolTipId} style = {{justifyContent: 'center', alignSelf: 'center', marginLeft: '10rem'}}>
@@ -242,11 +234,10 @@ const FormComponent = (props) => {
 							}}
 							schema={"lots"}
 							disabled = {!!lotTemplateId ? false : true}
-							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '11%', top: '0.5rem'}}
 							label = {'Work Instructions'}
 						/>
 					</div>
-				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
 

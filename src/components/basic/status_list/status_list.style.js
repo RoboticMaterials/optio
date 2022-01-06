@@ -6,12 +6,12 @@ display: flex;
 ${containerLayout};
 align-self: center;
 overflow: hidden;
-border-radius: 1rem;
+border-radius: 0rem 0rem 0.5rem 0.5rem;
 flex-direction: column;
 z-index: 5000;
 overflow: hidden;
 min-height: 90vh;
 height: 90vh;
-width: 90vw;
+width: 95vw;
 background: ${props => props.theme.bg.primary};
 `
