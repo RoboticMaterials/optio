@@ -68,6 +68,7 @@ const ApiContainer = (props) => {
     const [pageDataIntervals, setPageDataIntervals] = useState([])
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
     const [localParams, setLocalParams] = useState(params)
+    const [localPath, setLocalPath] = useState(history?.location?.pathname)
     const params = useParams()
 
     useEffect(() => {
@@ -114,7 +115,9 @@ const ApiContainer = (props) => {
     }, [MiRMapEnabled])
 
     useEffect(() => {
-      if(JSON.stringify(params) !==JSON.stringify(localParams)){
+      if(JSON.stringify(params) !==JSON.stringify(localParams) || JSON.stringify(localPath) !== JSON.stringify(history.location.pathname)) {
+        console.log('heree')
+        setLocalPath(history.location.pathname)
         setLocalParams(params)
         pageDataIntervals.forEach(interval => clearInterval(interval));
         setPageDataIntervals([])
@@ -281,11 +284,11 @@ const ApiContainer = (props) => {
         setPageDataIntervals([
             setInterval(async() => {
                 await onGetProcesses();
-            }, 10000),
+            }, 20000),
             setInterval(async() => {
                 await onGetCards();
                 await onGetSettings();
-            }, 1000)
+            }, 2000)
         ])
     }
 
@@ -303,7 +306,7 @@ const ApiContainer = (props) => {
             }, 5000),
             setInterval(() => {
                 onGetCards();
-            }, 10000)
+            }, 20000)
         ])
     }
 
