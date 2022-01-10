@@ -102,7 +102,7 @@ const SideBar = (props) => {
     }
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
@@ -111,7 +111,7 @@ const SideBar = (props) => {
     }, [])
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
     }, [url])
 
      useEffect(() => {

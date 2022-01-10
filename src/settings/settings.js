@@ -24,17 +24,17 @@ export const apiIPAddress = () => {
 
     if (nonLocalIp === true) {
         if (!!hostServerIpAddress) {
-            return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
+            return apiIPAddress = 'https://' + hostServerIpAddress + '/api/'
         } else if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return 'http://localhost:5001/api/'
         } else {
-            return 'https://' + window.location.hostname + ':5000/api/'
+            return 'https://' + window.location.hostname + '/api/'
         }
     } else {
         if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return 'http://localhost:5001/api/'
         } else {
-            return 'https://' + window.location.hostname + ':5000/api/'
+            return 'https://' + window.location.hostname + '/api/'
         }
     }
 
