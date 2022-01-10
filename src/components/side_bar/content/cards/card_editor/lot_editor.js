@@ -758,8 +758,8 @@ const FormComponent = (props) => {
 
             return (
                 <div>
-                    <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
-                    <Button schema='fields' onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
+                    <Button schema='lots' secondary onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
+                    <Button schema='lots' secondary onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
                 </div>
             )
 

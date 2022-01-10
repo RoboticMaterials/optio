@@ -581,7 +581,7 @@ const Cards = (props) => {
               </ReactTooltip>
               <styled.RowContainer>
                 <styled.LotCount>
-                {partCount[stationId]}
+                {cardCount[stationId]}
                 </styled.LotCount>
                 <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
               </styled.RowContainer>
