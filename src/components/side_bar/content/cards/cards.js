@@ -100,6 +100,7 @@ const Cards = (props) => {
   	const [mouseOffsetX, setMouseOffsetX] = useState(null)
     const [dropNodes, setDropNodes] = useState([])
     const [previousProcessId, setPreviousProcessId] = useState(null)
+    const [hoveringStation, setHoveringStation] = useState(null)
     //the following variables are to prevent cards glitching from drag by preventing
     //api updates right after dragEnd. Its nonsense but it works.
     //when dragging lots of cards there is a risk that api call occurs right when card
@@ -862,6 +863,9 @@ const Cards = (props) => {
                 setDragIndex(dragIndexSearch(station.stationID))
                 setDraggingStationId(station.stationID)
               }}
+              onMouseEnter = {() => {
+                setHoveringStation(station.stationID)
+              }}
             >
               <styled.ColumnContainer
                 disabled = {!dropNodes.includes(station.stationID) && draggingLotId}
@@ -885,6 +889,9 @@ const Cards = (props) => {
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('QUEUE'))
             setDraggingStationId('QUEUE')
+          }}
+          onMouseEnter = {() => {
+            setHoveringStation('QUEUE')
           }}
         >
           <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
@@ -910,6 +917,9 @@ const Cards = (props) => {
             setDragIndex(dragIndexSearch('FINISH'))
             setDraggingStationId('FINISH')
           }}
+          onMouseEnter = {() => {
+            setHoveringStation('FINISH')
+          }}
         >
           <styled.ColumnContainer>
            {renderHeaderContent('FINISH')}
@@ -928,7 +938,7 @@ const Cards = (props) => {
             onAfterOpen={null}
             cardId={hoveringCard ? hoveringCard._id : null}
             processId={id ? id : null}
-            binId={hoveringCard ? hoveringCard.binId : null}
+            binId={hoveringStation ? hoveringStation : null}
             onClose={()=>{
                 setHoveringCard(null)
                 onShowCardEditor(false)
