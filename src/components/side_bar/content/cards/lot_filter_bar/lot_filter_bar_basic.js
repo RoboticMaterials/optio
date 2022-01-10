@@ -20,7 +20,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { isMobile } from "react-device-detect"
 
 //Actions
-import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+import {postSettings} from '../../../../../redux/actions/settings_actions'
 
 
 // utils
@@ -54,11 +54,11 @@ const LotFilterBarBasic = (props) => {
 
     // redux state
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
 
     //dispatch
     const dispatch = useDispatch()
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
     const [open, setOpen] = useState(true) // is filter options open ?
@@ -137,10 +137,6 @@ const LotFilterBarBasic = (props) => {
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
             >
-                <styled.ExpandContractIcon
-                    className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
-                    onClick={()=>setOpen(!open)}
-                />
                 Filter
             </styled.Description>
 
@@ -160,8 +156,8 @@ const LotFilterBarBasic = (props) => {
 
                                 // updated selectedFilterOption
                                 setSelectedFilterOption(newFilterOption)
-                                dispatchPostLocalSettings({
-                                  ...localSettings,
+                                dispatchPostSettings({
+                                  ...serverSettings,
                                   lotSummaryFilterOption: newFilterOption
                                 })
                                 const {
@@ -189,7 +185,7 @@ const LotFilterBarBasic = (props) => {
                                 minWidth: "12rem",
                                 maxWidth: "12rem",
                                 overflow: 'visible',
-                                background: themeContext.bg.tertiary,
+                                background: themeContext.bg.secondary,
                             }}
                             containerStyle={{
                                 marginRight: "1rem",
@@ -286,7 +282,7 @@ const LotFilterBarBasic = (props) => {
                                             style={{
                                                 minWidth: "10rem",
                                                 flex: 1,
-                                                background: themeContext.bg.tertiary,
+                                                background: themeContext.bg.secondary,
                                                 alignSelf: "stretch",
                                             }}
                                         />
@@ -297,8 +293,8 @@ const LotFilterBarBasic = (props) => {
                                         placeholder='Filter lots...'
                                         onChange={(e) => {
                                             setLotFilterValue(e.target.value)
-                                            dispatchPostLocalSettings({
-                                              ...localSettings,
+                                            dispatchPostSettings({
+                                              ...serverSettings,
                                               lotSummaryFilterValue: e.target.value
                                             })
                                         }}
@@ -306,7 +302,7 @@ const LotFilterBarBasic = (props) => {
                                         value = {lotFilterValue}
                                         inputStyle={{
                                             height: "100%",
-                                            background: themeContext.bg.tertiary,
+                                            background: themeContext.bg.secondary,
                                         }}
                                         style={{
                                             alignSelf: "stretch",

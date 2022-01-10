@@ -206,7 +206,6 @@ export const removeRouteFromAllDashboards = (routeId) => {
                 }, currDashboard._id.$oid))
             }
             )
-
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

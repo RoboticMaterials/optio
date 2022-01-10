@@ -1016,7 +1016,6 @@ export const moveLot = (lot, destinationBinId, startBinId, quantity) => {
   //If one type of part doesn't exist yet none of that lot can be moved along
   //Otherwise, assuming 1 to 1 ratio the type of part with lowest count limits the amount of the lot that is available to move
 export const handleNextStationBins = (bins, quantity, loadStationId, unloadStationId, process, routes, stations) => {
-
     const processRoutes = process.routes.map((routeId) => routes[routeId]);
     let unloadStations = processRoutes.map((route) =>
         !!route ? route.unload : {}
@@ -1035,7 +1034,6 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
         routes,
         stations
       );
-
       let tempBin,
         currentBin = bins[unloadStationId];
       let traveledRoute = mergingRoutes.find((route) => route.load === loadStationId);
@@ -1098,7 +1096,6 @@ export const handleNextStationBins = (bins, quantity, loadStationId, unloadStati
         count: totalQuantity,
       };
     }
-
     return bins;
   };
 

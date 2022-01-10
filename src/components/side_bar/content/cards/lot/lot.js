@@ -69,6 +69,7 @@ const Lot = (props) => {
     // component state
     const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
     const [popupOpen, setPopupOpen] = useState(false)
+
     const [showRightClickMenu, setShowRightClickMenu] = useState(false)
     const [cardHover, setCardHover] = useState(false)
     useEffect(() => {
@@ -188,8 +189,10 @@ const Lot = (props) => {
                 <i
                  className = {'fas fa-chevron-up'}
                  style = {{marginBottom: '.3rem', fontSize: '1.2rem', marginLeft: '0.4rem'}}
-                 onClick = {() => {
+                 onClick = {(e) => {
+                   setCardHover(true)
                    setShowRightClickMenu(false)
+                   e.stopPropagation()
 
                  }}
                  />
@@ -213,14 +216,16 @@ const Lot = (props) => {
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
-            draggable = {!isDashboard ? 'true' : 'false'}
+            draggable = {!lotDisabled && !isDashboard ? 'true' : 'false'}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
             style={{
-              ...containerStyle
+              ...containerStyle,
+              padding: showRightClickMenu ? '0rem' : '0.2rem'
+
             }}
             onMouseEnter = {()=>setCardHover(true)}
             onMouseLeave = {() =>setCardHover(false)}

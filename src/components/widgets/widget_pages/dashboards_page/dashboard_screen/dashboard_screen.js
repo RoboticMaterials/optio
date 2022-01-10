@@ -128,7 +128,6 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
-
         dispatchGetProcesses()
         return () => {
             onDashboardOpen(false)
@@ -461,8 +460,6 @@ const DashboardScreen = (props) => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-
-
 
         </style.Container >
     )

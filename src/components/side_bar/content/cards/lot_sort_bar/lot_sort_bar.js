@@ -16,7 +16,7 @@ import * as styled from "../zone_header/zone_header.style"
 
 // utils
 import { getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
-import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+import {postSettings} from '../../../../../redux/actions/settings_actions'
 
 import {
     FIELD_DATA_TYPES,
@@ -31,6 +31,7 @@ const LotSortBar = (props) => {
         sortMode,
         sortDirection,
         setSortMode,
+        setSortChanged,
         setSortDirection,
     } = props
 
@@ -42,10 +43,10 @@ const LotSortBar = (props) => {
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
-    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const settings = useSelector(state => state.settingsReducer.settings)
 
     const dispatch = useDispatch()
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
 
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
@@ -107,10 +108,11 @@ const LotSortBar = (props) => {
                             valueCss={props.valueCss}
                             options={lotSortOptions}
                             onChange={(values) => {
+                                setSortChanged(true)
                                 // set sort mode
                                 setSortMode(values[0])
-                                dispatchPostLocalSettings({
-                                  ...localSettings,
+                                dispatchPostSettings({
+                                  ...settings,
                                   lotSummarySortValue: values[0]
                                 })
                             }}
@@ -123,7 +125,7 @@ const LotSortBar = (props) => {
                                 borderBottomRightRadius: 0,
                                 minWidth: "10rem",
                                 maxWidth: "15rem",
-                                background: themeContext.bg.tertiary
+                                background: themeContext.bg.secondary
                             }}
                         />
                         <RotateButton
@@ -132,19 +134,20 @@ const LotSortBar = (props) => {
                             iconName1={'fas fa-arrow-up'}
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
+                            setSortChanged = {setSortChanged}
                             onStateOne={() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              dispatchPostLocalSettings({
-                                ...localSettings,
+                              dispatchPostSettings({
+                                ...settings,
                                 lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
                               })
                             }}
                             onStateTwo={() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                              dispatchPostLocalSettings({
-                                ...localSettings,
+                              dispatchPostSettings({
+                                ...settings,
                                 lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
                               })
                             }}
@@ -160,12 +163,15 @@ LotSortBar.propTypes = {
     setSortMode: PropTypes.func,
     sortMode: PropTypes.any,
     setSortDirection: PropTypes.func,
+    setSortChanged: PropTypes.func,
 }
 
 LotSortBar.defaultProps = {
     sortMode: {},
     setSortMode: () => { },
-    setSortDirection: () => { }
+    setSortDirection: () => { },
+    setSortChanged: () => { }
+
 }
 
 export default LotSortBar

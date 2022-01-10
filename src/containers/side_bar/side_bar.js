@@ -31,9 +31,11 @@ const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_sw
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
-const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
+import Cards from "../../components/side_bar/content/cards/cards"
 const StatisticsSelector = lazy(() => import('../../components/side_bar/content/statistics/statistics_selector'))
 const ProcessStatistics = lazy(() => import('../../components/side_bar/content/statistics/process_statistics/process_statistics'))
+const LotSummarySelector = lazy(() => import('../../components/side_bar/content/cards/lot_summary_selector/lot_summary_selector'))
+
 
 const SideBar = (props) => {
 
@@ -88,6 +90,7 @@ const SideBar = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
+    const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -332,7 +335,7 @@ const SideBar = (props) => {
 
         case 'processes':
             if (subpage === "lots") {
-                content = <Cards />
+                content = <> </>
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
@@ -341,7 +344,11 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            content = <Cards />
+            if (!!subpage && !!summaryProcess) {
+                content = <Cards id = {summaryProcess}/>
+            } else {
+                content = <LotSummarySelector/>
+            }
             break
 
         case 'settings':
@@ -462,7 +469,7 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && subpage !== 'statistics'}>
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && page!=='lots' && subpage !== 'statistics' && subpage!=='lots'}>
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}

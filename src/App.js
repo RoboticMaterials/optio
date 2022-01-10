@@ -96,11 +96,11 @@ const App = () => {
               <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
-                    <BrowserRouter>
+                    <BrowserRouter basename="/locations">
                         <PageErrorBoundary>
                             <>
                                 {/* Authentication */}
-                                {!authenticated && 
+                                {!authenticated &&
                                     <Route path="/" >
                                         <Authentication mobileMode={mobileMode} />
                                     </Route>

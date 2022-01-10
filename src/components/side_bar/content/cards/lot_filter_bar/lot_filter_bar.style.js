@@ -69,7 +69,7 @@ export const FiltersContainer = styled.div`
 export const ExpandableContainer = styled.div`
     position: absolute;
 
-    background-color: ${props => props.theme.bg.tertiary};
+    background-color: ${props => props.theme.bg.secondary};
     border-radius: 0.2rem;
     min-height: 2.3rem;
     min-width: 10rem;

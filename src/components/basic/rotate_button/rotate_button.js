@@ -19,6 +19,7 @@ const RotateButton = props => {
 		onStateTwo,
 		containerCss,
 		iconCss,
+		setSortChanged,
 		schema
 	} = props
 
@@ -46,6 +47,7 @@ const RotateButton = props => {
 			css={containerCss}
 			schema={schema}
 			onClick={() => {
+				setSortChanged(true)
 				setCurrentState(currentState === STATES.STATE_ONE ? STATES.STATE_TWO : STATES.STATE_ONE)
 			}}
 		>
@@ -66,6 +68,7 @@ RotateButton.propTypes = {
 	rotationTime: PropTypes.number,
 	onStateOne: PropTypes.func,
 	onStateTwo: PropTypes.func,
+	setSortChanged: PropTypes.func,
 }
 
 RotateButton.defaultProps = {
@@ -73,6 +76,7 @@ RotateButton.defaultProps = {
 	rotationTime: 500,
 	onStateOne: () => {},
 	onStateTwo: () => {},
+	setSortChanged:() => {},
 	schema: "default"
 }
 

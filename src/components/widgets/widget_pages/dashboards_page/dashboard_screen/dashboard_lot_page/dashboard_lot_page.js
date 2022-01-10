@@ -118,12 +118,10 @@ const DashboardLotPage = (props) => {
     const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
     return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
   }, [currentLot.bins[stationID]])
-  
 
-  // Have to use Sate for current lot because when the history is pushed, the current lot goes to undefined
-  // but dashboard lot page is still mounted
-  
-  
+
+
+
   const routeOptions = useMemo(() => {
     return Object.values(routes)
       // This filter basically says that the route needs to be part of the process, or (assuming loadStationId is a warehouse) the unload station needs to be the current station
@@ -149,6 +147,21 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
+
+
+  const handleBack = () => {
+    Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
+    onBack();
+  }
+
+  // Catch leaving the page
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBack);
+    return () => {
+      window.removeEventListener("beforeunload", handleBack);
+      handleBack();
+    };
+  }, []);
 
   /**
    * Start building a touch event on component mount. If this screen persists until the card is moved
@@ -366,11 +379,12 @@ const DashboardLotPage = (props) => {
 
     // Exit page
     if (exitOnFinish) {
+      await setMergedLotsRevertStates({})
       onBack();
     }
 
     return lotCopy
-    
+
   };
 
   const handlePullWarehouseLot = async (mergeLotID, quantity) => {
@@ -404,7 +418,7 @@ const DashboardLotPage = (props) => {
         mergedQuantity: quantity,
       })
     }
-    
+
 
     pushUndoHandler({
       message: `Are you sure you want to unmerge ${mergeLotCopy?.name} from ${currentLot?.name}?`,
@@ -420,14 +434,13 @@ const DashboardLotPage = (props) => {
     if (!(mergeLot._id in mergedLotsRevertStates)) {
       mergedLotsRevertStatesCopy[mergeLot._id] = mergeLot
     }
-    
+
     // Remove the quantity from the original merge lot
     if (mergeLotCopy.bins[openWarehouse].count - quantity < 1) {
       delete mergeLotCopy.bins[openWarehouse];
     } else {
       mergeLotCopy.bins[openWarehouse].count -= quantity;
     }
-    console.log(mergeLotCopy)
     dispatchPutCard(mergeLotCopy, mergeLot._id);
 
     setMergedLotsRevertStates(mergedLotsRevertStatesCopy)
@@ -573,7 +586,7 @@ const DashboardLotPage = (props) => {
       break
     }
   }
-  
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -629,10 +642,7 @@ const DashboardLotPage = (props) => {
           fractionMove = {fractionMove}
           onFractionClick = {(fraction) => onFractionClick(fraction)}
           selectedFraction = {selectedFraction}
-          handleCancel={() => {
-            Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
-            onBack()
-          }}
+          handleCancel={handleBack}
           isFinish={routeOptions.length === 0}
           quantity={moveQuantity}
           onInputChange = {(e) =>{
