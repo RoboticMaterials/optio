@@ -57,6 +57,7 @@ const Cards = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+    const currProcessCards = useRef(processCards).current
 
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
@@ -190,7 +191,7 @@ const Cards = (props) => {
 
               }
               if(!!processCards[j].bins['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]._id) && i == 0){
-                tempIds[id]['QUEUE'].splice(0,0,processCards[j]._id)
+                tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
               if(!!processCards[j].bins['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
@@ -304,7 +305,7 @@ const Cards = (props) => {
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
-  	}, [draggingLotId,cards])
+  	}, [draggingLotId, cards])
 
 
     const onDragClient = (e) => {
@@ -529,8 +530,30 @@ const Cards = (props) => {
     }
 
     const handleRightClickDeleteLot = (card, binId, partId) => {
-        let currLot = processCards[card._id]
+        //delete card from ordered ids to make card immediately dissapear
+        if(!partId){
+          let updatedIds = deepCopy(orderedIds)
+          let ind = updatedIds[id][binId].findIndex(cardId => cardId === card._id)
+          updatedIds[id][binId].splice(ind,1)
+          setOrderedIds(updatedIds)
+          dispatchPostSettings({
+            ...serverSettings,
+            orderedCardIds: updatedIds
+          })
+
+          //update card/part count array immediately
+          let tempPartCount = deepCopy(partCount)
+          let tempCardCount = deepCopy(cardCount)
+          tempPartCount[binId] -= card.bins[binId]['count']
+          tempCardCount[binId] -= 1
+
+          setPartCount(tempPartCount)
+          setCardCount(tempCardCount)
+        }
+
+        let currLot = deepCopy(card)
         let currBin = currLot.bins[binId]
+
         if(!!partId){
           delete currBin[partId]
         }

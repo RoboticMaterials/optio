@@ -152,7 +152,6 @@ const FormComponent = (props) => {
         setUseCardFields,
         merge,
     } = props;
-
     const history = useHistory()
 
     const { _id: cardId, syncWithTemplate } = values || {};
@@ -321,10 +320,10 @@ const FormComponent = (props) => {
         // if there are no remaining bins, delete the card
         if (isEmpty(newBins)) {
             const res = await dispatchDeleteCard(cardId, processId);
-            setDeletedObject(res)
-            if(Object.values(res).length>0){
+            //setDeletedObject(res)
+            //if(Object.values(res).length>0){
                close();
-             }
+             //}
 
         }
 
