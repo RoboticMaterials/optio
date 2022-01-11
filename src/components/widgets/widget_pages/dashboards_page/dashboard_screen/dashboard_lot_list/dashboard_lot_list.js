@@ -115,6 +115,7 @@ const DashboardLotList = (props) => {
                     }}
                     containerStyle={{
                         margin: ".5rem",
+                        marginBottom: '1rem',
                         // pointerEvents: station.type === 'warehouse' ? 'none' : 'auto'
                     }}
                 />
@@ -171,6 +172,7 @@ const DashboardLotList = (props) => {
                           }}
                           containerStyle={{
                               margin: ".5rem",
+                              marginBottom: '1.5rem'
                           }}
                       />
                   )
@@ -191,7 +193,7 @@ const DashboardLotList = (props) => {
                   multipleFilters = {serverSettings.enableMultipleLotFilters}
                   sortMode={!!dashboard?.sort?.mode ? dashboard.sort.mode : LOT_FILTER_OPTIONS.name}
                   setSortMode={handleChangeSortMode}
-                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.DESCENDING : SORT_DIRECTIONS.ASCENDING}
+                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.ASCENDING : SORT_DIRECTIONS.DESCENDING}
                   setSortDirection={handleChangeSortDirection}
 
                   filters={dashboard.filters || []}

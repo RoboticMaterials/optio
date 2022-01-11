@@ -198,7 +198,10 @@ const Lot = (props) => {
                  />
                 <styled.PartContainer
                   style = {{paddingBottom: '0.5rem'}}
-                  onClick = {lotDisabled ? onDeleteDisabledLot: onRightClickDeleteLot}
+                  onClick = {(e) => {
+                    e.stopPropagation()
+                    onRightClickDeleteLot()
+                  }}
                 >
                 Delete Lot
                 </styled.PartContainer>

@@ -57,6 +57,7 @@ const Cards = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+    const currProcessCards = useRef(processCards).current
 
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
@@ -100,6 +101,7 @@ const Cards = (props) => {
   	const [mouseOffsetX, setMouseOffsetX] = useState(null)
     const [dropNodes, setDropNodes] = useState([])
     const [previousProcessId, setPreviousProcessId] = useState(null)
+    const [hoveringStation, setHoveringStation] = useState(null)
     //the following variables are to prevent cards glitching from drag by preventing
     //api updates right after dragEnd. Its nonsense but it works.
     //when dragging lots of cards there is a risk that api call occurs right when card
@@ -189,7 +191,7 @@ const Cards = (props) => {
 
               }
               if(!!processCards[j].bins['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]._id) && i == 0){
-                tempIds[id]['QUEUE'].splice(0,0,processCards[j]._id)
+                tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
               if(!!processCards[j].bins['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
@@ -303,7 +305,7 @@ const Cards = (props) => {
       }
       setCardCount(tempCardCount)
       setPartCount(tempPartCount)
-  	}, [draggingLotId,cards])
+  	}, [draggingLotId, cards])
 
 
     const onDragClient = (e) => {
@@ -528,8 +530,30 @@ const Cards = (props) => {
     }
 
     const handleRightClickDeleteLot = (card, binId, partId) => {
-        let currLot = processCards[card._id]
+        //delete card from ordered ids to make card immediately dissapear
+        if(!partId){
+          let updatedIds = deepCopy(orderedIds)
+          let ind = updatedIds[id][binId].findIndex(cardId => cardId === card._id)
+          updatedIds[id][binId].splice(ind,1)
+          setOrderedIds(updatedIds)
+          dispatchPostSettings({
+            ...serverSettings,
+            orderedCardIds: updatedIds
+          })
+
+          //update card/part count array immediately
+          let tempPartCount = deepCopy(partCount)
+          let tempCardCount = deepCopy(cardCount)
+          tempPartCount[binId] -= card.bins[binId]['count']
+          tempCardCount[binId] -= 1
+
+          setPartCount(tempPartCount)
+          setCardCount(tempCardCount)
+        }
+
+        let currLot = deepCopy(card)
         let currBin = currLot.bins[binId]
+
         if(!!partId){
           delete currBin[partId]
         }
@@ -581,7 +605,7 @@ const Cards = (props) => {
               </ReactTooltip>
               <styled.RowContainer>
                 <styled.LotCount>
-                {partCount[stationId]}
+                {cardCount[stationId]}
                 </styled.LotCount>
                 <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
               </styled.RowContainer>
@@ -862,6 +886,9 @@ const Cards = (props) => {
                 setDragIndex(dragIndexSearch(station.stationID))
                 setDraggingStationId(station.stationID)
               }}
+              onMouseEnter = {() => {
+                setHoveringStation(station.stationID)
+              }}
             >
               <styled.ColumnContainer
                 disabled = {!dropNodes.includes(station.stationID) && draggingLotId}
@@ -885,6 +912,9 @@ const Cards = (props) => {
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('QUEUE'))
             setDraggingStationId('QUEUE')
+          }}
+          onMouseEnter = {() => {
+            setHoveringStation('QUEUE')
           }}
         >
           <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
@@ -910,6 +940,9 @@ const Cards = (props) => {
             setDragIndex(dragIndexSearch('FINISH'))
             setDraggingStationId('FINISH')
           }}
+          onMouseEnter = {() => {
+            setHoveringStation('FINISH')
+          }}
         >
           <styled.ColumnContainer>
            {renderHeaderContent('FINISH')}
@@ -928,7 +961,7 @@ const Cards = (props) => {
             onAfterOpen={null}
             cardId={hoveringCard ? hoveringCard._id : null}
             processId={id ? id : null}
-            binId={hoveringCard ? hoveringCard.binId : null}
+            binId={hoveringStation ? hoveringStation : null}
             onClose={()=>{
                 setHoveringCard(null)
                 onShowCardEditor(false)
