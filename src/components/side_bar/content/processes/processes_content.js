@@ -80,7 +80,7 @@ const ProcessesContent = () => {
                 }
                 onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
                 onMouseLeave={() => dispatchSetSelectedProcess(null)}
-                onClick={(process) => {
+                onEditClick={(process) => {
                     // If task button is clicked, start editing it
                     dispatchSetSelectedProcess(process)
                     dispatchEditing(true)

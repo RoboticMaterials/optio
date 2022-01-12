@@ -254,12 +254,13 @@ const SideBar = (props) => {
         const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
 
         const time = Date.now()
-        if ((page === "processes" && subpage === 'lots') || page === "lots" || page === "statistics") {
+        if ((page === "processes" && subpage === 'lots') || page === "lots") {
             if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 
         } else if (page === 'settings') {
+        // if (page === 'settings') {
             if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
             setPageWidth(600)
             dispatchSetWidth(600)
@@ -469,7 +470,7 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && page!=='lots' && subpage !== 'statistics' && subpage!=='lots'}>
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page!=='lots' && subpage!=='lots'}>
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}

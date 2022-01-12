@@ -47,20 +47,6 @@ const SideBarSwitcher = (props) => {
                 currentMode={url}
             />
 
-          {/*  <SideBarButton
-                mode={'tasks'}
-                setShowSideBarPage={(page) => {
-                    dispatch(setMode(page));
-                    history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
-                    dispatch(deselectTask())
-                    dispatchProcessEditing(false)
-                    dispatchTaskEditing(false)
-                }}
-                currentMode={url}
-            /> */}
-
             <SideBarButton
                 mode={'processes'}
                 setShowSideBarPage={(page) => {
@@ -74,32 +60,6 @@ const SideBarSwitcher = (props) => {
                 }}
                 currentMode={url}
             />
-
-            {/* Commented out for now, probably going to delete */}
-            {/* <SideBarButton
-                mode={'objects'}
-                setShowSideBarPage={(page) => {
-                    dispatch(setMode(page));
-                    history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
-                    dispatch(deselectTask())
-                }}
-                currentMode={url}
-            /> */}
-            {/* {MiRMapEnabled &&
-              <SideBarButton
-                  mode={'scheduler'}
-                  setShowSideBarPage={(page) => {
-                      dispatch(setMode(page));
-                      history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
-                      dispatch(deselectTask())
-                  }}
-                  currentMode={url}
-              />
-            } */}
 
             <SideBarButton
                 mode={'lots'}
