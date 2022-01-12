@@ -39,7 +39,7 @@ const defaultState = {
 
 export default function cardsReducer(state = defaultState, action) {
   let processCards = {}
-  let statCards = deepCopy(state.stationCards)
+  let statCards = {}
   switch (action.type) {
     case GET + CARD + SUCCESS:
       return {
@@ -79,30 +79,19 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         stationCards: {...state.stationCards, [action.payload.stationId]: {
-          ...state.stationCards[action.payload.stationId], ...action.payload.cards
+          ...action.payload.cards
           }},
         pending: false,
       }
 
     case PUT + CARD + SUCCESS:
-      Object.keys(action.payload.card.bins).forEach((binId) => {
 
-        if(statCards[binId]) {
-          statCards[binId][card._id] = card
-        }
-         else {
-          statCards[binId] = {
-            [card._id]: card
-          }
-        }
-      })
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
         processCards: {...state.processCards, [action.payload.processId]: {
             ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
           }},
-        stationCards: statCards,
         pending: false,
       }
 

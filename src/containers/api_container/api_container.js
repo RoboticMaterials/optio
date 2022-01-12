@@ -60,6 +60,7 @@ const ApiContainer = (props) => {
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
 
     // States
@@ -207,10 +208,8 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-
         await onGetSettings();
         await onGetMaps()
-
         if (mapValues === undefined) {
             props.onLoad()
             setApiError(true)
@@ -250,9 +249,9 @@ const ApiContainer = (props) => {
       else{
         setPageDataIntervals([
             setInterval(async () => {
-                onGetStationCards(params.stationID)
-                onGetDashboards() // must go last
-            }, 5000)
+                await onGetStationCards(params.stationID)
+                await onGetDashboards() // must go last
+            }, 1000)
         ])
       }
     }
