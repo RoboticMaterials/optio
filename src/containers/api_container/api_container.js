@@ -30,7 +30,7 @@ import { getIsEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
-import { getCards, getProcessCards } from "../../redux/actions/card_actions";
+import { getCards, getProcessCards, getStationCards } from "../../redux/actions/card_actions";
 import { mapValues } from 'lodash';
 
 const ApiContainer = (props) => {
@@ -45,6 +45,7 @@ const ApiContainer = (props) => {
     const onGetLotTemplates = () => dispatch(getLotTemplates())
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const onGetCards = () => dispatch(getCards())
+    const onGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const onGetProcesses = () => dispatch(getProcesses());
 
     const onGetSettings = () => dispatch(getSettings())
@@ -59,6 +60,7 @@ const ApiContainer = (props) => {
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
 
     // States
@@ -92,7 +94,6 @@ const ApiContainer = (props) => {
 
 
     useEffect(() => {
-
 
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
         if (!MiRMapEnabled) {
@@ -207,10 +208,8 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-
         await onGetSettings();
         await onGetMaps()
-
         if (mapValues === undefined) {
             props.onLoad()
             setApiError(true)
@@ -228,7 +227,6 @@ const ApiContainer = (props) => {
 
         props.apiLoaded()
         props.onLoad()
-
     }
 
     //  DATA LOADERS SECTION BEGIN
@@ -241,7 +239,7 @@ const ApiContainer = (props) => {
                 await onGetStations()
                 await onGetSettings();
                 await onGetTasks()
-                await onGetCards()
+                await onGetStationCards(params.stationID)
                 await onGetProcesses()
                 await onGetTasks();
                 await onGetDashboards() // must go last
@@ -251,9 +249,9 @@ const ApiContainer = (props) => {
       else{
         setPageDataIntervals([
             setInterval(async () => {
-                onGetCards()
-                onGetDashboards() // must go last
-            }, 5000)
+                await onGetStationCards(params.stationID)
+                await onGetDashboards() // must go last
+            }, 1000)
         ])
       }
     }

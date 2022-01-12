@@ -9,6 +9,7 @@ export const LOT_TEMPLATE = 'LOT_TEMPLATE';
 export const LOT_TEMPLATES = 'LOT_TEMPLATES';
 export const LOTS = 'LOTS';
 export const PROCESS_CARDS = 'PROCESS_CARDS';
+export const STATION_CARDS = 'STATION_CARDS';
 export const CARD_HISTORY = 'CARD_HISTORY';
 export const DATA_PAGE = 'DATA_PAGE';
 export const JUNK = 'JUNK';
