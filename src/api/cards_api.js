@@ -42,7 +42,6 @@ export async function getCardsCount() {
     } catch (error) {
         handleError(error);
     }
-
 }
 
 export async function getCards() {
@@ -71,6 +70,25 @@ export async function getProcessCards(processId) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + "processes/" + processId + "/cards",
+            headers: getHeaders()
+        });
+        // Success 🎉
+        const data = response.data;
+        const dataJson = JSON.parse(data)
+        return dataJson;
+
+
+    } catch (error) {
+        handleError(error);
+    }
+
+}
+
+export async function getStationCards(stationId) {
+    try {
+        const response = await axios({
+            method: 'get',
+            url: apiIPAddress() + "stations/" + stationId + "/cards",
             headers: getHeaders()
         });
         // Success 🎉
@@ -126,7 +144,7 @@ export async function putCard(card, ID) {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         card.map_id = currMapId
-        
+
         const response = await axios({
             method: 'PUT',
             url: apiIPAddress() + operator + '/' + ID,

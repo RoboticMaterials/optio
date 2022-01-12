@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -38,17 +38,18 @@ const DashboardLotList = (props) => {
 
     const dispatch = useDispatch()
 
-    const stations = useSelector(state => state.stationsReducer.stations)
-    const cards = useSelector(state => state.cardsReducer.cards)
-    const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
-    const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const stations = useSelector(state => state.stationsReducer.stations) || {}
+    const cards = useSelector(state => state.cardsReducer.cards) || {}
+    const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID] || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
+    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
+    const stationCards = useSelector(state => state.cardsReducer.stationCards)[stationID] || cards
 
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
-
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+
     const size = useWindowSize()
     const station = stations[stationID]
 
@@ -79,10 +80,11 @@ const DashboardLotList = (props) => {
         dispatchPutDashboard(dashboardCopy, dashboard._id.$oid)
     }
 
+
     const renderLotCards = useMemo(() => {
 
       if(!!serverSettings.enableMultipleLotFilters){
-        let organizedCards = Object.values(cards)
+        let organizedCards = Object.values(stationCards)
                                 .filter(card => getIsCardAtBin(card, station?._id))
                                 .map(card => {
                                     const {
@@ -123,7 +125,7 @@ const DashboardLotList = (props) => {
         })
       }
       else{
-        let organizedCards = Object.values(cards)
+        let organizedCards = Object.values(stationCards)
                                 .filter(card => getIsCardAtBin(card, station?._id))
                                 .map(card => {
                                     const {
@@ -179,7 +181,7 @@ const DashboardLotList = (props) => {
               })
           }
 
-    }, [cards, onCardClicked, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
+    }, [stationCards, onCardClicked, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
 
     return (
         <styled.LotListContainer>
