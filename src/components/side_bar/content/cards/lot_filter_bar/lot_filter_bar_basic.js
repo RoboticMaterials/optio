@@ -20,7 +20,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { isMobile } from "react-device-detect"
 
 //Actions
-import {postSettings} from '../../../../../redux/actions/settings_actions'
+import {postSettings, getSettings} from '../../../../../redux/actions/settings_actions'
 
 
 // utils
@@ -59,6 +59,8 @@ const LotFilterBarBasic = (props) => {
     //dispatch
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
+
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
     const [open, setOpen] = useState(true) // is filter options open ?
@@ -150,16 +152,21 @@ const LotFilterBarBasic = (props) => {
                             // dropdownCss={props.dropdownCss}
                             // valueCss={props.valueCss}
                             options={lotFilterOptions}
-                            onChange={(values) => {
+                            onChange={async(values) => {
+
                                 // *** selected new option ***
                                 const newFilterOption = values[0]
 
                                 // updated selectedFilterOption
                                 setSelectedFilterOption(newFilterOption)
-                                dispatchPostSettings({
-                                  ...serverSettings,
-                                  lotSummaryFilterOption: newFilterOption
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response =>{
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummaryFilterOption: newFilterOption
+                                  })
                                 })
+
                                 const {
                                     dataType
                                 } = newFilterOption
@@ -291,11 +298,14 @@ const LotFilterBarBasic = (props) => {
                                 [VALUE_MODES.TEXT_BOX]:
                                     <Textbox
                                         placeholder='Filter lots...'
-                                        onChange={(e) => {
+                                        onChange={async(e) => {
                                             setLotFilterValue(e.target.value)
-                                            dispatchPostSettings({
-                                              ...serverSettings,
-                                              lotSummaryFilterValue: e.target.value
+                                            let settingsPromise = dispatchGetSettings()
+                                            settingsPromise.then(response =>{
+                                              dispatchPostSettings({
+                                                  ...response,
+                                                  lotSummaryFilterValue: e.target.value
+                                              })
                                             })
                                         }}
                                         focus={shouldFocusLotFilter}

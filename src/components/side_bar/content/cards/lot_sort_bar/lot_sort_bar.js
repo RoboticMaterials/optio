@@ -16,7 +16,7 @@ import * as styled from "../zone_header/zone_header.style"
 
 // utils
 import { getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
-import {postSettings} from '../../../../../redux/actions/settings_actions'
+import {postSettings, getSettings} from '../../../../../redux/actions/settings_actions'
 
 import {
     FIELD_DATA_TYPES,
@@ -47,6 +47,7 @@ const LotSortBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
 
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
@@ -107,13 +108,16 @@ const LotSortBar = (props) => {
                         <DropDownSearch
                             valueCss={props.valueCss}
                             options={lotSortOptions}
-                            onChange={(values) => {
+                            onChange={async(values) => {
                                 setSortChanged(true)
                                 // set sort mode
                                 setSortMode(values[0])
-                                dispatchPostSettings({
-                                  ...settings,
-                                  lotSummarySortValue: values[0]
+                                let settingsPromise = await dispatchGetSettings()
+                                settingsPromise.then(response =>{
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortValue: values[0]
+                                  })
                                 })
                             }}
                             values={[sortMode]}
@@ -135,20 +139,26 @@ const LotSortBar = (props) => {
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
                             setSortChanged = {setSortChanged}
-                            onStateOne={() => {
+                            onStateOne={async() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              dispatchPostSettings({
-                                ...settings,
-                                lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                              let settingsPromise = dispatchGetSettings()
+                              settingsPromise.then(response => {
+                                dispatchPostSettings({
+                                    ...response,
+                                    lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                                })
                               })
                             }}
-                            onStateTwo={() => {
+                            onStateTwo={async() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                              dispatchPostSettings({
-                                ...settings,
-                                lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                              let settingsPromise = dispatchGetSettings()
+                              settingsPromise.then(response =>{
+                                dispatchPostSettings({
+                                    ...response,
+                                    lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                                })
                               })
                             }}
                         />

@@ -14,6 +14,7 @@ import {
     CARD_HISTORY,
     PROCESS_CARDS,
     SHOW_EDITOR,
+    STATION_CARDS,
     SHOW_BARCODE_MODAL,
 } from '../types/data_types';
 
@@ -125,6 +126,35 @@ export const getProcessCards = (processId) =>  async (dispatch) => {
     }
 
     const actionName = GET + PROCESS_CARDS;
+
+    // payload is returned back
+    const payload = await api_action(actionName, callback, dispatch);
+
+    return payload;
+
+};
+
+export const getStationCards = (stationId) =>  async (dispatch) => {
+
+    /*
+        Invoked in api_action()
+        Whatever is returned from this function is the payload
+        that will be dispatched to redux (if successful)
+    */
+    const callback = async () => {
+
+        // make request
+        const cards = await api.getStationCards(stationId);
+        const cardsObj = convertArrayToObject(cards, "_id")
+
+        // return payload for redux
+        return {
+            cards: cardsObj,
+            stationId
+        };
+    }
+
+    const actionName = GET + STATION_CARDS;
 
     // payload is returned back
     const payload = await api_action(actionName, callback, dispatch);
