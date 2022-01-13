@@ -38,7 +38,7 @@ const LotFormCreator = (props) => {
 		setSelectedEditingField,
 		lotTemplateId
 	} = props
-
+	
 	const processes = useSelector(state => state.processesReducer.processes)
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 	const dispatch = useDispatch()

@@ -33,7 +33,7 @@ const ContentListItem = (props) => {
     const theme = useContext(ThemeContext);
 
     const renderLocationTypeIcon = (element) => {
-        
+
 
         const LocationTypes ={
             ...StationTypes,
@@ -78,7 +78,7 @@ const ContentListItem = (props) => {
                 )
 
             case 'user':
-                return 
+                return
         }
     }
 
@@ -100,7 +100,7 @@ const ContentListItem = (props) => {
                         </>
                     }
 
-                    {element.type === 'user' && 
+                    {element.type === 'user' &&
                         <styled.ListItemIcon
                             style = {{color: 'orange' }}
                             className='fas fa-user'
@@ -143,7 +143,7 @@ const ContentListItem = (props) => {
                         </div>
                         :
                         <styled.ListItemIcon
-                            className='fas fa-clone'
+                            className='fas fa-route'
                             style={{ color: '#ffb62e' }}
                             onClick={() => onIconClick(element)}
                         />

@@ -62,9 +62,10 @@ const TemplateSelectorSidebar = (props) => {
                         schema={'lots'}
                         secondary
                         onClick={() => {
-                            history.push(`/lots/${params.id}/template`)
                             onTemplateSelectClick(null)
                             onTemplateEditClick(null)
+                            history.push(`/lots/${params.id}/template`)
+
                         }}
                         style={{
                             margin: '0rem 0rem 1rem 0rem',

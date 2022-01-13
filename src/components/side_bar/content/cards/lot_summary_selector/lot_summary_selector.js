@@ -7,7 +7,8 @@ import { defaultColors } from '../../../../basic/charts/nivo_theme';
 import {setSummaryProcess} from '../../../../../redux/actions/card_page_actions'
 import ContentList from '../../content_list/content_list';
 import { setSelectedProcess } from '../../../../../redux/actions/processes_actions';
-
+import {getCards} from '../../../../../redux/actions/card_actions'
+import {getSettings} from '../../../../../redux/actions/settings_actions'
 const LotSummarySelector = (props) => {
 
     const processes = useSelector(state => state.processesReducer.processes)
@@ -16,10 +17,13 @@ const LotSummarySelector = (props) => {
     const dispatch = useDispatch()
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchSetSummaryProcess = (processId) => dispatch(setSummaryProcess(processId))
-
+    const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetSettings = () => dispatch(getSettings())
     const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
     useEffect(() => {
+      dispatchGetCards()
+      dispatchGetSettings()
       history.push("/lots/summary")
     }, [])
 
@@ -43,30 +47,6 @@ const LotSummarySelector = (props) => {
             itemStyle={{cursor: 'pointer'}}
         />
     )
-
-    // return (
-    //     <styled.Page>
-    //         <styled.Header>Processes</styled.Header>
-    //         {Object.values(processes).map((process, i) => (
-    //             <styled.ProcessCard onClick={() => {
-    //               history.push(process._id + "/lots")
-    //               dispatchSetSummaryProcess(process._id)
-    //           }}
-    //           >
-    //                 <styled.Container style={{width: '50%'}}>
-    //                     <styled.IconContainer className={'fas fa-route'} style={{color: '#924dff'}}/>
-    //                     <styled.LabelContainer>
-    //                         <styled.Label>{process.name}</styled.Label>
-    //                         <styled.SubLabel>{process?.flattened_stations?.length || null} Stations</styled.SubLabel>
-    //                     </styled.LabelContainer>
-    //                 </styled.Container>
-    //                 <styled.Container style={{flexGrow: '1'}}>
-    //                 </styled.Container>
-    //                 <styled.Chevron className="fas fa-chevron-right" />
-    //             </styled.ProcessCard>
-    //         ))}
-    //     </styled.Page>
-    // )
 }
 
 export default LotSummarySelector

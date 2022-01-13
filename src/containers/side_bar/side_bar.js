@@ -51,6 +51,9 @@ const SideBar = (props) => {
         id
     } = params
 
+    const idRef = useRef(id)
+    idRef.current = id
+
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
@@ -92,14 +95,16 @@ const SideBar = (props) => {
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
     const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
-
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
     const url = useLocation().pathname
     const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings', 'statistics']
 
     const boundToWindowSize = () => {
-        const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
+      let newWidth
+      if(!!idRef.current && idRef.current!=='summary') newWidth = Math.max(window.innerWidth, Math.max(360, pageWidth))
+      else newWidth = Math.min(window.innerWidth, Math.min(360, pageWidth))
+
         setPageWidth(newWidth)
         dispatchSetWidth(newWidth)
     }
@@ -243,41 +248,29 @@ const SideBar = (props) => {
             id: prevId
         } = prevParams
 
-        console.log([prevPage, prevId, prevSubpage], [page, id, subpage], ['lots', 'statistics'].includes(page), id !== 'summary', ['locations', 'processes'].includes(prevPage), prevId === 'summary')
+        //console.log([prevPage, prevId, prevSubpage], [page, id, subpage], ['lots', 'statistics'].includes(page), id !== 'summary', ['locations', 'processes'].includes(prevPage), prevId === 'summary')
 
         if (page === prevPage && id === prevId) {return}
         if ((['lots', 'statistics'].includes(page) && id !== 'summary') && (['locations', 'processes'].includes(prevPage) || prevId === 'summary')) {
-            console.log('A')
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
         } else if (page === 'settings') {
-            console.log('B')
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(600)
             dispatchSetWidth(600)
         } else if (!subpage){
             if (prevWidth) {
-                console.log("C1")
                 setPageWidth(prevWidth)
                 dispatchSetWidth(prevWidth)
                 setPrevWidth(null)
             } else {
-                console.log('C2')
                 setPageWidth(450)
                 dispatchSetWidth(450)
             }
         }
 
         setPrevParams(params)
-
-
-
-
-
-
-
-
 
 
         // if (prevPage === 'settings') {
@@ -380,7 +373,6 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            console.log(subpage, summaryProcess)
             if (!!subpage && !!summaryProcess) {
                 content = <Cards id = {summaryProcess}/>
             } else {
@@ -506,10 +498,10 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper 
-                    mode={mode} 
-                    style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} 
-                    open={showSideBar} 
+                <styled.SidebarWrapper
+                    mode={mode}
+                    style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }}
+                    open={showSideBar}
                     secondaryColor={['locations', 'processes'].includes(page) || id === 'summary'}
                 >
                 <Suspense fallback = {null}>
