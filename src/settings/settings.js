@@ -26,13 +26,13 @@ export const apiIPAddress = () => {
         if (!!hostServerIpAddress) {
             return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
         } else if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return 'http://localhost:5001/api/'
         } else {
             return 'https://' + window.location.hostname + ':5000/api/'
         }
     } else {
         if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return 'http://localhost:5001/api/'
         } else {
             return 'https://' + window.location.hostname + ':5000/api/'
         }
