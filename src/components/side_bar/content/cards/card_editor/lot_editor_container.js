@@ -1298,6 +1298,7 @@ const LotEditorContainer = (props) => {
                         collectionCount={parseInt(collectionCount + 1)}
                         lotTemplateId={lotTemplateId}
                         lotTemplate={lotTemplate}
+                        binId = {props.binId}
                         cardId={params.subpage === 'create' ? null : params.id}
                         processId={params.subpage === 'create' ? params.id : cards[params.id]?.process_id}
                         onSelectLotTemplate={handleSelectLotTemplate}

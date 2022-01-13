@@ -27,6 +27,7 @@ const LotContainer = (props) => {
     isPartial,
     onDeleteDisabledLot,
     onRightClickDeleteLot,
+    onDashboard,
     // quantity,
     ...rest
   } = props
@@ -35,11 +36,8 @@ const LotContainer = (props) => {
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
   const params = useParams();
-  const { dashboardID } = params;
-  const lot =
-    useSelector((state) => {
-      return state.cardsReducer.cards[lotId];
-    }) || {};
+  const { dashboardID, stationID } = params;
+  const lot = !onDashboard ? useSelector(state => state.cardsReducer.cards[lotId]) : useSelector(state => state.cardsReducer.stationCards)[params.stationID][lotId];
   const stations = useSelector(state => state.stationsReducer.stations)
   const {
     bins,
@@ -70,9 +68,10 @@ const LotContainer = (props) => {
     [lotTemplateId, lot, dashboard]
   );
 
-  if (bins === undefined) { return null }
+  if (bins === undefined){
+    return null
+  }
   const { count=0, ...partials } = bins[binId] || {};
-
   return (
     <styled.LotFamilyContainer>
           {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
@@ -147,9 +146,11 @@ const LotContainer = (props) => {
 LotContainer.propTypes = {
   lotId: PropTypes.string,
   binId: PropTypes.string,
+  onDashboard: PropTypes.bool,
 };
 
 LotContainer.defaultProps = {
+  onDashboard: false,
   lotId: "",
   binId: "",
   enableFlagSelector: false,

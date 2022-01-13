@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -21,7 +21,7 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from '../../../../../../constants
 
 // Import Actions
 import { putDashboard } from '../../../../../../redux/actions/dashboards_actions'
-
+import {getStationCards} from '../../../../../../redux/actions/card_actions'
 
 const DashboardLotList = (props) => {
 
@@ -37,20 +37,34 @@ const DashboardLotList = (props) => {
     } = params || {}
 
     const dispatch = useDispatch()
-
-    const stations = useSelector(state => state.stationsReducer.stations)
-    const cards = useSelector(state => state.cardsReducer.cards)
-    const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
-    const serverSettings = useSelector(state => state.settingsReducer.settings)
-    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const stations = useSelector(state => state.stationsReducer.stations) || {}
+    const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID] || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
+    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
+    const stationCards = useSelector(state => state.cardsReducer.stationCards)[stationID] || {}
+    const cardsRef = useRef(stationCards).current
 
     const [lotFilterValue, setLotFilterValue] = useState('')
+    const [cards, setCards] = useState(stationCards)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
-
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
+    const cardRef = useRef(cards)
+
+    cardRef.current = cards
     const size = useWindowSize()
     const station = stations[stationID]
+
+    useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
+      if(JSON.stringify(stationCards)!==JSON.stringify(cards)){
+        setCards(stationCards)
+      }
+  	}, [stationCards])
+
+    useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
+      dispatchGetStationCards(stationID)
+    }, [])
 
     const handleChangeSortMode = (mode) => {
         let dashboardCopy = deepCopy(dashboard)
@@ -79,17 +93,16 @@ const DashboardLotList = (props) => {
         dispatchPutDashboard(dashboardCopy, dashboard._id.$oid)
     }
 
-    const renderLotCards = useMemo(() => {
 
+    const renderLotCards = useMemo(() => {
       if(!!serverSettings.enableMultipleLotFilters){
         let organizedCards = Object.values(cards)
-                                .filter(card => getIsCardAtBin(card, station?._id))
                                 .map(card => {
                                     const {
                                         bins = {},
                                     } = card || {}
 
-                                    const quantity = bins[stationID]?.count
+                                    const quantity = bins[stationID]?.count || 1
                                     return {...card, quantity}
                                 })
 
@@ -106,6 +119,7 @@ const DashboardLotList = (props) => {
 
             return (
                 <LotContainer
+                    onDashboard = {true}
                     lotId={currCardId}
                     binId={stationID}
                     enableFlagSelector={false}
@@ -115,6 +129,7 @@ const DashboardLotList = (props) => {
                     }}
                     containerStyle={{
                         margin: ".5rem",
+                        marginBottom: '1rem',
                         // pointerEvents: station.type === 'warehouse' ? 'none' : 'auto'
                     }}
                 />
@@ -123,24 +138,19 @@ const DashboardLotList = (props) => {
       }
       else{
         let organizedCards = Object.values(cards)
-                                .filter(card => getIsCardAtBin(card, station?._id))
                                 .map(card => {
                                     const {
                                         bins = {},
                                     } = card || {}
 
-                                    const quantity = bins[stationID]?.count
+                                    const quantity = bins[stationID]?.count || 1
                                     return {...card, quantity}
                                 })
 
         if (!!dashboard.sort && !!dashboard.sort.mode && !!dashboard.sort.direction) {
             sortBy(organizedCards, dashboard.sort.mode, dashboard.sort.direction)
           }
-
           return organizedCards
-              .filter((card, ind) => {
-                  return getIsCardAtBin(card, station?._id)
-              })
               .filter((currLot) => {
                   const {
                       name: currLotName,
@@ -154,14 +164,13 @@ const DashboardLotList = (props) => {
                   }, lotFilterValue, selectedFilterOption)
               })
               .map((card, ind) => {
-
                   const {
                       _id: currCardId,
                       process_id: currCardProcessId
                   } = card || {}
-
                   return (
                       <LotContainer
+                          onDashboard = {true}
                           lotId={currCardId}
                           binId={stationID}
                           enableFlagSelector={false}
@@ -171,6 +180,7 @@ const DashboardLotList = (props) => {
                           }}
                           containerStyle={{
                               margin: ".5rem",
+                              marginBottom: '1.5rem'
                           }}
                       />
                   )
@@ -191,7 +201,7 @@ const DashboardLotList = (props) => {
                   multipleFilters = {serverSettings.enableMultipleLotFilters}
                   sortMode={!!dashboard?.sort?.mode ? dashboard.sort.mode : LOT_FILTER_OPTIONS.name}
                   setSortMode={handleChangeSortMode}
-                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.DESCENDING : SORT_DIRECTIONS.ASCENDING}
+                  sortDirection={dashboard?.sort?.direction?.id == 0 ? SORT_DIRECTIONS.ASCENDING : SORT_DIRECTIONS.DESCENDING}
                   setSortDirection={handleChangeSortDirection}
 
                   filters={dashboard.filters || []}

@@ -152,7 +152,6 @@ const FormComponent = (props) => {
         setUseCardFields,
         merge,
     } = props;
-
     const history = useHistory()
 
     const { _id: cardId, syncWithTemplate } = values || {};
@@ -321,10 +320,10 @@ const FormComponent = (props) => {
         // if there are no remaining bins, delete the card
         if (isEmpty(newBins)) {
             const res = await dispatchDeleteCard(cardId, processId);
-            setDeletedObject(res)
-            if(Object.values(res).length>0){
+            //setDeletedObject(res)
+            //if(Object.values(res).length>0){
                close();
-             }
+             //}
 
         }
 
@@ -758,8 +757,8 @@ const FormComponent = (props) => {
 
             return (
                 <div>
-                    <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
-                    <Button schema='fields' onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
+                    <Button schema='lots' secondary onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
+                    <Button schema='lots' secondary onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
                 </div>
             )
 

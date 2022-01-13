@@ -75,6 +75,7 @@ const DashboardLotPage = (props) => {
   const { stationID, dashboardID, lotID, warehouseID } = params || {};
 
   const cards = useSelector((state) => state.cardsReducer.cards);
+  const stationCards = useSelector(state => state.cardsReducer.stationCards)[params.stationID] || {};
   const processCards = useSelector(state => state.cardsReducer.processCards)
   const routes = useSelector((state) => state.tasksReducer.tasks);
   const processes = useSelector((state) => state.processesReducer.processes);
@@ -90,7 +91,7 @@ const DashboardLotPage = (props) => {
   const dispatchGetCards = async () => await dispatch(getCards())
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
 
-  let [currentLot, setCurrentLot] = useState(cards[lotID])
+  let [currentLot, setCurrentLot] = useState(stationCards[lotID])
   const currentProcess = useRef(processes[currentLot?.process_id]).current
 
   const loadStationID = useMemo(() => {
