@@ -42,6 +42,10 @@ const ContentHeader = (props) => {
             return 'Routes'
         }
 
+        else if (content === 'lots') {
+            return 'Travelers'
+        }
+
         else {
             return upperCaseFirstLetterInString(content)
         }

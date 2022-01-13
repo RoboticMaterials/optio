@@ -15,6 +15,7 @@ const LotSummarySelector = (props) => {
     const history = useHistory()
     const dispatch = useDispatch()
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const dispatchSetSummaryProcess = (processId) => dispatch(setSummaryProcess(processId))
 
     const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
@@ -33,6 +34,7 @@ const LotSummarySelector = (props) => {
             }
             onClick={(process) => {
                 history.push(process._id + "/lots")
+                dispatchSetSummaryProcess(process._id)
             }}
             onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
             onMouseLeave={() => dispatchSetSelectedProcess(null)}
