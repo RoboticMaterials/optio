@@ -125,7 +125,7 @@ export default function LocationContent() {
                     onSetSelectedLocation(null)
                   }
                 }}
-                onClick={(location) => {
+                onEditClick={(location) => {
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {

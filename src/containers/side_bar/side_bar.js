@@ -105,7 +105,7 @@ const SideBar = (props) => {
     }
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
@@ -114,7 +114,7 @@ const SideBar = (props) => {
     }, [])
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
     }, [url])
 
      useEffect(() => {
@@ -238,46 +238,82 @@ const SideBar = (props) => {
     // sets width to full screen if card subpage is open in processes
     useEffect(() => {
         const {
-
+            page: prevPage,
+            subpage: prevSubpage,
+            id: prevId
         } = prevParams
 
-        const prevPage = prevParams.page
-        const prevSubpage = prevParams.subpage
-        const prevId = prevParams.id
+        console.log([prevPage, prevId, prevSubpage], [page, id, subpage], ['lots', 'statistics'].includes(page), id !== 'summary', ['locations', 'processes'].includes(prevPage), prevId === 'summary')
 
-        if (prevPage === 'settings') {
-            setPageWidth(450)
-            dispatchSetWidth(450)
-            setPrevWidth(null)
-        }
-
-        const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
-
-        const time = Date.now()
-        if ((page === "processes" && subpage === 'lots') || page === "lots" || page === "statistics") {
-            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        if (page === prevPage && id === prevId) {return}
+        if ((['lots', 'statistics'].includes(page) && id !== 'summary') && (['locations', 'processes'].includes(prevPage) || prevId === 'summary')) {
+            console.log('A')
+            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
-
         } else if (page === 'settings') {
-            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+            console.log('B')
+            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(600)
             dispatchSetWidth(600)
-        } else if (!!prevWidth) {
-            setPageWidth(prevWidth)
-            dispatchSetWidth(prevWidth)
-            setPrevWidth(null)
+        } else if (!subpage){
+            if (prevWidth) {
+                console.log("C1")
+                setPageWidth(prevWidth)
+                dispatchSetWidth(prevWidth)
+                setPrevWidth(null)
+            } else {
+                console.log('C2')
+                setPageWidth(450)
+                dispatchSetWidth(450)
+            }
         }
-
 
         setPrevParams(params)
 
-        if (!showSideBar) {
-            setPageWidth(450)
-            dispatchSetWidth(450)
-        }
 
-        return () => { }
+
+
+
+
+
+
+
+
+        // if (prevPage === 'settings') {
+        //     setPageWidth(450)
+        //     dispatchSetWidth(450)
+        //     setPrevWidth(null)
+        // }
+
+        // const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
+
+        // const time = Date.now()
+        // if ((page === "processes" && subpage === 'lots') || page === "lots") {
+        //     if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        //     setPageWidth(window.innerWidth)
+        //     dispatchSetWidth(window.innerWidth)
+
+        // } else if (page === 'settings') {
+        // // if (page === 'settings') {
+        //     if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        //     setPageWidth(600)
+        //     dispatchSetWidth(600)
+        // } else if (!!prevWidth) {
+        //     setPageWidth(prevWidth)
+        //     dispatchSetWidth(prevWidth)
+        //     setPrevWidth(null)
+        // }
+
+
+        // setPrevParams(params)
+
+        // if (!showSideBar) {
+        //     setPageWidth(450)
+        //     dispatchSetWidth(450)
+        // }
+
+        // return () => { }
 
     }, [page, subpage, id, pageWidth, showSideBar])
 
@@ -344,6 +380,7 @@ const SideBar = (props) => {
             break
 
         case 'lots':
+            console.log(subpage, summaryProcess)
             if (!!subpage && !!summaryProcess) {
                 content = <Cards id = {summaryProcess}/>
             } else {
@@ -469,7 +506,12 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && page!=='lots' && subpage !== 'statistics' && subpage!=='lots'}>
+                <styled.SidebarWrapper 
+                    mode={mode} 
+                    style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} 
+                    open={showSideBar} 
+                    secondaryColor={['locations', 'processes'].includes(page) || id === 'summary'}
+                >
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}

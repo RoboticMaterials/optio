@@ -89,7 +89,7 @@ const ContentListItem = (props) => {
                 error={error}
                 onMouseEnter={() => onMouseEnter(element)}
                 onMouseLeave={() => onMouseLeave(element)}
-                onClick={onClick}
+                onClick={() => onClick(element)}
                 style={style}
             >
                 <styled.ListItemIconContainer style = {{paddingTop: element.type === "charger_position" ? '0.6rem': '0rem'}}>
@@ -114,6 +114,20 @@ const ContentListItem = (props) => {
                             style = {{color: inQueue === true ? 'grey' : 'lightGreen' }}
                             className='fas fa-play'
                             onClick={() => onIconClick(inQueue)}
+                        />
+                    }
+
+                    {props.schema === 'lots' &&
+                        <styled.ListItemIcon
+                            schema={schema}
+                            className='far fa-window-restore'
+                        />
+                    }
+
+                    {props.schema === 'statistics' &&
+                        <styled.ListItemIcon
+                            schema={schema}
+                            className='icon-statistics'
                         />
                     }
 
@@ -147,22 +161,24 @@ const ContentListItem = (props) => {
 
                 <styled.ListItemIconContainer>
 
-                    {showEdit &&
+                    {showEdit ?
                         <styled.ListItemIcon
                             className='fas fa-edit'
                             onClick={() => onEditClick(element)}
                             style={{ color: theme.bg.quaternary }}
                         />
+                        :
+                        showDelete ?
+                            <styled.ListItemIcon
+                                className="far fa-minus-square"
+                                onClick={() => onDeleteClick(element)}
+                                style = {{color: 'orange' }}
+                            />
+                            :
+                            <styled.ListItemIcon
+                                className="fas fa-chevron-right"
+                            />
                     }
-
-                    {showDelete &&
-                        <styled.ListItemIcon
-                            className="far fa-minus-square"
-                            onClick={() => onDeleteClick(element)}
-                            style = {{color: 'orange' }}
-                        />
-                    }
-
 
                 </styled.ListItemIconContainer>
 

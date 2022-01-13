@@ -96,7 +96,7 @@ const App = () => {
               <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
-                    <BrowserRouter basename="/locations">
+                    <BrowserRouter>
                         <PageErrorBoundary>
                             <>
                                 {/* Authentication */}
