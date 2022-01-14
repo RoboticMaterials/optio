@@ -114,10 +114,10 @@ const LotSortBar = (props) => {
                                 setSortMode(values[0])
                                 let settingsPromise = await dispatchGetSettings()
                                 settingsPromise.then(response =>{
-                                  dispatchPostSettings({
-                                      ...response,
-                                      lotSummarySortValue: values[0]
-                                  })
+                                  //dispatchPostSettings({
+                                //      ...response,
+                                  //    lotSummarySortValue: values[0]
+                                //  })
                                 })
                             }}
                             values={[sortMode]}
@@ -142,24 +142,29 @@ const LotSortBar = (props) => {
                             onStateOne={async() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              let settingsPromise = dispatchGetSettings()
-                              settingsPromise.then(response => {
-                                dispatchPostSettings({
-                                    ...response,
-                                    lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                              setTimeout(() => {
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response => {
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                                  })
                                 })
-                              })
+                              }, 4000);
+
                             }}
                             onStateTwo={async() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                              let settingsPromise = dispatchGetSettings()
-                              settingsPromise.then(response =>{
-                                dispatchPostSettings({
-                                    ...response,
-                                    lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                              setTimeout(() => {
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response =>{
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                                  })
                                 })
-                              })
+                              }, 4000);
                             }}
                         />
                     </styled.OptionContainer>

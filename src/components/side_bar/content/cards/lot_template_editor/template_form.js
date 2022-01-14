@@ -187,6 +187,8 @@ const FormComponent = (props) => {
 							setConfirmDeleteTemplateModal(null)
 							onDeleteClick()
 							close()
+							history.push(`/lots/${params.id}/create`)
+
 					}}
 					handleOnClick2={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -385,7 +387,6 @@ const FormComponent = (props) => {
 				style={buttonStyle}
 				onClick={()=>{
 					setConfirmDeleteTemplateModal(true)
-					history.push(`/lots/${params.id}/create`)
 				}}
 				schema={"error"}
 			>

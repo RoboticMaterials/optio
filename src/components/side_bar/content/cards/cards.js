@@ -148,6 +148,7 @@ const Cards = (props) => {
             }
           }
         }
+
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: {
@@ -156,12 +157,15 @@ const Cards = (props) => {
            }
         })
         if(needsSortUpdate) setNeedsSortUpdate(false)
-        setOrderedIds(tempIds)
+
+        setOrderedIds({
+          ...orderedIds,
+          [id]: tempIds[id]
+        })
         setCards(processCards)
       }
-      else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        if(sortedCards) setSortedCards(null)//it wants to setOrderedIds right after re sorting which causes glitch. this if statement gets rid of the glitch
-        else setOrderedIds(orderedCardIds)
+      else if(JSON.stringify(orderedIds[id]) !== JSON.stringify(orderedCardIds[id]) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
+        setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
         //console.log('if I come up while dropping a card from drag bad things have happened')
@@ -216,6 +220,16 @@ const Cards = (props) => {
     }, [clientY])
 
     useEffect(() => {//updates orderedIds when sort is changed
+        setUpdate(false)
+        if(!activeTimeout){
+          setActiveTimeout(true)
+        }
+        else{
+          clearTimeout(currTimeout)
+        }
+        let timeout = setTimeout(handleSetUpdate, 4000)
+        setCurrTimeout(timeout)
+
         if (sortMode && sortChanged) {
           let tempCards = []
           Object.values(cards).forEach((card) => {
