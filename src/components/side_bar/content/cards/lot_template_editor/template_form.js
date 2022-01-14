@@ -4,6 +4,7 @@ import React, {useState, useEffect, useContext, useRef} from "react";
 import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import {useHistory, useParams} from 'react-router-dom'
 import uuid from "uuid";
 import FadeLoader from "react-spinners/FadeLoader"
 import ReactTooltip from "react-tooltip";
@@ -88,6 +89,9 @@ const FormComponent = (props) => {
 	} = props
 	const themeContext = useContext(ThemeContext)
 	useChange()
+
+	const history = useHistory()
+	const params = useParams()
 
 	//tooltip
 	const ref = useRef()
@@ -183,6 +187,8 @@ const FormComponent = (props) => {
 							setConfirmDeleteTemplateModal(null)
 							onDeleteClick()
 							close()
+							history.push(`/lots/${params.id}/create`)
+
 					}}
 					handleOnClick2={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -354,6 +360,7 @@ const FormComponent = (props) => {
 				style={{...buttonStyle}}
 				onClick={async () => {
 					submitForm()
+					history.push(`/lots/${params.id}/create`)
 				}}
 				schema={"ok"}
 				disabled={submitDisabled}
@@ -378,7 +385,9 @@ const FormComponent = (props) => {
 			{formMode === FORM_MODES.UPDATE &&
 			<Button
 				style={buttonStyle}
-				onClick={()=>setConfirmDeleteTemplateModal(true)}
+				onClick={()=>{
+					setConfirmDeleteTemplateModal(true)
+				}}
 				schema={"error"}
 			>
 				Delete Template

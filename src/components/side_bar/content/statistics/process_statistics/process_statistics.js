@@ -112,7 +112,7 @@ const ProcessStatistics = ({ id }) => {
         if (!data || !data.throughput) return
         let throughputDataCopy = []
         if (isCumulative) {
-            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), data.throughput[0].data[0].x)
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), Number.MAX_VALUE)
             const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
 
             await data.throughput.forEach(async (line, i) => {

@@ -58,7 +58,6 @@ const Cards = (props) => {
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
     const currProcessCards = useRef(processCards).current
-
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
        serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
@@ -149,17 +148,24 @@ const Cards = (props) => {
             }
           }
         }
+
         dispatchPostSettings({
           ...serverSettings,
-          orderedCardIds: tempIds
+          orderedCardIds: {
+            ...serverSettings.orderedCardIds,
+            [id]: tempIds[id]
+           }
         })
         if(needsSortUpdate) setNeedsSortUpdate(false)
-        setOrderedIds(tempIds)
+
+        setOrderedIds({
+          ...orderedIds,
+          [id]: tempIds[id]
+        })
         setCards(processCards)
       }
-      else if(JSON.stringify(orderedIds) !== JSON.stringify(orderedCardIds) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        if(sortedCards) setSortedCards(null)//it wants to setOrderedIds right after re sorting which causes glitch. this if statement gets rid of the glitch
-        else setOrderedIds(orderedCardIds)
+      else if(JSON.stringify(orderedIds[id]) !== JSON.stringify(orderedCardIds[id]) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
+        setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
         //console.log('if I come up while dropping a card from drag bad things have happened')
@@ -214,6 +220,16 @@ const Cards = (props) => {
     }, [clientY])
 
     useEffect(() => {//updates orderedIds when sort is changed
+        setUpdate(false)
+        if(!activeTimeout){
+          setActiveTimeout(true)
+        }
+        else{
+          clearTimeout(currTimeout)
+        }
+        let timeout = setTimeout(handleSetUpdate, 4000)
+        setCurrTimeout(timeout)
+
         if (sortMode && sortChanged) {
           let tempCards = []
           Object.values(cards).forEach((card) => {
@@ -247,7 +263,7 @@ const Cards = (props) => {
             else{
               matchesFilter = getMatchesFilter(tempCard, lotFilterValue, selectedFilterOption)
             }
-            if(matchesFilter) tempCards[tempCard._id] = tempCard
+            if(matchesFilter) tempCards[tempCard?._id] = tempCard
           }
         }
         if(lotFilterValue!== '' || Object.values(tempCards).length>0) setCards(tempCards)
@@ -269,15 +285,15 @@ const Cards = (props) => {
 
         let id = process.flattened_stations[i].stationID
         for(const j in cards){
-          if(!!cards[j].bins[id]){
+          if(!!cards[j] && !!cards[j].bins[id]){
             cardCount+=1
             partCount+=cards[j].bins[id].count
           }
-          if(!!cards[j].bins['QUEUE'] && i == 0){
+          if(!!cards[j] && !!cards[j].bins['QUEUE'] && i == 0){
             queueCardCount+=1
             queuePartCount+=cards[j].bins['QUEUE'].count
           }
-          if(!!cards[j].bins['FINISH'] && i == 0){
+          if(!!cards[j] && !!cards[j].bins['FINISH'] && i == 0){
             finishCardCount+=1
             finishPartCount+=cards[j].bins['FINISH'].count
           }

@@ -224,15 +224,6 @@ const LotEditorContainer = (props) => {
 
     const handleSelectLotTemplate = (templateId) => {
 
-        if (templateId === null) {
-            templateId =
-                Object.values(lotTemplates).find(
-                    (lotTemplate) =>
-                        (!process || lotTemplate.processId === process._id) &&
-                        lotTemplate.name === "Basic"
-                )?._id || null;
-        }
-
         let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
         if (isObject(card) && card?.lotTemplateId) {

@@ -278,6 +278,7 @@ const ApiContainer = (props) => {
     }
 
     const setKanbanIntervals = () => {
+      if(!!params && params.data1 && params.data1 === 'summary'){
         setPageDataIntervals([
             setInterval(async() => {
                 await onGetProcesses();
@@ -285,8 +286,21 @@ const ApiContainer = (props) => {
             setInterval(async() => {
                 await onGetCards();
                 await onGetSettings();
-            }, 2000)
+            }, 1000)
         ])
+      }
+      else{
+        setPageDataIntervals([
+            setInterval(async() => {
+                await onGetProcesses();
+            }, 20000),
+            setInterval(async() => {
+                await onGetProcessCards(params.data1);
+                await onGetSettings();
+            }, 1000)
+        ])
+      }
+
     }
 
     const setSettingsPageIntervals = () => {
@@ -306,7 +320,6 @@ const ApiContainer = (props) => {
             }, 20000)
         ])
     }
-
 
     //  API LOGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
