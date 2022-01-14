@@ -112,13 +112,15 @@ const LotSortBar = (props) => {
                                 setSortChanged(true)
                                 // set sort mode
                                 setSortMode(values[0])
-                                let settingsPromise = await dispatchGetSettings()
-                                settingsPromise.then(response =>{
-                                  //dispatchPostSettings({
-                                //      ...response,
-                                  //    lotSummarySortValue: values[0]
-                                //  })
+                                setTimeout(() => {
+                                  let settingsPromise = dispatchGetSettings()
+                                  settingsPromise.then(response =>{
+                                    dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortValue: values[0]
+                                    })
                                 })
+                              }, 4000);
                             }}
                             values={[sortMode]}
                             labelField={"label"}
