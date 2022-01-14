@@ -661,7 +661,7 @@ const Cards = (props) => {
           ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
               let partBins = card?.bins[stationId] || {}
-              if(Object.values(partBins).length === 1){
+              if(Object.values(partBins).length === 1 && index<7){
                 return (
                   <styled.CardContainer
                     onMouseOver = {()=>{
@@ -761,7 +761,7 @@ const Cards = (props) => {
                   </styled.CardContainer>
                 )
               }
-                else{
+                else if(index<7){
                   return (
                     Object.keys(partBins).map((part) => {
                       const isPartial = part !== 'count' ? true : false

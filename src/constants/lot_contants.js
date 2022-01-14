@@ -281,3 +281,10 @@ export const LOT_SORT_OPTIONS = {
     quantity: { label: "Quantity", fieldName: 'quantity', primary: true, dataType: "INTEGER"},
     totalQuantity: { label: "Total Quantity", fieldName: 'totalQuantity', primary: true, dataType: "INTEGER"},
 }
+
+export const SUMMMARY_LOT_SORT_OPTIONS = {
+    name: { label: "Name", fieldName: 'name', primary: true, dataType: "STRING" },
+    lotNum: { label: "Lot Number", fieldName: 'lotNum', primary: true, dataType: "STRING" },
+    flags: { label: "Flags", fieldName: 'flags', primary: true, dataType: "FLAGS" },
+    totalQuantity: { label: "Total Quantity", fieldName: 'totalQuantity', primary: true, dataType: "INTEGER"},
+}

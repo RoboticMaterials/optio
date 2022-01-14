@@ -22,6 +22,7 @@ import {
     FIELD_DATA_TYPES,
     LOT_FILTER_OPTIONS,
     LOT_SORT_OPTIONS,
+    SUMMMARY_LOT_SORT_OPTIONS,
     SORT_DIRECTIONS
 } from "../../../../../constants/lot_contants"
 
@@ -40,7 +41,7 @@ const LotSortBar = (props) => {
     const {
         dashboardID,
     } = params || {}
-
+    
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
     const settings = useSelector(state => state.settingsReducer.settings)
@@ -49,12 +50,12 @@ const LotSortBar = (props) => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetSettings = () => dispatch(getSettings())
 
-    const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
+    const [lotSortOptions, setLotSortOptions] = useState(dashboardID ? [...Object.values(LOT_SORT_OPTIONS)] : [...Object.values(SUMMMARY_LOT_SORT_OPTIONS)])
 
     useEffect(() => {
         const templateFields = getAllTemplateFields(lotTemplates)
 
-        let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
+        let tempLotSortOptions = dashboardID ? [...Object.values(LOT_SORT_OPTIONS)] : [...Object.values(SUMMMARY_LOT_SORT_OPTIONS)]
 
         templateFields.forEach((currTemplateField) => {
 
