@@ -56,8 +56,9 @@ const ApiContainer = (props) => {
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
-    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-
+    const mapViewEnabled = localReducer.localSettings.mapViewEnabled
+    const localSettings = localReducer.localSettings
+    const maps = useSelector(state => state.mapReducer.maps)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -118,6 +119,16 @@ const ApiContainer = (props) => {
         }
 
     })
+
+    // If the currentMap changes, fetch the new resources
+    useEffect(() => {
+        onGetStations()
+        onGetDashboards()
+        onGetProcesses()
+        onGetTasks()
+        onGetCards()
+        onGetLotTemplates()
+    }, [localSettings.currentMapId])
 
     const updateCurrentPage = () => {
 
@@ -209,7 +220,20 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
 
         await onGetSettings();
-        await onGetMaps()
+        const mapsPromise = onGetMaps();
+
+        // If there is no map yet, set it to the first map
+        mapsPromise.then(maps => {
+            if (!localSettings.currentMapId && !!maps) {
+                onPostLocalSettings({
+                    ...localSettings,
+                    currentMapId: maps[0]?._id || null
+                })
+            }
+        })
+
+        
+        
 
         if (mapValues === undefined) {
             props.onLoad()
@@ -219,8 +243,8 @@ const ApiContainer = (props) => {
 
         await onGetStations()
         await onGetDashboards()
-        await onGetTasks()
         await onGetProcesses()
+        await onGetTasks()
         await onGetCards()
         await onGetLotTemplates()
 

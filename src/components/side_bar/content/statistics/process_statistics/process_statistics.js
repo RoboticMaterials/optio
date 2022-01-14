@@ -80,8 +80,6 @@ const ProcessStatistics = ({ id }) => {
 
     // Helpers
     const refreshData = async (dateRange) => {
-        setBalancePG(null)
-        setData(null)
         setThroughputData([])
         const tempData = await getProcessStatistics(id, dateRange[0], dateRange[1])
         console.log(tempData)
@@ -92,12 +90,12 @@ const ProcessStatistics = ({ id }) => {
             alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             if (!(balancePG in tempData.balance)) {
-                await setBalancePG(null)
+                setBalancePG(null)
             }
-            await setThroughputData(deepCopy(tempData.throughput))
-            await setData(tempData)
+            setThroughputData(deepCopy(tempData.throughput))
+            setData(tempData)
             if (!!tempData.balance && Object.keys(tempData.balance).length > 0 && !(balancePG in tempData.balance)) {
-                await setBalancePG(Object.keys(tempData.balance)[0])
+                setBalancePG(Object.keys(tempData.balance)[0])
             }
         }
     }
@@ -107,6 +105,13 @@ const ProcessStatistics = ({ id }) => {
             setBalancePG(Object.keys(data.balance)[0])
         }
     }, [data, balancePG])
+
+    useEffect(() => {
+        if (!data || !data.throughput) return []
+        
+        toggleCumulative();
+
+    }, [data, isCumulative])
 
     const toggleCumulative = async () => {
         if (!data || !data.throughput) return
@@ -133,13 +138,6 @@ const ProcessStatistics = ({ id }) => {
         }
         setThroughputData(throughputDataCopy);
     }
-
-    useEffect(() => {
-        if (!data || !data.throughput) return []
-        
-        toggleCumulative();
-
-    }, [data, isCumulative])
 
     const renderProductGroupDropdown = useMemo(() => {
         const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id]?.name || id}))
@@ -296,7 +294,7 @@ const ProcessStatistics = ({ id }) => {
                         {renderHeader('Line Balance', 'balance')}
                         <styled.ChartContainer style={{height: '26rem'}}>
                             {!!data ? 
-                                !!data.balance && !!balancePG && data.balance[balancePG].length ?
+                                !!data.balance && !!balancePG && (balancePG in data.balance) && data.balance[balancePG].length ?
                                     <BalanceBar data={data.balance[balancePG]} productGroupId={balancePG} renderDropdown={renderProductGroupDropdown}/>
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
@@ -316,7 +314,7 @@ const ProcessStatistics = ({ id }) => {
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
                                 throughputData.length > 1 ? 
-                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
+                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v*1000)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />

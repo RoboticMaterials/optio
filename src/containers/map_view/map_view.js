@@ -108,34 +108,6 @@ export class MapView extends Component {
 
       if (!!currentMap) {
         this.setState({currentMap: currentMap})
-      } else if (!this.state.currentMap && this.props.localSettings.currentMapId === null && this.props.maps.length > 0) {
-          this.setState({currentMap: this.props.maps[0]})
-
-
-          const updatedSettings = {
-            ...this.props.localSettings,
-            currentMapId: this.props.maps[0]._id,
-          }
-          const postSettingsPromise = this.props.dispatchPostLocalSettings(updatedSettings)
-          postSettingsPromise.then(() => {
-            const getStationsPromise = this.props.dispatchGetStations()
-            getStationsPromise.then((stations) => {
-                //// Apply the event translation to each station
-                let stationsCopy = []
-                Object.values(stations).forEach(station => {
-
-                    let [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                    station = {
-                        ...station,
-                        x: x,
-                        y: y,
-                    }
-                    stationsCopy[station._id] = station
-
-                })
-                this.props.dispatchUpdateStations(stationsCopy, null, this.d3) // Bulk Update
-            })
-          })
       }
     }
 

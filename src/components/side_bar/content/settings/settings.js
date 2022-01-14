@@ -42,6 +42,9 @@ import config from '../../../../settings/config'
 import { useHistory } from "react-router-dom";
 
 
+// Import API
+import { clearMap } from '../../../../api/development_api'
+
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
 
@@ -57,6 +60,7 @@ const Settings = () => {
     const dispatchGetDashboards = () => dispatch(getDashboards())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
+    const dispatchClearMap = () => clearMap(developmentPassword)
 
     const dispatchGetStations = () => dispatch(getStations())
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -77,10 +81,14 @@ const Settings = () => {
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
     const [showShiftSettings, setShowShiftSettings] = useState(false)
+
     const [confirmUnlock, setConfirmUnlock] = useState(false)
     const [confirmLock, setConfirmLock] = useState(false)
+    const [confirmClearMap, setConfirmClearMap] = useState(false)
+    
     const [addTaskAlert, setAddTaskAlert] = useState(null)
     const [saveDisabled, setSaveDisabled] = useState(true)
+    const [developmentPassword, setDevelopmentPassword] = useState('')
 
     const themeContext = useContext(ThemeContext);
 
@@ -103,6 +111,7 @@ const Settings = () => {
       const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
       const localChange = !getIsEquivalent(localSettingsState, localSettings)
 
+      
 
       if(!!serverChange || !!mapChange || !!localChange){
         setSaveDisabled(false)
@@ -382,7 +391,12 @@ const Settings = () => {
                             </styled.RowContainer>
                         }
 
-
+                    <Button
+                        style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem', background: 'black', color: 'white' }}
+                        schema={"settings"}
+                        onClick={() => setConfirmClearMap(true)}
+                    >Clear Map
+                    </Button>
 
                     </>
                 }
@@ -527,14 +541,14 @@ const Settings = () => {
         return (
             <>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem' }}>
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem', cursor: 'pointer' }} onClick={() => {
+                            setShowShiftSettings(!showShiftSettings)
+                        }}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
-                        onClick={() => {
-                            setShowShiftSettings(!showShiftSettings)
-                        }}
+                        
                     />
 
                 </styled.RowContainer>
@@ -619,30 +633,55 @@ const Settings = () => {
     return (
         <>
             <ConfirmDeleteModal
-                isOpen={!!confirmLock || !!confirmUnlock}
-                title={!!confirmLock ? "Are you sure you want to lock all dashboards?" : "Are you sure you want to unlock all dashboards?"}
+                isOpen={confirmLock || confirmUnlock || confirmClearMap}
+                title={confirmClearMap ?
+                        'Are you sure you want to clear this map?'
+                        :
+                        confirmLock ?
+                            "Are you sure you want to lock all dashboards?"
+                            :
+                            "Are you sure you want to unlock all dashboards?"
+                }
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => {
-                    setConfirmLock(false)
-                    setConfirmUnlock(false)
+                    if (confirmClearMap) setConfirmClearMap(false)
+                    else if (confirmLock) setConfirmLock(false)
+                    else if (confirmUnlock) setConfirmUnlock(false)
                 }}
                 handleOnClick1={() => {
-                    if (!!confirmLock) {
-                        handleLockUnlockDashboards(true)
+                    if (confirmClearMap) {
+                        const successPromise = dispatchClearMap()
+                        successPromise.then(success => {
+                            if (success) {
+                                window.location.reload(false);
+                            } else {
+                                alert('Incorrect Development Password')
+                            }
+                        })
                     }
-                    else {
-                        handleLockUnlockDashboards(false)
-                    }
-                    setConfirmLock(false)
-                    setConfirmUnlock(false)
+                    else if (confirmLock) handleLockUnlockDashboards(true)
+                    else if (confirmUnlock) handleLockUnlockDashboards(false)
 
+                    if (confirmLock) setConfirmLock(false)
+                    if (confirmUnlock) setConfirmUnlock(false)
+                    if (confirmClearMap) setConfirmClearMap(false)
                 }}
                 handleOnClick2={() => {
-                    setConfirmLock(false)
-                    setConfirmUnlock(false)
+                    if (confirmClearMap) setConfirmClearMap(false)
+                    else if (confirmLock) setConfirmLock(false)
+                    else if (confirmUnlock) setConfirmUnlock(false)
                 }}
-            />
+            >
+                {confirmClearMap && <Textbox
+                    placeholder="Enter development password"
+                    value={developmentPassword}
+                    onChange={(event) => {
+                        setDevelopmentPassword(event.target.value)
+                    }}
+                    style={{ width: '100%' }}
+                />}
+            </ConfirmDeleteModal>
 
             <TaskAddedAlert
                 containerStyle={{
