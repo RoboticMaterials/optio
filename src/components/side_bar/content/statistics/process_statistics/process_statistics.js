@@ -218,7 +218,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Finished Product</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{data.total_throughputs.total} Parts</styled.PrimaryValue>
-                                    {data.total_throughputs.data.map((datum, i) => (
+                                    {data.total_throughputs.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -239,7 +239,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>1 Part Every</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{secondsToReadable(data.production_rates.total)}</styled.PrimaryValue>
-                                    {data.production_rates.data.map((datum, i) => (
+                                    {data.production_rates.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -260,7 +260,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Total</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{data.wip.total} Parts</styled.PrimaryValue>
-                                    {data.wip.data.map((datum, i) => (
+                                    {data.wip.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
