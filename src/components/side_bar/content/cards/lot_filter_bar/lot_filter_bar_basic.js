@@ -161,10 +161,10 @@ const LotFilterBarBasic = (props) => {
                                 setSelectedFilterOption(newFilterOption)
                                 let settingsPromise = dispatchGetSettings()
                                 settingsPromise.then(response =>{
-                                //  dispatchPostSettings({
-                                //      ...response,
-                                //      lotSummaryFilterOption: newFilterOption
-                                //  })
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummaryFilterOption: newFilterOption
+                                  })
                                 })
 
                                 const {
@@ -302,10 +302,10 @@ const LotFilterBarBasic = (props) => {
                                             setLotFilterValue(e.target.value)
                                             let settingsPromise = dispatchGetSettings()
                                             settingsPromise.then(response =>{
-                                            //  dispatchPostSettings({
-                                            //      ...response,
-                                              //    lotSummaryFilterValue: e.target.value
-                                            //  })
+                                              dispatchPostSettings({
+                                                  ...response,
+                                                  lotSummaryFilterValue: e.target.value
+                                              })
                                             })
                                         }}
                                         focus={shouldFocusLotFilter}
