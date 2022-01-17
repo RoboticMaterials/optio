@@ -13,6 +13,7 @@ import uuid from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
+import {setSelectedProcess} from '../../../../redux/actions/processes_actions'
 import {throttle, debounce} from 'lodash'
 import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
@@ -47,6 +48,7 @@ const Cards = (props) => {
     const dispatch = useDispatch()
     const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchSetSelectedProcess = (processID) => dispatch(setSelectedProcess(processID))
     const dispatchDeleteCard = async (ID) => await dispatch(deleteCard(ID))
 
     const themeContext = useContext(ThemeContext)
@@ -102,7 +104,6 @@ const Cards = (props) => {
     const [dropNodes, setDropNodes] = useState([])
     const [previousProcessId, setPreviousProcessId] = useState(null)
     const [hoveringStation, setHoveringStation] = useState(null)
-
     //the following variables are to prevent cards glitching from drag by preventing
     //api updates right after dragEnd. Its nonsense but it works.
     //when dragging lots of cards there is a risk that api call occurs right when card
@@ -130,6 +131,7 @@ const Cards = (props) => {
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
+        console.log('1')
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
@@ -169,9 +171,11 @@ const Cards = (props) => {
         setCards(processCards)
       }
       else if(JSON.stringify(orderedIds[id]) !== JSON.stringify(orderedCardIds[id]) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
+        console.log('2')
         setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
+        console.log('3')
         //console.log('if I come up while dropping a card from drag bad things have happened')
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)
@@ -708,7 +712,8 @@ const Cards = (props) => {
                               for(const i in process.flattened_stations){
                                 shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
                               }
-
+                              shouldAcceptDrop(card._id, stationId, 'QUEUE')
+                              shouldAcceptDrop(card._id, stationId, 'FINISH')
                             }}
                             onDragEnd = {(e)=>{
                               handleDrop(false)
@@ -821,7 +826,8 @@ const Cards = (props) => {
                                 for(const i in process.flattened_stations){
                                   shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
                                 }
-
+                                shouldAcceptDrop(card._id, stationId, 'QUEUE')
+                                shouldAcceptDrop(card._id, stationId, 'FINISH')
                               }}
                               onDragEnd = {(e)=>{
                                 handleDrop(true)
@@ -835,6 +841,7 @@ const Cards = (props) => {
                                 setCurrTimeout(timeout)
                                 let lotDiv = document.getElementById(draggingLotId + dragFromStation )
                                 lotDiv.style.display = 'flex'//restore
+                                lotDiv.style.maxHeight = '100rem'
                                 setDragIndex(null)
                                 setStartIndex(null)
                                 setAllowHomeDrop(null)
@@ -844,6 +851,7 @@ const Cards = (props) => {
                                 setDropNodes([])
                                 e.target.style.opacity = '1'
                                 e.target.style.display = 'flex'
+                                e.target.style.maxHeight = '100rem'
                                 e.preventDefault()
                               }}
                             >
@@ -964,6 +972,7 @@ const Cards = (props) => {
     const renderQueue = useMemo(() => {
       return (
         <div
+          style = {{pointerEvents: !dropNodes.includes('QUEUE') && draggingLotId && 'none'}}
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('QUEUE'))
             setDraggingStationId('QUEUE')
@@ -972,7 +981,10 @@ const Cards = (props) => {
             setHoveringStation('QUEUE')
           }}
         >
-          <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
+          <styled.ColumnContainer
+            style = {{paddingBottom: '0.5rem'}}
+            disabled = {!dropNodes.includes('QUEUE') && draggingLotId}
+          >
            {renderHeaderContent('QUEUE')}
             <styled.StationColumnContainer
               id = {'QUEUE'}
@@ -995,6 +1007,7 @@ const Cards = (props) => {
     const renderFinish = useMemo(() => {
       return (
         <div
+          style = {{pointerEvents: !dropNodes.includes('FINISH') && draggingLotId && 'none'}}
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('FINISH'))
             setDraggingStationId('FINISH')
@@ -1003,7 +1016,9 @@ const Cards = (props) => {
             setHoveringStation('FINISH')
           }}
         >
-          <styled.ColumnContainer>
+          <styled.ColumnContainer
+            disabled = {!dropNodes.includes('FINISH') && draggingLotId}
+          >
            {renderHeaderContent('FINISH')}
             <styled.StationColumnContainer
               id = 'FINISH'
@@ -1041,6 +1056,7 @@ const Cards = (props) => {
               containerStyle = {{alignSelf: 'center'}}
               schema = {'lots'}
               onClick = {() => {
+                dispatchSetSelectedProcess(null)
                 history.push('/lots/summary')
               }}
                />
