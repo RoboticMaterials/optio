@@ -116,7 +116,7 @@ export const StationColumnContainer = styled.div`
     margin-top: .5rem;
     min-height: 1rem;
     max-height: ${props => props.maxHeight};
-    overflow: auto;
+    overflow: ${props => props.isOverflowing ? 'auto' : 'visible'};
     border-radius: .4rem;
     background-color: ${props =>props.theme.bg.secondary};
     justify-content: start;

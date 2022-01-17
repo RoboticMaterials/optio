@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef, useContext, memo, useCallback, useMemo, lazy, Suspense} from 'react';
+import VisibilitySensor from 'react-visibility-sensor'
 
 import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
@@ -101,6 +102,7 @@ const Cards = (props) => {
     const [dropNodes, setDropNodes] = useState([])
     const [previousProcessId, setPreviousProcessId] = useState(null)
     const [hoveringStation, setHoveringStation] = useState(null)
+
     //the following variables are to prevent cards glitching from drag by preventing
     //api updates right after dragEnd. Its nonsense but it works.
     //when dragging lots of cards there is a risk that api call occurs right when card
@@ -120,8 +122,10 @@ const Cards = (props) => {
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
-  				fieldDiv.style.display = 'none'
+  				fieldDiv.style.maxHeight = '1px'
+
   		}
+
   	}, [dragIndex, clientY, clientX])
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
@@ -332,6 +336,9 @@ const Cards = (props) => {
 
     const dragIndexSearch = (stationId) => {
       if(!!draggingLotId && !!stationId){
+        if(lotFilterValue !== '') {
+          return 0
+        }
         for(const i in orderedIds[id][stationId]){
           let ele = document.getElementById(orderedIds[id][stationId][i] + stationId)
           let midY = (ele?.getBoundingClientRect().bottom + ele?.getBoundingClientRect().top)/2
@@ -545,6 +552,15 @@ const Cards = (props) => {
      setDraggingLotId(null)
     }
 
+    const isOverflowing = (stationID) => {
+      let div = document.getElementById(stationID)
+      let divHeight = div.getBoundingClientRect().height
+      if(viewHeight-divHeight<60){
+        return true
+      }
+      return false
+    }
+
     const handleRightClickDeleteLot = (card, binId, partId) => {
         //delete card from ordered ids to make card immediately dissapear
         if(!partId){
@@ -661,107 +677,119 @@ const Cards = (props) => {
           ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
               let partBins = card?.bins[stationId] || {}
-              if(Object.values(partBins).length === 1 && index<7){
+              if(Object.values(partBins).length === 1){
                 return (
-                  <styled.CardContainer
-                    onMouseOver = {()=>{
-                      setHoveringCard(card)
-                    }}
-                    onMouseLeave = {()=>setHoveringCard(null)}
-                    onClick = {()=>setShowLotEditor(true)}
-                    draggable = {true}
-                    onDragStart = {(e)=>{
-                      setUpdate(false)
-                      setDivHeight(e.target.offsetHeight+3)
-                      setDivWidth(e.target.offsetWidth)
-                      setDraggingLotId(card._id)
-                      setDragFromStation(stationId)
-                      setStartIndex(index)
-                      let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
-                      let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
+                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
+                    {({isVisible}) =>
+                      <>
+                        {!!isVisible || draggingLotId === card._id?
+                          <styled.CardContainer
+                            onMouseOver = {()=>{
+                              setHoveringCard(card)
+                            }}
+                            onMouseLeave = {()=>setHoveringCard(null)}
+                            onClick = {()=>setShowLotEditor(true)}
+                            draggable = {true}
+                            onDragStart = {(e)=>{
+                              setUpdate(false)
+                              setDivHeight(e.target.offsetHeight)
+                              setDivWidth(e.target.offsetWidth)
+                              setDraggingLotId(card._id)
+                              setDragFromStation(stationId)
+                              setStartIndex(index)
+                              let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
+                              let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
-                      setMouseOffsetY(offsetY)
-                      setMouseOffsetX(offsetX)
+                              setMouseOffsetY(offsetY)
+                              setMouseOffsetX(offsetX)
 
-                      e.target.style.opacity = '0.001'
+                              e.target.style.opacity = '0.001'
 
-                      for(const i in process.flattened_stations){
-                        shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
-                      }
+                              for(const i in process.flattened_stations){
+                                shouldAcceptDrop(card._id, stationId, process.flattened_stations[i].stationID)
+                              }
 
-                    }}
-                    onDragEnd = {(e)=>{
-                      handleDrop(false)
-                      if(!activeTimeout){
-                        setActiveTimeout(true)
-                      }
-                      else{
-                        clearTimeout(currTimeout)
-                      }
-                      let timeout = setTimeout(handleSetUpdate, 4000)
-                      setCurrTimeout(timeout)
-                      let lotDiv = document.getElementById(draggingLotId + dragFromStation )
-                      lotDiv.style.display = 'flex'//restore
-                      setDragIndex(null)
-                      setStartIndex(null)
-                      setAllowHomeDrop(null)
-                      setMouseOffsetY(null)
-                      setDragFromStation(null)
-                      setDraggingStationId(null)
-                      setDropNodes([])
-                      e.target.style.opacity = '1'
-                      e.target.style.display = 'flex'
-                      e.preventDefault()
-                    }}
-                  >
-                  {dragIndex === 0 && index === 0 && draggingStationId === stationId && allowHomeDrop &&
-                    <styled.DropContainer
-                      divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-                      divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
-                    />
-                  }
-                  <div id = {cardId + stationId}>
-                    <LotContainer
-                      containerStyle = {{margin: '0.5rem'}}
-                      selectable={true}
-                      key={card._id}
-                      enableFlagSelector={true}
-                      onClick = {()=> {
-                        onShowCardEditor(card)
-                      }}
-                      onRightClickDeleteLot = {()=>{
-                        handleRightClickDeleteLot(card, stationId)
-                      }}
-                      totalQuantity={card.totalQuantity}
-                      lotNumber={card.lotNum}
-                      name={card.name}
-                      count={!!card.bins[stationId] ? card.bins[stationId].count : 1}
-                      lotId={card._id}
-                      binId={stationId}
-                      containerStyle={{
-                        borderBottom: draggingLotId === card._id && stationId === dragFromStation && '.35rem solid #b8b9bf',
-                        borderRight: draggingLotId === card._id && stationId === dragFromStation && '.2rem solid #b8b9bf',
-                        borderLeft: draggingLotId === card._id && stationId === dragFromStation && '.1rem solid #b8b9bf',
-                        borderTop: draggingLotId === card._id && stationId === dragFromStation && '.05rem solid #b8b9bf',
-                        boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
-                        borderRadius: '0.2rem',
-                        padding: '0.2rem',
-                        margin: '.5rem',
-                        width: '22rem',
-                        pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
-                      }}
-                      />
-                    </div>
-                    {dragIndex === index+1 && draggingStationId === stationId && allowHomeDrop &&
-                      <styled.DropContainer
-                        divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
-                        divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
-                      />
+                            }}
+                            onDragEnd = {(e)=>{
+                              handleDrop(false)
+                              if(!activeTimeout){
+                                setActiveTimeout(true)
+                              }
+                              else{
+                                clearTimeout(currTimeout)
+                              }
+                              let timeout = setTimeout(handleSetUpdate, 4000)
+                              setCurrTimeout(timeout)
+                              let lotDiv = document.getElementById(draggingLotId + dragFromStation )
+                              lotDiv.style.maxHeight = '100rem'
+
+                              setDragIndex(null)
+                              setStartIndex(null)
+                              setAllowHomeDrop(null)
+                              setMouseOffsetY(null)
+                              setDragFromStation(null)
+                              setDraggingStationId(null)
+                              setDropNodes([])
+                              e.target.style.opacity = '1'
+                              e.target.style.display = 'flex'
+                              e.target.style.maxHeight = '100rem'
+                              e.preventDefault()
+                            }}
+                          >
+                          {dragIndex === 0 && index === 0 && draggingStationId === stationId && (allowHomeDrop || lotFilterValue!== '') &&
+                            <styled.DropContainer
+                              divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                              divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+                            />
+                          }
+                          <div id = {cardId + stationId}>
+                            <LotContainer
+                              containerStyle = {{margin: '0.5rem'}}
+                              selectable={true}
+                              key={card._id}
+                              enableFlagSelector={true}
+                              onClick = {()=> {
+                                onShowCardEditor(card)
+                              }}
+                              onRightClickDeleteLot = {()=>{
+                                handleRightClickDeleteLot(card, stationId)
+                              }}
+                              totalQuantity={card.totalQuantity}
+                              lotNumber={card.lotNum}
+                              name={card.name}
+                              count={!!card.bins[stationId] ? card.bins[stationId].count : 1}
+                              lotId={card._id}
+                              binId={stationId}
+                              containerStyle={{
+                                borderBottom: draggingLotId === card._id && stationId === dragFromStation && '.35rem solid #b8b9bf',
+                                borderRight: draggingLotId === card._id && stationId === dragFromStation && '.2rem solid #b8b9bf',
+                                borderLeft: draggingLotId === card._id && stationId === dragFromStation && '.1rem solid #b8b9bf',
+                                borderTop: draggingLotId === card._id && stationId === dragFromStation && '.05rem solid #b8b9bf',
+                                boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
+                                borderRadius: '0.2rem',
+                                padding: '0.2rem',
+                                margin: '.5rem',
+                                width: '22rem',
+                                pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
+                              }}
+                              />
+                            </div>
+                            {dragIndex === index+1 && draggingStationId === stationId && allowHomeDrop &&
+                              <styled.DropContainer
+                                divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                                divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+                              />
+                            }
+                          </styled.CardContainer>
+                          :
+                          <div style = {{width: '100%', minHeight:'20rem'}}>...Loading</div>
+                        }
+                      </>
                     }
-                  </styled.CardContainer>
+                  </VisibilitySensor>
                 )
               }
-                else if(index<7){
+                else{
                   return (
                     Object.keys(partBins).map((part) => {
                       const isPartial = part !== 'count' ? true : false
@@ -892,35 +920,46 @@ const Cards = (props) => {
         }
       }
 
+      const renderStationColumn = (stationID) => {
+        return (
+          <div
+            style = {{pointerEvents: !dropNodes.includes(stationID) && draggingLotId && 'none'}}
+            onDragEnter = {(e)=>{
+              setDragIndex(dragIndexSearch(stationID))
+              setDraggingStationId(stationID)
+            }}
+            onMouseEnter = {() => {
+              setHoveringStation(stationID)
+            }}
+          >
+            <styled.ColumnContainer
+              disabled = {!dropNodes.includes(stationID) && draggingLotId}
+            >
+              {renderHeaderContent(stationID)}
+              <styled.StationColumnContainer
+                id = {stationID}
+                maxHeight = {viewHeight?.toString() + 'px'}
+                isOverflowing = {dragFromStation === stationID ? isOverflowing(dragFromStation) ? true : false : true}
+              >
+                {renderCards(stationID)}
+              </styled.StationColumnContainer>
+            </styled.ColumnContainer>
+          </div>
+        )
+      }
+
     const renderStationColumns = useMemo(() => {
       return (
         Object.values(process.flattened_stations).map((station) => {
           return (
-            <div
-              style = {{pointerEvents: !dropNodes.includes(station.stationID) && draggingLotId && 'none'}}
-              onDragEnter = {(e)=>{
-                setDragIndex(dragIndexSearch(station.stationID))
-                setDraggingStationId(station.stationID)
-              }}
-              onMouseEnter = {() => {
-                setHoveringStation(station.stationID)
-              }}
-            >
-              <styled.ColumnContainer
-                disabled = {!dropNodes.includes(station.stationID) && draggingLotId}
-              >
-                {renderHeaderContent(station.stationID)}
-                <styled.StationColumnContainer
-                  maxHeight = {viewHeight?.toString() + 'px'}
-                >
-                  {renderCards(station.stationID)}
-                </styled.StationColumnContainer>
-              </styled.ColumnContainer>
-            </div>
+            <>
+              {renderStationColumn(station.stationID)}
+            </>
           )
         })
       )
-    },[draggingStationId, viewHeight, orderedIds, filteredIds, cards, dragIndex, allowHomeDrop, draggingLotId, partCount, cardCount])
+    },[draggingStationId, viewHeight, orderedIds, dragIndex, filteredIds, cards, allowHomeDrop, draggingLotId, partCount, cardCount])
+
 
     const renderQueue = useMemo(() => {
       return (
@@ -935,7 +974,11 @@ const Cards = (props) => {
         >
           <styled.ColumnContainer style = {{paddingBottom: '0.5rem'}}>
            {renderHeaderContent('QUEUE')}
-            <styled.StationColumnContainer maxHeight = {(viewHeight-55)?.toString() + 'px'}>
+            <styled.StationColumnContainer
+              id = {'QUEUE'}
+              maxHeight = {(viewHeight-55)?.toString() + 'px'}
+              isOverflowing = {dragFromStation === 'QUEUE' ? isOverflowing(dragFromStation) ? true : false : true}
+            >
                 {renderCards('QUEUE')}
             </styled.StationColumnContainer>
             <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
@@ -962,7 +1005,11 @@ const Cards = (props) => {
         >
           <styled.ColumnContainer>
            {renderHeaderContent('FINISH')}
-            <styled.StationColumnContainer maxHeight = {viewHeight?.toString() + 'px'}>
+            <styled.StationColumnContainer
+              id = 'FINISH'
+              isOverflowing = {dragFromStation === 'FINISH' ? isOverflowing(dragFromStation) ? true : false : true}
+              maxHeight = {viewHeight?.toString() + 'px'}
+            >
                 {renderCards('FINISH')}
             </styled.StationColumnContainer>
           </styled.ColumnContainer>
