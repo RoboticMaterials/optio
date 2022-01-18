@@ -131,7 +131,6 @@ const Cards = (props) => {
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
-        console.log('1')
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
@@ -171,11 +170,9 @@ const Cards = (props) => {
         setCards(processCards)
       }
       else if(JSON.stringify(orderedIds[id]) !== JSON.stringify(orderedCardIds[id]) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        console.log('2')
         setOrderedIds(orderedCardIds)
       }
       else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
-        console.log('3')
         //console.log('if I come up while dropping a card from drag bad things have happened')
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)

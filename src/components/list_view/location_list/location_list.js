@@ -2,6 +2,10 @@ import React, {useEffect, useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from "prop-types";
 
+// Import Constants
+import { StationTypes } from '../../../constants/station_constants'
+import { PositionTypes } from '../../../constants/position_constants'
+
 import { locationsSortedAlphabetically } from '../../../methods/utils/locations_utils'
 
 import * as styled from '../list_view.style'
@@ -101,6 +105,36 @@ const LocationList = (props) => {
       })
     }
 
+    const renderLocationTypeIcon = (element) => {
+
+
+        const LocationTypes ={
+            ...StationTypes,
+            ...PositionTypes,
+        }
+
+        switch (element) {
+            case 'warehouse':
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['warehouse'].color} stroke={LocationTypes['warehouse'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['warehouse'].svgPath}
+                    </styled.LocationTypeGraphic>
+                )
+
+            case 'human':
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['human'].color} stroke={LocationTypes['human'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['human'].svgPath}
+                    </styled.LocationTypeGraphic>
+                )
+
+
+
+            case 'user':
+                return
+        }
+    }
+
     return (
         <styled.ListScrollContainer>
             {dashboardsArr.length > 0 ?
@@ -109,7 +143,6 @@ const LocationList = (props) => {
                         name,
                         device_name,
                     } = item
-
                     return (
                         <styled.ListItem
                             key={`li-${index}`}
@@ -119,7 +152,9 @@ const LocationList = (props) => {
 
                         >
                             <styled.ListItemRect>
-                                <styled.ListItemTitle schema={"locations"}>{locations[item._id]?.name + " Dashboard"}</styled.ListItemTitle>
+                                {renderLocationTypeIcon(locations[item._id].type)}
+                                <styled.ListItemTitle>{locations[item._id]?.name}</styled.ListItemTitle>
+                                <i className = 'fas fa-chevron-right' style = {{marginRight: '1rem', color: '#7e7e7e'}}/>
                             </styled.ListItemRect>
 
                         </styled.ListItem>

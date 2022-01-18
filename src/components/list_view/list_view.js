@@ -87,7 +87,7 @@ const ListView = (props) => {
     const [lotNum, setLotNum] = useState('')
     const [showSnoop, setShowSnoop] = useState(null)
     const [addTaskAlert, setAddTaskAlert] = useState(null);
-    const [title, setTitle] = useState('Dashboard')
+    const [title, setTitle] = useState('Dashboards')
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
@@ -251,7 +251,7 @@ const ListView = (props) => {
                                       color={"white"}
                                       onClick={() => {
                                           setShowDashboards(false)
-                                          setTitle('Locations')
+                                          setTitle('Dashboards')
                                           history.push('/locations')
                                       }}
                                       containerStyle={{
@@ -275,14 +275,16 @@ const ListView = (props) => {
                                 <BounceButton
                                     color={"blue"}
                                     onClick={() => {
-                                        setShowSettings(!showSettings)
-                                        setTitle('Settings')
+                                        if(title === 'Dashboards') setTitle('Settings')
+                                        else setTitle('Dashboards')
                                         if (showSettings) {
-                                            history.push(`/`)
+                                            history.push(`/locations`)
                                         }
                                         else {
                                             history.push(`/settings`)
                                         }
+                                        setShowSettings(!showSettings)
+
                                     }}
                                     active={showSettings}
                                     containerStyle={{
@@ -321,7 +323,7 @@ const ListView = (props) => {
             }
 
             {showSettings &&
-                <Settings />
+                <Settings listView = {true} setShowSettings = {setShowSettings} setTitle = {setTitle} />
             }
         </styled.Container>
     )
