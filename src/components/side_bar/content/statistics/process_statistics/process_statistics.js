@@ -116,6 +116,7 @@ const ProcessStatistics = ({ id }) => {
     const toggleCumulative = async () => {
         if (!data || !data.throughput) return
         let throughputDataCopy = []
+        console.log(isCumulative)
         if (isCumulative) {
             const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1]?.x || Number.POSITIVE_INFINITY), data.throughput[0]?.data[0]?.x || Number.POSITIVE_INFINITY)
             const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1]?.x || 0), 0)
@@ -134,8 +135,9 @@ const ProcessStatistics = ({ id }) => {
                 throughputDataCopy.push({...line, data: newLineData})
             })
         } else {
-            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
+            throughputDataCopy = await deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
         }
+        console.log(throughputDataCopy)
         setThroughputData(throughputDataCopy);
     }
 
@@ -313,7 +315,7 @@ const ProcessStatistics = ({ id }) => {
                         </div>
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
-                                throughputData.length > 1 ? 
+                                throughputData.length ? 
                                     <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v*1000)}/> 
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :

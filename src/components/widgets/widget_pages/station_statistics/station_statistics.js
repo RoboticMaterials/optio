@@ -58,6 +58,8 @@ const formatTimeString = (UTCSeconds) => {
 
 const convertProductionRateToCycleTime = (quantity, timescale, dailyWorkingSeconds) => {
     switch (timescale) {
+        case 'minute':
+            return 60 / quantity;
         case 'hour':
             return 3600 / quantity;
         case 'day':
@@ -529,6 +531,7 @@ const StatisticsPage = () => {
                             initialTimescale={timescale}
                             onSave={(newQuantity, newTimescale) => {
                                 const cycleTime = convertProductionRateToCycleTime(newQuantity, newTimescale, dailyWorkingSeconds)
+                                console.log(cycleTime, '!!!', newQuantity, newTimescale)
                                 setCycleTimeObj(labelsMap[d.label], {
                                     ...cycleTimeObj,
                                     theoretical: cycleTime
