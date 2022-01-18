@@ -6,23 +6,19 @@ if [ -z $1 ]; then
 fi
 
 
+# Configure Nginx
 cp nginx.conf /etc/nginx
-
-
-
-
 cp client-config.template client-config
 sed -i "s/{###Instance###}/$1/g" client-config
 cp client-config /etc/nginx/sites-enabled
-cp optio_rest_api.service /etc/systemd/system
 
-
-
+# Configure Gunicorn
 cp optio_rest_api.service.template optio_rest_api.service
 sed -i "s/{###Instance###}/$1/g" optio_rest_api.service
 cp optio_rest_api.service /etc/systemd/system
 
 # Install certbot
+echo "Installing Certbot"
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 sudo certbot certonly --nginx
@@ -39,7 +35,7 @@ pip3 install matplotlib
 
 
 # Setup firewall
-echo "Setting up firewall..."
+echo "Setting up firewall"
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow 22
