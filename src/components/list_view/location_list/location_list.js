@@ -97,7 +97,7 @@ const LocationList = (props) => {
     const handleGetStations = async () => {
       let res = dispatchPostLocalSettings({
         ...localSettings,
-        currentMapId: maps[0]._id
+        currentMapId: maps[0]?._id
       })
 
       res.then((result) => {
@@ -152,7 +152,7 @@ const LocationList = (props) => {
 
                         >
                             <styled.ListItemRect>
-                                {renderLocationTypeIcon(locations[item._id].type)}
+                                {renderLocationTypeIcon(locations[item._id]?.type)}
                                 <styled.ListItemTitle>{locations[item._id]?.name}</styled.ListItemTitle>
                                 <i className = 'fas fa-chevron-right' style = {{marginRight: '1rem', color: '#7e7e7e'}}/>
                             </styled.ListItemRect>
