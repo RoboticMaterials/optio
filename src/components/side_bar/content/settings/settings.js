@@ -45,7 +45,12 @@ import { useHistory } from "react-router-dom";
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
 
-const Settings = () => {
+const Settings = (props) => {
+    const {
+      listView,
+      setShowSettings,
+      setTitle,
+    } = props
 
     const history = useHistory()
 
@@ -219,8 +224,10 @@ const Settings = () => {
         await dispatchGetSettings()
         await dispatchGetLocalSettings()
 
-        if (!localSettingsState.mapViewEnabled) {
-            history.push(`/`)
+        if (listView) {
+            history.push(`/locations`)
+            setTitle('Dashboards')
+            setShowSettings(false)
         }
 
         if (mapChange) {
