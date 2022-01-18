@@ -1,0 +1,14 @@
+[Unit]
+Description=Gunicorn instance to serve optio
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/dev_rmstudio/rmengine/rest_api
+Environment="PATH=/home/ubuntu/.local/bin"
+ExecStart=/home/ubuntu/.local/bin/gunicorn -w 5 --chdir /home/ubuntu/dev_rmstudio/rmengine/rest_api --certfile /etc/letsencrypt/live/{###Instance###}/fullchain.pem --keyfile /etc/letsencrypt/live/{###Instance###}/privkey.pem --bind unix:/tmp/restapi.sock -m 007 'server:create_app()'
+
+
+[Install]
+WantedBy=multi-user.target
