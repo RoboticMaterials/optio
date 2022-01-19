@@ -198,6 +198,10 @@ export const Dot = styled.div`
 export const LegendLabel = styled.div`
     font-size: 1rem;
     color: #393975;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
 
 export const LegendValue = styled.div`
@@ -205,4 +209,6 @@ export const LegendValue = styled.div`
     color: #393975;
     text-align: right;
     flex-grow: 1;
+
+    white-space: nowrap;
 `

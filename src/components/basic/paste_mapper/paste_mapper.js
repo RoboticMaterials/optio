@@ -344,6 +344,7 @@ const PasteMapper = (props) => {
                         history.push(`/lots/${params.id}/validate`)
                         const payload = createPastePayload(table, mappedFields)
                         onCreateClick(payload)
+                        history.push(`/lots/${params.id}/validate`)
                     }}
                     style={{minWidth: '14rem', minHeight: '3rem'}}
                 />

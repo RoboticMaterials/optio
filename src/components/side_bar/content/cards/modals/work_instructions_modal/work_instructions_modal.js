@@ -186,13 +186,13 @@ const WorkInstructionsModal = (props) => {
             </styled.FileContainer>
 
             <styled.FileContainer style = {{flex: 'none', justifyContent: 'start'}}>
-            <styled.UploadButton>
+            <styled.UploadButton style = {{position: 'relative'}}>
               <input type="file" style = {{position: 'relative', zIndex: '2', opacity: '0.001'}} onChange={(e)=>handleFileInput(e, station.stationID)}/>
               <styled.ListItemIcon
                 className = 'fas fa-cloud-upload-alt'
                 style = {{position: 'absolute'}}
               />
-              <styled.ListItemTitle style = {{position: 'absolute', paddingLeft: '2.2rem', paddingTop: '0.5rem'}}>
+              <styled.ListItemTitle style = {{position: 'absolute', fontSize: '.9rem', paddingLeft: '1.7rem', paddingTop: '0.5rem'}}>
               {!!lotTemplates[lotTemplateId] &&  !!lotTemplates[lotTemplateId].workInstructions && !!lotTemplates[lotTemplateId].workInstructions[station.stationID]? 'Change File' : 'Upload File'}
               </styled.ListItemTitle>
             </styled.UploadButton>

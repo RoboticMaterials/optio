@@ -249,7 +249,7 @@ const ListView = (props) => {
 
                             {(showDashboards) ?
                               <>
-                                {!locked &&
+                                {!locked && !lotID &&
                                   <BounceButton
                                       color={"white"}
                                       onClick={() => {

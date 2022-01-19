@@ -88,11 +88,8 @@ const ProcessStatistics = ({ id }) => {
 
     // Helpers
     const refreshData = async (dateRange) => {
-        setBalancePG(null)
-        setData(null)
         setThroughputData([])
         const tempData = await getProcessStatistics(id, dateRange[0], dateRange[1])
-        console.log(tempData)
         if (tempData === undefined) {
             setBalancePG(null)
             setData(emptyData)
@@ -100,12 +97,12 @@ const ProcessStatistics = ({ id }) => {
             alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             if (!(balancePG in tempData.balance)) {
-                await setBalancePG(null)
+                setBalancePG(null)
             }
-            await setThroughputData(deepCopy(tempData.throughput))
-            await setData(tempData)
+            setThroughputData(deepCopy(tempData.throughput))
+            setData(tempData)
             if (!!tempData.balance && Object.keys(tempData.balance).length > 0 && !(balancePG in tempData.balance)) {
-                await setBalancePG(Object.keys(tempData.balance)[0])
+                setBalancePG(Object.keys(tempData.balance)[0])
             }
         }
     }
@@ -116,12 +113,19 @@ const ProcessStatistics = ({ id }) => {
         }
     }, [data, balancePG])
 
+    useEffect(() => {
+        if (!data || !data.throughput) return []
+
+        toggleCumulative();
+
+    }, [data, isCumulative])
+
     const toggleCumulative = async () => {
         if (!data || !data.throughput) return
         let throughputDataCopy = []
         if (isCumulative) {
-            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1].x), Number.MAX_VALUE)
-            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1].x), 0)
+            const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1]?.x || Number.POSITIVE_INFINITY), data.throughput[0]?.data[0]?.x || Number.POSITIVE_INFINITY)
+            const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1]?.x || 0), 0)
 
             await data.throughput.forEach(async (line, i) => {
                 let cumulation = 0;
@@ -137,17 +141,10 @@ const ProcessStatistics = ({ id }) => {
                 throughputDataCopy.push({...line, data: newLineData})
             })
         } else {
-            throughputDataCopy = deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
+            throughputDataCopy = await deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
         }
         setThroughputData(throughputDataCopy);
     }
-
-    useEffect(() => {
-        if (!data || !data.throughput) return []
-
-        toggleCumulative();
-
-    }, [data, isCumulative])
 
     const renderProductGroupDropdown = useMemo(() => {
         const options = Object.keys(data?.balance || {}).map(id => ({id, name: productGroups[id]?.name || id}))
@@ -233,7 +230,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Finished Product</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{data.total_throughputs.total} Parts</styled.PrimaryValue>
-                                    {data.total_throughputs.data.map((datum, i) => (
+                                    {data.total_throughputs.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -254,7 +251,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>1 Part Every</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{secondsToReadable(data.production_rates.total)}</styled.PrimaryValue>
-                                    {data.production_rates.data.map((datum, i) => (
+                                    {data.production_rates.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -275,7 +272,7 @@ const ProcessStatistics = ({ id }) => {
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Total</styled.PrimaryLabel>
                                     <styled.PrimaryValue>{data.wip.total} Parts</styled.PrimaryValue>
-                                    {data.wip.data.map((datum, i) => (
+                                    {data.wip.data.sort((a, b) => a.label > b.label ? 1 : -1 ).map((datum, i) => (
                                         <styled.LegendItem>
                                             <styled.Dot color={defaultColors[i]} />
                                             <styled.LegendLabel>{datum.label}</styled.LegendLabel>
@@ -309,7 +306,7 @@ const ProcessStatistics = ({ id }) => {
                         {renderHeader('Line Balance', 'balance')}
                         <styled.ChartContainer style={{height: '26rem'}}>
                             {!!data ?
-                                !!data.balance && !!balancePG && data.balance[balancePG].length ?
+                                !!data.balance && !!balancePG && (balancePG in data.balance) && data.balance[balancePG].length ?
                                     <BalanceBar data={data.balance[balancePG]} productGroupId={balancePG} renderDropdown={renderProductGroupDropdown}/>
                                     : <styled.NoData>No Data</styled.NoData>
                                 :
@@ -328,8 +325,8 @@ const ProcessStatistics = ({ id }) => {
                         </div>
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
-                                throughputData.length > 1 ?
-                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/>
+                                throughputData.length ?
+                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v*1000)}/>
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />
