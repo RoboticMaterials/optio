@@ -40,22 +40,12 @@ export const Container = styled.div`
     align-self: center;
     border-radius: 0rem 0rem 0.5rem 0.5rem;
     overflow: hidden;
-<<<<<<< HEAD
     flex-direction: column;
     z-index: 5000;
     overflow: hidden;
     min-height: 90vh;
     height: 100vh;
     width: 95vw;
-=======
-    border-radius: 0 0 1rem 1rem;
-    flex-direction: column;
-    z-index: 5000;
-    overflow: auto;
-    // min-height: 90vh;
-    // height: 100%;
-    width: 100%;
->>>>>>> master
     background: ${props => props.theme.bg.primary};
 `
 
