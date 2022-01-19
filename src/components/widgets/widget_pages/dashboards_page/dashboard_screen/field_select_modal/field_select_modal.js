@@ -37,7 +37,7 @@ const FieldSelectModal = (props) => {
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
 		const processes = useSelector(state => state.processesReducer.processes) || {}
-    const currentDashboard = dashboards[dashboardID]
+    const currentDashboard = dashboards[dashboardID] || {}
     const [selectedFields, setSelectedFields] = useState({})
 
     useEffect(() => {
@@ -79,9 +79,9 @@ const FieldSelectModal = (props) => {
 
 			let templatesCopy = {}
 			for(const i in lotTemplates){
-				let stations = processes[lotTemplates[i].processId].flattened_stations
-				let containsStation = stations.find(station => station.stationID === stationID)
-				if(containsStation) templatesCopy[lotTemplates[i]._id] = lotTemplates[i]
+				let stations = processes[lotTemplates[i]?.processId]?.flattened_stations
+				let containsStation = stations.find(station => station?.stationID === stationID)
+				if(containsStation) templatesCopy[lotTemplates[i]?._id] = lotTemplates[i]
 			}
 
       return (
@@ -118,15 +118,15 @@ const FieldSelectModal = (props) => {
             </styled.ListItemTitle>
           </styled.ListItem>
 
-          {Object.values(templatesCopy).map((template, index) =>
+          {Object.values(templatesCopy)?.map((template, index) =>
             <>
-              {template.name !== 'Basic' &&
+              {template?.name !== 'Basic' &&
                 <>
                 <styled.ListItem
                   style = {{ background: '#5c6fff', borderColor: '#5c6fff', justifyContent: 'center',paddingLeft: '0rem'}}
                 >
                   <styled.ListItemTitle style = {{color: '#f7f7fa', fontSize: '1.2rem'}} >
-                    {'Product Group: '+ template.name}
+                    {'Product Group: '+ template?.name}
                   </styled.ListItemTitle>
                 </styled.ListItem>
                 <>
@@ -137,12 +137,12 @@ const FieldSelectModal = (props) => {
                       <styled.ListItem>
                         <Checkbox
                           onClick = {()=> {
-                            onCheckBoxClick(indField, template._id)
+                            onCheckBoxClick(indField, template?._id)
                           }}
-                          checked = {!!selectedFields[template._id] && !!selectedFields[template._id][indField._id]}
+                          checked = {!!selectedFields[template?._id] && !!selectedFields[template?._id][indField?._id]}
                         />
                         <styled.ListItemTitle>
-                          {indField.fieldName}
+                          {indField?.fieldName}
                         </styled.ListItemTitle>
                       </styled.ListItem>
                     )}
