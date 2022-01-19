@@ -80,6 +80,12 @@ const ProcessStatistics = ({ id }) => {
         refreshData(dateRange);
     }, [dateRange])
 
+    useEffect(() => {
+      return () => {
+        dispatchSetSelectedProcess(null)
+      }
+    }, [])
+
     // Helpers
     const refreshData = async (dateRange) => {
         setBalancePG(null)
@@ -183,7 +189,6 @@ const ProcessStatistics = ({ id }) => {
                 <BackButton
                   onClick={() => {
                     history.push('/statistics')
-                    dispatchSetSelectedProcess(null) //otherwise process keeps showing on map 
                   }}
                   containerStyle={{position: 'absolute', left: '1.5rem'}}
                 />

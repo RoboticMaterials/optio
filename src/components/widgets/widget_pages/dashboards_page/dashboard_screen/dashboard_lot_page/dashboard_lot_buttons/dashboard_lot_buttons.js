@@ -44,7 +44,7 @@ const DashboardLotButtons = (props) => {
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
         const color = disabled ? '#dedfe3' : '#90eaa8'
-        const textColor = disabled ? '#999' : '#15702e'
+        const textColor = disabled ? '#545454' : '#545454'
         const iconColor = theme.main.bg.octonary
 
         const error = null

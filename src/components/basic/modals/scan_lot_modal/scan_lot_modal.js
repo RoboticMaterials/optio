@@ -10,6 +10,7 @@ import LotContainer from "../../../../components/side_bar/content/cards/lot/lot_
 
 // actions
 import {showLotScanModal} from '../../../../redux/actions/sidebar_actions'
+import {getStationCards} from '../../../../redux/actions/card_actions'
 // styles
 import * as styled from './scan_lot_modal.style'
 
@@ -31,6 +32,7 @@ const ScanLotModal = (props) => {
     const stations = useSelector(state =>state.stationsReducer.stations)
 
     const dispatch = useDispatch()
+    const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
     const history = useHistory()
 
@@ -45,8 +47,11 @@ const ScanLotModal = (props) => {
                     return (
                       <styled.ListItem
                         onClick={() => {
-                          history.push(`/locations/${station._id}/dashboards/${stations[station._id].dashboards[0]}/lots/${card._id}`)
-                          dispatchShowLotScanModal(null)
+                          let result = dispatchGetStationCards(i)
+                          result.then((res) => {
+                            history.push(`/locations/${station._id}/dashboards/${stations[station._id].dashboards[0]}/lots/${card._id}`)
+                            dispatchShowLotScanModal(null)
+                           })
                         }}
                       >
                       <styled.HoverContainer >

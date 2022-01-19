@@ -429,7 +429,7 @@ const DashboardScreen = (props) => {
           }
           {!history.location.pathname.includes('lots') &&
             <style.UndoIcon
-                style = {{marginRight: '0.5rem'}}
+                style = {{marginRight: '.5rem'}}
                 className="fas fa-undo"
                 disabled={undoHandlers.length === 0}
                 onClick={() => setShowUndoModal(true)}

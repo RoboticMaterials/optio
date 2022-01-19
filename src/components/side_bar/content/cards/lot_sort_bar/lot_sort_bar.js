@@ -41,7 +41,7 @@ const LotSortBar = (props) => {
     const {
         dashboardID,
     } = params || {}
-    
+
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
     const settings = useSelector(state => state.settingsReducer.settings)
@@ -92,7 +92,7 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer style = {{margin: '0rem'}}>
             <styled.Description
                 css={props.descriptionCss}
             >
@@ -131,7 +131,7 @@ const LotSortBar = (props) => {
                                 borderTopRightRadius: 0,
                                 borderBottomRightRadius: 0,
                                 minWidth: "10rem",
-                                maxWidth: "15rem",
+                                maxWidth: "10rem",
                                 background: themeContext.bg.secondary
                             }}
                         />

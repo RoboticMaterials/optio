@@ -20,6 +20,7 @@ import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
+import {getStationCards} from '../../redux/actions/card_actions'
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
@@ -56,6 +57,7 @@ const SideBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
     const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
@@ -149,7 +151,7 @@ const SideBar = (props) => {
                 if(!!lotId) onScanLot(lotId)
                 setFull('')
             }
-
+            else if(full === 'Enter') setBarcode([])
     }, [full])
 
     const logKey = (e) => {
@@ -169,6 +171,7 @@ const SideBar = (props) => {
               statId = station._id
             }
           })
+
         if(binCount > 1){
           if(!!pageInfoChanged){
             setConfirmDeleteModal(true)
@@ -190,7 +193,10 @@ const SideBar = (props) => {
               setBinCount(binCount)
             }
             else{
-              history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+              let result = dispatchGetStationCards(statId)
+              result.then((res) => {
+                history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+              })
             }
         }
 

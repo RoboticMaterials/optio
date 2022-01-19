@@ -132,7 +132,7 @@ const LotFilterBarBasic = (props) => {
             style={{
                 flex: (open && valueMode === VALUE_MODES.TEXT_BOX) && 1,
                 padding: open ? ".25rem 1rem 0 1rem" : "1rem",
-                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem"
+                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem",
             }}
         >
             <styled.Description
@@ -189,8 +189,8 @@ const LotFilterBarBasic = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "12rem",
-                                maxWidth: "12rem",
+                                minWidth: "10rem",
+                                maxWidth: "10rem",
                                 overflow: 'visible',
                                 background: themeContext.bg.secondary,
                             }}
@@ -317,7 +317,7 @@ const LotFilterBarBasic = (props) => {
                                         style={{
                                             alignSelf: "stretch",
                                             flex: 1,
-                                            minWidth: "5rem",
+                                            minWidth: "7rem",
                                             maxWidth: "12rem"
                                         }}
                                         schema={"lots"}

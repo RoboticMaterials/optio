@@ -18,6 +18,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import actions
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
+import {getStationCards} from '../../redux/actions/card_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
@@ -77,6 +78,7 @@ const ListView = (props) => {
     const deviceEnabled = settings.deviceEnabled
 
     const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
+    const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
 
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
@@ -88,7 +90,6 @@ const ListView = (props) => {
     const [showSnoop, setShowSnoop] = useState(null)
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [title, setTitle] = useState('Dashboards')
-
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
@@ -142,11 +143,11 @@ const ListView = (props) => {
                 lotId = parseInt(arr[1].slice(0,-5))
               }
               else lotId = parseInt(full.slice(0,-5))
-                setLotNum(lotId)
-                if(!!lotId) onScanLot(lotId)
-                setFull('')
+              setLotNum(lotId)
+              if(!!lotId) onScanLot(lotId)
+              setFull('')
             }
-
+            else if(full === 'Enter') setBarcode([])
     }, [full])
 
 
@@ -156,7 +157,6 @@ const ListView = (props) => {
 
 
     const onScanLot = (id) => {
-
       let binCount = 0
       let statId = ""
       let lotFound = false
@@ -175,10 +175,13 @@ const ListView = (props) => {
           dispatchShowLotScanModal(true)
         }
         else if(binCount ===1 && !!statId){
-          setShowSettings(false)
-          history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
-          setShowDashboards(true)
-          setTitle(stations[statId]?.name + ' Dashboard')
+          let result = dispatchGetStationCards(statId)
+          result.then((res) => {
+            setShowSettings(false)
+            history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+            setShowDashboards(true)
+            setTitle(stations[statId]?.name + ' Dashboard')
+         })
         }
         }
       })

@@ -129,6 +129,14 @@ const Cards = (props) => {
 
   	}, [dragIndex, clientY, clientX])
 
+    useEffect(() => {
+      return () => {
+        dispatchSetSelectedProcess(null)
+      }
+
+    }, [])
+
+
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
@@ -1053,7 +1061,6 @@ const Cards = (props) => {
               containerStyle = {{alignSelf: 'center'}}
               schema = {'lots'}
               onClick = {() => {
-                dispatchSetSelectedProcess(null)
                 history.push('/lots/summary')
               }}
                />
