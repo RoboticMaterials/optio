@@ -41,8 +41,8 @@ const FieldSelectModal = (props) => {
     const [selectedFields, setSelectedFields] = useState({})
 
     useEffect(() => {
-      if(!!currentDashboard.fields){
-        setSelectedFields(currentDashboard.fields)
+      if(!!currentDashboard?.fields){
+        setSelectedFields(currentDashboard?.fields)
       }
     }, [])
 
