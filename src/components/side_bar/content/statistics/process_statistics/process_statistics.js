@@ -185,7 +185,7 @@ const ProcessStatistics = ({ id }) => {
             <styled.Header>
                 <BackButton
                   onClick={() => {
-                    history.push('/statistics')
+                    history.push('/statistics/summary')
                   }}
                   containerStyle={{position: 'absolute', left: '1.5rem'}}
                 />

@@ -1188,7 +1188,7 @@ const LotEditorContainer = (props) => {
                                 await createLot(i);
                             }
                             setPasteTable([]);
-                            history.push(`/lots/summary`)
+                            onClose()
                         }}
                         onCreateAllWithoutWarningClick={async () => {
                             for (let i = 0; i < mappedValues.length; i++) {
