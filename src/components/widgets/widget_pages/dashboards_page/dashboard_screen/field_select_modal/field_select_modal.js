@@ -79,9 +79,11 @@ const FieldSelectModal = (props) => {
 
 			let templatesCopy = {}
 			for(const i in lotTemplates){
-				let stations = processes[lotTemplates[i]?.processId]?.flattened_stations
-				let containsStation = stations.find(station => station?.stationID === stationID)
-				if(containsStation) templatesCopy[lotTemplates[i]?._id] = lotTemplates[i]
+				if(processes[lotTemplates[i].processId]){
+					let stations = processes[lotTemplates[i]?.processId]?.flattened_stations
+					let containsStation = stations.find(station => station?.stationID === stationID)
+					if(containsStation) templatesCopy[lotTemplates[i]?._id] = lotTemplates[i]
+				}
 			}
 
       return (
