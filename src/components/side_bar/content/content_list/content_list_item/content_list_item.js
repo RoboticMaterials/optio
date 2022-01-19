@@ -33,7 +33,7 @@ const ContentListItem = (props) => {
     const theme = useContext(ThemeContext);
 
     const renderLocationTypeIcon = (element) => {
-        
+
 
         const LocationTypes ={
             ...StationTypes,
@@ -78,7 +78,7 @@ const ContentListItem = (props) => {
                 )
 
             case 'user':
-                return 
+                return
         }
     }
 
@@ -89,7 +89,7 @@ const ContentListItem = (props) => {
                 error={error}
                 onMouseEnter={() => onMouseEnter(element)}
                 onMouseLeave={() => onMouseLeave(element)}
-                onClick={onClick}
+                onClick={() => onClick(element)}
                 style={style}
             >
                 <styled.ListItemIconContainer style = {{paddingTop: element.type === "charger_position" ? '0.6rem': '0rem'}}>
@@ -100,7 +100,7 @@ const ContentListItem = (props) => {
                         </>
                     }
 
-                    {element.type === 'user' && 
+                    {element.type === 'user' &&
                         <styled.ListItemIcon
                             style = {{color: 'orange' }}
                             className='fas fa-user'
@@ -117,6 +117,20 @@ const ContentListItem = (props) => {
                         />
                     }
 
+                    {props.schema === 'lots' &&
+                        <styled.ListItemIcon
+                            schema={schema}
+                            className='far fa-window-restore'
+                        />
+                    }
+
+                    {props.schema === 'statistics' &&
+                        <styled.ListItemIcon
+                            schema={schema}
+                            className='icon-statistics'
+                        />
+                    }
+
                     {props.schema === 'processes' ? error ?
                         <div
                             onClick={() => onClick(element)}
@@ -129,7 +143,7 @@ const ContentListItem = (props) => {
                         </div>
                         :
                         <styled.ListItemIcon
-                            className='fas fa-clone'
+                            className='fas fa-route'
                             style={{ color: '#ffb62e' }}
                             onClick={() => onIconClick(element)}
                         />
@@ -147,22 +161,24 @@ const ContentListItem = (props) => {
 
                 <styled.ListItemIconContainer>
 
-                    {showEdit &&
+                    {showEdit ?
                         <styled.ListItemIcon
                             className='fas fa-edit'
                             onClick={() => onEditClick(element)}
                             style={{ color: theme.bg.quaternary }}
                         />
+                        :
+                        showDelete ?
+                            <styled.ListItemIcon
+                                className="far fa-minus-square"
+                                onClick={() => onDeleteClick(element)}
+                                style = {{color: 'orange' }}
+                            />
+                            :
+                            <styled.ListItemIcon
+                                className="fas fa-chevron-right"
+                            />
                     }
-
-                    {showDelete &&
-                        <styled.ListItemIcon
-                            className="far fa-minus-square"
-                            onClick={() => onDeleteClick(element)}
-                            style = {{color: 'orange' }}
-                        />
-                    }
-
 
                 </styled.ListItemIconContainer>
 

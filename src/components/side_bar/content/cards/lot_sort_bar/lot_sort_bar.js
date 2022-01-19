@@ -16,12 +16,13 @@ import * as styled from "../zone_header/zone_header.style"
 
 // utils
 import { getAllTemplateFields } from "../../../../../methods/utils/lot_utils"
-import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+import {postSettings, getSettings} from '../../../../../redux/actions/settings_actions'
 
 import {
     FIELD_DATA_TYPES,
     LOT_FILTER_OPTIONS,
     LOT_SORT_OPTIONS,
+    SUMMMARY_LOT_SORT_OPTIONS,
     SORT_DIRECTIONS
 } from "../../../../../constants/lot_contants"
 
@@ -31,6 +32,7 @@ const LotSortBar = (props) => {
         sortMode,
         sortDirection,
         setSortMode,
+        setSortChanged,
         setSortDirection,
     } = props
 
@@ -42,17 +44,18 @@ const LotSortBar = (props) => {
 
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID]
-    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const settings = useSelector(state => state.settingsReducer.settings)
 
     const dispatch = useDispatch()
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
 
-    const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
+    const [lotSortOptions, setLotSortOptions] = useState(dashboardID ? [...Object.values(LOT_SORT_OPTIONS)] : [...Object.values(SUMMMARY_LOT_SORT_OPTIONS)])
 
     useEffect(() => {
         const templateFields = getAllTemplateFields(lotTemplates)
 
-        let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
+        let tempLotSortOptions = dashboardID ? [...Object.values(LOT_SORT_OPTIONS)] : [...Object.values(SUMMMARY_LOT_SORT_OPTIONS)]
 
         templateFields.forEach((currTemplateField) => {
 
@@ -89,7 +92,7 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer style = {{margin: '0rem'}}>
             <styled.Description
                 css={props.descriptionCss}
             >
@@ -106,13 +109,19 @@ const LotSortBar = (props) => {
                         <DropDownSearch
                             valueCss={props.valueCss}
                             options={lotSortOptions}
-                            onChange={(values) => {
+                            onChange={async(values) => {
+                                setSortChanged(true)
                                 // set sort mode
                                 setSortMode(values[0])
-                                dispatchPostLocalSettings({
-                                  ...localSettings,
-                                  lotSummarySortValue: values[0]
+                                setTimeout(() => {
+                                  let settingsPromise = dispatchGetSettings()
+                                  settingsPromise.then(response =>{
+                                    dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortValue: values[0]
+                                    })
                                 })
+                              }, 4000);
                             }}
                             values={[sortMode]}
                             labelField={"label"}
@@ -122,8 +131,8 @@ const LotSortBar = (props) => {
                                 borderTopRightRadius: 0,
                                 borderBottomRightRadius: 0,
                                 minWidth: "10rem",
-                                maxWidth: "15rem",
-                                background: themeContext.bg.tertiary
+                                maxWidth: "10rem",
+                                background: themeContext.bg.secondary
                             }}
                         />
                         <RotateButton
@@ -132,21 +141,33 @@ const LotSortBar = (props) => {
                             iconName1={'fas fa-arrow-up'}
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
-                            onStateOne={() => {
+                            setSortChanged = {setSortChanged}
+                            onStateOne={async() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              dispatchPostLocalSettings({
-                                ...localSettings,
-                                lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
-                              })
+                              setTimeout(() => {
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response => {
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
+                                  })
+                                })
+                              }, 4000);
+
                             }}
-                            onStateTwo={() => {
+                            onStateTwo={async() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                              dispatchPostLocalSettings({
-                                ...localSettings,
-                                lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
-                              })
+                              setTimeout(() => {
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response =>{
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
+                                  })
+                                })
+                              }, 4000);
                             }}
                         />
                     </styled.OptionContainer>
@@ -160,12 +181,15 @@ LotSortBar.propTypes = {
     setSortMode: PropTypes.func,
     sortMode: PropTypes.any,
     setSortDirection: PropTypes.func,
+    setSortChanged: PropTypes.func,
 }
 
 LotSortBar.defaultProps = {
     sortMode: {},
     setSortMode: () => { },
-    setSortDirection: () => { }
+    setSortDirection: () => { },
+    setSortChanged: () => { }
+
 }
 
 export default LotSortBar

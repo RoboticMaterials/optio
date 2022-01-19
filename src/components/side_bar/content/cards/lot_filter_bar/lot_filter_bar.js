@@ -52,7 +52,7 @@ const SET_OPERATORS = [
 // Possible Options
 // name | StringField - Contains - TextField
 // process - Dropdown (processes)
-// flags - contains all | contains any | dn contain all | dn contain any - FlagDropdown 
+// flags - contains all | contains any | dn contain all | dn contain any - FlagDropdown
 // SingleDate | DateRangeSingle - gt/lt/et/gte/lte | isBetween - DateField
 // NumField | quantity | initQuantity - gt/lt/et/gte/gle | isBetween - NumField
 
@@ -80,7 +80,7 @@ const LotFilterBar = (props) => {
 
     useEffect(() => {
         document.addEventListener("keydown", (e) => e.keyCode === 27 && setOpen(false), false);
-    
+
         return () => {
           document.removeEventListener("keydown", (e) => e.keyCode === 27 && setOpen(false), false);
         };
@@ -140,7 +140,7 @@ const LotFilterBar = (props) => {
                 </styled.ActiveFilter>)}
             </styled.ActiveFiltersContainer>
         )
-        
+
     }, [filters])
 
     const onChangeFilterKey = (values) => {
@@ -182,7 +182,7 @@ const LotFilterBar = (props) => {
         setSelectedFilterOperator(null);
         setSelectedFilterOptions(null);
         setOpen(false)
-        
+
     }
 
     const renderFilterOperatorSelector = useMemo(() => {
@@ -261,7 +261,7 @@ const LotFilterBar = (props) => {
                         }}
                     />
                 )
-            
+
         }
 
     }, [selectedFilterKey])
@@ -460,7 +460,7 @@ const LotFilterBar = (props) => {
                     {selectedFilterOptions?.isRelative ?
                         <div style={{marginBottom: '0.5rem'}}>
                             <styled.Description style={{width: '100%', justifyContent: 'center', display: 'flex'}}>Days relative to current date</styled.Description>
-                            <NumberInput 
+                            <NumberInput
                                 onPlusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays+1})}
                                 onMinusClick={(e) => onChangeFilterOptions({...selectedFilterOptions, relativeDays: selectedFilterOptions.relativeDays-1})}
                                 onInputChange={e => onChangeFilterOptions({...selectedFilterOptions, relativeDays: parseInt(e.target.value)})}
@@ -509,8 +509,8 @@ const LotFilterBar = (props) => {
                             onClick={() => setOpen(!open)}
                         />
                     </styled.ActiveContainer>
-                    
-                    {open && 
+
+                    {open &&
                         <styled.NewFilterContainer>
                             <styled.Description>New Filter</styled.Description>
                             <DropDownSearch
@@ -520,7 +520,7 @@ const LotFilterBar = (props) => {
                                 labelField={"label"}
                                 valueField={"label"}
                                 schema={"lots"}
-                                
+
                                 style={{
                                     overflow: 'visible',
                                     minWidth: '15rem',
@@ -528,12 +528,12 @@ const LotFilterBar = (props) => {
                                     background: themeContext.bg.primary,
                                 }}
                             />
-                            {!!selectedFilterKey && 
+                            {!!selectedFilterKey &&
                                 <div style={{marginBottom: "0.5rem"}}>
                                     {renderFilterOperatorSelector}
                                 </div>
                             }
-                            {!!selectedFilterOperator && 
+                            {!!selectedFilterOperator &&
                                 <div style={{marginBottom: "0.5rem"}}>
                                     {renderFilterOptionsSelector}
                                 </div>
@@ -547,7 +547,7 @@ const LotFilterBar = (props) => {
             </styled.FiltersContainer>
         </styled.ColumnContainer>
     )
-    
+
 }
 
 LotFilterBar.propTypes = {

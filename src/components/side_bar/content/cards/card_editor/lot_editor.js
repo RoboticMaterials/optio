@@ -37,6 +37,8 @@ import LotCreatorForm from "../lot_template_editor/template_form";
 import ConfirmDeleteModal from "../../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import BarcodeModal from "../../../../basic/modals/barcode_modal/barcode_modal";
 import LotHistory from '../lot_history/lot_history';
+import { deepCopy } from '../../../../../methods/utils/utils'
+
 // actions
 import {
     deleteCard,
@@ -49,6 +51,10 @@ import {
     getLotTemplates,
     setSelectedLotTemplate,
 } from "../../../../../redux/actions/lot_template_actions";
+
+import {
+  postSettings
+} from '../../../../../redux/actions/settings_actions'
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
 
 // constants
@@ -146,7 +152,6 @@ const FormComponent = (props) => {
         setUseCardFields,
         merge,
     } = props;
-
     const history = useHistory()
 
     const { _id: cardId, syncWithTemplate } = values || {};
@@ -315,10 +320,10 @@ const FormComponent = (props) => {
         // if there are no remaining bins, delete the card
         if (isEmpty(newBins)) {
             const res = await dispatchDeleteCard(cardId, processId);
-            setDeletedObject(res)
-            if(Object.values(res).length>0){
+            //setDeletedObject(res)
+            //if(Object.values(res).length>0){
                close();
-             }
+             //}
 
         }
 
@@ -746,14 +751,14 @@ const FormComponent = (props) => {
 
         if (formMode === FORM_MODES.CREATE) {
 
-            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml' />
+            return <Button schema='lots' onClick={onImportXML} label='Import csv/xml'/>
 
         } else {
 
             return (
                 <div>
-                    <Button schema='lots' onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
-                    <Button schema='fields' onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
+                    <Button schema='lots' secondary onClick={() => dispatchShowBarcodeModal(true)} label='Barcode' />
+                    <Button schema='lots' secondary onClick={() => history.push(`/lots/${cardId}/history`)} label='Lot History' />
                 </div>
             )
 
@@ -786,7 +791,7 @@ const FormComponent = (props) => {
                     }}
                     barcodeId={lotNumber}
                 />
-                
+
 
                 <styled.RowContainer
                     style={{
@@ -903,14 +908,7 @@ const FormComponent = (props) => {
                                             </div>
                                         {/* </LabeledButton> */}
 
-                                        <div>
-                                            <styled.ContentTitle>
-                                                Product Template:{" "}
-                                            </styled.ContentTitle>
-                                            <styled.ContentValue>
-                                                {lotTemplate?.name}
-                                            </styled.ContentValue>
-                                        </div>
+
                                     </LabeledButton>
 
                                     <div>
@@ -1309,7 +1307,6 @@ const LotEditor = (props) => {
         cardNames,
         merge,
     } = props;
-
     const {
         current
     } = formRef || {}
@@ -1326,11 +1323,14 @@ const LotEditor = (props) => {
     const selectedLotTemplatesId = useSelector((state) => {
         return state.lotTemplatesReducer.selectedLotTemplatesId;
     });
+    const orderedCardIds = useSelector(state => state.settingsReducer.settings.orderedCardIds) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     // actions
     const dispatch = useDispatch();
     const onPostCard = async (card) => await dispatch(postCard(card));
     const onGetCard = async (cardId) => await dispatch(getCard(cardId));
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID));
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetLotTemplates = async () =>
         await dispatch(getLotTemplates());
     const dispatchSetSelectedLotTemplate = (id) =>
@@ -1432,19 +1432,6 @@ const LotEditor = (props) => {
     if (loaded) {
         return (
             <>
-                {showLotTemplateEditor && (
-                    <LotCreatorForm
-                        isOpen={true}
-                        setSelectedTemplate = {onSelectLotTemplate}
-                        onAfterOpen={null}
-                        lotTemplateId={selectedLotTemplatesId}
-                        close={() => {
-                            setShowLotTemplateEditor(false);
-                            dispatchSetSelectedLotTemplate(null)
-                        }}
-                        processId={processId}
-                    />
-                )}
                 <styled.Container>
                     <Formik
                         innerRef={formRef}
@@ -1671,11 +1658,9 @@ const LotEditor = (props) => {
                                             totalQuantity: bins["QUEUE"]?.count,
                                             syncWithTemplate,
                                         };
-
                                         requestResult = await onPostCard(
                                             submitItem
                                         );
-
                                         if (!(requestResult instanceof Error)) {
                                             const { _id = null } =
                                                 requestResult || {};
@@ -1720,7 +1705,6 @@ const LotEditor = (props) => {
                                 // return true
                             };
 
-                            if (hidden || showLotTemplateEditor) return null;
                             return (
                                 <FormComponent
                                     useCardFields={useCardFields}

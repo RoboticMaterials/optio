@@ -45,7 +45,7 @@ const ZoneHeader = (props) => {
 		setSortDirection,
 		setSortMode,
 		sortMode,
-
+		setSortChanged,
 		lotFilterValue,
 		setLotFilterValue,
 		selectedFilterOption,
@@ -63,7 +63,6 @@ const ZoneHeader = (props) => {
 
 
 	} = props
-
 	const [size, setSize] = useState({
 		width: undefined,
 		height: undefined,
@@ -107,63 +106,14 @@ const ZoneHeader = (props) => {
 
 	return (
 		<styled.Container>
-
 			<styled.SortFilterContainer>
-			{/* {zone === "summary" &&
-			<styled.ColumnContainer
-				css={columnCss3}
-			>
-				<styled.Description>Processes:</styled.Description>
-				<div
-					ref={sizeRef}
-					style={{
-						flex: 1,
-						overflow: "hidden"
-					}}
-				>
-				<DropDownSearch
-					maxDropdownWidth={`${size.width}px` }
-					portal={document.getElementById("root")}
-					containerCss={containerCss}
-					dropdownCss={dropdownCss}
-					valueCss={valueCss}
-					schema={"lots"}
-					placeholder='Select processes...'
-					style={{
-						background: themeContext.bg.secondary,
-						flex: 1,
-						overflow: "hidden"
-					}}
-					onClearAll={()=>{
-						setSelectedProcesses([])
-					}}
-					multi
-					values={selectedProcesses}
-					options={processes.filter((currProcess) => currProcess.map_id === currentMap._id)}
-					onChange={values => {
-						setSelectedProcesses(values)
-					}}
-					pattern={null}
-					labelField={'name'}
-					valueField={"_id"}
-					onDropdownOpen={() => {
-					}}
-					onRemoveItem={(values)=> {
-						setSelectedProcesses(values)
-
-					}}
-				/>
-				</div>
-			</styled.ColumnContainer>
-			} */}
-
 			<styled.OptionContainer>
 				<LotSortBar
 					sortMode={sortMode}
 					setSortMode={setSortMode}
 					sortDirection={sortDirection}
 					setSortDirection={setSortDirection}
-
+					setSortChanged = {setSortChanged}
 					columnCss={columnCss3}
 					containerCss={containerCss}
 					dropdownCss={dropdownCss}

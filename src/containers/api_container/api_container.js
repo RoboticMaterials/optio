@@ -1,7 +1,7 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
@@ -30,13 +30,14 @@ import { getIsEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
-import { getCards, getProcessCards } from "../../redux/actions/card_actions";
+import { getCards, getProcessCards, getStationCards } from "../../redux/actions/card_actions";
 import { mapValues } from 'lodash';
 
 const ApiContainer = (props) => {
 
     // Dispatches
     const dispatch = useDispatch()
+    const history = useHistory()
     const onGetMaps = async () => await dispatch(getMaps())
     const onGetStations = async () => await dispatch(getStations())
     const onGetDashboards = async () => await dispatch(getDashboards())
@@ -44,6 +45,7 @@ const ApiContainer = (props) => {
     const onGetLotTemplates = () => dispatch(getLotTemplates())
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const onGetCards = () => dispatch(getCards())
+    const onGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const onGetProcesses = () => dispatch(getProcesses());
 
     const onGetSettings = () => dispatch(getSettings())
@@ -56,7 +58,9 @@ const ApiContainer = (props) => {
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
-    const mapViewEnabled = localReducer.localSettings.mapViewEnabled
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const localSettings = localReducer.localSettings
     const maps = useSelector(state => state.mapReducer.maps)
 
@@ -66,7 +70,8 @@ const ApiContainer = (props) => {
 
     const [pageDataIntervals, setPageDataIntervals] = useState([])
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
-
+    const [localParams, setLocalParams] = useState(params)
+    const [localPath, setLocalPath] = useState(history?.location?.pathname)
     const params = useParams()
 
     useEffect(() => {
@@ -91,7 +96,6 @@ const ApiContainer = (props) => {
 
     useEffect(() => {
 
-
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
         if (!MiRMapEnabled) {
             let containsMirCart = false
@@ -113,12 +117,16 @@ const ApiContainer = (props) => {
     }, [MiRMapEnabled])
 
     useEffect(() => {
-
-        if (stopAPICalls !== true) {
-            updateCurrentPage();
+      if(JSON.stringify(params) !==JSON.stringify(localParams) || JSON.stringify(localPath) !== JSON.stringify(history.location.pathname)) {
+        setLocalPath(history.location.pathname)
+        setLocalParams(params)
+        pageDataIntervals.forEach(interval => clearInterval(interval));
+        setPageDataIntervals([])
+          if (stopAPICalls !== true) {
+              updateCurrentPage();
+          }
         }
-
-    })
+    },[params])
 
     // If the currentMap changes, fetch the new resources
     useEffect(() => {
@@ -139,19 +147,16 @@ const ApiContainer = (props) => {
         // this.logger.debug("api_container currentPage", currentPage);
         // this.logger.debug("api_container currentPageRouter", currentPageRouter);
 
-
         // If the current page state and actual current page are different, then the page has changed so the data interval should change
-        if (!getIsEquivalent(currentPageRouter, currentPage)) {
             // page changed
 
-            // update state
-            setCurrentPage(currentPageRouter)
+            //if (!getIsEquivalent(currentPageRouter, currentPage)) {
 
-            // update data interval to get data for new currentPage
-            setDataInterval(currentPageRouter);
-        }
+                setCurrentPage(currentPageRouter)
 
-
+                // update data interval to get data for new currentPage
+                setDataInterval(currentPageRouter);
+            //}
     }
 
 
@@ -178,7 +183,6 @@ const ApiContainer = (props) => {
         // clear current interval
         await pageDataIntervals.forEach(interval => clearInterval(interval));
         setPageDataIntervals([])
-
         // set new interval for specific page
         switch (pageName) {
 
@@ -187,7 +191,8 @@ const ApiContainer = (props) => {
                 break;
 
             case 'locations':
-                setLocationPageIntervals()
+              if(!mapViewEnabled) setLocationListViewIntervals()
+              else setLocationPageIntervals()
                 break
 
             case 'settings':
@@ -199,17 +204,13 @@ const ApiContainer = (props) => {
                 break
 
             case 'processes':
-                if (data2 === "lots") {
-                    setKanbanIntervals()
-                } else {
-                    setProcessPageIntervals()
-                }
-
+                setProcessPageIntervals()
                 break
 
             default:
                 if(!mapViewEnabled) {
-                    setDashboardPageIntervals()
+                    if(!pageName) setLocationListViewIntervals()
+                    else setDashboardPageIntervals()
                 }
                 break;
         }
@@ -218,7 +219,6 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-
         await onGetSettings();
         const mapsPromise = onGetMaps();
 
@@ -232,8 +232,8 @@ const ApiContainer = (props) => {
             }
         })
 
-        
-        
+
+
 
         if (mapValues === undefined) {
             props.onLoad()
@@ -252,25 +252,44 @@ const ApiContainer = (props) => {
 
         props.apiLoaded()
         props.onLoad()
-
     }
 
     //  DATA LOADERS SECTION BEGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     const setDashboardPageIntervals = () => {
+      if(history.location.pathname.includes('lots')){
         setPageDataIntervals([
             setInterval(async () => {
                 await onGetStations()
+                await onGetSettings();
                 await onGetTasks()
-                await onGetDashboards();
-                await onGetCards()
+                await onGetStationCards(params.stationID)
                 await onGetProcesses()
                 await onGetTasks();
                 await onGetDashboards() // must go last
             }, 5000)
         ])
+      }
+      else{
+        setPageDataIntervals([
+            setInterval(async () => {
+                await onGetStationCards(params.stationID)
+                await onGetDashboards() // must go last
+            }, 1000)
+        ])
+      }
     }
+
+    const setLocationListViewIntervals = () => {
+        setPageDataIntervals([
+            setInterval(async () => {
+                await onGetStations()
+                await onGetSettings()
+            }, 10000)
+        ])
+    }
+
 
     const setLocationPageIntervals = () => {
         // On these pages, the map is shown. therefore we also have to load stuff to render on the map
@@ -280,21 +299,33 @@ const ApiContainer = (props) => {
                 onGetProcesses();
                 onGetTasks();
             }, 5000),
-            setInterval(() => {
-                onGetCards();
-            }, 1000)
         ])
     }
 
     const setKanbanIntervals = () => {
+      if(!!params && params.data1 && params.data1 === 'summary'){
         setPageDataIntervals([
-            setInterval(() => {
-                onGetProcesses();
-            }, 10000),
-            setInterval(() => {
-                onGetCards();
+            setInterval(async() => {
+                await onGetProcesses();
+            }, 20000),
+            setInterval(async() => {
+                await onGetCards();
+                await onGetSettings();
             }, 1000)
         ])
+      }
+      else{
+        setPageDataIntervals([
+            setInterval(async() => {
+                await onGetProcesses();
+            }, 20000),
+            setInterval(async() => {
+                await onGetProcessCards(params.data1);
+                await onGetSettings();
+            }, 1000)
+        ])
+      }
+
     }
 
     const setSettingsPageIntervals = () => {
@@ -311,10 +342,9 @@ const ApiContainer = (props) => {
             }, 5000),
             setInterval(() => {
                 onGetCards();
-            }, 1000)
+            }, 20000)
         ])
     }
-
 
     //  API LOGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

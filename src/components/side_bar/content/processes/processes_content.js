@@ -39,7 +39,7 @@ const ProcessesContent = () => {
             dispatchSetSelectedProcess(null)
         }
     }, [])
-    
+
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
@@ -62,10 +62,6 @@ const ProcessesContent = () => {
     }, [processes])
 
 
-    const onCardView = (element) => {
-        const currentPath = history.location.pathname
-        history.push(currentPath + '/' + element._id + "/lots")
-    }
 
     if (editing && selectedProcess !== null) { // Editing Mode
         return (
@@ -84,8 +80,7 @@ const ProcessesContent = () => {
                 }
                 onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
                 onMouseLeave={() => dispatchSetSelectedProcess(null)}
-                handleCardView={(element) => onCardView(element)}
-                onClick={(process) => {
+                onEditClick={(process) => {
                     // If task button is clicked, start editing it
                     dispatchSetSelectedProcess(process)
                     dispatchEditing(true)

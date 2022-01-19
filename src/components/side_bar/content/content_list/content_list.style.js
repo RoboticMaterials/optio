@@ -107,11 +107,11 @@ export const ListItemTitle = styled.h1`
 export const ListItemIcon = styled.i`
 
     font-size: 1.3rem;
-    color: lightgreen;
+    color: ${props => props?.schema ? props.theme.schema[props.schema].solid : props.theme.bg.quaternary};
 
     &:hover {
         cursor: pointer;
-        color:green;
+        // color:green;
     }
 `
 

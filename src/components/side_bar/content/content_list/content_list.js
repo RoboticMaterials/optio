@@ -19,13 +19,17 @@ export default function ContentList(props) {
     const {
         executeTask,
         hideHeader,
-        handleCardView,
         elements,
         schema,
 
         onClick,
+        onEditClick,
         onMouseEnter,
         onMouseLeave,
+
+        showEdit,
+        showDelete,
+        itemStyle
     } = props;
 
     const [sortKey, setSortKey] = useState('alphabetic')
@@ -66,7 +70,7 @@ export default function ContentList(props) {
             case "tasks":
                 return (inQ) => !inQ && executeTask();
             case "processes":
-                return (element) => handleCardView(element);
+            return () => {};
         }
     }, [schema]);
 
@@ -127,7 +131,8 @@ export default function ContentList(props) {
                             key={`content-list-${element._id}`}
                             id={`content-list-${element._id}`}
                             onIconClick={handleIconClick}
-                            onEditClick={onClick}
+                            onEditClick={onEditClick}
+                            onClick={onClick}
                             ind={ind}
                             error={error}
                             element={element}
@@ -135,10 +140,18 @@ export default function ContentList(props) {
                             inQueue={false}
                             onMouseEnter={onMouseEnter}
                             onMouseLeave={onMouseLeave}
+                            showEdit={showEdit}
+                            showDelete={showDelete}
+                            style={itemStyle}
                         />
                     );
                 })}
             </styled.List>
         </styled.Container>
     );
+}
+
+ContentList.defaultProps = {
+    showEdit: true,
+    showDelete: false,
 }

@@ -27,18 +27,17 @@ const LotContainer = (props) => {
     isPartial,
     onDeleteDisabledLot,
     onRightClickDeleteLot,
+    onDashboard,
     // quantity,
     ...rest
-  } = props;
+  } = props
+
   const history = useHistory();
   const pageName = history.location.pathname;
   const isDashboard = !!pageName.includes("/locations");
   const params = useParams();
-  const { dashboardID } = params;
-  const lot =
-    useSelector((state) => {
-      return state.cardsReducer.cards[lotId];
-    }) || {};
+  const { dashboardID, stationID } = params;
+  const lot = !onDashboard ? useSelector(state => state.cardsReducer.cards[lotId]) : useSelector(state => state.cardsReducer.stationCards)[params.stationID][lotId];
   const stations = useSelector(state => state.stationsReducer.stations)
   const {
     bins,
@@ -49,6 +48,7 @@ const LotContainer = (props) => {
     flags,
     process_id: processId,
   } = lot || {};
+
   const routes = useSelector((state) => {
     return state.tasksReducer.tasks;
   });
@@ -68,9 +68,10 @@ const LotContainer = (props) => {
     [lotTemplateId, lot, dashboard]
   );
 
-  if (bins === undefined || !(binId in bins)) { return null }
+  if (bins === undefined){
+    return null
+  }
   const { count=0, ...partials } = bins[binId] || {};
-
   return (
     <styled.LotFamilyContainer>
           {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
@@ -103,36 +104,41 @@ const LotContainer = (props) => {
                   }}
               />
           }
-          {Object.entries(partials).map(([routeId, quantity]) => (
-              <>
-                  {0<quantity && !!isDashboard &&
-                      <Lot
-                          lotDisabled={true}
-                          isDashboard={!!isDashboard}
-                          processName={processName}
-                          stationName={stationName}
-                          templateValues={templateValues}
-                          totalQuantity={totalQuantity}
-                          lotNumber={lotNum}
-                          flags={flags || []}
-                          enableFlagSelector={enableFlagSelector}
-                          name={name + ` (${stations[routes[routeId]?.load]?.name})`}
-                          count={quantity}
-                          loopCount={lot.loopCount}
-                          id={lotId}
-                          isSelected={false}
-                          selectable={false}
-                          onClick={() => {}}
-                          {...rest}
-                          containerStyle={{
-                          width: "80%",
-                          margin: ".5rem auto .5rem auto",
-                          ...containerStyle,
-                          }}
-                      />
-                  }
-              </>
-          ))}
+          {Object.values(partials)>0 &&
+            <>
+            {Object.entries(partials).map(([routeId, quantity]) => (
+                <>
+                    {0<quantity && !!isDashboard &&
+                        <Lot
+                            lotDisabled={true}
+                            isDashboard={!!isDashboard}
+                            processName={processName}
+                            stationName={stationName}
+                            templateValues={templateValues}
+                            totalQuantity={totalQuantity}
+                            lotNumber={lotNum}
+                            flags={flags || []}
+                            enableFlagSelector={enableFlagSelector}
+                            name={name + ` (${stations[routes[routeId]?.load]?.name})`}
+                            count={quantity}
+                            loopCount={lot.loopCount}
+                            id={lotId}
+                            isSelected={false}
+                            selectable={false}
+                            onClick={() => {}}
+                            {...rest}
+                            containerStyle={{
+                            width: "80%",
+                            margin: ".5rem auto .5rem auto",
+                            ...containerStyle,
+                            }}
+                        />
+                    }
+                </>
+            ))
+          }
+        </>
+      }
     </styled.LotFamilyContainer>
   )
 };
@@ -140,9 +146,11 @@ const LotContainer = (props) => {
 LotContainer.propTypes = {
   lotId: PropTypes.string,
   binId: PropTypes.string,
+  onDashboard: PropTypes.bool,
 };
 
 LotContainer.defaultProps = {
+  onDashboard: false,
   lotId: "",
   binId: "",
   enableFlagSelector: false,

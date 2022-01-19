@@ -28,7 +28,7 @@ import { ThemeContext } from 'styled-components';
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 import { getDashboards, putDashboard } from '../../../../redux/actions/dashboards_actions'
-
+import {getCards} from '../../../../redux/actions/card_actions'
 import { getStations } from '../../../../redux/actions/stations_actions';
 import { getProcesses } from '../../../../redux/actions/processes_actions';
 import { getTasks } from '../../../../redux/actions/tasks_actions';
@@ -48,7 +48,12 @@ import { clearMap } from '../../../../api/development_api'
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
 
-const Settings = () => {
+const Settings = (props) => {
+    const {
+      listView,
+      setShowSettings,
+      setTitle,
+    } = props
 
     const history = useHistory()
 
@@ -60,12 +65,12 @@ const Settings = () => {
     const dispatchGetDashboards = () => dispatch(getDashboards())
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
-    const dispatchClearMap = () => clearMap(developmentPassword)
-
+    const dispatchGetCards = () => dispatch(getCards())
     const dispatchGetStations = () => dispatch(getStations())
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetRoutes = () => dispatch(getTasks())
-
+    const dispatchClearMap = () => dispatch(clearMap())
+    
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
@@ -85,7 +90,7 @@ const Settings = () => {
     const [confirmUnlock, setConfirmUnlock] = useState(false)
     const [confirmLock, setConfirmLock] = useState(false)
     const [confirmClearMap, setConfirmClearMap] = useState(false)
-    
+
     const [addTaskAlert, setAddTaskAlert] = useState(null)
     const [saveDisabled, setSaveDisabled] = useState(true)
     const [developmentPassword, setDevelopmentPassword] = useState('')
@@ -111,7 +116,7 @@ const Settings = () => {
       const mapChange = !getIsEquivalent(mapSettingsState, currentMap)
       const localChange = !getIsEquivalent(localSettingsState, localSettings)
 
-      
+
 
       if(!!serverChange || !!mapChange || !!localChange){
         setSaveDisabled(false)
@@ -228,8 +233,10 @@ const Settings = () => {
         await dispatchGetSettings()
         await dispatchGetLocalSettings()
 
-        if (!localSettingsState.mapViewEnabled) {
-            history.push(`/`)
+        if (listView) {
+            history.push(`/locations`)
+            setTitle('Dashboards')
+            setShowSettings(false)
         }
 
         if (mapChange) {
@@ -237,6 +244,7 @@ const Settings = () => {
             dispatchGetDashboards()
             dispatchGetProcesses()
             dispatchGetRoutes()
+            dispatchGetCards()
         }
     }
 
@@ -548,7 +556,7 @@ const Settings = () => {
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
-                        
+
                     />
 
                 </styled.RowContainer>

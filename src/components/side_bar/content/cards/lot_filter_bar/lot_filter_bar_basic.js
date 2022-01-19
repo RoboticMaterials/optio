@@ -20,7 +20,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { isMobile } from "react-device-detect"
 
 //Actions
-import {postLocalSettings} from '../../../../../redux/actions/local_actions'
+import {postSettings, getSettings} from '../../../../../redux/actions/settings_actions'
 
 
 // utils
@@ -54,11 +54,13 @@ const LotFilterBarBasic = (props) => {
 
     // redux state
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
 
     //dispatch
     const dispatch = useDispatch()
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
+
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
     const [open, setOpen] = useState(true) // is filter options open ?
@@ -130,17 +132,13 @@ const LotFilterBarBasic = (props) => {
             style={{
                 flex: (open && valueMode === VALUE_MODES.TEXT_BOX) && 1,
                 padding: open ? ".25rem 1rem 0 1rem" : "1rem",
-                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem"
+                maxWidth: valueMode === VALUE_MODES.TEXT_BOX && "30rem",
             }}
         >
             <styled.Description
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
             >
-                <styled.ExpandContractIcon
-                    className={open ? "fas fa-chevron-down" : "fas fa-chevron-right"}
-                    onClick={()=>setOpen(!open)}
-                />
                 Filter
             </styled.Description>
 
@@ -154,16 +152,21 @@ const LotFilterBarBasic = (props) => {
                             // dropdownCss={props.dropdownCss}
                             // valueCss={props.valueCss}
                             options={lotFilterOptions}
-                            onChange={(values) => {
+                            onChange={async(values) => {
+
                                 // *** selected new option ***
                                 const newFilterOption = values[0]
 
                                 // updated selectedFilterOption
                                 setSelectedFilterOption(newFilterOption)
-                                dispatchPostLocalSettings({
-                                  ...localSettings,
-                                  lotSummaryFilterOption: newFilterOption
+                                let settingsPromise = dispatchGetSettings()
+                                settingsPromise.then(response =>{
+                                  dispatchPostSettings({
+                                      ...response,
+                                      lotSummaryFilterOption: newFilterOption
+                                  })
                                 })
+
                                 const {
                                     dataType
                                 } = newFilterOption
@@ -186,10 +189,10 @@ const LotFilterBarBasic = (props) => {
                             valueField={"label"}
                             schema={"lots"}
                             style={{
-                                minWidth: "12rem",
-                                maxWidth: "12rem",
+                                minWidth: "10rem",
+                                maxWidth: "10rem",
                                 overflow: 'visible',
-                                background: themeContext.bg.tertiary,
+                                background: themeContext.bg.secondary,
                             }}
                             containerStyle={{
                                 marginRight: "1rem",
@@ -286,7 +289,7 @@ const LotFilterBarBasic = (props) => {
                                             style={{
                                                 minWidth: "10rem",
                                                 flex: 1,
-                                                background: themeContext.bg.tertiary,
+                                                background: themeContext.bg.secondary,
                                                 alignSelf: "stretch",
                                             }}
                                         />
@@ -295,23 +298,26 @@ const LotFilterBarBasic = (props) => {
                                 [VALUE_MODES.TEXT_BOX]:
                                     <Textbox
                                         placeholder='Filter lots...'
-                                        onChange={(e) => {
+                                        onChange={async(e) => {
                                             setLotFilterValue(e.target.value)
-                                            dispatchPostLocalSettings({
-                                              ...localSettings,
-                                              lotSummaryFilterValue: e.target.value
+                                            let settingsPromise = dispatchGetSettings()
+                                            settingsPromise.then(response =>{
+                                              dispatchPostSettings({
+                                                  ...response,
+                                                  lotSummaryFilterValue: e.target.value
+                                              })
                                             })
                                         }}
                                         focus={shouldFocusLotFilter}
                                         value = {lotFilterValue}
                                         inputStyle={{
                                             height: "100%",
-                                            background: themeContext.bg.tertiary,
+                                            background: themeContext.bg.secondary,
                                         }}
                                         style={{
                                             alignSelf: "stretch",
                                             flex: 1,
-                                            minWidth: "5rem",
+                                            minWidth: "7rem",
                                             maxWidth: "12rem"
                                         }}
                                         schema={"lots"}

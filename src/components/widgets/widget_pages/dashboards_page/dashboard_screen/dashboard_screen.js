@@ -128,7 +128,6 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
-
         dispatchGetProcesses()
         return () => {
             onDashboardOpen(false)
@@ -430,6 +429,7 @@ const DashboardScreen = (props) => {
           }
           {!history.location.pathname.includes('lots') &&
             <style.UndoIcon
+                style = {{marginRight: '.5rem'}}
                 className="fas fa-undo"
                 disabled={undoHandlers.length === 0}
                 onClick={() => setShowUndoModal(true)}
@@ -461,8 +461,6 @@ const DashboardScreen = (props) => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-
-
 
         </style.Container >
     )

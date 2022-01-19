@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom'
 import { DraggableCore } from "react-draggable";
 
 import {
@@ -45,7 +46,8 @@ const TemplateSelectorSidebar = (props) => {
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
     const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
 
-
+    const history = useHistory()
+    const params = useParams()
 
     const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions
 
@@ -62,6 +64,8 @@ const TemplateSelectorSidebar = (props) => {
                         onClick={() => {
                             onTemplateSelectClick(null)
                             onTemplateEditClick(null)
+                            history.push(`/lots/${params.id}/template`)
+
                         }}
                         style={{
                             margin: '0rem 0rem 1rem 0rem',
@@ -111,6 +115,7 @@ const TemplateSelectorSidebar = (props) => {
                                 <style.EditTemplateIcon
                                     isSelected={isSelected}
                                     onClick={()=>{
+                                        history.push(`/lots/${params.id}/template`)
                                         onTemplateSelectClick(currTemplateId)
                                         onTemplateEditClick(null)
                                     }}

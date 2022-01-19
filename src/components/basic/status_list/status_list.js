@@ -26,11 +26,6 @@ const StatusList = (props) => {
 
 	return (
 		<styled.Container>
-			{/* <StatusListHeader
-				onBack={onBack}
-				onCanceleClick={onCanceleClick}
-			/> */}
-
 			<StatusListBody
 				displayNames={displayNames}
 				onItemClick={onItemClick}

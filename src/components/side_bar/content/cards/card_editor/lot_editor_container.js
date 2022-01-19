@@ -19,6 +19,7 @@ import StatusList from "../../../../basic/status_list/status_list";
 import { PasteForm } from "../../../../basic/paste_mapper/paste_mapper";
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
 import BackButton from "../../../../basic/back_button/back_button";
+import LotCreatorForm from "../lot_template_editor/template_form";
 
 // constants
 import {
@@ -131,7 +132,6 @@ const LotEditorContainer = (props) => {
     const [showStatusListLazy, setShowStatusListLazy] = useState(null);
 
     const previousSelectedIndex = usePrevious(selectedIndex); // needed for useEffects
-
     const formRef = useRef(null); // gets access to form state
     const { current } = formRef || {};
     const {
@@ -191,7 +191,7 @@ const LotEditorContainer = (props) => {
                     setPasteTable(table);
                     break;
             }
-
+            history.push(`/lots/${params.id}/paste`)
             setShowPasteMapper(true);
             setPasteMapperHidden(false);
             setShowSimpleModal(false);
@@ -205,21 +205,24 @@ const LotEditorContainer = (props) => {
 
     }, [plainFiles.length]);
 
+    useEffect(() => {
+      if(params.subpage == 'create') {
+        setShowPasteMapper(false);
+        setPasteMapperHidden(true);
+        setPasteTable([]); // clear table
+        setShowStatusList(false); // display statusList
+        setSelectedIndex(null);
+        setMappedValues([]);
+        setResetPasteTable(true)
+      }
+    },[params])
+
     // when card id changes, update card
     useEffect(() => {
         setCard(cards[props.cardId] || null);
     }, [props.cardId]);
 
     const handleSelectLotTemplate = (templateId) => {
-
-        if (templateId === null) {
-            templateId =
-                Object.values(lotTemplates).find(
-                    (lotTemplate) =>
-                        (!process || lotTemplate.processId === process._id) &&
-                        lotTemplate.name === "Basic"
-                )?._id || null;
-        }
 
         let newTemplateId = templateId;
         // if a template isn't provided by process, check if card has template id
@@ -1092,7 +1095,6 @@ const LotEditorContainer = (props) => {
     const renderHeader = useMemo(() => {
 
         let onBack, title;
-
         switch (params.subpage) {
             case 'editing':
                 onBack = null;
@@ -1102,9 +1104,13 @@ const LotEditorContainer = (props) => {
                 onBack = null;
                 title = 'Creating Lot'
                 break;
+            case 'template':
+            onBack = () => history.push(`/lots/${params.id}/create`)
+                title = 'Editing Template'
+                break;
             case 'paste':
                 onBack = () => history.push(`/lots/${params.id}/create`)
-                title = 'Paste'
+                title = 'Import Lots'
                 break;
             case 'validate':
                 onBack = () => history.push(`/lots/${params.id}/paste`)
@@ -1118,14 +1124,14 @@ const LotEditorContainer = (props) => {
 
         return (
             <styled.Header>
-                {!!onBack && 
+                {!!onBack &&
                     <div style={{ position: "absolute" }}>
                         <BackButton
+                            schema = {'lots'}
                             onClick={onBack}
                         ></BackButton>
                     </div>
                 }
-
                 <styled.Title>{title}</styled.Title>
 
                 <styled.CloseIcon
@@ -1135,7 +1141,6 @@ const LotEditorContainer = (props) => {
                 />
             </styled.Header>
         )
-
     })
 
     const renderContent = useMemo(() => {
@@ -1236,6 +1241,21 @@ const LotEditorContainer = (props) => {
             case 'history':
                 return <LotHistory />
 
+            case 'template':
+                return (
+                  <LotCreatorForm
+                      isOpen={true}
+                      setSelectedTemplate = {handleSelectLotTemplate}
+                      onAfterOpen={null}
+                      lotTemplateId={lotTemplateId}
+                      close={() => {
+                          //setShowLotTemplateEditor(false);
+                          //dispatchSetSelectedLotTemplate(null)
+                      }}
+                      processId={props.processId}
+                  />
+                )
+
             default:
                 return (
                     <LotEditor
@@ -1269,6 +1289,7 @@ const LotEditorContainer = (props) => {
                         collectionCount={parseInt(collectionCount + 1)}
                         lotTemplateId={lotTemplateId}
                         lotTemplate={lotTemplate}
+                        binId = {props.binId}
                         cardId={params.subpage === 'create' ? null : params.id}
                         processId={params.subpage === 'create' ? params.id : cards[params.id]?.process_id}
                         onSelectLotTemplate={handleSelectLotTemplate}
@@ -1394,9 +1415,9 @@ const LotEditorContainer = (props) => {
                 </SimpleModal>
             )}
 
-            
+
             {renderHeader}
-            
+
             {renderContent}
 
         </styled.Container>

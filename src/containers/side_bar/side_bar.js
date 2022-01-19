@@ -20,6 +20,7 @@ import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
+import {getStationCards} from '../../redux/actions/card_actions'
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
@@ -31,9 +32,11 @@ const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_sw
 const LocationsContent = lazy(() => import('../../components/side_bar/content/locations/locations_content'))
 const ProcessesContent = lazy(() => import('../../components/side_bar/content/processes/processes_content'))
 const Settings = lazy(() => import('../../components/side_bar/content/settings/settings'))
-const Cards = lazy(() => import("../../components/side_bar/content/cards/cards"))
+import Cards from "../../components/side_bar/content/cards/cards"
 const StatisticsSelector = lazy(() => import('../../components/side_bar/content/statistics/statistics_selector'))
 const ProcessStatistics = lazy(() => import('../../components/side_bar/content/statistics/process_statistics/process_statistics'))
+const LotSummarySelector = lazy(() => import('../../components/side_bar/content/cards/lot_summary_selector/lot_summary_selector'))
+
 
 const SideBar = (props) => {
 
@@ -49,8 +52,12 @@ const SideBar = (props) => {
         id
     } = params
 
+    const idRef = useRef(id)
+    idRef.current = id
+
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
     const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
@@ -88,7 +95,7 @@ const SideBar = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
-
+    const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
@@ -96,13 +103,16 @@ const SideBar = (props) => {
     const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings', 'statistics']
 
     const boundToWindowSize = () => {
-        const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
+      let newWidth
+      if(!!idRef.current && idRef.current!=='summary') newWidth = Math.max(window.innerWidth, Math.max(360, pageWidth))
+      else newWidth = Math.min(window.innerWidth, Math.min(360, pageWidth))
+
         setPageWidth(newWidth)
         dispatchSetWidth(newWidth)
     }
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
         window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
@@ -111,7 +121,7 @@ const SideBar = (props) => {
     }, [])
 
     useEffect(() => {
-        disableBrowserBackButton()
+        // disableBrowserBackButton()
     }, [url])
 
      useEffect(() => {
@@ -141,7 +151,7 @@ const SideBar = (props) => {
                 if(!!lotId) onScanLot(lotId)
                 setFull('')
             }
-
+            else if(full === 'Enter') setBarcode([])
     }, [full])
 
     const logKey = (e) => {
@@ -161,6 +171,7 @@ const SideBar = (props) => {
               statId = station._id
             }
           })
+
         if(binCount > 1){
           if(!!pageInfoChanged){
             setConfirmDeleteModal(true)
@@ -182,7 +193,10 @@ const SideBar = (props) => {
               setBinCount(binCount)
             }
             else{
-              history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+              let result = dispatchGetStationCards(statId)
+              result.then((res) => {
+                history.push(`/locations/${statId}/dashboards/${stations[statId].dashboards[0]}/lots/${card._id}`)
+              })
             }
         }
 
@@ -221,7 +235,7 @@ const SideBar = (props) => {
     useEffect(() => {
         const hamburger = document.querySelector('.hamburger')
         const active = hamburger.classList.contains('is-active')
-        if (active && (id === undefined || id === 'summary') && !sideBarOpen) {
+        if (active && (id === undefined || id === 'summary' || (subpage === 'lots' || subpage === 'statistics')) && !sideBarOpen) {
             hamburger.classList.toggle('is-active')
         } else if (!active && sideBarOpen) {
             hamburger.classList.toggle('is-active')
@@ -235,46 +249,70 @@ const SideBar = (props) => {
     // sets width to full screen if card subpage is open in processes
     useEffect(() => {
         const {
-
+            page: prevPage,
+            subpage: prevSubpage,
+            id: prevId
         } = prevParams
 
-        const prevPage = prevParams.page
-        const prevSubpage = prevParams.subpage
-        const prevId = prevParams.id
+        //console.log([prevPage, prevId, prevSubpage], [page, id, subpage], ['lots', 'statistics'].includes(page), id !== 'summary', ['locations', 'processes'].includes(prevPage), prevId === 'summary')
 
-        if (prevPage === 'settings') {
-            setPageWidth(450)
-            dispatchSetWidth(450)
-            setPrevWidth(null)
-        }
-
-        const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
-
-        const time = Date.now()
-        if ((page === "processes" && subpage === 'lots') || page === "lots" || page === "statistics") {
-            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        if (page === prevPage && id === prevId) {return}
+        if ((['lots', 'statistics'].includes(page) && id !== 'summary') && (['locations', 'processes'].includes(prevPage) || prevId === 'summary')) {
+            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
-
         } else if (page === 'settings') {
-            if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(600)
             dispatchSetWidth(600)
-        } else if (!!prevWidth) {
-            setPageWidth(prevWidth)
-            dispatchSetWidth(prevWidth)
-            setPrevWidth(null)
+        } else if (!subpage){
+            if (prevWidth) {
+                setPageWidth(prevWidth)
+                dispatchSetWidth(prevWidth)
+                setPrevWidth(null)
+            } else {
+                setPageWidth(450)
+                dispatchSetWidth(450)
+            }
         }
-
 
         setPrevParams(params)
 
-        if (!showSideBar) {
-            setPageWidth(450)
-            dispatchSetWidth(450)
-        }
 
-        return () => { }
+        // if (prevPage === 'settings') {
+        //     setPageWidth(450)
+        //     dispatchSetWidth(450)
+        //     setPrevWidth(null)
+        // }
+
+        // const pageWidthCopy = prevPage === 'settings' ? 450 : pageWidth
+
+        // const time = Date.now()
+        // if ((page === "processes" && subpage === 'lots') || page === "lots") {
+        //     if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        //     setPageWidth(window.innerWidth)
+        //     dispatchSetWidth(window.innerWidth)
+
+        // } else if (page === 'settings') {
+        // // if (page === 'settings') {
+        //     if (!prevWidth) setPrevWidth(pageWidthCopy) // store previous width to restore when card page is left
+        //     setPageWidth(600)
+        //     dispatchSetWidth(600)
+        // } else if (!!prevWidth) {
+        //     setPageWidth(prevWidth)
+        //     dispatchSetWidth(prevWidth)
+        //     setPrevWidth(null)
+        // }
+
+
+        // setPrevParams(params)
+
+        // if (!showSideBar) {
+        //     setPageWidth(450)
+        //     dispatchSetWidth(450)
+        // }
+
+        // return () => { }
 
     }, [page, subpage, id, pageWidth, showSideBar])
 
@@ -332,7 +370,7 @@ const SideBar = (props) => {
 
         case 'processes':
             if (subpage === "lots") {
-                content = <Cards />
+                content = <> </>
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
@@ -341,7 +379,11 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            content = <Cards />
+            if (!!subpage && !!summaryProcess) {
+                content = <Cards id = {summaryProcess}/>
+            } else {
+                content = <LotSummarySelector/>
+            }
             break
 
         case 'settings':
@@ -462,7 +504,12 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }} open={showSideBar} secondaryColor={page !== 'statistics' && subpage !== 'statistics'}>
+                <styled.SidebarWrapper
+                    mode={mode}
+                    style={{ width: showSideBar == true ? pageWidth : 0, display: "flex" }}
+                    open={showSideBar}
+                    secondaryColor={['locations', 'processes'].includes(page) || id === 'summary'}
+                >
                 <Suspense fallback = {null}>
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}

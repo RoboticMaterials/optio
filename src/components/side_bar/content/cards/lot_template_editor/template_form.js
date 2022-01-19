@@ -4,6 +4,7 @@ import React, {useState, useEffect, useContext, useRef} from "react";
 import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import {useHistory, useParams} from 'react-router-dom'
 import uuid from "uuid";
 import FadeLoader from "react-spinners/FadeLoader"
 import ReactTooltip from "react-tooltip";
@@ -88,6 +89,9 @@ const FormComponent = (props) => {
 	} = props
 	const themeContext = useContext(ThemeContext)
 	useChange()
+
+	const history = useHistory()
+	const params = useParams()
 
 	//tooltip
 	const ref = useRef()
@@ -183,6 +187,8 @@ const FormComponent = (props) => {
 							setConfirmDeleteTemplateModal(null)
 							onDeleteClick()
 							close()
+							history.push(`/lots/${params.id}/create`)
+
 					}}
 					handleOnClick2={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -206,23 +212,15 @@ const FormComponent = (props) => {
 			/>
 			<styled.Header>
 				{/*<styled.Title>*/}
-				<BackButton
-					secondary
-					onClick={close}
-					schema={'lots'}
-				>
-				</BackButton>
+				<div style={{marginRight: "1rem", marginLeft: '11%'}}/>
 
-				<div style={{marginRight: "1rem"}}/>
-
-				<styled.TemplateNameContainer style = {{maxWidth: '50%', marginRight: '45rem'}}>
-					<styled.TemplateLabel>Product Group Name:</styled.TemplateLabel>
+					<styled.TemplateLabel style = {{marginTop: '0.2rem'}}>Product Group Name:</styled.TemplateLabel>
 					<TextField
 						name={"name"}
 						placeholder={"Enter template name..."}
 						InputComponent={Textbox}
-						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
-						inputStyle={{background: themeContext.bg.tertiary}}
+						style={{maxWidth: '60%', fontSize: themeContext.fontSize.sz2}}
+						inputStyle={{background: themeContext.bg.secondary}}
 						schema = {'lots'}
 					/>
 					<div data-tip data-for={toolTipId} style = {{justifyContent: 'center', alignSelf: 'center', marginLeft: '10rem'}}>
@@ -242,11 +240,10 @@ const FormComponent = (props) => {
 							}}
 							schema={"lots"}
 							disabled = {!!lotTemplateId ? false : true}
-							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '2rem', top: '1rem'}}
+							style = {{minWidth: '20rem', padding: '0.5rem', position: 'absolute', right: '11%', top: '0.5rem'}}
 							label = {'Work Instructions'}
 						/>
 					</div>
-				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
 
@@ -363,6 +360,7 @@ const FormComponent = (props) => {
 				style={{...buttonStyle}}
 				onClick={async () => {
 					submitForm()
+					history.push(`/lots/${params.id}/create`)
 				}}
 				schema={"ok"}
 				disabled={submitDisabled}
@@ -387,7 +385,9 @@ const FormComponent = (props) => {
 			{formMode === FORM_MODES.UPDATE &&
 			<Button
 				style={buttonStyle}
-				onClick={()=>setConfirmDeleteTemplateModal(true)}
+				onClick={()=>{
+					setConfirmDeleteTemplateModal(true)
+				}}
 				schema={"error"}
 			>
 				Delete Template

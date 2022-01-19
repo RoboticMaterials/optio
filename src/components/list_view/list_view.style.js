@@ -20,7 +20,7 @@ export const Icon = styled.i`
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%,-50%);
-  color: ${props => props.theme.bg.quinary};
+    color: ${props => props.theme.bg.quinary};
 `
 
 export const DashboardIcon = styled.i`
@@ -32,32 +32,29 @@ export const DashboardIcon = styled.i`
 
 
 export const Header = styled.div`
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => LightenDarkenColor(props.theme.bg.secondary,4)};
 	width: 100%;
 	padding: 1rem;
 	align-items: center;
   height: 4rem;
 	display: flex;
-  border-bottom: 2px solid ${props => props.theme.bg.tertiary};
+  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
 
-    // box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.3);
+  /* /box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.2); */
 `
 
 export const Title = styled.span`
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-
-    font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.phoneView ?  props.theme.fontSize.sz2 : props.theme.fontSize.sz2};
-    font-weight: 500;
-    color: ${props => props.theme.bg.quinary};
+    color: ${props => props.theme.bg.septenary};
 `
 
 export const ListScrollContainer = styled.ul`
     padding: 0;
     margin: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     flex: 1;
     padding: 1rem;
 
@@ -79,19 +76,24 @@ export const ListItemRect = styled.div`
     display: flex;
 
     border-radius: 0.5rem;
-    text-align: center;
+    text-align: start;
 
     cursor: pointer;
     user-select: none;
     box-sizing: border-box;
 
     background-color: ${props => props.theme.bg.primary};
-    box-shadow: ${props => props.theme.cardShadowBold};
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.1);
 
     &:hover {
         background: ${props => LightenDarkenColor(props.theme.bg.primary, -5)};
     }
 
+`
+export const LocationTypeGraphic = styled.svg`
+    height: 2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
 `
 
 export const ListItemTitle = styled.div`
@@ -106,7 +108,7 @@ export const ListItemTitle = styled.div`
     font-family: ${props => props.theme.font.primary};
     font-size: 1rem;
     font-weight: 500;
-    color: ${props => props.theme.schema['dashboards'].solid};
+    color: ${props => props.theme.bg.senary};
 
     white-space: nowrap;
     overflow: hidden;

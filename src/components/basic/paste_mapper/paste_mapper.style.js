@@ -6,30 +6,30 @@ import { LightenDarkenColor } from '../../../methods/utils/color_utils'
 
 const scrollCss = css`
 ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+        width: 15px;
+        height: 15px;
         margin: 1rem;
         background: transparent;
     }
 
     /* Track */
     ::-webkit-scrollbar-track {
-        background: rgba(175,175,175,0.75);
+      background: ${props => props.theme.bg.tertiary};
     }
 
     ::-webkit-scrollbar-track:hover {
-        background: rgba(175,175,175,0.6);
+      background: ${props => props.theme.bg.tertiary};
     }
 
     /* Handle */
     ::-webkit-scrollbar-thumb {
-        background: #27272b;
+      background: ${props => props.theme.bg.quaternary};
         border-radius: .5rem;
     }
 
     /* Handle on hover */
     ::-webkit-scrollbar-thumb:hover {
-        background: #555;
+      background: ${props => props.theme.bg.quaternary};
 
     }
 `
@@ -38,7 +38,16 @@ export const Container = styled.div`
     display: flex;
     ${containerLayout};
     align-self: center;
+    border-radius: 0rem 0rem 0.5rem 0.5rem;
     overflow: hidden;
+<<<<<<< HEAD
+    flex-direction: column;
+    z-index: 5000;
+    overflow: hidden;
+    min-height: 90vh;
+    height: 100vh;
+    width: 95vw;
+=======
     border-radius: 0 0 1rem 1rem;
     flex-direction: column;
     z-index: 5000;
@@ -46,6 +55,7 @@ export const Container = styled.div`
     // min-height: 90vh;
     // height: 100%;
     width: 100%;
+>>>>>>> master
     background: ${props => props.theme.bg.primary};
 `
 

@@ -14,7 +14,7 @@ export const SideBarOpenCloseButton = styled.button`
 
     box-shadow: 0 0 4px 1.5px rgba(0, 0, 0, 0.1);
     background-color: ${props => hexToRGBA(props.theme.bg.primary, 0.97)};
-    
+
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
     &:focus{

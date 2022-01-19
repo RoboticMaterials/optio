@@ -42,6 +42,10 @@ const ContentHeader = (props) => {
             return 'Routes'
         }
 
+        else if (content === 'lots') {
+            return 'Travelers'
+        }
+
         else {
             return upperCaseFirstLetterInString(content)
         }
@@ -53,16 +57,9 @@ const ContentHeader = (props) => {
             <styled.Header>
                 <styled.Title schema={content}>{handleTitle()}</styled.Title>
 
-                {content === 'taskQueue' ?
-                    <BounceButton
-                        color={"red"}
-                        onClick={onClickClear}
-                        disabled={disabled}
-                    >
-                        <styled.ClearIcon
-                            fontSize={"medium"}
-                        />
-                    </BounceButton>
+                {content !== 'locations' && content!== 'processes' ?
+                    <>
+                    </>
                     :
                     <PlusButton
                         style={{color: theme.main.schema[content].solid}}

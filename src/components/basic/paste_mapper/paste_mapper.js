@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from 'react-router-dom'
+import {useHistory, useParams} from 'react-router-dom'
 
 import PropTypes from "prop-types";
 import { Formik } from "formik";
@@ -42,9 +42,8 @@ const PasteMapper = (props) => {
         values,
     } = formikProps;
 
-    const history = useHistory();
-    const params = useParams();
-
+    const history = useHistory()
+    const params = useParams()
     const [table, setTable] = useState(values.table)
     const [disableMergeButton, setDisableMergeButton] = useState(false)
     const [showAutoCompleteModal, setShowAutoCompleteModal] = useState(false)
@@ -54,7 +53,7 @@ const PasteMapper = (props) => {
     const parseMode = useSelector(state => state.settingsReducer.settings.parseMode)
 
     const mappedFields = useMemo(() => {
-      let mapping = new Array(table[0].length).fill(null)
+      let mapping = new Array(table[0]?.length).fill(null)
       if(!!lotTemplate && fieldMapping){
       Object.keys(fieldMapping).forEach(key => {
         const foundField = availableFields.find(field => field._id === key)
@@ -309,15 +308,8 @@ const PasteMapper = (props) => {
           />
         }
         <styled.Container>
-            {/* <styled.Header>
-                <BackButton schema={'lots'} onClick={onCancel}/>
-                <styled.Title>Upload Lot Data</styled.Title>
-                <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
-            </styled.Header> */}
-
             <styled.Body>
                 <styled.ContentContainer>
-
                     {!!parseMode && (parseMode === 'YaleCordage' || parseMode === 'Alpen') &&
                       <Button
                           style={{maxWidth: '18rem', marginLeft: '1rem'}}
@@ -349,6 +341,7 @@ const PasteMapper = (props) => {
                     schema={'lots'}
                     label={"Validate Lots"}
                     onClick={()=>{
+                        history.push(`/lots/${params.id}/validate`)
                         const payload = createPastePayload(table, mappedFields)
                         onCreateClick(payload)
                         history.push(`/lots/${params.id}/validate`)

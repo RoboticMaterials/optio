@@ -24,6 +24,7 @@ import { getProcessStatistics } from '../../../../../api/processes_api';
 import { deepCopy } from '../../../../../methods/utils/utils';
 import { secondsToReadable } from '../../../../../methods/utils/time_utils';
 import { getLotTemplates } from '../../../../../redux/actions/lot_template_actions';
+import {setSelectedProcess} from '../../../../../redux/actions/processes_actions'
 
 import descriptions from './descriptions';
 import Portal from '../../../../../higher_order_components/portal';
@@ -71,6 +72,7 @@ const ProcessStatistics = ({ id }) => {
     // Dispatches
     const dispatch = useDispatch()
     const dispatchGetProductTemplates = () => dispatch(getLotTemplates())
+    const dispatchSetSelectedProcess = (processID) => dispatch(setSelectedProcess(processID))
 
     // On Mount
     useEffect(() => {
@@ -78,11 +80,16 @@ const ProcessStatistics = ({ id }) => {
         refreshData(dateRange);
     }, [dateRange])
 
+    useEffect(() => {
+      return () => {
+        dispatchSetSelectedProcess(null)
+      }
+    }, [])
+
     // Helpers
     const refreshData = async (dateRange) => {
         setThroughputData([])
         const tempData = await getProcessStatistics(id, dateRange[0], dateRange[1])
-        console.log(tempData)
         if (tempData === undefined) {
             setBalancePG(null)
             setData(emptyData)
@@ -108,7 +115,7 @@ const ProcessStatistics = ({ id }) => {
 
     useEffect(() => {
         if (!data || !data.throughput) return []
-        
+
         toggleCumulative();
 
     }, [data, isCumulative])
@@ -116,7 +123,6 @@ const ProcessStatistics = ({ id }) => {
     const toggleCumulative = async () => {
         if (!data || !data.throughput) return
         let throughputDataCopy = []
-        console.log(isCumulative)
         if (isCumulative) {
             const minTime = data.throughput.reduce((currMin, line) => Math.min(currMin, line.data[line.data.length-1]?.x || Number.POSITIVE_INFINITY), data.throughput[0]?.data[0]?.x || Number.POSITIVE_INFINITY)
             const maxTime = data.throughput.reduce((currMax, line) => Math.max(currMax, line.data[line.data.length-1]?.x || 0), 0)
@@ -137,7 +143,6 @@ const ProcessStatistics = ({ id }) => {
         } else {
             throughputDataCopy = await deepCopy(data.throughput).filter(line => line.id !== 'Total').map(line => ({...line, dashed: true}))
         }
-        console.log(throughputDataCopy)
         setThroughputData(throughputDataCopy);
     }
 
@@ -178,7 +183,12 @@ const ProcessStatistics = ({ id }) => {
     return (
         <styled.Page>
             <styled.Header>
-                <BackButton onClick={() => history.push('/statistics')} containerStyle={{position: 'absolute', left: '1.5rem'}}/>
+                <BackButton
+                  onClick={() => {
+                    history.push('/statistics')
+                  }}
+                  containerStyle={{position: 'absolute', left: '1.5rem'}}
+                />
                 {currentProcess.name}
             </styled.Header>
             <styled.StatisticsContainer>
@@ -215,7 +225,7 @@ const ProcessStatistics = ({ id }) => {
                 <styled.Row>
                     <styled.Card style={{width: '33.33%'}}>
                         {renderHeader('Throughput', 'totalThroughput')}
-                        {!!data ? 
+                        {!!data ?
                             !!data.total_throughputs && 'total' in data.total_throughputs ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Finished Product</styled.PrimaryLabel>
@@ -231,12 +241,12 @@ const ProcessStatistics = ({ id }) => {
                                 :
                                 <styled.NoData>No Data</styled.NoData>
                             :
-                            <ScaleLoader />         
+                            <ScaleLoader />
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
                         {renderHeader('Production Rate', 'productionRate')}
-                        {!!data ? 
+                        {!!data ?
                             !!data.production_rates && 'total' in data.production_rates ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>1 Part Every</styled.PrimaryLabel>
@@ -252,12 +262,12 @@ const ProcessStatistics = ({ id }) => {
                                 :
                                 <styled.NoData>No Data</styled.NoData>
                             :
-                            <ScaleLoader />         
+                            <ScaleLoader />
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
                         {renderHeader('Work in Process', 'wip')}
-                        {!!data ? 
+                        {!!data ?
                             'total' in data.wip ?
                                 <styled.ChartContainer>
                                     <styled.PrimaryLabel>Total</styled.PrimaryLabel>
@@ -273,12 +283,12 @@ const ProcessStatistics = ({ id }) => {
                                 :
                                 <styled.NoData>No Data</styled.NoData>
                             :
-                            <ScaleLoader />         
+                            <ScaleLoader />
                         }
                     </styled.Card>
                     <styled.Card style={{width: '33.33%'}}>
                     {renderHeader('Lead Time', 'leadTime')}
-                        {!!data ? 
+                        {!!data ?
                             'total' in data.production_rates ?
                                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%'}}>
                                     <styled.PrimaryValue style={{fontSize: '2.4rem', color: '#9494b5'}}>{secondsToReadable(data.lead_time)}</styled.PrimaryValue>
@@ -286,7 +296,7 @@ const ProcessStatistics = ({ id }) => {
                                 :
                                 <styled.NoData>No Data</styled.NoData>
                             :
-                            <ScaleLoader />         
+                            <ScaleLoader />
                         }
                     </styled.Card>
                 </styled.Row>
@@ -295,7 +305,7 @@ const ProcessStatistics = ({ id }) => {
                     <styled.Card style={{flexGrow: 1}}>
                         {renderHeader('Line Balance', 'balance')}
                         <styled.ChartContainer style={{height: '26rem'}}>
-                            {!!data ? 
+                            {!!data ?
                                 !!data.balance && !!balancePG && (balancePG in data.balance) && data.balance[balancePG].length ?
                                     <BalanceBar data={data.balance[balancePG]} productGroupId={balancePG} renderDropdown={renderProductGroupDropdown}/>
                                     : <styled.NoData>No Data</styled.NoData>
@@ -315,8 +325,8 @@ const ProcessStatistics = ({ id }) => {
                         </div>
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?
-                                throughputData.length ? 
-                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v*1000)}/> 
+                                throughputData.length ?
+                                    <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v*1000)}/>
                                     : <styled.NoData>Not Enough Data</styled.NoData>
                                 :
                                 <ScaleLoader />

@@ -100,7 +100,7 @@ const App = () => {
                         <PageErrorBoundary>
                             <>
                                 {/* Authentication */}
-                                {!authenticated && 
+                                {!authenticated &&
                                     <Route path="/" >
                                         <Authentication mobileMode={mobileMode} />
                                     </Route>

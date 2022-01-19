@@ -17,11 +17,10 @@ export const Container = styled.div`
 
 export const Header = styled.div`
 	display: flex;
-	justify-content: start;
-	align-items: start;
+	justify-content: space-between;
 	padding: 1rem 0.5rem;
 	margin: 0;
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.theme.bg.primary};
 	z-index: 10;
 	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 `
@@ -159,7 +158,7 @@ export const ProcessOptionsContainer = styled.div`
   padding-bottom: 1rem;
 
   ::-webkit-scrollbar {
-    height: 10px;
+    height: 15px;
   }
 
   /* Track */
