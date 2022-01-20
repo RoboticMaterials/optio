@@ -37,6 +37,7 @@ import {
 } from "../../../../../../methods/utils/processes_utils";
 import { getIsCardAtBin } from '../../../../../../methods/utils/lot_utils';
 import { deepCopy } from "../../../../../../methods/utils/utils";
+import { secondsToReadable, workingSecondsBetweenDates } from '../../../../../../methods/utils/time_utils'
 
 // Import Actions
 import {
@@ -46,6 +47,7 @@ import {
   getCards
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
+import { getStation } from "../../../../../../redux/actions/stations_actions";
 
 const recursiveFindAndRoutes = (exp, andNodes) => {
   for (var i=1; i<exp.length; i++) {
@@ -84,15 +86,19 @@ const DashboardLotPage = (props) => {
   const fractionMove = useSelector(state => state.settingsReducer.settings.fractionMove)
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
   const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
+  const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
+
   const dispatch = useDispatch();
   const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
   const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
   const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
   const dispatchGetCards = async () => await dispatch(getCards())
+  const dispatchGetStation = async (id) => await dispatch(getStation(id))
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
 
   let [currentLot, setCurrentLot] = useState(stationCards[lotID])
   const currentProcess = useRef(processes[currentLot?.process_id]).current
+  const currentStation = useRef(stations[stationID]).current
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
@@ -147,6 +153,8 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
+  const [timerValue, setTimerValue] = useState(null)
+  const [compareTimerValue, setCompareTimerValue] = useState(null)
 
 
   const handleBack = () => {
@@ -154,12 +162,40 @@ const DashboardLotPage = (props) => {
     onBack();
   }
 
+  const recalcTimer = () => {
+    const lastMovedDate = currentStation.cycle_times[currentLot.lotTemplateId]?.last_moved;
+    if (!!lastMovedDate) {
+      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate*1000), new Date(), serverSettings.shiftDetails))
+      setTimerValue(timer)
+    }
+  }
+
   // Catch leaving the page
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
+
+    const CTObj = currentStation.cycle_times[currentLot.lotTemplateId]
+    if (!!CTObj) {
+      switch (CTObj.mode) {
+        case 'auto':
+            setCompareTimerValue(CTObj.historical || '???');
+            break;
+        case 'manual': 
+            setCompareTimerValue(CTObj.manual || '???');
+            break;
+        case 'takt': 
+            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime || '???');
+            break;
+      }
+    }
+
+    recalcTimer();
+    const timerInterval = setInterval(recalcTimer, 1000);
+
     return () => {
       handleBack();
       window.removeEventListener("beforeunload", handleBack);
+      clearInterval(timerInterval)
     };
   }, []);
 
@@ -355,6 +391,7 @@ const DashboardLotPage = (props) => {
         merged_children: localLotChildren
       })
       await dispatchPostTouchEvent(updatedTouchEvent)
+      dispatchGetStation(fromStation._id)
     }
 
     // Move Alert (based on whether lot was split or not)
@@ -606,6 +643,11 @@ const DashboardLotPage = (props) => {
       )}
       {renderWorkInstructionsViewer()}
       {renderRouteSelectorModal}
+      <div style={{width: '100%', marginTop: '0.5rem', display: 'grid', gridTemplateColumns: '1fr 2rem 1fr'}}>
+        <styled.TimerValue style={{textAlign: 'right', color: timerValue <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{secondsToReadable(timerValue)}</styled.TimerValue>
+        <h3 style={{textAlign: 'center'}}>/</h3>
+        <styled.TimerValue style={{textAlign: 'left'}}>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
+      </div>
       <styled.LotBodyContainer>
         <styled.LotHeader style = {{minHeight: '1rem'}}>
         </styled.LotHeader>
