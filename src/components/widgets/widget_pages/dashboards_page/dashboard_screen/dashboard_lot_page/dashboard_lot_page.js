@@ -178,13 +178,13 @@ const DashboardLotPage = (props) => {
     if (!!CTObj) {
       switch (CTObj.mode) {
         case 'auto':
-            setCompareTimerValue(CTObj.historical || '???');
+            setCompareTimerValue(CTObj.historical);
             break;
         case 'manual': 
-            setCompareTimerValue(CTObj.manual || '???');
+            setCompareTimerValue(CTObj.manual);
             break;
         case 'takt': 
-            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime || '???');
+            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime);
             break;
       }
     }
