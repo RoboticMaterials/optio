@@ -20,7 +20,7 @@ import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
-import {getStationCards} from '../../redux/actions/card_actions'
+import {getStationCards, getCards} from '../../redux/actions/card_actions'
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
@@ -58,6 +58,7 @@ const SideBar = (props) => {
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
+    const dispatchGetCards = () => dispatch(getCards())
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
     const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
@@ -87,6 +88,9 @@ const SideBar = (props) => {
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const cards = useSelector(state => state.cardsReducer.cards)
+    const cardsRef = useRef(cards)
+    cardsRef.current = cards
+
     const stations = useSelector(state =>state.stationsReducer.stations)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
@@ -148,8 +152,13 @@ const SideBar = (props) => {
               }
               else lotId = parseInt(full.slice(0,-5))
                 setLotID(lotId)
-                if(!!lotId) onScanLot(lotId)
-                setFull('')
+                if(!!lotId) {
+                  let result = dispatchGetCards()
+                  result.then((res) => {
+                    if(!!res) onScanLot(lotId)
+                  })
+                }
+              setFull('')
             }
             else if(full === 'Enter') setBarcode([])
     }, [full])
@@ -162,7 +171,7 @@ const SideBar = (props) => {
       let binCount = 0
       let statId = ""
       let lotFound = false
-      Object.values(cards).forEach((card) => {
+      Object.values(cardsRef.current).forEach((card) => {
         if(card.lotNum == id){
           lotFound = true
           Object.values(stations).forEach((station) => {
