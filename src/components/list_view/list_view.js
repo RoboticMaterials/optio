@@ -1,5 +1,5 @@
 // import external dependencies
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useParams } from 'react-router-dom'
 import ClickNHold from 'react-click-n-hold'
@@ -18,7 +18,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import actions
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
-import {getStationCards} from '../../redux/actions/card_actions'
+import {getStationCards, getCards} from '../../redux/actions/card_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
@@ -74,11 +74,13 @@ const ListView = (props) => {
     const settings = useSelector(state => state.settingsReducer.settings)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
     const cards = useSelector(state => state.cardsReducer.cards)
-
+    const cardsRef = useRef(cards)
+    cardsRef.current = cards
     const deviceEnabled = settings.deviceEnabled
 
     const dispatchShowLotScanModal = (bool) => dispatch(showLotScanModal(bool))
     const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
+    const dispatchGetCards = () => dispatch(getCards())
 
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
@@ -144,7 +146,12 @@ const ListView = (props) => {
               }
               else lotId = parseInt(full.slice(0,-5))
               setLotNum(lotId)
-              if(!!lotId) onScanLot(lotId)
+              if(!!lotId) {
+                let result = dispatchGetCards()
+                result.then((res) => {
+                  if(!!res) onScanLot(lotId)
+                })
+              }
               setFull('')
             }
             else if(full === 'Enter') setBarcode([])
@@ -161,7 +168,7 @@ const ListView = (props) => {
       let statId = ""
       let lotFound = false
 
-      Object.values(cards).forEach((card) => {
+      Object.values(cardsRef.current).forEach((card) => {
         if(card.lotNum == id){
           lotFound = true
           Object.values(stations).forEach((station) => {
