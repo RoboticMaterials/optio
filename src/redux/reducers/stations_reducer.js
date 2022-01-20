@@ -3,6 +3,10 @@ import {
     GET_STATIONS_SUCCESS,
     GET_STATIONS_FAILURE,
 
+    GET_STATION_STARTED,
+    GET_STATION_SUCCESS,
+    GET_STATION_FAILURE,
+
     POST_STATION_STARTED,
     POST_STATION_SUCCESS,
     POST_STATION_FAILURE,
@@ -158,6 +162,37 @@ export default function stationsReducer(state = defaultState, action) {
 
 
         case GET_STATIONS_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
+
+        case GET_STATION_STARTED:
+            return Object.assign({}, state, {
+                pending: true
+            });
+
+        case GET_STATION_SUCCESS:
+            if(isEmpty(state.d3)) {
+                return {
+                    ...state,
+                    stations: {...state.stations, [action.payload._id]: action.payload},
+                    pending: false
+                }
+            }
+
+            else {
+                const parsedStations = compareExistingVsIncomingLocations({[action.payload._id]: action.payload}, deepCopy(state.stations), state.d3)
+
+                return {
+                    ...state,
+                    stations: parsedStations,
+                    pending: false
+                }
+            }
+
+
+        case GET_STATION_FAILURE:
             return Object.assign({}, state, {
                 error: action.payload,
                 pending: false

@@ -100,13 +100,17 @@ export const LotButtonContainer = styled.div`
 
 `
 
+export const TimerValue = styled.h3`
+    font: Nexa;
+`
+
 export const LotBodyContainer = styled.div`
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     /* flex: 6; */
     flex-grow: 1;
-    padding: 0.5rem 1rem;
+    padding: 0 1rem 0.5rem 1rem;
     z-index: 1;
 `
 
