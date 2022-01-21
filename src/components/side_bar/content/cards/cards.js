@@ -114,6 +114,7 @@ const Cards = (props) => {
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
     //sorting state
+
     const [sortedCards, setSortedCards] = useState(null)
     const [needsSortUpdate, setNeedsSortUpdate] = useState(false)
     const [sortChanged, setSortChanged] = useState(false)
@@ -138,6 +139,7 @@ const Cards = (props) => {
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
+        console.log('1')
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
@@ -184,38 +186,44 @@ const Cards = (props) => {
         //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
           let tempIds = deepCopy(orderedIds)
           //remove ids for queue
-          for(const i in tempIds[id]['QUEUE']){
-            let cardId = tempIds[id]['QUEUE'][i]
-            if(!processCards[cardId] || !processCards[cardId].bins || !processCards[cardId].bins['QUEUE']){
-              tempIds[id]['QUEUE'].splice(i,1)
+          if(tempIds[id] && tempIds[id]['QUEUE']){
+            for(const i in tempIds[id]['QUEUE']){
+              let cardId = tempIds[id]['QUEUE'][i]
+              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins['QUEUE']){
+                tempIds[id]['QUEUE'].splice(i,1)
+              }
             }
           }
+
           //remove ids for finish
-          for(const i in tempIds[id]['FINISH']){
-            let cardId = tempIds[id]['FINISH'][i]
-            if(!processCards[cardId] || !processCards[cardId].bins || !processCards[cardId].bins['FINISH']) tempIds[id]['FINISH'].splice(i,1)
+          if(tempIds[id] && tempIds[id]['FINISH']){
+            for(const i in tempIds[id]['FINISH']){
+              let cardId = tempIds[id]['FINISH'][i]
+              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins['FINISH']) tempIds[id]['FINISH'].splice(i,1)
+            }
           }
+
           for(const i in process.flattened_stations){//if new cards are at station x then push the ids to top (moved via dashboard)
-            let statId = process.flattened_stations[i].stationID
+            let statId = process.flattened_stations[i]?.stationID
             //remove ids where cards are no longer in Column
             for(const i in tempIds[id][statId]){
               let cardId = tempIds[id][statId][i]
-              if(!processCards[cardId] || !processCards[cardId].bins || !processCards[cardId].bins[statId]) tempIds[id][statId].splice(i,1)
+              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins[statId]) tempIds[id][statId].splice(i,1)
             }
 
             for(const j in processCards){
-              if(!!processCards[j].bins[statId] && !tempIds[id][statId].includes(processCards[j]._id)) {
+              if(!!processCards[j]?.bins[statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
                 tempIds[id][statId].push(processCards[j]._id)
-
               }
-              if(!!processCards[j].bins['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]._id) && i == 0){
+              if(!!processCards[j]?.bins['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
-              if(!!processCards[j].bins['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]._id) && i == 0){
+              if(!!processCards[j]?.bins['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
               }
             }
           }
+
           setOrderedIds(tempIds)
           setCards(processCards)
           if(JSON.stringify(tempIds) !== JSON.stringify(orderedCardIds)){
@@ -702,7 +710,7 @@ const Cards = (props) => {
                             onDragStart = {(e)=>{
                               setUpdate(false)
                               setDivHeight(e.target.offsetHeight)
-                              setDivWidth(e.target.offsetWidth)
+                              setDivWidth(e.target.offsetWidth-35)
                               setDraggingLotId(card._id)
                               setDragFromStation(stationId)
                               setStartIndex(index)
@@ -740,6 +748,7 @@ const Cards = (props) => {
                               setDragFromStation(null)
                               setDraggingStationId(null)
                               setDropNodes([])
+
                               e.target.style.opacity = '1'
                               e.target.style.display = 'flex'
                               e.target.style.maxHeight = '100rem'
@@ -779,8 +788,8 @@ const Cards = (props) => {
                                 borderRadius: '0.2rem',
                                 padding: '0.2rem',
                                 margin: '.5rem',
-                                width: '22rem',
-                                maxWidth: '21.3rem',
+                                width: '21.1rem',
+                                maxWidth: '21.1rem',
                                 pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                               }}
                               />
@@ -800,7 +809,7 @@ const Cards = (props) => {
                   </VisibilitySensor>
                 )
               }
-                else{
+                else if (partBins.length>1){
                   return (
                     Object.keys(partBins).map((part) => {
                       const isPartial = part !== 'count' ? true : false
