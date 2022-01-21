@@ -58,9 +58,9 @@ const Cards = (props) => {
     const processCards = useSelector(state => state.cardsReducer.processCards)[id] || {}
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
-    const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters)
+    const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters) || false
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
-    const currProcessCards = useRef(processCards).current
+    const currProcessCards = useRef(processCards).current || {}
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
        serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
@@ -773,8 +773,8 @@ const Cards = (props) => {
                               onRightClickDeleteLot = {()=>{
                                 handleRightClickDeleteLot(card, stationId)
                               }}
-                              totalQuantity={card.totalQuantity}
-                              lotNumber={card.lotNum}
+                              totalQuantity={card.totalQuantity ? card.totalQuantity : 0}
+                              lotNumber={card.lotNum ? card.lotNum : 0}
                               name={card.name}
                               count={!!card.bins[stationId] ? card.bins[stationId].count : 1}
                               lotId={card._id}
