@@ -133,7 +133,6 @@ const Cards = (props) => {
       return () => {
         dispatchSetSelectedProcess(null)
       }
-
     }, [])
 
 
@@ -300,15 +299,15 @@ const Cards = (props) => {
         for(const j in cards){
           if(!!cards[j] && !!cards[j].bins[id]){
             cardCount+=1
-            partCount+=cards[j].bins[id].count
+            if(Number.isInteger(cards[j].bins[id].count)) partCount+=cards[j].bins[id].count
           }
           if(!!cards[j] && !!cards[j].bins['QUEUE'] && i == 0){
             queueCardCount+=1
-            queuePartCount+=cards[j].bins['QUEUE'].count
+            if(Number.isInteger(cards[j].bins['QUEUE'].count)) queuePartCount+=cards[j].bins['QUEUE'].count
           }
           if(!!cards[j] && !!cards[j].bins['FINISH'] && i == 0){
             finishCardCount+=1
-            finishPartCount+=cards[j].bins['FINISH'].count
+            if(Number.isInteger(cards[j].bins['FINISH'].count)) finishPartCount+=cards[j].bins['FINISH'].count
           }
         }
         tempCardCount = {
@@ -693,6 +692,7 @@ const Cards = (props) => {
                       <>
                         {!!isVisible || draggingLotId === card._id?
                           <styled.CardContainer
+
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
@@ -780,6 +780,7 @@ const Cards = (props) => {
                                 padding: '0.2rem',
                                 margin: '.5rem',
                                 width: '22rem',
+                                maxWidth: '21.3rem',
                                 pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                               }}
                               />

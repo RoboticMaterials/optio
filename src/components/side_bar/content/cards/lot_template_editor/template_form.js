@@ -363,7 +363,7 @@ const FormComponent = (props) => {
 					history.push(`/lots/${params.id}/create`)
 				}}
 				schema={"ok"}
-				disabled={submitDisabled}
+				disabled={submitDisabled || values.name === ''}
 			>
 				{formMode === FORM_MODES.UPDATE ? "Save Product Group" : "Create Product Group"}
 			</Button>
