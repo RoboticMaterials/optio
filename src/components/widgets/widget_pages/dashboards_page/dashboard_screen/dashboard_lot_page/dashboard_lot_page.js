@@ -94,6 +94,9 @@ const DashboardLotPage = (props) => {
   const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
   const dispatchGetCards = async () => await dispatch(getCards())
   const dispatchGetStation = async (id) => await dispatch(getStation(id))
+
+  const dispatchOpenTouchEvent = async (touch_event) => await dispatch(openTouchEvent(touch_event))
+  const dispatchCloseTouchEvent = async (touch_event) => await dispatch(closeTouchEvent(touch_event))
   const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
 
   let [currentLot, setCurrentLot] = useState(stationCards[lotID])
@@ -207,25 +210,28 @@ const DashboardLotPage = (props) => {
     const fromStation = !!warehouseID ? warehouseID : stationID
 
     // Set initial information for the touch event, the rest will be filled out on move
-    setTouchEvent({
+    const openTouchEvent = {
       start_datetime: new Date().getTime(),
-      move_datetime: null,
+      // move_datetime: null,
       pauses: [],
       lot_id: currentLot._id,
       lot_number: currentLot.lotNum,
       product_group_id: currentLot.lotTemplateId,
       map_id: currentLot.map_id,
-      pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
+      // pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
       process_id: currentLot.process_id,
       sku: 'default',
-      quantity: null,
+      // quantity: null,
       load_station_id: fromStation,
-      current_wip: null,
-      unload_station_id: null,
+      // current_wip: null,
+      // unload_station_id: null,
       dashboard_id: dashboardID,
       operator: user,
-      route_id: null
-    })
+      // route_id: null
+    }
+
+    setTouchEvent(openTouchEvent);
+    dispatchOpenTouchEvent(openTouchEvent);
   }, [])
 
 
