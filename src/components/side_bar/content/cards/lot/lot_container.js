@@ -24,6 +24,7 @@ const LotContainer = (props) => {
     binId,
     enableFlagSelector,
     containerStyle,
+    isInProgress,
     isPartial,
     onDeleteDisabledLot,
     onRightClickDeleteLot,
@@ -77,6 +78,7 @@ const LotContainer = (props) => {
           {((!!count && count > 0) || (count>=0 && !isDashboard)) &&
               <Lot
                   lotDisabled={(count < 1 && !!isDashboard) || isPartial}
+                  isInProgress={isInProgress}
                   onDeleteDisabledLot = {onDeleteDisabledLot}
                   onRightClickDeleteLot = {onRightClickDeleteLot}
                   isDashboard={!!isDashboard}

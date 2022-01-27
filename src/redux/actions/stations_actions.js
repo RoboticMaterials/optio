@@ -5,6 +5,10 @@ import {
     GET_STATIONS_SUCCESS,
     GET_STATIONS_FAILURE,
 
+    GET_STATION_STARTED,
+    GET_STATION_SUCCESS,
+    GET_STATION_FAILURE,
+
     POST_STATION_STARTED,
     POST_STATION_SUCCESS,
     POST_STATION_FAILURE,
@@ -73,6 +77,32 @@ export const getStations = () => {
             const normalizedStations = !!normalize(stations, stationsSchema)?.entities?.stations ? normalize(stations, stationsSchema)?.entities?.stations : {}
 
             return onSuccess(normalizedStations);
+        } catch (error) {
+            return onError(error);
+        }
+    };
+};
+
+export const getStation = (id) => {
+    return async dispatch => {
+
+        function onStart() {
+            dispatch({ type: GET_STATION_STARTED });
+        }
+        function onSuccess(station) {
+            dispatch({ type: GET_STATION_SUCCESS, payload: station });
+            return station;
+        }
+        function onError(error) {
+            dispatch({ type: GET_STATION_FAILURE, payload: error });
+            return error;
+        }
+
+        try {
+            onStart();
+            const station = await api.getStation(id);
+
+            return onSuccess(station);
         } catch (error) {
             return onError(error);
         }

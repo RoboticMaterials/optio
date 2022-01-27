@@ -28,6 +28,28 @@ export async function getStations() {
 
 }
 
+export async function getStation(id) {
+    
+    try {
+        const currMapId = store.getState().localReducer.localSettings.currentMapId
+        const response = await axios({
+            method: 'GET',
+            url: apiIPAddress() + `${operator}/${id}`,
+            headers: getHeaders()
+        });
+        // Success 🎉
+        const data = response.data;
+        const dataJson = JSON.parse(data)
+        return dataJson;
+
+
+    } catch (error) {
+        handleError(error);
+    }
+
+
+}
+
 export async function deleteStation(ID) {
     try {
         const response = await axios({

@@ -28,7 +28,8 @@ export const theme = {
     main: {
         bg: light,
         fg: {
-            primary: '#2787e1',
+            // primary: '#2787e1',
+            primary: '#5D6FFE',
             secondary: '#F92644', // RM RED
             tertiary: '',
             quaternary: '',

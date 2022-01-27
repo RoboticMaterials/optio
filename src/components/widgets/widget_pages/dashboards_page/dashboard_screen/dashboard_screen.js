@@ -76,6 +76,7 @@ const DashboardScreen = (props) => {
     const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
     const trackUsers = useSelector(state => state.settingsReducer.settings?.trackUsers || false)
     const currentDashboard = dashboards[dashboardID]
+    
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))

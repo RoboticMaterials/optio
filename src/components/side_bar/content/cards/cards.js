@@ -764,6 +764,7 @@ const Cards = (props) => {
                           <div id = {cardId + stationId}>
                             <LotContainer
                               containerStyle = {{margin: '0.5rem'}}
+                              isInProgress = {!!openEvents[stationId] && openEvents[stationId].findIndex(e => e.lot_id === cardId) !== -1}
                               selectable={true}
                               key={card._id}
                               enableFlagSelector={true}
