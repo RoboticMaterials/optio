@@ -61,6 +61,8 @@ const Cards = (props) => {
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters) || false
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
     const currProcessCards = useRef(processCards).current || {}
+    const openEvents = useSelector(state => state.touchEventsReducer.openEvents|| {})
+
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
        serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
@@ -763,6 +765,7 @@ const Cards = (props) => {
                           <div id = {cardId + stationId}>
                             <LotContainer
                               containerStyle = {{margin: '0.5rem'}}
+                              isInProgress = {!!openEvents[stationId] && openEvents[stationId].findIndex(e => e.lot_id === cardId) !== -1}
                               selectable={true}
                               key={card._id}
                               enableFlagSelector={true}

@@ -32,6 +32,7 @@ import { getIsEquivalent, deepCopy } from '../../methods/utils/utils'
 import logger from '../../logger.js';
 import { getCards, getProcessCards, getStationCards } from "../../redux/actions/card_actions";
 import { mapValues } from 'lodash';
+import { getOpenStationTouchEvents } from '../../redux/actions/touch_events_actions';
 
 const ApiContainer = (props) => {
 
@@ -46,6 +47,7 @@ const ApiContainer = (props) => {
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const onGetCards = () => dispatch(getCards())
     const onGetStationCards = (stationId) => dispatch(getStationCards(stationId))
+    const onGetOpenStationTouchEvents = (stationId) => dispatch(getOpenStationTouchEvents(stationId))
     const onGetProcesses = () => dispatch(getProcesses());
 
     const onGetSettings = () => dispatch(getSettings())
@@ -267,6 +269,7 @@ const ApiContainer = (props) => {
                 await onGetStationCards(params.stationID)
                 await onGetProcesses()
                 await onGetTasks();
+                await onGetOpenStationTouchEvents(params.stationID)
                 await onGetDashboards() // must go last
             }, 5000)
         ])
@@ -275,6 +278,7 @@ const ApiContainer = (props) => {
         setPageDataIntervals([
             setInterval(async () => {
                 await onGetStationCards(params.stationID)
+                await onGetOpenStationTouchEvents(params.stationID)
                 await onGetDashboards() // must go last
             }, 1000)
         ])

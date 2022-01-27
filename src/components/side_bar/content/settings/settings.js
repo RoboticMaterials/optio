@@ -398,6 +398,20 @@ const Settings = (props) => {
                                 />
                             </styled.RowContainer>
                         }
+                        
+                        <styled.SwitchContainer>
+                            <styled.SwitchLabel>Disable HTTPS</styled.SwitchLabel>
+                            <Switch
+                                checked={localSettingsState.disable_https}
+                                onChange={() => {
+                                    handleUpdateLocalSettings({ disable_https: !localSettingsState.disable_https })
+                                }}
+                                onColor={themeContext.schema.settings.solid}
+                                style={{ marginRight: '1rem' }}
+                            />
+                        </styled.SwitchContainer>
+
+                        
 
                     <Button
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem', background: 'black', color: 'white' }}

@@ -24,7 +24,7 @@ import Button from '../../../basic/button/button';
 import { defaultColors, tooltipProps } from '../../../basic/charts/nivo_theme';
 import Switch from 'react-ios-switch';
 
-import { deepCopy } from '../../../../methods/utils/utils';
+import { deepCopy, getIsEquivalent } from '../../../../methods/utils/utils';
 import Popup from 'reactjs-popup';
 import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils';
 import { convertHHMMSSStringToSeconds, convertSecondsToHHMMSS, secondsToReadable } from '../../../../methods/utils/time_utils';
@@ -275,7 +275,12 @@ const StatisticsPage = () => {
     const processes = useSelector(state => state.processesReducer.processes)
     const productGroups = useSelector(state => state.lotTemplatesReducer.lotTemplates)
 
-    const station = useMemo(() => stations[stationId], [stations, stationId])
+    const [station, setStation] = useState(() => stations[stationId])
+    useEffect(() => {
+        if (!getIsEquivalent(station, stations[stationId])) {
+            setStation(stations[stationId])
+        }
+    }, [stations, stationId])
 
     // On Mount
     useEffect(() => {
@@ -404,6 +409,7 @@ const StatisticsPage = () => {
                 const label = `${pgName} (${pgProcessName})`;
 
                 const CTObj = station.cycle_times[pgId]
+                // console.log(label, CTObj)
 
                 let compareValue;
                 switch (CTObj.mode) {
@@ -473,7 +479,7 @@ const StatisticsPage = () => {
                 />
             )
         }
-    }, [data, stations])
+    }, [data, station.cycle_times])
 
     /**
      * This memo renders the OEE radial bar graph. This graph is different than other charts because the data is generated on the fly. The initial values
@@ -543,7 +549,7 @@ const StatisticsPage = () => {
                 />
             )
         }
-    }, [data, stations])
+    }, [data, station.cycle_times])
 
     const renderHeader = (label, stat) => (
         <styled.CardHeader>
@@ -556,8 +562,8 @@ const StatisticsPage = () => {
     )
 
     const productionRate = useMemo(() => {
-        if (!data || !data.cycle_time || !data.cycle_time[cycleTimePG] || !data.cycle_time[cycleTimePG].current) return ''
-        const {quantity, timescale} = convertCycleTimeToProductionRate(data.cycle_time[cycleTimePG].current)
+        if (!data || !data.cycle_time || !data.cycle_time[cycleTimePG] || !data.cycle_time[cycleTimePG].average) return ''
+        const {quantity, timescale} = convertCycleTimeToProductionRate(data.cycle_time[cycleTimePG].average)
         return `${quantity} parts per ${capitalizeFirstLetter(timescale)}`
     }, )
 
@@ -641,10 +647,10 @@ const StatisticsPage = () => {
                                                 <styled.NoData style={{height: '10rem'}}>Not Enough Data</styled.NoData>
                                         }
                                         {
-                                            !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].current &&
+                                            !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].average &&
                                             <div style={{height: '2rem'}}>
                                                 <styled.CycleTimeLabel>{productionRate}</styled.CycleTimeLabel>
-                                                <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].current)}</styled.CycleTime>
+                                                <styled.CycleTime>{secondsToReadable(data.cycle_time[cycleTimePG].average)}</styled.CycleTime>
                                             </div>
                                         }
                                     </div>

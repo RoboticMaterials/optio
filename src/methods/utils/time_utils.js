@@ -235,6 +235,8 @@ export const convertSecondsToHHMMSS = (seconds) => {
 
 export const secondsToReadable = (seconds, short=false) => {
 
+    if (typeof seconds !== 'number') return '???'
+
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -255,4 +257,81 @@ export const secondsToReadable = (seconds, short=false) => {
 
     return readable;
 
+}
+
+
+
+export function getBusinessDatesCount(startDate, endDate) {
+    let count = 0;
+    const curDate = new Date(startDate.getTime());
+    while (curDate <= endDate) {
+        const dayOfWeek = curDate.getDay();
+        if(dayOfWeek !== 0 && dayOfWeek !== 6) count++;
+        curDate.setDate(curDate.getDate() + 1);
+    }
+    return count - 1;
+}
+
+export const workingSecondsBetweenDates = (start, end, shiftDetails) => {
+
+    if (start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth() && start.getDate() === end.getDate()) {
+        return calcDailyWorkingSeconds(start, end, shiftDetails)
+    } else {
+        const firstDayWorkingSeconds = calcDailyWorkingSeconds(start, null, shiftDetails);
+        const lastDayWorkingSeconds = calcDailyWorkingSeconds(null, end, shiftDetails);
+
+        const dailyWorkingSeconds = calcDailyWorkingSeconds(null, null, shiftDetails);
+        const betweenBusinessDays = getBusinessDatesCount(start, end);
+
+        return firstDayWorkingSeconds + dailyWorkingSeconds*betweenBusinessDays + lastDayWorkingSeconds;
+    }
+}
+
+export const calcDailyWorkingSeconds = (start, end, shiftDetails) => {
+    const startOfShiftSeconds = moment.duration(shiftDetails.startOfShift).asSeconds()
+    const endOfShiftSeconds = moment.duration(shiftDetails.endOfShift).asSeconds()
+
+    
+
+    let startSeconds, endSeconds, startOfDay;
+
+    // Cant start before the shift starts
+    if (!start) {
+        startSeconds = startOfShiftSeconds;
+    } else {
+        startOfDay = new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            start.getDate(),
+            0,0,0)
+        startSeconds = (start.getTime() - startOfDay.getTime()) / 1000;
+    }
+
+    if (!end) {
+        endSeconds = endOfShiftSeconds;
+    } else {
+        startOfDay = new Date(
+            end.getFullYear(),
+            end.getMonth(),
+            end.getDate(),
+            0,0,0)
+        endSeconds = (end.getTime() - startOfDay.getTime()) / 1000;
+    }
+
+    // Total working seconds between the start and stop not including breaks
+    const shiftSeconds = Math.max(0, (endSeconds - startSeconds));
+
+    // For each break, calculate the length of the break in seconds and ad to total break time
+    let startBrSeconds, endBrSeconds, brSeconds;
+    for (var br of Object.values(shiftDetails.breaks)) {
+        if (br.enabled) {
+            startBrSeconds = moment.duration(br.startOfBreak).asSeconds();
+            endBrSeconds = moment.duration(br.endOfBreak).asSeconds();
+
+            shiftSeconds -= (endBrSeconds - startBrSeconds)
+        }
+    }
+
+
+    return shiftSeconds;
 }

@@ -26,7 +26,7 @@ export const Container = styled.div`
   pointer-events: ${props => props.clickDisabled ? 'none' : 'auto'};
 
   box-shadow: 2px 3px 2px 1px rgba(0,0,0,0.2);
-  border: 0.2rem solid transparent;
+  // border: 0.15rem solid ${props => props.isInProgress ? props.theme.fg.primary : 'transparent'};
 
   &:active{
         box-shadow: none;
@@ -239,8 +239,8 @@ export const Label = styled.span`
 
 export const LoopIndicator = styled.div`
     position: absolute;
-    top: -0.5rem;
-    right: -0.5rem;
+    top: -0.7rem;
+    right: -0.7rem;
     width: 2rem;
     height: 2rem;
     border-radius: 1rem;
@@ -250,6 +250,7 @@ export const LoopIndicator = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 `
 
 export const LoopIcon = styled.i`
