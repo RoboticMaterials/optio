@@ -13,8 +13,6 @@ export const apiIPAddress = () => {
     const storeState = store.getState();
     let apiIPAddress = "";
 
-    console.log("!!!", window.location.hostname)
-
     let localSettings = ls.get("localSettings")
     let parsedLocalSettings = JSON.parse(localSettings)
     let hostServerIpAddress = parsedLocalSettings ? parsedLocalSettings.non_local_api_ip : ""
