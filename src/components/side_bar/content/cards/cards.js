@@ -61,6 +61,8 @@ const Cards = (props) => {
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters) || false
     const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
     const currProcessCards = useRef(processCards).current || {}
+    const openEvents = useSelector(state => state.touchEventsReducer.openEvents|| {})
+
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
        serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
