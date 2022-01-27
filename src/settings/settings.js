@@ -31,6 +31,8 @@ export const apiIPAddress = () => {
         } else {
             return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}/api/`
         }
+    } else if (window.location.hostname === '10.42.0.1') {
+        return `http://window.location.hostname/api/`
     } else {
         if (window.location.hostname === 'localhost') {
             return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
