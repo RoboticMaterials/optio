@@ -17,6 +17,7 @@ export const apiIPAddress = () => {
     let parsedLocalSettings = JSON.parse(localSettings)
     let hostServerIpAddress = parsedLocalSettings ? parsedLocalSettings.non_local_api_ip : ""
     let nonLocalIp = parsedLocalSettings ? parsedLocalSettings.non_local_api : false
+    let disabledHTTPS = parsedLocalSettings ? parsedLocalSettings.disable_https : false
     /**
      * READ ME: Do not change IP address here. Go to the settings tab in the interface, select Non Local API IP Address and type in the api ip address
      * If non local api is true, then the server is running on an IP address entered
@@ -24,17 +25,17 @@ export const apiIPAddress = () => {
 
     if (nonLocalIp === true) {
         if (!!hostServerIpAddress) {
-            return apiIPAddress = 'https://' + hostServerIpAddress + '/api/'
+            return `${disabledHTTPS ? 'http' : 'https'}://${hostServerIpAddress}/api/`
         } else if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
         } else {
-            return 'https://' + window.location.hostname + '/api/'
+            return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}:5000/api/`
         }
     } else {
         if (window.location.hostname === 'localhost') {
-            return 'http://localhost:5000/api/'
+            return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
         } else {
-            return 'https://' + window.location.hostname + '/api/'
+            return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}:5000/api/`
         }
     }
 
