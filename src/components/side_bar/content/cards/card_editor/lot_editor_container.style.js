@@ -18,22 +18,22 @@ export const Container = styled(Modal)`
   position: absolute;
 	overflow: hidden;
   z-index: 50;
-  
+
   min-width: 95%;
   max-width: 95%;
   // max-height: 95%;
   height: 95%;
-  
+
   // height: ${props => props.formEditor && "95%"};
   // min-height: 95%;
   // height: 95%;
-  
+
   color: ${props => props.theme.bg.octonary};
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+
   color: ${props => props.theme.bg.octonary};
 `;
 
@@ -88,7 +88,7 @@ export const PageSelector = styled.div`
 export const PageSelectorButton = styled.div`
 	${iconButtonCss};
   ${commonClickableIcon};
-  
+
 `
 export const PageSelectorText = styled.span`
 	margin: 0 1rem;
