@@ -125,7 +125,6 @@ const Cards = (props) => {
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.maxHeight = '1px'
-
   		}
 
   	}, [dragIndex, clientY, clientX])
@@ -1119,6 +1118,5 @@ const Cards = (props) => {
       </styled.PageContainer>
     )
   }
-
 
 export default Cards
