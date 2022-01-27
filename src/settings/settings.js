@@ -29,7 +29,7 @@ export const apiIPAddress = () => {
         } else if (window.location.hostname === 'localhost') {
             return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
         } else {
-            return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}:5000/api/`
+            return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}/api/`
         }
     } else {
         if (window.location.hostname === 'localhost') {
