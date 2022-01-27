@@ -100,8 +100,32 @@ export const LotButtonContainer = styled.div`
 
 `
 
+export const TimerBlock = styled.div`
+    height: 2.6rem;
+    width: 14rem;
+
+    border: 1px solid #eee;
+    background: white;
+    border-radius: 0.4rem;
+
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
+
 export const TimerValue = styled.h3`
     font: Nexa;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 0.8rem;
+`
+
+export const TimerDescription = styled.span`
+    font-size: 0.7rem;
+    line-height: 0.6rem;
+    color: #999;
 `
 
 export const LotBodyContainer = styled.div`
