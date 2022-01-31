@@ -404,6 +404,7 @@ const DashboardLotPage = (props) => {
           load_station_id: fromStation._id,
           unload_station_id: moveRoute.unload === 'FINISH' ? 'FINISH' : toStation._id,
           quantity,
+          operator: user,
           type: moveRoute.unload === 'FINISH' ? 'finish' : 'move',
           merged_children: localLotChildren
         }
@@ -644,7 +645,8 @@ const DashboardLotPage = (props) => {
 
   const getWorkingTime = () => {
     const startTime = new Date(openTouchEvent.start_datetime.$date);
-    return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+    // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+    return (new Date().getTime() - startTime.getTime())/1000;
   }
 
   return (
