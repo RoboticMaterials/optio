@@ -26,7 +26,7 @@ import {getStationCards} from '../../../../../../redux/actions/card_actions'
 const DashboardLotList = (props) => {
 
     const {
-        onCardClicked
+        onCardClicked,
     } = props
 
     const params = useParams()
@@ -42,6 +42,7 @@ const DashboardLotList = (props) => {
     const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     const localSettings = useSelector(state => state.localReducer.localSettings) || {}
     const stationCards = useSelector(state => state.cardsReducer.stationCards)[stationID] || {}
+    const openEvents = useSelector(state => state.touchEventsReducer.openEvents[stationID] || [])
     const cardsRef = useRef(stationCards).current
 
     const [lotFilterValue, setLotFilterValue] = useState('')
@@ -168,12 +169,16 @@ const DashboardLotList = (props) => {
                       _id: currCardId,
                       process_id: currCardProcessId
                   } = card || {}
+
+                  const isInProgress = openEvents.findIndex(event => event.lot_id === currCardId) !== -1;
+
                   return (
                       <LotContainer
                           onDashboard = {true}
                           lotId={currCardId}
                           binId={stationID}
                           enableFlagSelector={false}
+                          isInProgress={isInProgress}
                           key={currCardId}
                           onClick={() => {
                               onCardClicked(currCardId)
@@ -187,7 +192,7 @@ const DashboardLotList = (props) => {
               })
           }
 
-    }, [cards, onCardClicked, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters])
+    }, [cards, onCardClicked, dashboard.filters, dashboard.sortBy, lotFilterValue, selectedFilterOption, serverSettings.enableMultipleLotFilters, openEvents])
 
     return (
         <styled.LotListContainer>

@@ -22,6 +22,8 @@ const DashboardLotButtons = (props) => {
 
 
     const {
+        hasStarted,
+        handleStartClicked,
         handleMoveClicked,
         handleCancel,
         isFinish,
@@ -39,6 +41,39 @@ const DashboardLotButtons = (props) => {
         selectedFraction,
         fractionMove
     } = props
+
+    const renderStartButton = () => {
+      const iconClassName = 'fas fa-play'
+      const color = '#90C7EA'
+      const textColor = '#545454'
+      const iconColor = theme.main.bg.octonary
+
+      const error = null
+
+      return (
+          <>
+
+          <DashboardButton
+              color={color}
+              containerStyle={{ background: color }}
+              titleStyle={{ color: textColor }}
+              iconColor={iconColor}
+
+              title={'Start'}
+              iconColor={"black"}
+              iconClassName={iconClassName}
+              onClick={handleStartClicked}
+
+              hoverable={false}
+              // taskID={taskID}
+              disabled={false}
+              // containerCss={style.ButtonContainerCss}
+              error={error}
+          />
+          </>
+      )
+
+  }
 
     const [fractionClicked, setFractionClicked] = useState(true)
     const renderMoveButton = () => {
@@ -96,7 +131,6 @@ const DashboardLotButtons = (props) => {
 
     const renderCancelButton = () => {
         const iconClassName = "fas fa-times"
-
 
         const color = '#ff9898'
         const textColor = '#8f0000'
@@ -203,10 +237,13 @@ const DashboardLotButtons = (props) => {
                 />
               </styled.ColumnContainer>
             }
-            {isFinish ?
+            {hasStarted ?
+              isFinish ?
                 renderFinishButton()
                 :
                 renderMoveButton()
+              :
+              renderStartButton()
             }
             {renderCancelButton()}
         </styled.ButtonContainer>

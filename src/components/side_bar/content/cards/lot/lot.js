@@ -10,6 +10,7 @@ import { ThemeContext } from "styled-components";
 
 // components external
 import Popup from 'reactjs-popup'
+import ClipLoader from 'react-spinners/ClipLoader'
 import 'reactjs-popup/dist/index.css'
 
 // constants
@@ -54,7 +55,8 @@ const Lot = (props) => {
         isDashboard,
         onDeleteDisabledLot,
         onRightClickDeleteLot,
-        dragging
+        dragging,
+        isInProgress,
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -216,6 +218,7 @@ const Lot = (props) => {
         <styled.Container
             disabled = {lotDisabled}
             clickDisabled = {clickDisabled}
+            isInProgress={isInProgress}
             dragging = {dragging}
             isDashboard = {isDashboard}
             glow={glow}
@@ -296,6 +299,12 @@ const Lot = (props) => {
                     :
                     renderFlags()
 
+                }
+
+                {isInProgress &&
+                    <styled.LoopIndicator style={{left: '-0.7rem'}}>
+                        <ClipLoader color={'#CFD4DF'} size={20} speedMultiplier={0.1}/>
+                    </styled.LoopIndicator>
                 }
 
                 {!!loopCount &&

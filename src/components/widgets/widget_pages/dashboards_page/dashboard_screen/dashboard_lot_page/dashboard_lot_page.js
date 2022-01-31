@@ -46,8 +46,8 @@ import {
   deleteCard,
   getCards
 } from "../../../../../../redux/actions/card_actions";
-import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
-import { getStation } from "../../../../../../redux/actions/stations_actions";
+import { postTouchEvent, postOpenTouchEvent, postCloseTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
+import { getStation, getStations } from "../../../../../../redux/actions/stations_actions";
 
 const recursiveFindAndRoutes = (exp, andNodes) => {
   for (var i=1; i<exp.length; i++) {
@@ -87,18 +87,29 @@ const DashboardLotPage = (props) => {
   const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
   const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
   const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
+  const openEvents = useSelector(state => state.touchEventsReducer.openEvents[stationID] || [])
 
   const dispatch = useDispatch();
-  const dispatchPostCard = async (lot) => await dispatch(postCard(lot))
-  const dispatchPutCard = async (lot, ID) => await dispatch(putCard(lot, ID));
-  const dispatchDeleteCard = async (id) => await dispatch(deleteCard(id))
-  const dispatchGetCards = async () => await dispatch(getCards())
-  const dispatchGetStation = async (id) => await dispatch(getStation(id))
-  const dispatchPostTouchEvent = async (touch_event) => await dispatch(postTouchEvent(touch_event))
+  const dispatchPostCard = (lot) => dispatch(postCard(lot))
+  const dispatchPutCard = (lot, ID) => dispatch(putCard(lot, ID));
+  const dispatchDeleteCard = (id) => dispatch(deleteCard(id))
+  const dispatchGetCards = () => dispatch(getCards())
+  const dispatchGetStation = (id) => dispatch(getStation(id))
+  const dispatchGetStations = () => dispatch(getStations())
+
+  const dispatchOpenTouchEvent = (touch_event) => dispatch(postOpenTouchEvent(touch_event))
+  const dispatchCloseTouchEvent = (touch_event) => dispatch(postCloseTouchEvent(touch_event))
+  const dispatchPostTouchEvent = (touch_event) => dispatch(postTouchEvent(touch_event))
 
   let [currentLot, setCurrentLot] = useState(stationCards[lotID])
   const currentProcess = useRef(processes[currentLot?.process_id]).current
   const currentStation = useRef(stations[stationID]).current
+
+  // Initial Load
+  useEffect(() => {
+    dispatchGetCards();
+    dispatchGetStations();
+  }, [])
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
@@ -123,9 +134,7 @@ const DashboardLotPage = (props) => {
       if (!mergeExpression) return []
       const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
       return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
-  }, [currentLot.bins[stationID]])
-
-
+  }, [currentLot?.bins[stationID]])
 
 
   const routeOptions = useMemo(() => {
@@ -143,7 +152,8 @@ const DashboardLotPage = (props) => {
       )
     }, [routes, loadStationID, currentLot, stationID])
 
-  const [touchEvent, setTouchEvent] = useState(null)
+  const openTouchEvent = useMemo(() => openEvents.find(e => e.lot_id === currentLot._id))
+
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);
   const [showRouteSelector, setShowRouteSelector] = useState(false);
@@ -178,13 +188,13 @@ const DashboardLotPage = (props) => {
     if (!!CTObj) {
       switch (CTObj.mode) {
         case 'auto':
-            setCompareTimerValue(CTObj.historical);
+            setCompareTimerValue(CTObj.historical * moveQuantity);
             break;
-        case 'manual':
-            setCompareTimerValue(CTObj.manual);
+        case 'manual': 
+            setCompareTimerValue(CTObj.manual * moveQuantity);
             break;
-        case 'takt':
-            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime);
+        case 'takt': 
+            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime * moveQuantity);
             break;
       }
     }
@@ -208,36 +218,6 @@ const DashboardLotPage = (props) => {
       }
     }
   }, [currentLot]);
-
-  /**
-   * Start building a touch event on component mount. If this screen persists until the card is moved
-   * at which point the event will be saved to the backend.
-   */
-  useEffect(() => {
-    const fromStation = !!warehouseID ? warehouseID : stationID
-
-    // Set initial information for the touch event, the rest will be filled out on move
-    setTouchEvent({
-      start_datetime: new Date().getTime(),
-      move_datetime: null,
-      pauses: [],
-      lot_id: currentLot._id,
-      lot_number: currentLot.lotNum,
-      product_group_id: currentLot.lotTemplateId,
-      map_id: currentLot.map_id,
-      pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
-      process_id: currentLot.process_id,
-      sku: 'default',
-      quantity: null,
-      load_station_id: fromStation,
-      current_wip: null,
-      unload_station_id: null,
-      dashboard_id: dashboardID,
-      operator: user,
-      route_id: null
-    })
-  }, [])
-
 
   // Used to show dashboard input
   useEffect(() => {
@@ -370,8 +350,11 @@ const DashboardLotPage = (props) => {
 
     // Create new touch Events
     for (var moveRoute of moveRoutes) {
+      
       const fromStation = stations[moveRoute.load]
       const toStation = stations[moveRoute.unload]
+
+      console.log('dnauown', moveRoute, toStation, stations)
 
       // Track the WIP (by product group) that are currently at the station
       let WIP = {}
@@ -390,18 +373,45 @@ const DashboardLotPage = (props) => {
             }
         })
 
-      const updatedTouchEvent = Object.assign(deepCopy(touchEvent), {
-        move_datetime: new Date().getTime(),
-        route_id: moveRoute.unload === 'FINISH' ? 'FINISH' : moveRoute._id,
-        current_wip: WIP,
-        load_station_id: fromStation._id,
-        unload_station_id: moveRoute.unload === 'FINISH' ? 'FINISH' : toStation._id,
-        quantity,
-        type: 'move',
-        merged_children: localLotChildren
-      })
-      await dispatchPostTouchEvent(updatedTouchEvent)
-      dispatchGetStation(fromStation._id)
+      if (fromStation.type === 'warehouse') {
+        const fullTouchEvent = {
+          start_datetime: new Date().getTime(),
+          move_datetime: new Date().getTime(),
+          pauses: [],
+          lot_id: currentLot._id,
+          lot_number: currentLot.lotNum,
+          product_group_id: currentLot.lotTemplateId,
+          map_id: currentLot.map_id,
+          pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
+          process_id: currentLot.process_id,
+          sku: 'default',
+          quantity,
+          type: 'move',
+          load_station_id: fromStation._id,
+          current_wip: WIP,
+          unload_station_id: toStation._id,
+          dashboard_id: dashboardID,
+          operator: user,
+          route_id: moveRoute._id,
+        }
+        dispatchPostTouchEvent(fullTouchEvent)
+      } else {
+        const closingTouchEvent = {
+          move_datetime: new Date().getTime(),
+          lot_id: currentLot._id,
+          route_id: moveRoute.unload === 'FINISH' ? 'FINISH' : moveRoute._id,
+          current_wip: WIP,
+          load_station_id: fromStation._id,
+          unload_station_id: moveRoute.unload === 'FINISH' ? 'FINISH' : toStation._id,
+          quantity,
+          type: moveRoute.unload === 'FINISH' ? 'finish' : 'move',
+          merged_children: localLotChildren
+        }
+        dispatchCloseTouchEvent(closingTouchEvent)
+        dispatchGetStation(fromStation._id)
+      }
+
+      
     }
 
     // Move Alert (based on whether lot was split or not)
@@ -632,6 +642,11 @@ const DashboardLotPage = (props) => {
     }
   }
 
+  const getWorkingTime = () => {
+    const startTime = new Date(openTouchEvent.start_datetime.$date);
+    return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+  }
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -651,11 +666,21 @@ const DashboardLotPage = (props) => {
       )}
       {renderWorkInstructionsViewer()}
       {renderRouteSelectorModal}
-      <div style={{width: '100%', marginTop: '0.5rem', display: 'grid', gridTemplateColumns: '1fr 2rem 1fr'}}>
-        <styled.TimerValue style={{textAlign: 'right', color: timerValue <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{secondsToReadable(timerValue)}</styled.TimerValue>
-        <h3 style={{textAlign: 'center'}}>/</h3>
-        <styled.TimerValue style={{textAlign: 'left'}}>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
+      <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
+        <styled.TimerBlock>
+          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable(getWorkingTime()) : 'None'}</styled.TimerValue>
+          <styled.TimerDescription>Active Working Time</styled.TimerDescription>
+        </styled.TimerBlock>
+        <styled.TimerBlock>
+          <styled.TimerValue style={{color: timerValue <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{secondsToReadable(timerValue)}</styled.TimerValue>
+          <styled.TimerDescription>Time Since Last Move</styled.TimerDescription>
+        </styled.TimerBlock>
+        <styled.TimerBlock>
+          <styled.TimerValue>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
+          <styled.TimerDescription>Expected Since Last Move</styled.TimerDescription>
+        </styled.TimerBlock>
       </div>
+
       <styled.LotBodyContainer>
         <styled.LotHeader style = {{minHeight: '1rem'}}>
         </styled.LotHeader>
@@ -688,6 +713,30 @@ const DashboardLotPage = (props) => {
     }
       <styled.LotButtonContainer>
         <DashboardLotButtons
+          hasStarted={!!openTouchEvent || currentStation.type === 'warehouse'}
+          handleStartClicked={() => {
+            const newTouchEvent = {
+              start_datetime: new Date().getTime(),
+              move_datetime: null,
+              pauses: [],
+              lot_id: currentLot._id,
+              lot_number: currentLot.lotNum,
+              product_group_id: currentLot.lotTemplateId,
+              map_id: currentLot.map_id,
+              pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
+              process_id: currentLot.process_id,
+              sku: 'default',
+              quantity: 0,
+              load_station_id: stationID,
+              current_wip: null,
+              unload_station_id: null,
+              dashboard_id: dashboardID,
+              operator: user,
+              route_id: null
+            }
+
+            dispatchOpenTouchEvent(newTouchEvent);
+          }}
           handleMoveClicked={() => onMoveClicked()}
           fractionMove = {fractionMove}
           onFractionClick = {(fraction) => onFractionClick(fraction)}
