@@ -175,7 +175,7 @@ const DashboardLotPage = (props) => {
   const recalcTimer = () => {
     const lastMovedDate = currentStation.cycle_times[currentLot.lotTemplateId]?.last_moved;
     if (!!lastMovedDate) {
-      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate*1000), new Date(), serverSettings.shiftDetails))
+      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate), new Date(), serverSettings.shiftDetails))
       setTimerValue(timer)
     }
   }
@@ -646,7 +646,7 @@ const DashboardLotPage = (props) => {
   const getWorkingTime = () => {
     const startTime = new Date(openTouchEvent.start_datetime.$date);
     // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
-    return (new Date().getTime() - startTime.getTime())/1000;
+    return workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails)
   }
 
   return (
