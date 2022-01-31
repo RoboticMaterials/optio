@@ -89,8 +89,6 @@ const DashboardLotPage = (props) => {
   const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
   const openEvents = useSelector(state => state.touchEventsReducer.openEvents[stationID] || [])
 
-  console.log(';!', stations)
-
   const dispatch = useDispatch();
   const dispatchPostCard = (lot) => dispatch(postCard(lot))
   const dispatchPutCard = (lot, ID) => dispatch(putCard(lot, ID));
@@ -636,6 +634,11 @@ const DashboardLotPage = (props) => {
     }
   }
 
+  const getWorkingTime = () => {
+    const startTime = new Date(openTouchEvent.start_datetime.$date);
+    return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+  }
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -657,7 +660,7 @@ const DashboardLotPage = (props) => {
       {renderRouteSelectorModal}
       <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
         <styled.TimerBlock>
-          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable((new Date().getTime() - openTouchEvent.start_datetime.$date)/1000) : 'None'}</styled.TimerValue>
+          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable(getWorkingTime()) : 'None'}</styled.TimerValue>
           <styled.TimerDescription>Active Working Time</styled.TimerDescription>
         </styled.TimerBlock>
         <styled.TimerBlock>
