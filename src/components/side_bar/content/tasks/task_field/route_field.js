@@ -5,6 +5,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import { ThemeContext } from 'styled-components'
 
 import Portal from '../../../../../higher_order_components/portal'
+import Switch from 'react-ios-switch'
 /*
 *
 * Should track quantity / fraction option only display if there is an obj? in master it always displays
@@ -50,7 +51,6 @@ const TaskField = (props) => {
         onSave,
         routeCopy
     } = props
-
     const { routes: processRoutes } = values;
     const [confirmExitModal, setConfirmExitModal] = useState(false)
     const [enableSave, setEnableSave] = useState(false)
@@ -151,6 +151,10 @@ const TaskField = (props) => {
         })
     }
 
+    const updateRequirePull = (requirePull) => {
+      setFieldValue(`routes[${editingIdx}].requirePull`, requirePull);
+    }
+
     const onRemoveRoute = (id) => {
       let updatedRoutes = []
       let removedRouteInd = 0
@@ -217,6 +221,15 @@ const TaskField = (props) => {
         }
         return isDiverging;
     }, [processRoutes, editingRoute])
+
+    const isWarehouseStartNode = useMemo(() => {
+        const unload = Object.values(processRoutes).find(route => route._id !== selectedRoute._id && route.unload === selectedRoute.load) !== undefined
+        if(unload === false && stations[selectedRoute.load].type === 'warehouse') return true
+
+        return false
+
+    }, [processRoutes, editingRoute])
+
 
     //This useEffect made onSaveRoute happend every time a keyboard key is pressed
     //useEffect(() => {
@@ -305,6 +318,23 @@ const TaskField = (props) => {
                                         Split
                                     </styled.DualSelectionButton>
 
+                                </styled.RowContainer>
+                            </>
+                        }
+
+                        {isWarehouseStartNode &&
+                            <>
+                                <styled.RowContainer style={{ justifyContent: 'space-between', marginTop: '2rem',
+                                    paddingBottom: '.8rem', borderBottom: '0.1rem solid #b8b9bf'}}>
+                                <styled.Title style={{ alignSelf: 'center' }}>Merge Required</styled.Title>
+                                <Switch
+                                    checked={editingRoute.requirePull ? true : false}
+                                    onChange={() => {
+                                      updateRequirePull(!editingRoute.requirePull)
+                                    }}
+                                    onColor={'#2ed182'}
+                                    style={{ marginRight: '1rem', minWidth:'3rem' }}
+                                />
                                 </styled.RowContainer>
                             </>
                         }
