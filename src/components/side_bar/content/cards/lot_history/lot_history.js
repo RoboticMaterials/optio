@@ -15,7 +15,7 @@ const LotHistory = (props) => {
     const {
         id: lotId
     } = params
-    
+
     const [lotTouchEvents, setLotTouchEvents] = useState(null)
 
     const lots = useSelector(state => state.cardsReducer.cards);
@@ -37,10 +37,9 @@ const LotHistory = (props) => {
 
     useEffect(() => {
         fetchEvents(lotId)
-        console.log(history)
     }, [lotId])
-    
-    
+
+
     const speed = (event) => {
         let speedStatus;
         let speedLabel;
@@ -50,7 +49,7 @@ const LotHistory = (props) => {
             const productTemplateId = lotTemplates[event.product_group_id]._id
             const loadStation = stations[event.load_station_id]
             const stationCycleTime = loadStation?.cycle_times[productTemplateId]?.actual || 0
-            
+
 
             speedStatus = (cycleTime <= stationCycleTime) ? 1 : -1
             speedLabel = speedStatus === 1 ? `Fast -${secondsToReadable(stationCycleTime-cycleTime)}` : `Slow +${secondsToReadable(cycleTime-stationCycleTime)}s`
@@ -65,7 +64,7 @@ const LotHistory = (props) => {
             </styled.Flag>
         )
     }
-    
+
     return (
         <styled.HistoryContainer>
             <div style={{display: 'flex', marginBottom: '0.8rem'}}>
