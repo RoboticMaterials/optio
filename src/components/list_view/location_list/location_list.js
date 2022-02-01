@@ -46,8 +46,9 @@ const LocationList = (props) => {
     const dispatchGetStations = () => dispatch(getStations())
     const locations = useSelector(state => state.stationsReducer.stations)
     const localMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
+    const lastUsedMap = useSelector(state => state.settingsReducer.settings.lastUsedMap)
     const maps = useSelector(state => state.mapReducer.maps)
-    const currentMapId = !!localMapId ? localMapId : maps[0]
+    const currentMapId = !!localMapId ? localMapId : lastUsedMap ? lastUsedMap : maps[0]
     const deviceEnabled = false
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const localSettings = useSelector(state => state.localReducer.localSettings)

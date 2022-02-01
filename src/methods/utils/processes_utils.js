@@ -480,7 +480,7 @@ export const findProcessStartNodes = (processRoutes, stations) => {
 
     if (
         stations !== undefined &&
-        startNodes.every((nodeId) => stations[nodeId].type === "warehouse")
+        startNodes.every((nodeId) => stations[nodeId]?.type === "warehouse")
     ) {
         const newRoutes = deepCopy(processRoutes).filter(
             (route) => !startNodes.includes(route.load)

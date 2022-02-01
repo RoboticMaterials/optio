@@ -89,8 +89,6 @@ const DashboardLotPage = (props) => {
   const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
   const openEvents = useSelector(state => state.touchEventsReducer.openEvents[stationID] || [])
 
-  console.log(';!', stations)
-
   const dispatch = useDispatch();
   const dispatchPostCard = (lot) => dispatch(postCard(lot))
   const dispatchPutCard = (lot, ID) => dispatch(putCard(lot, ID));
@@ -167,7 +165,7 @@ const DashboardLotPage = (props) => {
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
   const [timerValue, setTimerValue] = useState(null)
   const [compareTimerValue, setCompareTimerValue] = useState(null)
-
+  const [warehouseMergeDisabled, setWarehouseMergeDisabled] = useState(false)
 
   const handleBack = () => {
     Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
@@ -210,6 +208,16 @@ const DashboardLotPage = (props) => {
       clearInterval(timerInterval)
     };
   }, []);
+
+  useEffect(() => {
+    const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
+    for(const i in processRoutes){
+      if(processRoutes[i].unload ===stationID && stations[processRoutes[i].load]?.type === 'warehouse'){
+        const unloadAtWarehouse = processRoutes.find(route => route.unload === processRoutes[i].load)
+        if(!unloadAtWarehouse && processRoutes[i].requirePull === true) setWarehouseMergeDisabled(true)
+      }
+    }
+  }, [currentLot]);
 
   // Used to show dashboard input
   useEffect(() => {
@@ -396,6 +404,7 @@ const DashboardLotPage = (props) => {
           load_station_id: fromStation._id,
           unload_station_id: moveRoute.unload === 'FINISH' ? 'FINISH' : toStation._id,
           quantity,
+          operator: user,
           type: moveRoute.unload === 'FINISH' ? 'finish' : 'move',
           merged_children: localLotChildren
         }
@@ -437,7 +446,6 @@ const DashboardLotPage = (props) => {
   };
 
   const handlePullWarehouseLot = async (mergeLotID, quantity) => {
-
     const mergeLot = cards[mergeLotID]
 
     if (mergeLot._id === currentLot._id) {
@@ -448,7 +456,6 @@ const DashboardLotPage = (props) => {
     } else {
       handleMergeWarehouseLot(mergeLot, quantity)
     }
-
   }
 
   const handleMergeWarehouseLot = (mergeLot, quantity) => {
@@ -636,6 +643,12 @@ const DashboardLotPage = (props) => {
     }
   }
 
+  const getWorkingTime = () => {
+    const startTime = new Date(openTouchEvent.start_datetime.$date);
+    // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+    return (new Date().getTime() - startTime.getTime())/1000;
+  }
+
   return (
     <styled.LotContainer>
       {!!openWarehouse && (
@@ -657,7 +670,7 @@ const DashboardLotPage = (props) => {
       {renderRouteSelectorModal}
       <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
         <styled.TimerBlock>
-          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable((new Date().getTime() - openTouchEvent.start_datetime.$date)/1000) : 'None'}</styled.TimerValue>
+          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable(getWorkingTime()) : 'None'}</styled.TimerValue>
           <styled.TimerDescription>Active Working Time</styled.TimerDescription>
         </styled.TimerBlock>
         <styled.TimerBlock>
@@ -739,7 +752,7 @@ const DashboardLotPage = (props) => {
           setQuantity={setMoveQuantity}
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
-          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
+          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count || (warehouseMergeDisabled && localLotChildren.length<1)}
           warehouseDisabled = {stations[stationID].type === 'warehouse'}
           onBlur = {()=> {
             if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)

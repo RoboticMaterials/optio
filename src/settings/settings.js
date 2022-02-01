@@ -27,7 +27,7 @@ export const apiIPAddress = () => {
         if (!!hostServerIpAddress) {
             return `${disabledHTTPS ? 'http' : 'https'}://${hostServerIpAddress}/api/`
         } else if (window.location.hostname === 'localhost') {
-            return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
+            return `http://localhost:5000/api/`
         } else {
             return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}/api/`
         }
@@ -35,7 +35,7 @@ export const apiIPAddress = () => {
         return `http://${window.location.hostname}/api/`
     } else {
         if (window.location.hostname === 'localhost') {
-            return `${disabledHTTPS ? 'http' : 'https'}://localhost:5000/api/`
+            return `http://localhost:5000/api/`
         } else {
             return `${disabledHTTPS ? 'http' : 'https'}://${window.location.hostname}/api/`
         }
