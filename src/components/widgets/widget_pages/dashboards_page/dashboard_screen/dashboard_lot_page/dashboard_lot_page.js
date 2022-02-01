@@ -165,7 +165,7 @@ const DashboardLotPage = (props) => {
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
   const [timerValue, setTimerValue] = useState(null)
   const [compareTimerValue, setCompareTimerValue] = useState(null)
-
+  const [warehouseMergeDisabled, setWarehouseMergeDisabled] = useState(false)
 
   const handleBack = () => {
     Object.values(mergedLotsRevertStates).forEach(mergedLotRevertState => dispatchPutCard(mergedLotRevertState, mergedLotRevertState._id))
@@ -208,6 +208,16 @@ const DashboardLotPage = (props) => {
       clearInterval(timerInterval)
     };
   }, []);
+
+  useEffect(() => {
+    const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
+    for(const i in processRoutes){
+      if(processRoutes[i].unload ===stationID && stations[processRoutes[i].load]?.type === 'warehouse'){
+        const unloadAtWarehouse = processRoutes.find(route => route.unload === processRoutes[i].load)
+        if(!unloadAtWarehouse && processRoutes[i].requirePull === true) setWarehouseMergeDisabled(true)
+      }
+    }
+  }, [currentLot]);
 
   // Used to show dashboard input
   useEffect(() => {
@@ -394,6 +404,7 @@ const DashboardLotPage = (props) => {
           load_station_id: fromStation._id,
           unload_station_id: moveRoute.unload === 'FINISH' ? 'FINISH' : toStation._id,
           quantity,
+          operator: user,
           type: moveRoute.unload === 'FINISH' ? 'finish' : 'move',
           merged_children: localLotChildren
         }
@@ -435,7 +446,6 @@ const DashboardLotPage = (props) => {
   };
 
   const handlePullWarehouseLot = async (mergeLotID, quantity) => {
-
     const mergeLot = cards[mergeLotID]
 
     if (mergeLot._id === currentLot._id) {
@@ -446,7 +456,6 @@ const DashboardLotPage = (props) => {
     } else {
       handleMergeWarehouseLot(mergeLot, quantity)
     }
-
   }
 
   const handleMergeWarehouseLot = (mergeLot, quantity) => {
@@ -636,7 +645,8 @@ const DashboardLotPage = (props) => {
 
   const getWorkingTime = () => {
     const startTime = new Date(openTouchEvent.start_datetime.$date);
-    return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+    // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+    return (new Date().getTime() - startTime.getTime())/1000;
   }
 
   return (
@@ -742,7 +752,7 @@ const DashboardLotPage = (props) => {
           setQuantity={setMoveQuantity}
           maxQuantity={currentLot.bins[stationID]?.count}
           minQuantity={1}
-          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count}
+          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count || (warehouseMergeDisabled && localLotChildren.length<1)}
           warehouseDisabled = {stations[stationID].type === 'warehouse'}
           onBlur = {()=> {
             if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
