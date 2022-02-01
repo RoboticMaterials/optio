@@ -64,6 +64,7 @@ const ApiContainer = (props) => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const stations = useSelector(state => state.stationsReducer.stations)
     const localSettings = localReducer.localSettings
+    const lastUsedMap = useSelector(state => state.settingsReducer.settings.lastUsedMap)
     const maps = useSelector(state => state.mapReducer.maps)
 
     // States
@@ -226,7 +227,16 @@ const ApiContainer = (props) => {
 
         // If there is no map yet, set it to the first map
         mapsPromise.then(maps => {
-            if (!localSettings.currentMapId && !!maps) {
+            if (!localSettings.currentMapId && !!maps && lastUsedMap) {
+              let mapExists = Object.values(maps).find(map => maps._id === lastUsedMap)
+              if(mapExists){
+                onPostLocalSettings({
+                    ...localSettings,
+                    currentMapId: lastUsedMap
+                })
+              }
+            }
+            else if (!localSettings.currentMapId && !!maps) {
                 onPostLocalSettings({
                     ...localSettings,
                     currentMapId: maps[0]?._id || null
@@ -277,6 +287,7 @@ const ApiContainer = (props) => {
       else{
         setPageDataIntervals([
             setInterval(async () => {
+                await onGetStations()
                 await onGetStationCards(params.stationID)
                 await onGetOpenStationTouchEvents(params.stationID)
                 await onGetDashboards() // must go last

@@ -10,10 +10,41 @@ export const Container = styled.div`
   min-height: 100%
   width: 100%;
 `
+
 const scrollCss = css`
 ::-webkit-scrollbar {
         width: 12px;
         height: 5px;
+        margin: 1rem;
+        background: transparent;
+        border: none;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    ::-webkit-scrollbar-track:hover {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: ${props => props.theme.bg.quaternary};
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: ${props => props.theme.bg.quaternary};
+
+    }
+`
+
+const xScrollCss = css`
+::-webkit-scrollbar {
+        width: 12px;
+        height: 15px;
         margin: 1rem;
         background: transparent;
         border: none;
@@ -65,7 +96,10 @@ export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow-x: scroll;
+  overflow-x: auto;
+
+  ${xScrollCss};
+
 
 `
 export const DropContainer = styled.div`

@@ -62,14 +62,13 @@ const SplashScreen = (props) => {
         console.log("submitting")
 
         const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response =>{
-          dispatchPostLocalSettings({
-              ...response,
-              non_local_api_ip: apiIpAddress,
-              non_local_api: true,
-          })
+        localSettingsPromise.then(response => {
+            dispatchPostLocalSettings({
+                ...response,
+                non_local_api_ip: apiIpAddress,
+                non_local_api: true,
+            })
         })
-
         //window.location.reload(false);
     }
 

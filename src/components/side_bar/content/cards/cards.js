@@ -127,7 +127,6 @@ const Cards = (props) => {
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.maxHeight = '1px'
-
   		}
 
   	}, [dragIndex, clientY, clientX])
@@ -141,7 +140,6 @@ const Cards = (props) => {
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
-        console.log('1')
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
@@ -812,7 +810,7 @@ const Cards = (props) => {
                   </VisibilitySensor>
                 )
               }
-                else if (partBins.length>1){
+                else if (Object.values(partBins).length>1){
                   return (
                     Object.keys(partBins).map((part) => {
                       const isPartial = part !== 'count' ? true : false
@@ -1122,6 +1120,5 @@ const Cards = (props) => {
       </styled.PageContainer>
     )
   }
-
 
 export default Cards

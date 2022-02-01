@@ -203,7 +203,8 @@ const TaskField = (props) => {
         dispatchSetEditingValues({...values, routes: updatedRoutes})
     }
 
-    const onSaveRoute =() => {
+    const onSaveRoute = () => {
+        setFieldValue(`routes[${editingIdx}].isNew`, false);
         onEditing(false)
         dispatchSetSelectedTask(null)
         dispatchSetEditingValues(values)
