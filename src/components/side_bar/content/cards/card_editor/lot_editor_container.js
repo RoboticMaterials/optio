@@ -1246,6 +1246,7 @@ const LotEditorContainer = (props) => {
                   <LotCreatorForm
                       isOpen={true}
                       setSelectedTemplate = {handleSelectLotTemplate}
+                      setTemplate = {setLotTemplateId}
                       onAfterOpen={null}
                       lotTemplateId={lotTemplateId}
                       close={() => {

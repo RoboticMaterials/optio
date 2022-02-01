@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef} from "react";
+import React, {useState, useEffect, useContext, useRef, useMemo} from "react";
 
 // external functions
 import PropTypes from "prop-types";
@@ -92,7 +92,6 @@ const FormComponent = (props) => {
 
 	const history = useHistory()
 	const params = useParams()
-
 	//tooltip
 	const ref = useRef()
 	const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
@@ -414,6 +413,7 @@ const LotCreatorForm = (props) => {
 		lotTemplateId,
 		processId,
 		setSelectedTemplate,
+		setTemplate,
 	} = props
 
 	// actions
@@ -543,6 +543,7 @@ const LotCreatorForm = (props) => {
 				} = createdLotTemplate || {}
 
 				dispatchSetSelectedLotTemplate(createdLotTemplateId)
+				setTemplate(createdLotTemplateId)
 
 
 				// When new product group is created, we need to add an empty cycle time dict to each station that it might go through

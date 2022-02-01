@@ -125,7 +125,8 @@ const ProcessForm = (props) => {
 		// }
 
 		for (var savingRoute of remainingValues.routes) {
-			if (savingRoute.isNew) {
+			let exists = selectedProcess.routes.find(routeID => routeID === savingRoute._id)
+			if (!exists) {
 				dispatchPostRoute(savingRoute);
 			} else {
 				dispatchPutRoute(savingRoute);

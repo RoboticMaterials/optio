@@ -70,7 +70,7 @@ const Settings = (props) => {
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetRoutes = () => dispatch(getTasks())
     const dispatchClearMap = () => dispatch(clearMap())
-    
+
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
@@ -398,7 +398,7 @@ const Settings = (props) => {
                                 />
                             </styled.RowContainer>
                         }
-                        
+
                         <styled.SwitchContainer>
                             <styled.SwitchLabel>Disable HTTPS</styled.SwitchLabel>
                             <Switch
@@ -411,7 +411,7 @@ const Settings = (props) => {
                             />
                         </styled.SwitchContainer>
 
-                        
+
 
                     <Button
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem', background: 'black', color: 'white' }}
@@ -541,7 +541,8 @@ const Settings = (props) => {
                             if (!!localSettingsState && !!localSettingsState.currentMapId && !!maps.find(map => map._id === localSettingsState.currentMapId)) {
                                 return map._id === localSettingsState.currentMapId
                             }
-                            else return ind===0
+                            else if(serverSettings.lastUsedMap) return serverSettings.lastUsedMap
+                            else return ind === 0
                         })] : []}
                         dropdownGap={2}
                         noDataLabel="No matches found"
@@ -549,6 +550,7 @@ const Settings = (props) => {
                         onChange={values => {
                             // update current map
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            handleUpdateServerSettings({ lastUsedMap: values[0]._id })
 
 
                         }}
