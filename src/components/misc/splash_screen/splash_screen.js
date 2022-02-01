@@ -44,6 +44,7 @@ const SplashScreen = (props) => {
 
     const dispatch = useDispatch()
     const localSettings = useSelector(state => state.localReducer.localSettings)
+    const lastUsedMap = useSelector(state => state.settingsReducer.settings.lastUsedMap)
     const apiAddress = localSettings.non_local_api_ip
 
     const [apiIpAddress, setApiIpAddress] = useState(apiAddress)
@@ -62,14 +63,23 @@ const SplashScreen = (props) => {
         console.log("submitting")
 
         const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(response =>{
-          dispatchPostLocalSettings({
-              ...response,
-              non_local_api_ip: apiIpAddress,
-              non_local_api: true,
-          })
+        localSettingsPromise.then(response => {
+          if(response.currentMapId){
+            dispatchPostLocalSettings({
+                ...response,
+                non_local_api_ip: apiIpAddress,
+                non_local_api: true,
+            })
+          }
+          else{
+            dispatchPostLocalSettings({
+                ...response,
+                currentMapId: lastUsedMap,
+                non_local_api_ip: apiIpAddress,
+                non_local_api: true,
+            })
+          }
         })
-
         //window.location.reload(false);
     }
 
