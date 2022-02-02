@@ -224,31 +224,38 @@ const ApiContainer = (props) => {
         let lastUsedMap
         const mapsPromise = onGetMaps();
         const tempSettings = onGetSettings()
-        tempSettings.then((settings) => {
-          lastUsedMap = settings.lastUsedMap
-          // If there is no map yet, set it to the first map
+
+        if(localSettings.currentMapId){
           mapsPromise.then(maps => {
-              if (!localSettings.currentMapId && !!maps && lastUsedMap) {
-                let mapExists = maps.find(map => map._id === lastUsedMap)
-                if(mapExists){
-                  onPostLocalSettings({
-                      ...localSettings,
-                      currentMapId: lastUsedMap
-                  })
-                }
-              }
-              else if (!localSettings.currentMapId && !!maps) {
-                  onPostLocalSettings({
-                      ...localSettings,
-                      currentMapId: maps[0]?._id || null
-                  })
-              }
+            onPostLocalSettings({
+                ...localSettings,
+                currentMapId: maps[0]?._id || null
+            })
           })
-        })
-
-
-
-
+        }
+        else{
+          tempSettings.then((settings) => {
+            lastUsedMap = settings.lastUsedMap
+            // If there is no map yet, set it to the first map
+            mapsPromise.then(maps => {
+                if (!localSettings.currentMapId && !!maps && lastUsedMap) {
+                  let mapExists = maps.find(map => map._id === lastUsedMap)
+                  if(mapExists){
+                    onPostLocalSettings({
+                        ...localSettings,
+                        currentMapId: lastUsedMap
+                    })
+                  }
+                }
+                else if (!localSettings.currentMapId && !!maps) {
+                    onPostLocalSettings({
+                        ...localSettings,
+                        currentMapId: maps[0]?._id || null
+                    })
+                }
+            })
+          })
+        }
 
         if (mapValues === undefined) {
             props.onLoad()
