@@ -94,7 +94,6 @@ const Settings = (props) => {
     const [addTaskAlert, setAddTaskAlert] = useState(null)
     const [saveDisabled, setSaveDisabled] = useState(true)
     const [developmentPassword, setDevelopmentPassword] = useState('')
-
     const themeContext = useContext(ThemeContext);
 
 
