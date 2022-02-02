@@ -2,6 +2,36 @@ import styled, { css } from "styled-components";
 import * as commonCss from '../../../../../../common_css/common_css'
 
 
+const scrollCss = css`
+::-webkit-scrollbar {
+        width: 12px;
+        height: 5px;
+        margin: 1rem;
+        background: transparent;
+        border: none;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    ::-webkit-scrollbar-track:hover {
+      background: ${props => props.theme.bg.tertiary};
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: ${props => props.theme.bg.quaternary};
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: ${props => props.theme.bg.quaternary};
+
+    }
+`
+
 export const LotListContainer = styled.div`
     ${commonCss.columnContainer}
     justify-content: center;
@@ -9,6 +39,7 @@ export const LotListContainer = styled.div`
     width: 100%;
     overflow: auto;
 
+    ${scrollCss};
 `
 
 export const LotCardContainer = styled.div`
@@ -17,6 +48,8 @@ export const LotCardContainer = styled.div`
     justify-content: center;
     width: 100%;
     overflow: auto;
+    ${scrollCss};
+
 `
 
 export const Footer = styled.div`

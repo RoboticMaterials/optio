@@ -137,6 +137,7 @@ const LotFilterBarBasic = (props) => {
         >
             <styled.Description
                 css={props.descriptionCss}
+                style = {{fontSize: '.8rem', color:'#545454'}}
                 onClick={()=>setOpen(!open)}
             >
                 Filter

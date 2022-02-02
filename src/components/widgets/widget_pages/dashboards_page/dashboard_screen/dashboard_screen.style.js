@@ -13,7 +13,7 @@ export const Container = styled.div`
     max-height: 100%;
     // overflow: hidden;
 
-    background: ${props => LightenDarkenColor(props.theme.bg.secondary,4)};
+    background: ${props => LightenDarkenColor(props.theme.bg.secondary,14)};
 
 `
 

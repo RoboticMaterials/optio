@@ -32,12 +32,14 @@ export const DashboardIcon = styled.i`
 
 
 export const Header = styled.div`
-	background: ${props => LightenDarkenColor(props.theme.bg.secondary,5)};
-	width: 100%;
+	background: ${props => LightenDarkenColor(props.theme.bg.secondary,15)};
+	width: 95%;
 	padding: 1rem;
 	align-items: center;
   height: 4rem;
 	display: flex;
+  margin-left: 1rem;
+  margin-right: 1rem;
   border-bottom: 1px solid ${props => props.theme.bg.tertiary};
 
   /* /box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.2); */

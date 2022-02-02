@@ -158,7 +158,7 @@ const DashboardsHeader = (props) => {
                                 setShowOperationsMenu(true)
                             }}
                             disabled={showOperationsMenu}
-                            style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '6rem', padding: '0rem'}}
+                            style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '45%', padding: '0rem'}}
                         >
                             Pull
                         </Button>
@@ -179,7 +179,7 @@ const DashboardsHeader = (props) => {
                             alignItems: 'center',
                             position: 'absolute',
                             right: '.5rem',
-                            width: '6rem',
+                            width: '45%',
                             padding:'0rem'
 
                         }}

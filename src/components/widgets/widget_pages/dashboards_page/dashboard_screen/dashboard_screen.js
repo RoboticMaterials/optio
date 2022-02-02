@@ -76,7 +76,7 @@ const DashboardScreen = (props) => {
     const alertDuration = useSelector(state => state.settingsReducer.settings?.moveAlertDuration || 3000);
     const trackUsers = useSelector(state => state.settingsReducer.settings?.trackUsers || false)
     const currentDashboard = dashboards[dashboardID]
-    
+
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
@@ -404,7 +404,7 @@ const DashboardScreen = (props) => {
                 </div>
             }
 
-            {!history.location.pathname.includes('lots') &&
+            {!!history.location.pathname.includes('lots') &&
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
@@ -428,7 +428,7 @@ const DashboardScreen = (props) => {
 
             />
           }
-          {!history.location.pathname.includes('lots') &&
+          {!!history.location.pathname.includes('lots') &&
             <style.UndoIcon
                 style = {{marginRight: '.5rem'}}
                 className="fas fa-undo"
@@ -462,6 +462,30 @@ const DashboardScreen = (props) => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
+            {!history.location.pathname.includes('lots') &&
+            <DashboardsHeader
+                showTitle={false}
+                showBackButton={false}
+                handleToggleLock={() => handleToggleLock()}
+                showEditButton={true}
+                currentDashboard={currentDashboard}
+                handleOperationSelected={(op) => {
+                    setSelectedOperation(op)
+                }}
+                handleTaskAlert={() => {
+                    // If a custom task then add custom task key to task q
+                    setAddTaskAlert({
+                        type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                        label: "Task Added to Queue",
+                        message: '',
+                    })
+
+                    // clear alert after timeout
+                    return setTimeout(() => setAddTaskAlert(null), 1800)
+                }}
+
+            />
+          }
 
         </style.Container >
     )

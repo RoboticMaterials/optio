@@ -257,59 +257,49 @@ const ListView = (props) => {
                             {(showDashboards) ?
                               <>
                                 {!locked && !lotID &&
-                                  <BounceButton
-                                      color={"white"}
-                                      onClick={() => {
-                                          setShowDashboards(false)
-                                          setTitle('Dashboards')
-                                          history.push('/locations')
-                                      }}
-                                      containerStyle={{
-                                          color: "black",
-                                          width: "2.5rem",
-                                          height: "2.5rem",
-                                          top: '0.75rem',
-                                            left: '1rem',
-                                            position: "absolute"
-                                      }}
-                                  >
-
                                       <styled.Icon
-                                          className={"fa fa-times"}
+                                          className={"fas fa-chevron-left"}
+                                          style={{
+                                              color: '#79797d',
+                                              width: "2.5rem",
+                                              height: "2.5rem",
+                                              top: '2.75rem',
+                                                left: '2.5rem',
+                                                position: "absolute"
+                                          }}
+                                          onClick={() => {
+                                              setShowDashboards(false)
+                                              setTitle('Dashboards')
+                                              history.push('/locations')
+                                          }}
                                       />
-                                  </BounceButton>
                                 }
                                 <styled.Title>{stations[stationID].name}</styled.Title>
                               </>
                                 :
-                                <BounceButton
-                                    color={"blue"}
-                                    onClick={() => {
-                                        if(title === 'Dashboards') setTitle('Settings')
-                                        else setTitle('Dashboards')
-                                        if (showSettings) {
-                                            history.push(`/locations`)
-                                        }
-                                        else {
-                                            history.push(`/settings`)
-                                        }
-                                        setShowSettings(!showSettings)
+                                  <styled.Icon
+                                      onClick={() => {
+                                          if(title === 'Dashboards') setTitle('')
+                                          else setTitle('Dashboards')
+                                          if (showSettings) {
+                                              history.push(`/locations`)
+                                          }
+                                          else {
+                                              history.push(`/settings`)
+                                          }
+                                          setShowSettings(!showSettings)
 
-                                    }}
-                                    active={showSettings}
-                                    containerStyle={{
-                                        background: 'white',
-                                        width: "2.5rem",
-                                        height: "2.5rem",
-                                        top: '0.75rem',
-                                        left: '1rem',
-                                        position: "absolute"
-                                    }}
-                                >
-                                    <styled.Icon
-                                        className={!showSettings ? "fa fa-cog" : "fa fa-times"}
-                                    />
-                                </BounceButton>
+                                      }}
+                                      style={{
+                                          color: '#79797d',
+                                          width: "2.5rem",
+                                          height: "2.5rem",
+                                          top: '2.75rem',
+                                          left: showSettings ? '2.5rem' : '3.25rem',
+                                          position: "absolute"
+                                      }}
+                                      className={!showSettings ? "fa fa-cog" : "fas fa-chevron-left"}
+                                  />
                             }
 
 
