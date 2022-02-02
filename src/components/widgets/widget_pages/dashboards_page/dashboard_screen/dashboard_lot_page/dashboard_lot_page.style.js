@@ -96,13 +96,11 @@ export const LotButtonContainer = styled.div`
     box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
     height: fit-content;
     /* flex: 3; */
-
-
 `
 
 export const TimerBlock = styled.div`
     height: 2.6rem;
-    width: 14rem;
+    width: 11.5rem;
 
     border: 1px solid #eee;
     background: white;

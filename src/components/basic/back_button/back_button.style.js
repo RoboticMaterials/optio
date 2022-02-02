@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const BackSymbol = styled.i`
 
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 800;
 
     position: absolute;
@@ -26,10 +26,10 @@ export const BackButton = styled.button`
     min-width: 2rem;
     height: 2rem;
     min-height: 2rem;
-    
+
     margin: 0.3rem 0.5rem 0.3rem 0.5rem;
     padding: 0;
-    border-radius: 0.35rem;
+    border-radius: 0.3rem;
     background-color: transparent;
 
     position: relative;
