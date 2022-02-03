@@ -70,7 +70,6 @@ const Settings = (props) => {
     const dispatchGetStations = () => dispatch(getStations())
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchGetRoutes = () => dispatch(getTasks())
-    const dispatchClearMap = () => dispatch(clearMap())
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -690,7 +689,7 @@ const Settings = (props) => {
                 }}
                 handleOnClick1={() => {
                     if (confirmClearMap) {
-                        const successPromise = dispatchClearMap()
+                        const successPromise = clearMap();
                         successPromise.then(success => {
                             if (success) {
                                 window.location.reload(false);
