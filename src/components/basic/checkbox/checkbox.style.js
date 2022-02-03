@@ -1,14 +1,26 @@
 import styled from 'styled-components'
+import { LightenDarkenColor } from '../../../methods/utils/utils';
 
 
 export const Checkbox = styled.input`
-  --active: #275EFE;
+  ${props => !!props.schema ? 
+    `
+    --active: ${props.theme.schema[props.schema].solid};
+    --border-hover: ${props.theme.schema[props.schema].solid};
+    --border: ${LightenDarkenColor(props.theme.schema[props.schema].solid, 0.7)};
+    --disabled-inner: ${LightenDarkenColor(props.theme.schema[props.schema].solid, 0.9)};
+    `
+  :
+    `
+    --active: #275EFE;
+    --border-hover: #275EFE;
+    --border: #BBC1E1;
+    --disabled-inner: #E1E6F9;
+    `
+  }
   --active-inner: #fff;
-  --border: #BBC1E1;
-  --border-hover: #275EFE;
   --background: #fff;
-  --disabled: #F6F8FF;
-  --disabled-inner: #E1E6F9;
+  
   -webkit-appearance: none;
   -moz-appearance: none;
   height: 21px;

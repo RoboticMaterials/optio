@@ -354,8 +354,6 @@ const DashboardLotPage = (props) => {
       const fromStation = stations[moveRoute.load]
       const toStation = stations[moveRoute.unload]
 
-      console.log('dnauown', moveRoute, toStation, stations)
-
       // Track the WIP (by product group) that are currently at the station
       let WIP = {}
       Object.values(cards)
@@ -733,7 +731,7 @@ const DashboardLotPage = (props) => {
               current_wip: null,
               unload_station_id: null,
               dashboard_id: dashboardID,
-              operator: user,
+              start_operator: user,
               route_id: null
             }
 

@@ -84,8 +84,8 @@ const TemplateSelectorSidebar = (props) => {
                             _id: currTemplateId
                         } = currTemplate
                         //
-
-                        const isSelected = selectedLotTemplatesId !== 'BASIC_LOT_TEMPLATE' ? (selectedLotTemplatesId === currTemplateId) : name === 'Basic'
+                        
+                        const isSelected = (!!selectedLotTemplatesId && selectedLotTemplatesId !== 'BASIC_LOT_TEMPLATE') ? (selectedLotTemplatesId === currTemplateId) : name === 'Basic'
 
                         return <style.LotTemplateButton
                             key={currTemplateId}

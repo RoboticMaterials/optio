@@ -63,6 +63,7 @@ const ApiContainer = (props) => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     const localSettings = localReducer.localSettings
     const maps = useSelector(state => state.mapReducer.maps)
 
@@ -221,15 +222,16 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        await onGetSettings();
+        const settingsPromise = onGetSettings();
         const mapsPromise = onGetMaps();
 
         // If there is no map yet, set it to the first map
-        mapsPromise.then(maps => {
+        Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
             if (!localSettings.currentMapId && !!maps) {
+                console.log(serverSettings)
                 onPostLocalSettings({
                     ...localSettings,
-                    currentMapId: maps[0]?._id || null
+                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
                 })
             }
         })
