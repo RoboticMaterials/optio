@@ -116,7 +116,7 @@ const Cards = (props) => {
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
     //sorting state
-
+    //console.log(cards)
     const [sortedCards, setSortedCards] = useState(null)
     const [needsSortUpdate, setNeedsSortUpdate] = useState(false)
     const [sortChanged, setSortChanged] = useState(false)
@@ -205,6 +205,7 @@ const Cards = (props) => {
 
           for(const i in process.flattened_stations){//if new cards are at station x then push the ids to top (moved via dashboard)
             let statId = process.flattened_stations[i]?.stationID
+            if(!tempIds[id][statId]) tempIds[id][statId] = []
             //remove ids where cards are no longer in Column
             for(const i in tempIds[id][statId]){
               let cardId = tempIds[id][statId][i]
@@ -212,13 +213,13 @@ const Cards = (props) => {
             }
 
             for(const j in processCards){
-              if(!!processCards[j]?.bins[statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
+              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
                 tempIds[id][statId].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
               }
             }
