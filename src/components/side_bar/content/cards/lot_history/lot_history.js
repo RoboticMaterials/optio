@@ -78,8 +78,10 @@ const LotHistory = (props) => {
                     <styled.Label>From Station</styled.Label>
                     <styled.Label>To Station</styled.Label>
                     <styled.Label>Quantity</styled.Label>
-                    <styled.Label>Touch Time</styled.Label>
+                    <styled.Label>Start Time</styled.Label>
+                    <styled.Label>Started By</styled.Label>
                     <styled.Label>Move Time</styled.Label>
+                    <styled.Label>Moved By</styled.Label>
                     <styled.Label>Speed</styled.Label>
                     <styled.Label>Operator</styled.Label>
                     <styled.Label>Product</styled.Label>
@@ -92,9 +94,10 @@ const LotHistory = (props) => {
                         <styled.Data>{stations[event.unload_station_id]?.name || event.unload_station_id}</styled.Data>
                         <styled.Data>{event.quantity}</styled.Data>
                         <styled.Data>{new Date(event.start_datetime.$date).toLocaleString()}</styled.Data>
+                        <styled.Data>{event.start_operator || '-'}</styled.Data>
                         <styled.Data>{new Date(event.move_datetime.$date).toLocaleString()}</styled.Data>
+                        <styled.Data>{event.operator || '-'}</styled.Data>
                         <styled.Data>{speed(event)}</styled.Data>
-                        <styled.Data>{event.operator}</styled.Data>
                         <styled.Data>{lotTemplates[event.product_group_id]?.name}</styled.Data>
                         <styled.Data>{event.sku}</styled.Data>
                         <styled.Data>{!event.merged_children?.length ? '-' : event.merged_children.map((child, i) => (

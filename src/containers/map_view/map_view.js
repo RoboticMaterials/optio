@@ -111,7 +111,6 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
