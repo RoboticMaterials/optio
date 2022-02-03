@@ -33,6 +33,10 @@ pip3 install demjson
 pip3 install pandas
 pip3 install matplotlib
 
+# Build Node
+echo "Building Node"
+npm install --prefix /home/ubuntu/optio
+npm run-script build --prefix /home/ubuntu/optio
 
 # Setup firewall
 echo "Setting up firewall"
@@ -53,6 +57,5 @@ service nginx restart
 service optio_rest_api enable
 service optio_rest_api restart
 
-
-
+python3 /home/ubuntu/dev_rmstudio/rmengine/testing/cleanup.py
 

@@ -44,6 +44,7 @@ import { useHistory } from "react-router-dom";
 
 // Import API
 import { clearMap } from '../../../../api/development_api'
+import Checkbox from '../../../basic/checkbox/checkbox';
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
@@ -528,6 +529,7 @@ const Settings = (props) => {
 
 
         return (
+            <>
                 <styled.DropdownContainer>
                     <styled.DropdownLabel>Map</styled.DropdownLabel>
                     <DropDownSearch
@@ -555,8 +557,22 @@ const Settings = (props) => {
                         }}
                         className="w-100"
                     />
-
                 </styled.DropdownContainer>
+                <styled.RowContainer style={{justifyContent: 'space-between'}}>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Make Default Server Map</styled.DropdownLabel>
+                    <Checkbox 
+                        schema="settings" 
+                        checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId} 
+                        onChange={(state) => {
+                            if (state) {
+                                handleUpdateServerSettings({ defaultMapId: localSettingsState.currentMapId });
+                            } else {
+                                handleUpdateServerSettings({ defaultMapId: null })
+                            }
+                        }}
+                    />
+                </styled.RowContainer>
+            </>
         )
     }
 
