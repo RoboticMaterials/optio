@@ -63,6 +63,7 @@ const ApiContainer = (props) => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
     const localSettings = localReducer.localSettings
     const maps = useSelector(state => state.mapReducer.maps)
 
@@ -220,42 +221,22 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        await onGetSettings();
-        let lastUsedMap
+        const settingsPromise = onGetSettings();
         const mapsPromise = onGetMaps();
-        const tempSettings = onGetSettings()
 
-        if(localSettings.currentMapId){
-          mapsPromise.then(maps => {
-            onPostLocalSettings({
-                ...localSettings,
-                currentMapId: maps[0]?._id || null
-            })
-          })
-        }
-        else{
-          tempSettings.then((settings) => {
-            lastUsedMap = settings.lastUsedMap
-            // If there is no map yet, set it to the first map
-            mapsPromise.then(maps => {
-                if (!localSettings.currentMapId && !!maps && lastUsedMap) {
-                  let mapExists = maps.find(map => map._id === lastUsedMap)
-                  if(mapExists){
-                    onPostLocalSettings({
-                        ...localSettings,
-                        currentMapId: lastUsedMap
-                    })
-                  }
-                }
-                else if (!localSettings.currentMapId && !!maps) {
-                    onPostLocalSettings({
-                        ...localSettings,
-                        currentMapId: maps[0]?._id || null
-                    })
-                }
-            })
-          })
-        }
+        // If there is no map yet, set it to the first map
+        Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
+            if (!localSettings.currentMapId && !!maps) {
+                console.log(serverSettings)
+                onPostLocalSettings({
+                    ...localSettings,
+                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
+                })
+            }
+        })
+
+
+
 
         if (mapValues === undefined) {
             props.onLoad()

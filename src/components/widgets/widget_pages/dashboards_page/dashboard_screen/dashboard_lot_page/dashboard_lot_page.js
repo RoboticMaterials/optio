@@ -175,7 +175,7 @@ const DashboardLotPage = (props) => {
   const recalcTimer = () => {
     const lastMovedDate = currentStation.cycle_times[currentLot.lotTemplateId]?.last_moved;
     if (!!lastMovedDate) {
-      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate*1000), new Date(), serverSettings.shiftDetails))
+      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate), new Date(), serverSettings.shiftDetails))
       setTimerValue(timer)
     }
   }
@@ -353,8 +353,6 @@ const DashboardLotPage = (props) => {
 
       const fromStation = stations[moveRoute.load]
       const toStation = stations[moveRoute.unload]
-
-      console.log('dnauown', moveRoute, toStation, stations)
 
       // Track the WIP (by product group) that are currently at the station
       let WIP = {}
@@ -646,7 +644,7 @@ const DashboardLotPage = (props) => {
   const getWorkingTime = () => {
     const startTime = new Date(openTouchEvent.start_datetime.$date);
     // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
-    return (new Date().getTime() - startTime.getTime())/1000;
+    return workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails)
   }
 
   return (
@@ -733,7 +731,7 @@ const DashboardLotPage = (props) => {
               current_wip: null,
               unload_station_id: null,
               dashboard_id: dashboardID,
-              operator: user,
+              start_operator: user,
               route_id: null
             }
 
