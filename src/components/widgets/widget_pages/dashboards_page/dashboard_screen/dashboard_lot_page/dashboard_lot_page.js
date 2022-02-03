@@ -190,10 +190,10 @@ const DashboardLotPage = (props) => {
         case 'auto':
             setCompareTimerValue(CTObj.historical * moveQuantity);
             break;
-        case 'manual': 
+        case 'manual':
             setCompareTimerValue(CTObj.manual * moveQuantity);
             break;
-        case 'takt': 
+        case 'takt':
             setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime * moveQuantity);
             break;
       }
@@ -350,7 +350,7 @@ const DashboardLotPage = (props) => {
 
     // Create new touch Events
     for (var moveRoute of moveRoutes) {
-      
+
       const fromStation = stations[moveRoute.load]
       const toStation = stations[moveRoute.unload]
 
@@ -410,7 +410,7 @@ const DashboardLotPage = (props) => {
         dispatchGetStation(fromStation._id)
       }
 
-      
+
     }
 
     // Move Alert (based on whether lot was split or not)
@@ -438,7 +438,7 @@ const DashboardLotPage = (props) => {
       await setMergedLotsRevertStates({})
       onBack();
     }
-
+    dispatchGetStations()
     return lotCopy
 
   };

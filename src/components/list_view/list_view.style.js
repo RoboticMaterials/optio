@@ -32,7 +32,7 @@ export const DashboardIcon = styled.i`
 
 
 export const Header = styled.div`
-	background: ${props => LightenDarkenColor(props.theme.bg.secondary,4)};
+	background: ${props => LightenDarkenColor(props.theme.bg.secondary,5)};
 	width: 100%;
 	padding: 1rem;
 	align-items: center;
@@ -47,8 +47,9 @@ export const Title = styled.span`
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.phoneView ?  props.theme.fontSize.sz2 : props.theme.fontSize.sz2};
-    color: ${props => props.theme.bg.septenary};
+    color: ${props => props.theme.bg.quinary};
 `
 
 export const ListScrollContainer = styled.ul`

@@ -217,7 +217,6 @@ const ApiContainer = (props) => {
                 }
                 break;
         }
-
     }
 
     const loadInitialData = async () => {
@@ -279,6 +278,7 @@ const ApiContainer = (props) => {
       else{
         setPageDataIntervals([
             setInterval(async () => {
+                await onGetStations()
                 await onGetStationCards(params.stationID)
                 await onGetOpenStationTouchEvents(params.stationID)
                 await onGetDashboards() // must go last

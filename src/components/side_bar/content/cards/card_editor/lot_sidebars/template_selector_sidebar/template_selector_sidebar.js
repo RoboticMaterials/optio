@@ -42,16 +42,20 @@ const TemplateSelectorSidebar = (props) => {
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
     const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
-
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
     const processLotTemplates = useMemo(() => Object.values(lotTemplates).filter(template => template.processId === processId), [lotTemplates, processId])
-
     const history = useHistory()
     const params = useParams()
-
     const [width, setWidth] = useState(isMobile ? window.innerWidth : 100); // used for tracking sidebar dimensions
 
     const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name); // used for tracking sidebar dimensions
+
+    useEffect(() => {
+      if(!selectedLotTemplatesId){
+        let basicTemplate = processLotTemplates.find(template => template.name === 'Basic')
+        onTemplateSelectClick(basicTemplate._id)
+      }
+    }, [])
 
     const getTemplateButtons = () => {
         return (

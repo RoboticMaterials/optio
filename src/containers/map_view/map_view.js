@@ -83,7 +83,6 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
-
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
@@ -110,7 +109,6 @@ export class MapView extends Component {
         this.setState({currentMap: currentMap})
       }
     }
-
 
     componentDidUpdate(prevProps, prevState) {
         // If new maps are available, refresh current map
