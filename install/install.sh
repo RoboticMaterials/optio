@@ -6,11 +6,24 @@ if [ -z $1 ]; then
 fi
 
 
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+sudo apt update
+sudo apt install -y nginx
+sudo apt install -y python3-pip
+sudo apt install -y acl
+pip3 install gunicorn
+
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+sudo apt-get install -y mongodb-org
+sudo apt install -y nodejs npm
+
 # Configure Nginx
-cp nginx.conf /etc/nginx
+sudo cp nginx.conf /etc/nginx
 cp client-config.template client-config
 sed -i "s/{###Instance###}/$1/g" client-config
-cp client-config /etc/nginx/sites-enabled
+sudo cp client-config /etc/nginx/sites-enabled
+sudo rm /etc/nginx/sites-enabled/default
 
 # Configure Gunicorn
 cp optio_rest_api.service.template optio_rest_api.service
@@ -22,7 +35,12 @@ echo "Installing Certbot"
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 sudo certbot certonly --nginx
-
+#chmod 755 /etc/letsencrypt/archive
+#chmod 755 /etc/letsencrypt/live
+sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/live/ixblue.optio.cloud
+sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/archive/ixblue.optio.cloud
+sudo setfacl -m g:www-data:rX /etc/letsencrypt/live
+sudo setfacl -m g:www-data:rX /etc/letsencrypt/archive
 
 # Install Python packages
 echo "Installing Python packages"
@@ -32,6 +50,9 @@ pip3 install connexion
 pip3 install demjson
 pip3 install pandas
 pip3 install matplotlib
+pip3 install pymongo
+pip3 install cognitojwt
+pip3 install connexion[swagger-ui]
 
 # Build Node
 echo "Building Node"
