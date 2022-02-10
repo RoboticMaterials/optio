@@ -18,7 +18,6 @@ const HeatMap = (props) => {
     } = props;
 
     const [stationWIPRatios, setStationWIPRatios] = useState({})
-
     const cards = useSelector(state => state.cardsReducer.cards)
 	const routes = useSelector(state => state.tasksReducer.tasks)
 
@@ -39,21 +38,21 @@ const HeatMap = (props) => {
 
             let totalProcessWIP = 0;    // Tracks total WIP in the process
             let stationWIP = {}         // Tracks WIP at each station in the process (by id)
-            let i, pStationId, stationsWithWip = 0;
+            let i, pStationId = 0;
+            let stationsWithWip = 0;
             for (pStationId of processStations) { // Loop through each station in process to get mean WIP of the process
                 stationWIP[pStationId] = Object.values(cards).filter(card => card.process_id === process._id).reduce((accumWIP, card) => accumWIP + getBinQuantity(card, pStationId), 0)
                 stationsWithWip += (stationWIP[pStationId] > 0) ? 1 : 0;
                 totalProcessWIP += stationWIP[pStationId];
             }
-
+            //if(stationsWithWip === 0) stationsWithWip = 1
             const meanProcessWIP = totalProcessWIP / stationsWithWip;    // The mean WIP at each station in this prcess
-
             // Loop through stations again to find WIP Ratio (stationWIP / meanProcessWIP)
             let WIPRatio;
             for (i=0; i<processStations.length; i++) {
                 pStationId = processStations[i];
                 WIPRatio = stationWIP[pStationId] / meanProcessWIP;
-
+                if(!WIPRatio) WIPRatio = 0
                 if (pStationId in WIPBuildupRatios) {
                     WIPBuildupRatios[pStationId] = WIPRatio + WIPBuildupRatios[pStationId] // Take the sum of WIP ratios for every process that goes through the station
                 } else if (WIPRatio > 0) {
@@ -70,7 +69,7 @@ const HeatMap = (props) => {
     const spotEndOpacity = 0;
 
     // console.log('render', stationWIPRatios)
-    
+
     return (
         <g>
             <defs>
@@ -88,12 +87,12 @@ const HeatMap = (props) => {
                 </radialGradient>
             </defs>
             {!editingStation && !editingPosition &&
-                stations.map(station => 
-                    station._id in stationWIPRatios && 
-                        <HeatSpot 
+                stations.map(station =>
+                    station._id in stationWIPRatios &&
+                        <HeatSpot
                             key={station._id+'-heatspot'}
-                            station={station} 
-                            wipRatio={stationWIPRatios[station._id]} 
+                            station={station}
+                            wipRatio={stationWIPRatios[station._id]}
                             d3Scale={d3Scale}
                         />
                 )

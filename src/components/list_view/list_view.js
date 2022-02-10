@@ -126,13 +126,16 @@ const ListView = (props) => {
         return () => {
             document.removeEventListener('keyup', logKey)
         }
+
     }, [])
 
     useEffect(() => {
       setFull(barcode.join(''))
     }, [barcode])
 
+    useEffect(() => {
 
+    }, [])
 
     useEffect(() => {
             let lotId
