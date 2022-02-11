@@ -19,6 +19,7 @@ import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
 import Button from '../../../../../basic/button/button'
 import WorkInstructionsViewer from '../work_instructions_viewer/work_instructions_viewer'
+import useInterval from 'react-useinterval'
 
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
@@ -163,8 +164,7 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
-  const [timerValue, setTimerValue] = useState(null)
-  const [compareTimerValue, setCompareTimerValue] = useState(null)
+  const [workingTime, setWorkingTime] = useState(0) // The timer to keep track of how long a lot has been worked on for
   const [warehouseMergeDisabled, setWarehouseMergeDisabled] = useState(false)
 
   const handleBack = () => {
@@ -172,43 +172,17 @@ const DashboardLotPage = (props) => {
     onBack();
   }
 
-  const recalcTimer = () => {
-    const lastMovedDate = currentStation.cycle_times[currentLot.lotTemplateId]?.last_moved;
-    if (!!lastMovedDate) {
-      const timer = Math.round(workingSecondsBetweenDates(new Date(lastMovedDate), new Date(), serverSettings.shiftDetails))
-      setTimerValue(timer)
-    }
-  }
-
   // Catch leaving the page
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
 
-    const CTObj = currentStation.cycle_times[currentLot.lotTemplateId]
-    if (!!CTObj) {
-      switch (CTObj.mode) {
-        case 'auto':
-            setCompareTimerValue(CTObj.historical * moveQuantity);
-            break;
-        case 'manual':
-            setCompareTimerValue(CTObj.manual * moveQuantity);
-            break;
-        case 'takt':
-            setCompareTimerValue(lotTemplates[currentLot.lotTemplateId]?.taktTime * moveQuantity);
-            break;
-      }
-    }
-
-    recalcTimer();
-    const timerInterval = setInterval(recalcTimer, 1000);
-
     return () => {
       handleBack();
       window.removeEventListener("beforeunload", handleBack);
-      clearInterval(timerInterval)
     };
   }, []);
 
+  
   useEffect(() => {
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
     for(const i in processRoutes){
@@ -218,6 +192,20 @@ const DashboardLotPage = (props) => {
       }
     }
   }, [currentLot]);
+  
+  const compareTimerValue = useMemo(() => {
+    const CTObj = currentStation.cycle_times[currentLot.lotTemplateId]
+    if (!!CTObj) {
+      switch (CTObj.mode) {
+        case 'auto':
+            return CTObj.historical * moveQuantity;
+        case 'manual':
+            return CTObj.manual * moveQuantity;
+        case 'takt':
+            return lotTemplates[currentLot.lotTemplateId]?.taktTime * moveQuantity;
+      }
+    }
+  }, [currentStation.cycle_times, moveQuantity])
 
   // Used to show dashboard input
   useEffect(() => {
@@ -642,10 +630,20 @@ const DashboardLotPage = (props) => {
   }
 
   const getWorkingTime = () => {
-    const startTime = new Date(openTouchEvent.start_datetime.$date);
-    // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
-    return workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails)
+    if (!!openTouchEvent) {
+      let startTime = new Date(openTouchEvent.start_datetime.$date);
+      startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
+
+      // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+      setWorkingTime( workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails) );
+    }
   }
+
+  
+  // Timer update interval
+  useInterval(getWorkingTime, 1000);
+  useEffect(getWorkingTime, [openTouchEvent]);
+
 
   return (
     <styled.LotContainer>
@@ -668,17 +666,17 @@ const DashboardLotPage = (props) => {
       {renderRouteSelectorModal}
       <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
         <styled.TimerBlock>
-          <styled.TimerValue>{!!openTouchEvent ? secondsToReadable(getWorkingTime()) : 'None'}</styled.TimerValue>
+          <styled.TimerValue style={{color: workingTime <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{!!openTouchEvent ? secondsToReadable(workingTime) : 'None'}</styled.TimerValue>
           <styled.TimerDescription>Active Working Time</styled.TimerDescription>
         </styled.TimerBlock>
         <styled.TimerBlock>
-          <styled.TimerValue style={{color: timerValue <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{secondsToReadable(timerValue)}</styled.TimerValue>
-          <styled.TimerDescription>Time Since Last Move</styled.TimerDescription>
-        </styled.TimerBlock>
-        <styled.TimerBlock>
           <styled.TimerValue>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
-          <styled.TimerDescription>Expected Since Last Move</styled.TimerDescription>
+          <styled.TimerDescription>Expected Cycle Time</styled.TimerDescription>
         </styled.TimerBlock>
+        {/* <styled.TimerBlock>
+          <styled.TimerValue>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
+          <styled.TimerDescription>Since last move of this product</styled.TimerDescription>
+        </styled.TimerBlock> */}
       </div>
 
       <styled.LotBodyContainer>

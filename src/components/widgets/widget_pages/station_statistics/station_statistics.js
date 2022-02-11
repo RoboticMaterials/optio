@@ -109,13 +109,16 @@ const ProdTick = (props) => {
     useEffect(() => {
         let compareSeconds = 0;
         let newMode = CTObj.mode || 'auto'
-        switch (CTObj.mode) {
+        switch (newMode) {
             case "takt":
-                compareSeconds = processTaktTime;                
+                compareSeconds = processTaktTime;     
+                break;           
             case "manual":
                 compareSeconds = CTObj.manual;
+                break;
             default:
                 compareSeconds = CTObj.historical;
+                break;
         }
 
         const { quantity: newQuantity, timescale: newTimescale } = convertCycleTimeToProductionRate(compareSeconds, dailyWorkingSeconds);
@@ -294,7 +297,7 @@ const StatisticsPage = () => {
         console.log(tempData)
         if (tempData === undefined) {
             setData(emptyData)
-            alert('Something went wrong. Please contact Optio support for more information.')
+            // alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             await setCycleTimePG(null)
             await setThroughputData(deepCopy(tempData.throughput))
@@ -626,7 +629,7 @@ const StatisticsPage = () => {
                     </styled.Card>
 
                     <styled.Card style={{width: '50%'}}>
-                        {renderHeader('Production Time', 'cycleTime')}
+                        {renderHeader('Cycle Time', 'cycleTime')}
                         <styled.ChartContainer style={{height: '16rem'}}>
                             {!!data ?
                                 <>
@@ -639,7 +642,7 @@ const StatisticsPage = () => {
                                                         showLegend={false}
                                                         showAxes={false}
                                                         yFormat={v => secondsToReadable(v)}
-                                                        margin={{top:10, right:2, bottom:10, left:2}}
+                                                        margin={{top:10, right:10, bottom:10, left:10}}
                                                         xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}
                                                     />
                                                 </div>
