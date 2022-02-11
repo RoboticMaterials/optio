@@ -628,6 +628,7 @@ const DashboardLotPage = (props) => {
   }
 
   const getWorkingTime = () => {
+    if (!openTouchEvent) return 0
     let startTime = new Date(openTouchEvent.start_datetime.$date);
     startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
 

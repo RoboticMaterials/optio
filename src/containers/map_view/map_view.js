@@ -679,11 +679,11 @@ export class MapView extends Component {
                         {!!this.state.resolution && !!this.mapImage &&
                             <>
 
-                                {this.props.settings.mapApps.heatmap &&
+                                {this.props.settings.mapApps?.heatmap &&
                                     <HeatMap map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
 
-                                {this.props.settings.mapApps.ratsnest &&
+                                {this.props.settings.mapApps?.ratsnest &&
                                     <RatsNest map_id={this.state.currentMap?._id} d3Scale={this.d3.scale} />
                                 }
 
