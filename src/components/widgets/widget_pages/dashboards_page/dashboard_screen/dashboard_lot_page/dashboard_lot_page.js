@@ -632,7 +632,7 @@ const DashboardLotPage = (props) => {
   const getWorkingTime = () => {
     if (!!openTouchEvent) {
       let startTime = new Date(openTouchEvent.start_datetime.$date);
-      startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
+      startTime = new Date(startTime.getTime());// + startTime.getTimezoneOffset() * 60000);
 
       // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
       setWorkingTime( workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails) );
