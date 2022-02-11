@@ -163,7 +163,7 @@ const DashboardLotPage = (props) => {
   const [moveQuantity, setMoveQuantity] = useState(currentLot?.bins[loadStationID]?.count);
   const [localLotChildren, setLocalLotChildren] = useState([]) // The lot Children are only relevant to the current session, so dont apply changes to the card in the backend until the move button is pressed.
   const [mergedLotsRevertStates, setMergedLotsRevertStates] = useState({}) // When we merge a card from a warehouse, we remove the qty from that lot. If the user hits 'Go Back' we need to revert those cards to the original quantitites
-  const [timerValue, setTimerValue] = useState(null)
+  const [workingTime, setWorkingTime] = useState(0) // The timer to keep track of how long a lot has been worked on for
   const [warehouseMergeDisabled, setWarehouseMergeDisabled] = useState(false)
 
   const handleBack = () => {
@@ -174,10 +174,13 @@ const DashboardLotPage = (props) => {
   // Catch leaving the page
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
+    getWorkingTime();
+    const getWorkingTimeInterval = setInterval(getWorkingTime, 1000);
 
     return () => {
       handleBack();
       window.removeEventListener("beforeunload", handleBack);
+      clearInterval(getWorkingTimeInterval);
     };
   }, []);
 
@@ -628,12 +631,18 @@ const DashboardLotPage = (props) => {
   }
 
   const getWorkingTime = () => {
-    if (!openTouchEvent) return 0
-    let startTime = new Date(openTouchEvent.start_datetime.$date);
-    startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
+    if (!openTouchEvent) {
+      setWorkingTime(0);
+      return
+    }
+    else {
+      let startTime = new Date(openTouchEvent.start_datetime.$date);
+      startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
 
-    // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
-    return workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails)
+      // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+      setWorkingTime( workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails) );
+      return
+    }
   }
 
   return (
@@ -657,7 +666,7 @@ const DashboardLotPage = (props) => {
       {renderRouteSelectorModal}
       <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
         <styled.TimerBlock>
-          <styled.TimerValue style={{color: getWorkingTime() <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{!!openTouchEvent ? secondsToReadable(getWorkingTime()) : 'None'}</styled.TimerValue>
+          <styled.TimerValue style={{color: workingTime <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{!!openTouchEvent ? secondsToReadable(workingTime) : 'None'}</styled.TimerValue>
           <styled.TimerDescription>Active Working Time</styled.TimerDescription>
         </styled.TimerBlock>
         <styled.TimerBlock>
