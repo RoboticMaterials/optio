@@ -297,7 +297,7 @@ const StatisticsPage = () => {
         console.log(tempData)
         if (tempData === undefined) {
             setData(emptyData)
-            alert('Something went wrong. Please contact Optio support for more information.')
+            // alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             await setCycleTimePG(null)
             await setThroughputData(deepCopy(tempData.throughput))

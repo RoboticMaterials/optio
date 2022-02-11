@@ -94,7 +94,7 @@ const ProcessStatistics = ({ id }) => {
             setBalancePG(null)
             setData(emptyData)
             setThroughputData([])
-            alert('Something went wrong. Please contact Optio support for more information.')
+            // alert('Something went wrong. Please contact Optio support for more information.')
         } else {
             if (!(balancePG in tempData.balance)) {
                 setBalancePG(null)
