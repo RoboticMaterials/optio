@@ -44,7 +44,8 @@ const LotHistory = (props) => {
         let speedStatus;
         let speedLabel;
         try {
-            const cycleTime = (event.move_datetime.$date - event.start_datetime.$date) / 1000*event.quantity; // ms to s
+            const cycleTime = (new Date(event.move_datetime.$date) - new Date(event.start_datetime.$date)) / 1000*event.quantity; // ms to s
+            console.log(cycleTime)
 
             const productTemplateId = lotTemplates[event.product_group_id]._id
             const loadStation = stations[event.load_station_id]
@@ -52,7 +53,7 @@ const LotHistory = (props) => {
 
 
             speedStatus = (cycleTime <= stationCycleTime) ? 1 : -1
-            speedLabel = speedStatus === 1 ? `Fast -${secondsToReadable(stationCycleTime-cycleTime)}` : `Slow +${secondsToReadable(cycleTime-stationCycleTime)}s`
+            speedLabel = speedStatus === 1 ? `-${secondsToReadable(stationCycleTime-cycleTime)}` : `+${secondsToReadable(cycleTime-stationCycleTime)}s`
         } catch (error) {
             speedStatus = -1
             speedLabel = '?'
