@@ -21,11 +21,12 @@ import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
 import {getStationCards, getCards} from '../../redux/actions/card_actions'
+import {postSettings} from '../../redux/actions/settings_actions'
 
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
-
+import {clearLocalSettings} from '../../api/local_api'
 import disableBrowserBackButton from 'disable-browser-back-navigation';
 
 const SideBarSwitcher = lazy(() => import('../../components/side_bar/side_bar_switcher/side_bar_switcher'))
@@ -65,7 +66,7 @@ const SideBar = (props) => {
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
-
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
@@ -100,6 +101,8 @@ const SideBar = (props) => {
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
     const summaryProcess = useSelector(state => state.cardPageReducer.summaryProcess)
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
@@ -127,6 +130,13 @@ const SideBar = (props) => {
     useEffect(() => {
         // disableBrowserBackButton()
     }, [url])
+
+    useEffect(() => {
+        if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
+          clearLocalSettings()
+          window.location.reload(true)
+        }
+    }, [serverSettings])
 
      useEffect(() => {
           document.addEventListener('keyup', logKey)
