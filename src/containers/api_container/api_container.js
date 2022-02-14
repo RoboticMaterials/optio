@@ -215,6 +215,7 @@ const ApiContainer = (props) => {
                     if(!pageName) setLocationListViewIntervals()
                     else setDashboardPageIntervals()
                 }
+                else setLocationPageIntervals()
                 break;
         }
     }
@@ -282,7 +283,10 @@ const ApiContainer = (props) => {
                 await onGetStationCards(params.stationID)
                 await onGetOpenStationTouchEvents(params.stationID)
                 await onGetDashboards() // must go last
-            }, 1000)
+            }, 1000),
+            setInterval(async () => {
+                await onGetSettings()
+            }, 20000)
         ])
       }
     }
@@ -305,6 +309,9 @@ const ApiContainer = (props) => {
                 onGetProcesses();
                 onGetTasks();
             }, 5000),
+            setInterval(() => {
+                onGetSettings();
+            }, 10000),
         ])
     }
 
@@ -348,6 +355,7 @@ const ApiContainer = (props) => {
             }, 5000),
             setInterval(() => {
                 onGetCards();
+                onGetSettings();
             }, 20000)
         ])
     }

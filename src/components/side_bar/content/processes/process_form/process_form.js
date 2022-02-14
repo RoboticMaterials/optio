@@ -13,21 +13,20 @@ import {
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
-	deleteProcess, deleteProcessClean,
+	deleteProcessClean,
 	postProcesses,
 	putProcesses,
 	setSelectedProcess,
 	setProcessAttributes,
 	setEditingValues
 } from "../../../../../redux/actions/processes_actions";
-import * as taskActions from "../../../../../redux/actions/tasks_actions";
+
 import {isObject} from "../../../../../methods/utils/object_utils";
-import {isArray} from "../../../../../methods/utils/array_utils";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 import { flattenProcessStations } from '../../../../../methods/utils/processes_utils';
 import { BASIC_LOT_TEMPLATE } from '../../../../../constants/lot_contants';
 import { CYCLE_TIME_DICT } from '../../../../../constants/location_constants';
-import { deleteLotTemplate, postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
+import { getLotTemplates, deleteLotTemplate, postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
 import { deepCopy } from '../../../../../methods/utils/utils';
 import { putStation } from '../../../../../redux/actions/stations_actions';
 
@@ -53,6 +52,7 @@ const ProcessForm = (props) => {
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
+	const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates());
 	const dispatchDeleteLotTemplate = async (ID) => await dispatch(deleteLotTemplate(ID))
 	const dispatchPostRoute = async (route) => await dispatch(postTask(route))
     const dispatchPutRoute = async (route) => await dispatch(putTask(route, route._id))
@@ -76,6 +76,8 @@ const ProcessForm = (props) => {
 	const [processCopy, setProcessCopy] = useState(selectedProcess)	// Initial process, used when changes are not to be saved (onBack)
 
 	useEffect(() => {
+		dispatchGetLotTemplates() // We will use these when we save the process
+
 		return () => {
 			dispatchSetSelectedTask(null)
 			dispatchSetSelectedProcess(null)
@@ -169,19 +171,29 @@ const ProcessForm = (props) => {
 
 		// When a process changes, we need to go through every station involved and make sure they
 		// have a cycle time dict for every product group in the process.
-		Object.values(lotTemplates).forEach(lotTemplate => {
-			if (lotTemplate.processId !== savedProcess._id) return
-			else {
-				for (var node of nodes) {
-					let stationCopy = deepCopy(stations[node.stationID])
-					if(!stationCopy.cycle_times) stationCopy.cycle_times = []
-					if (!stationCopy.cycle_times[lotTemplate._id]) {
-						stationCopy.cycle_times[lotTemplate._id] = CYCLE_TIME_DICT
-						dispatchPutStation(stationCopy)
-					}
+		for (const node of nodes) {
+			let stationCopy = deepCopy(stations[node.stationID])
+
+			let stationCycleTimesObj
+			if ('cycle_times' in stationCopy) {
+				stationCycleTimesObj = stationCopy.cycle_times;
+			} else {
+				stationCycleTimesObj = {}
+			}
+
+			let changed = false;
+			for (var lotTemplate of Object.values(lotTemplates)) {
+				if (!(lotTemplate._id in stationCycleTimesObj)) {
+					changed = true;
+					stationCycleTimesObj = {[lotTemplate._id]: CYCLE_TIME_DICT, ...stationCycleTimesObj};
 				}
 			}
-		})
+
+			if (changed) {
+				stationCopy.cycle_times = stationCycleTimesObj;
+				dispatchPutStation(stationCopy)
+			}
+		}
 
 		// close editor
 		if(close) {

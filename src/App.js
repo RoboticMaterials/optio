@@ -30,7 +30,6 @@ const PageErrorBoundary = lazy(() => import('./containers/page_error_boundary/pa
 const widthBreakPoint = 1000;
 
 const App = () => {
-
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const maps = useSelector(state => state.mapReducer.maps)

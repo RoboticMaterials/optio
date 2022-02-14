@@ -23,7 +23,7 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'
 import { ThemeContext } from 'styled-components';
 
-
+import {clearLocalSettings} from '../../../../api/local_api'
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
@@ -245,6 +245,7 @@ const Settings = (props) => {
             dispatchGetRoutes()
             dispatchGetCards()
         }
+
     }
 
     const TimeZone = () => {
@@ -559,9 +560,9 @@ const Settings = (props) => {
                 </styled.DropdownContainer>
                 <styled.RowContainer style={{justifyContent: 'space-between'}}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Make Default Server Map</styled.DropdownLabel>
-                    <Checkbox 
-                        schema="settings" 
-                        checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId} 
+                    <Checkbox
+                        schema="settings"
+                        checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId}
                         onChange={(state) => {
                             if (state) {
                                 handleUpdateServerSettings({ defaultMapId: localSettingsState.currentMapId });

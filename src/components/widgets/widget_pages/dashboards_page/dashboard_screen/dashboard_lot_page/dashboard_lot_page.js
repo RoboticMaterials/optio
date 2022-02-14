@@ -19,6 +19,7 @@ import DashboardLotInputBox from "./dashboard_lot_input_box/dashboard_lot_input_
 import ContentListItem from "../../../../../side_bar/content/content_list/content_list_item/content_list_item";
 import Button from '../../../../../basic/button/button'
 import WorkInstructionsViewer from '../work_instructions_viewer/work_instructions_viewer'
+import useInterval from 'react-useinterval'
 
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
@@ -174,16 +175,14 @@ const DashboardLotPage = (props) => {
   // Catch leaving the page
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
-    getWorkingTime();
-    const getWorkingTimeInterval = setInterval(getWorkingTime, 1000);
 
     return () => {
       handleBack();
       window.removeEventListener("beforeunload", handleBack);
-      clearInterval(getWorkingTimeInterval);
     };
   }, []);
 
+  
   useEffect(() => {
     const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
     for(const i in processRoutes){
@@ -633,13 +632,18 @@ const DashboardLotPage = (props) => {
   const getWorkingTime = () => {
     if (!!openTouchEvent) {
       let startTime = new Date(openTouchEvent.start_datetime.$date);
-      startTime = new Date(startTime.getTime() + startTime.getTimezoneOffset() * 60000);
+      startTime = new Date(startTime.getTime());// + startTime.getTimezoneOffset() * 60000);
 
       // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
       setWorkingTime( workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails) );
-      return
     }
   }
+
+  
+  // Timer update interval
+  useInterval(getWorkingTime, 1000);
+  useEffect(getWorkingTime, [openTouchEvent]);
+
 
   return (
     <styled.LotContainer>
