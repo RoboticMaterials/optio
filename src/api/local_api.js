@@ -46,3 +46,7 @@ export const getLocalSettings = async () => {
 export const deleteLocalSettings = async () => {
     localStorage.removeItem("local-settings-config");
 }
+
+export const clearLocalSettings = async () => {
+    localStorage.clear();
+}
