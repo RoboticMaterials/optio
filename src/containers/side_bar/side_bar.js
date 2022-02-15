@@ -22,7 +22,7 @@ import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
 import {getStationCards, getCards} from '../../redux/actions/card_actions'
 import {postSettings} from '../../redux/actions/settings_actions'
-
+import config from '../../settings/config'
 import * as taskActions from '../../redux/actions/tasks_actions'
 import * as sidebarActions from "../../redux/actions/sidebar_actions";
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
@@ -66,7 +66,6 @@ const SideBar = (props) => {
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
-    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
@@ -132,11 +131,11 @@ const SideBar = (props) => {
     }, [url])
 
     useEffect(() => {
-        if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
+        if(localSettings.currentVersion && localSettings.currentVersion!==config.version){
           clearLocalSettings()
           window.location.reload(true)
         }
-    }, [serverSettings])
+    }, [localSettings, serverSettings])
 
      useEffect(() => {
           document.addEventListener('keyup', logKey)

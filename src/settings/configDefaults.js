@@ -2,5 +2,6 @@ export default {
     authenticationNeeded: Boolean,
     Region: String,
     UserPoolId: String,
-    ClientId: String
+    ClientId: String,
+    version: String,
 }
