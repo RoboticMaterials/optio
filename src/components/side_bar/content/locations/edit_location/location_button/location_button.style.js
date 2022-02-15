@@ -14,7 +14,7 @@ export const LocationTypeGraphic = styled.svg`
 
 export const LocationTypeButton = styled.div`
     height: ${props => props.schema == 'position' ? '4.5rem' : '6rem'};
-    width: 6rem;
+    width: 7.5rem;
     border-radius: 0.5rem;
 
     background: ${props => props.isSelected ? `#ebecf0` : props.isNotSelected ? 'lightgray' : '#f5f5f7'};

@@ -16,6 +16,8 @@
   "end":"Fin",
   "select":"Sélectionner",
   "delete":"Effacer",
+  "workstation":"Poste de travail",
+  "warehouse":"Supermarché",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",
