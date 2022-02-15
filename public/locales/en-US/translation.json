@@ -1,0 +1,20 @@
+{
+  "locations":"Locations",
+  "devices":"Devices",
+  "travelers":"Travelers",
+  "statistics":"Statistics",
+  "processes":"Processes",
+  "schedules":"Schedules",
+  "routes":"Routes",
+  "settings":"Settings",
+
+  "taskqueue":"Task Queue",
+  "Settings":{
+    "unlockmessage":"All Dashboards have been successfully unlocked!",
+    "lockmessage":"All Dashboards have been successfully locked!"
+  },
+  "description": {
+    "part1": "To get started, edit <1>src/App.js</1> and save to reload.",
+    "part2": "Switch language between english and german using buttons above."
+  }
+}

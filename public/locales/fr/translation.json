@@ -1,0 +1,15 @@
+{
+  "locations":"Emplacements",
+  "devices":"Appareils",
+  "travelers":"Lots",
+  "statistics":"Statistiques",
+  "processes":"Processus",
+  "schedules":"Horaires",
+  "routes":"Routes",
+  "settings":"Paramètres",
+  "taskqueue":"File d'attente de tâches",
+  "Settings":{
+     "unlockmessage":"Tous les tableaux de bord ont été déverrouillés avec succès !",
+     "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !"
+   }
+}
