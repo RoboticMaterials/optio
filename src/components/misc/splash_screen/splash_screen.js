@@ -14,7 +14,7 @@ import * as styled from "./splash_screen.style"
 import logger from '../../../logger.js';
 import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
 import {postSettings} from '../../../redux/actions/settings_actions'
-import config from '../../../settings/config'
+
 
 const ToggleMapViewSwitch = (props) => {
     const {
@@ -45,27 +45,31 @@ const SplashScreen = (props) => {
     const dispatch = useDispatch()
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const apiAddress = localSettings.non_local_api_ip
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
     const [apiIpAddress, setApiIpAddress] = useState(apiAddress)
     const [localSettingsState, setLocalSettingsState] = useState({})
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
     useEffect(() => {
       setLocalSettingsState(localSettings)
     }, [])
     useEffect(() => {
-      if(localSettings && !localSettings.currentVersion && config.version){
+      if(localSettings && serverSettings && !localSettings.currentVersion && serverSettings.currentVersion){
         dispatchPostLocalSettings({
           ...localSettings,
-          currentVersion: config.version
+          currentVersion: serverSettings.currentVersion
         })
       }
-    },[localSettings])
+    },[serverSettings, localSettings])
     /**
      * Submit API address to local storage
      */
     const handleSubmitApiIpAddress = async () => {
+        console.log("submitting")
+
         const localSettingsPromise = dispatchGetLocalSettings()
         localSettingsPromise.then(response => {
             dispatchPostLocalSettings({
