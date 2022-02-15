@@ -15,6 +15,7 @@
   "start":"Début",
   "end":"Fin",
   "select":"Sélectionner",
+  "delete":"Effacer",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",
@@ -48,5 +49,14 @@
      "clearmap":"Effacer la carte",
      "signout":"Se déconnecter",
      "movealert":"Durée d'alerte pour l'avancement"
+    },
+    "Editloc":{
+      "cannotdeletewarning":"Les nouvelles stations ne peuvent pas être supprimées.",
+      "processwarning": "Cette station est utilisée dans le processus \"{{processname}}\". Si vous souhaitez supprimer cette station, supprimez-la du processus ou supprimez le processus.",
+      "deletewarning":"ATTENTION ! Toutes les données historiques de cet emplacement seront également supprimées. Voulez-vous vraiment supprimer cet emplacement ?",
+      "backwarning":"Êtes-vous sûr de vouloir revenir en arrière ? La progression ne sera pas enregistrée",
+      "name":"Nom de l'emplacement",
+      "entername":"Entrez le nom de l'emplacement",
+      "type":"Type d'emplacement"  
     }
 }

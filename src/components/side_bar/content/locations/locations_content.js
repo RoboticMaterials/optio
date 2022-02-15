@@ -16,10 +16,16 @@ import { StationTypes } from '../../../../constants/station_constants'
 // Import Utils
 import { locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
+import { useTranslation } from 'react-i18next';
+
+
+    
 
 // This adds a location selected info to the reducer
 export default function LocationContent() {
 
+    const { t, i18n } = useTranslation();
+    
     const dispatch = useDispatch()
 
     const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
