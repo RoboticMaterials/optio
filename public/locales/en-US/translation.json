@@ -7,14 +7,25 @@
   "schedules":"Schedules",
   "routes":"Routes",
   "settings":"Settings",
+  "save":"Save",
 
   "taskqueue":"Task Queue",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
-    "lockmessage":"All Dashboards have been successfully locked!"
-  },
-  "description": {
-    "part1": "To get started, edit <1>src/App.js</1> and save to reload.",
-    "part2": "Switch language between english and german using buttons above."
+    "lockmessage":"All Dashboards have been successfully locked!",
+    "contactname":"Contact Name",
+    "emailaddress":"E-mail address",
+    "map":"Map",
+    "makedefault":"Set as the default map",
+    "mapsettings":"Map Settings",
+    "enablemapview":"Enable Map View",
+    "generalsettings":"General Settings",
+    "timezone":"Timezone",
+    "emailnotifications":"Email Notifications",
+    "showshiftsettings":"Show Shift Settings",
+    "startofshift":"Start of Shift",
+    "endofshift":"End of Shift",
+    "breaks":"Breaks",
+    "calculateandsave":"Recompute and save"
   }
 }

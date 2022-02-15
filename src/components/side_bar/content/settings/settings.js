@@ -45,11 +45,15 @@ import { useHistory } from "react-router-dom";
 // Import API
 import { clearMap } from '../../../../api/development_api'
 import Checkbox from '../../../basic/checkbox/checkbox';
+import { useTranslation } from 'react-i18next';
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
 
 const Settings = (props) => {
+
+    const { t, i18n } = useTranslation();
+    
     const {
       listView,
       setShowSettings,
@@ -252,7 +256,7 @@ const Settings = (props) => {
 
         return (
                 <styled.DropdownContainer>
-                    <styled.DropdownLabel>Timezone</styled.DropdownLabel>
+                    <styled.DropdownLabel>{t("Settings.timezone","Timezone")}</styled.DropdownLabel>
                     <DropDownSearch
                         placeholder="Select Timezone"
                         label="Select your timezone"
@@ -431,7 +435,7 @@ const Settings = (props) => {
     const MapViewEnabled = () => {
         return (
             <styled.SwitchContainer>
-                <styled.SwitchLabel>Enable Map View</styled.SwitchLabel>
+                <styled.SwitchLabel>{t("Settings.enablemapview","Enable Map View")}</styled.SwitchLabel>
                 <Switch
                     onColor={themeContext.schema.settings.solid}
                     checked={!!localSettingsState.mapViewEnabled}
@@ -477,7 +481,7 @@ const Settings = (props) => {
         return (
             <>
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel>Email Notifications </styled.SwitchLabel>
+                    <styled.SwitchLabel>{t("Settings.emailnotifications","Email Notifications")} </styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.emailEnabled ? serverSettingsState.emailEnabled : false}
                         onChange={() => {
@@ -493,7 +497,7 @@ const Settings = (props) => {
                 {!!serverSettingsState.emailEnabled &&
                     <>
                     <styled.DropdownContainer>
-                        <styled.DropdownLabel>Contact Name</styled.DropdownLabel>
+                        <styled.DropdownLabel>{t("Settings.contactname","Contact Name")}</styled.DropdownLabel>
                         <Textbox
                             placeholder="Enter a contact name..."
                             value={!!serverSettingsState.emailName ? serverSettingsState.emailName : ""}
@@ -505,7 +509,7 @@ const Settings = (props) => {
                     </styled.DropdownContainer>
 
                     <styled.DropdownContainer>
-                        <styled.DropdownLabel>Email Address</styled.DropdownLabel>
+                        <styled.DropdownLabel>{t("Settings.emailaddress","Email Address")}</styled.DropdownLabel>
                         <Textbox
                             placeholder="Enter an email address..."
                             value={!!serverSettingsState.emailAddress ? serverSettingsState.emailAddress : ""}
@@ -530,7 +534,7 @@ const Settings = (props) => {
         return (
             <>
                 <styled.DropdownContainer>
-                    <styled.DropdownLabel>Map</styled.DropdownLabel>
+                    <styled.DropdownLabel>{t("Settings.map","Map")}</styled.DropdownLabel>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select a map"
@@ -558,7 +562,7 @@ const Settings = (props) => {
                     />
                 </styled.DropdownContainer>
                 <styled.RowContainer style={{justifyContent: 'space-between'}}>
-                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Make Default Server Map</styled.DropdownLabel>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>{t("Settings.makedefault","Set as the default map")}</styled.DropdownLabel>
                     <Checkbox 
                         schema="settings" 
                         checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId} 
@@ -582,7 +586,7 @@ const Settings = (props) => {
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem', cursor: 'pointer' }} onClick={() => {
                             setShowShiftSettings(!showShiftSettings)
                         }}>
-                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>{t("Settings.showshiftsettings","Show Shift Settings")}</styled.DropdownLabel>
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
@@ -733,12 +737,12 @@ const Settings = (props) => {
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
 
             <styled.HeaderContainer>
-              <styled.Label style = {{marginTop: '0rem'}}>Map Settings</styled.Label>
+              <styled.Label style = {{marginTop: '0rem'}}>{t("Settings.mapsettings","Map Settings")}</styled.Label>
             </styled.HeaderContainer>
             {MapViewEnabled()}
             {CurrentMap()}
             <styled.HeaderContainer>
-              <styled.Label>General Settings</styled.Label>
+              <styled.Label>{t("Settings.generalsettings","General Settings")}</styled.Label>
             </styled.HeaderContainer>
             {TimeZone()}
             {EmailAddress()}

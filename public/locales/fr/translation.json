@@ -8,8 +8,23 @@
   "routes":"Routes",
   "settings":"Paramètres",
   "taskqueue":"File d'attente de tâches",
+  "save":"Enregistrer",
   "Settings":{
      "unlockmessage":"Tous les tableaux de bord ont été déverrouillés avec succès !",
-     "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !"
+     "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !",
+     "contactname":"Nom du contact",
+     "emailaddress":"Adresse e-mail",
+     "map":"Carte",
+     "makedefault":"Définir comme carte par défaut",
+     "mapsettings":"Paramètres de la carte",
+     "enablemapview":"Activer l'affichage de la carte",
+     "generalsettings":"Paramètres généraux",
+     "timezone":"Fuseau horaire",
+     "emailnotifications":"Notifications par e-mail",
+     "showshiftsettings":"Afficher les paramètres de décalage",
+     "startofshift":"Début du quart de travail",
+     "endofshift":"Fin du quart",
+     "breaks":"Pauses",
+     "calculateandsave":"Recalculer et enregistrer"
    }
 }

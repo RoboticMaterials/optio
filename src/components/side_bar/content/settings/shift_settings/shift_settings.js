@@ -21,7 +21,11 @@ import { convert12hto24h } from '../../../../../methods/utils/time_utils'
 import { postSettings } from '../../../../../redux/actions/settings_actions'
 import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
+import { useTranslation } from 'react-i18next';
+
 const ShiftSettings = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         themeContext,
@@ -305,7 +309,7 @@ const ShiftSettings = (props) => {
                         <styled.ColumnContainer>
                             <styled.RowContainer style={{ justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                 <styled.Label>
-                                    Start of Shift
+                                    {t("Settings.startofshift","Start of Shift")}
                             </styled.Label>
                                 <TimePickerField
                                     schema={'statistics'}
@@ -337,7 +341,7 @@ const ShiftSettings = (props) => {
                             </styled.RowContainer>
                             <styled.RowContainer style={{ justifyContent: 'space-between', borderBottom: '1px solid #b8b9bf', marginBottom: '0.5rem', paddingBottom: '0.5rem'}}>
                                 <styled.Label>
-                                    End of Shift
+                                    {t("Settings.endofshift","End of Shift")}
                             </styled.Label>
                                 <TimePickerField
                                     schema={'statistics'}
@@ -369,7 +373,7 @@ const ShiftSettings = (props) => {
 
                             <styled.RowContainer style={{ justifyContent: 'space-between', }}>
                                 <styled.Label>
-                                    Breaks
+                                    {t("Settings.breaks","Breaks")}
                             </styled.Label>
                             </styled.RowContainer>
                             {!!enableOutput &&
@@ -400,7 +404,7 @@ const ShiftSettings = (props) => {
                         {/* <styled.RowContainer>
 
         </styled.RowContainer> */}
-                        <Button schema={'settings'} disabled = {!pageInfoChanged} type={'submit'} style = {{margin: '.5rem 0rem 0rem 0rem'}}>{!!enableOutput ? 'Calculate and Save' : 'Save Shift Details'}</Button>
+                        <Button schema={'settings'} disabled = {!pageInfoChanged} type={'submit'} style = {{margin: '.5rem 0rem 0rem 0rem'}}>{!!enableOutput ? t("Settings.calculateandsave","Recompute and save") : t("save","Save")}</Button>
 
                     </Form>
                 )
