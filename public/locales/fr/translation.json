@@ -1,4 +1,6 @@
 {
+  "yes":"Oui",
+  "no":"Non",
   "locations":"Emplacements",
   "devices":"Appareils",
   "travelers":"Lots",
@@ -9,7 +11,13 @@
   "settings":"Paramètres",
   "taskqueue":"File d'attente de tâches",
   "save":"Enregistrer",
+  "number":"Numéro",
+  "start":"Début",
+  "end":"Fin",
+  "select":"Sélectionner",
   "Settings":{
+     "unlockdashboards":"Déverrouiller tous les tableaux de bord",
+     "lockdashboards":"Verrouiller tous les tableaux de bord",
      "unlockmessage":"Tous les tableaux de bord ont été déverrouillés avec succès !",
      "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !",
      "contactname":"Nom du contact",
@@ -25,6 +33,13 @@
      "startofshift":"Début du quart de travail",
      "endofshift":"Fin du quart",
      "breaks":"Pauses",
-     "calculateandsave":"Recalculer et enregistrer"
+     "calculateandsave":"Recalculer et enregistrer",
+     "dashboardsettings":"Paramètres du tableaux de bord",
+     "trackoperators":"Suivi des Opérateurs",
+     "fractionalmove":"Avancer les lots par fraction",
+     "hidefilters":"Masquer les filtres sur mobile",
+     "advancedfilters":"Filtres de recherche avancés",
+     "customlotdisplay":"Affichage de lot personnalisé",
+     "nomatches":"Aucune correspondance trouvée"
    }
 }

@@ -1,4 +1,6 @@
 {
+  "yes":"Yes",
+  "no":"No",
   "locations":"Locations",
   "devices":"Devices",
   "travelers":"Travelers",
@@ -8,6 +10,10 @@
   "routes":"Routes",
   "settings":"Settings",
   "save":"Save",
+  "number":"Number",
+  "start":"Start",
+  "end":"End",
+  "select":"Select",
 
   "taskqueue":"Task Queue",
   "Settings":{
@@ -26,6 +32,15 @@
     "startofshift":"Start of Shift",
     "endofshift":"End of Shift",
     "breaks":"Breaks",
-    "calculateandsave":"Recompute and save"
+    "calculateandsave":"Recompute and save",
+    "dashboardsettings":"Dashboard Settings",
+    "trackoperators":"Track Operators",
+    "fractionalmove":"Move Lots by Fraction",
+    "hidefilters":"Hide Filters on Mobile",
+    "advancedfilters":"Advanced Search Filters",
+    "customlotdisplay":"Custom Lot Display",
+    "nomatches":"No matches found",
+    "unlockdashboards":"Unlock All Dashboards",
+    "lockdashboards":"Lock All Dashboards"
   }
 }

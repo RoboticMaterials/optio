@@ -125,17 +125,17 @@ const ShiftSettings = (props) => {
                     <styled.RowContainer style = {{width: '100%'}}>
                       <styled.ColumnContainer style={{ margin: '.25rem', flex: '3'}}>
                           <styled.BreakLabel>
-                              Break #
+                              {t("number","Number")}
                       </styled.BreakLabel>
                       </styled.ColumnContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '2rem'}}>
+                        <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '4rem'}}>
                             <styled.BreakLabel>
-                                Start Time
+                                {t("start","Start")}
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                         <styled.ColumnContainer style={{ margin: '.25rem', paddingRight: '1.5rem'}}>
                             <styled.BreakLabel>
-                                End Time
+                                {t("end","End")}
                         </styled.BreakLabel>
                         </styled.ColumnContainer>
                     </styled.RowContainer>

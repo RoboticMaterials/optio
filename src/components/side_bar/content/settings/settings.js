@@ -258,14 +258,14 @@ const Settings = (props) => {
                 <styled.DropdownContainer>
                     <styled.DropdownLabel>{t("Settings.timezone","Timezone")}</styled.DropdownLabel>
                     <DropDownSearch
-                        placeholder="Select Timezone"
+                        placeholder={t("select","Select")}
                         label="Select your timezone"
                         labelField="name"
                         valueField="label"
                         options={Timezones}
                         values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
                         dropdownGap={5}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             handleUpdateServerSettings({ timezone: values[0] })
@@ -280,7 +280,7 @@ const Settings = (props) => {
         return (
             <>
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Track Operators</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.trackoperators","Track Operators")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.trackUsers ? serverSettingsState.trackUsers : false}
                         onChange={() => {
@@ -295,7 +295,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Move Lots by Fraction</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.fractionalmove","Move Lots by Fraction")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.fractionMove ? serverSettingsState.fractionMove : false}
                         onChange={() => {
@@ -310,7 +310,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Hide Filters on Mobile</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.hidefilters","Hide Filters on Mobile")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
                         onChange={() => {
@@ -325,7 +325,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Advanced Search Filters</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.advancedfilters","Advanced Search Filters")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
                         onChange={() => {
@@ -340,7 +340,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Custom Lot Display</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.customlotdisplay","Custom Lot Display")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
                         onChange={() => {
@@ -462,14 +462,14 @@ const Settings = (props) => {
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmUnlock(true)}
-                    >Unlock All Dashboards
+                    >{t("Settings.unlockdashboards","Unlock All Dashboards")}
                     </Button>
 
                     <Button
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmLock(true)}
-                    >Lock All Dashboards
+                    >{t("Settings.lockdashboards","Lock All Dashboards")}
                     </Button>
                 </styled.RowContainer>
 
@@ -536,7 +536,7 @@ const Settings = (props) => {
                 <styled.DropdownContainer>
                     <styled.DropdownLabel>{t("Settings.map","Map")}</styled.DropdownLabel>
                     <DropDownSearch
-                        placeholder="Select Map"
+                        placeholder={t("select","Select")}
                         label="Select a map"
                         labelField="name"
                         valueField="_id"
@@ -549,7 +549,7 @@ const Settings = (props) => {
                             else return ind === 0
                         })] : []}
                         dropdownGap={2}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
@@ -619,7 +619,7 @@ const Settings = (props) => {
                         options={Durations}
                         values={!!serverSettingsState.moveAlertDuration ? [Durations.find(d => d.value === serverSettingsState.moveAlertDuration)] : []}
                         dropdownGap={0}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             console.log('dffff', values)
@@ -684,8 +684,8 @@ const Settings = (props) => {
                             :
                             "Are you sure you want to unlock all dashboards?"
                 }
-                button_1_text={"Yes"}
-                button_2_text={"No"}
+                button_1_text={t("yes","Yes")}
+                button_2_text={t("no","No")}
                 handleClose={() => {
                     if (confirmClearMap) setConfirmClearMap(false)
                     else if (confirmLock) setConfirmLock(false)
@@ -751,7 +751,7 @@ const Settings = (props) => {
 
 
             <styled.HeaderContainer>
-              <styled.Label>Dashboard Settings</styled.Label>
+              <styled.Label>{t("Settings.dashboardsettings","Dashboard Settings")}</styled.Label>
             </styled.HeaderContainer>
             {dashboardSettings()}
             {LockUnlockAllDashboards()}
