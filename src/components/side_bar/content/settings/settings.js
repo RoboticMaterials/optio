@@ -363,7 +363,7 @@ const Settings = (props) => {
             <styled.SettingContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
-                    <styled.Label>Show Developer Settings</styled.Label>
+                    <styled.Label>{t("Settings.showdevelopersettings","Show Developer Settings")}</styled.Label>
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
@@ -420,7 +420,7 @@ const Settings = (props) => {
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem', background: 'black', color: 'white' }}
                         schema={"settings"}
                         onClick={() => setConfirmClearMap(true)}
-                    >Clear Map
+                    >{t("Settings.clearmap","Clear Map")}
                     </Button>
 
                     </>
@@ -609,7 +609,7 @@ const Settings = (props) => {
     const renderAlertDurationSetting = () => {
         return (
             <styled.DropdownContainer>
-                <styled.DropdownLabel>Move Alert Duration</styled.DropdownLabel>
+                <styled.DropdownLabel>{t("Settings.movealert","Move Alert Duration")}</styled.DropdownLabel>
                 <div style={{width: '100%', display: 'flex', justifyContent: 'flex-end'}}>
                     <DropDownSearch
                         placeholder="(s)"
@@ -666,7 +666,7 @@ const Settings = (props) => {
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
 
             </styled.SettingContainer>
         )
@@ -677,12 +677,12 @@ const Settings = (props) => {
             <ConfirmDeleteModal
                 isOpen={confirmLock || confirmUnlock || confirmClearMap}
                 title={confirmClearMap ?
-                        'Are you sure you want to clear this map?'
+                        t("Settings.confirmmapclear","Are you sure you want to clear this map?")
                         :
                         confirmLock ?
-                            "Are you sure you want to lock all dashboards?"
+                            t("Settings.confirmdashboardlock","Are you sure you want to lock all dashboards?")
                             :
-                            "Are you sure you want to unlock all dashboards?"
+                            t("Settings.confirmdashboardunlock","Are you sure you want to unlock all dashboards?")
                 }
                 button_1_text={t("yes","Yes")}
                 button_2_text={t("no","No")}

@@ -41,6 +41,13 @@
     "customlotdisplay":"Custom Lot Display",
     "nomatches":"No matches found",
     "unlockdashboards":"Unlock All Dashboards",
-    "lockdashboards":"Lock All Dashboards"
+    "lockdashboards":"Lock All Dashboards",
+    "confirmmapclear":"Are you sure you want to clear this map?",
+    "confirmdashboardunlock":"Are you sure you want to unlock all dashboards?",
+    "confirmdashboardlock":"Are you sure you want to lock all dashboards?",
+    "showdevelopersettings":"Show Developer Settings",
+    "clearmap":"Clear Map",
+    "signout":"Sign Out",
+    "movealert":"Move Alert Duration"
   }
 }

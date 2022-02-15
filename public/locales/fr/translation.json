@@ -40,6 +40,13 @@
      "hidefilters":"Masquer les filtres sur mobile",
      "advancedfilters":"Filtres de recherche avancés",
      "customlotdisplay":"Affichage de lot personnalisé",
-     "nomatches":"Aucune correspondance trouvée"
-   }
+     "nomatches":"Aucune correspondance trouvée",
+     "confirmmapclear":"Voulez-vous vraiment effacer cette carte ?",
+     "confirmdashboardunlock":"Voulez-vous vraiment déverrouiller tous les tableaux de bord ?",
+     "confirmdashboardlock":"Êtes-vous sûr de vouloir verrouiller tous les tableaux de bord ?",
+     "showdevelopersettings":"Afficher les paramètres du développeur",
+     "clearmap":"Effacer la carte",
+     "signout":"Se déconnecter",
+     "movealert":"Durée d'alerte pour l'avancement"
+    }
 }

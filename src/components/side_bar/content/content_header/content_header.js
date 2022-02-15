@@ -11,7 +11,7 @@ import { upperCaseFirstLetterInString } from '../../../../methods/utils/utils'
 import PlusButton from '../../../basic/plus_button/plus_button'
 import Button from '../../../basic/button/button'
 import BackButton from '../../../basic/back_button/back_button'
-import BounceButton from '../../../basic/bounce_button/bounce_button'
+//import BounceButton from '../../../basic/bounce_button/bounce_button'
 
 import { useTranslation } from 'react-i18next';
 
@@ -60,6 +60,10 @@ const ContentHeader = (props) => {
 
         else if (content === 'processes'){
             return t('processes','Processes')
+        }
+
+        else if (content == 'settings'){
+            return t('settings','Settings')
         }
 
         else {
@@ -130,7 +134,7 @@ const ContentHeader = (props) => {
                     <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
                         onClick={onClickSave} disabled={disabled}
                     >
-                        Save
+                        {t("save","Save")}
                     </Button>
                 }
 
