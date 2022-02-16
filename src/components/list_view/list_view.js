@@ -15,7 +15,7 @@ import { ADD_TASK_ALERT_TYPE } from "../../constants/dashboard_constants";
 import TaskAddedAlert from "../../components/widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
-import config from '../../settings/config'
+
 // Import actions
 import {showLotScanModal} from '../../redux/actions/sidebar_actions'
 import {getStationCards, getCards} from '../../redux/actions/card_actions'
@@ -115,11 +115,11 @@ const ListView = (props) => {
     }, [stationID])
 
     useEffect(() => {
-        if(localSettings.currentVersion && localSettings.currentVersion!==config.version){
+        if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
           clearLocalSettings()
           window.location.reload(true)
         }
-    }, [serverSettings, localSettings])
+    }, [serverSettings])
 
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
