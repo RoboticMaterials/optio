@@ -70,7 +70,7 @@ const DashboardLotButtons = (props) => {
               iconClassName={iconClassName}
               onClick={() => {
                 setStartClicked(true)
-                //handleStartClicked()
+                handleStartClicked()
               }}
 
               hoverable={false}
