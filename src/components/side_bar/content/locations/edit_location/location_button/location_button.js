@@ -5,8 +5,10 @@ import { StationTypes } from '../../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../../constants/position_constants'
 
 import Draggable from 'react-draggable';
+import { useTranslation } from 'react-i18next';
 
 const LocationButton = (props) => {
+    const { t, i18n } = useTranslation();
 
     const {
         type,
@@ -33,8 +35,10 @@ const LocationButton = (props) => {
             string = 'cart'
         } else if (string === 'shelf_position') {
             string = 'shelf'
+        } else if (string === 'warehouse'){
+            string = t("warehouse","Supermarket")
         } else if (string === 'human') {
-            string = 'Work Station'
+            string = t("workstation","Work Station")
         } else if (string === 'charger_position') {
             string = 'Charger'
         }
@@ -47,7 +51,7 @@ const LocationButton = (props) => {
     function handleDrag(e, ui) {
         setX(x + ui.deltaX)
         setY(y + ui.deltaY)
-    }
+    }type
 
     const handleDragStop = () => {
         setX(0)
