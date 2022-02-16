@@ -14,7 +14,7 @@ import * as styled from "./splash_screen.style"
 import logger from '../../../logger.js';
 import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
 import {postSettings} from '../../../redux/actions/settings_actions'
-
+import config from '../../../settings/config'
 
 const ToggleMapViewSwitch = (props) => {
     const {
@@ -68,7 +68,6 @@ const SplashScreen = (props) => {
      * Submit API address to local storage
      */
     const handleSubmitApiIpAddress = async () => {
-        console.log("submitting")
 
         const localSettingsPromise = dispatchGetLocalSettings()
         localSettingsPromise.then(response => {

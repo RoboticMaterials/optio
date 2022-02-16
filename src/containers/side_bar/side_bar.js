@@ -136,7 +136,7 @@ const SideBar = (props) => {
           clearLocalSettings()
           window.location.reload(true)
         }
-    }, [serverSettings])
+    }, [serverSettings, localSettings])
 
      useEffect(() => {
           document.addEventListener('keyup', logKey)
