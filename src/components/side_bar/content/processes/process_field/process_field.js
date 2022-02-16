@@ -30,7 +30,12 @@ import useChange from "../../../../basic/form/useChange";
 // styles
 import * as styled from './process_field.style'
 import {ThemeContext} from "styled-components";
+import { useTranslation } from 'react-i18next';
+
 export const ProcessField = (props) => {
+
+    const { t, i18n } = useTranslation();
+
     const {
         formikProps,
         onDelete,
@@ -140,9 +145,9 @@ export const ProcessField = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmExitModal}
-                title={"Are you sure you want to go back? Any progress will not be saved"}
-                button_1_text={"Yes"}
-                button_2_text={"No"}
+                title={t("backwarning","Are you sure you want to go back? Any progress will not be saved")}
+                button_1_text={t("yes","Yes")}
+                button_2_text={t("no","No")}
                 handleClose={() => setConfirmExitModal(null)}
                 handleOnClick1={() => {
                     onBack()
@@ -154,9 +159,9 @@ export const ProcessField = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
-                title={"WARNING! All lots currently in this process will be permanently deleted. Are you sure you want to delete this process?"}
-                button_1_text={"Yes"}
-                button_2_text={"No"}
+                title={t("Editproc.deletewarning","WARNING! All lots currently in this process will be permanently deleted. Are you sure you want to delete this process?")}
+                button_1_text={t("yes","Yes")}
+                button_2_text={t("no","No")}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
                     onDelete(true)
@@ -187,10 +192,10 @@ export const ProcessField = (props) => {
                 </div>
 
                 <div >
-                    <styled.Title schema={'default'}>Process Name</styled.Title>
+                    <styled.Title schema={'default'}>{t("Editproc.name","Process Name")}</styled.Title>
                     <TextField
                         focus={!values.name}
-                        placeholder='Process Name'
+                        placeholder={t("Editproc.name","Process Name")}
                         defaultValue={values.name}
                         schema={'processes'}
                         name={`name`}
@@ -229,10 +234,10 @@ export const ProcessField = (props) => {
                     </div>
                 }
 
-                <styled.Title schema={'processes'} style={{ marginTop: "2rem", marginBottom: "1rem" }}>Routes</styled.Title>
+                <styled.Title schema={'processes'} style={{ marginTop: "2rem", marginBottom: "1rem" }}>{t("routes","Routes")}</styled.Title>
                 {selectedTask === null &&
                     <>
-                        <styled.HelpText>Click a station on the map to start a route</styled.HelpText>
+                        <styled.HelpText>{t("Editproc.clickstation","Click a station on the map to start a route")}</styled.HelpText>
                         {typeof errors.routes === 'string' &&
                             <styled.ErrorText>{errors.routes}</styled.ErrorText>
                         }
@@ -258,7 +263,7 @@ export const ProcessField = (props) => {
                                       onSave(values, true)
                                   }}
                               >
-                                  Save Process
+                                  {t("save","Save")}
                               </Button>
 
                               <Button
@@ -269,7 +274,7 @@ export const ProcessField = (props) => {
                                       setConfirmDeleteModal(true)
                                   }}
                               >
-                                  Delete Process
+                                  {t("delete","Delete")}
                               </Button>
                           </styled.ColumnContainer>
                       </styled.ContentContainer>

@@ -18,6 +18,13 @@
   "delete":"Effacer",
   "workstation":"Poste de travail",
   "warehouse":"Supermarché",
+  "backwarning":"Êtes-vous sûr de vouloir revenir en arrière ? La progression ne sera pas enregistrée",
+  "Throughput":"Débit",
+  "Production Rate": "Taux de production",
+  "Work in Process":"Travail en cours (WIP)",
+  "Lead Time":"Délai de livraison",
+  "Line Balance":"Équilibre de la ligne",
+  "cumulative":"Cumulatif",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",
@@ -56,9 +63,21 @@
       "cannotdeletewarning":"Les nouvelles stations ne peuvent pas être supprimées.",
       "processwarning": "Cette station est utilisée dans le processus \"{{processname}}\". Si vous souhaitez supprimer cette station, supprimez-la du processus ou supprimez le processus.",
       "deletewarning":"ATTENTION ! Toutes les données historiques de cet emplacement seront également supprimées. Voulez-vous vraiment supprimer cet emplacement ?",
-      "backwarning":"Êtes-vous sûr de vouloir revenir en arrière ? La progression ne sera pas enregistrée",
       "name":"Nom de l'emplacement",
       "entername":"Entrez le nom de l'emplacement",
       "type":"Type d'emplacement"  
+    },
+    "Editproc":{
+      "name":"Nom du processus",
+      "deletewarning":"ATTENTION ! Tous les lots actuellement dans ce processus seront définitivement supprimés. Êtes-vous sûr de vouloir supprimer ce processus ?",
+      "clickstation":"Cliquez sur une station sur la carte pour commencer un itinéraire"
+    },
+    "Statistics":{
+       "totalThroughput": "Le débit est la quantité totale de produits qui ont été finis dans la plage de dates donnée. Les produits finis incluent les produits qui ont été déplacés dans la colonne fini ou dans un supermarché sans itinéraires de sortie.",
+       "productionRate": "Le taux de production est la quantité de produit qui est produite par seconde. Il est représenté ici par son inverse, le temps moyen nécessaire pour fabriquer un seul produit sur la plage de dates donnée, en tenant compte des paramètres d'équipe.",
+       "wip": "Work-In-Process (WIP) est le nombre moyen de produits qui ont été à n'importe quelle station du processus pendant la plage de dates donnée.",
+       "leadTime": "Le délai de livraison est le temps qu'il faut pour produire un seul produit à partir du moment où il entre dans le processus de production jusqu'au moment où il atteint la file d'attente de finition. Il est donné par le taux de production multiplié par le travail en cours. Le temps est exprimé en jours ouvrables, sans tenir compte des week-ends.",
+       "balance": "L'équilibrage de ligne est l'art d'équilibrer les temps de cycle de chaque station du processus afin de réduire la quantité de WIP et le délai d'approvisionnement. Votre taux de production est donné par la station la plus lente, indiquée par la 'ligne de goulot d'étranglement'. Takt time est le temps de cycle souhaité pour chaque station du processus. Faites glisser la ligne \"Takt\" dans le graphique pour modifier votre taux de production cible pour toutes les stations de ce processus.",
+       "throughput": "Débit au fil du temps dans la plage de dates donnée. \"Cumulatif\" affiche le débit total sur la plage de dates donnée."
     }
 }
