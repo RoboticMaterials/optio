@@ -51,6 +51,17 @@
   "Sign in":"Sign in",
   "Previous Operators":"Previous Operators",
   "Continue":"Continue",
+  "Sort":"Sort",
+  "Filter":"Filter",
+  "Queue":"Queue",
+  "Finish":"Finish",
+  "Add New Lot":"Add New Lot",
+  "Editing Lot":"Editing Lot",
+  "Creating Lot":"Creating Lot",
+  "Editing Template":"Editing Template",
+  "Import Lots":"Import Lots",
+  "Validate Lots":"Validate Lots",
+  "Lot History":"Lot History",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
     "lockmessage":"All Dashboards have been successfully locked!",
@@ -84,7 +95,9 @@
     "clearmap":"Clear Map",
     "signout":"Sign Out",
     "movealert":"Move Alert Duration",
-    "filterlots":"Filter lots..."
+    "filterlots":"Filter lots...",
+    "Lots at the current station":"Lots at the current station",
+    "Parts at the current station":"Parts at the current station"
   },
   "Editloc":{
     "cannotdeletewarning":"New Stations cannot be deleted.",
@@ -131,5 +144,18 @@
     "unlockmsg":"Click to unlock the dashboard. This will show the \"X\" button on the dashsboard screen when in mobile mode",
     "locksuccess":"Dashboard has been successfully unlocked!",
     "unlocksuccess":"Dashboard has been successfully locked!"
+  },
+  "Sortkey":{
+    "alpha":"Alphabetical",
+    "datedes":"Created Date (Newest -> Oldest)",
+    "dateasc":"Created Date (Oldest -> Newest)",
+    "editdes":"Last Edited Date (Newest -> Oldest)",
+    "editasc":"Last Edited Date (Oldest -> Newest)"
+  },
+  "Import":{
+    "file": "Are you sure you want to import this file?",
+    "paste":"A paste event was detected. Would you like to use pasted data to create lots?",
+    "importevt":"Import Event Detected",
+    "pastevt":"Paste Event Detected"
+  }                    
   }
-}
