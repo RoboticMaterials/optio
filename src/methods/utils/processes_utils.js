@@ -531,6 +531,8 @@ export const findProcessEndNodes = (routes) => {
  * @param {ID} stationId
  */
 export const handleMergeExpression = (stationId, process, routes, stations, clean=true) => {
+    if (!process) return []
+
     const processRoutes = process.routes.map((routeId) => routes[routeId]);
 
     const recursivePrint = (exp) => {
