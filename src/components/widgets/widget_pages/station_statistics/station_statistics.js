@@ -30,11 +30,12 @@ import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils';
 import { convertHHMMSSStringToSeconds, convertSecondsToHHMMSS, secondsToReadable } from '../../../../methods/utils/time_utils';
 import ReactTooltip from 'react-tooltip';
 
-import descriptions from './descriptions'
 import TimePicker from 'rc-time-picker';
 import Portal from '../../../../higher_order_components/portal';
 import { putStation } from '../../../../redux/actions/stations_actions';
 import { getLotTemplates } from '../../../../redux/actions/lot_template_actions';
+
+import { useTranslation } from 'react-i18next';
 
 const emptyData = {
     partials: {}, 
@@ -254,6 +255,8 @@ const OEETick = (props) => {
 
 const StatisticsPage = () => {
 
+    const { t, i18n } = useTranslation();
+
     const params = useParams()
     const stationId = params.stationID
 
@@ -377,19 +380,19 @@ const StatisticsPage = () => {
                         onClick={() => setShowWIPChart(false)}
                         selected={!showWIPChart}
                     >
-                        Throughput
+                        {t("Throughput")}
                     </styled.DualSelectionButton>
                     <styled.DualSelectionButton activeColor={defaultColors[0]} style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                         onClick={() => setShowWIPChart(true)}
                         selected={showWIPChart}
                     >
-                        WIP
+                        {t("WIP")}
                     </styled.DualSelectionButton>
                 </styled.DualSelectionButtonContainer>
                 {!showWIPChart &&
                     <>
                         <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
-                        <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
+                        <styled.CheckboxLabel>{t("cumulative")}</styled.CheckboxLabel>
                     </>
                 }
             </div>
@@ -401,7 +404,7 @@ const StatisticsPage = () => {
         // This needs to be in a memo, otherwise the tooltip will close
 
         if (!data) return <ScaleLoader />
-        else if (!Object.values(data.partials).length) return <styled.NoData>No Data</styled.NoData>
+        else if (!Object.values(data.partials).length) return <styled.NoData>{t("nodata","No Data")}</styled.NoData>
         else {
             var weighted_sum = 0;
             var labelsMap = {}
@@ -493,7 +496,7 @@ const StatisticsPage = () => {
         // This needs to be in a memo, otherwise the tooltip will close when the time picker is clicked
 
         if (!data) return <ScaleLoader />
-        else if (!Object.values(data.partials).length) return <styled.NoData>No Data</styled.NoData>
+        else if (!Object.values(data.partials).length) return <styled.NoData>{t("nodata","No Data")}</styled.NoData>
         else {
             var weighted_sum = 0;
             var labelsMap = {}
@@ -556,10 +559,10 @@ const StatisticsPage = () => {
 
     const renderHeader = (label, stat) => (
         <styled.CardHeader>
-            <styled.CardLabel>{label}</styled.CardLabel>
+            <styled.CardLabel>{t(label)}</styled.CardLabel>
             <styled.TooltipIcon className="fas fa-info"  data-tip data-for={`${stat}-tooltip`} />
             <ReactTooltip id={`${stat}-tooltip`} {...tooltipProps}>
-                <styled.Tooltip dangerouslySetInnerHTML={{__html:descriptions[stat]}}></styled.Tooltip>
+                <styled.Tooltip dangerouslySetInnerHTML={{__html:t("Stationstats." + stat)}}></styled.Tooltip>
             </ReactTooltip>
         </styled.CardHeader>
     )
@@ -647,7 +650,7 @@ const StatisticsPage = () => {
                                                     />
                                                 </div>
                                                 :
-                                                <styled.NoData style={{height: '10rem'}}>Not Enough Data</styled.NoData>
+                                                <styled.NoData style={{height: '10rem'}}>{t("Not Enough Data")}</styled.NoData>
                                         }
                                         {
                                             !!!!cycleTimePG && !!data.cycle_time[cycleTimePG] && !!data.cycle_time[cycleTimePG].average &&
@@ -675,11 +678,11 @@ const StatisticsPage = () => {
                                 showWIPChart ? 
                                     data.wip.length > 0 ? 
                                         <Line data={data.wip.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)}/> 
-                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                        : <styled.NoData>{t("Not Enough Data")}</styled.NoData>
                                     :
                                     throughputData.length > 1 ? 
                                         <Line data={throughputData.filter(line => line.data.length>0)} showLegend={true} xFormat={v => !!dateRange[1] ? new Date(v).toLocaleDateString("en-US") : formatTimeString(v)} curve={isCumulative ? "monotoneX" : "linear"}/> 
-                                        : <styled.NoData>Not Enough Data</styled.NoData>
+                                        : <styled.NoData>{t("Not Enough Data")}</styled.NoData>
                                 :
                                 <ScaleLoader />
                             }
@@ -694,7 +697,7 @@ const StatisticsPage = () => {
                             {!!data ?
                                 !!data.reports.data && data.reports.data.length ?
                                     <Bar data={data.reports.data} keys={Object.keys(data.reports.key_colors)} colors={Object.values(data.reports.key_colors)}/>
-                                    : <styled.NoData>No Data</styled.NoData>
+                                    : <styled.NoData>{t("nodata","No Data")}</styled.NoData>
                                 :
                                 <ScaleLoader />
                             }
@@ -708,20 +711,20 @@ const StatisticsPage = () => {
                             {!!data ?
                                 <>
                                     <styled.PieContainer>
-                                        <Pie data={data.reports_pie} label="Station Reports" stat="stationReportsPie" description={descriptions.stationReportsPie}/>
+                                        <Pie data={data.reports_pie} label={t("Station Reports")} stat="stationReportsPie" description={t("Stationstats.stationReportsPie")}/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.process_pie} label="Processes" stat="processesPie" description={descriptions.processesPie}/>
+                                        <Pie data={data.process_pie} label={t("Processes")} stat="processesPie" description={t("Stationstats.processesPie")}/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.product_group_pie} label="Product Groups" stat="productGroupPie" description={descriptions.productGroupPie}/>
+                                        <Pie data={data.product_group_pie} label={t("Product Groups")} stat="productGroupPie" description={t("Stationstats.productGroupPie")}/>
                                     </styled.PieContainer>
                                     <styled.PieContainer>
-                                        <Pie data={data.operator_pie} label="Operators" stat="operatorsPie" description={descriptions.operatorsPie}/>
+                                        <Pie data={data.operator_pie} label={t("Operators")} stat="operatorsPie" description={t("Stationstats.operatorsPie")}/>
                                     </styled.PieContainer>
                                     {data.out_station_pie.length > 1 &&
                                         <styled.PieContainer>
-                                            <Pie data={data.out_station_pie} label="To Station" stat="toStationPie" description={descriptions.toStationPie}/>
+                                            <Pie data={data.out_station_pie} label={t("To Station")} stat="toStationPie" description={t("Stationstats.toStationPie")}/>
                                         </styled.PieContainer>
                                     }
                                 </> :
@@ -738,7 +741,7 @@ const StatisticsPage = () => {
                         {!!data ?
                             !!data.machine_utilization && Object.keys(data.machine_utilization).length ?
                                 <Scale data={[data.machine_utilization]} labels={['working', 'idle']} valueFormat={v => secondsToReadable(v)}/>
-                                : <styled.NoData>No Data</styled.NoData>
+                                : <styled.NoData>{t("nodata","No Data")}</styled.NoData>
                             :
                             <ScaleLoader />
                         }
@@ -750,7 +753,7 @@ const StatisticsPage = () => {
                         {!!data ?
                             !!data.value_creating_time && Object.keys(data.value_creating_time).length ?
                                 <Scale data={[data.value_creating_time]} labels={['working', 'idle']} valueFormat={v => secondsToReadable(v)}/>
-                                : <styled.NoData>No Data</styled.NoData>
+                                : <styled.NoData>{t("nodata","No Data")}</styled.NoData>
                             :
                             <ScaleLoader />
                         }
