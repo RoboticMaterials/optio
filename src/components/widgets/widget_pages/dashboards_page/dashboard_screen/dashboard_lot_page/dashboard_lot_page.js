@@ -680,11 +680,11 @@ const DashboardLotPage = (props) => {
       <div style={{width: '100%', marginTop: '0.5rem', display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap'}}>
         <styled.TimerBlock>
           <styled.TimerValue style={{color: workingTime <= compareTimerValue ? '#6ab076' : '#ff6363'}}>{!!openTouchEvent ? secondsToReadable(workingTime) : 'None'}</styled.TimerValue>
-          <styled.TimerDescription>Active Working Time</styled.TimerDescription>
+          <styled.TimerDescription>{t("Active Working Time")}</styled.TimerDescription>
         </styled.TimerBlock>
         <styled.TimerBlock>
           <styled.TimerValue>{secondsToReadable(compareTimerValue)}</styled.TimerValue>
-          <styled.TimerDescription>Expected Cycle Time</styled.TimerDescription>
+          <styled.TimerDescription>{t("Expected Cycle Time")}</styled.TimerDescription>
         </styled.TimerBlock>
         {/* <styled.TimerBlock>
           <styled.TimerValue>{secondsToReadable(compareTimerValue)}</styled.TimerValue>

@@ -30,10 +30,14 @@ import { getNodeIncoming, getNodeOutgoing, isNodeStartWarehouse } from '../../..
 import * as styled from './dashboards_header.style';
 import { ThemeContext } from 'styled-components'
 
+import { useTranslation } from 'react-i18next';
+
 const widthBreakPoint = 1000;
 const phoneViewBreakPoint = 500;
 
 const DashboardsHeader = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         showBackButton,
@@ -258,9 +262,9 @@ const DashboardsHeader = (props) => {
                     >
                         <ReactTooltip id={toolTipId}>
                             {!currentDashboard.locked ?
-                                <styled.LockContainer>Click to lock the dashboard. This will hide the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                                <styled.LockContainer>{t("Dashboard.lockmsg","Click to lock the dashboard. This will hide the \"X\" button on the dashsboard screen when in mobile mode")}</styled.LockContainer>
                                 :
-                                <styled.LockContainer>Click to unlock the dashboard. This will show the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                                <styled.LockContainer>{t("Dashboard.unlockmsg","Click to unlock the dashboard. This will show the \"X\" button on the dashsboard screen when in mobile mode")}</styled.LockContainer>
                             }
 
                         </ReactTooltip>

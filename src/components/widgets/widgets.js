@@ -21,10 +21,15 @@ import { deepCopy } from '../../methods/utils/utils'
 import * as styled from './widgets.style'
 import { connect } from 'formik';
 
+import { useTranslation } from 'react-i18next';
+
 const WidgetPages = lazy(() => import('./widget_pages/widget_pages'))
 const WidgetButton = lazy(() => import('./widget_button/widget_button'))
 
 const Widgets = (props) => {
+
+    const { t, i18n } = useTranslation();
+
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1000;
@@ -151,7 +156,7 @@ const Widgets = (props) => {
                         <WidgetButton
                             id={stationID}
                             type={'dashboards'}
-                            label={'Dashboards'}
+                            label={t('dashboards')}
                             currentPage={widgetPage}
                             switcher={!!widgetPage}
                         />
@@ -160,7 +165,7 @@ const Widgets = (props) => {
                           <WidgetButton
                               id={stationID}
                               type={'statistics'}
-                              label={'Statistics'}
+                              label={t('statistics')}
                               currentPage={widgetPage}
                               switcher={!!widgetPage}
                           />

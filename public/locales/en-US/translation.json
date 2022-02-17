@@ -31,8 +31,10 @@
   "Go back":"Go back",
   "Start":"Start",
   "Lot Moved":"Lot Moved",
-
+  "dashboards":"Dashboards",  
   "taskqueue":"Task Queue",
+  "Active Working Time":"Active Working Time",
+  "Expected Cycle Time":"Expected Cycle Time",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
     "lockmessage":"All Dashboards have been successfully locked!",
@@ -65,7 +67,8 @@
     "showdevelopersettings":"Show Developer Settings",
     "clearmap":"Clear Map",
     "signout":"Sign Out",
-    "movealert":"Move Alert Duration"
+    "movealert":"Move Alert Duration",
+    "filterlots":"Filter lots..."
   },
   "Editloc":{
     "cannotdeletewarning":"New Stations cannot be deleted.",
@@ -107,6 +110,10 @@
   "Dashboard":{
     "lotsplit" : "{{quantity}} parts of {{name}} have been split between {{stations}}",
     "lotmove" : "{{quantity}} parts from {{name}} have been moved to {{station}}",
-    "unmergemsg": "Are you sure you want to unmerge {{name1}} from {{name2}}?"
+    "unmergemsg": "Are you sure you want to unmerge {{name1}} from {{name2}}?",
+    "lockmsg":"Click to lock the dashboard. This will hide the \"X\" button on the dashsboard screen when in mobile mode",
+    "unlockmsg":"Click to unlock the dashboard. This will show the \"X\" button on the dashsboard screen when in mobile mode",
+    "locksuccess":"Dashboard has been successfully unlocked!",
+    "unlocksuccess":"Dashboard has been successfully locked!"
   }
 }

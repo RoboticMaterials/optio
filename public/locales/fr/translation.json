@@ -42,6 +42,10 @@
    "Go back":"Retourner",
    "Start":"Commencer",
    "Lot Moved":"Lot déplacé",
+   "dashboards":"Tableaux",
+   "Active Working Time":"Temps de travail actif",
+   "Expected Cycle Time":"Temps de cycle attendu",
+   "filterlots":"Filtrer les lots...",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",
@@ -116,6 +120,10 @@
     "Dashboard":{
       "lotsplit": "{{quantity}} pièces de {{name}} ont été réparties entre {{stations}}",
       "lotmove": "{{quantity}} pièces de {{name}} ont été avancées vers {{station}}",
-      "unmergemsg": "Êtes-vous sûr de vouloir dissocier {{name1}} de {{name2}}?"
+      "unmergemsg": "Êtes-vous sûr de vouloir dissocier {{name1}} de {{name2}}?",
+      "lockmsg":"Cliquez pour verrouiller le tableau de bord. Cela masquera le bouton \"X\" sur l'écran du tableau de bord en mode mobile",
+      "unlockmsg":"Cliquez pour déverrouiller le tableau de bord. Cela affichera le bouton \"X\" sur l'écran du tableau de bord en mode mobile",
+      "locksuccess":"Le tableau de bord a été déverrouillé avec succès !",
+      "unlocksuccess":"Le tableau de bord a été verrouillé avec succès !"
     }
 }
