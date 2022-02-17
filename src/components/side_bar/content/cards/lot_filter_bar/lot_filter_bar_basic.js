@@ -142,7 +142,7 @@ const LotFilterBarBasic = (props) => {
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
             >
-                Filter
+                {t("Filter")}
             </styled.Description>
 
             {/* only show content when open */}

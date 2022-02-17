@@ -263,7 +263,7 @@ const DashboardScreen = (props) => {
                             // set alert
                             setAddTaskAlert({
                                 type: success ? ADD_TASK_ALERT_TYPE.REPORT_SEND_SUCCESS : ADD_TASK_ALERT_TYPE.REPORT_SEND_FAILURE,
-                                label: success ? "Report Sent" : "Failed to Send Report",
+                                label: success ? t("Report Sent") : t("Failed to Send Report"),
                                 message: name ? `"` + name + `"` : null
                             })
 
@@ -287,7 +287,7 @@ const DashboardScreen = (props) => {
                             // set alert
                             setAddTaskAlert({
                                 type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
-                                label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
+                                label: success ? t("Lot Kick Off Successful") : t("Lot Kick Off Failed"),
                                 message: message
                             })
 
@@ -378,7 +378,7 @@ const DashboardScreen = (props) => {
                     alignItems: 'center'
                 }}>
                     {!isMobile &&
-                        <style.Text>{user === null ? `Sign In` : `Operator: ${user}`} </style.Text>
+                        <style.Text>{user === null ? t("Sign In") : `Operator: ${user}`} </style.Text>
                     }
                     <Button
                         color={"white"}
