@@ -127,6 +127,7 @@ const Cards = (props) => {
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.maxHeight = '1px'
+          fieldDiv.style.paddingTop = '1px'
   		}
 
   	}, [dragIndex, clientY, clientX])
@@ -646,7 +647,7 @@ const Cards = (props) => {
                 offset = {{top: 70, left: 95}}
                 backgroundColor = '#FFFFFF'
                 textColor = '#363636'
-                border = 'true'
+                border = {true}
                 >
                 <styled.LotCount>Number of </styled.LotCount>
                 <styled.LotCount style = {{color: '#924dff'}}>lots </styled.LotCount>
@@ -668,7 +669,7 @@ const Cards = (props) => {
                   offset = {{top: 70, left: 95}}
                   backgroundColor = '#FFFFFF'
                   textColor = '#363636'
-                  border = 'true'
+                  border = {true}
                   >
                   <styled.LotCount>Number of </styled.LotCount>
                   <styled.LotCount style = {{color: '#924dff'}}>parts </styled.LotCount>
@@ -894,7 +895,7 @@ const Cards = (props) => {
                                 enableFlagSelector={true}
                                 totalQuantity={card.totalQuantity}
                                 lotNumber={card.lotNum}
-                                name={isPartial ? card.name + ` (${routes[part]?.part})` : card.name}
+                                name={isPartial ? card.name? card.name + ` (${routes[part]?.name})` : card.lotNum + ` (${routes[part]?.name})` : card.name ? card.name : card.lotNum}
                                 count={isPartial ? partBins[part] : partBins['count']}
                                 lotId={card._id}
                                 leadTime = {card.leadTime}
@@ -908,8 +909,9 @@ const Cards = (props) => {
                                   boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
                                   borderRadius: '0.2rem',
                                   padding: '0.2rem',
-                                  margin: '.4rem',
-                                  width: '22rem',
+                                  margin: '.5rem',
+                                  width: '21.1rem',
+                                  maxWidth: '21.1rem',
                                   pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                                 }}
                                 onClick = {()=>{

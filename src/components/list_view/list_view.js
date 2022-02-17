@@ -22,7 +22,7 @@ import {getStationCards, getCards} from '../../redux/actions/card_actions'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
-
+import {clearLocalSettings} from '../../api/local_api'
 // styles
 import * as styled from "./list_view.style"
 
@@ -74,6 +74,9 @@ const ListView = (props) => {
     const settings = useSelector(state => state.settingsReducer.settings)
     const showScanLotModal = useSelector(state => state.sidebarReducer.showLotScanModal)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+
     const cardsRef = useRef(cards)
     cardsRef.current = cards
     const deviceEnabled = settings.deviceEnabled
@@ -85,7 +88,6 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [locked, setLocked] = useState(null);
-
     const [barcode, setBarcode] = useState([])
     const [full, setFull] = useState('')
     const [lotNum, setLotNum] = useState('')
@@ -112,6 +114,12 @@ const ListView = (props) => {
 
     }, [stationID])
 
+    useEffect(() => {
+        if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
+          clearLocalSettings()
+          window.location.reload(true)
+        }
+    }, [serverSettings])
 
     useEffect(() => {
         Object.values(dashboards).forEach((dashboard) => {
