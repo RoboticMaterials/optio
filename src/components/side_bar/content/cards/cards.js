@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef, useContext, memo, useCallback, useMemo, lazy, Suspense} from 'react';
 import VisibilitySensor from 'react-visibility-sensor'
+import ScaleLoader from 'react-spinners/ScaleLoader'
 
 import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
@@ -689,20 +690,21 @@ const Cards = (props) => {
     }
 
     const renderCards = (stationId) => {
+
       if(orderedIds && cards && orderedIds[id] && orderedIds[id][stationId] && orderedIds[id][stationId].length>0){
         let ids = orderedIds
         return(
           ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
-              let partBins = card?.bins[stationId] || {}
-              if(Object.values(partBins).length === 1){
-                return (
-                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
-                    {({isVisible}) =>
-                      <>
-                        {!!isVisible || draggingLotId === card._id?
-                          <styled.CardContainer
+            let partBins = card?.bins[stationId] || {}
 
+            if(Object.values(partBins).length === 1){
+              return (
+                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
+                    {({isVisible}) => 
+                      <>
+                        {isVisible || draggingLotId === card._id ?
+                          <styled.CardContainer
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
@@ -805,7 +807,7 @@ const Cards = (props) => {
                             }
                           </styled.CardContainer>
                           :
-                          <div style = {{width: '100%', minHeight:'20rem'}}>...Loading</div>
+                          <div style = {{minHeight:'12rem', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #ddd', borderRadius: '0.4rem', margin: '0.5rem 1rem'}}><ScaleLoader color={'#ccc'}/></div>
                         }
                       </>
                     }

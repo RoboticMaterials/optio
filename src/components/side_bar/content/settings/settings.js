@@ -664,10 +664,11 @@ const Settings = (props) => {
             window.location.reload();
 
         }
+        console.log(config)
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
+                {config?.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
 
             </styled.SettingContainer>
         )
