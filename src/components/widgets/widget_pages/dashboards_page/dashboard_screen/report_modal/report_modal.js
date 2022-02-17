@@ -32,6 +32,8 @@ import {ThemeContext} from "styled-components";
 import ScrollContainer from "../../../../../basic/scroll_container/scroll_container";
 import useWindowSize from '../../../../../../hooks/useWindowSize'
 
+import { useTranslation } from 'react-i18next';
+
 import * as emailjs from 'emailjs-com'
 import {init} from 'emailjs-com'
 init('user_nlG7klXmPKmiIS9WsYj6J')
@@ -39,6 +41,8 @@ init('user_nlG7klXmPKmiIS9WsYj6J')
 Modal.setAppElement('body');
 
 const ReportModal = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         isOpen,
@@ -206,7 +210,7 @@ const ReportModal = (props) => {
             }}
         >
             <styled.Header>
-                <styled.Title>{editing ? "Edit Report" : "Send Report"}</styled.Title>
+                <styled.Title>{editing ? t("Edit Report") : t("Send Report")}</styled.Title>
 
                 <Button
                     onClick={close}
@@ -237,7 +241,7 @@ const ReportModal = (props) => {
                                 showBorder={!noButtons}
                             >
                                 <ReportButton
-                                    label={"Add Report Button"}
+                                    label={t("Add Report Button")}
                                     invert={true}
                                     iconClassName={null}
                                     color={theme.schema.report.solid}

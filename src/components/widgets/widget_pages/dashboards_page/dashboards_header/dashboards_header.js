@@ -188,7 +188,7 @@ const DashboardsHeader = (props) => {
 
                         }}
                     >
-                        Report
+                        {t("report")}
                         {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
                     </Button>
                     {!!stationBasedLots && !mobileMode && !history.location.pathname.includes('lots') &&
