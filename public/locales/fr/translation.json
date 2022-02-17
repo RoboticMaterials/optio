@@ -18,7 +18,7 @@
   "delete":"Effacer",
   "workstation":"Poste de travail",
   "warehouse":"Supermarché",
-  "backwarning":"Êtes-vous sûr de vouloir revenir en arrière ? La progression ne sera pas enregistrée",
+  "backwarning":"Êtes-vous sûr de vouloir revenir en arrière ? La progression ne sera pas enregistrée",
   "Throughput":"Débit",
   "Production Rate": "Taux de production",
   "Work in Process":"Travail en cours (WIP)",
@@ -41,11 +41,12 @@
    "Finish Quantity":"Finir par montant",
    "Go back":"Retourner",
    "Start":"Commencer",
+   "Lot Moved":"Lot déplacé",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",
-     "unlockmessage":"Tous les tableaux de bord ont été déverrouillés avec succès !",
-     "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !",
+     "unlockmessage":"Tous les tableaux de bord ont été déverrouillés avec succès !",
+     "lockmessage":"Tous les tableaux de bord ont été verrouillés avec succès !",
      "contactname":"Nom du contact",
      "emailaddress":"Adresse e-mail",
      "map":"Carte",
@@ -67,9 +68,9 @@
      "advancedfilters":"Filtres de recherche avancés",
      "customlotdisplay":"Affichage de lot personnalisé",
      "nomatches":"Aucune correspondance trouvée",
-     "confirmmapclear":"Voulez-vous vraiment effacer cette carte ?",
-     "confirmdashboardunlock":"Voulez-vous vraiment déverrouiller tous les tableaux de bord ?",
-     "confirmdashboardlock":"Êtes-vous sûr de vouloir verrouiller tous les tableaux de bord ?",
+     "confirmmapclear":"Voulez-vous vraiment effacer cette carte ?",
+     "confirmdashboardunlock":"Voulez-vous vraiment déverrouiller tous les tableaux de bord ?",
+     "confirmdashboardlock":"Êtes-vous sûr de vouloir verrouiller tous les tableaux de bord ?",
      "showdevelopersettings":"Afficher les paramètres du développeur",
      "clearmap":"Effacer la carte",
      "signout":"Se déconnecter",
@@ -78,14 +79,14 @@
     "Editloc":{
       "cannotdeletewarning":"Les nouvelles stations ne peuvent pas être supprimées.",
       "processwarning": "Cette station est utilisée dans le processus \"{{processname}}\". Si vous souhaitez supprimer cette station, supprimez-la du processus ou supprimez le processus.",
-      "deletewarning":"ATTENTION ! Toutes les données historiques de cet emplacement seront également supprimées. Voulez-vous vraiment supprimer cet emplacement ?",
+      "deletewarning":"ATTENTION ! Toutes les données historiques de cet emplacement seront également supprimées. Voulez-vous vraiment supprimer cet emplacement ?",
       "name":"Nom de l'emplacement",
       "entername":"Entrez le nom de l'emplacement",
       "type":"Type d'emplacement"  
     },
     "Editproc":{
       "name":"Nom du processus",
-      "deletewarning":"ATTENTION ! Tous les lots actuellement dans ce processus seront définitivement supprimés. Êtes-vous sûr de vouloir supprimer ce processus ?",
+      "deletewarning":"ATTENTION ! Tous les lots actuellement dans ce processus seront définitivement supprimés. Êtes-vous sûr de vouloir supprimer ce processus ?",
       "clickstation":"Cliquez sur une station sur la carte pour commencer un itinéraire"
     },
     "Statistics":{
@@ -109,7 +110,12 @@
        "productGroupPie": "Une répartition de la quantité de pièces traités par groupe de produits auquel elles appartenaient.",
        "operatorsPie": "Une répartition de la quantité de pièces traités par l'opérateur qui les a traité.",
        "toStationPie": "Une répartition de la quantité de pièces traités par l'emplacement vers laquelle elles ont été déplacées.",
-       "machineUtilization": "Une mesure de l'utilisation de cet emplacement : le rapport entre le nombre total de secondes de travail à cet emplacement et le nombre total de secondes de travail disponibles, basé sur les paramètres d'équipe définis dans l'onglet des paramètres. Le nombre total de secondes de travail est calculé en fonction de la temps qu'un travailleur était actif dans un lot (par rapport à la liste des lots à l'emplacement).",
+       "machineUtilization": "Une mesure de l'utilisation de cet emplacement: le rapport entre le nombre total de secondes de travail à cet emplacement et le nombre total de secondes de travail disponibles, basé sur les paramètres d'équipe définis dans l'onglet des paramètres. Le nombre total de secondes de travail est calculé en fonction de la temps qu'un travailleur était actif dans un lot (par rapport à la liste des lots à l'emplacement).",
        "valueCreatingTime": "Une mesure du temps relatif pendant lequel un lot a été activement travaillé par rapport au temps qu'il a passé inactif à cet emplacement. Les secondes de travail actives de ce lot sont basées sur le temps qu'un travailleur a été actif dans un lot (versus regarder la liste des lots au emplacement)."
+    },
+    "Dashboard":{
+      "lotsplit": "{{quantity}} pièces de {{name}} ont été réparties entre {{stations}}",
+      "lotmove": "{{quantity}} pièces de {{name}} ont été avancées vers {{station}}",
+      "unmergemsg": "Êtes-vous sûr de vouloir dissocier {{name1}} de {{name2}}?"
     }
 }

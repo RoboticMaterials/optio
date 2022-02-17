@@ -50,6 +50,9 @@ import {
 import { postTouchEvent, postOpenTouchEvent, postCloseTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 import { getStation, getStations } from "../../../../../../redux/actions/stations_actions";
 
+import { useTranslation } from 'react-i18next';
+
+
 const recursiveFindAndRoutes = (exp, andNodes) => {
   for (var i=1; i<exp.length; i++) {
     if (typeof exp[i] === 'string') {
@@ -64,6 +67,9 @@ const recursiveFindAndRoutes = (exp, andNodes) => {
 }
 
 const DashboardLotPage = (props) => {
+ 
+  const { t, i18n } = useTranslation();
+ 
   const {
     user,
     handleTaskAlert,
@@ -405,19 +411,25 @@ const DashboardLotPage = (props) => {
     if (moveRoutes.length > 1) {
       handleTaskAlert(
         "LOT_MOVED",
-        "Lot Moved",
+        t("Lot Moved"),
+        /*
         `${quantity} parts from ${lotCopy.name}
           have been split between ${moveRoutes
             .map((route) => stations[route.unload].name)
             .join(" & ")}`
+          */
+        t("Dashboard.lotsplit",{quantity:quantity,name:lotCopy.name,stations:moveRoutes
+        .map((route) => stations[route.unload].name)
+        .join(" & ")})  
       );
     } else {
       const stationName =
         moveRoutes[0].unload === "FINISH" ? "Finish" : stations[moveRoutes[0].unload].name;
       handleTaskAlert(
         "LOT_MOVED",
-        "Lot Moved",
-        `${quantity} parts from ${lotCopy.name} have been moved to ${stationName}`
+        t("Lot Moved"),
+        /*`${quantity} parts from ${lotCopy.name} have been moved to ${stationName}` */
+        t("Dashboard.lotmove",{quantity:quantity,name:lotCopy.name,station:stationName})
       );
     }
 
@@ -463,7 +475,8 @@ const DashboardLotPage = (props) => {
 
 
     pushUndoHandler({
-      message: `Are you sure you want to unmerge ${mergeLotCopy?.name} from ${currentLot?.name}?`,
+      /* message: `Are you sure you want to unmerge ${mergeLotCopy?.name} from ${currentLot?.name}?`,*/
+      message : t("Dashboard.unmergemsg",{name1:mergeLotCopy?.name,name2:currentLot?.name}),
       handler: () => {
         dispatchPutCard(mergeLot, mergeLot._id)
         dispatchPutCard(currentLot, currentLot._id)
