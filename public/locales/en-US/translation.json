@@ -6,6 +6,7 @@
   "travelers":"Travelers",
   "statistics":"Statistics",
   "processes":"Processes",
+  "process":"Process",
   "schedules":"Schedules",
   "routes":"Routes",
   "settings":"Settings",
@@ -15,6 +16,7 @@
   "end":"End",
   "label":"Label",
   "description":"Description",
+  "dates":"Dates",
   "color":"Color",
   "select":"Select",
   "delete":"Delete",
@@ -62,6 +64,7 @@
   "Import Lots":"Import Lots",
   "Validate Lots":"Validate Lots",
   "Lot History":"Lot History",
+  "Product Group":"Product Group",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
     "lockmessage":"All Dashboards have been successfully locked!",

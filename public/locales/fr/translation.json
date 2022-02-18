@@ -6,6 +6,7 @@
   "travelers":"Lots",
   "statistics":"Statistiques",
   "processes":"Processus",
+  "process":"Processus",
   "schedules":"Horaires",
   "routes":"Routes",
   "settings":"Paramètres",
@@ -15,6 +16,7 @@
   "start":"Début",
   "end":"Fin",
   "label":"Étiquette",
+  "dates":"Dates",
   "description":"Description",
   "select":"Sélectionner",
   "delete":"Effacer",
@@ -74,6 +76,7 @@
    "Import Lots":"Importer des lots",
    "Validate Lots":"Valider les lots",
    "Lot History":"Historique du lot",
+   "Product Group":"Groupe de produits",
   "Settings":{
      "unlockdashboards":"Déverrouiller tous les tableaux de bord",
      "lockdashboards":"Verrouiller tous les tableaux de bord",

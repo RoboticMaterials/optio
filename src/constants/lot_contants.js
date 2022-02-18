@@ -1,10 +1,12 @@
 import { uuidv4 } from "../methods/utils/utils";
+import i18next from "../i18n"
+
 
 export const QUEUE_BIN_ID = "QUEUE"
 export const FINISH_BIN_ID = "FINISH"
 
-export const QUEUE_BIN_DISPLAY_NAME = "Queue"
-export const FINISH_BIN_DISPLAY_NAME = "Finish"
+// export const QUEUE_BIN_DISPLAY_NAME = "Queue"
+//export const FINISH_BIN_DISPLAY_NAME = "Finish" 
 
 export const BIN_IDS = {
     QUEUE: QUEUE_BIN_ID,
@@ -14,15 +16,15 @@ export const BIN_IDS = {
 export const QUEUE_THEME = {
     ICON: "fas fa-ellipsis-h",
     COLOR: "#b642f5",
-    ID: QUEUE_BIN_ID,
-    DISPLAY_NAME: QUEUE_BIN_DISPLAY_NAME
+    ID: QUEUE_BIN_ID
+ //   DISPLAY_NAME: QUEUE_BIN_DISPLAY_NAME
 
 }
 export const FINISH_THEME = {
     ICON: "fas fa-box",
     COLOR: "#ff8605",
-    ID: FINISH_BIN_ID,
-    DISPLAY_NAME: FINISH_BIN_DISPLAY_NAME,
+    ID: FINISH_BIN_ID
+    // DISPLAY_NAME: FINISH_BIN_DISPLAY_NAME,
 }
 
 export const BIN_THEMES = {
@@ -130,7 +132,7 @@ export const DEFAULT_DATES_FIELD_ID = "DEFAULT_DATES_FIELD_ID"
 export const BASIC_DEFAULT_DESCIPTION_FIELD = {
     _id: DEFAULT_DESCRIPTION_FIELD_ID,
     ...LOT_EDITOR_SIDEBAR_OPTIONS.TEXT_BOX_BIG,
-    [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "description",
+    [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "Description",
     [TEMPLATE_FIELD_KEYS.REQUIRED]: false,
     [TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,
     key: 0,
@@ -142,7 +144,7 @@ export const IGNORE_LOT_SYNC_WARNING = "ignoreLotSyncWarning"
 export const BASIC_DEFAULT_DATES_FIELD = {
     _id: DEFAULT_DATES_FIELD_ID,
     ...LOT_EDITOR_SIDEBAR_OPTIONS.CALENDAR_START_END,
-    [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "dates",
+    [TEMPLATE_FIELD_KEYS.FIELD_NAME]: "Dates",
     [TEMPLATE_FIELD_KEYS.REQUIRED]: false,
     [TEMPLATE_FIELD_KEYS.SHOW_IN_PREVIEW]: false,
     key: 1,
