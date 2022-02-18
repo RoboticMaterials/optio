@@ -23,7 +23,7 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import * as styled from './settings.style'
 import { ThemeContext } from 'styled-components';
 
-
+import {clearLocalSettings} from '../../../../api/local_api'
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
@@ -53,7 +53,7 @@ export const Durations = [...Array(10).keys()].map(num => ({label: num, value: n
 const Settings = (props) => {
 
     const { t, i18n } = useTranslation();
-    
+
     const {
       listView,
       setShowSettings,
@@ -249,6 +249,7 @@ const Settings = (props) => {
             dispatchGetRoutes()
             dispatchGetCards()
         }
+
     }
 
     const TimeZone = () => {
@@ -563,9 +564,9 @@ const Settings = (props) => {
                 </styled.DropdownContainer>
                 <styled.RowContainer style={{justifyContent: 'space-between'}}>
                     <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>{t("Settings.makedefault","Set as the default map")}</styled.DropdownLabel>
-                    <Checkbox 
-                        schema="settings" 
-                        checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId} 
+                    <Checkbox
+                        schema="settings"
+                        checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId}
                         onChange={(state) => {
                             if (state) {
                                 handleUpdateServerSettings({ defaultMapId: localSettingsState.currentMapId });
@@ -663,10 +664,11 @@ const Settings = (props) => {
             window.location.reload();
 
         }
+        console.log(config)
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
+                {config?.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
 
             </styled.SettingContainer>
         )

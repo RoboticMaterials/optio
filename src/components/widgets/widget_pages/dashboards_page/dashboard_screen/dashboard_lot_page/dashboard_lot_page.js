@@ -49,6 +49,7 @@ import {
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent, postOpenTouchEvent, postCloseTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
 import { getStation, getStations } from "../../../../../../redux/actions/stations_actions";
+import { getProcesses } from "../../../../../../redux/actions/processes_actions";
 
 import { useTranslation } from 'react-i18next';
 
@@ -103,20 +104,33 @@ const DashboardLotPage = (props) => {
   const dispatchGetCards = () => dispatch(getCards())
   const dispatchGetStation = (id) => dispatch(getStation(id))
   const dispatchGetStations = () => dispatch(getStations())
+  const dispatchGetProcesses = () => dispatch(getProcesses());
 
   const dispatchOpenTouchEvent = (touch_event) => dispatch(postOpenTouchEvent(touch_event))
   const dispatchCloseTouchEvent = (touch_event) => dispatch(postCloseTouchEvent(touch_event))
   const dispatchPostTouchEvent = (touch_event) => dispatch(postTouchEvent(touch_event))
 
   let [currentLot, setCurrentLot] = useState(stationCards[lotID])
-  const currentProcess = useRef(processes[currentLot?.process_id]).current
-  const currentStation = useRef(stations[stationID]).current
+  const currentProcess = useRef(processes[stationCards[lotID]?.process_id] || null)
+  const currentStation = useRef(stations[stationID] || null)
 
   // Initial Load
   useEffect(() => {
-    dispatchGetCards();
-    dispatchGetStations();
+    const getCardsPromise = dispatchGetCards();
+    const getStationsPromise = dispatchGetStations();
+    const getProcessesPromise = dispatchGetProcesses();
+
+    Promise.all([getCardsPromise, getStationsPromise, getProcessesPromise]).then(([{cards}, stations, processes]) => {
+      
+      if (!currentLot) setCurrentLot(cards[lotID])
+      if (!currentProcess.current) currentProcess.current = processes[stationCards[lotID]?.process_id]
+      if (!currentStation.current) currentStation.current = stations[stationID]
+
+      if (!moveQuantity) setMoveQuantity(cards[lotID]?.bins[loadStationID]?.count)
+    })
   }, [])
+
+  // console.log(lotID, stationID, stationCards[lotID])
 
   const loadStationID = useMemo(() => {
     return !!warehouseID ? warehouseID : stationID;
@@ -137,7 +151,7 @@ const DashboardLotPage = (props) => {
 
   const incomingSplitMergeRoutes = useMemo(() => {
       // Case 2: A split process merges at this node, consider every node downstream of the AND expression
-      const mergeExpression = handleMergeExpression(stationID, currentProcess, routes, stations)
+      const mergeExpression = handleMergeExpression(stationID, currentProcess.current, routes, stations)
       if (!mergeExpression) return []
       const andRoutes = recursiveFindAndRoutes(mergeExpression, []).map(routeId => routes[routeId])
       return andRoutes.filter(route => route.load in currentLot.bins && currentLot.bins[route.load]?.count > 0)
@@ -190,7 +204,7 @@ const DashboardLotPage = (props) => {
 
   
   useEffect(() => {
-    const processRoutes = currentProcess.routes.map(routeId => routes[routeId])
+    const processRoutes = currentProcess.current?.routes.map(routeId => routes[routeId]) || []
     for(const i in processRoutes){
       if(processRoutes[i].unload ===stationID && stations[processRoutes[i].load]?.type === 'warehouse'){
         const unloadAtWarehouse = processRoutes.find(route => route.unload === processRoutes[i].load)
@@ -200,7 +214,7 @@ const DashboardLotPage = (props) => {
   }, [currentLot]);
   
   const compareTimerValue = useMemo(() => {
-    const CTObj = currentStation.cycle_times[currentLot.lotTemplateId]
+    const CTObj = currentStation.current.cycle_times[currentLot?.lotTemplateId]
     if (!!CTObj) {
       switch (CTObj.mode) {
         case 'auto':
@@ -208,10 +222,10 @@ const DashboardLotPage = (props) => {
         case 'manual':
             return CTObj.manual * moveQuantity;
         case 'takt':
-            return lotTemplates[currentLot.lotTemplateId]?.taktTime * moveQuantity;
+            return lotTemplates[currentLot?.lotTemplateId]?.taktTime * moveQuantity;
       }
     }
-  }, [currentStation.cycle_times, moveQuantity])
+  }, [currentLot, currentStation.current.cycle_times, moveQuantity])
 
   // Used to show dashboard input
   useEffect(() => {
@@ -226,8 +240,8 @@ const DashboardLotPage = (props) => {
       });
     }
     else{
-      if(dashboards[dashboardID].fields && !!dashboards[dashboardID]?.fields[currentLot.lotTemplateId]){
-        let fields = dashboards[dashboardID]?.fields[currentLot.lotTemplateId]
+      if(dashboards[dashboardID].fields && !!dashboards[dashboardID]?.fields[currentLot?.lotTemplateId]){
+        let fields = dashboards[dashboardID]?.fields[currentLot?.lotTemplateId]
         for(const i in fields){
           if(fields[i].component === 'INPUT_BOX') containsInput = true
         }
@@ -372,7 +386,7 @@ const DashboardLotPage = (props) => {
           pauses: [],
           lot_id: currentLot._id,
           lot_number: currentLot.lotNum,
-          product_group_id: currentLot.lotTemplateId,
+          product_group_id: currentLot?.lotTemplateId,
           map_id: currentLot.map_id,
           pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
           process_id: currentLot.process_id,
@@ -540,7 +554,7 @@ const DashboardLotPage = (props) => {
           setShowWorkInstructionsViewer = {setShowWorkInstructionsViewer}
           showWorkInstructionsViewer = {showWorkInstructionsViewer}
           stationID = {stationID}
-          lotTemplateId = {currentLot.lotTemplateId}
+          lotTemplateId = {currentLot?.lotTemplateId}
         />
       )
   }
@@ -581,7 +595,7 @@ const DashboardLotPage = (props) => {
       </>
     )
 
-  }, [currentProcess, routes, currentLot]);
+  }, [currentProcess.current, routes, currentLot]);
 
   const renderRouteSelectorModal = useMemo(() => {
     return (
@@ -644,10 +658,7 @@ const DashboardLotPage = (props) => {
 
   const getWorkingTime = () => {
     if (!!openTouchEvent) {
-      let startTime = new Date(openTouchEvent.start_datetime.$date);
-      startTime = new Date(startTime.getTime());// + startTime.getTimezoneOffset() * 60000);
-
-      // return (new Date().getTime() - startTime.getTime() - startTime.getTimezoneOffset() * 60000)/1000;
+      let startTime = new Date(openTouchEvent.start_datetime);
       setWorkingTime( workingSecondsBetweenDates(startTime, new Date(), serverSettings.shiftDetails) );
     }
   }
@@ -657,6 +668,8 @@ const DashboardLotPage = (props) => {
   useInterval(getWorkingTime, 1000);
   useEffect(getWorkingTime, [openTouchEvent]);
 
+
+  if (!currentLot) return null
 
   return (
     <styled.LotContainer>
@@ -712,7 +725,7 @@ const DashboardLotPage = (props) => {
           {renderChildCards}
         </div>
       </styled.LotBodyContainer>
-      {!!lotTemplates[currentLot.lotTemplateId].workInstructions && !!lotTemplates[currentLot.lotTemplateId].workInstructions[stationID] &&
+      {!!lotTemplates[currentLot?.lotTemplateId]?.workInstructions && !!lotTemplates[currentLot?.lotTemplateId]?.workInstructions[stationID] &&
       <Button
         schema = {'locations'}
         label = 'View Work Instructions'
@@ -724,7 +737,7 @@ const DashboardLotPage = (props) => {
     }
       <styled.LotButtonContainer>
         <DashboardLotButtons
-          hasStarted={!!openTouchEvent || currentStation.type === 'warehouse'}
+          hasStarted={!!openTouchEvent || currentStation.current.type === 'warehouse'}
           handleStartClicked={() => {
             const newTouchEvent = {
               start_datetime: new Date().getTime(),
@@ -732,7 +745,7 @@ const DashboardLotPage = (props) => {
               pauses: [],
               lot_id: currentLot._id,
               lot_number: currentLot.lotNum,
-              product_group_id: currentLot.lotTemplateId,
+              product_group_id: currentLot?.lotTemplateId,
               map_id: currentLot.map_id,
               pgs_cycle_time: null, // SET IN BACKEND (Calculation includes this event)
               process_id: currentLot.process_id,
@@ -759,13 +772,13 @@ const DashboardLotPage = (props) => {
             handleTypedQty(e)
           }}
           setQuantity={setMoveQuantity}
-          maxQuantity={currentLot.bins[stationID]?.count}
+          maxQuantity={currentLot?.bins[stationID]?.count}
           minQuantity={1}
-          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot.bins[stationID]?.count || (warehouseMergeDisabled && localLotChildren.length<1)}
+          disabled={moveQuantity<1 || moveQuantity<1 || moveQuantity > currentLot?.bins[stationID]?.count || (warehouseMergeDisabled && localLotChildren.length<1)}
           warehouseDisabled = {stations[stationID].type === 'warehouse'}
           onBlur = {()=> {
             if(!moveQuantity || moveQuantity<1) setMoveQuantity(1)
-            if(moveQuantity>currentLot.bins[stationID]?.count) setMoveQuantity(currentLot.bins[stationID].count)
+            if(moveQuantity>currentLot?.bins[stationID]?.count) setMoveQuantity(currentLot?.bins[stationID].count)
           }}
         />
       </styled.LotButtonContainer>
