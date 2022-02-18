@@ -35,10 +35,8 @@ echo "Installing Certbot"
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 sudo certbot certonly --nginx
-#chmod 755 /etc/letsencrypt/archive
-#chmod 755 /etc/letsencrypt/live
-sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/live/ixblue.optio.cloud
-sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/archive/ixblue.optio.cloud
+sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/live/$1
+sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/archive/$1
 sudo setfacl -m g:www-data:rX /etc/letsencrypt/live
 sudo setfacl -m g:www-data:rX /etc/letsencrypt/archive
 
