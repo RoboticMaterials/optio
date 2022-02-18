@@ -13,6 +13,9 @@
   "number":"Number",
   "start":"Start",
   "end":"End",
+  "label":"Label",
+  "description":"Description",
+  "color":"Color",
   "select":"Select",
   "delete":"Delete",
   "workstation":"Work Station",
@@ -23,10 +26,42 @@
   "Work in Process":"Work in Process (WIP)",
   "Lead Time":"Lead Time",
   "Line Balance":"Line Balance",
-  
-
-
+  "cumulative":"Cumulative",
+  "nodata":"No Data",
+  "Not Enough Data":"Not Enough Data",
+  "Move Quantity":"Move Quantity",
+  "Finish Quantity":"Finish Quantity",
+  "Go back":"Go back",
+  "Start":"Start",
+  "Lot Moved":"Lot Moved",
+  "dashboards":"Dashboards",  
   "taskqueue":"Task Queue",
+  "Active Working Time":"Active Working Time",
+  "Expected Cycle Time":"Expected Cycle Time",
+  "report":"Rapport",
+  "Edit Report":"Edit Report",
+  "Send Report":"Send Report",
+  "Add Report Button":"Add Report Button",
+  "Report Sent":"Report Sent",
+  "Failed to Send Report":"Failed to Send Report",
+  "Lot Kick Off Successful":"Lot Kick Off Successful",
+  "Lot Kick Off Failed":"Lot Kick Off Failed",
+  "Select Operator":"Select Operator",
+  "Enter name/identifier of operator":"Enter name/identifier of operator",
+  "Sign in":"Sign in",
+  "Previous Operators":"Previous Operators",
+  "Continue":"Continue",
+  "Sort":"Sort",
+  "Filter":"Filter",
+  "Queue":"Queue",
+  "Finish":"Finish",
+  "Add New Lot":"Add New Lot",
+  "Editing Lot":"Editing Lot",
+  "Creating Lot":"Creating Lot",
+  "Editing Template":"Editing Template",
+  "Import Lots":"Import Lots",
+  "Validate Lots":"Validate Lots",
+  "Lot History":"Lot History",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
     "lockmessage":"All Dashboards have been successfully locked!",
@@ -59,7 +94,10 @@
     "showdevelopersettings":"Show Developer Settings",
     "clearmap":"Clear Map",
     "signout":"Sign Out",
-    "movealert":"Move Alert Duration"
+    "movealert":"Move Alert Duration",
+    "filterlots":"Filter lots...",
+    "Lots at the current station":"Lots at the current station",
+    "Parts at the current station":"Parts at the current station"
   },
   "Editloc":{
     "cannotdeletewarning":"New Stations cannot be deleted.",
@@ -81,5 +119,43 @@
     "leadTime": "Lead time is the time it takes to produce a single product from the moment it enters the production process till the time it hits the finished queue. It is given by the production rate times the work-in-process. Lead time is expressed in working days, not accounting for weekends.",
     "balance": "Line balancing is the art of evening the cycle times of each station in the process to reduce the amount of WIP and lead time. Your production rate is given by the slowest station, indicated by the 'Bottleneck line'. Takt time is the desired cycle time for every station in the process. Drag the 'Takt' line in the chart to modify your goal production rate for all stations in this process.",
     "throughput": "Throughput over time in the given date range. 'Cumulative' shows the total throughput over the given date range."
+  },
+  "Stationstats":{
+    "productivity": "Productivity allows you to compare the station's cycle time with the desired station's cycle time for each specific product. Click the gear icon to change what the desired cycle time should be for each product.",
+    "productivitySettings": "Configure the desired takt time for this product at this station.<br/><br/><b>Process Takt:</b> Compares your production rate to the takt time set over all the stations in this process. This takt time can be configured in the Process Statistics page by dragging the 'Takt' line on the balance graph.<br/><b>Station Takt:</b> Compares the production rate against a takt time that is specific for this product at this station only.<br/><BLOCKQUOTE style='margin-left: 40px'><b>Auto:</b> Compares the production rate to the historical all-time production rate of this product at this station.<br/><b>Manual:</b> Set a production rate to compare the actual production rate to.</BLOCKQUOTE>",
+    "oee": "Overall Equipment Effectiveness (OEE) is the measure of actual vs. theoretical maximum throughput. This is given by the product of availability, performance, and quality. Click on the gears to specify the theoretical minimum cycle time number of parts for this station.",
+    "cycleTime": "Cycle time is the measure of (active working) time it takes to produce a single part at this station. This is calculated based on the 'Start' and 'Stop' time for each lot that has moved from this station and the quantity that was moved.",
+    "throughput": "Throughput is the total number of parts that have passed through this station over the selected date range. Total throughput is broken down by product group. Turn individual lines on and off by clicking on them in the legend. ",
+    "wip": "Work in Progress (WIP) is the total amount of product sitting at this station over time. WIP is separated by product group with a 'Total' measurement as well. You can toggle lines on this graph by clicking them in the legend.",
+    "stationReports": "Station reports are triggered by the dashboard operators to indicate events such as machine malfunctions, defects, lack of consumables, and more. Define custom report buttons on the dashboard view of each station.",
+    "stationReportsPie": "A breakdown of the number of occurances of each report event.",
+    "processesPie": "A breakdown of the quantity of moved parts by the process they belonged to",
+    "productGroupPie": "A breakdown of the quantity of moved parts by the product group they belonged to.",
+    "operatorsPie": "A breakdown of the quantity of moved parts by the operator that moved them.",
+    "toStationPie": "A breakdown of the quantity of moved parts by the station they were moved to.",
+    "machineUtilization": "A measure of the utilization of this station: the ratio of total working seconds at this station and the total available working seconds which is based on the shift settings defined in the settings tab. Total working seconds is calculated based on the time a worker was active in a lot (versus looking at the list of lots at the station).",
+    "valueCreatingTime": "A measure of the relative amount of time a lot was being activly worked on versus the time it spent sitting idle at this station. The active working seconds of this lot is based on the time a worker was active in a lot (versus looking at the list of lots at the station)."
+  },
+  "Dashboard":{
+    "lotsplit" : "{{quantity}} parts of {{name}} have been split between {{stations}}",
+    "lotmove" : "{{quantity}} parts from {{name}} have been moved to {{station}}",
+    "unmergemsg": "Are you sure you want to unmerge {{name1}} from {{name2}}?",
+    "lockmsg":"Click to lock the dashboard. This will hide the \"X\" button on the dashsboard screen when in mobile mode",
+    "unlockmsg":"Click to unlock the dashboard. This will show the \"X\" button on the dashsboard screen when in mobile mode",
+    "locksuccess":"Dashboard has been successfully unlocked!",
+    "unlocksuccess":"Dashboard has been successfully locked!"
+  },
+  "Sortkey":{
+    "alpha":"Alphabetical",
+    "datedes":"Created Date (Newest -> Oldest)",
+    "dateasc":"Created Date (Oldest -> Newest)",
+    "editdes":"Last Edited Date (Newest -> Oldest)",
+    "editasc":"Last Edited Date (Oldest -> Newest)"
+  },
+  "Import":{
+    "file": "Are you sure you want to import this file?",
+    "paste":"A paste event was detected. Would you like to use pasted data to create lots?",
+    "importevt":"Import Event Detected",
+    "pastevt":"Paste Event Detected"
+  }                    
   }
-}

@@ -18,8 +18,11 @@ import { FIELD_DATA_TYPES } from "../../../../../../../constants/lot_contants"
 import { getCustomFields, getLotTotalQuantity, getBinCount } from '../../../../../../../methods/utils/lot_utils'
 import { getPreviousWarehouseStation } from '../../../../../../../methods/utils/processes_utils'
 
+import { useTranslation } from 'react-i18next';
 
 const DashboardLotFields = (props) => {
+
+  const { t, i18n } = useTranslation();
 
     const {
         currentLot,
@@ -156,7 +159,7 @@ const DashboardLotFields = (props) => {
         </div>
         <div style = {{marginTop:'0.5rem', marginBottom: '.8rem'}}>
           <LotSimpleRow
-              label={currentLot.name? currentLot.name : (currentLot.lotNum).toString()}
+              label={currentLot.name? currentLot.name : (currentLot.lotNum)?.toString() || '???'}
               labelStyle={{fontSize: '1.3rem' }}
             />
           </div>
