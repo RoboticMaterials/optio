@@ -20,16 +20,10 @@ const BarcodeModal = (props) => {
         isOpen,
         title,
         close,
-        dashboard,
-        onSubmit,
         handleClose,
-        children,
         barcodeId,
+        card
     } = props
-
-    const cards = useSelector(state => state.cardsReducer.cards)
-    const stations = useSelector(state =>state.stationsReducer.stations)
-    const barcodeModal = useSelector(state => state.cardsReducer.showBarcodeModal)
 
     const dispatch = useDispatch()
     const dispatchShowBarcodeModal = (bool) => dispatch(showBarcodeModal(bool))
@@ -44,7 +38,7 @@ const BarcodeModal = (props) => {
       if (!!componentRef.current) {
         JsBarcode("#barcode", barcodeId, {
           width: 16,
-          height: 800,
+          height: 300,          
         })
         setGenerated(true)
       }
@@ -66,7 +60,7 @@ const BarcodeModal = (props) => {
             }}
         >
             <styled.Header>
-              {!!generated &&
+              {generated &&
                 <ReactToPrint
                   trigger = {()=><styled.PrintIcon className = 'fas fa-print' style = {{paddingLeft: '1rem'}}/>}
                   content = {() => componentRef.current}
@@ -79,12 +73,30 @@ const BarcodeModal = (props) => {
               </styled.Title>
               <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
             </styled.Header>
-            <styled.BodyContainer generated = {generated}>
+            <styled.BodyContainer ref = {componentRef} generated = {generated}>
 
                   <styled.BarcodeSVG
                     id = "barcode"
-                    ref = {componentRef}
                   />
+            
+            {!!card && card.fields.map((row) => {
+              return <div style={{display: 'flex', flexDirection: 'center', width: '100%', justifyContent: 'space-around'}}>
+                {
+                  row.map((field) => {
+                      return !!field.showInBarcode && <styled.Field>
+                      <styled.FieldLabel>{field.fieldName}</styled.FieldLabel>: <styled.FieldValue>{field.dataType === 'DATE_RANGE' ?
+                          !! field.value[0] ? `${new Date(field.value[0])?.toLocaleDateString()} -> ${new Date(field.value[1])?.toLocaleDateString()}` : ``
+                          : field.dataType === 'DATE_SINGLE' ?
+                             new Date(field.value)?.toLocaleDateString() 
+                            :
+                            field.value}</styled.FieldValue>
+                    </styled.Field>
+                    
+                  }
+                  )
+                }
+              </div>
+            })}
 
             </styled.BodyContainer>
         </styled.Container>

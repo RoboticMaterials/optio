@@ -423,3 +423,16 @@ export const Icon = styled.i`
         filter: brightness(85%)
     }
 `
+
+
+export const Field = styled.div`
+
+`
+
+export const FieldLabel = styled.span`
+    font-weight: bold;
+`
+
+export const FieldValue = styled.span`
+
+`

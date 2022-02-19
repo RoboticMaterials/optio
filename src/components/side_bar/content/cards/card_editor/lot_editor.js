@@ -794,6 +794,7 @@ const FormComponent = (props) => {
                         dispatchShowBarcodeModal(false);
                     }}
                     barcodeId={lotNumber}
+                    card={card}
                 />
 
 
