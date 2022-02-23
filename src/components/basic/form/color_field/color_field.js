@@ -86,7 +86,7 @@ const ColorField = (props) => {
 ColorField.propTypes = {
 	Container: PropTypes.elementType,
 	mode: PropTypes.string,
-	colors: PropTypes.arrayOf(PropTypes.string),
+	colors: PropTypes.array,/*arrayOf(PropTypes.string),*/
 };
 
 // Specifies the default values for props:

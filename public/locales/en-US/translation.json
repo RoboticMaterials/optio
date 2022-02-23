@@ -65,6 +65,9 @@
   "Validate Lots":"Validate Lots",
   "Lot History":"Lot History",
   "Product Group":"Product Group",
+  "filterlots":"Filter lots...",
+  "Lots at the current station":"Lots at the current station",
+  "Parts at the current station":"Parts at the current station",
   "Settings":{
     "unlockmessage":"All Dashboards have been successfully unlocked!",
     "lockmessage":"All Dashboards have been successfully locked!",
@@ -97,10 +100,7 @@
     "showdevelopersettings":"Show Developer Settings",
     "clearmap":"Clear Map",
     "signout":"Sign Out",
-    "movealert":"Move Alert Duration",
-    "filterlots":"Filter lots...",
-    "Lots at the current station":"Lots at the current station",
-    "Parts at the current station":"Parts at the current station"
+    "movealert":"Move Alert Duration"
   },
   "Editloc":{
     "cannotdeletewarning":"New Stations cannot be deleted.",

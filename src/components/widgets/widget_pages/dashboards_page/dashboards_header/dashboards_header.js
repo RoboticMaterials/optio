@@ -32,6 +32,7 @@ import { ThemeContext } from 'styled-components'
 
 import { useTranslation } from 'react-i18next';
 
+
 const widthBreakPoint = 1000;
 const phoneViewBreakPoint = 500;
 
@@ -127,6 +128,7 @@ const DashboardsHeader = (props) => {
                 <DashboardButton
                     title={btnLabel}
                     iconColor={"black"}
+                    key={uuid.v4()}
                     iconClassName={iconClassName}
                     onClick={() => {
                         const { type, ...meta }  = pullBtn;
