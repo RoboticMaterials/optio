@@ -112,7 +112,6 @@ const SignInUpPage = (props) => {
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
-
                     dispatchUpdateLocalSettings({
                         authenticated: result.accessToken.payload.username,
                         idToken: result?.idToken?.jwtToken || null
