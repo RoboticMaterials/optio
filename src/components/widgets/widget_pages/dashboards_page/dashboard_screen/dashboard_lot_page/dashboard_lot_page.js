@@ -21,6 +21,8 @@ import Button from '../../../../../basic/button/button'
 import WorkInstructionsViewer from '../work_instructions_viewer/work_instructions_viewer'
 import useInterval from 'react-useinterval'
 
+import uuid from "uuid"
+
 // constants
 import { FIELD_COMPONENT_NAMES } from "../../../../../../constants/lot_contants";
 
@@ -615,6 +617,7 @@ const DashboardLotPage = (props) => {
             <styled.Title>Select the station to move this lot to</styled.Title>
             {routeOptions.map((route, ind) => (
               <ContentListItem
+                key={uuid.v4()}
                 ind={ind}
                 element={stations[route.unload]}
                 schema="locations"

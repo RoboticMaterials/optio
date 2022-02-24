@@ -92,6 +92,7 @@ const convertCycleTimeToProductionRate = (cycleTime, dailyWorkingSeconds) => {
 
 const ProdTick = (props) => {
 
+    const {t, i18n } = useTranslation();
     const {
         numBars,
         label,
@@ -141,7 +142,7 @@ const ProdTick = (props) => {
                             <i style={{color: 'grey', cursor: 'pointer', position: 'absolute', top: '0.5rem', right: '0.5rem'}} className='fas fa-times' onClick={() => {tooltipRef.current.tooltipRef = null; tooltipRef.current.hideTooltip()}}/>
                             <styled.TooltipIcon className="fas fa-info" onMouseEnter={() => ReactTooltip.rebuild()} data-tip data-for={`prod-tooltip-${label}`} style={{position: 'absolute', top: '0.5rem', left: '0.5rem'}}/>
                             <ReactTooltip id={`prod-tooltip-${label}`} {...tooltipProps}>
-                                <styled.Tooltip style={{textAlign: 'left', maxWidth: '20rem'}} dangerouslySetInnerHTML={{__html:descriptions.productivitySettings}}></styled.Tooltip>
+                                <styled.Tooltip style={{textAlign: 'left', maxWidth: '20rem'}} dangerouslySetInnerHTML={{__html:t("Stationstats.productivitySettings")}}></styled.Tooltip>
                             </ReactTooltip>
                             <div style={{fontWeight: 'bold'}}>Desired Takt</div>
                             <div style={{color: '#8e8e9c', marginBottom: '1rem'}}>{label}</div>

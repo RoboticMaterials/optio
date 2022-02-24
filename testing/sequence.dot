@@ -1,0 +1,33 @@
+digraph pastafarianism {
+ordering=out;
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+Sequence [fillcolor=orange, fontcolor=black, fontsize=9, label=Sequence, shape=box, style=filled];
+Move_TCP [fillcolor=gray, fontcolor=black, fontsize=9, label=Move_TCP, shape=ellipse, style=filled];
+Sequence -> Move_TCP;
+Find_Feature_Poses [fillcolor=gray, fontcolor=black, fontsize=9, label=Find_Feature_Poses, shape=ellipse, style=filled];
+Sequence -> Find_Feature_Poses;
+Find_Feature_Grasp [fillcolor=gray, fontcolor=black, fontsize=9, label=Find_Feature_Grasp, shape=ellipse, style=filled];
+Sequence -> Find_Feature_Grasp;
+Sequence -> BlackboardKeys  [color=magenta, constraint=True, style=invis];
+"/clouds" -> Find_Feature_Grasp  [color=green, constraint=False, weight=0];
+"/clouds" -> Find_Feature_Grasp  [color=green, constraint=False, weight=0];
+Find_Feature_Poses -> "/clouds"  [color=blue, constraint=False, weight=0];
+Find_Feature_Poses -> "/clouds"  [color=blue, constraint=False, weight=0];
+"/poses" -> Find_Feature_Grasp  [color=green, constraint=False, weight=0];
+"/poses" -> Find_Feature_Grasp  [color=green, constraint=False, weight=0];
+Find_Feature_Poses -> "/poses"  [color=blue, constraint=False, weight=0];
+Find_Feature_Poses -> "/poses"  [color=blue, constraint=False, weight=0];
+subgraph Blackboard {
+id=Blackboard;
+label=Blackboard;
+rank=sink;
+BlackboardKeys [label=Keys, shape=box];
+Find_Feature_Poses [color=blue, fillcolor=gray, fontcolor=blue, fontsize=7, label=Find_Feature_Poses, shape=ellipse, style=filled];
+Find_Feature_Grasp [color=blue, fillcolor=gray, fontcolor=blue, fontsize=7, label=Find_Feature_Grasp, shape=ellipse, style=filled];
+"/clouds" [color=blue, fillcolor=white, fixedsize=False, fontcolor=blue, fontsize=8, height=0, label="/clouds: []", shape=box, style=filled, width=0];
+"/poses" [color=blue, fillcolor=white, fixedsize=False, fontcolor=blue, fontsize=8, height=0, label="/poses: []", shape=box, style=filled, width=0];
+}
+
+}
