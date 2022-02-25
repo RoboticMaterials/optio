@@ -213,6 +213,32 @@ export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 	let remainingExcel = {...excel}
 	let lot = {}
 
+	for(const field in remainingExcel){
+		let idField = field
+		if(remainingExcel[field]._id.includes('start') || remainingExcel[field]._id.includes('end')){
+
+			const {
+				_id: fieldID
+			} = remainingExcel[idField] || {}
+
+			const {
+				[fieldID]: field,
+				...rest
+			} = remainingExcel
+
+			let splitField = fieldID.split('-')
+			let a = splitField.pop()
+			splitField.join('-')
+
+			field._id = splitField.join('-')
+
+			remainingExcel = {
+				...rest,
+				[splitField]: field
+			}
+		}
+	}
+
 	for(const primaryField of REQUIRED_FIELDS) {
 
 		const {
