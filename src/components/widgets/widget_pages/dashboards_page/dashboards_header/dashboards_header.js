@@ -84,23 +84,25 @@ const DashboardsHeader = (props) => {
             const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes)
                 .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
-
-
+        
             if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
+                if(!tempPullButtons.some(e => e.type === 'kickoff')){
                 tempPullButtons.push({
-                    type: 'kickoff',
-                    processID: process._id
-                });
+                    type: 'kickoff'/*,
+                processID: process._id*/});
+                }
             } else {
 
                 incomingRoutes
                     .filter(route => stations[route.load]?.type === 'warehouse')
                     .forEach(route => {
                         if (getNodeIncoming(route.load, processRoutes).length > 0) { // Cannot pull from start warehouses, must merge them into another lot
+                            if(!tempPullButtons.some(e => e.type === 'warehouse')){
                             tempPullButtons.push({
                                 type: 'warehouse',
                                 warehouseID: route.load
                             })
+                          }
                         }
                     })
 
@@ -117,7 +119,7 @@ const DashboardsHeader = (props) => {
 
         return pullButtons.map(pullBtn => {
 
-            const btnLabel = pullBtn.type === 'kickoff' ? `Kick Off ${processes[pullBtn.processID]?.name}` : `${stations[pullBtn.warehouseID]?.name}`
+            const btnLabel = pullBtn.type === 'kickoff' ? `Kick Off` : `${stations[pullBtn.warehouseID]?.name}`
 
             const schema = pullBtn.type === 'kickoff' ? theme.schema.kick_off : theme.schema.warehouse
             const iconClassName = schema?.iconName
