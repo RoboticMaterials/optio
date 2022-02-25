@@ -204,7 +204,7 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
         // name (string)
         case LOT_FILTER_OPTIONS.name.label: {
             if (filterValue) {
-                return lot.name.toLowerCase().includes((filterValue || "").toLowerCase())
+                return lot?.name.toLowerCase().includes((filterValue || "").toLowerCase())
             }
             return true
             break
