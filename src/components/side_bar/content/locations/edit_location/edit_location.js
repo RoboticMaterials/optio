@@ -455,7 +455,7 @@ const EditLocation = (props) => {
                 <ConfirmDeleteModal
                     isOpen={!!confirmExitModal}
                     title={
-                        t("Editloc.backwarning","Are you sure you want to go back? Any progress will not be saved")
+                        t("backwarning","Are you sure you want to go back? Any progress will not be saved")
                     }
                     button_1_text={t("yes","Yes")}
                     handleOnClick1={() => {

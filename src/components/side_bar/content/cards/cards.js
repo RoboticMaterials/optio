@@ -214,13 +214,13 @@ const Cards = (props) => {
             }
 
             for(const j in processCards){
-              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
+              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId]?.includes(processCards[j]?._id)) {
                 tempIds[id][statId].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
               }
             }
