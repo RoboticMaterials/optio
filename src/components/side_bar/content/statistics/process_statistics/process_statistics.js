@@ -26,8 +26,10 @@ import { secondsToReadable } from '../../../../../methods/utils/time_utils';
 import { getLotTemplates } from '../../../../../redux/actions/lot_template_actions';
 import {setSelectedProcess} from '../../../../../redux/actions/processes_actions'
 
-import descriptions from './descriptions';
 import Portal from '../../../../../higher_order_components/portal';
+
+import { useTranslation } from 'react-i18next';
+
 
 const emptyData = {
     production_rates: {total: null, data: []},
@@ -45,6 +47,8 @@ const formatTimeString = (UTCSeconds) => {
 }
 
 const ProcessStatistics = ({ id }) => {
+
+    const { t, i18n } = useTranslation();
 
     const history = useHistory()
 
@@ -170,11 +174,14 @@ const ProcessStatistics = ({ id }) => {
 
     const renderHeader = (label, stat) => (
         <styled.CardHeader>
-            <styled.CardLabel>{label}</styled.CardLabel>
+            <styled.CardLabel>{t(label,label)}</styled.CardLabel>
             <styled.TooltipIcon className="fas fa-info"  data-tip data-for={`${stat}-tooltip`} />
             <Portal>
                 <ReactTooltip id={`${stat}-tooltip`} {...tooltipProps}>
+                {/* 
                     <styled.Tooltip dangerouslySetInnerHTML={{__html:descriptions[stat]}}></styled.Tooltip>
+                */}
+                    <styled.Tooltip dangerouslySetInnerHTML={{__html:t("Statistics."+stat)}}></styled.Tooltip>
                 </ReactTooltip>
             </Portal>
         </styled.CardHeader>
@@ -321,7 +328,7 @@ const ProcessStatistics = ({ id }) => {
                         {renderHeader('Throughput', 'throughput')}
                         <div style={{margin: '0.4rem 0', display: 'flex'}}>
                             <Checkbox checked={isCumulative} onClick={() => setIsCumulative(!isCumulative)} css={`--active: ${defaultColors[0]}`}/>
-                            <styled.CheckboxLabel>Cumulative</styled.CheckboxLabel>
+                            <styled.CheckboxLabel>{t("cumulative","Cumulative")}</styled.CheckboxLabel>
                         </div>
                         <styled.ChartContainer style={{height: '25.4rem'}}>
                             {!!data ?

@@ -10,6 +10,7 @@ import DashboardButton from '../../../dashboard_buttons/dashboard_button/dashboa
 import DashboardSplitButton from '../../../dashboard_buttons/dashboard_split_button/dashboard_split_button'
 import NumberInput from '../../../../../../basic/number_input/number_input';
 import Button from '../../../../../../basic/button/button'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 // Renders that buttons at the footer of the dashboard screen
 // IE:
@@ -19,7 +20,7 @@ import Button from '../../../../../../basic/button/button'
 const DashboardLotButtons = (props) => {
 
   const deviceEnabled = false
-
+  const [startClicked, setStartClicked] = useState(false)
 
     const {
         hasStarted,
@@ -52,21 +53,29 @@ const DashboardLotButtons = (props) => {
 
       return (
           <>
+          {startClicked &&
+            <styled.LoopIndicator>
+                <ClipLoader size={20} speedMultiplier={0.1}/>
+            </styled.LoopIndicator>
+          }
 
           <DashboardButton
-              color={color}
-              containerStyle={{ background: color }}
+              color={startClicked? '#b8b9bf'  : color}
+              containerStyle={{ background: startClicked? '#b8b9bf' : color }}
               titleStyle={{ color: textColor }}
               iconColor={iconColor}
 
-              title={'Start'}
+              title={startClicked ? 'Starting Timer...' : 'Start'}
               iconColor={"black"}
               iconClassName={iconClassName}
-              onClick={handleStartClicked}
+              onClick={() => {
+                setStartClicked(true)
+                handleStartClicked()
+              }}
 
               hoverable={false}
               // taskID={taskID}
-              disabled={false}
+              disabled={startClicked ? true : false}
               // containerCss={style.ButtonContainerCss}
               error={error}
           />
@@ -76,6 +85,7 @@ const DashboardLotButtons = (props) => {
   }
 
     const [fractionClicked, setFractionClicked] = useState(true)
+
     const renderMoveButton = () => {
         const iconClassName = 'fas fa-play'
         const color = disabled ? '#dedfe3' : '#90eaa8'

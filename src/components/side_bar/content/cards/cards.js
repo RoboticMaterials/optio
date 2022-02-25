@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef, useContext, memo, useCallback, useMemo, lazy, Suspense} from 'react';
 import VisibilitySensor from 'react-visibility-sensor'
+import ScaleLoader from 'react-spinners/ScaleLoader'
 
 import LotContainer from './lot/lot_container'
 import LotEditorContainer from './card_editor/lot_editor_container'
@@ -127,6 +128,7 @@ const Cards = (props) => {
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
   				fieldDiv.style.maxHeight = '1px'
+          fieldDiv.style.paddingTop = '1px'
   		}
 
   	}, [dragIndex, clientY, clientX])
@@ -213,13 +215,13 @@ const Cards = (props) => {
             }
 
             for(const j in processCards){
-              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
+              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId]?.includes(processCards[j]?._id)) {
                 tempIds[id][statId].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
               }
             }
@@ -646,7 +648,7 @@ const Cards = (props) => {
                 offset = {{top: 70, left: 95}}
                 backgroundColor = '#FFFFFF'
                 textColor = '#363636'
-                border = 'true'
+                border = {true}
                 >
                 <styled.LotCount>Number of </styled.LotCount>
                 <styled.LotCount style = {{color: '#924dff'}}>lots </styled.LotCount>
@@ -668,7 +670,7 @@ const Cards = (props) => {
                   offset = {{top: 70, left: 95}}
                   backgroundColor = '#FFFFFF'
                   textColor = '#363636'
-                  border = 'true'
+                  border = {true}
                   >
                   <styled.LotCount>Number of </styled.LotCount>
                   <styled.LotCount style = {{color: '#924dff'}}>parts </styled.LotCount>
@@ -688,20 +690,21 @@ const Cards = (props) => {
     }
 
     const renderCards = (stationId) => {
+
       if(orderedIds && cards && orderedIds[id] && orderedIds[id][stationId] && orderedIds[id][stationId].length>0){
         let ids = orderedIds
         return(
           ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
-              let partBins = card?.bins[stationId] || {}
-              if(Object.values(partBins).length === 1){
-                return (
-                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
-                    {({isVisible}) =>
-                      <>
-                        {!!isVisible || draggingLotId === card._id?
-                          <styled.CardContainer
+            let partBins = card?.bins[stationId] || {}
 
+            if(Object.values(partBins).length === 1){
+              return (
+                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
+                    {({isVisible}) => 
+                      <>
+                        {isVisible || draggingLotId === card._id ?
+                          <styled.CardContainer
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
@@ -804,7 +807,7 @@ const Cards = (props) => {
                             }
                           </styled.CardContainer>
                           :
-                          <div style = {{width: '100%', minHeight:'20rem'}}>...Loading</div>
+                          <div style = {{minHeight:'12rem', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #ddd', borderRadius: '0.4rem', margin: '0.5rem 1rem'}}><ScaleLoader color={'#ccc'}/></div>
                         }
                       </>
                     }
@@ -894,7 +897,7 @@ const Cards = (props) => {
                                 enableFlagSelector={true}
                                 totalQuantity={card.totalQuantity}
                                 lotNumber={card.lotNum}
-                                name={isPartial ? card.name + ` (${routes[part]?.part})` : card.name}
+                                name={isPartial ? card.name? card.name + ` (${routes[part]?.name})` : card.lotNum + ` (${routes[part]?.name})` : card.name ? card.name : card.lotNum}
                                 count={isPartial ? partBins[part] : partBins['count']}
                                 lotId={card._id}
                                 leadTime = {card.leadTime}
@@ -908,8 +911,9 @@ const Cards = (props) => {
                                   boxShadow: draggingLotId === card._id && stationId === dragFromStation && '2px 3px 2px 1px rgba(0,0,0,0.2)',
                                   borderRadius: '0.2rem',
                                   padding: '0.2rem',
-                                  margin: '.4rem',
-                                  width: '22rem',
+                                  margin: '.5rem',
+                                  width: '21.1rem',
+                                  maxWidth: '21.1rem',
                                   pointerEvents: !!draggingLotId && draggingLotId !== card._id && 'none',
                                 }}
                                 onClick = {()=>{

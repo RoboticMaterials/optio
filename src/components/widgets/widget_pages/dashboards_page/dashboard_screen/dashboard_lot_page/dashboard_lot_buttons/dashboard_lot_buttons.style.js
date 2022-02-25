@@ -34,3 +34,17 @@ export const ColumnContainer = styled.div`
   justifyContent: center;
   margin-top: .5rem;
 `
+
+export const LoopIndicator = styled.div`
+    position: absolute;
+    padding-bottom: .5rem;
+    margin-left: 2rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+`

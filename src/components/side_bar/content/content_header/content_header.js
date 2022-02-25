@@ -11,10 +11,14 @@ import { upperCaseFirstLetterInString } from '../../../../methods/utils/utils'
 import PlusButton from '../../../basic/plus_button/plus_button'
 import Button from '../../../basic/button/button'
 import BackButton from '../../../basic/back_button/back_button'
-import BounceButton from '../../../basic/bounce_button/bounce_button'
+//import BounceButton from '../../../basic/bounce_button/bounce_button'
+
+import { useTranslation } from 'react-i18next';
 
 const ContentHeader = (props) => {
 
+    const { t, i18n } = useTranslation();
+    
     const {
         content,
         onClickAdd,
@@ -31,19 +35,35 @@ const ContentHeader = (props) => {
     const handleTitle = () => {
 
         if (content === 'scheduler') {
-            return 'Schedules'
+            return t('schedules','Schedules')
         }
 
         else if (content === 'taskQueue') {
-            return 'Task Queue'
+            return t('taskqueue','Task Queue')
         }
 
         else if (content === 'tasks') {
-            return 'Routes'
+            return t('routes','Routes')
         }
 
         else if (content === 'lots') {
-            return 'Travelers'
+            return t('travelers','Travelers')
+        }
+
+        else if (content === 'locations'){
+            return t('locations','Locations')
+        }
+
+        else if (content === 'statistics'){
+            return t('statistics','Statistics')
+        }
+
+        else if (content === 'processes'){
+            return t('processes','Processes')
+        }
+
+        else if (content == 'settings'){
+            return t('settings','Settings')
         }
 
         else {
@@ -51,7 +71,7 @@ const ContentHeader = (props) => {
         }
     }
 
-    // If the side bar is show a list of itemts, then have the title and add button
+    // If the side bar is show a list of item, then have the title and add button
     if (mode === 'list') {
         return (
             <styled.Header>
@@ -114,7 +134,7 @@ const ContentHeader = (props) => {
                     <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
                         onClick={onClickSave} disabled={disabled}
                     >
-                        Save
+                        {t("save","Save")}
                     </Button>
                 }
 

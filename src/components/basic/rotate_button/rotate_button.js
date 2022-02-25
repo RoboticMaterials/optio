@@ -54,8 +54,8 @@ const RotateButton = props => {
 			<styled.Icon
 				schema={schema}
 				css={iconCss}
-				rotate={rotate}
-				rotationTime={rotationTime}
+				rotate={rotate.toString()}
+				rotationTime={200}
 				className={iconName1}
 			>
 			</styled.Icon>
@@ -73,7 +73,7 @@ RotateButton.propTypes = {
 
 RotateButton.defaultProps = {
 	iconName1: "",
-	rotationTime: 500,
+	rotationTime: 200,
 	onStateOne: () => {},
 	onStateTwo: () => {},
 	setSortChanged:() => {},

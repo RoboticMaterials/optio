@@ -13,6 +13,8 @@ import { Provider } from 'react-redux'
 import store from './redux/store/index.js'
 import './methods/css/fontawesome.min.css'
 import './graphics/icons/style.css'
+
+import './i18n';
 // import 'nivo'
 // import { AppContainer } from 'react-hot-loader';
 // require('react-hot-loader/patch')
