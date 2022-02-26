@@ -6,6 +6,10 @@ if [ -z $1 ]; then
 fi
 
 
+cd ~/optio
+npm install
+npm run-script build
+
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
 
 sudo apt update
@@ -18,7 +22,7 @@ sudo systemctl restart nginx
 
 # Install certbot
 echo "Installing Certbot"
-sudo certbot certonly --nginx  --register-unsafely-without-email 
+sudo certbot certonly -d $1 --nginx  --register-unsafely-without-email 
 sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/live/$1
 sudo setfacl -R -m g:www-data:rX /etc/letsencrypt/archive/$1
 sudo setfacl -m g:www-data:rX /etc/letsencrypt/live
@@ -27,6 +31,7 @@ sudo rm -r /etc/letsencrypt/live/temp.optio.cloud
 sudo rm -r /etc/letsencrypt/archive/temp.optio.cloud
 
 # Configure Nginx
+cp client-config.template client-config
 sed -i "s/{###Instance###}/$1/g" client-config
 sudo cp client-config /etc/nginx/sites-enabled
 sudo rm /etc/nginx/sites-enabled/default
