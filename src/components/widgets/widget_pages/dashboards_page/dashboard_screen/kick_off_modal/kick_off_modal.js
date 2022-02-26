@@ -313,8 +313,6 @@ const KickOffModal = (props) => {
     )
     return components
   }, []) // initializes component to []
-
-    console.log(out)
     return out;
   
 }, [processCards, processID, dashboard, sortMode]);
@@ -376,19 +374,6 @@ const KickOffModal = (props) => {
           },
         }}
       >
-        {/* {showLotEditor &&
-                <LotEditorContainer
-                    isOpen={true}
-                    onAfterOpen={null}
-                    processOptions={kickOffEnabledInfo}
-                    cardId={null}
-                    processId={null}
-                    close={() => {
-                        setShowLotEditor(false)
-                        // setSelectedCard(null)
-                    }}
-                />
-            } */}
         <styled.Header>
           <styled.HeaderMainContentContainer>
             <styled.Title>{title}</styled.Title>

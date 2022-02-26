@@ -102,7 +102,7 @@ const SignInUpPage = (props) => {
             };
 
             const authenticationDetails = new AuthenticationDetails(authenticationData)
-            console.log(authenticationDetails)
+            //console.log(authenticationDetails)
 
             const userData = {
                 Username: email,
@@ -110,7 +110,7 @@ const SignInUpPage = (props) => {
             }
 
             const cognitoUser = new CognitoUser(userData);
-            console.log(cognitoUser.pool)
+            //console.log(cognitoUser.pool)
 
             cognitoUser.authenticateUser(authenticationDetails, {
 
