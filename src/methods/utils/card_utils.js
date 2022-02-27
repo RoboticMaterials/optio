@@ -212,32 +212,92 @@ export const convertLotToExcel = (lot, lotTemplateId) => {
 export const convertPastePayloadToLot = (excel, lotTemplate, processId) => {
 	let remainingExcel = {...excel}
 	let lot = {}
+	let foundStart = false
+	let foundBoth = false
+	let firstFound = ''
+	let withoutStartID = ''
+	let withStartID = ''
+	let startID
 
+	for(const i in remainingExcel){
+		if(remainingExcel[i]._id.includes('start') || remainingExcel[i]._id.includes('end')){
+			if(remainingExcel[i]._id.includes('start')){
+				let tempID = remainingExcel[i]._id
+				let b = tempID.split('-')
+				let a = b.pop()
+				withoutStartID = b.join('-')
+				withStartID = remainingExcel[i]._id
+			}
+			if(!foundStart){
+				foundStart = true
+				if(remainingExcel[i]._id.includes('start')){
+					firstFound = 'start'
+				}
+				else firstFound = 'end'
+			}
+			else foundBoth = true
+		}
+	}
 	for(const field in remainingExcel){
 		let idField = field
-		if(remainingExcel[field]._id.includes('start') || remainingExcel[field]._id.includes('end')){
+		if(foundStart && !foundBoth){
+			if(remainingExcel[field]._id.includes('start') || remainingExcel[field]._id.includes('end')){
 
-			const {
-				_id: fieldID
-			} = remainingExcel[idField] || {}
+				const {
+					_id: fieldID
+				} = remainingExcel[idField] || {}
 
-			const {
-				[fieldID]: field,
-				...rest
-			} = remainingExcel
+				const {
+					[fieldID]: field,
+					...rest
+				} = remainingExcel
 
-			let splitField = fieldID.split('-')
-			let a = splitField.pop()
-			splitField.join('-')
+				let splitField = fieldID.split('-')
+				let a = splitField.pop()
+				let b = splitField.join('-')
 
-			field._id = splitField.join('-')
+				field._id = splitField.join('-')
+				remainingExcel = {
+					...rest,
+					[b]: field
+				}
+			}
+		}
+		else if(foundBoth){
+			if(remainingExcel[field]._id.includes('start')){
+				const {
+					_id: fieldID
+				} = remainingExcel[idField] || {}
 
-			remainingExcel = {
-				...rest,
-				[splitField]: field
+				const {
+					[fieldID]: field,
+					...rest
+				} = remainingExcel
+
+				let splitField = fieldID.split('-')
+				let a = splitField.pop()
+				let b  = splitField.join('-')
+
+				field._id = splitField.join('-')
+
+				remainingExcel = {
+					...rest,
+					[b]: field
+				}
+			}
+			else if(remainingExcel[field]._id.includes('end')){
+				if(firstFound === 'start'){
+					remainingExcel[withoutStartID].value[1] = remainingExcel[field].value[1]
+					delete remainingExcel[field]
+				}
+				else{
+					remainingExcel[withStartID].value[1] = remainingExcel[field].value[1]
+					delete remainingExcel[field]
+				}
 			}
 		}
 	}
+
 
 	for(const primaryField of REQUIRED_FIELDS) {
 
