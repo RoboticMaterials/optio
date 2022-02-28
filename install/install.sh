@@ -51,6 +51,9 @@ pip3 install matplotlib
 pip3 install pymongo
 pip3 install cognitojwt
 pip3 install connexion[swagger-ui]
+pip3 install flask_socketio
+pip3 install eventlet
+
 
 # Build Node
 echo "Building Node"
