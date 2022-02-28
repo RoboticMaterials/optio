@@ -42,6 +42,7 @@ const ReportModalButtons = ((props) => {
 							<ReportButton
 								editing={true}
 								id={buttonId}
+								key={buttonId}
 								label={label}
 								iconClassName={iconClassName}
 								color={color}
@@ -56,6 +57,7 @@ const ReportModalButtons = ((props) => {
 					return (
 						<ReportButton
 							id={buttonId}
+							key={buttonId}
 							label={label}
 							iconClassName={iconClassName}
 							color={color}

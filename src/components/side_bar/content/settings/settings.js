@@ -664,7 +664,7 @@ const Settings = (props) => {
             window.location.reload();
 
         }
-        console.log(config)
+        /* console.log(config)*/
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 

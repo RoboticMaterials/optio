@@ -1,0 +1,71 @@
+db.tasks.find().forEach( function(currTask) {
+    print("hi")
+    // array for device_type -> device_types
+    var device_types = []
+    // get current device_type
+    var currDeviceType = currTask.device_type
+    if(currDeviceType) {
+        device_types.push(currDeviceType)
+    }
+    // check for associated task
+    if(currTask.associated_task) {
+        const associated_task = db.tasks.findOne({_id: currTask.associated_task}, {} );
+        // found one
+        if(associated_task) {
+            // get device type
+            const associatedDeviceType = associated_task.device_type;
+            // make sure device type is different (should be unless there was some bug)
+            if((associatedDeviceType) && (associatedDeviceType !== currDeviceType)) {
+                device_types.push(associatedDeviceType);
+            }
+            // remove the human one, merge data into MiR one
+            if(associatedDeviceType === "human") {
+                // remove associated task from processes
+                if(associated_task.processes) {
+                    associated_task.processes.forEach((currProcess) => {
+                        var processRoutes = [...process.routes]; // spread routes
+                        const routeIndex = processRoutes.indexOf(associated_task._id); // get index of associated task
+                        // remove associated route
+                        if (routeIndex > -1) {
+                          processRoutes.splice(routeIndex, 1);
+                        }
+                        // update process
+                        db.processes.updateOne({ "_id": currProcess }, {
+                            $set: {
+                                routes: processRoutes
+                            }
+                        });
+                    });
+                }
+                // delete human task
+                db.tasks.remove({"_id": associated_task._id});
+                // update non human task
+                db.tasks.updateOne(currTask,{
+                    $set: {
+                        device_types: device_types
+                    },
+                    $unset: {
+                        device_type : "",
+                        associated_task: "",
+                        processes: ""
+                    }
+                });
+            }
+            else {
+            }
+        }
+    }
+    else {
+        // doesn't have associated task, only need to update device_type to device_types
+        db.tasks.updateOne(currTask,{
+            $set: {
+                device_types: device_types
+            },
+            $unset: {
+                device_type : "",
+                associated_task: "",
+                processes: ""
+            }
+        });
+    }
+})

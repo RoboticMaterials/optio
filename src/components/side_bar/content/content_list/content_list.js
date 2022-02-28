@@ -15,7 +15,12 @@ import { deepCopy } from "../../../../methods/utils/utils";
 
 import { isOnlyHumanTask } from "../../../../methods/utils/route_utils";
 
+import { useTranslation } from 'react-i18next';
+
 export default function ContentList(props) {
+
+    const { t, i18n } = useTranslation();
+
     const {
         executeTask,
         hideHeader,
@@ -104,16 +109,16 @@ export default function ContentList(props) {
                         className="sort-dropdown-toggle"
                         style={{userSelect: 'none !important', border: 'none !important'}}
                     >
-                        Sort
+                        {t("Sort")}
                     </Dropdown.Toggle>
 
                     <Portal>
                         <Dropdown.Menu style={{zIndex: 10000}} >
-                            <Dropdown.Item eventKey="alphabetic">Alphabetical</Dropdown.Item>
-                            <Dropdown.Item eventKey="created new-old">Created Date (Newest -> Oldest)</Dropdown.Item>
-                            <Dropdown.Item eventKey="created old-new">Created Date (Oldest -> Newest)</Dropdown.Item>
-                            <Dropdown.Item eventKey="edited new-old">Last Edited Date (Newest -> Oldest)</Dropdown.Item>
-                            <Dropdown.Item eventKey="edited old-new">Last Edited Date (Oldest -> Newest)</Dropdown.Item>
+                            <Dropdown.Item eventKey="alphabetic">{t("Sortkey.alpha","Alphabetical")}</Dropdown.Item>
+                            <Dropdown.Item eventKey="created new-old">{t("Sortkey.datedes","Created Date (Newest -> Oldest)")}</Dropdown.Item>
+                            <Dropdown.Item eventKey="created old-new">{t("Sortkey.dateasc","Created Date (Oldest -> Newest)")}</Dropdown.Item>
+                            <Dropdown.Item eventKey="edited new-old">{t("Sortkey.editdes","Last Edited Date (Newest -> Oldest)")}</Dropdown.Item>
+                            <Dropdown.Item eventKey="edited old-new">{t("Sortkey.editasc","Last Edited Date (Oldest -> Newest)")}</Dropdown.Item>
                         </Dropdown.Menu>
                     </Portal>
                 </Dropdown>

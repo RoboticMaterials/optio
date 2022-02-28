@@ -75,6 +75,7 @@ const Authentication = (props) => {
             var poolData = {
                 UserPoolId: configData.UserPoolId,
                 ClientId: configData.ClientId,
+                Region: configData.Region
             };
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -94,7 +95,26 @@ const Authentication = (props) => {
                         })
                     }
                 });
+                
+               cognitoUser.getUserAttributes(function(err,result){ //getUserAttributes
+                    if (err) {
+                        alert(err.message || JSON.stringify(err));
+                        return;
+                    }
+
+                    result.map(res =>{
+                        console.log(
+                            'attribute ' + res.getName() + ' has value ' + res.getValue()
+                        )
+                    });
+
+                });
+                
             }
+
+
+
+
         }
     }
 

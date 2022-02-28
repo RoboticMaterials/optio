@@ -1,0 +1,1514 @@
+# =========== INITIALIZATION ========== #
+
+# ---------- Base Description ----------#
+swagger: "2.0"
+info:
+  description: Welcome
+  version: "0.4.0"
+  title: Optio REST API
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# ---------- Security ----------#
+securityDefinitions: 
+  OptioAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-apikeyInfoFunc : token_authentication.api_key_decode
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools
+      providerARNs:
+        - arn:aws:cognito-idp:us-east-2:571361296658:userpool/us-east-2_e9bP4odAT
+
+security:
+  - OptioAuth: []
+
+
+# =========== ENDPOINTS ========== #
+paths:
+
+  # ---------- Development ---------- #
+  /development/clear/{map_id}:
+    delete:
+      operationId: development.clear_map
+      summary: Clear all elements and events on a map
+      description: Clear all elements and events on a map
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+        - name: password
+          in: query
+          description: The development password
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully cleared map
+          schema:
+            type: boolean
+          # type: boolean
+
+  # ---------- Cards ---------- #
+  /site_maps/{map_id}/cards:
+    get:
+      operationId: cards.read_all
+      tags:
+        - Cards
+      summary: Read the entire set of cards
+      description: Read the entire set of cards
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read cards
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/card"
+
+    delete:
+      operationId: cards.delete_all_on_map
+      tags:
+        - Cards
+      summary: Delete all cards on a map
+      description: Delete all cards on a map
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully delete all cards on map
+
+
+  /cards:
+    post:
+      operationId: cards.create
+      tags:
+        - Cards
+      summary: Create a card
+      description: Create a new card
+      parameters:
+        - name: card
+          in: body
+          description: Device to create
+          required: True
+          schema:
+            type: object
+      responses:
+        201:
+          description: Successfully created card
+          schema:
+            $ref: "#/definitions/card"
+
+  /cards/count:
+    get:
+      operationId: cards.get_count
+      tags:
+        - Cards
+      summary: Get the total number of cards
+      description: Get the total number of cards
+      responses:
+        201:
+          description: Successfully read the number of cards
+          schema:
+            type: number
+
+  /cards/{card_id}:
+    get:
+      operationId: cards.read_one
+      tags:
+        - Cards
+      summary: Read one card
+      description: Read one card
+      parameters:
+        - name: card_id
+          in: path
+          description: Id of the card to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read card from cards data operation
+          schema:
+            $ref: "#/definitions/card"
+
+    put:
+      operationId: cards.update
+      tags:
+        - Cards
+      summary: Update a card
+      description: Update a card
+      parameters:
+        - name: card_id
+          in: path
+          description: Id the card to update
+          type: string
+          required: True
+        - name: card
+          in: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Successfully updated card
+          schema:
+            $ref: "#/definitions/card"
+
+    delete:
+      operationId: cards.delete
+      tags:
+        - Cards
+      summary: Delete a card from the cards list
+      description: Delete a card
+      parameters:
+        - name: card_id
+          in: path
+          type: string
+          description: Id of the card to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a process
+          schema:
+            type: string
+          
+  /processes/{process_id}/cards:
+    get:
+      operationId: cards.read_process_cards
+      tags:
+        - Cards
+      summary: Read the entire set of cards belonging to a process
+      description: Read the entire set of cards belonging to a process
+      parameters:
+        - name: process_id
+          in: path
+          description: Id of the process to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read set of process cards
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/card"
+
+  /stations/{station_id}/cards:
+    get:
+      operationId: cards.read_station_cards
+      tags:
+        - Cards
+      summary: Read the entire set of cards belonging to a station
+      description: Read the entire set of cards belonging to a station
+      parameters:
+        - name: station_id
+          in: path
+          description: Id of the station to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read set of station cards
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/card"
+
+  # ---------- Dashboards ----------#
+  /site_maps/{map_id}/dashboards:
+    get:
+      operationId: dashboards.read_all
+      tags:
+        - Dashboards
+      summary: Read the entire set of dashboards
+      description: Read the entire set of dashboards
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read dashboards
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/dashboard'
+
+  /dashboards:
+    post:
+      operationId: dashboards.create
+      tags:
+        - Dashboards
+      summary: Create a dashboard
+      description: Create a new dashboard
+      parameters:
+        - name: dashboard
+          in: body
+          description: Dashboard to create
+          required: True
+          schema:
+            $ref: '#/definitions/dashboard'
+      responses:
+        201:
+          description: Successfully created dashboard
+          schema:
+            $ref: '#/definitions/dashboard'
+
+  /dashboards/{dashboard_id}:
+    get:
+      operationId: dashboards.read_one
+      tags:
+        - Dashboards
+      summary: Read one dashboard
+      description: Read one dashboard
+      parameters:
+        - name: dashboard_id
+          in: path
+          description: Id of the dashboard to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read dashboard from dashboards data operation
+          schema:
+            $ref: '#/definitions/dashboard'
+
+    put:
+      operationId: dashboards.update
+      tags:
+        - Dashboards
+      summary: Update a dashboard
+      description: Update a dashboard
+      parameters:
+        - name: dashboard_id
+          in: path
+          description: Id the dashboard to update
+          type: string
+          required: True
+        - name: dashboard
+          in: body
+          schema:
+            $ref: '#/definitions/dashboard'
+      responses:
+        200:
+          description: Successfully updated dashboard
+          schema:
+            $ref: '#/definitions/dashboard'
+
+    delete:
+      operationId: dashboards.delete
+      tags:
+        - Dashboards
+      summary: Delete a dashboard from the dashboards list
+      description: Delete a dashboard
+      parameters:
+        - name: dashboard_id
+          in: path
+          type: string
+          description: Id of the dashboard to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a dashboard
+          schema: 
+            type: string
+
+
+  # ---------- Lot Templates ----------#
+  /site_maps/{map_id}/cards/templates:
+    get:
+      operationId: lot_templates.read_all
+      tags:
+        - Lot Templates
+      summary: Read the entire set of lot templates
+      description: Read the entire set of lot templates
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read lot templates
+          schema:
+            type: array
+            items:
+              type: object
+
+  /cards/templates:
+    post:
+      operationId: lot_templates.create
+      tags:
+        - Lot Templates
+      summary: Create a lot template
+      description: Create a new lot template
+      parameters:
+        - name: lot_template
+          in: body
+          description: lot template to create
+          required: True
+          schema:
+            type: object
+      responses:
+        201:
+          description: Successfully created lot template
+          schema:
+            type: object
+
+  /cards/templates/{id}:
+    get:
+      operationId: lot_templates.read_one
+      tags:
+        - Lot Templates
+      summary: Read one lot template
+      description: Read one lot template
+      parameters:
+        - name: id
+          in: path
+          description: Id of the lot template to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read lot template from lot templates data operation
+          schema:
+            type: object
+
+    put:
+      operationId: lot_templates.update
+      tags:
+        - Lot Templates
+      summary: Update a lot template
+      description: Update a lot template
+      parameters:
+        - name: id
+          in: path
+          description: Id of the lot template to update
+          type: string
+          required: True
+        - name: lot_template
+          in: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Successfully updated lot template
+          schema:
+            type: object
+
+    delete:
+      operationId: lot_templates.delete
+      tags:
+        - Lot Templates
+      summary: Delete a lot template from the lot templates list
+      description: Delete a lot template
+      parameters:
+        - name: id
+          in: path
+          type: string
+          description: Id of the lot template to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a process
+          schema:
+            type: object
+
+
+  # ---------- Map ----------#
+  /site_maps:
+    get:
+      operationId: site_maps.read_all
+      tags:
+        - Site Maps
+      summary: Read the entire set of site_maps
+      description: Read the entire set of site_maps
+      responses:
+        200:
+          description: Successfully read site_maps
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/site_map"
+
+    post:
+      operationId: site_maps.create
+      tags:
+        - Site Maps
+      summary: Create a site_map
+      description: Create a new site_map
+      parameters:
+        - name: site_map
+          in: body
+          description: site_map to create
+          required: True
+          schema:
+            type: object
+      responses:
+        201:
+          description: Successfully created site_map
+          schema:
+            $ref: "#/definitions/site_map"
+
+  /site_maps/{site_map_id}:
+    get:
+      operationId: site_maps.read_one
+      tags:
+        - Site Maps
+      summary: Read one site_map
+      description: Read one site_map
+      parameters:
+        - name: site_map_id
+          in: path
+          description: Id of the site_map to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read site_map from site_maps data operation
+          schema:
+            $ref: "#/definitions/site_map"
+
+    delete:
+      operationId: site_maps.delete
+      tags:
+        - Site Maps
+      summary: Delete a site map from the site map list
+      description: Delete a site map
+      parameters:
+        - name: site_map_id
+          in: path
+          type: string
+          description: Id of the site map to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a site map
+          schema:
+            $ref: "#/definitions/site_map"
+
+
+  # ---------- Processes ----------#
+  /site_maps/{map_id}/processes:
+    get:
+      operationId: processes.read_all
+      tags:
+        - Processes
+      summary: Read the entire set of processes
+      description: Read the entire set of processes
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read processes
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/process"
+
+  /processes:
+    post:
+      operationId: processes.create
+      tags:
+        - Processes
+      summary: Create a process
+      description: Create a new process
+      parameters:
+        - name: process
+          in: body
+          description: Device to create
+          required: True
+          schema:
+            $ref: "#/definitions/process"
+      responses:
+        201:
+          description: Successfully created process
+          schema:
+            $ref: "#/definitions/process"
+
+  /processes/{process_id}:
+    get:
+      operationId: processes.read_one
+      tags:
+        - Processes
+      summary: Read one process
+      description: Read one process
+      parameters:
+        - name: process_id
+          in: path
+          description: Id of the process to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read process from processes data operation
+          schema:
+            $ref: "#/definitions/process"
+
+    put:
+      operationId: processes.update
+      tags:
+        - Processes
+      summary: Update a process
+      description: Update a process
+      parameters:
+        - name: process_id
+          in: path
+          description: Id the process to update
+          type: string
+          required: True
+        - name: process
+          in: body
+          schema:
+            $ref: "#/definitions/process"
+      responses:
+        200:
+          description: Successfully updated process
+          schema:
+            $ref: "#/definitions/process"
+
+    delete:
+      operationId: processes.delete
+      tags:
+        - Processes
+      summary: Delete a process from the processes list
+      description: Delete a process
+      parameters:
+        - name: process_id
+          in: path
+          type: string
+          description: Id of the process to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a process
+ 
+  /processes/{process_id}/statistics:
+    get:
+      operationId: process_stats.generate_process_statistics
+      tags:
+        - Processes
+      summary: Generate process statistics for process
+      description: Generate process statistics for process
+      parameters:
+        - name: process_id
+          in: path
+          description: Id of the process data to generate statistics for
+          type: string
+          required: True
+        - name: start_date
+          in: query
+          description: Statistics start date (UTC Timestamp)
+          required: True
+          type: integer
+        - name: end_date
+          in: query
+          description: Statistics end date (UTC Timestamp)
+          type: integer
+
+      responses:
+        200:
+          description: Successfully read process data from process
+          schema:
+            type: object
+
+  /process_summaries:
+    delete:
+      operationId: process_stats.delete_all_process_summaries
+      tags:
+        - Process Summaries
+      description: Deletes all process summaries
+
+      responses:
+        200:
+          description: Successfully deleted all process summaries
+
+  # ---------- Server Settings ----------#
+  /settings:
+    get:
+      operationId: settings.read_all
+      tags:
+        - Settings
+      summary: Read the settings
+      description: Read the settings
+      responses:
+        200:
+          description: Successfully read settings
+          schema:
+            $ref: "#/definitions/settings"
+    post:
+      operationId: settings.create
+      tags:
+        - Settings
+      summary: Create settings
+      description: Create settings
+      parameters:
+        - name: settings
+          in: body
+          description: Settings to create
+          required: True
+          schema:
+            type: object
+      responses:
+        201:
+          description: Successfully created settings
+          schema:
+            $ref: "#/definitions/settings"
+
+
+  # ---------- Stations ----------#
+  /site_maps/{map_id}/stations:
+    get:
+      operationId: stations.read_all
+      tags:
+        - Stations
+      summary: Read the entire set of stations
+      description: Read the entire set of stations
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read stations
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/station"
+
+  /stations:
+    post:
+      operationId: stations.create
+      tags:
+        - Stations
+      summary: Create a station
+      description: Create a new station
+      parameters:
+        - name: station
+          in: body
+          description: station to create
+          required: True
+          schema:
+            $ref: "#/definitions/station"
+      responses:
+        201:
+          description: Successfully created station
+          schema:
+            $ref: "#/definitions/station"
+
+  /stations/{station_id}:
+    get:
+      operationId: stations.read_one
+      tags:
+        - Stations
+      summary: Read one station
+      description: Read one station
+      parameters:
+        - name: station_id
+          in: path
+          description: Id of the station to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read station from stations data operation
+          schema:
+            $ref: "#/definitions/station"
+
+    put:
+      operationId: stations.update
+      tags:
+        - Stations
+      summary: Update a station
+      description: Update a station
+      parameters:
+        - name: station_id
+          in: path
+          description: Id the station to update
+          type: string
+          required: True
+        - name: station
+          in: body
+          schema:
+            $ref: "#/definitions/station"
+      responses:
+        200:
+          description: Successfully updated station
+          schema:
+            $ref: "#/definitions/station"
+
+    delete:
+      operationId: stations.delete
+      tags:
+        - Stations
+      summary: Delete a station from the stations list
+      description: Delete a station
+      parameters:
+        - name: station_id
+          in: path
+          type: string
+          description: Id of the station to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a station
+
+  /stations/{station_id}/statistics:
+    get:
+      operationId: station_stats.generate_station_statistics
+      tags:
+        - Stations
+      summary: Generate station statistics for station
+      description: Generate station statistics for station
+      parameters:
+        - name: station_id
+          in: path
+          description: Id of the station data to generate statistics for
+          type: string
+          required: True
+        - name: start_date
+          in: query
+          description: Statistics start date (UTC Timestamp)
+          required: True
+          type: integer
+        - name: end_date
+          in: query
+          description: Statistics end date (UTC Timestamp)
+          type: integer
+
+      responses:
+        200:
+          description: Successfully read station data from station
+          schema:
+            type: object
+
+  /station_summaries:
+    delete:
+      operationId: station_stats.delete_all_station_summaries
+      tags:
+        - Station Summaries
+      description: Deletes all station summaries
+
+      responses:
+        200:
+          description: Successfully deleted all station summaries
+
+      
+
+  # ---------- Tasks ----------#
+  /site_maps/{map_id}/tasks:
+    get:
+      operationId: tasks.read_all
+      tags:
+        - Tasks
+      summary: Read the entire set of tasks
+      description: Read the entire set of tasks
+      parameters:
+        - name: map_id
+          in: path
+          description: Map Id
+          required: True
+          type: string
+      responses:
+        200:
+          description: Successfully read tasks
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/route"
+
+  /tasks:
+    post:
+      operationId: tasks.create
+      tags:
+        - Tasks
+      summary: Create a task
+      description: Create a new task
+      parameters:
+        - name: task
+          in: body
+          description: Task to create
+          required: True
+          schema:
+            $ref: "#/definitions/route"
+      responses:
+        201:
+          description: Successfully created task
+          schema:
+            $ref: "#/definitions/route"
+
+  /tasks/{task_id}:
+    get:
+      operationId: tasks.read_one
+      tags:
+        - Tasks
+      summary: Read one task
+      description: Read one task
+      parameters:
+        - name: task_id
+          in: path
+          description: Id of the task to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read task from tasks data operation
+          schema:
+            $ref: "#/definitions/route"
+
+    put:
+      operationId: tasks.update
+      tags:
+        - Tasks
+      summary: Update a task
+      description: Update a task
+      parameters:
+        - name: task_id
+          in: path
+          description: Id the task to update
+          type: string
+          required: True
+        - name: task
+          in: body
+          schema:
+            $ref: "#/definitions/route"
+      responses:
+        200:
+          description: Successfully updated task
+          schema:
+            $ref: "#/definitions/route"
+
+    delete:
+      operationId: tasks.delete
+      tags:
+        - Tasks
+      summary: Delete a task from the tasks list
+      description: Delete a task
+      parameters:
+        - name: task_id
+          in: path
+          type: string
+          description: Id of the task to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a task
+
+
+  # ---------- Report Events ----------#
+  /report_events:
+    get:
+      operationId: report_events.read_all
+      tags:
+        - Report Events
+      summary: Read the entire set of report_events
+      description: Read the entire set of report_events
+      responses:
+        200:
+          description: Successfully read report_events
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/report_event"
+
+    post:
+      operationId: report_events.create
+      tags:
+        - Report Events
+      summary: Create a report event
+      description: Create a new report event
+      parameters:
+        - name: report_event
+          in: body
+          description: Report event to create
+          required: True
+          schema:
+            $ref: "#/definitions/report_event"
+      responses:
+        201:
+          description: Successfully created batch
+          schema:
+            $ref: "#/definitions/report_event"
+
+  /report_events/{report_event_id}:
+    get:
+      operationId: report_events.read_one
+      tags:
+        - Report Events
+      summary: Read one report event
+      description: Read one report event
+      parameters:
+        - name: report_event_id
+          in: path
+          description: Id of the report event to get
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read report event from report events data operation
+          schema:
+            $ref: "#/definitions/report_event"
+
+    put:
+      operationId: report_events.update
+      tags:
+        - Report Events
+      summary: Update a report event
+      description: Update a report event
+      parameters:
+        - name: report_event_id
+          in: path
+          description: Id the report event to update
+          type: string
+          required: True
+        - name: report_event
+          in: body
+          schema:
+            $ref: "#/definitions/report_event"
+      responses:
+        200:
+          description: Successfully updated report event
+          schema:
+            $ref: "#/definitions/report_event"
+
+    delete:
+      operationId: report_events.delete
+      tags:
+        - Report Events
+      summary: Delete a report event from the report events list
+      description: Delete a report event
+      parameters:
+        - name: report_event_id
+          in: path
+          type: string
+          description: Id of the report event to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a report event
+
+  # ---------- Touch Events ----------#
+  /touch_events:
+
+    post:
+      operationId: touch_events.create
+      tags:
+        - Touch Events
+      summary: Create a touch event
+      description: Create a new touch event
+      parameters:
+        - name: touch_event
+          in: body
+          description: event to create
+          required: True
+          schema:
+            $ref: "#/definitions/touch_event"
+        - name: option
+          in: query
+          description: Either open or close
+          required: False
+          type: string
+      responses:
+        201:
+          description: Successfully created touch event
+          schema:
+            $ref: "#/definitions/touch_event"
+
+    get:
+      operationId: touch_events.read_all
+      tags:
+        - Touch Events
+      summary: Read all touch events
+      description: Read all touch events
+      responses:
+        200:
+          description: Successfully read touch events from touch events data operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/touch_event"
+
+  /touch_events/site_map/{map_id}:     
+    delete:
+      operationId: touch_events.delete_all_on_map
+      tags:
+        - Touch Events
+      summary: Delete all touch events on a map
+      description: Delete all events on a map
+      parameters:
+        - name: map_id
+          in: path
+          description: Id of map to delete events on
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully deleted all events for map
+
+  /touch_events/site_map/{map_id}/open_events:
+    get:
+      operationId: touch_events.get_open_touch_events
+      tags:
+        - Touch Events
+      summary: Get all open touch events on a map, normalized by station ID
+      description: Get all open touch events on a map, normalized by station ID
+      parameters:
+        - name: map_id
+          in: path
+          description: Id of map to get open events for
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully retrieved open touch events
+
+  /touch_events/station/{station_id}/open_events:
+    get:
+      operationId: touch_events.get_open_touch_events_for_station
+      tags:
+        - Touch Events
+      summary: Get all open touch events at a station
+      description: Get all open touch events at a station
+      parameters:
+        - name: station_id
+          in: path
+          description: Id of station to get events for
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully retrieved open touch events
+
+  /touch_events/lot/{lot_id}:
+    get:
+      operationId: touch_events.get_by_lot
+      tags:
+        - Touch Events
+      summary: Get touch events for a specific lot
+      description: Get touch events for a specific lot
+      parameters:
+        - name: lot_id
+          in: path
+          description: Id of lot to retrieve events for
+          type: string
+          required: True
+      responses:
+        201:
+          description: Successfully retrieved touch events for lot
+          schema:
+            $ref: "#/definitions/touch_event"
+
+
+
+# =========== DEFINITIONS ========== #
+
+definitions:
+
+  site_map:
+    type: object
+    properties:
+      _id: 
+        type: string
+        description: uuidv4
+      name:
+        type: string
+        description: Map name
+      created_by_name:
+        type: string
+        description: Username of user who uploaded map
+      map:
+        type: string
+        description: Byte map data string
+      origin_x:
+        type: number
+        description: When based on MiR map, value may not be 0
+      origin_y:
+        type: number
+        description: When based on MiR map, value may not be 0
+      resolution:
+        type: number
+        description: Map resolution from MiR. For now, this does not affect rendering.
+        
+
+  card:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: uuidv4
+      name:
+        type: string
+        description: Lot name
+      bins:
+        type: object
+        description: Bins are formatted as an object where the key is the station at which there is some quantity from this lot, and the value is an object with a key 'count' which is the actual quantity at that station, and other keys correlating to routes and values correlating to non-consumated parts that traveled along that route.
+      flags:
+        type: array
+        items:
+          type: object
+      process_id:
+        type: string
+        description: ID of process that the lot belongs to
+      lotTemplateId:
+        type: string
+        description: ID of the lot template that this card used during creation
+      lotNum:
+        type: number
+        description: Auto generated (or editable) identifier that related to the barcode
+      fields:
+        type: array
+        description: The fields from the lot template. If the lot template changes, the lot may use it's local copy instead of syncing with the new template.
+        items:
+          type: object
+          # properties:
+          #   _id:
+          #     type: string
+          #     description: ID of the field (not saved in any DB)
+          #   component:
+          #     type: string
+          #     description: One of 'TEXT_BOX_BIG' 'TEXT_BOX_SMALL' 'CALENDAR_START_END' etc.
+          #   dataType: 
+          #     type: string
+          #     description: One of 'DATE_RANGE' 'STRING' etc
+          #   fieldName:
+          #     type: string
+          #     description: Name of the field for user input
+          #   required:
+          #     type: boolean
+          #     description: Is this field required to make a new lot?
+          #   showInPreview:
+          #     type: boolean
+          #     description: When the card is displayed, should this value be displayed? (still displayed in dashboard page)
+          #   key:
+          #     type: number
+          #     description: Index
+          #   value: 
+          #     type: string
+          #     description: The value of this field
+
+
+  dashboard:
+    type: object    
+    properties:
+      _id:
+        type: string
+        description: ID of the dashboard
+      name:
+        type: string
+        description: Dahsboard name. (legacy property. Dashboards are no longer renamable)
+      locked:
+        type: boolean
+        description: If true, the dashboard cannot be exited from a tablet
+      station:
+        type: string
+        description: ID of the station that this map is correlated to
+      map_id:
+        type: string
+        description: ID of the map that this dashbaord appears on
+      users:
+        type: array
+        items:
+          type: string
+          description: Name/ID of an operator at that station
+      sort:
+        type: object
+        description: sort method of dashbaord
+      filters:
+        type: array
+        items:
+          type: object
+      report_buttons:
+        type: array
+        items: 
+          type: object
+          properties:
+            _id: 
+              type: string
+              description: ID of the report button
+            label: 
+              type: string
+              description: Name of the report
+            color: 
+              type: string
+              description: Hex color of button
+            description:
+              type: string
+              description: Report description
+      
+
+  station:
+    type: object
+    properties:
+      _id: 
+        type: string
+        description: ID of the station
+      name: 
+        type: string
+        description: The station name
+      schema: 
+        type: string
+        description: station or position
+      type:
+        type: string
+        description: human or device type
+      pos_x:
+        type: number
+        description: The X position in meters
+      pos_y: 
+        type: number
+        description: The Y position in meters
+      x: 
+        type: number
+        description: The X position in pixels (is overwritten by map movements)
+      y:
+        type: number
+        description: The Y position in pixels (is overwritten by map movements)
+      map_id:
+        type: string
+        description: The ID of the map that the station appears on
+      cycle_time:
+        type: number
+        description: The calculated cycle time based on events in seconds. Is generated by backend
+      manual_cycle_time:
+        type: number
+        description: The user-specified manual cycle time in seconds
+      cycle_time_mode:
+        type: string
+        description: auto or manual
+      children:
+        type: array
+        items: 
+          type: string
+          description: ID of child station
+      dashboards:
+        type: array
+        items:
+          type: string
+          description: ID of the dashboards
+      edited_at:
+        type: number
+        description: UTC time of last edit
+      created_at:
+        type: number
+        description: UTC time of creation
+
+  process:
+    type: object
+    properties:
+      _id: 
+        type: string
+        description: ID of the process
+      name: 
+        type: string
+        description: Name of the process
+      routes: 
+        type: array
+        items:
+          type: string
+          description: ID of the route
+      map_id:
+        type: string
+        description: ID of the map this process belongs on
+      # startDivergeType:
+      #   type: string
+      #   x-nullable: true
+      #   description: split or choice of False
+      edited_at:
+        type: number
+        description: UTC time of last edit
+      created_at:
+        type: number
+        description: UTC time of creation
+      flattened_stations:
+        type: array
+        items:
+          type: object
+          properties:
+            stationID: 
+              type: string
+              description: ID of the station
+            depth: 
+              type: number
+              description: Integer flattened depth for display
+      lastLotTemplateId:
+        type: string
+        description: ID of the last used lot template for this process
+
+  route:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: ID of route
+      name:
+        type: string
+        description: Name of route
+      processId:
+        type: string
+        description: ID of the process this route belongs to
+      inOutRatio:
+        type: number
+        description: The ratio between the number of parts that entered the load station and the amount of parts that will arrive at the unload station
+      load:
+        type: string
+        description: ID of the load station
+      unload:
+        type: string
+        description: ID of the unload station
+      map_id:
+        type: string
+        description: ID of the map this route belongs to
+      
+
+  lot_template:
+    type: object
+    properties:
+      _id: 
+        type: string
+        description: ID of the template
+      name:
+        type: string
+        description: Template name
+      processId: 
+        type: string
+        description: ID of the process this template belongs to
+      map_id: 
+        type: string
+        description: ID of the map this template belongs to
+      uploadFieldMapping:
+        type: object
+        description: Keys are the ID of the field and values are the columns that the field correspond to
+      fields:
+        type: array
+        description: The fields from the lot template. If the lot template changes, the lot may use it's local copy instead of syncing with the new template.
+        items:
+          type: object
+          # properties:
+          #   _id:
+          #     type: string
+          #     description: ID of the field (not saved in any DB)
+          #   component:
+          #     type: string
+          #     description: One of 'TEXT_BOX_BIG' 'TEXT_BOX_SMALL' 'CALENDAR_START_END' etc.
+          #   dataType: 
+          #     type: string
+          #     description: One of 'DATE_RANGE' 'STRING' etc
+          #   fieldName:
+          #     type: string
+          #     description: Name of the field for user input
+          #   required:
+          #     type: boolean
+          #     description: Is this field required to make a new lot?
+          #   showInPreview:
+          #     type: boolean
+          #     description: When the card is displayed, should this value be displayed? (still displayed in dashboard page)
+          #   key:
+          #     type: number
+          #     description: Index
+          #   value: 
+          #     type: string
+          #     description: The value of this field
+
+  settings:
+    type: object
+
+  report_event: 
+    type: object
+    properties:
+      _id:
+        type: string
+        description: Event ID
+      dashboard_id:
+        type: string
+        description: ID of the dashboard that triggered the event
+      station_id:
+        type: string
+        description: The ID of the station where this report was triggered
+      report_button_id:
+        type: string
+        description: The ID of the report button on the dashbaord
+      datetime:
+        type: integer
+        description: The UTC datetime of the report
+
+  touch_event:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: ID of the event
+      start_datetime:
+        type: integer
+        description: UTC time of operator touching lot
+      move_datetime:
+        type: integer
+        x-nullable: true
+        description: UTC time of opertator moving lot
+      map_id: 
+        type: string
+        description: ID of the map that the event was on
+      lot_id: 
+        type: string
+        description: ID of the lot that the event is tied to
+      product_group_id:
+        type: string
+        description: ID of the product group
+      sku:
+        type: string
+        description: The SKU of the parts moved
+      start_operator:
+        type: string
+        x-nullable: true
+        description: Name or ID of the user who started the event
+      operator:
+        type: string
+        x-nullable: true
+        description: Name or ID of the user who finished the event
+      notes:
+        type: string
+        description: Notes attached to that move event (currently not used)
+      quantity:
+        type: integer
+        description: The quantity of parts moved during this event
+      load_station_id:
+        type: string
+        description: ID of the station that moved the lot
+      unload_station_id:
+        type: string
+        x-nullable: true
+        description: ID of the station the lot was moved to
+      dashboard_id:
+        type: string
+        description: ID of the dashboard that the lot move was triggered from
+      route_id:
+        type: string
+        x-nullable: true
+        description: ID that the lot was moved along
+      type:
+        type: string
+        description: move, rework, or scrap
