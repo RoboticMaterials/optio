@@ -121,7 +121,7 @@ const LotEditorContainer = (props) => {
     const [showStatusList, setShowStatusList] = useState(false); // bool - controls whether or not to show statusList
     const [createdLot, setCreatedLot] = useState(false); // bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([]);
-
+    //console.log(fieldNameArr)
     const [lotTemplateId, setLotTemplateId] = useState(null);
     const lotTemplate = useMemo(
         () => lotTemplates[lotTemplateId],
@@ -416,19 +416,18 @@ const LotEditorContainer = (props) => {
                     // extract properties
                     const { fieldName, component, dataType, _id } =
                         currItem || {};
-
                     if (
                         component === FIELD_COMPONENT_NAMES.CALENDAR_START_END
                     ) {
                         newFieldNameArr.push({
-                            _id,
+                            _id: `${_id}-start`,
                             fieldName: `${fieldName}`,
                             index: 0,
                             dataType: dataType,
                             displayName: `${fieldName} (start)`,
                         });
                         newFieldNameArr.push({
-                            _id,
+                            _id: `${_id}-end`,
                             fieldName: `${fieldName}`,
                             index: 1,
                             dataType: dataType,
@@ -444,7 +443,6 @@ const LotEditorContainer = (props) => {
                     }
                 });
             });
-
             setFieldNameArr([
                 // ...REQUIRED_FIELDS,
                 {
