@@ -700,12 +700,12 @@ export const handleMergeExpression = (stationId, process, routes, stations, clea
 
 export const getNodeIncoming = (node, processRoutes, filterLoopRoutes=false) => {
     return processRoutes.filter((route) => {
-        return route.unload === node && (!filterLoopRoutes || !isLoopingRoute(route._id, processRoutes))
+        return route?.unload === node && (!filterLoopRoutes || !isLoopingRoute(route._id, processRoutes))
     });
 };
 
 export const getNodeOutgoing = (node, processRoutes) => {
-    return processRoutes.filter((route) => route.load === node);
+    return processRoutes.filter((route) => route?.load === node);
 };
 
 export const isNodeStartWarehouse = (node, processRoutes, stations) => {

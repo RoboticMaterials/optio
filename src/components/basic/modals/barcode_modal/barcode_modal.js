@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, useMemo} from "react";
 import Modal from 'react-modal';
 import ReactToPrint from 'react-to-print'
 import {useDispatch, useSelector} from "react-redux";
@@ -20,16 +20,10 @@ const BarcodeModal = (props) => {
         isOpen,
         title,
         close,
-        dashboard,
-        onSubmit,
         handleClose,
-        children,
         barcodeId,
+        card
     } = props
-
-    const cards = useSelector(state => state.cardsReducer.cards)
-    const stations = useSelector(state =>state.stationsReducer.stations)
-    const barcodeModal = useSelector(state => state.cardsReducer.showBarcodeModal)
 
     const dispatch = useDispatch()
     const dispatchShowBarcodeModal = (bool) => dispatch(showBarcodeModal(bool))
@@ -43,12 +37,58 @@ const BarcodeModal = (props) => {
     useEffect(() => {
       if (!!componentRef.current) {
         JsBarcode("#barcode", barcodeId, {
-          width: 16,
-          height: 800,
+          width: 12,
+          height: 600,          
         })
         setGenerated(true)
       }
   	}, [componentRef.current])
+
+    const parseFieldValue = (field) => {
+      let fieldValue;
+      if (field.dataType === 'DATE_RANGE') {
+        if (field.value[0]) {
+          fieldValue = new Date(field.value[0])?.toLocaleDateString();
+        } else {
+          fieldValue = 'None'
+        }
+
+        fieldValue += ' => ';
+        if (field.value[1]) {
+          fieldValue += new Date(field.value[1])?.toLocaleDateString()
+        } else {
+          fieldValue += 'None'
+        }
+      } else if (field.dataType === 'DATE') {
+        if (field.value) {
+          fieldValue = new Date(field.value)?.toLocaleDateString()
+        } else {
+          fieldValue = 'None'
+        }
+      } else {
+        fieldValue = field.value
+      }
+
+      return fieldValue
+    }
+
+    const fields = useMemo(() => {
+      if (!card) return null
+      return (
+        <styled.FieldsContainer>
+          {card.fields.map(row => (
+            <>
+              {row.map(field => (field.showInBarcode && 
+                <styled.Field>
+                  <styled.FieldLabel>{field.fieldName}: </styled.FieldLabel>
+                  <styled.FieldValue>{parseFieldValue(field)}</styled.FieldValue>
+                </styled.Field>
+              ))}
+            </>
+          ))}
+        </styled.FieldsContainer>
+      )
+    }, [card])
 
     return (
         <styled.Container
@@ -65,8 +105,11 @@ const BarcodeModal = (props) => {
                 }
             }}
         >
+
+            
+
             <styled.Header>
-              {!!generated &&
+              {generated &&
                 <ReactToPrint
                   trigger = {()=><styled.PrintIcon className = 'fas fa-print' style = {{paddingLeft: '1rem'}}/>}
                   content = {() => componentRef.current}
@@ -79,12 +122,12 @@ const BarcodeModal = (props) => {
               </styled.Title>
               <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={()=>{handleClose(); setGenerated(false)}}/>
             </styled.Header>
-            <styled.BodyContainer generated = {generated}>
+            <styled.BodyContainer ref = {componentRef} generated = {generated}>
+              {fields}
 
-                  <styled.BarcodeSVG
-                    id = "barcode"
-                    ref = {componentRef}
-                  />
+              <styled.BarcodeSVG
+                id = "barcode"
+              />
 
             </styled.BodyContainer>
         </styled.Container>

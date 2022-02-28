@@ -31,7 +31,7 @@ const LotContainer = (props) => {
     onDashboard,
     // quantity,
     ...rest
-  } = props
+        } = props
 
   const history = useHistory();
   const pageName = history.location.pathname;
@@ -90,6 +90,7 @@ const LotContainer = (props) => {
                   flags={flags || []}
                   enableFlagSelector={enableFlagSelector}
                   name={name}
+                  key={lotId}
                   count={count}
                   loopCount={lot.loopCount}
                   id={lotId}
@@ -125,6 +126,7 @@ const LotContainer = (props) => {
                             count={quantity}
                             loopCount={lot.loopCount}
                             id={lotId}
+                            key={lotId}
                             isSelected={false}
                             selectable={false}
                             onClick={() => {}}

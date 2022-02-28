@@ -14,8 +14,11 @@ import Textbox from "../../../../../../basic/textbox/textbox";
 import ColorField from "../../../../../../basic/form/color_field/color_field";
 import {DASHBOARD_BUTTON_COLORS} from "../../../../../../../constants/dashboard_constants";
 import Button from "../../../../../../basic/button/button";
+import { useTranslation } from 'react-i18next';
 
 const NewButtonForm = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         cancel,
@@ -185,12 +188,12 @@ const NewButtonForm = (props) => {
                         }
 
                         <div style={{ marginBottom: "1rem" }}>
-                            <styled.Label>Label</styled.Label>
+                            <styled.Label>{t("label")}</styled.Label>
                             {editing &&
                             <TextField
                                 name="label"
                                 type="text"
-                                placeholder="Label..."
+                                placeholder={t("label")+"..."}
                                 InputComponent={Textbox}
                                 style={{ borderRadius: ".5rem" }}
                             />
@@ -203,11 +206,11 @@ const NewButtonForm = (props) => {
                                     marginBottom: "1rem"
                                 }}
                             >
-                                <styled.Label>Description</styled.Label>
+                                <styled.Label>{t("description")}</styled.Label>
                                 <TextField
                                     name="description"
                                     type="text"
-                                    placeholder="Description..."
+                                    placeholder={t("description")+"..."}
                                     InputComponent={Textbox}
                                     lines={2}
                                     style={{ borderRadius: "0.5rem" }}
@@ -240,7 +243,7 @@ const NewButtonForm = (props) => {
                                 marginBottom: "1rem"
                             }}
                         >
-                            <styled.Label>Color</styled.Label>
+                            <styled.Label>{t("color")}</styled.Label>
                             <ColorField
                                 name={"color"}
                                 Container={styled.ColorFieldContainer}

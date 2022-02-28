@@ -62,7 +62,7 @@ const Lot = (props) => {
     const themeContext = useContext(ThemeContext)
     // actions
     const dispatch = useDispatch()
-    const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
+    const dispatchPutCardAttributes = async (card, ID) => dispatch(putCardAttributes(card, ID))
     const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
     const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
     const lot = useSelector(state => state.cardsReducer.cards)[id] || {}
@@ -338,12 +338,22 @@ const Lot = (props) => {
                     />
                 }
 
+                <LotSimpleRow
+                    label="Product"
+                    value={lotTemplates[lot.lotTemplateId]?.name }
+                />
+                
+
               {/* {stationName &&
                     <LotSimpleRow
                         label={"Station"}
                         value={stationName}
                     />
                 } */}
+
+                
+
+                
 
                 {showCustomFields && renderTemplateValues()}
             </styled.ContentContainer>
