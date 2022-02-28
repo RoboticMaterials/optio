@@ -35,7 +35,11 @@ import { sortBySummary } from "../../../../methods/utils/card_utils";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 import {SORT_MODES} from "../../../../constants/common_contants";
 
+import { useTranslation } from 'react-i18next';
+
 const Cards = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         id
@@ -630,8 +634,8 @@ const Cards = (props) => {
 
     const renderHeaderContent = (stationId) => {
       let name
-      if(stationId === 'QUEUE') name = 'Queue'
-      else if(stationId === 'FINISH') name = 'Finish'
+      if(stationId === 'QUEUE') name = t("Queue")
+      else if(stationId === 'FINISH') name = t("Finish")
       else name = stations[stationId].name
       return (
         <styled.HeaderContainer>
@@ -649,9 +653,7 @@ const Cards = (props) => {
                 textColor = '#363636'
                 border = {true}
                 >
-                <styled.LotCount>Number of </styled.LotCount>
-                <styled.LotCount style = {{color: '#924dff'}}>lots </styled.LotCount>
-                <styled.LotCount>at current station</styled.LotCount>
+               <styled.LotCount>{t("Parts at the current station")}</styled.LotCount>
               </ReactTooltip>
               <styled.RowContainer>
                 <styled.LotCount>
@@ -671,9 +673,9 @@ const Cards = (props) => {
                   textColor = '#363636'
                   border = {true}
                   >
-                  <styled.LotCount>Number of </styled.LotCount>
-                  <styled.LotCount style = {{color: '#924dff'}}>parts </styled.LotCount>
-                  <styled.LotCount>at current station</styled.LotCount>
+                
+                  <styled.LotCount>{t("Lots at the current station")}</styled.LotCount>
+                      
                 </ReactTooltip>
                 <styled.RowContainer>
                   <styled.LotCount>
@@ -707,6 +709,7 @@ const Cards = (props) => {
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
+                            key = {cardId}
                             onMouseLeave = {()=>setHoveringCard(null)}
                             onClick = {()=>setShowLotEditor(true)}
                             draggable = {true}
@@ -1016,7 +1019,7 @@ const Cards = (props) => {
             <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
             <i className = 'fas fa-plus' style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
               <styled.AddLot>
-                Add New Lot
+                {t("Add New Lot")}
               </styled.AddLot>
             </styled.AddLotContainer>
           </styled.ColumnContainer>

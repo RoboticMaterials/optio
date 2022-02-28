@@ -32,6 +32,7 @@ import * as styled from "../zone_header/zone_header.style"
 import AdvancedCalendarPlaceholderButton
     , {FILTER_DATE_OPTIONS} from "../../../../basic/advanced_calendar_placeholder_button/advanced_calendar_placeholder_button"
 import {newPositionTemplate} from "../../../../../constants/position_constants";
+import { useTranslation } from 'react-i18next';
 
 const VALUE_MODES = {
     TEXT_BOX: "TEXT_BOX",
@@ -41,6 +42,8 @@ const VALUE_MODES = {
 }
 
 const LotFilterBarBasic = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         setLotFilterValue,
@@ -139,7 +142,7 @@ const LotFilterBarBasic = (props) => {
                 css={props.descriptionCss}
                 onClick={()=>setOpen(!open)}
             >
-                Filter
+                {t("Filter")}
             </styled.Description>
 
             {/* only show content when open */}
@@ -297,7 +300,7 @@ const LotFilterBarBasic = (props) => {
 
                                 [VALUE_MODES.TEXT_BOX]:
                                     <Textbox
-                                        placeholder='Filter lots...'
+                                        placeholder={t("filterlots","Filter lots...")}
                                         onChange={async(e) => {
                                             setLotFilterValue(e.target.value)
                                             let settingsPromise = dispatchGetSettings()

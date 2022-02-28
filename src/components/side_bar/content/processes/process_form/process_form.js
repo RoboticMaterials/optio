@@ -70,6 +70,7 @@ const ProcessForm = (props) => {
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+	const processes = useSelector(state => state.processesReducer.processes)
 	const currentMapId = useSelector(state => state.localReducer.localSettings.currentMapId)
 	const stations = useSelector(state => state.stationsReducer.stations);
 	const lotTemplates = useSelector(state => state.lotTemplatesReducer.lotTemplates)
@@ -292,7 +293,7 @@ const ProcessForm = (props) => {
 			}}
 
 			// validation control
-			validationSchema={getProcessSchema(stations)}
+			validationSchema={getProcessSchema(stations,processes,selectedProcess)}
 			innerRef = {formRef}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched

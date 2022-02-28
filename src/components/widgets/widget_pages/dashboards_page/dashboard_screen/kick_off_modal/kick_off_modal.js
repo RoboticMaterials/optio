@@ -40,6 +40,9 @@ import { getLotTemplates } from "../../../../../../redux/actions/lot_template_ac
 import { postTouchEvent } from '../../../../../../redux/actions/touch_events_actions';
 import useWindowSize from "../../../../../../hooks/useWindowSize";
 
+import { getNodeIncoming, getNodeOutgoing, isNodeStartWarehouse } from '../../../../../../methods/utils/processes_utils';
+
+
 Modal.setAppElement("body");
 
 const KickOffModal = (props) => {
@@ -81,7 +84,6 @@ const KickOffModal = (props) => {
   const [selectedLot, setSelectedLot] = useState(null);
   const [lotCount, setLotCount] = useState(null);
   const [showQuantitySelector, setShowQuantitySelector] = useState(false);
-  const [availableKickoffCards, setAvailableKickoffCards] = useState([]);
 
   const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING);
@@ -132,7 +134,7 @@ const KickOffModal = (props) => {
       const kickoffStations = findProcessStartNodes(processRoutes, stations);
 
       if (startDivergeType === undefined || startDivergeType === "split") {
-      
+
         for (var station in kickoffStations) {
           let totalQuantity = !!updatedCard.bins[kickoffStations[station]]
             ?.count
@@ -190,7 +192,7 @@ const KickOffModal = (props) => {
           route_id: null
         })
       }
-      
+
 
       const result = await onPutCard(updatedCard, updatedCard._id);
 
@@ -200,12 +202,11 @@ const KickOffModal = (props) => {
         if (kickoffStations.length > 1) {
           message = `${quantity} parts from ${card.name} 
                     have been kicked off between ${kickoffStations
-                      .map((stationId) => stations[stationId].name)
-                      .join(" & ")}`;
+              .map((stationId) => stations[stationId].name)
+              .join(" & ")}`;
         } else {
-          message = `${quantity} parts from ${card.name} have been kicked off to ${
-            stations[kickoffStations[0]]?.name
-          }`;
+          message = `${quantity} parts from ${card.name} have been kicked off to ${stations[kickoffStations[0]]?.name
+            }`;
         }
       }
     } else {
@@ -219,85 +220,102 @@ const KickOffModal = (props) => {
   /*
    * renders an array of buttons for each kick off lot
    * */
-  const renderKickOffButtons = useMemo(() => {
-    return availableKickoffCards.map((currCard, cardIndex) => {
-      const {
-        _id: lotId,
-        name,
-        start_date,
-        end_date,
-        bins = {},
-        flags,
-        lotNumber,
-        process_id: processId,
-        lotTemplateId,
-      } = currCard;
+  const availableKickoffCards = useMemo(() => {
 
-      const process = processes[processId];
-      const { name: processName } = process || {};
 
-      const count = bins["QUEUE"]?.count || 0;
-      const totalQuantity = getLotTotalQuantity(currCard);
-      const templateValues = getCustomFields(lotTemplateId, currCard);
 
-      return (
-        <Lot
-          renderParts={false}
-          templateValues={templateValues}
-          totalQuantity={totalQuantity}
-          enableFlagSelector={false}
-          lotNumber={lotNumber}
-          processName={processName}
-          flags={flags || []}
-          name={name}
-          start_date={start_date}
-          end_date={end_date}
-          count={count}
-          id={lotId}
-          index={cardIndex}
-          onClick={() => {
-            onButtonClick(currCard);
-          }}
-          containerStyle={{
-            marginBottom: "0.5rem",
-            width: "80%",
-            margin: ".5rem auto .5rem auto",
-          }}
-        />
-      );
-    });
-  }, [availableKickoffCards]);
+    const localProcesses = Object.values(processes).filter(process => {
 
-  useEffect(() => {
-    let tempAvailableKickOffCards = Object.values(processCards[processID] || {})
-      .filter(
-        (currCard) =>
-          currCard.bins &&
-          currCard.bins["QUEUE"] &&
-          currCard.bins["QUEUE"]?.count > 0
-      )
-      .map((currCard) => ({
-        ...currCard,
-        count: currCard.bins["QUEUE"].count,
-      }))
-      .filter(
-        (currLot) =>
-          dashboard?.filters?.reduce((matchesAll, filter) => {
-            const { bins = {} } = currLot || {};
-            const quantity = bins["QUEUE"]?.count || 0;
-            return (
-              matchesAll &&
-              checkCardMatchesFilter({ ...currLot, quantity }, filter)
-            );
-          }, true) || true
-      );
+      const processRoutes = process.routes.map(routeId => routes[routeId]);
+      const incomingRoutes = getNodeIncoming(stationId, processRoutes)
+          .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
+      const outgoingRoutes = getNodeOutgoing(stationId, processRoutes);
 
-    if (sortMode) {
-      sortBy(tempAvailableKickOffCards, sortMode, sortDirection);
-    }
 
-    setAvailableKickoffCards(tempAvailableKickOffCards);
-  }, [processCards, dashboard, sortMode]);
+      if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
+          return true;
+      }
+      else return false;
+    })
+
+
+    const out = localProcesses.reduce((components, process) => {
+
+      const processId = process._id;
+
+      let tempAvailableKickOffCards = Object.values(processCards[processId] || {})
+        .filter(
+          (currCard) =>
+            currCard.bins &&
+            currCard.bins["QUEUE"] &&
+            currCard.bins["QUEUE"]?.count > 0
+        )
+
+      if (sortMode) {
+        sortBy(tempAvailableKickOffCards, sortMode, sortDirection);
+      }
+      if(tempAvailableKickOffCards.length <= 0){ // prevent a JSX component to be returned if it is empty
+        return components
+      }
+
+      components.push (
+        <>
+          <styled.ProcessName>{processes[processId]?.name}</styled.ProcessName>
+        
+        {tempAvailableKickOffCards.map((currCard, cardIndex) => {
+        const {
+          _id: lotId,
+          name,
+          start_date,
+          end_date,
+          bins = {},
+          flags,
+          lotNumber,
+          process_id: processId,
+          lotTemplateId,
+        } = currCard;
+
+        const process = processes[processId];
+        const { name: processName } = process || {};
+
+        const count = bins["QUEUE"]?.count || 0;
+        const totalQuantity = getLotTotalQuantity(currCard);
+        const templateValues = getCustomFields(lotTemplateId, currCard);
+
+        return (
+          <Lot
+            renderParts={false}
+            templateValues={templateValues}
+            totalQuantity={totalQuantity}
+            enableFlagSelector={false}
+            lotNumber={lotNumber}
+            processName={processName}
+            flags={flags || []}
+            name={name}
+            start_date={start_date}
+            end_date={end_date}
+            count={count}
+            id={lotId}
+            index={cardIndex}
+            onClick={() => {
+              onButtonClick(currCard);
+            }}
+            containerStyle={{
+              marginBottom: "0.5rem",
+              width: "80%",
+              margin: ".5rem auto .5rem auto",
+            }}
+          />
+        )
+      })}
+      </>
+
+    )
+    return components
+  }, []) // initializes component to []
+    return out;
+  
+}, [processCards, processID, dashboard, sortMode]);
 
   const loadData = async () => {
     const cardsResult = await dispatchGetCards();
@@ -356,19 +374,6 @@ const KickOffModal = (props) => {
           },
         }}
       >
-        {/* {showLotEditor &&
-                <LotEditorContainer
-                    isOpen={true}
-                    onAfterOpen={null}
-                    processOptions={kickOffEnabledInfo}
-                    cardId={null}
-                    processId={null}
-                    close={() => {
-                        setShowLotEditor(false)
-                        // setSelectedCard(null)
-                    }}
-                />
-            } */}
         <styled.Header>
           <styled.HeaderMainContentContainer>
             <styled.Title>{title}</styled.Title>
@@ -378,21 +383,7 @@ const KickOffModal = (props) => {
               onClick={close}
             />
           </styled.HeaderMainContentContainer>
-          {/* {!phoneView &&
-                    <SortFilterContainer
 
-                        sortMode={dashboard?.sort?.direciton || LOT_FILTER_OPTIONS.name}
-                        setSortMode={handleChangeSortMode}
-                        sortDirection={dashboard?.sort?.direction || SORT_DIRECTIONS.ASCENDING}
-                        setSortDirection={handleChangeSortDirection}
-
-                        filters={dashboard.filters || []}
-                        onAddFilter={filter => handleAddFilter(filter)}
-                        onRemoveFilter={filterId => handleRemoveFilter(filterId)}
-
-                        containerStyle={{}}
-                    />
-                } */}
         </styled.Header>
 
         <styled.BodyContainer>
@@ -408,7 +399,7 @@ const KickOffModal = (props) => {
                 isButtons={availableKickoffCards.length > 0}
               >
                 {availableKickoffCards.length > 0 ? (
-                  renderKickOffButtons
+                  <>{availableKickoffCards}</>
                 ) : didLoadData ? (
                   <styled.NoButtonsText>
                     There are currently no lots in the queue available for kick

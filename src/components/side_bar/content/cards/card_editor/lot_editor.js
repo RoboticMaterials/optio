@@ -39,6 +39,8 @@ import BarcodeModal from "../../../../basic/modals/barcode_modal/barcode_modal";
 import LotHistory from '../lot_history/lot_history';
 import { deepCopy } from '../../../../../methods/utils/utils'
 
+import { useTranslation } from 'react-i18next';
+
 // actions
 import {
     deleteCard,
@@ -113,6 +115,8 @@ const logger = log.getLogger("CardEditor");
 logger.setLevel("debug");
 
 const FormComponent = (props) => {
+    const { t, i18n } = useTranslation();
+
     const {
         showCreationStatusButton,
         onShowCreateStatusClick,
@@ -739,7 +743,7 @@ const FormComponent = (props) => {
             <styled.ProcessFieldContainer>
                 <styled.ContentHeader style={{ marginBottom: ".5rem" }}>
                     <styled.ContentTitle>
-                        Process: {processes[values.processId].name}
+                        {t("process")}: {processes[values.processId].name}
                     </styled.ContentTitle>
                 </styled.ContentHeader>
             </styled.ProcessFieldContainer>
@@ -790,6 +794,7 @@ const FormComponent = (props) => {
                         dispatchShowBarcodeModal(false);
                     }}
                     barcodeId={lotNumber}
+                    card={card}
                 />
 
 
@@ -913,7 +918,7 @@ const FormComponent = (props) => {
 
                                     <div>
                                         <styled.ContentTitle>
-                                            Product Group:{" "}
+                                            {t("Product Group")}:{" "}
                                         </styled.ContentTitle>
                                         <styled.ContentValue>
                                             {lotTemplate?.name}

@@ -42,106 +42,106 @@ const borderGlowCss = css`
 `
 
 
-export const TextboxDiv = styled.div`
-    background-color: ${props => props.theme.bg.primary};
-    border: none;
-    font-size: ${props => props.theme.fontSize.sz4};
-    font-family: ${props => props.theme.font.primary};
-    font-weight: 500;
-    min-height: 2rem;
-    display: flex;
-    flex-grow: 1;
-    color: ${props => props.theme.bg.octonary};
-    padding: .5rem;
-    border-radius: .5rem;
+// export const TextboxDiv = styled.div`
+//     background-color: ${props => props.theme.bg.primary};
+//     border: none;
+//     font-size: ${props => props.theme.fontSize.sz4};
+//     font-family: ${props => props.theme.font.primary};
+//     font-weight: 500;
+//     min-height: 2rem;
+//     display: flex;
+//     flex-grow: 1;
+//     color: ${props => props.theme.bg.octonary};
+//     padding: .5rem;
+//     border-radius: .5rem;
 
-    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-    border-bottom: 2px solid ${props => props.theme.bg.quinary};
+//     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
+//     border-bottom: 2px solid ${props => props.theme.bg.quinary};
 
-    &:focus {
-        // background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-        color: ${props => props.theme.bg.octonary};
-        outline: none !important;
-    }
+//     &:focus {
+//         // background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+//         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+//         color: ${props => props.theme.bg.octonary};
+//         outline: none !important;
+//     }
 
-    &::placeholder {
-        font-family: ${props => props.theme.font.secondary};
-        color: ${props => props.theme.bg.senary};
-    }
-`;
+//     &::placeholder {
+//         font-family: ${props => props.theme.font.secondary};
+//         color: ${props => props.theme.bg.senary};
+//     }
+// `;
 
-export const ListItem = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    text-overflow: ellipsis;
-    justify-content: space-between;
-    background: ${props => props.theme.bg.secondary};
+// export const ListItem = styled.div`
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     width: 100%;
+//     text-overflow: ellipsis;
+//     justify-content: space-between;
+//     background: ${props => props.theme.bg.secondary};
 
-    &:hover {
-        background: ${props => LightenDarkenColor(props.theme.bg.secondary, -10)};
-        cursor: pointer;
-    }
+//     &:hover {
+//         background: ${props => LightenDarkenColor(props.theme.bg.secondary, -10)};
+//         cursor: pointer;
+//     }
 
-    margin-left: 0rem;
-    margin-right: .5rem;
-    margin-top: 0rem;
-    margin-bottom: 1rem;
-    border-radius: 0.5rem;
+//     margin-left: 0rem;
+//     margin-right: .5rem;
+//     margin-top: 0rem;
+//     margin-bottom: 1rem;
+//     border-radius: 0.5rem;
 
-    border-color: ${props=>props.theme.bg.quaternary};
-`
-export const ListItemTitle = styled.h1`
+//     border-color: ${props=>props.theme.bg.quaternary};
+// `
+// export const ListItemTitle = styled.h1`
 
-    font-family: ${props => props.theme.font.primary};
-    /* font-size: ${props => props.theme.fontSize.sz3}; */
-    font-size: 1rem;
-    font-weight: 500;
-    color: ${props => props.theme.bg.octonary};
-    user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-left: 0.5rem;
-    margin-right: 1rem;
-    margin-bottom: 0rem;
+//     font-family: ${props => props.theme.font.primary};
+//     /* font-size: ${props => props.theme.fontSize.sz3}; */
+//     font-size: 1rem;
+//     font-weight: 500;
+//     color: ${props => props.theme.bg.octonary};
+//     user-select: none;
+//     white-space: nowrap;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     margin-left: 0.5rem;
+//     margin-right: 1rem;
+//     margin-bottom: 0rem;
 
-    text-align: center;
+//     text-align: center;
 
-`
+// `
 
-export const HoverContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    padding: 1rem 0rem .5rem 0.3rem;
-    margin-left: 1.5rem;
-    &:hover {
-        cursor: pointer;
-    }
+// export const HoverContainer = styled.div`
+//     display: flex;
+//     flex-direction: row;
+//     width: 100%;
+//     height: 100%;
+//     padding: 1rem 0rem .5rem 0.3rem;
+//     margin-left: 1.5rem;
+//     &:hover {
+//         cursor: pointer;
+//     }
 
-`
+// `
 
 export const BarcodeSVG = styled.svg`
-
-@media print {
-  @page { size: landscape; }
-  
-}`
-
-export const ListItemIcon = styled.i`
-
-    font-size: 1.3rem;
-    color: ${props => props.theme.schema.locations.solid};
-    padding-left: 0.8rem;
-
-    &:hover {
-        cursor: pointer;
-    }
+// width: 100%;
+min-height: 100%;
+// align-items: right;
+// flex-grow: 1;
 `
+
+// export const ListItemIcon = styled.i`
+
+//     font-size: 1.3rem;
+//     color: ${props => props.theme.schema.locations.solid};
+//     padding-left: 0.8rem;
+
+//     &:hover {
+//         cursor: pointer;
+//     }
+// `
 export const PrintIcon = styled.i`
     font-size: 1.6rem;
     color: ${props =>props.theme.schema.locations.solid};
@@ -151,7 +151,7 @@ export const PrintIcon = styled.i`
         color: ${props =>props.theme.schema.locations.solid};
     }
 
-`
+// `
 
 export const Container = styled(Modal)`
 	outline: none !important;
@@ -165,6 +165,9 @@ export const Container = styled(Modal)`
 	position: absolute;
 
 	z-index: 50;
+
+    height: 70vh;
+    width: 80vw;
 
 	min-width: 30rem;
     max-width: 95%;
@@ -237,13 +240,21 @@ export const TextContainer = styled.div`
 
 export const BodyContainer = styled.div`
 	display: flex;
-  flex-direction: ${props => !!props.generated ? "row" : "column"};
 	padding: 1rem;
+
 	justify-content: center;
-  text-align: center;
+    text-align: center;
 	overflow: hidden;
 
 	background: ${props => props.theme.bg.primary};
+
+
+    width: 100%;
+    height: 100%;
+    page-break-after:always 
+    @media print {
+        @page { size: landscape; }
+    }
 `
 
 export const ButtonForm = styled.div`
@@ -315,95 +326,95 @@ export const RightContentContainer = styled.div`
 
 `
 
-export const ButtonContainer = styled.button`
-  position: relative;
-  user-select: none;
+// export const ButtonContainer = styled.button`
+//   position: relative;
+//   user-select: none;
 
-  // flex layout
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  // flex-grow: 1;
-  width: 90%;
-  overflow: hidden;
-  height: 4rem;
-  min-height: 4rem;
-  line-height: 3rem;
-  min-width: 80%;
+//   // flex layout
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   // flex-grow: 1;
+//   width: 90%;
+//   overflow: hidden;
+//   height: 4rem;
+//   min-height: 4rem;
+//   line-height: 3rem;
+//   min-width: 80%;
 
-  background: ${props => `linear-gradient(180deg,
-                            ${LightenDarkenColor(props.background, 20)} 0%,
-                            ${props.background} 50%,
-                            ${LightenDarkenColor(props.background, -20)} 100%)`};
-  border-radius: 0.6rem;
-  padding: 0;
+//   background: ${props => `linear-gradient(180deg,
+//                             ${LightenDarkenColor(props.background, 20)} 0%,
+//                             ${props.background} 50%,
+//                             ${LightenDarkenColor(props.background, -20)} 100%)`};
+//   border-radius: 0.6rem;
+//   padding: 0;
 
 
-  // margins
-  margin: .5rem 0 .5rem 0;
+//   // margins
+//   margin: .5rem 0 .5rem 0;
 
-  // padding
-  // padding: 0.5rem 1rem 0.5rem 1rem;
+//   // padding
+//   // padding: 0.5rem 1rem 0.5rem 1rem;
 
-  outline: none;
-  &:focus {
-    outline: none;
-  }
+//   outline: none;
+//   &:focus {
+//     outline: none;
+//   }
 
-  letter-spacing: 1.5px;
-  border: none;
-  box-shadow: ${props => props.clickable ? 'none' : `2px 2px 2px rgba(0, 0, 0, 0.5)`};
-  transition: all 0.1s ease 0s;
-  cursor: pointer;
-  outline: none;
+//   letter-spacing: 1.5px;
+//   border: none;
+//   box-shadow: ${props => props.clickable ? 'none' : `2px 2px 2px rgba(0, 0, 0, 0.5)`};
+//   transition: all 0.1s ease 0s;
+//   cursor: pointer;
+//   outline: none;
 
-  &:hover {
-    ${props => props.hoverable && !props.clickable &&
-	{
-		boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
-		transform: "translateY(-1px)",
-	}
-}
-  }
+//   &:hover {
+//     ${props => props.hoverable && !props.clickable &&
+// 	{
+// 		boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
+// 		transform: "translateY(-1px)",
+// 	}
+// }
+//   }
 
-  ${props => props.clickable && !props.disabled &&
-	`&:active {
-      background: ${`linear-gradient(180deg,
-          ${LightenDarkenColor(props.background, -20)} 0%,
-          ${props.background} 50%,
-          ${LightenDarkenColor(props.background, 20)} 100%)`
-	}
-    }`
-}
+//   ${props => props.clickable && !props.disabled &&
+// 	`&:active {
+//       background: ${`linear-gradient(180deg,
+//           ${LightenDarkenColor(props.background, -20)} 0%,
+//           ${props.background} 50%,
+//           ${LightenDarkenColor(props.background, 20)} 100%)`
+// 	}
+//     }`
+// }
 
-  ${props => props.disabled &&
-	{
-		color: props.theme.bg.quaternary,
-		background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
-		pointerEvents: "none",
-	}
-}
+//   ${props => props.disabled &&
+// 	{
+// 		color: props.theme.bg.quaternary,
+// 		background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
+// 		pointerEvents: "none",
+// 	}
+// }
 
-    // --border-width: 3px;
-    ${props => props.borderGlow &&
-	borderGlowCss
-}
+//     // --border-width: 3px;
+//     ${props => props.borderGlow &&
+// 	borderGlowCss
+// }
 
-${props => props.css};
+// ${props => props.css};
 
-`
+// `
 
-export const AddNewButtonContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
-`
+// export const AddNewButtonContainer = styled.div`
+// 	display: flex;
+// 	justify-content: center;
+// 	width: 100%;
+// 	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
+// `
 
-export const ColorFieldContainer = styled.div`
-	position: relative;
+// export const ColorFieldContainer = styled.div`
+// 	position: relative;
 
-`
+// `
 
 
 export const Icon = styled.i`
@@ -422,4 +433,29 @@ export const Icon = styled.i`
     &:active{
         filter: brightness(85%)
     }
+`
+
+export const FieldsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    justify-content: center;
+    z-index: 10000;
+
+    flex-grow: 1;
+`
+
+
+export const Field = styled.div`
+    align-content: left;
+    text-align: left;
+`
+
+export const FieldLabel = styled.span`
+    font-weight: bold;
+`
+
+export const FieldValue = styled.span`
+
 `

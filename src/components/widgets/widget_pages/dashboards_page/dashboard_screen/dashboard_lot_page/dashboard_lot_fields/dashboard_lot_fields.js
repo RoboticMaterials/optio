@@ -18,8 +18,13 @@ import { FIELD_DATA_TYPES } from "../../../../../../../constants/lot_contants"
 import { getCustomFields, getLotTotalQuantity, getBinCount } from '../../../../../../../methods/utils/lot_utils'
 import { getPreviousWarehouseStation } from '../../../../../../../methods/utils/processes_utils'
 
+import { useTranslation } from 'react-i18next';
+
+import  uuid  from "uuid"
 
 const DashboardLotFields = (props) => {
+
+  const { t, i18n } = useTranslation();
 
     const {
         currentLot,
@@ -51,13 +56,13 @@ const DashboardLotFields = (props) => {
                 value,
             } = field
 
-            const key = `${fieldName}+dataType`
+            const key = uuid.v4()/*`${fieldName}+dataType`*/
             const isLast = currIndex === arr.length - 1
             if(!!value){
               switch (dataType) {
                   case FIELD_DATA_TYPES.STRING: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key} style = {{marginTop:'.5rem'}}>
                             <LotSimpleRow
                                 key={key}
                                 label={fieldName}
@@ -71,7 +76,7 @@ const DashboardLotFields = (props) => {
                   }
                   case FIELD_DATA_TYPES.EMAIL: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key}  style = {{marginTop:'.5rem'}}>
                             <LotSimpleRow
                                 key={key}
                                 label={fieldName}
@@ -85,7 +90,7 @@ const DashboardLotFields = (props) => {
                   }
                   case FIELD_DATA_TYPES.DATE: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key} style = {{marginTop:'.5rem'}}>
                           <LotDateRow
                               key={key}
                               label={fieldName}
@@ -99,7 +104,7 @@ const DashboardLotFields = (props) => {
                   }
                   case FIELD_DATA_TYPES.DATE_RANGE: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key} style = {{marginTop:'.5rem'}}>
                           <LotDateRangeRow
                               key={key}
                               label={fieldName}
@@ -113,7 +118,7 @@ const DashboardLotFields = (props) => {
                   }
                   case FIELD_DATA_TYPES.URL: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key} style = {{marginTop:'.5rem'}}>
                           <LotSimpleRow
                               key={key}
                               label={fieldName}
@@ -127,7 +132,7 @@ const DashboardLotFields = (props) => {
                   }
                   case FIELD_DATA_TYPES.INTEGER: {
                       return (
-                        <div style = {{marginTop:'.5rem'}}>
+                        <div key = {key} style = {{marginTop:'.5rem'}}>
                           <LotSimpleRow
                               key={key}
                               label={fieldName}
@@ -156,7 +161,7 @@ const DashboardLotFields = (props) => {
         </div>
         <div style = {{marginTop:'0.5rem', marginBottom: '.8rem'}}>
           <LotSimpleRow
-              label={currentLot.name? currentLot.name : (currentLot.lotNum).toString()}
+              label={currentLot.name? currentLot.name : (currentLot.lotNum)?.toString() || '???'}
               labelStyle={{fontSize: '1.3rem' }}
             />
           </div>
