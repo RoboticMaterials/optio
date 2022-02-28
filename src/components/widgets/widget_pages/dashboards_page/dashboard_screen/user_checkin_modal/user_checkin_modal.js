@@ -9,8 +9,11 @@ import ContentListItem from '../../../../../side_bar/content/content_list/conten
 import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 import { putDashboard } from '../../../../../../redux/actions/dashboards_actions'
+import { useTranslation } from 'react-i18next';
 
 const UserCheckinModal = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         dashboard,
@@ -38,7 +41,7 @@ const UserCheckinModal = (props) => {
             existingUsers.unshift(userName)
             user = userName
         }
-
+        
         dispatchPutDashboard({
             ...dashboard,
             users: existingUsers
@@ -88,7 +91,7 @@ const UserCheckinModal = (props) => {
                 
                 <styled.Header>
                     <styled.HeaderMainContentContainer>
-                        <styled.Title>{'Select Operator'}</styled.Title>
+                        <styled.Title>{t('Select Operator')}</styled.Title>
                         <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onClose} />
                     </styled.HeaderMainContentContainer>
 
@@ -100,7 +103,7 @@ const UserCheckinModal = (props) => {
                         style={{width: '100%', height: '3rem', margin: '1rem'}} 
                         inputStyle={{background: 'white', fontSize: '1rem'}} 
                         autoFocus={true}
-                        placeholder="Enter name/identifier of operator"
+                        placeholder={t("Enter name/identifier of operator")}
                         value={userName}
                         onChange={e => {
                             setUserName(e.target.value)
@@ -110,7 +113,7 @@ const UserCheckinModal = (props) => {
                     />
                     {!!dashboard.users && dashboard.users.length ?
                         <>
-                            <styled.Label>Previous Operators</styled.Label>
+                            <styled.Label>{t("Previous Operators")}</styled.Label>
                             <div style={{marginBottom: '1rem', width: '100%', maxHeight: '40vh', overflowY: 'scroll'}}>
                                 
                                 {dashboard.users.map((user, ind) => (
@@ -138,7 +141,7 @@ const UserCheckinModal = (props) => {
                         schema={'users'}
                         onClick={onContinue}
                         disabled={existingUser === null && userName.length === 0}
-                    >Continue</Button>
+                    >{t("Continue")}</Button>
                 </styled.ContentContainer>
             </styled.Container>
         </>

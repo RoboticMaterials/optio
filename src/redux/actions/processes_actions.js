@@ -223,3 +223,18 @@ export const editingProcess = (bool) => {
 export const setFixingProcess = (bool) => {
     return { type: 'SET_FIXING_PROCESS', payload: bool }
 }
+
+
+// Websocket Actions
+export const addProcess = (process) => {
+    return { type: POST_PROCESSES_SUCCESS, payload: process }
+}
+
+export const updateProcess = (process) => {
+    return { type: PUT_PROCESSES_SUCCESS, payload: process }
+}
+
+export const removeProcess = (id) => {
+    return { type: DELETE_PROCESSES_SUCCESS, payload: id }
+}
+// === 

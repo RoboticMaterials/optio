@@ -96,5 +96,7 @@ const noButtonsCss = css`
   justify-content: center;
 `
 
-
-
+export const ProcessName = styled.h3`
+  text-align: center;
+  
+`

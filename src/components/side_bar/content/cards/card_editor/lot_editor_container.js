@@ -68,7 +68,12 @@ import { putProcesses } from "../../../../../redux/actions/processes_actions";
 import { postLotTemplate } from '../../../../../redux/actions/lot_template_actions';
 import LotHistory from "../lot_history/lot_history";
 
+import { useTranslation } from 'react-i18next';
+
 const LotEditorContainer = (props) => {
+
+    const { t, i18n } = useTranslation();
+
     const { merge, onClose } = props;
 
     const params = useParams()
@@ -116,7 +121,7 @@ const LotEditorContainer = (props) => {
     const [showStatusList, setShowStatusList] = useState(false); // bool - controls whether or not to show statusList
     const [createdLot, setCreatedLot] = useState(false); // bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([]);
-
+    //console.log(fieldNameArr)
     const [lotTemplateId, setLotTemplateId] = useState(null);
     const lotTemplate = useMemo(
         () => lotTemplates[lotTemplateId],
@@ -411,19 +416,18 @@ const LotEditorContainer = (props) => {
                     // extract properties
                     const { fieldName, component, dataType, _id } =
                         currItem || {};
-
                     if (
                         component === FIELD_COMPONENT_NAMES.CALENDAR_START_END
                     ) {
                         newFieldNameArr.push({
-                            _id,
+                            _id: `${_id}-start`,
                             fieldName: `${fieldName}`,
                             index: 0,
                             dataType: dataType,
                             displayName: `${fieldName} (start)`,
                         });
                         newFieldNameArr.push({
-                            _id,
+                            _id: `${_id}-end`,
                             fieldName: `${fieldName}`,
                             index: 1,
                             dataType: dataType,
@@ -439,7 +443,6 @@ const LotEditorContainer = (props) => {
                     }
                 });
             });
-
             setFieldNameArr([
                 // ...REQUIRED_FIELDS,
                 {
@@ -1098,27 +1101,27 @@ const LotEditorContainer = (props) => {
         switch (params.subpage) {
             case 'editing':
                 onBack = null;
-                title = 'Editing Lot'
+                title = t('Editing Lot')
                 break;
             case 'create':
                 onBack = null;
-                title = 'Creating Lot'
+                title = t('Creating Lot')
                 break;
             case 'template':
             onBack = () => history.push(`/lots/${params.id}/create`)
-                title = 'Editing Template'
+                title = t('Editing Template')
                 break;
             case 'paste':
                 onBack = () => history.push(`/lots/${params.id}/create`)
-                title = 'Import Lots'
+                title = t('Import Lots')
                 break;
             case 'validate':
                 onBack = () => history.push(`/lots/${params.id}/paste`)
-                title = 'Validate Lots'
+                title = t('Validate Lots')
                 break;
             case 'history':
                 onBack = () => history.push(`/lots/${params.id}/editing`)
-                title = 'Lot History'
+                title = t('Lot History')
                 break;
         }
 
@@ -1379,8 +1382,8 @@ const LotEditorContainer = (props) => {
                     isOpen={true}
                     title={
                         plainFiles.length === 1
-                            ? "Import Event Detected"
-                            : "Paste Event Detected"
+                            ? t("Import.importevt","Import Event Detected")
+                            : t("Import.pastevt","Paste Event Detected")
                     }
                     onRequestClose={() => setShowSimpleModal(false)}
                     onCloseButtonClick={() => setShowSimpleModal(false)}
@@ -1400,17 +1403,16 @@ const LotEditorContainer = (props) => {
                         setShowSimpleModal(false);
                         setDisablePasteModal(true);
                     }}
-                    button_2_text={"Yes"}
-                    button_1_text={"No"}
+                    button_2_text={t("yes")}
+                    button_1_text={t("no")}
                 >
                     {plainFiles.length === 1 ? (
                         <styled.SimpleModalText>
-                            Are you sure you want to import this file?
+                            {t("Import.file","Are you sure you want to import this file?")}
                         </styled.SimpleModalText>
                     ) : (
                         <styled.SimpleModalText>
-                            A paste event was detected. Would you like to use
-                            pasted data to create lots?
+                            {t("Import.paste","A paste event was detected. Would you like to use pasted data to create lots?")}
                         </styled.SimpleModalText>
                     )}
                 </SimpleModal>

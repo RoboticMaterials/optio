@@ -50,7 +50,6 @@ const SplashScreen = (props) => {
     const [localSettingsState, setLocalSettingsState] = useState({})
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
     useEffect(() => {

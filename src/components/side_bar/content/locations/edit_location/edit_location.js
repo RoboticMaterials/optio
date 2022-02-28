@@ -52,8 +52,12 @@ import {
 } from "../../../../../redux/actions/stations_actions";
 import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
 import { putProcesses } from "../../../../../redux/actions/processes_actions";
+import { useTranslation } from 'react-i18next';
+
+
 
 const EditLocation = (props) => {
+    const { t, i18n } = useTranslation();
     const dispatch = useDispatch();
     let selectedLocationRef = useRef();
     let selectedStationChildrenCopyRef = useRef();
@@ -152,7 +156,7 @@ const EditLocation = (props) => {
 
     const cantDeleteReason = useMemo(() => {
         if (selectedLocation === null || !!selectedLocation.new) {
-            return "New Stations cannot be deleted.";
+            return t("Editloc.cannotdeletewarning","New Stations cannot be deleted.");
         } else if (!!selectedLocation) {
             for (var process of Object.values(processes)) {
                 for (var routeId of process.routes) {
@@ -161,7 +165,8 @@ const EditLocation = (props) => {
                         route.load === selectedLocation._id ||
                         route.unload === selectedLocation._id
                     ) {
-                        return `This station is used in process ${process.name}. If you wish to delete this station either remove it from the process or delete the process.`;
+                        return t("Editloc.processwarning", {processname : process.name})
+                        //return `This station is used in process ${process.name}. If you wish to delete this station either remove it from the process or delete the process.`;
                     }
                 }
             }
@@ -435,14 +440,14 @@ const EditLocation = (props) => {
                 <ConfirmDeleteModal
                     isOpen={!!confirmDeleteModal}
                     title={
-                        "WARNING! All historical data for this location will also be deleted. Are you sure you want to delete this Location?"
+                        t("Editloc.deletewarning","WARNING! All historical data for this location will also be deleted. Are you sure you want to delete this Location?")
                     }
-                    button_1_text={"Yes"}
+                    button_1_text={t("yes","Yes")}
                     handleOnClick1={() => {
                         onDelete();
                         setConfirmDeleteModal(null);
                     }}
-                    button_2_text={"No"}
+                    button_2_text={t("no","No")}
                     handleOnClick2={() => setConfirmDeleteModal(null)}
                     handleClose={() => setConfirmDeleteModal(null)}
                 />
@@ -450,15 +455,15 @@ const EditLocation = (props) => {
                 <ConfirmDeleteModal
                     isOpen={!!confirmExitModal}
                     title={
-                        "Are you sure you want to go back? Any progress will not be saved"
+                        t("backwarning","Are you sure you want to go back? Any progress will not be saved")
                     }
-                    button_1_text={"Yes"}
+                    button_1_text={t("yes","Yes")}
                     handleOnClick1={() => {
                         onBack();
                         setConfirmExitModal(null);
                         dispatchPageDataChanged(false);
                     }}
-                    button_2_text={"No"}
+                    button_2_text={t("no","No")}
                     handleOnClick2={() => setConfirmExitModal(null)}
                     handleClose={() => setConfirmExitModal(null)}
                 />
@@ -528,9 +533,9 @@ const EditLocation = (props) => {
                                             fontWeight: "Bold",
                                             fontSize: "3rem",
                                         }}
-                                        placeholder="Enter Location Name"
+                                        placeholder={t("Editloc.entername","Enter Location Name")}
                                         type="text"
-                                        label="Location Name"
+                                        label={t("Editloc.name","Location Name")}
                                         schema="locations"
                                         InputComponent={Textbox}
                                         style={{
@@ -551,7 +556,7 @@ const EditLocation = (props) => {
                                                 <styled.Label
                                                     schema={"locations"}
                                                 >
-                                                    Location Type
+                                                    {t("Editloc.type","Location Type")}
                                                 </styled.Label>
                                                 <styled.LocationButtonConatiner>
                                                     {renderStationButtons(
@@ -567,7 +572,7 @@ const EditLocation = (props) => {
                                                 <styled.Label
                                                     schema={"locations"}
                                                 >
-                                                    Location Type
+                                                    {t("Editloc.type","Location Type")}
                                                 </styled.Label>
                                                 <styled.LocationButtonConatiner>
                                                     {renderStationButtons(
@@ -593,7 +598,7 @@ const EditLocation = (props) => {
                                             )
                                         }
                                     >
-                                        Save Location
+                                       {t("save","Save")}
                                     </Button>
 
                                     <div
@@ -612,7 +617,7 @@ const EditLocation = (props) => {
                                                 setConfirmDeleteModal(true)
                                             }
                                         >
-                                            Delete
+                                            {t("delete","Delete")}
                                         </Button>
                                     </div>
 

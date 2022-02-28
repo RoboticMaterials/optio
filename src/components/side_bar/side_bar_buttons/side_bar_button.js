@@ -12,8 +12,11 @@ import { pageDataChanged } from '../../../redux/actions/sidebar_actions'
 
 import ConfirmDeleteModal from '../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
+import { useTranslation } from 'react-i18next';
 
 const SideBarButton = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         mode,
@@ -119,7 +122,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Locations</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('locations','Locations')}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -150,7 +153,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Devices</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('devices','Devices')}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -184,7 +187,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Travelers</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('travelers','Travelers')}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -218,7 +221,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Statistics</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('statistics','Statistics')}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -250,7 +253,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Processes</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('processes','Processes')}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -280,7 +283,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Schedules</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t('schedules',"Schedules")}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -311,7 +314,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Routes</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t("routes","Routes")}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
@@ -345,7 +348,7 @@ const SideBarButton = (props) => {
                         mode={mode}
 
                     >
-                        <style.SideBarButtonText>Settings</style.SideBarButtonText>
+                        <style.SideBarButtonText>{t("settings","Settings")}</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>

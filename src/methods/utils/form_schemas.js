@@ -677,6 +677,8 @@ export const routesSchema = Yup.array().of(
 
 // })
 
+
+
 // const DFSIsCyclic = (routes, node, visited) => {
 //     const outgoingRoutes = getNodeOutgoing(node, routes);
 
@@ -743,11 +745,47 @@ const doesExpressionConverge = (exp, routes, nodeId) => {
 }
 
 
-export const getProcessSchema = (stations) => Yup.object().shape({
+/*export const locationSchema = (stations, selectedLocation) => {
+
+    let stationNames = []
+    Object.values(stations).forEach(station => {
+        if (!!selectedLocation && station._id === selectedLocation._id) {
+
+        }
+        else {
+            stationNames.push(station.name)
+        }
+    })
+
+    return (
+        Yup.object().shape({
+            locationName: Yup.string()
+                .required('Please enter a name')
+                .notOneOf(stationNames, 'Name already in use')
+        })
+    )
+}*/
+
+
+
+export const getProcessSchema = (stations,processes,selectedProcess) => {
+
+    let processNames = []
+    Object.values(processes).forEach(process => {
+        if (!!selectedProcess && process._id === selectedProcess._id) {
+
+        }
+        else {
+            processNames.push(process.name)
+        }
+    })
+
+ return ( Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+        .required('Please enter a name.')
+        .notOneOf(processNames,'Process with this name already exists'),
     routes: Yup.array().of(
         routeSchema.test(
             'doesConnectWarehouses',
@@ -823,7 +861,9 @@ export const getProcessSchema = (stations) => Yup.object().shape({
         }
     )
 
-})
+    })
+)
+}
 
 const backTraverseUntilSplit = (node, routes, visited) => {
 

@@ -30,10 +30,15 @@ import { getNodeIncoming, getNodeOutgoing, isNodeStartWarehouse } from '../../..
 import * as styled from './dashboards_header.style';
 import { ThemeContext } from 'styled-components'
 
+import { useTranslation } from 'react-i18next';
+
+
 const widthBreakPoint = 1000;
 const phoneViewBreakPoint = 500;
 
 const DashboardsHeader = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         showBackButton,
@@ -79,23 +84,25 @@ const DashboardsHeader = (props) => {
             const incomingRoutes = getNodeIncoming(currentDashboard.station, processRoutes)
                 .filter(route => !isNodeStartWarehouse(route.load, processRoutes, stations));
             const outgoingRoutes = getNodeOutgoing(currentDashboard.station, processRoutes);
-
-
+        
             if (incomingRoutes.length === 0 && outgoingRoutes.length > 0) {
+                if(!tempPullButtons.some(e => e.type === 'kickoff')){
                 tempPullButtons.push({
-                    type: 'kickoff',
-                    processID: process._id
-                });
+                    type: 'kickoff'/*,
+                processID: process._id*/});
+                }
             } else {
 
                 incomingRoutes
                     .filter(route => stations[route.load]?.type === 'warehouse')
                     .forEach(route => {
                         if (getNodeIncoming(route.load, processRoutes).length > 0) { // Cannot pull from start warehouses, must merge them into another lot
+                            if(!tempPullButtons.some(e => e.type === 'warehouse')){
                             tempPullButtons.push({
                                 type: 'warehouse',
                                 warehouseID: route.load
                             })
+                          }
                         }
                     })
 
@@ -112,7 +119,7 @@ const DashboardsHeader = (props) => {
 
         return pullButtons.map(pullBtn => {
 
-            const btnLabel = pullBtn.type === 'kickoff' ? `Kick Off ${processes[pullBtn.processID]?.name}` : `${stations[pullBtn.warehouseID]?.name}`
+            const btnLabel = pullBtn.type === 'kickoff' ? `Kick Off` : `${stations[pullBtn.warehouseID]?.name}`
 
             const schema = pullBtn.type === 'kickoff' ? theme.schema.kick_off : theme.schema.warehouse
             const iconClassName = schema?.iconName
@@ -123,6 +130,7 @@ const DashboardsHeader = (props) => {
                 <DashboardButton
                     title={btnLabel}
                     iconColor={"black"}
+                    key={uuid.v4()}
                     iconClassName={iconClassName}
                     onClick={() => {
                         const { type, ...meta }  = pullBtn;
@@ -184,7 +192,7 @@ const DashboardsHeader = (props) => {
 
                         }}
                     >
-                        Report
+                        {t("report")}
                         {/* <styled.ReportIcon className={'fas fa-exclamation-triangle'} /> */}
                     </Button>
                     {!!stationBasedLots && !mobileMode && !history.location.pathname.includes('lots') &&
@@ -258,9 +266,9 @@ const DashboardsHeader = (props) => {
                     >
                         <ReactTooltip id={toolTipId}>
                             {!currentDashboard.locked ?
-                                <styled.LockContainer>Click to lock the dashboard. This will hide the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                                <styled.LockContainer>{t("Dashboard.lockmsg","Click to lock the dashboard. This will hide the \"X\" button on the dashsboard screen when in mobile mode")}</styled.LockContainer>
                                 :
-                                <styled.LockContainer>Click to unlock the dashboard. This will show the "X" button on the dashsboard screen when in mobile mode</styled.LockContainer>
+                                <styled.LockContainer>{t("Dashboard.unlockmsg","Click to unlock the dashboard. This will show the \"X\" button on the dashsboard screen when in mobile mode")}</styled.LockContainer>
                             }
 
                         </ReactTooltip>

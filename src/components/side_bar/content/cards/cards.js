@@ -35,7 +35,11 @@ import { sortBySummary } from "../../../../methods/utils/card_utils";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 import {SORT_MODES} from "../../../../constants/common_contants";
 
+import { useTranslation } from 'react-i18next';
+
 const Cards = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         id
@@ -139,7 +143,7 @@ const Cards = (props) => {
     }, [])
 
 
-    useEffect(() => {//this sets the order cards are displayed. Array of card IDs
+    useEffect(() => { //this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
@@ -163,7 +167,6 @@ const Cards = (props) => {
             }
           }
         }
-
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: {
@@ -214,13 +217,13 @@ const Cards = (props) => {
             }
 
             for(const j in processCards){
-              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId].includes(processCards[j]?._id)) {
+              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId]?.includes(processCards[j]?._id)) {
                 tempIds[id][statId].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['QUEUE'].push(processCards[j]._id)
               }
-              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH'].includes(processCards[j]?._id) && i == 0){
+              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH']?.includes(processCards[j]?._id) && i == 0){
                 tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
               }
             }
@@ -630,8 +633,8 @@ const Cards = (props) => {
 
     const renderHeaderContent = (stationId) => {
       let name
-      if(stationId === 'QUEUE') name = 'Queue'
-      else if(stationId === 'FINISH') name = 'Finish'
+      if(stationId === 'QUEUE') name = t("Queue")
+      else if(stationId === 'FINISH') name = t("Finish")
       else name = stations[stationId].name
       return (
         <styled.HeaderContainer>
@@ -649,9 +652,7 @@ const Cards = (props) => {
                 textColor = '#363636'
                 border = {true}
                 >
-                <styled.LotCount>Number of </styled.LotCount>
-                <styled.LotCount style = {{color: '#924dff'}}>lots </styled.LotCount>
-                <styled.LotCount>at current station</styled.LotCount>
+               <styled.LotCount>{t("Parts at the current station")}</styled.LotCount>
               </ReactTooltip>
               <styled.RowContainer>
                 <styled.LotCount>
@@ -671,9 +672,9 @@ const Cards = (props) => {
                   textColor = '#363636'
                   border = {true}
                   >
-                  <styled.LotCount>Number of </styled.LotCount>
-                  <styled.LotCount style = {{color: '#924dff'}}>parts </styled.LotCount>
-                  <styled.LotCount>at current station</styled.LotCount>
+                
+                  <styled.LotCount>{t("Lots at the current station")}</styled.LotCount>
+                      
                 </ReactTooltip>
                 <styled.RowContainer>
                   <styled.LotCount>
@@ -689,23 +690,25 @@ const Cards = (props) => {
     }
 
     const renderCards = (stationId) => {
+
       if(orderedIds && cards && orderedIds[id] && orderedIds[id][stationId] && orderedIds[id][stationId].length>0){
         let ids = orderedIds
         return(
           ids[id][stationId].map((cardId, index) => {
             let card = cards[cardId]
-              let partBins = card?.bins[stationId] || {}
-              if(Object.values(partBins).length === 1){
-                return (
+            let partBins = card?.bins[stationId] || {}
+
+            if(Object.values(partBins).length === 1){
+              return (
                   <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
                     {({isVisible}) =>
                       <>
-                        {!!isVisible || draggingLotId === card._id?
+                        {isVisible || draggingLotId === card._id ?
                           <styled.CardContainer
-
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
+                            key = {cardId}
                             onMouseLeave = {()=>setHoveringCard(null)}
                             onClick = {()=>setShowLotEditor(true)}
                             draggable = {true}
@@ -805,7 +808,7 @@ const Cards = (props) => {
                             }
                           </styled.CardContainer>
                           :
-                          <div style = {{width: '100%', minHeight:'20rem'}}>...Loading</div>
+                          <div style = {{minHeight:'12rem', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #ddd', borderRadius: '0.4rem', margin: '0.5rem 1rem'}}>...Loading</div>
                         }
                       </>
                     }
@@ -1015,7 +1018,7 @@ const Cards = (props) => {
             <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
             <i className = 'fas fa-plus' style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
               <styled.AddLot>
-                Add New Lot
+                {t("Add New Lot")}
               </styled.AddLot>
             </styled.AddLotContainer>
           </styled.ColumnContainer>

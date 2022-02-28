@@ -90,6 +90,7 @@ const SignInUpPage = (props) => {
         }
 
         const userPool = new CognitoUserPool(poolData)
+        console.log(userPool)
 
         // If the request is a sign in then run these functions
         if (signIn) {
@@ -101,6 +102,7 @@ const SignInUpPage = (props) => {
             };
 
             const authenticationDetails = new AuthenticationDetails(authenticationData)
+            //console.log(authenticationDetails)
 
             const userData = {
                 Username: email,
@@ -108,11 +110,11 @@ const SignInUpPage = (props) => {
             }
 
             const cognitoUser = new CognitoUser(userData);
+            //console.log(cognitoUser.pool)
 
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
-
                     dispatchUpdateLocalSettings({
                         authenticated: result.accessToken.payload.username,
                         idToken: result?.idToken?.jwtToken || null

@@ -5,9 +5,13 @@ import {
     GET,
     POST,
     DELETE,
-    PUT
+    PUT,
 } from '../types/prefixes';
 
+import {
+    SUCCESS,
+  } from '../types/suffixes'
+  
 import {
     CARDS,
     CARD,
@@ -271,6 +275,20 @@ export const putCardAttributes = (attributes, cardId) => async (dispatch, getSta
 
 
 };
+
+// Websocket Actions
+export const addCard = (card) => {
+    return { type: POST + CARD + SUCCESS, payload: { card } }
+}
+
+export const updateCard = (card) => {
+    return { type: PUT + CARD + SUCCESS, payload: { card } }
+}
+
+export const removeCard = (id) => {
+    return { type: DELETE + CARD + SUCCESS, payload: id }
+}
+// === 
 
 export const showEditor = (bool) => {
     return { type: SHOW_EDITOR, payload: bool }

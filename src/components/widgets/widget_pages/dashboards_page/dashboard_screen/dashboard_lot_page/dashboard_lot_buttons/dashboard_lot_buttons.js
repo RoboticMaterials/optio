@@ -12,12 +12,16 @@ import NumberInput from '../../../../../../basic/number_input/number_input';
 import Button from '../../../../../../basic/button/button'
 import ClipLoader from 'react-spinners/ClipLoader'
 
+import { useTranslation } from 'react-i18next';
+
 // Renders that buttons at the footer of the dashboard screen
 // IE:
 // Move
 // Scrap
 // Rework
 const DashboardLotButtons = (props) => {
+
+  const { t, i18n } = useTranslation();
 
   const deviceEnabled = false
   const [startClicked, setStartClicked] = useState(false)
@@ -65,7 +69,7 @@ const DashboardLotButtons = (props) => {
               titleStyle={{ color: textColor }}
               iconColor={iconColor}
 
-              title={startClicked ? 'Starting Timer...' : 'Start'}
+              title={startClicked ? t('Starting Timer...') : t('Start')}
               iconColor={"black"}
               iconClassName={iconClassName}
               onClick={() => {
@@ -103,7 +107,7 @@ const DashboardLotButtons = (props) => {
                 titleStyle={{ color: textColor }}
                 iconColor={iconColor}
 
-                title={'Move Quantity'}
+                title={t('Move Quantity')}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleMoveClicked}
@@ -126,7 +130,7 @@ const DashboardLotButtons = (props) => {
 
         return (
             <DashboardButton
-                title={'Finish Quantity'}
+                title={t('Finish Quantity')}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleMoveClicked}
@@ -146,7 +150,7 @@ const DashboardLotButtons = (props) => {
         const textColor = '#8f0000'
         return (
             <DashboardButton
-                title={'Go Back'}
+                title={t('Go back')}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 onClick={handleCancel}

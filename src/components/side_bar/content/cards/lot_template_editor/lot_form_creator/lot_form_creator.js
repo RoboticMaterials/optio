@@ -669,7 +669,12 @@ const LotFormCreator = (props) => {
 														</styled.ColumnContainer>
 														<styled.OptionContainer>
 														<styled.RowContainer style = {{justifyContent: 'end'}}>
-														<styled.FieldName style = {{margin: '0.4rem 0rem 0rem 0.2rem'}}>show</styled.FieldName>
+														<styled.FieldName style = {{margin: '0.4rem 0rem 0rem 0.2rem'}}>printable</styled.FieldName>
+														<CheckboxField
+															name={`fields[${currRowIndex}][${currItemIndex}].showInBarcode`}
+															css = {{background: !!values.fields[currRowIndex][currItemIndex].showInBarcode && '#924dff', border: '0.1rem solid #924dff'}}
+														/>
+														<styled.FieldName style = {{margin: '0.4rem 0rem 0rem 1.5rem'}}>show</styled.FieldName>
 														<CheckboxField
 															name={`fields[${currRowIndex}][${currItemIndex}].showInPreview`}
 															css = {{background: !!values.fields[currRowIndex][currItemIndex].showInPreview && '#924dff', border: '0.1rem solid #924dff'}}

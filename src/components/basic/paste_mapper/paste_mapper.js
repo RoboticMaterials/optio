@@ -41,7 +41,6 @@ const PasteMapper = (props) => {
     const {
         values,
     } = formikProps;
-
     const history = useHistory()
     const params = useParams()
     const [table, setTable] = useState(values.table)
@@ -187,8 +186,8 @@ const PasteMapper = (props) => {
 
       const unusedFields = availableFields.map(availField => {
           let disabled = false;
-          if (!!fieldMapping && (availField._id in fieldMapping) && (fieldMapping[availField._id] < table[0].length)) {
-            disabled = true;
+          if (!!fieldMapping && (availField._id in fieldMapping) && (fieldMapping[availField._id] < table[0].length)){
+           disabled = true;
           }
 
           return {
@@ -196,7 +195,6 @@ const PasteMapper = (props) => {
               disabled,
           }
       })
-
       const keyOfCol = !!fieldMapping? Object.keys(fieldMapping).find(key => fieldMapping[key] === column) : 0
       const savedValue = !!keyOfCol ? (unusedFields.find(field => field._id === keyOfCol) || null) : null
 

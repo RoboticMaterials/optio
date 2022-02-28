@@ -71,3 +71,7 @@ export const postSettings = (settings) => {
 export const deviceEnabled = (state) => {
     return { type: DEVICE_ENABLED, payload: state}
 }
+
+export const updateSettings = (settings) => {
+    return { type: POST_SETTINGS_SUCCESS, payload: settings }
+}

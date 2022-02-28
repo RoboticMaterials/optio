@@ -93,9 +93,9 @@ export const postDashboard = (dashboard) => {
         function onStart() {
             dispatch({ type: POST_DASHBOARD_STARTED });
         }
-        function onSuccess(response) {
-            dispatch({ type: POST_DASHBOARD_SUCCESS, payload: response });
-            return response;
+        function onSuccess(dashboard) {
+            dispatch({ type: POST_DASHBOARD_SUCCESS, payload: { dashboard } });
+            return dashboard;
         }
         function onError(error) {
             dispatch({ type: POST_DASHBOARD_FAILURE, payload: error });
@@ -118,9 +118,9 @@ export const putDashboard = (dashboard, ID) => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
         }
-        async function onSuccess(updatedDashboard) {
-            await dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: updatedDashboard });
-            return updatedDashboard;
+        async function onSuccess(dashboard) {
+            await dispatch({ type: PUT_DASHBOARD_SUCCESS, payload: { dashboard } });
+            return dashboard;
         }
         function onError(error) {
             dispatch({ type: PUT_DASHBOARD_FAILURE, payload: error });
@@ -356,3 +356,17 @@ export const setDashboardKickOffProcesses = (dashboardId, kickOffEnabled) => {
 export const setDashboardFinishProcesses = (dashboardId, finishEnabled) => {
     return { type: SET + DASHBOARD + FINISH_ENABLED, payload: { dashboardId, finishEnabled } }
 }
+
+// Websocket Actions
+export const addDashboard = (dashboard) => {
+    return { type: POST_DASHBOARD_SUCCESS, payload: { dashboard } }
+}
+
+export const updateDashboard = (dashboard) => {
+    return { type: PUT_DASHBOARD_SUCCESS, payload: { dashboard } }
+}
+
+export const removeDashboard = (id) => {
+    return { type: DELETE_DASHBOARD_SUCCESS, payload: id }
+}
+// === 

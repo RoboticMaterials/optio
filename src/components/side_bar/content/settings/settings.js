@@ -45,11 +45,15 @@ import { useHistory } from "react-router-dom";
 // Import API
 import { clearMap } from '../../../../api/development_api'
 import Checkbox from '../../../basic/checkbox/checkbox';
+import { useTranslation } from 'react-i18next';
 
 export const Durations = [...Array(10).keys()].map(num => ({label: num, value: num*1000}))
 
 
 const Settings = (props) => {
+
+    const { t, i18n } = useTranslation();
+
     const {
       listView,
       setShowSettings,
@@ -253,16 +257,16 @@ const Settings = (props) => {
 
         return (
                 <styled.DropdownContainer>
-                    <styled.DropdownLabel>Timezone</styled.DropdownLabel>
+                    <styled.DropdownLabel>{t("Settings.timezone","Timezone")}</styled.DropdownLabel>
                     <DropDownSearch
-                        placeholder="Select Timezone"
+                        placeholder={t("select","Select")}
                         label="Select your timezone"
                         labelField="name"
                         valueField="label"
                         options={Timezones}
                         values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
                         dropdownGap={5}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             handleUpdateServerSettings({ timezone: values[0] })
@@ -277,7 +281,7 @@ const Settings = (props) => {
         return (
             <>
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Track Operators</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.trackoperators","Track Operators")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.trackUsers ? serverSettingsState.trackUsers : false}
                         onChange={() => {
@@ -292,7 +296,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Move Lots by Fraction</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.fractionalmove","Move Lots by Fraction")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.fractionMove ? serverSettingsState.fractionMove : false}
                         onChange={() => {
@@ -307,7 +311,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Hide Filters on Mobile</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.hidefilters","Hide Filters on Mobile")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.hideFilterSortDashboards ? serverSettingsState.hideFilterSortDashboards : false}
                         onChange={() => {
@@ -322,7 +326,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Advanced Search Filters</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.advancedfilters","Advanced Search Filters")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.enableMultipleLotFilters ? serverSettingsState.enableMultipleLotFilters : false}
                         onChange={() => {
@@ -337,7 +341,7 @@ const Settings = (props) => {
                 </styled.SwitchContainer>
 
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel style={{marginRight:'0rem'}}>Custom Lot Display</styled.SwitchLabel>
+                    <styled.SwitchLabel style={{marginRight:'0rem'}}>{t("Settings.customlotdisplay","Custom Lot Display")}</styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.stationBasedLots ? serverSettingsState.stationBasedLots : false}
                         onChange={() => {
@@ -360,7 +364,7 @@ const Settings = (props) => {
             <styled.SettingContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white" }}>
-                    <styled.Label>Show Developer Settings</styled.Label>
+                    <styled.Label>{t("Settings.showdevelopersettings","Show Developer Settings")}</styled.Label>
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
@@ -417,7 +421,7 @@ const Settings = (props) => {
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem', background: 'black', color: 'white' }}
                         schema={"settings"}
                         onClick={() => setConfirmClearMap(true)}
-                    >Clear Map
+                    >{t("Settings.clearmap","Clear Map")}
                     </Button>
 
                     </>
@@ -432,7 +436,7 @@ const Settings = (props) => {
     const MapViewEnabled = () => {
         return (
             <styled.SwitchContainer>
-                <styled.SwitchLabel>Enable Map View</styled.SwitchLabel>
+                <styled.SwitchLabel>{t("Settings.enablemapview","Enable Map View")}</styled.SwitchLabel>
                 <Switch
                     onColor={themeContext.schema.settings.solid}
                     checked={!!localSettingsState.mapViewEnabled}
@@ -459,14 +463,14 @@ const Settings = (props) => {
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmUnlock(true)}
-                    >Unlock All Dashboards
+                    >{t("Settings.unlockdashboards","Unlock All Dashboards")}
                     </Button>
 
                     <Button
                         style={{ width: '100%', minHeight: '2rem', fontSize: '1.2rem', lineHeight: '1.5rem', padding: '0.3rem 1rem' }}
                         schema={"settings"}
                         onClick={() => setConfirmLock(true)}
-                    >Lock All Dashboards
+                    >{t("Settings.lockdashboards","Lock All Dashboards")}
                     </Button>
                 </styled.RowContainer>
 
@@ -478,7 +482,7 @@ const Settings = (props) => {
         return (
             <>
                 <styled.SwitchContainer>
-                    <styled.SwitchLabel>Email Notifications </styled.SwitchLabel>
+                    <styled.SwitchLabel>{t("Settings.emailnotifications","Email Notifications")} </styled.SwitchLabel>
                     <Switch
                         checked={!!serverSettingsState.emailEnabled ? serverSettingsState.emailEnabled : false}
                         onChange={() => {
@@ -494,7 +498,7 @@ const Settings = (props) => {
                 {!!serverSettingsState.emailEnabled &&
                     <>
                     <styled.DropdownContainer>
-                        <styled.DropdownLabel>Contact Name</styled.DropdownLabel>
+                        <styled.DropdownLabel>{t("Settings.contactname","Contact Name")}</styled.DropdownLabel>
                         <Textbox
                             placeholder="Enter a contact name..."
                             value={!!serverSettingsState.emailName ? serverSettingsState.emailName : ""}
@@ -506,7 +510,7 @@ const Settings = (props) => {
                     </styled.DropdownContainer>
 
                     <styled.DropdownContainer>
-                        <styled.DropdownLabel>Email Address</styled.DropdownLabel>
+                        <styled.DropdownLabel>{t("Settings.emailaddress","Email Address")}</styled.DropdownLabel>
                         <Textbox
                             placeholder="Enter an email address..."
                             value={!!serverSettingsState.emailAddress ? serverSettingsState.emailAddress : ""}
@@ -531,9 +535,9 @@ const Settings = (props) => {
         return (
             <>
                 <styled.DropdownContainer>
-                    <styled.DropdownLabel>Map</styled.DropdownLabel>
+                    <styled.DropdownLabel>{t("Settings.map","Map")}</styled.DropdownLabel>
                     <DropDownSearch
-                        placeholder="Select Map"
+                        placeholder={t("select","Select")}
                         label="Select a map"
                         labelField="name"
                         valueField="_id"
@@ -546,7 +550,7 @@ const Settings = (props) => {
                             else return ind === 0
                         })] : []}
                         dropdownGap={2}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
@@ -559,7 +563,7 @@ const Settings = (props) => {
                     />
                 </styled.DropdownContainer>
                 <styled.RowContainer style={{justifyContent: 'space-between'}}>
-                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Make Default Server Map</styled.DropdownLabel>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>{t("Settings.makedefault","Set as the default map")}</styled.DropdownLabel>
                     <Checkbox
                         schema="settings"
                         checked={serverSettingsState.defaultMapId === localSettingsState.currentMapId}
@@ -583,7 +587,7 @@ const Settings = (props) => {
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', alignSelf: 'start', marginBottom: '.5rem', cursor: 'pointer' }} onClick={() => {
                             setShowShiftSettings(!showShiftSettings)
                         }}>
-                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>Show Shift Settings</styled.DropdownLabel>
+                    <styled.DropdownLabel style={{paddingLeft: '0.5rem'}}>{t("Settings.showshiftsettings","Show Shift Settings")}</styled.DropdownLabel>
                     <styled.ChevronIcon
                         className={!!showShiftSettings ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                         style={{ color: 'black' }}
@@ -606,7 +610,7 @@ const Settings = (props) => {
     const renderAlertDurationSetting = () => {
         return (
             <styled.DropdownContainer>
-                <styled.DropdownLabel>Move Alert Duration</styled.DropdownLabel>
+                <styled.DropdownLabel>{t("Settings.movealert","Move Alert Duration")}</styled.DropdownLabel>
                 <div style={{width: '100%', display: 'flex', justifyContent: 'flex-end'}}>
                     <DropDownSearch
                         placeholder="(s)"
@@ -616,7 +620,7 @@ const Settings = (props) => {
                         options={Durations}
                         values={!!serverSettingsState.moveAlertDuration ? [Durations.find(d => d.value === serverSettingsState.moveAlertDuration)] : []}
                         dropdownGap={0}
-                        noDataLabel="No matches found"
+                        noDataLabel={t("Settings.nomatches","No matches found")}
                         closeOnSelect="true"
                         onChange={values => {
                             console.log('dffff', values)
@@ -660,10 +664,11 @@ const Settings = (props) => {
             window.location.reload();
 
         }
+        /* console.log(config)*/
         return (
             <styled.SettingContainer style={{ display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end' }}>
 
-                {config.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> Sign Out </Button>}
+                {config?.authenticationNeeded && <Button schema={'settings'} style={{ height: '2rem', flex: 1 }} onClick={signOut}> {t("Settings.signout","Sign Out")} </Button>}
 
             </styled.SettingContainer>
         )
@@ -674,15 +679,15 @@ const Settings = (props) => {
             <ConfirmDeleteModal
                 isOpen={confirmLock || confirmUnlock || confirmClearMap}
                 title={confirmClearMap ?
-                        'Are you sure you want to clear this map?'
+                        t("Settings.confirmmapclear","Are you sure you want to clear this map?")
                         :
                         confirmLock ?
-                            "Are you sure you want to lock all dashboards?"
+                            t("Settings.confirmdashboardlock","Are you sure you want to lock all dashboards?")
                             :
-                            "Are you sure you want to unlock all dashboards?"
+                            t("Settings.confirmdashboardunlock","Are you sure you want to unlock all dashboards?")
                 }
-                button_1_text={"Yes"}
-                button_2_text={"No"}
+                button_1_text={t("yes","Yes")}
+                button_2_text={t("no","No")}
                 handleClose={() => {
                     if (confirmClearMap) setConfirmClearMap(false)
                     else if (confirmLock) setConfirmLock(false)
@@ -734,12 +739,12 @@ const Settings = (props) => {
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} disabled = {saveDisabled} onClickSave={handleSumbitSettings} />
 
             <styled.HeaderContainer>
-              <styled.Label style = {{marginTop: '0rem'}}>Map Settings</styled.Label>
+              <styled.Label style = {{marginTop: '0rem'}}>{t("Settings.mapsettings","Map Settings")}</styled.Label>
             </styled.HeaderContainer>
             {MapViewEnabled()}
             {CurrentMap()}
             <styled.HeaderContainer>
-              <styled.Label>General Settings</styled.Label>
+              <styled.Label>{t("Settings.generalsettings","General Settings")}</styled.Label>
             </styled.HeaderContainer>
             {TimeZone()}
             {EmailAddress()}
@@ -748,7 +753,7 @@ const Settings = (props) => {
 
 
             <styled.HeaderContainer>
-              <styled.Label>Dashboard Settings</styled.Label>
+              <styled.Label>{t("Settings.dashboardsettings","Dashboard Settings")}</styled.Label>
             </styled.HeaderContainer>
             {dashboardSettings()}
             {LockUnlockAllDashboards()}

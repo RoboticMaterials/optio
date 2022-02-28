@@ -26,7 +26,12 @@ import {
     SORT_DIRECTIONS
 } from "../../../../../constants/lot_contants"
 
+import { useTranslation } from 'react-i18next';
+
+
 const LotSortBar = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         sortMode,
@@ -97,7 +102,7 @@ const LotSortBar = (props) => {
                 css={props.descriptionCss}
             >
 
-                Sort
+                {t("Sort")}
             </styled.Description>
             <styled.ContentContainer>
                 <styled.ItemContainer
