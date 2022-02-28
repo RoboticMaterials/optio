@@ -75,6 +75,7 @@ const Authentication = (props) => {
             var poolData = {
                 UserPoolId: configData.UserPoolId,
                 ClientId: configData.ClientId,
+                Region: configData.Region
             };
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -94,18 +95,21 @@ const Authentication = (props) => {
                         })
                     }
                 });
+                
+               cognitoUser.getUserAttributes(function(err,result){ //getUserAttributes
+                    if (err) {
+                        alert(err.message || JSON.stringify(err));
+                        return;
+                    }
 
-                cognitoUser.getUserAttributes(function(err, result) {
-                if (err) {
-                    alert(err.message || JSON.stringify(err));
-                    return;
-                }
-                for (i = 0; i < result.length; i++) {
-                    console.log(
-                        'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
-                    );
-                 }
+                    result.map(res =>{
+                        console.log(
+                            'attribute ' + res.getName() + ' has value ' + res.getValue()
+                        )
+                    });
+
                 });
+                
             }
 
 

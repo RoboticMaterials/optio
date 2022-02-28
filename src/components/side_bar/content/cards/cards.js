@@ -710,6 +710,7 @@ const Cards = (props) => {
                             onMouseOver = {()=>{
                               setHoveringCard(card)
                             }}
+                            key = {cardId}
                             onMouseLeave = {()=>setHoveringCard(null)}
                             onClick = {()=>setShowLotEditor(true)}
                             draggable = {true}
