@@ -16,7 +16,7 @@ export const apiIPAddress = (protocol='https', suffix='api/') => {
     const nonLocalIp = parsedLocalSettings ? parsedLocalSettings.non_local_api : false
     const disabledHTTPS = parsedLocalSettings ? parsedLocalSettings.disable_https : false
 
-    let protocolToUse = protocol==='https' ? (disabledHTTPS ? 'http' : 'https') : protocol;
+    let protocolToUse = protocol==='https' ? (disabledHTTPS ? 'http' : 'https') : (protocol==='wss' ? (disabledHTTPS ? 'ws' : 'wss') : protocol);
 
     let host;
     if (nonLocalIp === true && !!hostServerIpAddress) {
@@ -27,6 +27,8 @@ export const apiIPAddress = (protocol='https', suffix='api/') => {
         host = 'localhost:5000';
         if (protocol === 'https') {
             protocolToUse = 'http';
+        } else if (protocol === 'wss') {
+            protocolToUse = 'ws';
         }
         
     } else {
