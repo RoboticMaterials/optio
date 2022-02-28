@@ -38,7 +38,7 @@ const UserCheckinModal = (props) => {
             existingUsers.unshift(userName)
             user = userName
         }
-
+        
         dispatchPutDashboard({
             ...dashboard,
             users: existingUsers

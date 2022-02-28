@@ -1,7 +1,6 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
-import WebSocketProvider from './containers/websockets_container/websocket';
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -11,6 +10,7 @@ import 'rc-time-picker/assets/index.css';
 
 // Import Hooks
 import useWindowSize from './hooks/useWindowSize'
+import useWebsocket from './hooks/useWebsocket';
 
 import * as styled from './App.style'
 // Import API
@@ -48,6 +48,8 @@ const App = () => {
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
+
+    const socket = useWebsocket();
 
     useEffect(() => {
       handleLoadLocalData();
@@ -88,7 +90,7 @@ const App = () => {
     // }
 
     return (
-        <WebSocketProvider>
+        // <WebSocketProvider>
             <Suspense fallback = {<></>}>
                 <Logger />
 
@@ -209,7 +211,7 @@ const App = () => {
 
                 </ThemeProvider>
                 </Suspense>
-            </WebSocketProvider>
+            // </WebSocketProvider>
     );
 
 }

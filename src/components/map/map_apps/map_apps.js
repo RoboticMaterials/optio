@@ -38,7 +38,6 @@ const MapApps = (props) => {
             labels: true,
             heatmap: true,
         }
-
         dispatchPostSettings(settingsCopy);
 
         // return null;

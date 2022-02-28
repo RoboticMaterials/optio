@@ -2,7 +2,11 @@ import {
   GET,
   POST,
   DELETE,
-  PUT
+  PUT,
+
+  ADD,
+  UPDATE,
+  REMOVE,
 } from '../types/prefixes';
 
 import {
