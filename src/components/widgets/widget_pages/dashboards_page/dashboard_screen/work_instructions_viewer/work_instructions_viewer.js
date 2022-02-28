@@ -109,7 +109,7 @@ const WorkInstructionsViewer = (props) => {
         )
       case 'pdf':
         return (
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.10.377/build/pdf.worker.min.js">
+          <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
             <Viewer fileUrl = {fileUrl} plugins = {[defaultLayoutPluginInstance]}/>
           </Worker>
         )
