@@ -139,7 +139,7 @@ const Cards = (props) => {
     }, [])
 
 
-    useEffect(() => {//this sets the order cards are displayed. Array of card IDs
+    useEffect(() => { //this sets the order cards are displayed. Array of card IDs
       if(!orderedCardIds[id] || needsSortUpdate){
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
@@ -163,7 +163,6 @@ const Cards = (props) => {
             }
           }
         }
-
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: {
