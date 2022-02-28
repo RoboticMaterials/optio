@@ -1,8 +1,11 @@
 """
 Main module of the server file
 """
-
-from flask_cors import CORS
+from pprint import pprint
+from flask import g
+from flask_cors import CORS, cross_origin
+from numpy import broadcast
+from flask_socketio import SocketIO
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # local modules
@@ -13,26 +16,25 @@ connex_app = config.connex_app
 
 CORS(connex_app.app)
 
+
 # Read the swagger.yml file to configure the endpoints
 connex_app.add_api("swagger.yml")
 
 application = connex_app.app # expose global WSGI application object
 application.wsgi_app = ProxyFix(application.wsgi_app)
 
+socketio = SocketIO(application, cors_allowed_origins="*", async_handlers=True, async_mode='eventlet')
+# socketio.init_app(application, cors_allowed_origins="*")
 
-@application.after_request
-def add_header(r):
+@application.before_request
+def assing_socket():
     """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
+    We need each module to have access to the socket (to emit) so we attach it to the flask global object.
+    This variable is reset on each new rest connection so we have to assign it before each request. This
+    is not the best solution but will work short term.
     """
-    return r
-    
-
-# gunicorn "server:create_app()"
-def create_app():
-    return application
+    g.socket = socketio
 
 
 if __name__ == "__main__":
-    connex_app.run(debug=False)
+    socketio.run(application, debug=True)

@@ -3,7 +3,7 @@ This is the dashboard module and supports all the REST actions for the
 dashboard data
 """
 
-from flask import make_response, abort
+from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -60,16 +60,9 @@ def create(dashboard):
     # if rtnd_dashboard.count() == 0:
     result = collection.insert_one(dashboard)
     dashboard_with_id = collection.find_one({'_id':result.inserted_id})
+    dashboard_with_id['_id'] = {"$oid": str(dashboard_with_id['_id'])}
+    g.socket.emit('message', {"type":"dashboards", "method":"POST", "payload":dashboard_with_id}, broadcast=True)
     return dumps(dashboard_with_id)
-
-    # Otherwise, nope, dashboard exists already
-    # else:
-    #     abort(
-    #         409,
-    #         "Dashboard {name} exists already".format(
-    #             name=dashboard["name"]
-    #         ),
-    #     )
 
 
 def update(dashboard_id, dashboard):
@@ -102,7 +95,9 @@ def update(dashboard_id, dashboard):
     #     )
 
     result = collection.replace_one({"_id":ObjectId(dashboard_id)}, dashboard)
-    dashboard_with_id = collection.find_one({"_id":ObjectId(dashboard_id)})
+    dashboard_with_id = collection.find_one({"_id": ObjectId(dashboard_id)})
+    dashboard_with_id['_id'] = {"$oid": str(dashboard_with_id['_id'])}
+    g.socket.emit('message', {"type":"dashboards", "method":"PUT", "payload":dashboard_with_id}, broadcast=True)
     return dumps(dashboard_with_id)
 
 
@@ -117,7 +112,7 @@ def delete(dashboard_id):
     # Can we insert this dashboard?
     if len(list(rtnd_dashboard.clone())) != 0:
         collection.delete_one({"_id":ObjectId(dashboard_id)})
-        
+        g.socket.emit('message', {"type":"dashboards", "method":"DELETE", "payload":dashboard_id}, broadcast=True)
         return dashboard_id
 
     # Otherwise, nope, didn't find that person

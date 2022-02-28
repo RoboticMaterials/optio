@@ -3,9 +3,10 @@ This is the schedule module and supports all the REST actions for the
 schedule data
 """
 
-from flask import make_response, abort
+from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
+from numpy import broadcast
 from pymongo import MongoClient
 from datetime import datetime
 import uuid
@@ -14,22 +15,7 @@ from pymongo import ReturnDocument
 client = MongoClient('localhost:27017')
 db = client.ContactDB
 collection = db.cards
-history_collection = db.card_histories
 counters_collection = db.counters
-
-def create_card_history_event(type, username, data={}):
-    today = datetime.utcnow()
-
-    history_event = {
-        "name": type,
-        "date": today,
-        "username": username,
-    }
-
-    if data is not None:
-        history_event["data"] = data
-
-    return history_event
 
 def findDiff(d1, d2, path=""):
     diffs = {}
@@ -65,6 +51,7 @@ def findDiff(d1, d2, path=""):
 
 
 def read_all(map_id):
+    
     """
     This function responds to a request for /api/cards
     with the complete lists of cards
@@ -95,6 +82,7 @@ def read_station_cards(station_id):
     """
     # Create the list of schedules from our data
     cards = collection.find({"bins.{}".format(station_id): {'$exists': True}})
+    # socketio.emit("message", "read station cards")
     return dumps(cards)
 
 def read_one(card_id):
@@ -149,20 +137,7 @@ def create(card):
 
     card_with_id = collection.find_one({'_id':result.inserted_id})
 
-    # create history object for card
-    # array of objects, include initial create event
-    today = datetime.utcnow()
-
-    card_history_event = create_card_history_event(type="create", username="temp_username")
-
-    card_history = {
-        "_id": str(ObjectId()),
-        "card_id": result.inserted_id,
-        "events": [card_history_event]
-    }
-
-    card_history = history_collection.insert_one(card_history)
-
+    g.socket.emit('message', {"type":"cards", "method":"POST", "payload":card_with_id}, broadcast=True)
     return dumps(card_with_id)
 
 
@@ -198,24 +173,8 @@ def update(card_id, card):
     else:
         result = collection.replace_one({"_id":(card_id)}, card)
 
-        # update corresponding card_history
-        card_history = history_collection.find_one({"card_id":(card_id)})
-
-        if card_history:
-
-            card_history_event_data = findDiff(card, old_card)
-
-            # create event
-            card_history_event = create_card_history_event(type="update", username="temp_username", data=card_history_event_data)
-
-            # add event
-            card_history["events"].append(card_history_event)
-
-            # save updated history
-            updated_card_history = history_collection.replace_one({"card_id":(card_id)}, card_history)
-
-
         card_with_id = collection.find_one({"_id":(card_id)})
+        g.socket.emit('message', {"type":"cards", "method":"PUT", "payload":card_with_id}, broadcast=True)
         return dumps(card_with_id)
 
 
@@ -232,7 +191,7 @@ def delete(card_id):
     # Can we insert this schedule?
     if len(list(rtnd_card.clone()))  != 0:
         collection.delete_one({"_id":(card_id)})
-        
+        g.socket.emit('message', {"type":"cards", "method":"DELETE", "payload":card_id}, broadcast=True)
         return card_id
 
     # Otherwise, nope, didn't find that person

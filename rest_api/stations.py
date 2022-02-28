@@ -3,7 +3,7 @@ This is the station module and supports all the REST actions for the
 station data
 """
 
-from flask import make_response, abort
+from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -60,6 +60,7 @@ def create(station):
     if len(list(rtnd_station.clone())) == 0:
         result = collection.insert_one(station)
         station_with_id = collection.find_one({'_id':result.inserted_id})
+        g.socket.emit('message', {"type":"stations", "method":"POST", "payload":station_with_id}, broadcast=True)
         return dumps(station_with_id)
 
     # Otherwise, nope, station exists already
@@ -165,6 +166,7 @@ def update(station_id, station):
 
     result = collection.replace_one({"_id": station_id}, station)
     station_with_id = collection.find_one({"_id": station_id})
+    g.socket.emit('message', {"type":"station", "method":"PUT", "payload":station_with_id}, broadcast=True)
     return dumps(station_with_id)
 
 
@@ -179,6 +181,8 @@ def delete(station_id):
     # Can we delete  this station?
     if len(list(rtnd_station.clone())) != 0:
         collection.delete_one({"_id":station_id})
+        g.socket.emit('message', {"type":"station", "method":"DELETE", "payload":station_id}, broadcast=True)
+        return station_id
 
     # Otherwise, nope, didn't find that person
     else:

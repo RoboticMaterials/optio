@@ -3,7 +3,7 @@ This is the task module and supports all the REST actions for the
 task data
 """
 
-from flask import make_response, abort
+from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -73,27 +73,9 @@ def create(task):
     # Send to data base
     result = collection.insert_one(task)
     task_with_id = collection.find_one({'_id' : result.inserted_id})
+    g.socket.emit('message', {"type":"tasks", "method":"POST", "payload":task_with_id}, broadcast=True)
     return dumps(task_with_id)    
     
-#     rtnd_task = collection.find({"name" : task["name"]})
-#     # Can we insert this task?
-#     if rtnd_task.count() == 0:
-#         # Plan Task
-#         # planned_task_dict = plan_task(task)
-        
-#         # Send to data base
-#         result = collection.insert_one(task)
-#         task_with_id = collection.find_one({'_id' : result.inserted_id})
-#         return dumps(task_with_id)
-
-#     # Otherwise, nope, task exists already
-#     else:
-#         abort(
-#             409,
-#             "Task {name} exists already".format(
-#                 name=task["name"]
-#             ),
-#         )
 
 def update(task_id, task):
     """
@@ -122,6 +104,7 @@ def update(task_id, task):
         # Send to data base
         result = collection.replace_one({"_id" : task_id}, task)
         task_with_id = collection.find_one({"_id" : task_id})
+        g.socket.emit('message', {"type":"tasks", "method":"PUT", "payload":task_with_id}, broadcast=True)
         return dumps(task_with_id)
 
 
@@ -136,6 +119,8 @@ def delete(task_id):
     # Can we insert this task?
     if len(list(rtnd_task.clone()))  != 0:
         collection.delete_one({"_id" : task_id})
+        g.socket.emit('message', {"type":"tasks", "method":"DELETE", "payload":task_id}, broadcast=True)
+        return task_id
 
     # Otherwise, nope, didn't find that person
     else:

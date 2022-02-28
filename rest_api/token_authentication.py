@@ -18,7 +18,6 @@ import cognitojwt
 with open('../src/settings/config.js', 'r') as conf:
     raw = conf.read()
     json_obj = raw[raw.find('{') : raw.rfind('}')+1].replace("'", '"')
-    print(json_obj)
     cognito_attributes = demjson.decode(json_obj)
         
     REQUIRE_AUTH = cognito_attributes['authenticationNeeded']
@@ -40,6 +39,7 @@ def api_key_decode(api_key, required_scopes=None):
             app_client_id=APP_CLIENT_ID,  # Optional
             testmode=True  # Disable token expiration check for testing purposes
         )
+        print(result)
         
         return {'scope': 'admin'}
 

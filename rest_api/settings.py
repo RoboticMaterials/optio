@@ -3,7 +3,7 @@ This is the settings module and supports all the REST actions for the
 settings data
 """
 
-from flask import make_response, abort
+from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -120,6 +120,8 @@ def create(settings):
     if len(list(mongo_settings)) == 0:
         collection.insert_one({})
     collection.update_one({},  { "$set": settings})
+    print("UPDATE SETTINGS")
+    g.socket.emit('message', {"type":"settings", "method":"PUT", "payload":settings}, broadcast=True)
     return 201
 
 
