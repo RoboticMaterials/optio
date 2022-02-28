@@ -120,7 +120,6 @@ def create(settings):
     if len(list(mongo_settings)) == 0:
         collection.insert_one({})
     collection.update_one({},  { "$set": settings})
-    print("UPDATE SETTINGS")
     g.socket.emit('message', {"type":"settings", "method":"PUT", "payload":settings}, broadcast=True)
     return 201
 
