@@ -1,7 +1,7 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 
-___pycache___
+/rest_api/__pycache__
 # dependencies
 node_modules
 #package-lock.json
