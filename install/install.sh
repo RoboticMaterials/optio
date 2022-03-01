@@ -51,6 +51,9 @@ pip3 install matplotlib
 pip3 install pymongo
 pip3 install cognitojwt
 pip3 install connexion[swagger-ui]
+pip3 install --upgrade python-socketio==4.6.0
+pip3 install --upgrade python-engineio==3.13.2
+pip3 install --upgrade Flask-SocketIO==4.3.1
 
 # Build Node
 echo "Building Node"
