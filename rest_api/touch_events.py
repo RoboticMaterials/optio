@@ -60,7 +60,7 @@ def open_touch_event(touch_event):
         'move_datetime': None
     })
     if existing_touch_event:
-        collection.update_one({'_id': existing_touch_event['_id']}, touch_event)
+        collection.update_one({'_id': existing_touch_event['_id']}, {'$set': touch_event})
         return dumps(existing_touch_event)
     
     # add id field

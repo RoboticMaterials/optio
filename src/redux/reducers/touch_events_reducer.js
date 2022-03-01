@@ -187,7 +187,7 @@ const eventsReducer = (state = defaultState, action) => {
 
         case OPEN_TOUCH_EVENT_SUCCESS:
 
-            eventsClone = deepCopy(state.openEvents[action.payload.load_station_id]) || []
+            eventsClone = deepCopy(state.openEvents[action.payload.load_station_id] || [])
             eventsClone.push(action.payload)
 
             return {

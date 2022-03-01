@@ -175,7 +175,7 @@ const DashboardLotPage = (props) => {
       )
     }, [routes, loadStationID, currentLot, stationID])
 
-  const openTouchEvent = useMemo(() => openEvents.find(e => e.lot_id === currentLot._id))
+  const openTouchEvent = useMemo(() => openEvents.find(e => e.lot_id === currentLot._id), [openEvents, currentLot._id])
 
   const [openWarehouse, setOpenWarehouse] = useState(null);
   const [lotContainsInput, setLotContainsInput] = useState(false);

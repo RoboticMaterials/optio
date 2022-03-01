@@ -93,8 +93,8 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+        processCards: {...state.processCards, [action.payload.card.process_id]: {
+            ...state.processCards[action.payload.card.process_id], [action.payload.card._id]: action.payload.card
           }},
         pending: false,
       }
@@ -103,25 +103,27 @@ export default function cardsReducer(state = defaultState, action) {
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+        processCards: {...state.processCards, [action.payload.card.process_id]: {
+            ...state.processCards[action.payload.card.process_id], [action.payload.card._id]: action.payload.card
           }},
         pending: false,
       }
 
     case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
-      const {
+      let cardsCopy = deepCopy(state.cards);
+      let processCardsCopy = deepCopy(state.processCards);
 
-        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
-        ...unchangedProcessGroups
+      const processId = cardsCopy[action.payload.cardId]?.process_id
+      delete cardsCopy[action.payload.cardId];
 
-      } = state.processCards; // extracts payload lot from rest
+      if (!processId) {
+        delete processCardsCopy[processId][action.payload.cardId];
+      }
 
       return {
         ...state,
-        cards: {...rest},
-        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        cards: cardsCopy,
+        processCards: processCardsCopy,
         pending: false,
       }
 

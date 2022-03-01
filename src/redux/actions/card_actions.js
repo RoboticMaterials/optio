@@ -286,7 +286,7 @@ export const updateCard = (card) => {
 }
 
 export const removeCard = (id) => {
-    return { type: DELETE + CARD + SUCCESS, payload: id }
+    return { type: DELETE + CARD + SUCCESS, payload: { cardId: id } }
 }
 // === 
 

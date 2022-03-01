@@ -94,7 +94,6 @@ const DashboardLotList = (props) => {
         dispatchPutDashboard(dashboardCopy, dashboard._id.$oid)
     }
 
-
     const renderLotCards = useMemo(() => {
       if(!!serverSettings.enableMultipleLotFilters){
         let organizedCards = Object.values(cards)

@@ -163,6 +163,6 @@ export const updateLotTemplate = (lotTemplate) => {
 }
 
 export const removeLotTemplate = (id) => {
-    return { type: DELETE + LOT_TEMPLATE + SUCCESS, payload: id }
+    return { type: DELETE + LOT_TEMPLATE + SUCCESS, payload: { id } }
 }
 // === 

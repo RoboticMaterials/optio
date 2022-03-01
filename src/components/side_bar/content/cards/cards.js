@@ -67,6 +67,9 @@ const Cards = (props) => {
     const currProcessCards = useRef(processCards).current || {}
     const openEvents = useSelector(state => state.touchEventsReducer.openEvents|| {})
 
+    const cards2 = useSelector(state => state.cardsReducer.cards)
+    console.log(Object.values(cards2).map(card => card.name), Object.values(processCards).map(card => card.name))
+
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?
        serverSettings.lotSummarySortValue : LOT_FILTER_OPTIONS.name)
@@ -143,8 +146,10 @@ const Cards = (props) => {
     }, [])
 
 
+
     useEffect(() => { //this sets the order cards are displayed. Array of card IDs
-      if(!orderedCardIds[id] || needsSortUpdate){
+      
+      if(!orderedCardIds[id] || needsSortUpdate) {
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
         tempIds[id] = {}
