@@ -23,7 +23,7 @@ connex_app.add_api("swagger.yml")
 application = connex_app.app # expose global WSGI application object
 application.wsgi_app = ProxyFix(application.wsgi_app)
 
-socketio = SocketIO(application, cors_allowed_origins="*", async_handlers=True, async_mode='eventlet',  path='/api/socket.io')
+socketio = SocketIO(application, cors_allowed_origins="*", async_handlers=True, async_mode='eventlet')
 # socketio.init_app(application, cors_allowed_origins="*")
 
 @application.before_request
@@ -36,7 +36,7 @@ def assing_socket():
     g.socket = socketio
 
 def create_app():
-    return socketio
+    return application
 
 if __name__ == "__main__":
     socketio.run(application, debug=True)
