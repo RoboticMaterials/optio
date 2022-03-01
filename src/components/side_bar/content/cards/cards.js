@@ -67,8 +67,8 @@ const Cards = (props) => {
     const currProcessCards = useRef(processCards).current || {}
     const openEvents = useSelector(state => state.touchEventsReducer.openEvents|| {})
 
-    const cards2 = useSelector(state => state.cardsReducer.cards)
-    console.log(Object.values(cards2).map(card => card.name), Object.values(processCards).map(card => card.name))
+    // const cards2 = useSelector(state => state.cardsReducer.cards)
+    // console.log(Object.values(cards2).map(card => card.name), Object.values(processCards).map(card => card.name))
 
     //filter & sort state
     const [sortMode, setSortMode] = useState(!!serverSettings.lotSummarySortValue ?

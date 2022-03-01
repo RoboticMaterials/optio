@@ -12,6 +12,7 @@ import { getLotTemplates } from '../../redux/actions/lot_template_actions'
 import { getCards, getStationCards } from "../../redux/actions/card_actions";
 import { getSettings } from '../../redux/actions/settings_actions'
 import { getStations } from '../../redux/actions/stations_actions'
+import { postLocalSettings } from '../../redux/actions/local_actions';
 
 // Import components
 import SplashScreen from "../../components/misc/splash_screen/splash_screen";
@@ -36,6 +37,7 @@ const ApiContainer = (props) => {
     const onGetStationCards = (stationId) => dispatch(getStationCards(stationId))
     const onGetProcesses = () => dispatch(getProcesses());
     const onGetSettings = () => dispatch(getSettings())
+    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     // Selectors
     const params = useParams()
