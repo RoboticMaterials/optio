@@ -40,10 +40,8 @@ const DashboardLotList = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const dashboard = useSelector(state => state.dashboardsReducer.dashboards)[dashboardID] || {}
     const serverSettings = useSelector(state => state.settingsReducer.settings) || {}
-    const localSettings = useSelector(state => state.localReducer.localSettings) || {}
     const stationCards = useSelector(state => state.cardsReducer.stationCards)[stationID] || {}
     const openEvents = useSelector(state => state.touchEventsReducer.openEvents[stationID] || [])
-    const cardsRef = useRef(stationCards).current
 
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [cards, setCards] = useState(stationCards)
