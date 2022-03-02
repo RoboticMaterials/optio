@@ -96,7 +96,7 @@ const Authentication = (props) => {
                     }
                 });
                 
-               cognitoUser.getUserAttributes(function(err,result){ //getUserAttributes
+               /*cognitoUser.getUserAttributes(function(err,result){ //getUserAttributes
                     if (err) {
                         alert(err.message || JSON.stringify(err));
                         return;
@@ -108,7 +108,7 @@ const Authentication = (props) => {
                         )
                     });
 
-                });
+                });*/
                 
             }
 
