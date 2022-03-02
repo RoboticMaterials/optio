@@ -1071,7 +1071,7 @@ const LotEditorContainer = (props) => {
     const onPasteEvent = useCallback(
         (e) => {
             const plainText = e.clipboardData.getData("text/plain").trim(); // get clipboard data
-            console.log(plainText)
+           // console.log(plainText)
             const table = parseCSV(plainText, '\t')
             setPasteTable(table); // set paste table
 
