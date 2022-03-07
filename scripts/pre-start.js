@@ -8,7 +8,7 @@ try {
   }else{
 
     var writeStream = fs.createWriteStream('src/settings/config.js');
-    writeStream.write("export default { authenticationNeeded: false, UserPoolId: '', ClientId: ''}");
+    writeStream.write("export default { authenticationNeeded: false, Region: '', UserPoolId: '', ClientId: ''}");
     writeStream.end();
 
   }

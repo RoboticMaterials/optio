@@ -109,6 +109,8 @@ const DashboardsHeader = (props) => {
 
             }
 
+
+
         });
 
         setPullButtons(tempPullButtons)
@@ -216,7 +218,7 @@ const DashboardsHeader = (props) => {
 
                           }}
                       >
-                      <i class="fas fa-list" style = {{color: '#FFFFFF'}}></i>
+                      <i className="fas fa-list" style = {{color: '#FFFFFF'}}></i>
                       </Button>
                     }
                   </>
