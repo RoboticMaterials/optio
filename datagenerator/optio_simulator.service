@@ -1,0 +1,21 @@
+[Unit]
+Description=Optio Simulator
+<<<<<<< HEAD
+After=multi-user.target
+=======
+After=network.target
+>>>>>>> 2ab35d131c504eb665faf97839ed2568918a9dd0
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/ubuntu/dev_rmstudio/datagenerator/realtime_sim.py
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/dev_rmstudio/datagenerator
+Restart=always
+
+<<<<<<< HEAD
+=======
+[Install]
+WantedBy=multi-user.target
+>>>>>>> 2ab35d131c504eb665faf97839ed2568918a9dd0
