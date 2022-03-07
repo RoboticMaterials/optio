@@ -877,7 +877,7 @@ const FormComponent = (props) => {
                                                 ) : (
                                                     <styled.Sync
                                                         sync={
-                                                            values.syncWithTemplate
+                                                            values.syncWithTemplate.toString()
                                                         }
                                                         style={{
                                                             fontSize: 40,
