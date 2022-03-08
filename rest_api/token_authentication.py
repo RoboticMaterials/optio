@@ -1,24 +1,11 @@
-
-# def authenticate_token(token):
-#     print('Token', token)
-#     return {'scope': 'admin1'}
-
-
-# import time
-#
-# # import connexion
-# import six
-# # from werkzeug.exceptions import Unauthorized
-#
-# from jose import JWTError, jwt
-
-import demjson
+import yaml
 import cognitojwt
 
 with open('../src/settings/config.js', 'r') as conf:
     raw = conf.read()
     json_obj = raw[raw.find('{') : raw.rfind('}')+1].replace("'", '"')
-    cognito_attributes = demjson.decode(json_obj)
+    print(json_obj)
+    cognito_attributes = yaml.load(json_obj,Loader=yaml.SafeLoader)
         
     REQUIRE_AUTH = cognito_attributes['authenticationNeeded']
     USERPOOL_ID = cognito_attributes['UserPoolId']
