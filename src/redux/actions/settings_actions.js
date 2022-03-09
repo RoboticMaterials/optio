@@ -59,7 +59,8 @@ export const postSettings = (settings) => {
 
         try {
             onStart();
-            delete settings._id
+            delete settings._id;
+            delete settings?.currentVersion; // avoid version number to be ever overwritten
             const newSettings = await api.postSettings(settings);
             return onSuccess(newSettings)
         } catch (error) {

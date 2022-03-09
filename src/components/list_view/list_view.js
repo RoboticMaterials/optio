@@ -60,6 +60,7 @@ const ListView = (props) => {
         editing,
         lotID,
         stationID,
+        widgetPage,
         warehouse
     } = params
 
@@ -116,7 +117,7 @@ const ListView = (props) => {
     useEffect(() => {
         console.log(serverSettings.currentVersion)
         console.log(localSettings.currentVersion)
-        if(serverSettings.currentVersion && serverSettings.currentVersion!==localSettings.currentVersion){
+        if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
           console.log("Software update received, reloading page...")
           clearLocalSettings()
           window.location.reload(true)
@@ -319,17 +320,18 @@ const ListView = (props) => {
                 </styled.Header>
             </ClickNHold>
 
+            {console.log(showDashboards,showSettings)}
             {(!showDashboards && !showSettings) &&
-                <LocationList
+               <LocationList
                     onLocationClick={onLocationClick}
-                />
-            }
+               />
+                        }
 
             {(showDashboards && !showSettings) &&
                 // must be wrapped in route to give dashboards page the match params
                 <Route
                     path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouseID?"
-                    render={() => <DashboardsPage onSetTitle={(title) => setTitle(title)}/>}
+                    render={() => <DashboardsPage onSetTitle={(title) => setTitle(title)}/>}                    
                 />
             }
 
