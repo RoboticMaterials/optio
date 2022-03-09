@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import {DEVICE_CONSTANTS} from "../../constants/device_constants";
 import  store  from "../../redux/store/index";
 import {defaultTask} from "../../constants/route_constants";
@@ -12,7 +12,7 @@ export const generateDefaultRoute = (processId) => {
     return {
         ...defaultTask,
         processId,
-        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+        _id: uuid(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
 
@@ -35,7 +35,7 @@ export const autoGenerateRoute = (obj) => {
               },
         unload: {...defaultTask.unload},
         obj: obj ? obj : null,
-        _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
+        _id: uuid(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }
 

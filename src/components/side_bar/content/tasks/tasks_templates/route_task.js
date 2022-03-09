@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 const RouteTask = {
     name: '',
@@ -24,7 +24,7 @@ const RouteTask = {
         sound: null,
         instructions: 'Unload'
     },
-    _id: uuid.v4(),
+    _id: uuid(),
 }
 
 export default RouteTask

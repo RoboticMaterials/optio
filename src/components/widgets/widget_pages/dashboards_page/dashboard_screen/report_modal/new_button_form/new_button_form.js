@@ -5,7 +5,7 @@ import {putDashboard} from "../../../../../../../redux/actions/dashboards_action
 import {FORM_MODES} from "../../../../../../../constants/scheduler_constants";
 import {immutableDelete, immutableReplace} from "../../../../../../../methods/utils/array_utils";
 import {Formik} from "formik";
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import {reportEventSchema} from "../../../../../../../methods/utils/form_schemas";
 import * as styled from "../report_modal.style";
 import DashboardButton from "../../../dashboard_buttons/dashboard_button/dashboard_button";
@@ -87,7 +87,7 @@ const NewButtonForm = (props) => {
             else if (formMode === FORM_MODES.CREATE) {
 
                 const newReportButton = {
-                    _id: uuid.v4(),
+                    _id: uuid(),
                     description,
                     iconClassName,
                     color,

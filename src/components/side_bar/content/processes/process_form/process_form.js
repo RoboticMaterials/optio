@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {getProcessSchema} from "../../../../../methods/utils/form_schemas";
 import {ProcessField} from "../process_field/process_field";
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import {
 	deleteRouteClean,
 	deleteTask,
@@ -282,7 +282,7 @@ const ProcessForm = (props) => {
 			initialValues={{
 				name: selectedProcess ? selectedProcess.name : "",
 				routes: handleInitialRoutes(),
-				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
+				_id: selectedProcess ? selectedProcess._id : uuid(),
 				broken: selectedProcess ? selectedProcess.broken : false,
 				new: selectedProcess.new,
 				map_id: currentMapId,

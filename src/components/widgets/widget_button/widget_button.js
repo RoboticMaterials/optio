@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as styled from './widget_button.style'
 
 // Import utils
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 // Import Actions
 import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'

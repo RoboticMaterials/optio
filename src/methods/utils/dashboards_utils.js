@@ -2,7 +2,7 @@ import store from '../../redux/store/index'
 import { OPERATION_TYPES, TYPES } from '../../constants/dashboard_constants'
 import { isArray, isNonEmptyArray } from "./array_utils";
 import { DASHBOARD_BUTTON_COLORS } from "../../constants/dashboard_constants";
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import {
     CUSTOM_CHARGE_TASK_ID,
     CUSTOM_IDLE_TASK_ID,
@@ -121,7 +121,7 @@ export const getOperationButton = (key) => {
             return {
                 name: currValue.name,
                 color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
-                id: uuid.v4(),
+                id: uuid(),
                 type: currKey,
             }
         }

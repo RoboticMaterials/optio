@@ -60,6 +60,7 @@ const ListView = (props) => {
         editing,
         lotID,
         stationID,
+        widgetPage,
         warehouse
     } = params
 
@@ -91,7 +92,6 @@ const ListView = (props) => {
     const [barcode, setBarcode] = useState([])
     const [full, setFull] = useState('')
     const [lotNum, setLotNum] = useState('')
-    const [showSnoop, setShowSnoop] = useState(null)
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [title, setTitle] = useState('Dashboards')
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
@@ -115,7 +115,10 @@ const ListView = (props) => {
     }, [stationID])
 
     useEffect(() => {
+        console.log(serverSettings.currentVersion)
+        console.log(localSettings.currentVersion)
         if(serverSettings.currentVersion && localSettings.currentVersion && localSettings.currentVersion!==serverSettings.currentVersion){
+          console.log("Software update received, reloading page...")
           clearLocalSettings()
           window.location.reload(true)
         }
@@ -204,11 +207,6 @@ const ListView = (props) => {
         }
       })
 
-      if(id === 420 && lotFound === false){
-        setShowSnoop(true)
-        return setTimeout(() => setShowSnoop(null), 2500)
-      }
-
       if(lotFound===false) {
           setAddTaskAlert({
               type: ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
@@ -248,13 +246,6 @@ const ListView = (props) => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-
-            {!!showSnoop &&
-              <img
-               src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
-               alt="new"
-               />
-            }
 
             <ClickNHold
                 time={2}
@@ -329,17 +320,18 @@ const ListView = (props) => {
                 </styled.Header>
             </ClickNHold>
 
+            {console.log(showDashboards,showSettings)}
             {(!showDashboards && !showSettings) &&
-                <LocationList
+               <LocationList
                     onLocationClick={onLocationClick}
-                />
-            }
+               />
+                        }
 
             {(showDashboards && !showSettings) &&
                 // must be wrapped in route to give dashboards page the match params
                 <Route
                     path="/locations/:stationID/dashboards/:dashboardID?/:editing?/:lotID?/:warehouseID?"
-                    render={() => <DashboardsPage onSetTitle={(title) => setTitle(title)}/>}
+                    render={() => <DashboardsPage onSetTitle={(title) => setTitle(title)}/>}                    
                 />
             }
 

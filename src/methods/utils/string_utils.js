@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 export const isString = (value) => {
     return (typeof value) === "string"
@@ -17,5 +17,5 @@ export const capitalizeFirstLetter = (string) => {
 
 export const newlines = (str) => {
     if (!(typeof str === 'string')) return str
-    return str.split('\\n').map(s => <span key = {uuid.v4()}>{s.replace('\\n', '')}<br/></span>)
+    return str.split('\\n').map(s => <span key = {uuid()}>{s.replace('\\n', '')}<br/></span>)
 }

@@ -82,7 +82,6 @@ const SideBar = (props) => {
     const [full, setFull] = useState('')
     const [lotID, setLotID] = useState('')
     const [addTaskAlert, setAddTaskAlert] = useState(null);
-    const [showSnoop, setShowSnoop] = useState(null)
     const [statId, setStatId] = useState(null)
     const [cardId, setCardId] = useState(null)
     const [binCount, setBinCount] = useState(null)
@@ -221,10 +220,6 @@ const SideBar = (props) => {
 
       }
     })
-      if(id === 420 && lotFound === false){
-        setShowSnoop(true)
-        return setTimeout(() => setShowSnoop(null), 2500)
-      }
 
       if(lotFound===false) {
           setAddTaskAlert({
@@ -489,13 +484,6 @@ const SideBar = (props) => {
                   dispatchShowLotScanModal(null)
                 }}
             />
-
-            {!!showSnoop &&
-              <img
-               src="https://i.kym-cdn.com/entries/icons/original/000/017/129/rs-10918-snoop-624-1368121236.jpg"
-               alt="new"
-               />
-            }
 
             <TaskAddedAlert
                 containerStyle={{

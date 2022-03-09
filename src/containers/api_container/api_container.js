@@ -154,7 +154,8 @@ const ApiContainer = (props) => {
             // page changed
 
             //if (!getIsEquivalent(currentPageRouter, currentPage)) {
-
+        console.log(params)
+        
                 setCurrentPage(currentPageRouter)
 
                 // update data interval to get data for new currentPage
@@ -187,8 +188,9 @@ const ApiContainer = (props) => {
         await pageDataIntervals.forEach(interval => clearInterval(interval));
         setPageDataIntervals([])
         // set new interval for specific page
+        console.log(pageName)
         switch (pageName) {
-
+            
             case 'dashboards':
                 setDashboardPageIntervals()
                 break;
@@ -209,7 +211,6 @@ const ApiContainer = (props) => {
             case 'processes':
                 setProcessPageIntervals()
                 break
-
             default:
                 if(!mapViewEnabled) {
                     if(!pageName) setLocationListViewIntervals()
@@ -228,8 +229,7 @@ const ApiContainer = (props) => {
         // If there is no map yet, set it to the first map
         Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
             if (!localSettings.currentMapId && !!maps) {
-                console.log(serverSettings)
-                onPostLocalSettings({
+                 onPostLocalSettings({
                     ...localSettings,
                     currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
                 })
@@ -286,6 +286,7 @@ const ApiContainer = (props) => {
             }, 1000),
             setInterval(async () => {
                 await onGetSettings()
+                console.log("update db")
             }, 20000)
         ])
       }
@@ -294,8 +295,9 @@ const ApiContainer = (props) => {
     const setLocationListViewIntervals = () => {
         setPageDataIntervals([
             setInterval(async () => {
-                await onGetStations()
-                await onGetSettings()
+                await onGetStations();
+                await onGetSettings();
+                console.log("update")
             }, 10000)
         ])
     }

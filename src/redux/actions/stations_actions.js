@@ -34,7 +34,7 @@ import {
     EDITING_STATION,
 } from '../types/stations_types'
 
-import uuid from 'uuid';
+import {v4 as uuid} from "uuid"
 
 // Import External Actions
 import { deleteTask } from './tasks_actions'

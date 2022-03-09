@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory, useParams} from 'react-router-dom'
-import uuid from "uuid";
+import {v4 as uuid} from "uuid"
 import FadeLoader from "react-spinners/FadeLoader"
 import ReactTooltip from "react-tooltip";
 
@@ -94,7 +94,7 @@ const FormComponent = (props) => {
 	const params = useParams()
 	//tooltip
 	const ref = useRef()
-	const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+	const toolTipId = useRef(`tooltip-${uuid()}`).current;
 
 	// component state
 	const [preview, ] = useState(false)
