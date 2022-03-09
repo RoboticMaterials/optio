@@ -1,5 +1,5 @@
 import React from 'react'
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 const positionColor = '#2adba6';
 
@@ -126,7 +126,7 @@ export const newPositionTemplate = (name, type, parent, map_id) => {
         x: 0,
         y: 0,
         parent: parent,
-        _id: uuid.v4(),
+        _id: uuid(),
         map_id: map_id,
     }
 }

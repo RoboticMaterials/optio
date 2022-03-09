@@ -20,7 +20,8 @@ import { getPreviousWarehouseStation } from '../../../../../../../methods/utils/
 
 import { useTranslation } from 'react-i18next';
 
-import  uuid  from "uuid"
+import {v4 as uuid} from "uuid"
+
 
 const DashboardLotFields = (props) => {
 
@@ -56,7 +57,7 @@ const DashboardLotFields = (props) => {
                 value,
             } = field
 
-            const key = uuid.v4()/*`${fieldName}+dataType`*/
+            const key = uuid()/*`${fieldName}+dataType`*/
             const isLast = currIndex === arr.length - 1
             if(!!value){
               switch (dataType) {

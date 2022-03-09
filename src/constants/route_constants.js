@@ -1,5 +1,5 @@
 import {DEVICE_CONSTANTS} from "./device_constants";
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 export const CUSTOM_TASK_ID = "custom_task"
 export const CUSTOM_CHARGE_TASK_ID = "custom_task_charge"

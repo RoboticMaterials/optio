@@ -10,7 +10,7 @@ import { setSelectedProcess, editingProcess, putProcesses } from '../../../../re
 // Import Utils
 import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
 
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import ProcessForm from "./process_form/process_form";
 
 const ProcessesContent = () => {
@@ -88,7 +88,7 @@ const ProcessesContent = () => {
                 onPlus={() => {
                     const newProcess = {
                         name: '',
-                        _id: uuid.v4(),
+                        _id: uuid(),
                         new: true,
                         routes: [],
                         broken: null,

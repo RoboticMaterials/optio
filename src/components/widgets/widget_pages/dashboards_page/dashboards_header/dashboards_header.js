@@ -14,7 +14,7 @@ import ReactTooltip from "react-tooltip";
 import DashboardOperationsMenu from '../dashboard_operations_menu/dashboard_operations_menu'
 import DashboardButton from '../dashboard_buttons/dashboard_button/dashboard_button'
 
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 
 
 
@@ -59,7 +59,7 @@ const DashboardsHeader = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks);
     const stationBasedLots = useSelector(state => state.settingsReducer.settings.stationBasedLots)
 
-    const [toolTipId,] = useState(`tooltip-${uuid.v4()}`)
+    const [toolTipId,] = useState(`tooltip-${uuid()}`)
     const [showOperationsMenu, setShowOperationsMenu] = useState(false)
 
     const [pullButtons, setPullButtons] = useState([])
@@ -132,7 +132,7 @@ const DashboardsHeader = (props) => {
                 <DashboardButton
                     title={btnLabel}
                     iconColor={"black"}
-                    key={uuid.v4()}
+                    key={uuid()}
                     iconClassName={iconClassName}
                     onClick={() => {
                         const { type, ...meta }  = pullBtn;

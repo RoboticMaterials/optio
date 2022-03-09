@@ -28,7 +28,7 @@ import {
     SET_SELECTED_STATION_CHILDREN_COPY
 } from '../types/positions_types'
 
-import uuid from 'uuid';
+import {v4 as uuid} from "uuid";
 
 import * as api from '../../api/positions_api'
 
@@ -103,7 +103,7 @@ export const postPosition = (position) => {
         try {
             onStart();
             if (!('_id' in position)) {
-                position._id = uuid.v4()
+                position._id = uuid()
             }
 
             // Was used for a bug that didnt exist

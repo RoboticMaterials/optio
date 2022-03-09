@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from 'react'
 
 // external functions
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
 import { useSelector, useDispatch } from 'react-redux'
 
 // internal components

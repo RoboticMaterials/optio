@@ -38,7 +38,8 @@ import {
     FINISH_ENABLED
 } from "../types/suffixes"
 
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid";
+
 
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
@@ -240,7 +241,7 @@ export const addRouteToDashboards = (route) => {
 
         const newDashboardButton = {
             color: '#bcbcbc',
-            id: uuid.v4(),
+            id: uuid(),
             name: "",
             task_id: routeId,
             type: TYPES.ROUTES.key,

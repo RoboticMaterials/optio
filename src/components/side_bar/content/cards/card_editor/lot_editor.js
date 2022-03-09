@@ -91,7 +91,7 @@ import {
     formatLotNumber,
     getDisplayName,
 } from "../../../../../methods/utils/lot_utils";
-import uuid from "uuid";
+import {v4 as uuid} from "uuid"
 
 // import styles
 import * as styled from "./lot_editor.style";
@@ -167,7 +167,7 @@ const FormComponent = (props) => {
     const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE;
 
     const themeContext = useContext(ThemeContext);
-    const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+    const toolTipId = useRef(`tooltip-${uuid()}`).current;
 
     // actions
     const dispatch = useDispatch();

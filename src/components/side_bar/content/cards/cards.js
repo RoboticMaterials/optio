@@ -9,7 +9,7 @@ import ReactTooltip from "react-tooltip";
 
 // external functions
 import { useHistory, useParams } from 'react-router-dom'
-import uuid from "uuid";
+import {v4 as uuid} from "uuid"
 import { useDispatch, useSelector } from "react-redux";
 import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
@@ -63,7 +63,7 @@ const Cards = (props) => {
     const routes = useSelector(state => state.tasksReducer.tasks) || {}
     const stations = useSelector(state => state.stationsReducer.stations) || {}
     const multipleFilters = useSelector(state => state.settingsReducer.settings.enableMultipleLotFilters) || false
-    const toolTipId = useRef(`tooltip-${uuid.v4()}`).current;
+    const toolTipId = useRef(`tooltip-${uuid()}`).current;
     const currProcessCards = useRef(processCards).current || {}
     const openEvents = useSelector(state => state.touchEventsReducer.openEvents|| {})
 

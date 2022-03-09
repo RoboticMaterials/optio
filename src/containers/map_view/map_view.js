@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 
 import * as styled from './map_view.style'
 
-import uuid from 'uuid';
+import {v4 as uuid} from "uuid"
 import * as d3 from 'd3'
 
 // Import Utils

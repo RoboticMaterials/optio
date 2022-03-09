@@ -22,7 +22,8 @@ import { StationTypes } from '../../../constants/station_constants'
 // import styling
 import * as styled from './right_click_menu.style'
 
-import uuid from 'uuid'
+import {v4 as uuid} from "uuid"
+
 
 /**
  * This is the menu that opens on right click
@@ -80,7 +81,7 @@ const RightClickMenu = (props) => {
             rotation: 0,
             x: coords.x,
             y: coords.y,
-            _id: uuid.v4()
+            _id: uuid()
         }
 
         await Object.assign(tempSelectedPosition, { ...PositionTypes['temporary_cart_position'].attributes, temp: true })
@@ -97,7 +98,7 @@ const RightClickMenu = (props) => {
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
         defaultAttributes['map_id'] = currentMapId
-        defaultAttributes['_id'] = uuid.v4()
+        defaultAttributes['_id'] = uuid()
         defaultAttributes['pos_x'] = pos[0]
         defaultAttributes['pos_y'] = pos[1]
         defaultAttributes['x'] = coords.x

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import uuid from "uuid";
+import {v4 as uuid} from "uuid"
 
 import * as styled from "./edit_location.style";
 import { Formik, Form } from "formik";
@@ -340,7 +340,7 @@ const EditLocation = (props) => {
 
         defaultAttributes["name"] = newName;
         defaultAttributes["map_id"] = currentMapId;
-        defaultAttributes["_id"] = uuid.v4();
+        defaultAttributes["_id"] = uuid();
         defaultAttributes["temp"] = true;
 
         const attributes = deepCopy(LocationTypes[type].attributes);
