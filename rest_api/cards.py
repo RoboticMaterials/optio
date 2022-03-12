@@ -6,10 +6,9 @@ schedule data
 from flask import make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from numpy import broadcast
+#from numpy import broadcast
 from pymongo import MongoClient
-from datetime import datetime
-import uuid
+#from datetime import datetime
 from pymongo import ReturnDocument
 
 client = MongoClient('localhost:27017')

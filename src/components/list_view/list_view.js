@@ -290,7 +290,7 @@ const ListView = (props) => {
                                       />
                                   </BounceButton>
                                 }
-                                <styled.Title>{stations[stationID].name}</styled.Title>
+                                <styled.Title>{stations[stationID]?.name}</styled.Title>
                               </>
                                 :
                                 <BounceButton
