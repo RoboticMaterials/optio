@@ -160,6 +160,7 @@
     "file": "Are you sure you want to import this file?",
     "paste":"A paste event was detected. Would you like to use pasted data to create lots?",
     "importevt":"Import Event Detected",
-    "pastevt":"Paste Event Detected"
-  }                    
+    "pastevt":"Paste Event Detected",
+    "instructions":"Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template. Right click on a row header to delete a row, right click on a column header to reset a column label."
+  }    
   }

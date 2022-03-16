@@ -169,6 +169,7 @@
       "file": "Êtes-vous sûr de vouloir importer ce fichier ?",
       "paste":"Un événement de collage a été détecté. Souhaitez-vous utiliser les données collées pour créer des lots ?",
       "importevt":"Événement d'importation détecté",
-      "pastevt":"Événement de collage détecté"       
+      "pastevt":"Événement de collage détecté",
+      "instructions":"Sélectionnez le menu déroulant en haut de chaque colonne pour l'affecter à l'un des champs de votre modèle de groupe de produits. Cliquez avec le bouton droit sur un en-tête de ligne pour supprimer une ligne, cliquez avec le bouton droit sur un en-tête de colonne pour réinitialiser une étiquette de colonne."       
     }
 }

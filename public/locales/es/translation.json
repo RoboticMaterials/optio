@@ -168,6 +168,7 @@
       "file": "¿Estás seguro de que quieres importar este archivo?",
       "paste":"Se detectó un evento de pegado. ¿Le gustaría usar los datos pegados para crear lotes?",
       "importevt":"Evento de importación detectado",
-      "pastevt":"Evento de pegado detectado"       
+      "pastevt":"Evento de pegado detectado",
+      "instructions":"Seleccione el menú desplegable en la parte superior de cada columna para asignarlo a uno de los campos en su plantilla de grupo de productos. Haga clic con el botón derecho en el encabezado de una fila para eliminar una fila, haga clic con el botón derecho en el encabezado de una columna para restablecer una etiqueta de columna."       
     }
 }

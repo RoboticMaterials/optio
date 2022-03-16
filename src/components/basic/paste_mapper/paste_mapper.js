@@ -27,7 +27,11 @@ import * as styled from './paste_mapper.style'
 import { putLotTemplate } from '../../../redux/actions/lot_template_actions'
 import BackButton from '../back_button/back_button';
 
+import { useTranslation } from 'react-i18next';
+
 const PasteMapper = (props) => {
+
+    const { t, i18n } = useTranslation();
 
     const {
         formikProps,
@@ -322,7 +326,7 @@ const PasteMapper = (props) => {
                       />
                     }
 
-                    <styled.SectionDescription style = {{flex: parseMode === 'Alpen' && '0.75'}}>Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template</styled.SectionDescription>
+                    <styled.SectionDescription style = {{flex: parseMode === 'Alpen' && '0.75'}}>{t("Import.instructions","Select the dropdown at the top of each column to assign it to one of the fields in your Product Group Template. Right click on a row header to delete a row, right click on a column header to reset a column label.")}</styled.SectionDescription>
                 </styled.ContentContainer>
                 <styled.SectionBreak />
                 <styled.TableContainer style={{backdropFilter: 'none !important'}}>
