@@ -7,14 +7,14 @@ import { isArray, isNonEmptyArray } from "./array_utils";
 
 /**
  * This function checks to see if a process is broken.
- * A process is broken because it has dissjointed routes, theres a gap between an unload station and a load station between 2 consecutive routes
- *
+ * A process is broken because it has disjointed routes, theres a gap between an unload station 
+ * and a load station between 2 consecutive routes
  *
  * @param {object} processRoutes Process to check and see if it is broken
  * @param {object} routes All routes
  */
 export const isBrokenProcess = (routes) => {
-    return false;
+    return false; // always returns false
 
     // can't be broken if there is only 1 route
     if (routes.length > 1) {

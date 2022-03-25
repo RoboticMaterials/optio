@@ -168,7 +168,7 @@ const DashboardLotFields = (props) => {
 
           <div style = {{marginTop:'0.5rem'}}>
             <LotSimpleRow
-                label={lotTemplates[currentLot.lotTemplateId].name === 'Basic' ? 'Quantity' : lotTemplates[currentLot.lotTemplateId].displayNames.count}
+                label={lotTemplates[currentLot.lotTemplateId]?.name === 'Basic' ? 'Quantity' : lotTemplates[currentLot.lotTemplateId]?.displayNames.count}
                 value={`${count}/${totalQuantity}`}
                 labelStyle={{ fontSize: '1rem' }}
                 countStyle={{ fontSize: '1rem' }}

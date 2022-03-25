@@ -160,7 +160,9 @@ export default function cardsReducer(state = defaultState, action) {
 
       // Delete from station cards
       for (let stationId of Object.keys(cardsCopy[action.payload.cardId]?.bins || {})) {
-        delete stationCardsCopy[stationId][action.payload.cardId];
+        if(!!stationId){
+          delete stationCardsCopy[stationId][action.payload.cardId];
+        }
       }
 
       // Delete from cards
