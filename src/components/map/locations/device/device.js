@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { DeviceTypes } from '../../../../constants/position_constants'
+import { DeviceTypes } from '../../../../constants/device_constants'
 
 const Device = () => {
 
@@ -67,7 +67,7 @@ const Device = () => {
             <g id="Layer_2" data-name="Layer 2">
                 <g id="Layer_1-2" data-name="Layer 1">
                     <rect fill='#4d4d4d' width="360" height="240" rx="30" />
-                    <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={DeviceTypes['Mir100'].svgPath} />
+                    <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={DeviceTypes['cart'].svgPath} />
                 </g>
             </g>
         </svg>

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import * as style from '../../dashboard_list/DashboardsList.style.js'
+//import * as style from '../../dashboard_list/DashboardsList.style.js'
 
 
 export const AddContainer = styled(style.AddContainer)`

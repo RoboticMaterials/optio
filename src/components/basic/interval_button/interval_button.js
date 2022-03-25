@@ -3,7 +3,7 @@ import * as styled from './interval_button.style'
 
 import SmallButton from '../small_button/small_button';
 
-import useIntervalPress from '../../../event_handlers/use_interval_press';
+//import useIntervalPress from '../../../event_handlers/use_interval_press';
 
 const IntervalButton = (
   {
@@ -15,12 +15,12 @@ const IntervalButton = (
   }
 ) => {
 
-  const wayPointPress = useIntervalPress(startFunc, intervalFunc, endFunc, interval);
+  //const wayPointPress = useIntervalPress(startFunc, intervalFunc, endFunc, interval);
 
     return (
         <SmallButton
             {...props}
-            {...wayPointPress}
+    //        {...wayPointPress}
         />
     )
 };

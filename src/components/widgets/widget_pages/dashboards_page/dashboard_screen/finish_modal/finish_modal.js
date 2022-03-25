@@ -13,7 +13,7 @@ import { getCards } from "../../../../../../redux/actions/card_actions";
 import * as styled from './finish_modal.style'
 import { useTheme } from "styled-components";
 import { getProcesses } from "../../../../../../redux/actions/processes_actions";
-∂import { sortBy } from "../../../../../../methods/utils/card_utils";
+import { sortBy } from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import {getCustomFields, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
