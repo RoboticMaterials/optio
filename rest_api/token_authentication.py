@@ -12,14 +12,15 @@
 #
 # from jose import JWTError, jwt
 
-import demjson
+
+import yaml
 import cognitojwt
 
 with open('../src/settings/config.js', 'r') as conf:
     raw = conf.read()
     json_obj = raw[raw.find('{') : raw.rfind('}')+1].replace("'", '"')
     print(json_obj)
-    cognito_attributes = demjson.decode(json_obj)
+    cognito_attributes = yaml.load(json_obj,Loader=yaml.SafeLoader) #demjson.decode(json_obj)
         
     REQUIRE_AUTH = cognito_attributes['authenticationNeeded']
     USERPOOL_ID = cognito_attributes['UserPoolId']
