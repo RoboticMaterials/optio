@@ -1,0 +1,176 @@
+service: optio-robotic-materials
+
+frameworkVersion: "3"
+
+custom:
+  dbClusterIdentifier: ${self:service}-${self:provider.stage}-cluster-identifier
+  dbEngineVersion: "4.0.0"
+  dbInstanceClass: "db.t3.medium"
+  dbInstanceIdentifier1: ${self:service}-${self:provider.stage}-instance-1
+  dbClusterEndpoint: "docdb-2022-04-05-17-06-22.cluster-cgsq72pfcm9g.us-east-2.docdb.amazonaws.com:27017"
+  dbMasterUserName: "optioawsdocumentdb"
+  dbMasterUserPassword: "R0boticmaterials!"
+  userPoolName: ${self:service}-${self:provider.stage}-user-pool
+  userPoolClientName: ${self:service}-${self:provider.stage}-user-pool-client
+  websocketConnectionsTableName: ${self:service}-${self:provider.stage}-websocket-connections
+
+  wsgi:
+    app: app.app
+  pythonRequirements:
+    dockerizePip: false
+    pythonBin: python3
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: us-east-2
+  apiName: ${self:service}-restApi-${self:provider.stage}
+  websocketsApiName: ${self:service}-websocketApi-${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cognito-idp:ForgotPassword
+            - cognito-idp:ConfirmSignUp
+            - cognito-idp:GetUserAttributeVerificationCode
+            - cognito-idp:DeleteUser
+            - cognito-idp:GetUser
+            - cognito-idp:ConfirmForgotPassword
+            - cognito-idp:SignUp
+            - cognito-idp:VerifyUserAttribute
+            - cognito-idp:DeleteUserAttributes
+            - cognito-idp:UpdateUserAttributes
+            - cognito-idp:ChangePassword
+            - cognito-idp:ResendConfirmationCod
+          Resource:
+            - { "Fn::GetAtt": ["OptioUserPool", "Arn"] }
+
+        - Effect: Allow
+          Action:
+            - ec2:DescribeNetworkInterfaces
+            - ec2:CreateNetworkInterface
+            - ec2:DeleteNetworkInterface
+            - ec2:DescribeInstances
+            - ec2:AttachNetworkInterface
+          Resource: "*"
+
+        - Effect: Allow
+          Action:
+            - "execute-api:ManageConnections"
+          Resource:
+            - "arn:aws:execute-api:*:*:**/@connections/*"
+
+  environment:
+    REGION: ${self:provider.region}
+    COGNITO_USER_POOL: !Ref OptioUserPool
+    COGNITO_USER_POOL_CLIENT_NAME: !Ref OptioUserPoolClient
+    DB_CLUSTER_ENDPOINT: ${self:custom.dbClusterEndpoint}
+    DB_MASTER_USER_NAME: ${self:custom.dbMasterUserName}
+    DB_MASTER_USER_PASSWORD: ${self:custom.dbMasterUserPassword}
+    WEBSOCKET_API_ENDPOINT:
+      !Join [
+        "",
+        [
+          "https://",
+          !Ref WebsocketsApi,
+          ".execute-api.",
+          "${self:provider.region}",
+          ".amazonaws.com/",
+          "${self:provider.stage}/",
+        ],
+      ]
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    maximumRetryAttempts: 1
+    maximumEventAge: 7200
+    vpc:
+      subnetIds:
+        - subnet-76cdb83a
+        - subnet-8ce9e4f6
+      securityGroupIds:
+        - sg-b3abd5cf
+    events:
+      - httpApi: "*"
+    layers:
+      - arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p38-numpy:2
+      - arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p38-pandas:2
+  websocketConnect:
+    handler: websocket.connect
+    maximumRetryAttempts: 1
+    vpc:
+      subnetIds:
+        - subnet-76cdb83a
+        - subnet-8ce9e4f6
+      securityGroupIds:
+        - sg-b3abd5cf
+    events:
+      - websocket:
+          route: $connect
+  websocketDisconnect:
+    handler: websocket.disconnect
+    maximumRetryAttempts: 1
+    vpc:
+      subnetIds:
+        - subnet-76cdb83a
+        - subnet-8ce9e4f6
+      securityGroupIds:
+        - sg-b3abd5cf
+    events:
+      - websocket:
+          route: $disconnect
+  websocketDefaultMessage:
+    handler: websocket.default_message
+    maximumRetryAttempts: 1
+    vpc:
+      subnetIds:
+        - subnet-76cdb83a
+        - subnet-8ce9e4f6
+      securityGroupIds:
+        - sg-b3abd5cf
+    events:
+      - websocket:
+          route: $default
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+
+resources:
+  Resources:
+    OptioUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AdminCreateUserConfig:
+          AllowAdminCreateUserOnly: true
+          InviteMessageTemplate:
+            EmailMessage: Your username is {username} and temporary password is {####}.
+            EmailSubject: Your temporary password
+            SMSMessage: Your username is {username} and temporary password is {####}.
+          UnusedAccountValidityDays: 30
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        EmailVerificationMessage: Your Optio verification code is {####}.
+        EmailVerificationSubject: Your Optio verification code
+        MfaConfiguration: "OFF"
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+            RequireUppercase: true
+        UserPoolName: ${self:custom.userPoolName}
+
+    OptioUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:custom.userPoolClientName}
+        UserPoolId:
+          Ref: OptioUserPool
+        GenerateSecret: false
