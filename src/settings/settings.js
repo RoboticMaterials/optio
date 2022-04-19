@@ -1,5 +1,7 @@
 import  store  from "../redux/store/index";
 import ls from 'local-storage'
+import config from "./config"
+
 
 export const mirURL = (url) => {
     // const mirURL = url
@@ -9,7 +11,7 @@ export const mirURL = (url) => {
     return URL;
 };
 
-export const apiIPAddress = (protocol='https', suffix='api/') => {
+export const apiIPAddress = (protocol='https', suffix='') => {
     const localSettings = ls.get("localSettings")
     const parsedLocalSettings = JSON.parse(localSettings)
     const hostServerIpAddress = parsedLocalSettings ? parsedLocalSettings.non_local_api_ip : ""
@@ -23,16 +25,22 @@ export const apiIPAddress = (protocol='https', suffix='api/') => {
         host = hostServerIpAddress;
     } else if (window.location.hostname === '10.42.0.1') {
         host = window.location.hostname;
-    } else if (window.location.hostname === 'localhost') {
+    /*} else if (window.location.hostname === 'localhost') {
         host = 'localhost:5000';
         if (protocol === 'https') {
             protocolToUse = 'http';
         } else if (protocol === 'wss') {
             protocolToUse = 'ws';
         }
-        
+    */    
     } else {
-        host = window.location.hostname
+        if(protocol==='https'){
+            host = !!config.API ? config.API : window.location.hostname
+        }
+        else{
+            host = !!config.socketAPI ? config.socketAPI : window.location.hostname
+        }
+        //console.log(host)
     }
 
     return `${protocolToUse}://${host}/${suffix}`;

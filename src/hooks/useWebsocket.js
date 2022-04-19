@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import io from 'socket.io-client/dist/socket.io';
 
 import { apiIPAddress } from '../settings/settings';
@@ -17,7 +18,10 @@ const useWebsocket = (props) => {
 
     const socket = useRef(null);
 
+    const idToken = useSelector((settings) => settings.localReducer.idToken)
+    //console.log(idToken)
     const dispatch = useDispatch();
+
 
     // Cards
     const dispatchAddCard = (card) => dispatch(addCard(card));
@@ -177,7 +181,7 @@ const useWebsocket = (props) => {
     }
 
     useEffect(() => {
-        socket.current = io.connect(apiIPAddress('wss', ''), {transports: ['websocket']})
+        socket.current = io.connect(apiIPAddress('wss', ''), {transports: ['websocket'], path: "/dev", query: {idToken}})
         socket.current.on("message", msg => switchMessage(msg))
     }, [])
 

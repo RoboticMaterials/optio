@@ -1,6 +1,13 @@
+org: correll
+app: optio-robotic-materials
 service: optio-robotic-materials
 
 frameworkVersion: "3"
+
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
 
 custom:
   dbClusterIdentifier: ${self:service}-${self:provider.stage}-cluster-identifier

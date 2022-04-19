@@ -32,10 +32,11 @@ export async function getMap(map_id) {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator + '/' + map_id,
-      headers: {
+      headers: getHeaders
+     /* headers: {
         'Accept': 'application/json',
         'X-API-Key': '123456',
-      },
+      }*/,
   });
 
   // Success 🎉
