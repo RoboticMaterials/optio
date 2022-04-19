@@ -16,7 +16,7 @@ db = client.ContactDB
 collection = db.site_maps
 
 
-@app.route('/site_maps/<string:map_id>/stations', methods=['GET'])
+@app.route('/site_maps', methods=['GET'])
 def site_maps_read_all():
     """
     This function responds to a request for /api/site_maps
@@ -36,7 +36,7 @@ def site_maps_read_all():
     #     }
     # ])
 
-@app.route('/site_maps/<string:map_id>', methods=['GET'])
+@app.route('/site_maps/<string:site_map_id>', methods=['GET'])
 def site_maps_read_one(site_map_id):
     """
     This function responds to a request for /api/site_maps/{site_map_id}
@@ -58,7 +58,7 @@ def site_maps_read_one(site_map_id):
         )
 
 
-@app.route('/site_maps', methods=['POST'])
+@app.route('/site_map', methods=['POST'])
 def site_maps_create(site_map):
     """
     This function creates a new site_map in the site_maps structure
@@ -147,7 +147,7 @@ def site_maps_update(site_map_id, site_map):
 #         return data, 200
 
 
-@app.route('/site_maps/<string:map_id>', methods=['DELETE'])
+@app.route('/site_maps/<string:site_map_id>', methods=['DELETE'])
 def site_maps_delete(site_map_id):
     """
     This function deletes a site_map from the site_maps structure
