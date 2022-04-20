@@ -39,7 +39,7 @@ def after_request(response):
     return response
 
 
-@app.route("/hello")
+@app.route("/hello", methods=["GET"])
 def hello():
     groupname = get_user_attribute(g.user['UserAttributes'], 'name')
     send_wss_message_to_group(groupname, json.dumps({'type':'test', 'msg':'Hello from path!'}))
