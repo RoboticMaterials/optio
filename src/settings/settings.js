@@ -25,14 +25,15 @@ export const apiIPAddress = (protocol='https', suffix='') => {
         host = hostServerIpAddress;
     } else if (window.location.hostname === '10.42.0.1') {
         host = window.location.hostname;
-    /*} else if (window.location.hostname === 'localhost') {
-        host = 'localhost:5000';
+    } else if (window.location.hostname === 'localhost') {
+        // use with npm local-cors-proxy
         if (protocol === 'https') {
             protocolToUse = 'http';
+            host = 'localhost:8010/proxy';
         } else if (protocol === 'wss') {
             protocolToUse = 'ws';
-        }
-    */    
+            host = !!config.socketAPI ? config.socketAPI : window.location.hostname
+        }   
     } else {
         if(protocol==='https'){
             host = !!config.API ? config.API : window.location.hostname

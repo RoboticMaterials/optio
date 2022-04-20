@@ -12,7 +12,7 @@ export async function getMaps() {
       method: 'GET',
       url: apiIPAddress() + operator,
       headers: getHeaders()
-    });
+     });
 
     // Success 🎉
     const data = response.data;

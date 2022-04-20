@@ -181,7 +181,8 @@ const useWebsocket = (props) => {
     }
 
     useEffect(() => {
-        socket.current = io.connect(apiIPAddress('wss', ''), {transports: ['websocket'], path: "/dev", query: {idToken}})
+        console.log(idToken)
+        socket.current = io.connect(apiIPAddress('wss', ''), {transports: ['websocket'], path: "/opmtwo", Authorization: {idToken}})
         socket.current.on("message", msg => switchMessage(msg))
     }, [])
 

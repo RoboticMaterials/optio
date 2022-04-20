@@ -16,6 +16,7 @@ export const getHeaders = () => {
     return headers;
 }
 
+
 export const handleError = (error) => {
      // Error 😨
      if (error.response) {
