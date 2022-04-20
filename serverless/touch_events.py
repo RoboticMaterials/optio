@@ -55,7 +55,7 @@ def touch_events_delete_all_on_map(map_id):
     collection.delete_many({'map_id': map_id})
 
 
-@app.route('/touch_events/lot/<string:lot_id>', methods=['DELETE'])
+@app.route('/touch_events/lot/<string:lot_id>', methods=['GET'])
 def touch_events_get_by_lot(lot_id):
     # Create the list of site_maps from our data
     touch_events = collection.find({"lot_id": lot_id, 'move_datetime': {
@@ -262,7 +262,7 @@ def full_create(touch_event):
     return dumps(touch_event_with_id)
 
 
-@app.route('/touch_events/site_map/<string:map_id>/open_events', methods=['GET'])
+@app.route('/touch_events/site_map/<string:station_id>/open_events', methods=['GET'])
 def touch_events_get_open_touch_events_for_station(station_id):
     open_touch_events = list(db.touch_events.find({
         'load_station_id': station_id,
