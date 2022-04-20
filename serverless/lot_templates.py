@@ -98,7 +98,7 @@ def lot_templates_update(id, lot_template):
         return dumps(lot_template_with_id)
 
 
-@app.route('/development/clear/<string:map_id>', methods=['DELETE'])
+@app.route('/cards/templates/<string:id>', methods=['DELETE'])
 def lot_templates_delete(id):
     """
     This function deletes a schedule from the schedules structure
