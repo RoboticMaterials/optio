@@ -319,7 +319,7 @@ export const calcDailyWorkingSeconds = (start, end, shiftDetails) => {
     }
 
     // Total working seconds between the start and stop not including breaks
-    const shiftSeconds = Math.max(0, (endSeconds - startSeconds));
+    let shiftSeconds = Math.max(0, (endSeconds - startSeconds));
 
     // For each break, calculate the length of the break in seconds and ad to total break time
     let startBrSeconds, endBrSeconds, brSeconds;
