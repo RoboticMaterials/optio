@@ -10,7 +10,7 @@ export async function getTasks() {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: getHeaders()
         });
@@ -33,7 +33,7 @@ export async function getTask(id) {
     // log.debug('getTask: id: ', id)
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + '/' + id,
             headers: getHeaders(),
         });

@@ -12,7 +12,7 @@ const log = logger.getLogger('Api')
 export async function getLotTouchEvents(lotID) {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + '/lot/' + lotID, 
             headers: getHeaders(),
         });
@@ -32,7 +32,7 @@ export async function getOpenTouchEvents() {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + '/site_maps/' + currMapId + '/open_events', 
             headers: getHeaders(),
         });
@@ -51,7 +51,7 @@ export async function getOpenTouchEvents() {
 export async function getOpenStationTouchEvents(stationId) {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + '/station/' + stationId + '/open_events', 
             headers: getHeaders(),
         });

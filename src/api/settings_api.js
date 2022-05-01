@@ -9,7 +9,7 @@ const operator = 'settings'
 export async function getSettings() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
             headers: getHeaders(),
         });

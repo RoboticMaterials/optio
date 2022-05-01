@@ -530,7 +530,7 @@ const Settings = (props) => {
 
 
     const CurrentMap = () => {
-
+        console.log(maps)
 
         return (
             <>

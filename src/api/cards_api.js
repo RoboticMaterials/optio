@@ -9,7 +9,7 @@ const operator = 'cards'
 export async function getCard(cardId) {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + "/" + cardId,
             headers: getHeaders()
         });
@@ -28,7 +28,7 @@ export async function getCard(cardId) {
 export async function getCardsCount() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator + "/count",
             headers: getHeaders()
         });
@@ -48,7 +48,7 @@ export async function getCards() {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: getHeaders()
         });
@@ -68,7 +68,7 @@ export async function getCards() {
 export async function getProcessCards(processId) {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + "processes/" + processId + "/cards",
             headers: getHeaders()
         });
@@ -87,7 +87,7 @@ export async function getProcessCards(processId) {
 export async function getStationCards(stationId) {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + "stations/" + stationId + "/cards",
             headers: getHeaders()
         });

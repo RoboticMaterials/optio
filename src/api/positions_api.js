@@ -9,7 +9,7 @@ const operator = 'positions'
 export async function getPositions() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
             headers: getHeaders()
         });

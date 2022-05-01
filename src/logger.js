@@ -74,7 +74,7 @@ log.getCategoryLoggers = function(category) {
 //         rawMethod("Newsflash: " + message);
 //     };
 // };
-// log.setLevel(log.getLevel());
+//log.setLevel("Error");
 
 export default log;
 

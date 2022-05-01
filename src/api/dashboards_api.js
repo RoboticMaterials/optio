@@ -10,7 +10,7 @@ export async function getDashboards() {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + `site_maps/${currMapId}/${operator}`,
             headers: getHeaders()
         });
