@@ -15,7 +15,7 @@ def connect(event, context):
     """
     logger.info(f'Received new connect event {event}')
 
-    token = event['headers']['Authorization'] if 'Authorization' in event['headers'] else ''
+    token = event['headers']['Sec-WebSocket-Protocol'] if 'Sec-WebSocket-Protocol' in event['headers'] else ''
     user = get_user(token)
     if not user:
         return get_response(401, 'Unauthorized!')
