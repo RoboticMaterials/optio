@@ -11,7 +11,8 @@ export const mirURL = (url) => {
     return URL;
 };
 
-export const apiIPAddress = (protocol='https', suffix='') => {
+export const apiIPAddress = (protocol='https', suffix='',test='remove') => {
+   
     const localSettings = ls.get("localSettings")
     const parsedLocalSettings = JSON.parse(localSettings)
     const hostServerIpAddress = parsedLocalSettings ? parsedLocalSettings.non_local_api_ip : ""
@@ -43,7 +44,8 @@ export const apiIPAddress = (protocol='https', suffix='') => {
         }
         //console.log(host)
     }
-
+    if(test==='maps')
+        console.log(`${protocolToUse}://${host}/${suffix}`)
     return `${protocolToUse}://${host}/${suffix}`;
 };
 

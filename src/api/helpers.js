@@ -15,7 +15,7 @@ export const getHeaders = () => {
    
     return new Headers({
         Authorization: store.getState().localReducer.idToken,
-//        'Content-Type': 'application/json',
+       'Content-Type': 'application/json',
     })
 }
 
