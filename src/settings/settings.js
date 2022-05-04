@@ -26,7 +26,7 @@ export const apiIPAddress = (protocol='https', suffix='',test='remove') => {
         host = hostServerIpAddress;
     } else if (window.location.hostname === '10.42.0.1') {
         host = window.location.hostname;
-    } else if (window.location.hostname === 'localhost') {
+    } /*else if (window.location.hostname === 'localhost') {
         // use with npm local-cors-proxy
         if (protocol === 'https') {
             protocolToUse = 'http';
@@ -35,7 +35,7 @@ export const apiIPAddress = (protocol='https', suffix='',test='remove') => {
             protocolToUse = 'ws';
             host = !!config.socketAPI ? config.socketAPI : window.location.hostname
         }   
-    } else {
+    } */else {
         if(protocol==='https'){
             host = !!config.API ? config.API : window.location.hostname
         }

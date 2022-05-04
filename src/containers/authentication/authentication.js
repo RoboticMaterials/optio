@@ -89,9 +89,10 @@ const Authentication = (props) => {
                     }
 
                     if (session.isValid()) {
+               
                         dispatchUpdateLocalSettings({
                             authenticated:true,
-                            idToken: session?.idToken?.jwtToken || null
+                            idToken: session?.getAccessToken()?.getJwtToken() || null
                         })
                     }
                 });

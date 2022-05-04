@@ -11,6 +11,8 @@ export async function getMaps() {
 
 
   try {
+    console.log("getting maps")
+    console.log(store.getState().localReducer.idToken)
     const response = await axios.get(apiIPAddress() + operator,{
         headers : {
         'Content-Type': 'application/json',

@@ -52,11 +52,11 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        const settingsPromise = onGetSettings();
+       // const settingsPromise = onGetSettings();
         const mapsPromise = onGetMaps();
 
         // If there is no map yet, set it to the first map
-       Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
+      /* Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
             if (!localSettings.currentMapId && !!maps) {
                 console.log(serverSettings)
                 onPostLocalSettings({
@@ -76,7 +76,7 @@ const ApiContainer = (props) => {
         onGetDashboards()
         onGetProcesses()
         onGetTasks()
-        onGetLotTemplates()
+        onGetLotTemplates()*/
 
         props.apiLoaded()
         props.onLoad()
