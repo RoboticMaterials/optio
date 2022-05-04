@@ -3,7 +3,7 @@ This is the position module and supports all the REST actions for the
 position data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -52,7 +52,7 @@ def positions_read_one(position_id):
 
 
 @app.route('/positions', methods=['POST'])
-def positions_create(position):
+def positions_create():
     """
     This function creates a new position in the positions structure
     based on the passed in position data
@@ -60,7 +60,7 @@ def positions_create(position):
     :param position:  position to create in positions structure
     :return:        201 on success, 406 on position exists
     """
-
+    position = request.get_json()
     result = collection.insert_one(position)
     position_with_id = collection.find_one({'_id': result.inserted_id})
     return dumps(position_with_id)
@@ -129,7 +129,7 @@ def positions_create(position):
 
 
 @app.route('/positions/<string:position_id>', methods=['PUT'])
-def positions_update(position_id, position):
+def positions_update(position_id):
     """
     This function updates an existing dashboard in the dashboards structure
     Throws an error if a dashboard with the name we want to update to
@@ -139,7 +139,7 @@ def positions_update(position_id, position):
     :param dashboard:      dashboard to update
     :return:            updated dashboard structure
     """
-
+    position = request.get_json()
     # Are we trying to find a dashboard that does not exist?
     rtn_position_1 = list(collection.find({"_id": position_id}))
     if len(rtn_position_1) == 0:
