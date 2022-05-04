@@ -11,26 +11,23 @@ export async function getMaps() {
 
 
   try {
-    console.log("getting maps")
-    console.log(store.getState().localReducer.idToken)
     const response = await axios.get(apiIPAddress() + operator,{
-        headers : {
+        headers : getHeaders()
+        
+        /*{
         'Content-Type': 'application/json',
         Authorization: store.getState().localReducer.idToken,
-      },
+      }*/,
      });
     
     // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    console.log(dataJson);
+    const dataJson = response.data;
     return dataJson;
 
 
   } catch (error) {
     console.log("Problem reading maps")
-    console.log(apiIPAddress() + operator)
-    console.log(error.response)
+    console.log(error)
     handleError(error);
 }
 
@@ -49,8 +46,8 @@ export async function getMap(map_id) {
   });
 
   // Success 🎉
-  const data = response.data;
-  const dataJson = JSON.parse(data)
+  const dataJson = response.data;
+  //const dataJson = JSON.parse(data)
   return dataJson;
 
 

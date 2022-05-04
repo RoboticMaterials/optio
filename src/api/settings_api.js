@@ -14,8 +14,8 @@ export async function getSettings() {
             headers: getHeaders(),
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
     } catch (error) {
@@ -34,12 +34,13 @@ export async function postSettings(settings) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
     } catch (error) {
+        console.log(error)
         handleError(error);
     }
 }

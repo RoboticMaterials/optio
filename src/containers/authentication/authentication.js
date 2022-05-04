@@ -92,7 +92,7 @@ const Authentication = (props) => {
                
                         dispatchUpdateLocalSettings({
                             authenticated:true,
-                            idToken: session?.getAccessToken()?.getJwtToken() || null
+                            idToken: session.getAccessToken().getJwtToken() || null
                         })
                     }
                 });

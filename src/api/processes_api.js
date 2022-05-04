@@ -17,8 +17,8 @@ export async function getProcesses() {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -61,8 +61,8 @@ export async function postProcesses(process) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -82,8 +82,8 @@ export async function putProcesses(process, ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -110,8 +110,8 @@ export async function getProcessStatistics(id, startDate, endDate) {
         });
         
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
 
         return dataJson;
 

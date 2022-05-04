@@ -17,8 +17,8 @@ export async function getLotTouchEvents(lotID) {
             headers: getHeaders(),
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -37,8 +37,8 @@ export async function getOpenTouchEvents() {
             headers: getHeaders(),
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -56,8 +56,8 @@ export async function getOpenStationTouchEvents(stationId) {
             headers: getHeaders(),
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -97,8 +97,8 @@ export async function openTouchEvent(touchEvent) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -117,8 +117,8 @@ export async function closeTouchEvent(touchEvent) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -137,8 +137,8 @@ export async function postTouchEvent(touchEvent) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 

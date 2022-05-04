@@ -14,8 +14,8 @@ export async function getLotTemplate(id) {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -34,8 +34,8 @@ export async function getLotTemplates() {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -79,8 +79,8 @@ export async function postLotTemplate(lotTemplate) {
 
         // Success 🎉
         // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         // log.debug('response data json',dataJson);
 
 
@@ -106,8 +106,8 @@ export async function putLotTemplate(lotTemplate, ID) {
 
         // Success 🎉
         // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 

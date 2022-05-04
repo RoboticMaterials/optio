@@ -15,8 +15,8 @@ export async function getDashboards() {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -56,8 +56,8 @@ export async function postDashboards(dashboard) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -77,8 +77,8 @@ export async function putDashboards(dashboard, ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 

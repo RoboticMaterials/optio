@@ -14,8 +14,8 @@ export async function getPositions() {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -35,8 +35,8 @@ export async function deletePosition(ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson
 
     } catch (error) {
@@ -55,8 +55,8 @@ export async function postPosition(position) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
 
         return dataJson;
 
@@ -77,8 +77,8 @@ export async function putPosition(position, ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 

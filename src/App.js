@@ -49,7 +49,7 @@ const App = () => {
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
 
-    const socket = useWebsocket();
+    //const socket = useWebsocket();
 
     useEffect(() => {
       handleLoadLocalData();

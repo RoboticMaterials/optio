@@ -16,8 +16,8 @@ export async function getStations() {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+       // const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -38,8 +38,8 @@ export async function getStation(id) {
             headers: getHeaders()
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -59,8 +59,8 @@ export async function deleteStation(ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson
 
     } catch (error) {
@@ -84,8 +84,8 @@ export async function postStation(station) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
 
         return dataJson;
 
@@ -106,8 +106,8 @@ export async function putStation(station, ID) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
 
         return dataJson;
 
@@ -135,8 +135,8 @@ export async function getStationStatistics(id, startDate, endDate) {
         });
         
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
 
         return dataJson;
 

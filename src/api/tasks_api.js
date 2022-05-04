@@ -17,8 +17,8 @@ export async function getTasks() {
 
         // Success 🎉
         // log.debug('getTasks :res:',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         // log.debug('getTasks: dataJson: ', dataJson)
         return dataJson;
 
@@ -38,8 +38,8 @@ export async function getTask(id) {
             headers: getHeaders(),
         });
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
 
@@ -64,8 +64,8 @@ export async function postTask(task) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
     } catch (error) {
@@ -104,8 +104,8 @@ export async function putTask(task, id) {
         });
 
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = response.data;
+        //const dataJson = JSON.parse(data)
         return dataJson;
 
     } catch (error) {
