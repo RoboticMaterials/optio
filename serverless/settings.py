@@ -3,7 +3,7 @@ This is the settings module and supports all the REST actions for the
 settings data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -113,7 +113,7 @@ def settings_read_all():
 
 
 @app.route('/settings', methods=['POST'])
-def settings_create(settings):
+def settings_create():
     """
     This function creates a new settings in the settings structure
     based on the passed in settings data
@@ -121,6 +121,7 @@ def settings_create(settings):
     :param settings:  settings to create in settings structure
     :return:        201 on success, 406 on settings exists
     """
+    settings = request.get_json()
     mongo_settings = collection.find()
     if len(list(mongo_settings)) == 0:
         collection.insert_one({})
