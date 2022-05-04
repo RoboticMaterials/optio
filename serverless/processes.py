@@ -3,7 +3,7 @@ This is the processes module and supports all the REST actions for the
 processes data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -51,7 +51,7 @@ def processes_read_one(process_id):
 
 
 @app.route('/processes', methods=['POST'])
-def processes_create(process):
+def processes_create():
     """
     This function creates a new process in the processes structure
     based on the passed in process data
@@ -59,6 +59,7 @@ def processes_create(process):
     :param process:  process to create in processes structure
     :return:        201 on success, 406 on process exists
     """
+    process = request.get_json()
     result = collection.insert_one(process)
     process_with_id = collection.find_one({'_id': result.inserted_id})
     # g.socket.emit('message', {"type": "processes", "method": "POST",
@@ -67,7 +68,7 @@ def processes_create(process):
 
 
 @app.route('/processes/<string:process_id>', methods=['PUT'])
-def processes_update(process_id, process):
+def processes_update(process_id):
     """
     This function updates an existing process in the processes structure
     Throws an error if a process with the name we want to update to
@@ -77,7 +78,7 @@ def processes_update(process_id, process):
     :param process:      process to update
     :return:            updated process structure
     """
-
+    process = request.get_json()
     # Are we trying to find a process that does not exist?
     rtn_process_1 = list(collection.find({"_id": process_id}))
     if len(rtn_process_1) == 0:
