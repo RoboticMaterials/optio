@@ -3,7 +3,7 @@ This is the status module and supports all the REST actions for the
 status data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -28,7 +28,7 @@ def status_read_all():
 
 
 @app.route('/status', methods=['POST'])
-def status_create(status):
+def status_create():
     """
     This function creates a new status in the status structure
     based on the passed in status data
@@ -36,5 +36,6 @@ def status_create(status):
     :param status:  status to create in status structure
     :return:        201 on success, 406 on status exists
     """
+    status = request.get_json()
     collection.update_one({},  {"$set": status})
     return 201
