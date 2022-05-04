@@ -3,7 +3,7 @@ This is the events module and supports all the REST actions for the
 events data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -49,7 +49,7 @@ def events_read_one(event_id):
 
 
 @app.route('/events', methods=['POST'])
-def events_create(event):
+def events_create():
     """
     This function creates a new event in the events structure
     based on the passed in event data
@@ -57,6 +57,7 @@ def events_create(event):
     :param event:  event to create in events structure
     :return:        201 on success, 406 on event exists
     """
+    event = request.get_json()
     rtnd_event = collection.find({"name": event["name"]})
     # Can we insert this event?
     if len(list(rtnd_event.clone())) == 0:
@@ -75,7 +76,7 @@ def events_create(event):
 
 
 @app.route('/events/<string:event_id>', methods=['PUT'])
-def events_update(event_id, event):
+def events_update(event_id):
     """
     This function updates an existing event in the events structure
     Throws an error if a event with the name we want to update to
@@ -85,7 +86,7 @@ def events_update(event_id, event):
     :param event:      event to update
     :return:            updated event structure
     """
-
+    event = request.get_json()
     # Are we trying to find a event that does not exist?
     rtn_event_1 = list(collection.find({"_id": ObjectId(event_id)}))
     if len(rtn_event_1) == 0:
