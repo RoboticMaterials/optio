@@ -3,7 +3,7 @@ This is the site_map module and supports all the REST actions for the
 site_map data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -59,7 +59,7 @@ def site_maps_read_one(site_map_id):
 
 
 @app.route('/site_map', methods=['POST'])
-def site_maps_create(site_map):
+def site_maps_create():
     """
     This function creates a new site_map in the site_maps structure
     based on the passed in site_map data
@@ -67,6 +67,7 @@ def site_maps_create(site_map):
     :param site_map:  site_map to create in site_maps structure
     :return:        201 on success, 406 on site_map exists
     """
+    site_map = request.get_json()
     rtnd_site_map = collection.find({"name": site_map["name"]})
     # Can we insert this site_map?
     if len(list(rtnd_site_map.clone())) == 0:
@@ -84,7 +85,7 @@ def site_maps_create(site_map):
 
 
 @app.route('/site_maps/<string:map_id>', methods=['PUT'])
-def site_maps_update(site_map_id, site_map):
+def site_maps_update(site_map_id):
     """
     This function updates an existing site_map in the site_maps structure
     Throws an error if a site_map with the name we want to update to
@@ -94,6 +95,7 @@ def site_maps_update(site_map_id, site_map):
     :param site_map:      site_map to update
     :return:            updated site_map structure
     """
+    site_map = request.get_json()
 #     # Get the site_map requested from the db into session
 #     update_site_map = Site Map.query.filter(
 #         Site Map.site_map_id == site_map_id
