@@ -3,7 +3,7 @@ This is the schedule module and supports all the REST actions for the
 schedule data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 #from numpy import broadcast
@@ -120,7 +120,7 @@ def get_next_sequence_value(sequence_name):
 
 
 @app.route('/cards', methods=['POST'])
-def cards_create(card):
+def cards_create():
     """
     This function creates a new card in the cards structure
     based on the passed in card data
@@ -129,6 +129,7 @@ def cards_create(card):
     :return:        201 on success, 406 on card exists
     """
 
+    card = request.get_json()
     card['_id'] = str(ObjectId())
 
     lot_number_counter = counters_collection.find_one({'_id': "lot_number"})
@@ -161,7 +162,7 @@ def cards_get_count():
 
 
 @app.route('/cards/<string:card_id>', methods=['PUT'])
-def cards_update(card_id, card):
+def cards_update(card_id):
     """
     This function updates an existing card in the cards structure
     Throws an error if a card with the name we want to update to
@@ -172,6 +173,7 @@ def cards_update(card_id, card):
     :return:            updated card structure
     """
     # Create the list of cards from our data
+    card = request.get_json()
     old_card = collection.find_one({"_id": card_id})
 
     # Are we trying to find a card that does not exist?
