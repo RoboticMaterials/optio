@@ -3,7 +3,7 @@ This is the settings module and supports all the REST actions for the
 settings data
 """
 
-from flask import request, make_response, abort, g
+from flask import request, make_response, jsonify, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -128,4 +128,4 @@ def settings_create():
     collection.update_one({},  {"$set": settings})
     # g.socket.emit('message', {
     #               "type": "settings", "method": "PUT", "payload": settings}, broadcast=True)
-    return 201
+    return jsonify({})
