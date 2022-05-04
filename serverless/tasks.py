@@ -3,7 +3,7 @@ This is the task module and supports all the REST actions for the
 task data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -68,7 +68,7 @@ def tasks_read_one(task_id):
 
 
 @app.route('/tasks', methods=['POST'])
-def tasks_create(task):
+def tasks_create():
     """
     This function creates a new task in the tasks structure
     based on the passed in task data
@@ -76,6 +76,7 @@ def tasks_create(task):
     :param task:  task to create in tasks structure
     :return:        201 on success, 406 on task exists
     """
+    task = request.get_json()
     # Send to data base
     result = collection.insert_one(task)
     task_with_id = collection.find_one({'_id': result.inserted_id})
@@ -85,7 +86,7 @@ def tasks_create(task):
 
 
 @app.route('/tasks/<string:task_id>', methods=['PUT'])
-def tasks_update(task_id, task):
+def tasks_update(task_id):
     """
     This function updates an existing task in the tasks structure
     Throws an error if a task with the name we want to update to
@@ -95,6 +96,7 @@ def tasks_update(task_id, task):
     :param task:      task to update
     :return:            updated task structure
     """
+    task = request.get_json()
     # Create the list of tasks from our data
     test_task = collection.find({"_id": task_id})
 
