@@ -3,7 +3,7 @@ This is the task analysis module and supports all the REST actions for the
 task analysis data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from datetime import datetime
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -174,8 +174,8 @@ def close_touch_event(touch_event):
 
 
 @app.route('/touch_events', methods=['POST'])
-def touch_events_create(touch_event, option=None):
-
+def touch_events_create(option=None):
+    touch_event = request.get_json()
     if option is None:
         return full_create(touch_event)
     elif option == 'open':
