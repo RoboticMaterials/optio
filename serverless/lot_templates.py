@@ -3,7 +3,7 @@ This is the lot_templates module and supports all the REST actions for the
 lot_templates data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -52,7 +52,7 @@ def lot_templates_read_one(id):
 
 
 @app.route('/cards/templates', methods=['POST'])
-def lot_templates_create(lot_template):
+def lot_templates_create():
     """
     This function creates a new card in the cards structure
     based on the passed in card data
@@ -60,7 +60,7 @@ def lot_templates_create(lot_template):
     :param card:  card to create in cards structure
     :return:        201 on success, 406 on card exists
     """
-
+    lot_template = request.get_json()
     lot_template['_id'] = str(ObjectId())
     result = collection.insert_one(lot_template)
 
@@ -70,7 +70,7 @@ def lot_templates_create(lot_template):
 
 
 @app.route('/cards/templates/<string:id>', methods=['PUT'])
-def lot_templates_update(id, lot_template):
+def lot_templates_update(id):
     """
     This function updates an existing card in the cards structure
     Throws an error if a card with the name we want to update to
@@ -80,6 +80,7 @@ def lot_templates_update(id, lot_template):
     :param card:      card to update
     :return:            updated card structure
     """
+    lot_template = request.get_json()
     # Create the list of cards from our data
     old_lot_template = collection.find_one({"_id": id})
 
