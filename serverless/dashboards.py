@@ -3,7 +3,7 @@ This is the dashboard module and supports all the REST actions for the
 dashboard data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -52,7 +52,7 @@ def dashboards_read_one(dashboard_id):
 
 
 @app.route('/dashboards', methods=['POST'])
-def dashboards_create(dashboard):
+def dashboards_create():
     """
     This function creates a new dashboard in the dashboards structure
     based on the passed in dashboard data
@@ -60,6 +60,7 @@ def dashboards_create(dashboard):
     :param dashboard:  dashboard to create in dashboards structure
     :return:        201 on success, 406 on dashboard exists
     """
+    dashboard = request.get_json()
     rtnd_dashboard = collection.find({"name": dashboard["name"]})
     # Can we insert this dashboard?
     # if rtnd_dashboard.count() == 0:
@@ -72,7 +73,7 @@ def dashboards_create(dashboard):
 
 
 @app.route('/dashboards/<string:dashboard_id>', methods=['PUT'])
-def dashboards_update(dashboard_id, dashboard):
+def dashboards_update(dashboard_id):
     """
     This function updates an existing dashboard in the dashboards structure
     Throws an error if a dashboard with the name we want to update to
@@ -83,6 +84,7 @@ def dashboards_update(dashboard_id, dashboard):
     :return:            updated dashboard structure
     """
 
+    dashboard = request.get_json()
     # Are we trying to find a dashboard that does not exist?
     rtn_dashboard_1 = list(collection.find({"_id": ObjectId(dashboard_id)}))
     if len(rtn_dashboard_1) == 0:
