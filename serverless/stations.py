@@ -3,7 +3,7 @@ This is the station module and supports all the REST actions for the
 station data
 """
 
-from flask import make_response, abort, g
+from flask import request, make_response, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from app import app
@@ -52,7 +52,7 @@ def stations_read_one(station_id):
 
 
 @app.route('/stations', methods=['POST'])
-def stations_create(station):
+def stations_create():
     """
     This function creates a new station in the stations structure
     based on the passed in station data
@@ -60,6 +60,7 @@ def stations_create(station):
     :param station:  station to create in stations structure
     :return:        201 on success, 406 on station exists
     """
+    station = request.get_json()
     rtnd_station = collection.find(
         {"$and": [{"name": station["name"]}, {"map_id": station["map_id"]}]})
     # Can we insert this station?
@@ -145,7 +146,7 @@ def stations_create(station):
 
 
 @app.route('/stations/<string:station_id>', methods=['PUT'])
-def stations_update(station_id, station):
+def stations_update(station_id):
     """
     This function updates an existing dashboard in the dashboards structure
     Throws an error if a dashboard with the name we want to update to
@@ -155,7 +156,7 @@ def stations_update(station_id, station):
     :param dashboard:      dashboard to update
     :return:            updated dashboard structure
     """
-
+    station = request.get_json()
     # Are we trying to find a dashboard that does not exist?
     rtn_station_1 = list(collection.find({"_id": station_id}))
     if len(rtn_station_1) == 0:
