@@ -3,7 +3,7 @@ This is the schedule module and supports all the REST actions for the
 schedule data
 """
 
-from flask import make_response, abort
+from flask import request, make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -62,7 +62,7 @@ def report_events_read_one(report_event_id):
 
 
 @app.route('/report_events', methods=['POST'])
-def report_events_create(report_event):
+def report_events_create():
     """
     This function creates a new report_event in the report_events structure
     based on the passed in report_event data
@@ -70,7 +70,7 @@ def report_events_create(report_event):
     :param report_event:  report_event to create in report_events structure
     :return:        201 on success, 406 on report_event exists
     """
-
+    report_event = request.get_json()
     # add id field
     id = str(ObjectId())
     report_event['_id'] = id
@@ -102,7 +102,7 @@ def report_events_create(report_event):
 
 
 @app.route('/report_events/<string:report_event_id>', methods=['PUT'])
-def report_events_update(report_event_id, report_event):
+def report_events_update(report_event_id):
     """
     This function updates an existing report_event in the report_events structure
     Throws an error if a report_event with the name we want to update to
@@ -112,6 +112,7 @@ def report_events_update(report_event_id, report_event):
     :param report_event:      report_event to update
     :return:            updated report_event structure
     """
+    report_event = request.get_json()
     # check for existing report_event
     old_report_event = collection.find_one({"_id": report_event_id})
 
