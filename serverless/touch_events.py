@@ -171,7 +171,8 @@ def close_touch_event(touch_event):
 
 
 @app.route('/touch_events', methods=['POST'])
-def touch_events_create(option=None):
+def touch_events_create():
+    option = request.args.get('option')
     touch_event = request.get_json()
     if option is None:
         return full_create(touch_event)
