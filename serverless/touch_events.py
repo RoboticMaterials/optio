@@ -3,7 +3,7 @@ This is the task analysis module and supports all the REST actions for the
 task analysis data
 """
 
-from flask import request, make_response, abort
+from flask import request, make_response, jsonify, abort
 from datetime import datetime
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -102,10 +102,7 @@ def close_touch_event(touch_event):
     print(existing_touch_event)
 
     if not existing_touch_event:
-        abort(
-            404,
-            "Open lot not found"
-        )
+        return make_response(jsonify(message='Open lot not found'), 404)
 
     touch_event = {**existing_touch_event, **touch_event}
 
@@ -183,10 +180,7 @@ def touch_events_create(option=None):
     elif option == 'close':
         return close_touch_event(touch_event)
     else:
-        abort(
-            404,
-            "Option is not valid"
-        )
+        return make_response(jsonify(message='Option is not valid'), 404)
 
 
 def full_create(touch_event):
@@ -315,7 +309,4 @@ def touch_events_delete(event_id):
 
     # Otherwise, nope, didn't find that person
     else:
-        abort(
-            404,
-            "station not found for Id: {event_id}".format(event_id=event_id),
-        )
+        return make_response(jsonify(message="station not found for Id: {event_id}".format(event_id=event_id)), 404)
