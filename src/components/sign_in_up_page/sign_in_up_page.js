@@ -117,7 +117,7 @@ const SignInUpPage = (props) => {
                 onSuccess: function (result) {
                     dispatchUpdateLocalSettings({
                         authenticated: result.accessToken.payload.username,
-                        idToken: result?.idToken?.jwtToken || null
+                        idToken: result.getAccessToken().getJwtToken() || null 
                     })
 
                 },

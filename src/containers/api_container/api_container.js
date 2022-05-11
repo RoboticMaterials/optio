@@ -231,8 +231,9 @@ const ApiContainer = (props) => {
             if (!localSettings.currentMapId && !!maps) {
                  onPostLocalSettings({
                     ...localSettings,
-                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
+                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null   
                 })
+                location.reload()
             }
         })
 
