@@ -60,4 +60,5 @@ import dashboards
 import development
 import cards
 import site_maps
+import touch_events
 

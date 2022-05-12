@@ -3,7 +3,7 @@ This is the schedule module and supports all the REST actions for the
 schedule data
 """
 
-from flask import request, make_response, abort, g
+from flask import request, make_response, jsonify, abort, g
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 #from numpy import broadcast
@@ -156,9 +156,9 @@ def cards_get_count():
     lot_number_counter = counters_collection.find_one({'_id': "lot_number"})
 
     if not lot_number_counter:
-        return 0
+        return jsonify(0)
     else:
-        return lot_number_counter['sequence_value']
+        return jsonify(lot_number_counter['sequence_value'])
 
 
 @app.route('/cards/<string:card_id>', methods=['PUT'])
