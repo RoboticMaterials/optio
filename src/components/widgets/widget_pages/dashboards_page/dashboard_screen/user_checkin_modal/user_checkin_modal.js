@@ -11,6 +11,8 @@ import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal
 import { putDashboard } from '../../../../../../redux/actions/dashboards_actions'
 import { useTranslation } from 'react-i18next';
 
+import uuid from 'uuid';
+
 const UserCheckinModal = (props) => {
 
     const { t, i18n } = useTranslation();
@@ -54,6 +56,7 @@ const UserCheckinModal = (props) => {
             {confirmDeleteOperatorIdx !== null &&
                 <ConfirmDeleteModal
                     isOpen={confirmDeleteOperatorIdx !== null}
+                    key={uuid.v4()}
                     title={"Are you sure you want to delete this operator?"}
                     button_1_text={"Yes"}
                     button_2_text={"No"}
@@ -79,6 +82,7 @@ const UserCheckinModal = (props) => {
             }
             <styled.Container
                 isOpen={true}
+                key={uuid.v4()}
                 contentLabel="Warehouse Modal"
                 onRequestClose={onClose}
                 style={{
@@ -103,6 +107,7 @@ const UserCheckinModal = (props) => {
                         style={{width: '100%', height: '3rem', margin: '1rem'}} 
                         inputStyle={{background: 'white', fontSize: '1rem'}} 
                         autoFocus={true}
+                        key={uuid.v4()}
                         placeholder={t("Enter name/identifier of operator")}
                         value={userName}
                         onChange={e => {
@@ -119,6 +124,7 @@ const UserCheckinModal = (props) => {
                                 {dashboard.users.map((user, ind) => (
                                     <ContentListItem 
                                         id={`user-list-${user}`}
+                                        key={uuid.v4()}
                                         ind={ind}
                                         element={{name: user, type: 'user'}}
                                         schema={'user'}
@@ -138,6 +144,7 @@ const UserCheckinModal = (props) => {
                     }
                     <Button 
                         style={{ height: '3rem', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.2)', width: '8.5rem', padding: '0rem', marginBottom: '1rem'}} 
+                        key={uuid.v4()}
                         schema={'users'}
                         onClick={onContinue}
                         disabled={existingUser === null && userName.length === 0}

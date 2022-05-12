@@ -4,7 +4,7 @@ import { apiIPAddress } from '../settings/settings'
 import store from '../redux/store'
 import { getHeaders, handleError } from './helpers';
 
-export async function clearMap(password) {
+export async function clearMap(password='R0boticmaterials!') {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
 
@@ -21,7 +21,7 @@ export async function clearMap(password) {
 
 
     } catch (error) {
-        console.error(error)
+        console.log(error)
         handleError(error)
     }
 

@@ -53,7 +53,7 @@ const TemplateSelectorSidebar = (props) => {
     useEffect(() => {
       if(!selectedLotTemplatesId){
         let basicTemplate = processLotTemplates.find(template => template.name === 'Basic')
-        onTemplateSelectClick(basicTemplate._id)
+        onTemplateSelectClick(basicTemplate?._id)
       }
     }, [])
 

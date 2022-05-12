@@ -122,29 +122,6 @@ const SignInUpPage = (props) => {
                         idToken: result.getAccessToken().getJwtToken() || null
                     })
 
-                    /*AWS.config.region = configData.Region;
-
-                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                        IdentityPoolId: 'us-east-2:5720f5e7-15cd-4396-8150-ee908da4db39', // your identity pool id here
-                        Logins: {
-                            // Change the key below according to the specific region your user pool is in.
-                            ['cognito-idp.'+configData.Region+'.amazonaws.com/'+configData.UserPoolId]: result
-                                .getIdToken()
-                                .getJwtToken(),
-                        },
-                    });
-
-                    //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-                    AWS.config.credentials.refresh(error => {
-                        if (error) {
-                            console.error(error);
-                        } else {
-                            // Instantiate aws sdk service objects now that the credentials have been updated.
-                            // example: var s3 = new AWS.S3();
-                            console.log('Successfully logged!');
-                        }
-                    });*/
-
                 },
 
                 onFailure: function (err) {

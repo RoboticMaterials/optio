@@ -62,6 +62,7 @@ export async function postDashboards(dashboard) {
 
 
     } catch (error) {
+        console.log(error)
         handleError(error);
     }
 }

@@ -52,17 +52,34 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-       // const settingsPromise = onGetSettings();
+
+        const settingsPromise = onGetSettings();
         const mapsPromise = onGetMaps();
 
         // If there is no map yet, set it to the first map
-      /* Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
+        Promise.all([mapsPromise, settingsPromise]).then(([maps, serverSettings]) => {
             if (!localSettings.currentMapId && !!maps) {
-                console.log(serverSettings)
+                /*console.log(serverSettings)
+                console.log(maps)
+                console.log(localSettings)*/
                 onPostLocalSettings({
                     ...localSettings,
                     currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
                 })
+            
+            
+                onGetStations()
+                onGetDashboards()
+                onGetProcesses()
+                onGetTasks()
+                onGetLotTemplates()
+        
+                props.apiLoaded()
+                props.onLoad()
+
+                location.reload() // needs to be done in order to get map setup properly
+            
+            
             }
         })
 
@@ -70,13 +87,13 @@ const ApiContainer = (props) => {
             props.onLoad()
             setApiError(true)
             return
-        }
+        } 
 
         onGetStations()
         onGetDashboards()
         onGetProcesses()
         onGetTasks()
-        onGetLotTemplates()*/
+        onGetLotTemplates()
 
         props.apiLoaded()
         props.onLoad()

@@ -642,14 +642,19 @@ const Cards = (props) => {
       else if(stationId === 'FINISH') name = t("Finish")
       else name = stations[stationId].name
       return (
-        <styled.HeaderContainer>
-          <styled.StationName>
+        <styled.HeaderContainer
+          key = {uuid.v4()}
+        >
+          <styled.StationName
+            key = {uuid.v4()}
+          >
             {name}
           </styled.StationName>
-          <styled.ColumnHeader>
-          <div data-tip data-for = {'lots-' + stationId}>
+          <styled.ColumnHeader key = {uuid.v4()}>
+          <div data-tip data-for = {'lots-' + stationId} key = {uuid.v4()}>
             <ReactTooltip
                 id={'lots-' + stationId}
+                key = {uuid.v4()}
                 place="right"
                 effect="solid"
                 offset = {{top: 70, left: 95}}
@@ -657,21 +662,26 @@ const Cards = (props) => {
                 textColor = '#363636'
                 border = {true}
                 >
-               <styled.LotCount>{t("Parts at the current station")}</styled.LotCount>
+               <styled.LotCount key = {uuid.v4()}>{t("Parts at the current station")}</styled.LotCount>
               </ReactTooltip>
-              <styled.RowContainer>
-                <styled.LotCount>
+              <styled.RowContainer
+                key = {uuid.v4()}
+              >
+                <styled.LotCount
+                 key = {uuid.v4()} 
+                >
                 {cardCount[stationId]}
                 </styled.LotCount>
-                <i className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
+                <i key = {uuid.v4()} className = 'far fa-window-restore' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
               </styled.RowContainer>
             </div>
 
-            <div data-tip data-for = {'parts-' + stationId}>
+            <div data-tip data-for = {'parts-' + stationId} key = {uuid.v4()}>
               <ReactTooltip
                   id={'parts-' + stationId}
                   place="right"
                   effect="solid"
+                  key = {uuid.v4()}
                   offset = {{top: 70, left: 95}}
                   backgroundColor = '#FFFFFF'
                   textColor = '#363636'
@@ -681,8 +691,12 @@ const Cards = (props) => {
                   <styled.LotCount>{t("Lots at the current station")}</styled.LotCount>
                       
                 </ReactTooltip>
-                <styled.RowContainer>
-                  <styled.LotCount>
+                <styled.RowContainer
+                  key = {uuid.v4()}
+                >
+                  <styled.LotCount
+                   key = {uuid.v4()}
+                  >
                   {partCount[stationId]}
                   </styled.LotCount>
                   <i className = 'fas fa-splotch' style = {{color: '#79797d', fontSize: '1.2rem', marginLeft: '0.5rem', marginTop: '0.1rem'}}/>
@@ -705,7 +719,7 @@ const Cards = (props) => {
 
             if(Object.values(partBins).length === 1){
               return (
-                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}}>
+                  <VisibilitySensor partialVisibility = {true} offset = {{bottom: -550, top: -550}} key = {uuid.v4()}>
                     {({isVisible}) =>
                       <>
                         {isVisible || draggingLotId === card._id ?
@@ -767,11 +781,12 @@ const Cards = (props) => {
                           >
                           {dragIndex === 0 && index === 0 && draggingStationId === stationId && (allowHomeDrop || lotFilterValue!== '') &&
                             <styled.DropContainer
+                              key = {cardId}
                               divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
                               divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
                             />
                           }
-                          <div id = {cardId + stationId}>
+                          <div id = {cardId + stationId} key = {uuid.v4()}>
                             <LotContainer
                               containerStyle = {{margin: '0.5rem'}}
                               isInProgress = {!!openEvents[stationId] && openEvents[stationId].findIndex(e => e.lot_id === cardId) !== -1}
@@ -807,13 +822,14 @@ const Cards = (props) => {
                             </div>
                             {dragIndex === index+1 && draggingStationId === stationId && allowHomeDrop &&
                               <styled.DropContainer
+                                key = {cardId}
                                 divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
                                 divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
                               />
                             }
                           </styled.CardContainer>
                           :
-                          <div style = {{minHeight:'12rem', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #ddd', borderRadius: '0.4rem', margin: '0.5rem 1rem'}}>...Loading</div>
+                          <div  key = {uuid.v4()} style = {{minHeight:'12rem', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid #ddd', borderRadius: '0.4rem', margin: '0.5rem 1rem'}}>...Loading</div>
                         }
                       </>
                     }
@@ -831,6 +847,7 @@ const Cards = (props) => {
                               onMouseOver = {()=>{
                                 setHoveringCard(card)
                               }}
+                              key = {uuid.v4()}
                               onMouseLeave = {()=>setHoveringCard(null)}
                               onClick = {()=>setShowLotEditor(true)}
                               draggable = {isPartial ? false : true}
@@ -884,11 +901,12 @@ const Cards = (props) => {
                             {dragIndex === 0 && index === 0 && draggingStationId === stationId && allowHomeDrop
                               && !isPartial && draggingStationId === dragFromStation &&
                               <styled.DropContainer
+                                key = {uuid.v4()}
                                 divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
                                 divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
                               />
                             }
-                            <div id = {cardId + stationId}>
+                            <div id = {cardId + stationId} key = {uuid.v4()}>
                               <LotContainer
                                 containerStyle = {{margin: '0.5rem'}}
                                 selectable={true}
@@ -933,6 +951,7 @@ const Cards = (props) => {
                                 <styled.DropContainer
                                   divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
                                   divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
+                                  key = {uuid.v4()}
                                 />
                               }
                             </styled.CardContainer>
@@ -949,6 +968,7 @@ const Cards = (props) => {
           return (
               <styled.DropContainer
                 divHeight = {!!divHeight ? divHeight +'px' : '8rem'}
+                key = {uuid.v4()}
                 divWidth = {!!divWidth ? divWidth +'px' : '20rem'}
               />
           )
@@ -959,6 +979,7 @@ const Cards = (props) => {
         return (
           <div
             style = {{pointerEvents: !dropNodes.includes(stationID) && draggingLotId && 'none'}}
+            key = {uuid.v4()}
             onDragEnter = {(e)=>{
               setDragIndex(dragIndexSearch(stationID))
               setDraggingStationId(stationID)
@@ -968,11 +989,13 @@ const Cards = (props) => {
             }}
           >
             <styled.ColumnContainer
+              key = {uuid.v4()}
               disabled = {!dropNodes.includes(stationID) && draggingLotId}
             >
               {renderHeaderContent(stationID)}
               <styled.StationColumnContainer
                 id = {stationID}
+                key = {uuid.v4()}
                 maxHeight = {viewHeight?.toString() + 'px'}
                 isOverflowing = {dragFromStation === stationID ? isOverflowing(dragFromStation) ? true : false : true}
               >
@@ -1000,6 +1023,7 @@ const Cards = (props) => {
       return (
         <div
           style = {{pointerEvents: !dropNodes.includes('QUEUE') && draggingLotId && 'none'}}
+          key = {uuid.v4()}
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('QUEUE'))
             setDraggingStationId('QUEUE')
@@ -1010,19 +1034,21 @@ const Cards = (props) => {
         >
           <styled.ColumnContainer
             style = {{paddingBottom: '0.5rem'}}
+            key = {uuid.v4()}
             disabled = {!dropNodes.includes('QUEUE') && draggingLotId}
           >
            {renderHeaderContent('QUEUE')}
             <styled.StationColumnContainer
               id = {'QUEUE'}
+              key = {uuid.v4()}
               maxHeight = {(viewHeight-55)?.toString() + 'px'}
               isOverflowing = {dragFromStation === 'QUEUE' ? isOverflowing(dragFromStation) ? true : false : true}
             >
                 {renderCards('QUEUE')}
             </styled.StationColumnContainer>
-            <styled.AddLotContainer onClick = {()=>handleAddLotClick()}>
-            <i className = 'fas fa-plus' style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
-              <styled.AddLot>
+            <styled.AddLotContainer onClick = {()=>handleAddLotClick()} key = {uuid.v4()}>
+            <i className = 'fas fa-plus' key = {uuid.v4()} style = {{marginTop: '1.2rem', color: '#7e7e7e'}}/>
+              <styled.AddLot key = {uuid.v4()}>
                 {t("Add New Lot")}
               </styled.AddLot>
             </styled.AddLotContainer>
@@ -1035,6 +1061,7 @@ const Cards = (props) => {
       return (
         <div
           style = {{pointerEvents: !dropNodes.includes('FINISH') && draggingLotId && 'none'}}
+          key = {uuid.v4()}
           onDragEnter = {(e)=>{
             setDragIndex(dragIndexSearch('FINISH'))
             setDraggingStationId('FINISH')
@@ -1044,10 +1071,12 @@ const Cards = (props) => {
           }}
         >
           <styled.ColumnContainer
+            key = {uuid.v4()}
             disabled = {!dropNodes.includes('FINISH') && draggingLotId}
           >
            {renderHeaderContent('FINISH')}
             <styled.StationColumnContainer
+              key = {uuid.v4()}
               id = 'FINISH'
               isOverflowing = {dragFromStation === 'FINISH' ? isOverflowing(dragFromStation) ? true : false : true}
               maxHeight = {viewHeight?.toString() + 'px'}
@@ -1062,6 +1091,7 @@ const Cards = (props) => {
     const renderLotEditor = () => {
       return (
         <LotEditorContainer
+            key = {uuid.v4()}
             isOpen={showLotEditor}
             onAfterOpen={null}
             cardId={hoveringCard ? hoveringCard._id : null}
@@ -1077,9 +1107,10 @@ const Cards = (props) => {
 
     const renderFilterSortBar = useMemo(() => {
       return (
-        <div style = {{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-          <div style={{marginLeft: '0.5rem', display: 'flex', padding: ".5rem 0rem 0rem 0.5rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap"}}>
+        <div key = {uuid.v4()} style = {{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+          <div key = {uuid.v4()} style={{marginLeft: '0.5rem', display: 'flex', padding: ".5rem 0rem 0rem 0.5rem", flexDirection: 'row', margin: '0rem', flexWrap: "wrap"}}>
             <BackButton
+              key = {uuid.v4()}
               containerStyle = {{alignSelf: 'center'}}
               schema = {'lots'}
               onClick = {() => {
@@ -1087,6 +1118,7 @@ const Cards = (props) => {
               }}
                />
               <ZoneHeader
+                  key = {uuid.v4()}
                   lotFilterValue={lotFilterValue}
                   sortDirection={sortDirection}
                   sortMode={sortMode}
@@ -1105,17 +1137,17 @@ const Cards = (props) => {
                   onClearClick={()=>setCards([])}
               />
           </div>
-          <styled.StationName style = {{alignSelf: 'center', position: 'absolute', left: '50%', fontSize: '1.8rem'}}>{process.name}</styled.StationName>
+          <styled.StationName style = {{alignSelf: 'center', position: 'absolute', left: '50%', fontSize: '1.8rem'}} key = {uuid.v4()}>{process.name}</styled.StationName>
         </div>
       )
     },[lotFilterValue, sortDirection, sortMode, selectedFilterOption, lotFilters, cards])
 
     return (
-      <styled.PageContainer
-      >
+      <styled.PageContainer key = {uuid.v4()}>
         {renderFilterSortBar}
         <styled.Container
           style = {{height: size.height}}
+          key = {uuid.v4()}
           onDragOver = {(e) => {
             e.preventDefault()
             debouncedDrag(e)
