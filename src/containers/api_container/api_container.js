@@ -100,6 +100,7 @@ const ApiContainer = (props) => {
     }
 
     const loadData = () => {
+      //  console.log("load data",date.now())
         onGetStations();
         onGetDashboards();
         onGetProcesses();

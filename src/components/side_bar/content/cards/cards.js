@@ -11,29 +11,24 @@ import ReactTooltip from "react-tooltip";
 import { useHistory, useParams } from 'react-router-dom'
 import uuid from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import useInterval from 'react-useinterval'
-import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
+import {deleteCard, putCard} from '../../../../redux/actions/card_actions'
 import {setSelectedProcess} from '../../../../redux/actions/processes_actions'
-import {throttle, debounce} from 'lodash'
-import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
-import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
+import {throttle} from 'lodash'
+import {findProcessStartNodes, findProcessEndNodes} from '../../../../methods/utils/processes_utils'
+import { getCustomFields, handleNextStationBins, handleCurrentStationBins} from "../../../../methods/utils/lot_utils";
 import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../methods/utils/lot_utils";
-import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
+import { postSettings} from '../../../../redux/actions/settings_actions'
 
 // styles
 import * as styled from './cards.style'
 import { ThemeContext } from "styled-components";
 import useWindowSize from '../../../../hooks/useWindowSize'
 // Utils
-import {isEmpty} from "../../../../methods/utils/object_utils";
-import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 import { deepCopy } from '../../../../methods/utils/utils'
-import { isArray } from "../../../../methods/utils/array_utils";
 import { sortBySummary } from "../../../../methods/utils/card_utils";
 
 //sort constants
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
-import {SORT_MODES} from "../../../../constants/common_contants";
 
 import { useTranslation } from 'react-i18next';
 
@@ -172,6 +167,7 @@ const Cards = (props) => {
             }
           }
         }
+        console.log("Dispath post settings")
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: {
@@ -237,6 +233,7 @@ const Cards = (props) => {
           setOrderedIds(tempIds)
           setCards(processCards)
           if(JSON.stringify(tempIds) !== JSON.stringify(orderedCardIds)){
+            console.log("Dispath post settings")
             dispatchPostSettings({
               ...serverSettings,
               orderedCardIds: tempIds
@@ -534,6 +531,7 @@ const Cards = (props) => {
             newIds[id][draggingStationId].splice(startIndex,1)
           }
           setOrderedIds(newIds)
+          console.log("Dispath post settings")
           dispatchPostSettings({
             ...serverSettings,
             orderedCardIds: newIds
@@ -550,6 +548,7 @@ const Cards = (props) => {
         if(!containsPartial) newIds[id][dragFromStation].splice(startIndex,1)
         if(newIds[id][dragFromStation].length === 0) newIds[id][dragFromStation] = []
         setOrderedIds(newIds)
+        console.log("Dispath post settings")
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: newIds
@@ -594,6 +593,7 @@ const Cards = (props) => {
           let ind = updatedIds[id][binId].findIndex(cardId => cardId === card._id)
           updatedIds[id][binId].splice(ind,1)
           setOrderedIds(updatedIds)
+          console.log("Dispath post settings")
           dispatchPostSettings({
             ...serverSettings,
             orderedCardIds: updatedIds

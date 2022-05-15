@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 // components internal
@@ -25,6 +25,10 @@ import {
     SUMMMARY_LOT_SORT_OPTIONS,
     SORT_DIRECTIONS
 } from "../../../../../constants/lot_contants"
+
+import uuid from "uuid";
+import debounce from "lodash.debounce"
+
 
 import { useTranslation } from 'react-i18next';
 
@@ -97,28 +101,31 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer style = {{margin: '0rem'}}>
+        <styled.ColumnContainer key={uuid.v4()} style = {{margin: '0rem'}}>
             <styled.Description
                 css={props.descriptionCss}
+                key={uuid.v4()} 
             >
 
                 {t("Sort")}
             </styled.Description>
-            <styled.ContentContainer>
+            <styled.ContentContainer key={uuid.v4()} >
                 <styled.ItemContainer
+                    key={uuid.v4()} 
                     style={{
                         flexWrap: "nowrap"
                     }}
                 >
-                    <styled.OptionContainer>
+                    <styled.OptionContainer key={uuid.v4()} >
                         <DropDownSearch
+                            key={uuid.v4()} 
                             valueCss={props.valueCss}
                             options={lotSortOptions}
-                            onChange={async(values) => {
+                            onChange={debounce(async(values) => {
                                 setSortChanged(true)
                                 // set sort mode
                                 setSortMode(values[0])
-                                setTimeout(() => {
+                               // setTimeout(() => {
                                   let settingsPromise = dispatchGetSettings()
                                   settingsPromise.then(response =>{
                                     dispatchPostSettings({
@@ -126,8 +133,9 @@ const LotSortBar = (props) => {
                                       lotSummarySortValue: values[0]
                                     })
                                 })
-                              }, 4000);
-                            }}
+                              //}, 4000);
+                            },4000)
+                            }
                             values={[sortMode]}
                             labelField={"label"}
                             valueField={"label"}
@@ -141,16 +149,18 @@ const LotSortBar = (props) => {
                             }}
                         />
                         <RotateButton
+                            key={uuid.v4()} 
                             schema={"lots"}
                             state = {sortDirection.id}
                             iconName1={'fas fa-arrow-up'}
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
                             setSortChanged = {setSortChanged}
-                            onStateOne={async() => {
+                            onStateOne={debounce(async() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              setTimeout(() => {
+                              //setTimeout(() => {
+                                  console.log("getsettings1")
                                 let settingsPromise = dispatchGetSettings()
                                 settingsPromise.then(response => {
                                   dispatchPostSettings({
@@ -158,13 +168,14 @@ const LotSortBar = (props) => {
                                       lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
                                   })
                                 })
-                              }, 4000);
+                              }, 4000)
 
-                            }}
+                            }
                             onStateTwo={async() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
                               setTimeout(() => {
+                                console.log("getsettings2")
                                 let settingsPromise = dispatchGetSettings()
                                 settingsPromise.then(response =>{
                                   dispatchPostSettings({

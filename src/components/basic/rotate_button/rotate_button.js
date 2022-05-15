@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 // styles
 import * as styled from "./rotate_button.style"
 
+import uuid from "uuid";
+
 // component constant
 const STATES = {
 	STATE_ONE: "STATE_ONE",
@@ -33,17 +35,18 @@ const RotateButton = props => {
 	useEffect(() => {
 		if(currentState === STATES.STATE_ONE) {
 			setRotate(false)
-			onStateOne()
+			onStateOne();
 
 		}
 		else {
 			setRotate(true)
-			onStateTwo()
+			onStateTwo();
 		}
 	}, [currentState])
 
 	return (
 		<styled.Container
+			key={uuid.v4()}
 			css={containerCss}
 			schema={schema}
 			onClick={() => {
@@ -52,6 +55,7 @@ const RotateButton = props => {
 			}}
 		>
 			<styled.Icon
+				key={uuid.v4()}
 				schema={schema}
 				css={iconCss}
 				rotate={rotate.toString()}

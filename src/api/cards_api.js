@@ -4,9 +4,12 @@ import { apiIPAddress } from '../settings/settings'
 import store from '../redux/store'
 import { getHeaders, handleError } from './helpers';
 
+import throttle from "lodash.throttle"
+
+
 const operator = 'cards'
 
-export async function getCard(cardId) {
+export const getCard = throttle(async function (cardId) {
     try {
         const response = await axios({
             method: 'GET',
@@ -23,9 +26,9 @@ export async function getCard(cardId) {
         handleError(error);
     }
 
-}
+},100);
 
-export async function getCardsCount() {
+export const getCardsCount = throttle(async function () {
     try {
         const response = await axios({
             method: 'GET',
@@ -42,9 +45,9 @@ export async function getCardsCount() {
     } catch (error) {
         handleError(error);
     }
-}
+}, 100);
 
-export async function getCards() {
+export const getCards = throttle(async function () {
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
@@ -62,7 +65,7 @@ export async function getCards() {
         handleError(error);
     }
 
-}
+}, 1000,{leading:true,trailing:false});
 
 
 export async function getProcessCards(processId) {

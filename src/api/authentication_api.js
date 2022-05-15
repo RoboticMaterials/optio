@@ -1,6 +1,6 @@
-export const getAccessToken = () => {
+/*export const getAccessToken = () => {
 
-}
+}*/
 
 export const getRefreshToken = async () => {
 

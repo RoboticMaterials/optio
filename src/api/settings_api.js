@@ -2,11 +2,13 @@ import axios from 'axios';
 
 import { apiIPAddress } from '../settings/settings'
 import { getHeaders, handleError } from './helpers';
+import throttle from "lodash.throttle"
+
 
 const operator = 'settings'
 
 
-export async function getSettings() {
+export const getSettings = throttle(async function () {
     try {
         const response = await axios({
             method: 'GET',
@@ -22,9 +24,9 @@ export async function getSettings() {
         handleError(error);
     }
 
-}
+},1000,{leading:true,trailing:false});
 
-export async function postSettings(settings) {
+export const postSettings = throttle(async function (settings) {
     try {
         const response = await axios({
             method: 'POST',
@@ -43,4 +45,5 @@ export async function postSettings(settings) {
         console.log(error)
         handleError(error);
     }
-}
+},1000,{leading:true,trailing:true});
+

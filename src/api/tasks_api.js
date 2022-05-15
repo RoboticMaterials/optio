@@ -3,10 +3,13 @@ import { apiIPAddress } from '../settings/settings'
 import store from '../redux/store'
 import { getHeaders, handleError } from './helpers';
 
+import throttle from "lodash.throttle"
+
 
 const operator = 'tasks'
 
-export async function getTasks() {
+export const getTasks = throttle(async function () {
+
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
         const response = await axios({
@@ -22,14 +25,12 @@ export async function getTasks() {
         // log.debug('getTasks: dataJson: ', dataJson)
         return dataJson;
 
-    } catch (error) {
-        handleError(error);
-    }
+          } catch (error) {
+            handleError(error);
+        }
+    },1000,{leading:true,trailing:false});
 
-
-};
-
-export async function getTask(id) {
+export const getTask = throttle(async function (id) {
     // log.debug('getTask: id: ', id)
     try {
         const response = await axios({
@@ -46,11 +47,10 @@ export async function getTask(id) {
     } catch (error) {
         handleError(error);
     }
+},100,{leading:true,trailing:false});
 
 
-};
-
-export async function postTask(task) {
+export const postTask = throttle(async function (task) {
     // log.debug('postTask task:',task, JSON.stringify(task));
     try {
         const currMapId = store.getState().localReducer.localSettings.currentMapId
@@ -71,11 +71,9 @@ export async function postTask(task) {
     } catch (error) {
         handleError(error);
     }
+},100,{leading:true,trailing:false});
 
-
-};
-
-export async function deleteTask(id) {
+export const deleteTask = throttle(async function (id) {
 
     try {
         const response = await axios({
@@ -91,10 +89,9 @@ export async function deleteTask(id) {
         handleError(error);
     }
 
+},100,{leading:true,trailing:false});
 
-};
-
-export async function putTask(task, id) {
+export const putTask = throttle(async function (task, id) {
     try {
         const response = await axios({
             method: 'put',
@@ -112,4 +109,4 @@ export async function putTask(task, id) {
         handleError(error);
     }
 
-}
+},100,{leading:true,trailing:false});

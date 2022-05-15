@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import LotSortBar from "../lot_sort_bar/lot_sort_bar";
 import {
 	BarsContainer,
@@ -12,7 +11,8 @@ import {
 } from "../lot_bars.style";
 import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
 import LotFilterBarBasic from '../lot_filter_bar/lot_filter_bar_basic'
-import * as styled from "../zone_header/zone_header.style";
+import uuid from "uuid";
+
 
 const SortFilterContainer = (props) => {
 	const {
@@ -33,9 +33,10 @@ const SortFilterContainer = (props) => {
     containerStyle,
 	} = props
 	return (
-		<BarsContainer style={containerStyle}>
+		<BarsContainer style={containerStyle} key={uuid.v4()}>
 			{/*<styled.OptionContainer>*/}
 			<LotSortBar
+				key={uuid.v4()}
 				sortMode={sortMode}
 				setSortMode={setSortMode}
 				sortDirection={sortDirection}
@@ -46,12 +47,14 @@ const SortFilterContainer = (props) => {
 			{/*<styled.OptionContainer>*/}
 			{!!multipleFilters ?
 				<LotFilterBar
+					key={uuid.v4()}
 					filters={filters}
 					onAddFilter={onAddFilter}
 					onRemoveFilter={onRemoveFilter}
 				/>
 				:
 				<LotFilterBarBasic
+					key={uuid.v4()}
 					lotFilterValue={lotFilterValue}
 					columnCss={columnCss}
 					containerCss={containerCss}
