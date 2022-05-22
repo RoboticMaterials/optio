@@ -82,6 +82,7 @@ export const Container = styled(Modal)`
 
 	position: absolute;
 
+
 	z-index: 50;
 
 	min-width: 30rem;

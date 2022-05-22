@@ -156,11 +156,11 @@ const LotSortBar = (props) => {
                             containerCss={styled.rotateButtonContainerCss}
                             iconCss={styled.rotateButtonIconCss}
                             setSortChanged = {setSortChanged}
-                            onStateOne={debounce(async() => {
+                            onStateOne={async() => {
                               // set sort direction
                               setSortDirection(SORT_DIRECTIONS.DESCENDING)
-                              //setTimeout(() => {
-                                  console.log("getsettings1")
+                              /*setTimeout(() => {
+                                  console.log("getsettings1");
                                 let settingsPromise = dispatchGetSettings()
                                 settingsPromise.then(response => {
                                   dispatchPostSettings({
@@ -168,13 +168,13 @@ const LotSortBar = (props) => {
                                       lotSummarySortDirection: SORT_DIRECTIONS.DESCENDING
                                   })
                                 })
-                              }, 4000)
+                              }, 4000)*/
 
-                            }
+                            }}
                             onStateTwo={async() => {
                             // set sort direction
                               setSortDirection(SORT_DIRECTIONS.ASCENDING)
-                              setTimeout(() => {
+                             /* setTimeout(() => {
                                 console.log("getsettings2")
                                 let settingsPromise = dispatchGetSettings()
                                 settingsPromise.then(response =>{
@@ -183,7 +183,7 @@ const LotSortBar = (props) => {
                                       lotSummarySortDirection: SORT_DIRECTIONS.ASCENDING
                                   })
                                 })
-                              }, 4000);
+                              }, 4000);*/
                             }}
                         />
                     </styled.OptionContainer>

@@ -13,8 +13,8 @@ const REGION ='us-west-1';
 
 //AWS config keys
 AWS.config.update({
-    accessKeyId: 'AKIAYKB6JQEJI3A35AFN',
-    secretAccessKey: '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'
+    accessKeyId: 'AKIAYKB6JQEJEUXQLW5H',
+    secretAccessKey: '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'
 })
 
 const myBucket = new AWS.S3({
@@ -25,8 +25,6 @@ const myBucket = new AWS.S3({
 // Import Style
 import * as styled from './work_instructions_modal.style'
 // Import Components
-import Checkbox from '../../../../../../components/basic/checkbox/checkbox'
-import Button from "../../../../../../components/basic/button/button";
 
 const WorkInstructionsModal = (props) => {
 
@@ -61,21 +59,20 @@ const WorkInstructionsModal = (props) => {
       handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[id], id)
     }
 
-    let fileID = uuidv4()
+      const fileID = uuidv4()
       setSelectedFile(e.target.files[0]);
       setStationFiles({//Keeps track of upload status percent at each station
         ...stationFiles,
-        [id]: e.target.files[0].name
+        [id]: fileID + e.target.files[0].name
       })
 
-      setWorkInstructions(id, e.target.files[0].name)
+      setWorkInstructions(id, fileID+e.target.files[0].name)
       const params = {
-          ACL: 'public-read',
+          ACL: 'bucket-owner-full-control', //'public-read',
           Body: e.target.files[0],
           Bucket: S3_BUCKET,
-          Key: e.target.files[0].name,
+          Key: fileID + e.target.files[0].name,
       };
-
 
       myBucket.putObject(params)
           .on('httpUploadProgress', (evt) => {
@@ -100,14 +97,16 @@ const WorkInstructionsModal = (props) => {
         handleDeleteFile(lotTemplates[lotTemplateId].workInstructions[id], id)
       }
     }
-      setWorkInstructions(process.flattened_stations, e.target.files[0].name, process.flattened_stations)
 
+    const fileID = uuidv4()
+
+      setWorkInstructions(process.flattened_stations, fileID + e.target.files[0].name, process.flattened_stations)
 
       const params = {
-          ACL: 'public-read',
+          ACL: 'bucket-owner-full-control',
           Body: e.target.files[0],
           Bucket: S3_BUCKET,
-          Key: e.target.files[0].name,
+          Key: fileID + e.target.files[0].name,
       };
 
 
@@ -165,13 +164,12 @@ const WorkInstructionsModal = (props) => {
             </styled.FileContainer>
 
             <styled.FileContainer style = {{minWidth: '20rem', flex: '2'}}>
-              <styled.ListItemTitle
-              >
+              <styled.ListItemTitle>
               {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID] ? 'Uploaded File:' : 'No File Uploaded'}
               </styled.ListItemTitle>
                 <styled.RowContainer style = {{maxWidth: '17rem',}}>
                   <styled.ListItemTitle style = {{fontWeight: '600', padding: '.5rem 0.5rem 0.5rem 0.5rem'}}>
-                    {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID]}
+                    {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID] && lotTemplates[lotTemplateId].workInstructions[station.stationID].replace(/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/,'')}
                   </styled.ListItemTitle>
                   {!!lotTemplates && !!lotTemplates[lotTemplateId] && !!lotTemplates[lotTemplateId].workInstructions && lotTemplates[lotTemplateId].workInstructions[station.stationID] &&
                   <i
