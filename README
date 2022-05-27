@@ -1,26 +1,16 @@
-# Welcome to RM Studio
-# In order to deploy on amplify, use these build settings:
+Optio is served via nginx and gunicorn/flask. Both services start at bootup, check their status and output using
 
-version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - nvm use $VERSION_NODE_12
-        - npm ci
-        # - npm install
-    build:
-      commands:
-        - nvm use $VERSION_NODE_12
-        - node -v
-        - npm run-script build
-  artifacts:
-    baseDirectory: build
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
+sudo systemctl status optio-rest-api.service
+sudo systemctl status nginx.service
 
-######
-# For some reason, node 12 has memory issues at the moment on aws 
+Runinng Optio on "localhost"
+----------------------------
+
+Run "npm start" in the main optio directory. Then switch to "optio/rest_api" and run "python3 server.py". When running on localhost (or 10.42.0.1), 
+Optio does not use https. 
+
+
+Creating a production build
+---------------------------
+
+Run "npm run-script build" in the main optio directory. Nginx will serve files from the "optio/build" directory and proxy requests to the gunicorn server. 
