@@ -62,9 +62,9 @@ const ApiModal = (props) => {
                             <modalStyle.Title>Choose an Endpoint</modalStyle.Title>
                         </>
                     }
-                    <modalStyle.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onClose}/>
+                    <modalStyle.Icon className="fa fa-times" aria-hidden="true" onClick={onClose}/>
             </modalStyle.HeaderContainer>
-            <modalStyle.BodyContainer>
+            <modalStyle.TextContainer>
                 {!!login ?
                     <ApiLogin endpoint={login} />
                     :
@@ -85,7 +85,7 @@ const ApiModal = (props) => {
                         )}
                     </>
                 }
-            </modalStyle.BodyContainer>
+            </modalStyle.TextContainer>
         </modalStyle.Container>
     );
 };

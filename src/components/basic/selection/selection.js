@@ -1,11 +1,9 @@
-import PropTypes from "prop-types";
-import PasteMapper from "../paste_mapper/paste_mapper";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
+var PropTypes = require('prop-types')
 import usePrevious from "../../../hooks/usePrevious";
-import {getLoadStationId} from "../../../methods/utils/route_utils";
 
 var _ = require('lodash');
-var React = require('react/addons');
+//var React = require('react/addons');
 
 const Selection = (props) => {
 	const {

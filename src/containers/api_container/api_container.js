@@ -154,7 +154,7 @@ const ApiContainer = (props) => {
             // page changed
 
             //if (!getIsEquivalent(currentPageRouter, currentPage)) {
-        console.log(params)
+        //console.log(params)
         
                 setCurrentPage(currentPageRouter)
 
@@ -188,7 +188,7 @@ const ApiContainer = (props) => {
         await pageDataIntervals.forEach(interval => clearInterval(interval));
         setPageDataIntervals([])
         // set new interval for specific page
-        console.log(pageName)
+        //console.log(pageName)
         switch (pageName) {
             
             case 'dashboards':
@@ -231,8 +231,9 @@ const ApiContainer = (props) => {
             if (!localSettings.currentMapId && !!maps) {
                  onPostLocalSettings({
                     ...localSettings,
-                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null
+                    currentMapId: serverSettings.defaultMapId || maps[0]?._id || null   
                 })
+                location.reload()
             }
         })
 
