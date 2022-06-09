@@ -57,6 +57,42 @@ paths:
             type: boolean
           # type: boolean
 
+  # ----- Authentication ------ #
+
+  /authenticate:
+    post:
+      operationId: authenticate.authenticate
+      tags:
+       - Authentication
+      summary: Returns JWT token provided credentials
+      description: Returns JWT token provided credentials
+      security : []
+      parameters:
+      - in: body
+        name: credentials
+        description: The user credentials.
+        schema:
+          type: object
+          required:
+            - username
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            app_client_id:
+              type: string
+            region_name:
+              type: string
+      responses:
+        200:
+          description: Successfully authenticated
+          schema:
+            type: string    
+
+
+
+
   # ---------- Cards ---------- #
   /site_maps/{map_id}/cards:
     get:
@@ -66,8 +102,8 @@ paths:
       summary: Read the entire set of cards
       description: Read the entire set of cards
       parameters:
-        - name: map_id
-          in: path
+        - in: path
+          name: map_id
           description: Map Id
           required: True
           type: string
