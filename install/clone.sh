@@ -7,8 +7,8 @@ fi
 
 
 cd ~/optio
-npm install
-npm run-script build
+#npm install
+#npm run-script build
 
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
 
@@ -31,16 +31,16 @@ sudo rm -r /etc/letsencrypt/live/temp.optio.cloud
 sudo rm -r /etc/letsencrypt/archive/temp.optio.cloud
 
 # Configure Nginx
-cp client-config.template client-config
-sed -i "s/{###Instance###}/$1/g" client-config
-sudo cp client-config /etc/nginx/sites-enabled
+cp ~/optio/install/client-config.template ~/optio/install/client-config
+sed -i "s/{###Instance###}/$1/g" ~/optio/install/client-config
+sudo cp ~/optio/install/client-config /etc/nginx/sites-enabled
 sudo rm /etc/nginx/sites-enabled/default
 
 sudo systemctl restart nginx
 
 # Configure gunicorn
-cp optio_rest_api.service.template optio_rest_api.service
-sed -i "s/{###Instance###}/$1/g" optio_rest_api.service
+cp ~/optio/install/optio_rest_api.service.template ~/optio/install/optio_rest_api.service
+sed -i "s/{###Instance###}/$1/g" ~/optio/install/optio_rest_api.service
 sudo cp optio_rest_api.service /etc/systemd/system
 
 # Enable system services
@@ -50,5 +50,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable optio_rest_api
 sudo systemctl restart optio_rest_api 
 
-python3 /home/ubuntu/dev_rmstudio/rmengine/testing/cleanup.py
 
