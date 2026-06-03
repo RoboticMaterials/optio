@@ -8,8 +8,10 @@ from datetime import datetime
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+import json
 import pytz
 
+from config import socketio
 from process_stats import calculate_process_production_rate, generate_process_summaries_until_date
 from station_stats import calculate_pg_station_cycle_time, generate_station_summaries_until_date, working_seconds_between_datetimes
 
@@ -51,30 +53,44 @@ def get_by_lot(lot_id):
     # Create the list of site_maps from our data
     touch_events = collection.find({ "lot_id": lot_id, 'move_datetime': {'$ne': None} }).sort('move_datetime')
     return dumps(touch_events)
+
+def serialize_touch_event(touch_event):
+    serialized_touch_event = dict(touch_event)
+    if serialized_touch_event.get('start_datetime') is not None and isinstance(serialized_touch_event['start_datetime'], datetime):
+        serialized_touch_event['start_datetime'] = datetime.timestamp(serialized_touch_event['start_datetime']) * 1000
+    if serialized_touch_event.get('move_datetime') is not None and isinstance(serialized_touch_event['move_datetime'], datetime):
+        serialized_touch_event['move_datetime'] = datetime.timestamp(serialized_touch_event['move_datetime']) * 1000
+    return serialized_touch_event
     
 def open_touch_event(touch_event):
-    
+
     existing_touch_event = db.touch_events.find_one({
         'lot_id': touch_event['lot_id'],
         'load_station_id': touch_event['load_station_id'],
         'move_datetime': None
     })
+
+    touch_event_copy = dict(touch_event)
+    touch_event_copy['start_datetime'] = datetime.fromtimestamp(touch_event_copy['start_datetime'] / 1000)
+
     if existing_touch_event:
-        collection.update_one({'_id': existing_touch_event['_id']}, touch_event)
-        return dumps(existing_touch_event)
+        updated_touch_event = {**existing_touch_event, **touch_event_copy, '_id': existing_touch_event['_id']}
+        collection.replace_one({'_id': existing_touch_event['_id']}, updated_touch_event)
+        touch_event_with_id = collection.find_one({'_id': existing_touch_event['_id']})
+        socketio.emit('message', {'type': 'touch_events', 'method': 'OPEN', 'payload': json.loads(dumps(serialize_touch_event(touch_event_with_id)))})
+        return dumps(serialize_touch_event(touch_event_with_id))
     
     # add id field
     id = str(ObjectId())
-    touch_event['_id'] = id
-    
-    touch_event['start_datetime'] = datetime.fromtimestamp(touch_event['start_datetime'] / 1000)
-    
-    result = collection.insert_one(touch_event)
+    touch_event_copy['_id'] = id
+
+    result = collection.insert_one(touch_event_copy)
     touch_event_with_id = collection.find_one({'_id':result.inserted_id})
-    
-    touch_event_with_id['start_datetime'] = datetime.timestamp(touch_event_with_id['start_datetime']) * 1000 # Handles the timezone issue for the dashboard timer
-        
-    return dumps(touch_event_with_id)
+
+    serialized_touch_event = serialize_touch_event(touch_event_with_id)
+    socketio.emit('message', {'type': 'touch_events', 'method': 'OPEN', 'payload': json.loads(dumps(serialized_touch_event))})
+
+    return dumps(serialized_touch_event)
 
 def close_touch_event(touch_event):
     
@@ -143,8 +159,11 @@ def close_touch_event(touch_event):
         generate_process_summaries_until_date(touch_event['process_id'], touch_event['move_datetime'])
         process_production_rate = calculate_process_production_rate(touch_event['process_id'])
         db.processes.update_one({'_id': touch_event['process_id']}, {'$set': {'production_rate': process_production_rate}})
-        
-    return dumps(touch_event)
+
+    serialized_touch_event = serialize_touch_event(touch_event)
+    socketio.emit('message', {'type': 'touch_events', 'method': 'CLOSE', 'payload': json.loads(dumps(serialized_touch_event))})
+
+    return dumps(serialized_touch_event)
     
 
 def create(touch_event, option=None):
@@ -217,7 +236,10 @@ def full_create(touch_event):
         process_production_rate = calculate_process_production_rate(touch_event['process_id'])
         db.processes.update_one({'_id': touch_event['process_id']}, {'$set': {'production_rate': process_production_rate}})
 
-    return dumps(touch_event_with_id)
+    serialized_touch_event = serialize_touch_event(touch_event_with_id)
+    socketio.emit('message', {'type': 'touch_events', 'method': 'POST', 'payload': json.loads(dumps(serialized_touch_event))})
+
+    return dumps(serialized_touch_event)
 
 def get_open_touch_events_for_station(station_id):
     open_touch_events = list(db.touch_events.find({

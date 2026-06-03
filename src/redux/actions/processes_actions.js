@@ -215,6 +215,19 @@ export const editingProcess = (bool) => {
     return { type: EDITING_PROCESS, payload: bool }
 }
 
+// WebSocket handlers - simple sync actions for server push updates
+export const addProcess = (process) => {
+    return { type: POST_PROCESSES_SUCCESS, payload: process }
+}
+
+export const updateProcess = (process) => {
+    return { type: PUT_PROCESSES_SUCCESS, payload: process }
+}
+
+export const removeProcess = (id) => {
+    return { type: DELETE_PROCESSES_SUCCESS, payload: id }
+}
+
 /**
  * This is to tell the map that you are fixing a process vs adding a new route to the process
  * It will force you to select a location that is tied with the location before the process breaks

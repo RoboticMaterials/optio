@@ -10,6 +10,8 @@ from pymongo import MongoClient
 from datetime import datetime
 import uuid
 from pymongo import ReturnDocument
+import json
+from config import socketio
 
 client = MongoClient('localhost:27017')
 db = client.ContactDB
@@ -163,6 +165,7 @@ def create(card):
 
     card_history = history_collection.insert_one(card_history)
 
+    socketio.emit('message', {'type': 'cards', 'method': 'POST', 'payload': json.loads(dumps(card_with_id))})
     return dumps(card_with_id)
 
 
@@ -216,6 +219,7 @@ def update(card_id, card):
 
 
         card_with_id = collection.find_one({"_id":(card_id)})
+        socketio.emit('message', {'type': 'cards', 'method': 'PUT', 'payload': json.loads(dumps(card_with_id))})
         return dumps(card_with_id)
 
 
@@ -232,7 +236,7 @@ def delete(card_id):
     # Can we insert this schedule?
     if len(list(rtnd_card.clone()))  != 0:
         collection.delete_one({"_id":(card_id)})
-        
+        socketio.emit('message', {'type': 'cards', 'method': 'DELETE', 'payload': card_id})
         return card_id
 
     # Otherwise, nope, didn't find that person

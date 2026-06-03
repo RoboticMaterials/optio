@@ -7,6 +7,8 @@ from flask import make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+import json
+from config import socketio
 
 # from context import rmengine
 
@@ -73,6 +75,7 @@ def create(task):
     # Send to data base
     result = collection.insert_one(task)
     task_with_id = collection.find_one({'_id' : result.inserted_id})
+    socketio.emit('message', {'type': 'tasks', 'method': 'POST', 'payload': json.loads(dumps(task_with_id))})
     return dumps(task_with_id)    
     
 #     rtnd_task = collection.find({"name" : task["name"]})
@@ -122,6 +125,7 @@ def update(task_id, task):
         # Send to data base
         result = collection.replace_one({"_id" : task_id}, task)
         task_with_id = collection.find_one({"_id" : task_id})
+        socketio.emit('message', {'type': 'tasks', 'method': 'PUT', 'payload': json.loads(dumps(task_with_id))})
         return dumps(task_with_id)
 
 
@@ -136,6 +140,7 @@ def delete(task_id):
     # Can we insert this task?
     if len(list(rtnd_task.clone()))  != 0:
         collection.delete_one({"_id" : task_id})
+        socketio.emit('message', {'type': 'tasks', 'method': 'DELETE', 'payload': task_id})
 
     # Otherwise, nope, didn't find that person
     else:

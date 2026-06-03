@@ -357,3 +357,15 @@ export const setDashboardKickOffProcesses = (dashboardId, kickOffEnabled) => {
 export const setDashboardFinishProcesses = (dashboardId, finishEnabled) => {
     return { type: SET + DASHBOARD + FINISH_ENABLED, payload: { dashboardId, finishEnabled } }
 }
+// WebSocket handlers - simple sync actions for server push updates
+export const addDashboard = (dashboard) => {
+    return { type: POST_DASHBOARD_SUCCESS, payload: { _id: { $oid: dashboard._id }, ...dashboard } }
+}
+
+export const updateDashboard = (dashboard) => {
+    return { type: PUT_DASHBOARD_SUCCESS, payload: { _id: { $oid: dashboard._id }, ...dashboard } }
+}
+
+export const removeDashboard = (id) => {
+    return { type: DELETE_DASHBOARD_SUCCESS, payload: id }
+}

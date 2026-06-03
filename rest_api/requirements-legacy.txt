@@ -1,0 +1,21 @@
+# Legacy-friendly Python dependency set for local bring-up
+# Target runtime: Python 3.10.x
+# Rationale: the codebase was last actively maintained ~2022 and relies on Connexion 2.x + Flask 2.0 era behavior.
+
+Flask==2.0.3
+Werkzeug==2.0.3
+flask-cors==3.0.10
+connexion[swagger-ui]==2.14.2
+gunicorn==20.1.0
+
+pymongo==4.4.1
+pandas==1.5.3
+numpy==1.24.4
+python-dateutil==2.8.2
+simplejson==3.19.2
+pytz==2023.3.post1
+
+boto3==1.26.165
+cognitojwt==1.4.1
+PyYAML==6.0.1
+matplotlib==3.7.5

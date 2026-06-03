@@ -6,11 +6,18 @@ const log = logger.getLogger('Api')
 
 export const getHeaders = () => {
 
+    const state = store.getState();
+    const authHeader =
+        state?.localReducer?.idToken ||
+        state?.localReducer?.accessToken ||
+        state?.localReducer?.localSettings?.accessToken ||
+        'local-dev';
+
     let headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': store.getState().localReducer.idToken
+        'Authorization': authHeader
     }
 
     return headers;

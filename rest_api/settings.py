@@ -97,6 +97,9 @@ if db.settings.count_documents({}) < 1:
     "lastUsedMap": None
   })
 
+import json
+from config import socketio
+
 def read_all():
     """
     This function responds to a request for /api/settings
@@ -120,6 +123,8 @@ def create(settings):
     if len(list(mongo_settings)) == 0:
         collection.insert_one({})
     collection.update_one({},  { "$set": settings})
+    updated = collection.find_one()
+    socketio.emit('message', {'type': 'settings', 'method': 'PUT', 'payload': json.loads(dumps(updated))})
     return 201
 
 

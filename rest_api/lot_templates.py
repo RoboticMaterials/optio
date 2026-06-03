@@ -7,6 +7,8 @@ from flask import make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+import json
+from config import socketio
 from datetime import datetime
 import uuid
 
@@ -59,7 +61,7 @@ def create(lot_template):
     result = collection.insert_one(lot_template)
 
     lot_template_with_id = collection.find_one({'_id':result.inserted_id})
-
+    socketio.emit('message', {'type': 'lot_templates', 'method': 'POST', 'payload': json.loads(dumps(lot_template_with_id))})
     return dumps(lot_template_with_id)
 
 
@@ -90,6 +92,7 @@ def update(id, lot_template):
         result = collection.replace_one({"_id":(id)}, lot_template)
 
         lot_template_with_id = collection.find_one({"_id":(id)})
+        socketio.emit('message', {'type': 'lot_templates', 'method': 'PUT', 'payload': json.loads(dumps(lot_template_with_id))})
         return dumps(lot_template_with_id)
 
 def delete(id):
@@ -103,6 +106,7 @@ def delete(id):
     # Can we insert this schedule?
     if len(list(rtnd_card.clone())) != 0:
         collection.delete_one({"_id":(id)})
+        socketio.emit('message', {'type': 'lot_templates', 'method': 'DELETE', 'payload': id})
 
     # Otherwise, nope, didn't find that person
     else:

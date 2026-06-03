@@ -72,3 +72,8 @@ export const postSettings = (settings) => {
 export const deviceEnabled = (state) => {
     return { type: DEVICE_ENABLED, payload: state}
 }
+
+// WebSocket handler - simple sync action for server push updates
+export const updateSettings = (settings) => {
+    return { type: GET_SETTINGS_SUCCESS, payload: settings }
+}

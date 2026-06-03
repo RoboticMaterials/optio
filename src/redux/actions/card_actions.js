@@ -8,6 +8,8 @@ import {
     PUT
 } from '../types/prefixes';
 
+import { SUCCESS } from '../types/suffixes';
+
 import {
     CARDS,
     CARD,
@@ -278,5 +280,18 @@ export const showEditor = (bool) => {
 
 export const showBarcodeModal = (bool) => {
     return { type: SHOW_BARCODE_MODAL, payload: bool }
+}
+
+// WebSocket handlers - simple sync actions for server push updates
+export const addCard = (card) => {
+    return { type: POST + CARD + SUCCESS, payload: { card, processId: card.process_id } }
+}
+
+export const updateCard = (card) => {
+    return { type: PUT + CARD + SUCCESS, payload: { card, processId: card.process_id } }
+}
+
+export const removeCard = (id) => {
+    return { type: DELETE + CARD + SUCCESS, payload: { cardId: id } }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

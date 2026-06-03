@@ -37,6 +37,32 @@ const defaultState = {
 
 };
 
+const removeCardFromStationCards = (stationCards = {}, cardId) => {
+  const updatedStationCards = {};
+
+  Object.keys(stationCards).forEach((stationId) => {
+    const stationLots = stationCards[stationId] || {};
+    const { [cardId]: removedCard, ...remainingLots } = stationLots;
+    updatedStationCards[stationId] = remainingLots;
+  });
+
+  return updatedStationCards;
+};
+
+const addCardToStationCards = (stationCards = {}, card) => {
+  const updatedStationCards = removeCardFromStationCards(stationCards, card._id);
+  const binStationIds = Object.keys(card?.bins || {});
+
+  binStationIds.forEach((stationId) => {
+    updatedStationCards[stationId] = {
+      ...(updatedStationCards[stationId] || {}),
+      [card._id]: card,
+    };
+  });
+
+  return updatedStationCards;
+};
+
 export default function cardsReducer(state = defaultState, action) {
   let processCards = {}
   let statCards = {}
@@ -86,22 +112,27 @@ export default function cardsReducer(state = defaultState, action) {
 
     case PUT + CARD + SUCCESS:
 
+      const updatedCard = action.payload.card
+
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {...state.cards, [updatedCard._id]: updatedCard},
         processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+            ...state.processCards[action.payload.processId], [updatedCard._id]: updatedCard
           }},
+        stationCards: addCardToStationCards(state.stationCards, updatedCard),
         pending: false,
       }
 
     case POST + CARD + SUCCESS:
+      const postedCard = action.payload.card
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {...state.cards, [postedCard._id]: postedCard},
         processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+            ...state.processCards[action.payload.processId], [postedCard._id]: postedCard
           }},
+        stationCards: addCardToStationCards(state.stationCards, postedCard),
         pending: false,
       }
 
@@ -118,6 +149,7 @@ export default function cardsReducer(state = defaultState, action) {
         ...state,
         cards: {...rest},
         processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        stationCards: removeCardFromStationCards(state.stationCards, action.payload.cardId),
         pending: false,
       }
 

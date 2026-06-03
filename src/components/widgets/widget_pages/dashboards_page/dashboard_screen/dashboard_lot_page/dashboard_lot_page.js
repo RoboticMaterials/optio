@@ -47,9 +47,11 @@ import {
   postCard,
   putCard,
   deleteCard,
-  getCards
+  getCards,
+  getStationCards
 } from "../../../../../../redux/actions/card_actions";
 import { postTouchEvent, postOpenTouchEvent, postCloseTouchEvent } from '../../../../../../redux/actions/touch_events_actions'
+import { getOpenStationTouchEvents } from '../../../../../../redux/actions/touch_events_actions'
 import { getStation, getStations } from "../../../../../../redux/actions/stations_actions";
 import { getProcesses } from "../../../../../../redux/actions/processes_actions";
 
@@ -104,9 +106,11 @@ const DashboardLotPage = (props) => {
   const dispatchPutCard = (lot, ID) => dispatch(putCard(lot, ID));
   const dispatchDeleteCard = (id) => dispatch(deleteCard(id))
   const dispatchGetCards = () => dispatch(getCards())
+  const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
   const dispatchGetStation = (id) => dispatch(getStation(id))
   const dispatchGetStations = () => dispatch(getStations())
   const dispatchGetProcesses = () => dispatch(getProcesses());
+  const dispatchGetOpenStationTouchEvents = (stationId) => dispatch(getOpenStationTouchEvents(stationId))
 
   const dispatchOpenTouchEvent = (touch_event) => dispatch(postOpenTouchEvent(touch_event))
   const dispatchCloseTouchEvent = (touch_event) => dispatch(postCloseTouchEvent(touch_event))
@@ -119,10 +123,12 @@ const DashboardLotPage = (props) => {
   // Initial Load
   useEffect(() => {
     const getCardsPromise = dispatchGetCards();
+    const getStationCardsPromise = dispatchGetStationCards(stationID);
     const getStationsPromise = dispatchGetStations();
     const getProcessesPromise = dispatchGetProcesses();
+    const getOpenTouchEventsPromise = dispatchGetOpenStationTouchEvents(stationID);
 
-    Promise.all([getCardsPromise, getStationsPromise, getProcessesPromise]).then(([{cards}, stations, processes]) => {
+    Promise.all([getCardsPromise, getStationCardsPromise, getStationsPromise, getProcessesPromise, getOpenTouchEventsPromise]).then(([{cards}, stationCardsResponse, stations, processes]) => {
       
       if (!currentLot) setCurrentLot(cards[lotID])
       if (!currentProcess.current) currentProcess.current = processes[stationCards[lotID]?.process_id]

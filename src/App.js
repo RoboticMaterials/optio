@@ -10,6 +10,7 @@ import 'rc-time-picker/assets/index.css';
 
 // Import Hooks
 import useWindowSize from './hooks/useWindowSize'
+import useWebsocket from './hooks/useWebsocket'
 
 import * as styled from './App.style'
 // Import API
@@ -55,6 +56,9 @@ const App = () => {
     const handleLoadLocalData = async () => {
       await dispatchGetLocalSettings()
     }
+
+    // Initialize WebSocket connection after API is loaded
+    useWebsocket();
 
     /**
      * This handles Map view in mobile mode

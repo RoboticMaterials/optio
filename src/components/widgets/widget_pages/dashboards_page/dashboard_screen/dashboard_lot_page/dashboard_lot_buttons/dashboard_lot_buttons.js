@@ -47,6 +47,12 @@ const DashboardLotButtons = (props) => {
         fractionMove
     } = props
 
+    useEffect(() => {
+      if (hasStarted) {
+        setStartClicked(false)
+      }
+    }, [hasStarted])
+
     const renderStartButton = () => {
       const iconClassName = 'fas fa-play'
       const color = '#90C7EA'

@@ -263,84 +263,43 @@ const ApiContainer = (props) => {
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     const setDashboardPageIntervals = () => {
-      if(history.location.pathname.includes('lots')){
-        setPageDataIntervals([
-            setInterval(async () => {
-                await onGetStations()
-                await onGetSettings();
-                await onGetTasks()
-                await onGetStationCards(params.stationID)
-                await onGetProcesses()
-                await onGetTasks();
-                await onGetOpenStationTouchEvents(params.stationID)
-                await onGetDashboards() // must go last
-            }, 5000)
-        ])
-      }
-      else{
-        setPageDataIntervals([
-            setInterval(async () => {
-                await onGetStations()
-                await onGetStationCards(params.stationID)
-                await onGetOpenStationTouchEvents(params.stationID)
-                await onGetDashboards() // must go last
-            }, 1000),
-            setInterval(async () => {
-                await onGetSettings()
-                console.log("update db")
-            }, 20000)
-        ])
-      }
+            if(history.location.pathname.includes('lots')){
+                setPageDataIntervals([
+                        setInterval(async () => {
+                                await onGetStationCards(params.stationID)
+                                await onGetOpenStationTouchEvents(params.stationID)
+                        }, 2000),
+                        setInterval(async () => {
+                                await onGetStations()
+                                await onGetProcesses()
+                                await onGetTasks()
+                                await onGetDashboards()
+                                await onGetSettings()
+                        }, 5000)
+                ])
+            }
+            else{
+                setPageDataIntervals([
+                        setInterval(async () => {
+                                await onGetStationCards(params.stationID)
+                                await onGetOpenStationTouchEvents(params.stationID)
+                                await onGetDashboards()
+                        }, 2000)
+                ])
+            }
     }
 
     const setLocationListViewIntervals = () => {
-        setPageDataIntervals([
-            setInterval(async () => {
-                await onGetStations();
-                await onGetSettings();
-                console.log("update")
-            }, 10000)
-        ])
+        setPageDataIntervals([])
     }
 
 
     const setLocationPageIntervals = () => {
-        // On these pages, the map is shown. therefore we also have to load stuff to render on the map
-        setPageDataIntervals([
-            setInterval(() => {
-                onGetStations();
-                onGetProcesses();
-                onGetTasks();
-            }, 5000),
-            setInterval(() => {
-                onGetSettings();
-            }, 10000),
-        ])
+        setPageDataIntervals([])
     }
 
     const setKanbanIntervals = () => {
-      if(!!params && params.data1 && params.data1 === 'summary'){
-        setPageDataIntervals([
-            setInterval(async() => {
-                await onGetProcesses();
-            }, 20000),
-            setInterval(async() => {
-                await onGetCards();
-                await onGetSettings();
-            }, 1000)
-        ])
-      }
-      else{
-        setPageDataIntervals([
-            setInterval(async() => {
-                await onGetProcesses();
-            }, 20000),
-            setInterval(async() => {
-                await onGetProcessCards(params.data1);
-                await onGetSettings();
-            }, 1000)
-        ])
-      }
+      setPageDataIntervals([])
 
     }
 
@@ -349,18 +308,7 @@ const ApiContainer = (props) => {
     }
 
     const setProcessPageIntervals = () => {
-        // On these pages, the map is shown. therefore we also have to load stuff to render on the map
-        setPageDataIntervals([
-            setInterval(() => {
-                onGetStations();
-                onGetProcesses();
-                onGetTasks();
-            }, 5000),
-            setInterval(() => {
-                onGetCards();
-                onGetSettings();
-            }, 20000)
-        ])
+        setPageDataIntervals([])
     }
 
     //  API LOGIN

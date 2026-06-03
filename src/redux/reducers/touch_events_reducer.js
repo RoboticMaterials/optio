@@ -53,6 +53,11 @@ const defaultState = {
     openEvents: {}
 }
 
+const cloneStationEvents = (openEvents, stationId) => {
+    const stationEvents = openEvents?.[stationId]
+    return Array.isArray(stationEvents) ? deepCopy(stationEvents) : []
+}
+
 const eventsReducer = (state = defaultState, action) => {
     
     let eventsClone = {}
@@ -187,7 +192,7 @@ const eventsReducer = (state = defaultState, action) => {
 
         case OPEN_TOUCH_EVENT_SUCCESS:
 
-            eventsClone = deepCopy(state.openEvents[action.payload.load_station_id]) || []
+            eventsClone = cloneStationEvents(state.openEvents, action.payload.load_station_id)
             eventsClone.push(action.payload)
 
             return {
@@ -221,9 +226,11 @@ const eventsReducer = (state = defaultState, action) => {
 
         case CLOSE_TOUCH_EVENT_SUCCESS:
 
-            eventsClone = deepCopy(state.openEvents[action.payload.load_station_id]) || []
+            eventsClone = cloneStationEvents(state.openEvents, action.payload.load_station_id)
             eventIdx = eventsClone.findIndex(e => e._id === action.payload._id);
-            eventsClone.splice(eventIdx, 1)
+            if (eventIdx !== -1) {
+                eventsClone.splice(eventIdx, 1)
+            }
 
             return {
                 ...state,

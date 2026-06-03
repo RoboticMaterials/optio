@@ -22,6 +22,7 @@ import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from '../../../../../../constants
 // Import Actions
 import { putDashboard } from '../../../../../../redux/actions/dashboards_actions'
 import {getStationCards} from '../../../../../../redux/actions/card_actions'
+import { getOpenStationTouchEvents } from '../../../../../../redux/actions/touch_events_actions'
 
 const DashboardLotList = (props) => {
 
@@ -51,6 +52,7 @@ const DashboardLotList = (props) => {
     const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
     const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const dispatchGetStationCards = (stationId) => dispatch(getStationCards(stationId))
+    const dispatchGetOpenStationTouchEvents = (stationId) => dispatch(getOpenStationTouchEvents(stationId))
     const cardRef = useRef(cards)
 
     cardRef.current = cards
@@ -65,6 +67,7 @@ const DashboardLotList = (props) => {
 
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
       dispatchGetStationCards(stationID)
+            dispatchGetOpenStationTouchEvents(stationID)
     }, [])
 
     const handleChangeSortMode = (mode) => {

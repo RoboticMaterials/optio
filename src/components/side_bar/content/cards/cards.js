@@ -116,9 +116,18 @@ const Cards = (props) => {
     //is being posted and causes glitch.
     const [update, setUpdate] = useState(true)
     const dragIdRef = useRef(draggingLotId)
+    const justDraggedRef = useRef(false)
+    const sortMountedRef = useRef(false)
     const [activeTimeout, setActiveTimeout] = useState(false)
     const [currTimeout, setCurrTimeout] = useState(null)
     dragIdRef.current = draggingLotId
+    const cardsRef = useRef(cards)
+    const orderedIdsRef = useRef(orderedIds)
+    const dragFromStationRef = useRef(dragFromStation)
+    const draggingLotIdRef = useRef(draggingLotId)
+    const draggingStationIdRef = useRef(draggingStationId)
+    const startIndexRef = useRef(startIndex)
+    const dragIndexRef = useRef(dragIndex)
     //sorting state
     //console.log(cards)
     const [sortedCards, setSortedCards] = useState(null)
@@ -126,12 +135,43 @@ const Cards = (props) => {
     const [sortChanged, setSortChanged] = useState(false)
     //filtering
     const [filteredIds, setFilteredIds] = useState(null)
+
+    useEffect(() => {
+      cardsRef.current = cards
+    }, [cards])
+
+    useEffect(() => {
+      orderedIdsRef.current = orderedIds
+    }, [orderedIds])
+
+    useEffect(() => {
+      dragFromStationRef.current = dragFromStation
+    }, [dragFromStation])
+
+    useEffect(() => {
+      draggingLotIdRef.current = draggingLotId
+    }, [draggingLotId])
+
+    useEffect(() => {
+      draggingStationIdRef.current = draggingStationId
+    }, [draggingStationId])
+
+    useEffect(() => {
+      startIndexRef.current = startIndex
+    }, [startIndex])
+
+    useEffect(() => {
+      dragIndexRef.current = dragIndex
+    }, [dragIndex])
+
     useEffect(() => {//sets display to none. Cant do it onDragStart as wont work
   		if(dragIndex && (startIndex || startIndex===0) && draggingLotId){
           setAllowHomeDrop(true)
   				let fieldDiv = document.getElementById(draggingLotId + dragFromStation)
-  				fieldDiv.style.maxHeight = '1px'
-          fieldDiv.style.paddingTop = '1px'
+        if(fieldDiv){
+          fieldDiv.style.maxHeight = '1px'
+            fieldDiv.style.paddingTop = '1px'
+          }
   		}
 
   	}, [dragIndex, clientY, clientX])
@@ -144,6 +184,8 @@ const Cards = (props) => {
 
 
     useEffect(() => {//this sets the order cards are displayed. Array of card IDs
+
+      // ── Branch 1: Initial load or sort change — build orderedIds from scratch ──
       if(!orderedCardIds[id] || needsSortUpdate){
         let tempCards = needsSortUpdate ? deepCopy(sortedCards): deepCopy(processCards)
         let tempIds = {}
@@ -182,70 +224,63 @@ const Cards = (props) => {
           [id]: tempIds[id]
         })
         setCards(processCards)
+        return
       }
-      else if(JSON.stringify(orderedIds[id]) !== JSON.stringify(orderedCardIds[id]) && JSON.stringify(cards) === JSON.stringify(processCards) && update){
-        setOrderedIds(orderedCardIds)
-      }
-      else if((JSON.stringify(processCards) !== JSON.stringify(cards)) && update && lotFilterValue === '' && lotFilters.length === 0){
-        //console.log('if I come up while dropping a card from drag bad things have happened')
-        //ids exist in backend. Check against processCards in case anything has changed from operator moves/imports and update Ids
-          let tempIds = deepCopy(orderedIds)
-          //remove ids for queue
-          if(tempIds[id] && tempIds[id]['QUEUE']){
-            for(const i in tempIds[id]['QUEUE']){
-              let cardId = tempIds[id]['QUEUE'][i]
-              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins['QUEUE']){
-                tempIds[id]['QUEUE'].splice(i,1)
-              }
-            }
-          }
 
-          //remove ids for finish
-          if(tempIds[id] && tempIds[id]['FINISH']){
-            for(const i in tempIds[id]['FINISH']){
-              let cardId = tempIds[id]['FINISH'][i]
-              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins['FINISH']) tempIds[id]['FINISH'].splice(i,1)
-            }
-          }
+      // Skip all sync logic while a drag is in progress
+      if(!update) return
 
-          for(const i in process.flattened_stations){//if new cards are at station x then push the ids to top (moved via dashboard)
-            let statId = process.flattened_stations[i]?.stationID
-            if(!tempIds[id][statId]) tempIds[id][statId] = []
-            //remove ids where cards are no longer in Column
-            for(const i in tempIds[id][statId]){
-              let cardId = tempIds[id][statId][i]
-              if(!processCards[cardId] || !processCards[cardId]?.bins || !processCards[cardId]?.bins[statId]) tempIds[id][statId].splice(i,1)
-            }
+      // ── Branch 2: processCards changed (websocket push) ──
+      // Sync card DATA only. Update orderedIds surgically:
+      //   - add cards that are new in processCards
+      //   - remove cards that no longer exist in processCards
+      // Never reorder existing cards — orderedIds is the user's ordering authority.
+      if(JSON.stringify(processCards) !== JSON.stringify(cards) && lotFilterValue === '' && lotFilters.length === 0){
+        justDraggedRef.current = false
 
-            for(const j in processCards){
-              if(!!processCards[j]?.bins[statId] && tempIds[id] && tempIds[id][statId] && !tempIds[id][statId]?.includes(processCards[j]?._id)) {
-                tempIds[id][statId].push(processCards[j]._id)
-              }
-              if(!!processCards[j]?.bins['QUEUE'] && tempIds[id] && tempIds[id]['QUEUE'] && !tempIds[id]['QUEUE']?.includes(processCards[j]?._id) && i == 0){
-                tempIds[id]['QUEUE'].push(processCards[j]._id)
-              }
-              if(!!processCards[j]?.bins['FINISH'] && tempIds[id] && tempIds[id]['FINISH'] && !tempIds[id]['FINISH']?.includes(processCards[j]?._id) && i == 0){
-                tempIds[id]['FINISH'].splice(0,0,processCards[j]._id)
-              }
-            }
-          }
+        const allColumns = ['QUEUE', 'FINISH',
+          ...Object.values(process.flattened_stations).map(s => s.stationID)]
 
-          setOrderedIds(tempIds)
-          setCards(processCards)
-          if(JSON.stringify(tempIds) !== JSON.stringify(orderedCardIds)){
-            dispatchPostSettings({
-              ...serverSettings,
-              orderedCardIds: tempIds
-            })
+        let tempIds = deepCopy(orderedIdsRef.current)
+        if(!tempIds[id]) tempIds[id] = {}
+
+        // For every column: remove cards no longer belonging there, add new arrivals
+        for(const col of allColumns){
+          if(!tempIds[id][col]) tempIds[id][col] = []
+
+          // Remove ids whose card no longer has a bin at this column
+          tempIds[id][col] = tempIds[id][col].filter(cardId =>
+            processCards[cardId]?.bins?.[col]
+          )
+
+          // Add any card that belongs here but isn't listed yet
+          for(const cardId in processCards){
+            if(processCards[cardId]?.bins?.[col] && !tempIds[id][col].includes(cardId)){
+              tempIds[id][col].push(cardId)
+            }
           }
         }
+
+        orderedIdsRef.current = tempIds
+        setOrderedIds(tempIds)
+        setCards(processCards)
+        if(JSON.stringify(tempIds) !== JSON.stringify(orderedCardIds)){
+          dispatchPostSettings({
+            ...serverSettings,
+            orderedCardIds: tempIds
+          })
+        }
+      }
     }, [processCards, orderedCardIds])
 
     useEffect(() => {
-      setDragIndex(dragIndexSearch(draggingStationId))
+      const nextDragIndex = dragIndexSearch(draggingStationId)
+      dragIndexRef.current = nextDragIndex
+      setDragIndex(nextDragIndex)
     }, [clientY])
 
     useEffect(() => {//updates orderedIds when sort is changed
+        if(!sortMountedRef.current){ sortMountedRef.current = true; return }
         setUpdate(false)
         if(!activeTimeout){
           setActiveTimeout(true)
@@ -414,6 +449,61 @@ const Cards = (props) => {
       }
     }
 
+    const scheduleUpdateReset = (delay = 4000) => {
+      if(activeTimeout && currTimeout){
+        clearTimeout(currTimeout)
+      }
+
+      setActiveTimeout(true)
+      const timeout = setTimeout(() => {
+        setUpdate(true)
+        setActiveTimeout(false)
+        setCurrTimeout(null)
+      }, delay)
+      setCurrTimeout(timeout)
+    }
+
+    const finalizeDrag = (target, lotDiv) => {
+      if(lotDiv){
+        lotDiv.style.display = 'flex'
+        lotDiv.style.maxHeight = '100rem'
+        lotDiv.style.paddingTop = ''
+      }
+
+      resetDragState()
+      justDraggedRef.current = true
+
+      // Re-enable processCards→cards syncing immediately.
+      // We awaited dispatchPutCard before reaching here, so the backend
+      // response is already in Redux — no extra delay needed.
+      setUpdate(true)
+      setActiveTimeout(false)
+      setCurrTimeout(null)
+
+      if(target){
+        target.style.opacity = '1'
+        target.style.display = 'flex'
+        target.style.maxHeight = '100rem'
+      }
+    }
+
+    const resetDragState = () => {
+      dragIndexRef.current = null
+      startIndexRef.current = null
+      dragFromStationRef.current = null
+      draggingStationIdRef.current = null
+      draggingLotIdRef.current = null
+      setDragIndex(null)
+      setStartIndex(null)
+      setAllowHomeDrop(null)
+      setMouseOffsetY(null)
+      setMouseOffsetX(null)
+      setDragFromStation(null)
+      setDraggingStationId(null)
+      setDraggingLotId(null)
+      setDropNodes([])
+    }
+
     //This function is now more limiting with split/merge
     // -dont allow moving lot to next stations(s) if current station disperses a lot
     //-dont allow movinga lot backwards if the previous node has routes merging into it or if it disperses a lot
@@ -421,9 +511,9 @@ const Cards = (props) => {
     //-These limitations ensure dragging lots around in cardZone dont mess merge/split functionality
     //-We should make it more flexible in the future with functions that handle the above cases...
     //-There is some functionality that i added where you can drag lots forward into their merging station and it will properly merge them
-    const shouldAcceptDrop = (cardId, startId, currId) => {
+    const shouldAcceptDrop = (cardId, startId, currId, shouldUpdateDropNodes = true) => {
       let lastStationTraversed = false
-      let tempDropNodes = dropNodes
+      let tempDropNodes = []
       const processRoutes = process.routes.map(routeId => routes[routeId])
 
       let startNodes = findProcessStartNodes(processRoutes, stations)
@@ -513,22 +603,33 @@ const Cards = (props) => {
           }
           forwardsTraverseCheck(startId)
           backwardsTraverseCheck(startId)
-          setDropNodes(tempDropNodes)
+          if(shouldUpdateDropNodes){
+            setDropNodes((prevDropNodes) => [...new Set([...(prevDropNodes || []), ...tempDropNodes])])
+          }
           return lastStationTraversed
 
         }
 
-    const handleDrop = (containsPartial) => {
-      if(dragFromStation === draggingStationId){//dragging within column
-        if((!!dragIndex || dragIndex === 0) && dragIndex !== startIndex+1){//drop zone existst and not dropping in home position
-          let newIds = orderedIds
-          newIds[id][draggingStationId].splice(dragIndex, 0, newIds[id][draggingStationId][startIndex])
-          if(dragIndex<=startIndex){//dragging up
-            newIds[id][draggingStationId].splice(startIndex+1,1)
+    const handleDrop = async (containsPartial) => {
+      const currentDragFromStation = dragFromStationRef.current
+      const currentDraggingStationId = draggingStationIdRef.current
+      const currentDragIndex = dragIndexRef.current
+      const currentStartIndex = startIndexRef.current
+      const currentDraggingLotId = draggingLotIdRef.current
+      const currentOrderedIds = orderedIdsRef.current
+      const currentCards = cardsRef.current
+
+      if(currentDragFromStation === currentDraggingStationId){//dragging within column
+        if((!!currentDragIndex || currentDragIndex === 0) && currentDragIndex !== currentStartIndex+1){//drop zone existst and not dropping in home position
+          let newIds = deepCopy(currentOrderedIds)
+          newIds[id][currentDraggingStationId].splice(currentDragIndex, 0, newIds[id][currentDraggingStationId][currentStartIndex])
+          if(currentDragIndex<=currentStartIndex){//dragging up
+            newIds[id][currentDraggingStationId].splice(currentStartIndex+1,1)
           }
           else{//dragging down
-            newIds[id][draggingStationId].splice(startIndex,1)
+            newIds[id][currentDraggingStationId].splice(currentStartIndex,1)
           }
+          orderedIdsRef.current = newIds
           setOrderedIds(newIds)
           dispatchPostSettings({
             ...serverSettings,
@@ -536,41 +637,44 @@ const Cards = (props) => {
           })
         }
       }
-      else if((dragIndex || dragIndex ===0) && dragFromStation!==draggingStationId){
+      else if((!!currentDragIndex || currentDragIndex ===0) && currentDragFromStation!==currentDraggingStationId){
         //update ID array
-        let newIds = orderedIds
-        if(!newIds[id][draggingStationId]) newIds[id][draggingStationId] = []
-        if(!newIds[id][draggingStationId].includes(draggingLotId)){
-          newIds[id][draggingStationId].splice(dragIndex, 0, newIds[id][dragFromStation][startIndex])
+        let newIds = deepCopy(currentOrderedIds)
+        if(!newIds[id][currentDraggingStationId]) newIds[id][currentDraggingStationId] = []
+        if(!newIds[id][currentDraggingStationId].includes(currentDraggingLotId)){
+          newIds[id][currentDraggingStationId].splice(currentDragIndex, 0, newIds[id][currentDragFromStation][currentStartIndex])
         }
-        if(!containsPartial) newIds[id][dragFromStation].splice(startIndex,1)
-        if(newIds[id][dragFromStation].length === 0) newIds[id][dragFromStation] = []
+        if(!containsPartial) newIds[id][currentDragFromStation].splice(currentStartIndex,1)
+        if(newIds[id][currentDragFromStation].length === 0) newIds[id][currentDragFromStation] = []
+        orderedIdsRef.current = newIds
         setOrderedIds(newIds)
         dispatchPostSettings({
           ...serverSettings,
           orderedCardIds: newIds
         })
         //post new lot bins
-        let lastStn = shouldAcceptDrop(draggingLotId, dragFromStation, draggingStationId)
-        let updatedLot = cards[draggingLotId]
-        let stationBeforeMerge = !!lastStn ? lastStn : dragFromStation
-        updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[dragFromStation]?.count, stationBeforeMerge, draggingStationId, process, routes, stations)
-        updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[dragFromStation]?.count, dragFromStation, process, routes)
-        if(!!updatedLot.bins[dragFromStation] && !updatedLot.bins[dragFromStation]['count']){
-          updatedLot.bins[dragFromStation] = {
-            ...updatedLot.bins[dragFromStation],
+        let lastStn = shouldAcceptDrop(currentDraggingLotId, currentDragFromStation, currentDraggingStationId, false)
+        let updatedLot = deepCopy(currentCards[currentDraggingLotId])
+        let stationBeforeMerge = !!lastStn ? lastStn : currentDragFromStation
+        updatedLot.bins = handleNextStationBins(updatedLot.bins, updatedLot.bins[currentDragFromStation]?.count, stationBeforeMerge, currentDraggingStationId, process, routes, stations)
+        updatedLot.bins = handleCurrentStationBins(updatedLot.bins, updatedLot.bins[currentDragFromStation]?.count, currentDragFromStation, process, routes)
+        if(!!updatedLot.bins[currentDragFromStation] && !updatedLot.bins[currentDragFromStation]['count']){
+          updatedLot.bins[currentDragFromStation] = {
+            ...updatedLot.bins[currentDragFromStation],
             count: 0
           }
         }
         //Bin exists but nothing in it. Delete the bin as this messes various things up.
-        if(!!updatedLot.bins[dragFromStation] && updatedLot.bins[dragFromStation]['count'] === 0 && Object.values(updatedLot.bins[dragFromStation]).length === 1){
-          delete updatedLot.bins[dragFromStation]
+        if(!!updatedLot.bins[currentDragFromStation] && updatedLot.bins[currentDragFromStation]['count'] === 0 && Object.values(updatedLot.bins[currentDragFromStation]).length === 1){
+          delete updatedLot.bins[currentDragFromStation]
         }
-        let newCards = deepCopy(cards)
+        let newCards = deepCopy(currentCards)
         newCards[updatedLot._id] = updatedLot
+        cardsRef.current = newCards
         setCards(newCards)
-        let result = dispatchPutCard(updatedLot, updatedLot._id)
+        await dispatchPutCard(updatedLot, updatedLot._id)
      }
+     draggingLotIdRef.current = null
      setDraggingLotId(null)
     }
 
@@ -715,11 +819,19 @@ const Cards = (props) => {
                             draggable = {true}
                             onDragStart = {(e)=>{
                               setUpdate(false)
+                              setDropNodes([])
                               setDivHeight(e.target.offsetHeight)
                               setDivWidth(e.target.offsetWidth-35)
+                              draggingLotIdRef.current = card._id
                               setDraggingLotId(card._id)
+                              dragFromStationRef.current = stationId
                               setDragFromStation(stationId)
+                              draggingStationIdRef.current = stationId
+                              setDraggingStationId(stationId)
+                              startIndexRef.current = index
                               setStartIndex(index)
+                              dragIndexRef.current = index
+                              setDragIndex(index)
                               let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
                               let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
@@ -734,30 +846,14 @@ const Cards = (props) => {
                               shouldAcceptDrop(card._id, stationId, 'QUEUE')
                               shouldAcceptDrop(card._id, stationId, 'FINISH')
                             }}
-                            onDragEnd = {(e)=>{
-                              handleDrop(false)
-                              if(!activeTimeout){
-                                setActiveTimeout(true)
+                            onDragEnd = {async (e)=>{
+                              const target = e.target
+                              let lotDiv = document.getElementById(card._id + stationId)
+                              try {
+                                await handleDrop(false)
+                              } finally {
+                                finalizeDrag(target, lotDiv)
                               }
-                              else{
-                                clearTimeout(currTimeout)
-                              }
-                              let timeout = setTimeout(handleSetUpdate, 4000)
-                              setCurrTimeout(timeout)
-                              let lotDiv = document.getElementById(draggingLotId + dragFromStation )
-                              lotDiv.style.maxHeight = '100rem'
-
-                              setDragIndex(null)
-                              setStartIndex(null)
-                              setAllowHomeDrop(null)
-                              setMouseOffsetY(null)
-                              setDragFromStation(null)
-                              setDraggingStationId(null)
-                              setDropNodes([])
-
-                              e.target.style.opacity = '1'
-                              e.target.style.display = 'flex'
-                              e.target.style.maxHeight = '100rem'
                               e.preventDefault()
                             }}
                           >
@@ -832,11 +928,19 @@ const Cards = (props) => {
                               draggable = {isPartial ? false : true}
                               onDragStart = {(e)=>{
                                 setUpdate(false)
+                                setDropNodes([])
                                 setDivHeight(e.target.offsetHeight)
                                 setDivWidth(e.target.offsetWidth)
+                                draggingLotIdRef.current = card._id
                                 setDraggingLotId(card._id)
+                                dragFromStationRef.current = stationId
                                 setDragFromStation(stationId)
+                                draggingStationIdRef.current = stationId
+                                setDraggingStationId(stationId)
+                                startIndexRef.current = index
                                 setStartIndex(index)
+                                dragIndexRef.current = index
+                                setDragIndex(index)
                                 let offsetY = ((e.target.getBoundingClientRect().bottom - e.target.getBoundingClientRect().top)/2 + e.target.getBoundingClientRect().top - e.clientY)
                                 let offsetX = ((e.target.getBoundingClientRect().right - e.target.getBoundingClientRect().left)/2 + e.target.getBoundingClientRect().left - e.clientX)
 
@@ -851,29 +955,14 @@ const Cards = (props) => {
                                 shouldAcceptDrop(card._id, stationId, 'QUEUE')
                                 shouldAcceptDrop(card._id, stationId, 'FINISH')
                               }}
-                              onDragEnd = {(e)=>{
-                                handleDrop(true)
-                                if(!activeTimeout){
-                                  setActiveTimeout(true)
-                                }
-                                else{
-                                  clearTimeout(currTimeout)
-                                }
-                                let timeout = setTimeout(handleSetUpdate, 4000)
-                                setCurrTimeout(timeout)
-                                let lotDiv = document.getElementById(draggingLotId + dragFromStation )
-                                lotDiv.style.display = 'flex'//restore
-                                lotDiv.style.maxHeight = '100rem'
-                                setDragIndex(null)
-                                setStartIndex(null)
-                                setAllowHomeDrop(null)
-                                setMouseOffsetY(null)
-                                setDragFromStation(null)
-                                setDraggingStationId(null)
-                                setDropNodes([])
-                                e.target.style.opacity = '1'
-                                e.target.style.display = 'flex'
-                                e.target.style.maxHeight = '100rem'
+                              onDragEnd = {async (e)=>{
+                                const target = e.target
+                                  let lotDiv = document.getElementById(card._id + stationId)
+                                try {
+                                  await handleDrop(true)
+                                } finally {
+                                  finalizeDrag(target, lotDiv)
+                                  }
                                 e.preventDefault()
                               }}
                             >
@@ -956,7 +1045,10 @@ const Cards = (props) => {
           <div
             style = {{pointerEvents: !dropNodes.includes(stationID) && draggingLotId && 'none'}}
             onDragEnter = {(e)=>{
-              setDragIndex(dragIndexSearch(stationID))
+              const nextDragIndex = dragIndexSearch(stationID)
+              dragIndexRef.current = nextDragIndex
+              setDragIndex(nextDragIndex)
+              draggingStationIdRef.current = stationID
               setDraggingStationId(stationID)
             }}
             onMouseEnter = {() => {
@@ -983,9 +1075,9 @@ const Cards = (props) => {
       return (
         Object.values(process.flattened_stations).map((station) => {
           return (
-            <>
+            <React.Fragment key={station.stationID}>
               {renderStationColumn(station.stationID)}
-            </>
+            </React.Fragment>
           )
         })
       )
@@ -997,7 +1089,10 @@ const Cards = (props) => {
         <div
           style = {{pointerEvents: !dropNodes.includes('QUEUE') && draggingLotId && 'none'}}
           onDragEnter = {(e)=>{
-            setDragIndex(dragIndexSearch('QUEUE'))
+            const nextDragIndex = dragIndexSearch('QUEUE')
+            dragIndexRef.current = nextDragIndex
+            setDragIndex(nextDragIndex)
+            draggingStationIdRef.current = 'QUEUE'
             setDraggingStationId('QUEUE')
           }}
           onMouseEnter = {() => {
@@ -1032,7 +1127,10 @@ const Cards = (props) => {
         <div
           style = {{pointerEvents: !dropNodes.includes('FINISH') && draggingLotId && 'none'}}
           onDragEnter = {(e)=>{
-            setDragIndex(dragIndexSearch('FINISH'))
+            const nextDragIndex = dragIndexSearch('FINISH')
+            dragIndexRef.current = nextDragIndex
+            setDragIndex(nextDragIndex)
+            draggingStationIdRef.current = 'FINISH'
             setDraggingStationId('FINISH')
           }}
           onMouseEnter = {() => {

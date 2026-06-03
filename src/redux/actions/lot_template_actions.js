@@ -152,3 +152,16 @@ export const setSelectedLotTemplate = (lotTemplateId) => async dispatch => {
 export const setLotTemplateAttributes = (id, attr) => async dispatch => {
     dispatch({ type: 'SET_LOT_TEMPLATE_ATTRIBUTES', payload: { id, attr } })
 }
+
+// WebSocket handlers - simple sync actions for server push updates
+export const addLotTemplate = (lotTemplate) => {
+    return { type: POST + LOT_TEMPLATE + SUCCESS, payload: { lotTemplate } }
+}
+
+export const updateLotTemplate = (lotTemplate) => {
+    return { type: PUT + LOT_TEMPLATE + SUCCESS, payload: { lotTemplate } }
+}
+
+export const removeLotTemplate = (id) => {
+    return { type: DELETE + LOT_TEMPLATE + SUCCESS, payload: { id } }
+}

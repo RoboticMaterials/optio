@@ -45,4 +45,13 @@ export const apiIPAddress = () => {
 
 store.subscribe(apiIPAddress);
 
+/**
+ * Returns the base URL for the Socket.IO connection (no /api/ path suffix).
+ * e.g. http://localhost:5000
+ */
+export const getSocketBaseUrl = () => {
+    const apiUrl = apiIPAddress(); // e.g. "http://localhost:5000/api/"
+    return apiUrl.replace(/\/api\/?$/, '');
+};
+
 // /home/ubuntu/.local/bin/gunicorn -w 5 -b :5000 --chdir /home/ubuntu/dev_rmstudio/rmengine/rest_api --certfile /etc/letsencrypt/live/dev.optio.cloud/fullchain.pem --keyfile /etc/letsencrypt/live/dev.optio.cloud/privkey.pem 'server:create_app()'

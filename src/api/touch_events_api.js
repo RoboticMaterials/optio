@@ -84,6 +84,7 @@ export async function deleteTouchEvent(ID) {
 
     } catch (error) {
         handleError(error);
+        throw error;
     }
 }
 
@@ -104,6 +105,7 @@ export async function openTouchEvent(touchEvent) {
 
     } catch (error) {
         handleError(error);
+        throw error;
     }
 }
 
@@ -124,6 +126,7 @@ export async function closeTouchEvent(touchEvent) {
 
     } catch (error) {
         handleError(error);
+        throw error;
     }
 }
 
