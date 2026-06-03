@@ -19,3 +19,7 @@ boto3==1.26.165
 cognitojwt==1.4.1
 PyYAML==6.0.1
 matplotlib==3.7.5
+
+flask-socketio==5.3.6
+eventlet==0.33.3
+Pillow==12.2.0
