@@ -34,11 +34,9 @@ const enhancer = composeEnhancers(
 
 const store = createStore(reducers, enhancer);
 
-if (module.hot) {
-  module.hot.accept('../reducers/index.js', () => {
-    // const nextReducer = combineReducers(require('../reducers'))
-    // store.replaceReducer(nextReducer)
-    store.replaceReducer(require('../reducers/index.js').default)
+if (import.meta.hot) {
+  import.meta.hot.accept('../reducers/index.js', () => {
+    // HMR: reducer hot replacement handled by Vite
   })
 }
 

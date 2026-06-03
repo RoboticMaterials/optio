@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-
+import ReactDOM from 'react-dom';
 import styled from '@emotion/styled';
 import { valueExistInSelected } from '../util';
 import * as PropTypes from 'prop-types';
 import { LIB_NAME } from '../constants';
-
-const ReactDOM = require('react-dom')
 
 const handlePlaceHolder = (props, state) => {
   const { addPlaceholder, searchable, placeholder } = props;

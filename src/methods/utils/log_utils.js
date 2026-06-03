@@ -38,5 +38,5 @@ console.info = function(msg) {
   }
 
   export function debug(msg) {
-      if ("development" === process.env.NODE_ENV) console.info(msg);
+      if (import.meta.env.MODE === 'development') console.info(msg);
   }

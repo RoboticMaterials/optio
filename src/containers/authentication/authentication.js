@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router-dom'
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 import ForgotPassword from '../../components/forgotPassword/forgotPassword'
-import { ReactComponent as OptioLogo } from '../../graphics/icons/optioFull.svg'
+import OptioLogo from '../../graphics/icons/optioFull.svg?react'
 import { Link } from 'react-router-dom'
 import * as styled from './authentication.style'
 

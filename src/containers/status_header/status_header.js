@@ -23,9 +23,8 @@ import log, { disableAll } from '../../logger.js';
 
 // import styles
 import * as styled from './status_header.style'
-import { render } from '@testing-library/react';
 import { ThemeContext } from 'styled-components'
-import { ReactComponent as OptioLogo } from '../../graphics/icons/optioFull.svg'
+import OptioLogo from '../../graphics/icons/optioFull.svg?react'
 
 const StatusHeader = (props) => {
 

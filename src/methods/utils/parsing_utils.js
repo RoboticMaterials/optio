@@ -51,8 +51,9 @@ export const parseCSV = (content, strDelimiter=',') => {
     return( table );
 }
 
+import XMLParser from 'react-xml-parser';
+
 export const parseXML = (content) => {
-    var XMLParser = require("react-xml-parser");
     var xml = new XMLParser().parseFromString(content);
     var newXml = xml.getElementsByTagName("row");
     var header = "";

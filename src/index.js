@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -13,54 +13,16 @@ import './methods/css/fontawesome.min.css'
 import './graphics/icons/style.css'
 
 import './i18n';
-// import 'nivo'
-// import { AppContainer } from 'react-hot-loader';
-// require('react-hot-loader/patch')
 
-/* uncomment to disable default logger
-console.log = () => {};
-console.error = () => {};
-console.fatal = () => {};
-console.warn = () => {};
-*/
-//
-
-if(module.hot){
-    module.hot.accept()
+if (import.meta.hot) {
+    import.meta.hot.accept()
 }
 
-// if(module.hot){
-//     console.log("module hot")
-//
-//     module.hot.accept('./App', () => {
-//         console.log("inside callback")
-//
-//         const NextApp = require('./App');
-//
-//         ReactDOM.render(
-//             <Provider store={store}>
-//                 <App />
-//             </Provider>,
-//             document.getElementById('root')
-//         );
-//
-//     });
-// }
-// else {
-    const rootElement = document.getElementById('root')
-    ReactDOM.render(
-        // <AppContainer>
-        <Provider store={store}>
-            <App />
-        </Provider>,
-            // </AppContainer>,
-        rootElement
-    )
-// }
+const rootElement = document.getElementById('root')
+createRoot(rootElement).render(
+    <Provider store={store}>
+        <App />
+    </Provider>
+)
 
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-// serviceWorker.unregister();
 serviceWorker.register();

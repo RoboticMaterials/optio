@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Switch from 'react-ios-switch'
 import Textbox from '../../basic/textbox/textbox'
 import Button from '../../basic/button/button'
-import { ReactComponent as OptioLogo } from '../../../graphics/icons/optio.svg'
+import OptioLogo from '../../../graphics/icons/optio.svg?react'
 
 // styles
 import * as styled from "./splash_screen.style"

@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
-var PropTypes = require('prop-types')
+import PropTypes from 'prop-types';
 import usePrevious from "../../../hooks/usePrevious";
-
-var _ = require('lodash');
-//var React = require('react/addons');
+import _ from 'lodash';
 
 const Selection = (props) => {
 	const {

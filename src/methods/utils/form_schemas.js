@@ -11,9 +11,7 @@ import { FIELD_DATA_TYPES } from "../../constants/lot_contants";
 
 import { findProcessStartNodes, findProcessEndNodes, getNodeOutgoing, handleMergeExpression, getNodeIncoming } from './processes_utils';
 import { deepCopy, uuidv4 } from './utils'
-
-const { object, lazy, string, number } = require('yup')
-const mapValues = require('lodash/mapValues')
+import mapValues from 'lodash/mapValues'
 
 Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
     return this.test('startEndDate', message, function (value) {

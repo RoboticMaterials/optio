@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef, useMemo} from "react";
+import JsBarcode from 'jsbarcode';
 import Modal from 'react-modal';
 import ReactToPrint from 'react-to-print'
 import {useDispatch, useSelector} from "react-redux";
@@ -28,7 +29,6 @@ const BarcodeModal = (props) => {
     const dispatch = useDispatch()
     const dispatchShowBarcodeModal = (bool) => dispatch(showBarcodeModal(bool))
     const history = useHistory()
-    var JsBarcode = require("jsbarcode")
     const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
     const [generated, setGenerated] = useState(false)
