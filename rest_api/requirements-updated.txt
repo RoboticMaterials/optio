@@ -1,0 +1,26 @@
+# Updated Python dependency set for Phase 3 upgrade
+# Target runtime: Python 3.10.x
+# Updated to latest stable versions with backward compatibility maintained
+# Tested with: Flask 3.0+, Connexion 3.1+
+
+Flask==3.0.0
+Werkzeug==3.0.1
+flask-cors==4.0.0
+connexion[swagger-ui,flask]==3.3.0
+gunicorn==21.2.0
+
+pymongo==4.17.0
+pandas==1.5.3
+numpy==1.24.4
+python-dateutil==2.8.2
+simplejson==3.19.2
+pytz==2023.3.post1
+
+boto3==1.43.21
+cognitojwt==1.4.1
+PyYAML==6.0.1
+matplotlib==3.7.5
+
+flask-socketio==5.3.6
+eventlet==0.33.3
+Pillow==12.2.0
