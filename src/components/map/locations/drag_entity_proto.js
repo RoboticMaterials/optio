@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
-import * as d3 from 'd3'
+import * as d3ns from 'd3'
+const d3 = d3ns.default || d3ns
 
 
 const DragEntityProto = (props) => {

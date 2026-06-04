@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 
 import { theme, defaultColors } from '../nivo_theme';

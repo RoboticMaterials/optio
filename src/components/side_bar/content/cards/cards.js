@@ -15,7 +15,7 @@ import useInterval from 'react-useinterval'
 import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 import {setSelectedProcess} from '../../../../redux/actions/processes_actions'
 import {throttle, debounce} from 'lodash'
-import {findProcessStartNodes, findProcessEndNodes, isStationOnBranch } from '../../../../methods/utils/processes_utils'
+import {findProcessStartNodes, findProcessEndNodes } from '../../../../methods/utils/processes_utils'
 import { getCustomFields, handleNextStationBins, handleCurrentStationBins, handleMergeParts } from "../../../../methods/utils/lot_utils";
 import { getLotTotalQuantity, checkCardMatchesFilter, getMatchesFilter } from "../../../../methods/utils/lot_utils";
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'

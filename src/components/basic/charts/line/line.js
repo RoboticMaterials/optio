@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 
 import { theme, defaultColors } from '../nivo_theme';

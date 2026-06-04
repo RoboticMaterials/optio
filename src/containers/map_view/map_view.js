@@ -1,16 +1,16 @@
-import React, { Component, useState, lazy, Suspense } from 'react'
-import { ReactDOM, Route } from 'react-dom'
-import {connect, useSelector} from 'react-redux';
-import moduleName from 'react'
+import React, { Component, lazy, Suspense } from 'react'
+import { Route } from 'react-router-dom'
+import {connect} from 'react-redux';
 import { withRouter } from "react-router-dom";
 
 import * as styled from './map_view.style'
 
 import {v4 as uuid} from "uuid"
-import * as d3 from 'd3'
+import * as d3ns from 'd3'
+const d3 = d3ns.default || d3ns
 
 // Import Utils
-import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
+import { convertD3ToReal, convertRealToD3 } from '../../methods/utils/map_utils'
 import { getIsEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
@@ -104,6 +104,7 @@ export class MapView extends Component {
     checkForMapLoad = () => {
 
       var currentMap = this.props.maps.find(map => map._id === this.props.localSettings.currentMapId)
+        || (this.props.maps && this.props.maps[0])
 
       if (!!currentMap) {
         this.setState({currentMap: currentMap})

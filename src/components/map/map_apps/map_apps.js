@@ -29,19 +29,22 @@ const MapApps = (props) => {
     }
 
 
-    // handle if the mapApps hasnt been created in settings
-    const hasAllKeys = (keys, obj) => keys.every(item => obj.hasOwnProperty(item));
-    if (!settings.mapApps || !hasAllKeys(['ratsnest', 'labels', 'heatmap'], settings.mapApps)) {
-        const settingsCopy = deepCopy(settings)
-        settingsCopy.mapApps = {
-            ratsnest: true,
-            labels: true,
-            heatmap: true,
+    const hasAllKeys = (keys, obj) => keys.every(item => obj.hasOwnProperty(item))
+
+    useEffect(() => {
+        if (!settings.mapApps || !hasAllKeys(['ratsnest', 'labels', 'heatmap'], settings.mapApps)) {
+            const settingsCopy = deepCopy(settings)
+            settingsCopy.mapApps = {
+                ratsnest: true,
+                labels: true,
+                heatmap: true,
+            }
+            dispatchPostSettings(settingsCopy);
         }
+    }, [])
 
-        dispatchPostSettings(settingsCopy);
-
-        // return null;
+    if (!settings.mapApps || !hasAllKeys(['ratsnest', 'labels', 'heatmap'], settings.mapApps)) {
+        return null
     }
 
     return (

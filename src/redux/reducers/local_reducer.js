@@ -22,7 +22,6 @@ import {
   POST_LOCAL_SETTINGS_FAILURE,
 
   STOP_API_CALLS,
-  SET_TEMP_SIGN_IN_DATA,
 
 } from '../types/local_types';
 import {defaultLocalSettings} from "../../constants/local_settings_constants";

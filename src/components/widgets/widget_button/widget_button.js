@@ -8,7 +8,7 @@ import * as styled from './widget_button.style'
 import {v4 as uuid} from "uuid"
 
 // Import Actions
-import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'
+import { putStation } from '../../../redux/actions/stations_actions'
 import { removePosition, setSelectedPosition } from '../../../redux/actions/positions_actions'
 import { widgetLoaded, hoverStationInfo } from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'

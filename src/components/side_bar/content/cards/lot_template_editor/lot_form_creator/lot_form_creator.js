@@ -13,8 +13,7 @@ import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper"
 import DropDownIcon from '../../../../../basic/drop_down_icon/drop_down_icon'
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import CalendarPlaceholder from '../../../../../basic/calendar_placeholder/calendar_placeholder'
-import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_template_editor_sidebar/lot_template_editor_sidebar";
-import {FIELD_TYPES, ICONS} from '../../../../../../constants/lot_template_constants'
+import {FIELD_TYPES} from '../../../../../../constants/lot_template_constants'
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector, useDispatch} from "react-redux";
 import NumberInput from '../../../../../basic/number_input/number_input'

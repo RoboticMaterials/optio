@@ -1,3 +1,4 @@
+import React from 'react'
 import { ResponsiveRadialBar } from '@nivo/radial-bar'
 
 import * as styled from './radial_bar.style';

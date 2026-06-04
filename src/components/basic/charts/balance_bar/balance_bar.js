@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
+import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { ResponsiveBar } from '@nivo/bar'
 import { svg, behavior, select, event } from 'd3'

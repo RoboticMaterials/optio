@@ -1,3 +1,4 @@
+import React from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import { capitalizeFirstLetter } from '../../../../methods/utils/string_utils'
 

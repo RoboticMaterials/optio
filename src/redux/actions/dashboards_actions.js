@@ -78,7 +78,7 @@ export const getDashboards = () => {
             const dashboards = await api.getDashboards();
 
             const normalizedDashboards = {}
-            dashboards.map((dashboard) => {
+            ;(dashboards || []).map((dashboard) => {
                 normalizedDashboards[dashboard._id.$oid] = dashboard
             })
 

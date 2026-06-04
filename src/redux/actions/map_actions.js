@@ -11,7 +11,6 @@ import {
 
     SET_MAP_ATTRIBUTES,
     SET_CURRENT_MAP,
-    SET_MAP_ZOOM
 } from '../types/map_types'
 
 

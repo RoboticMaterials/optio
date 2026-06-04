@@ -42,21 +42,15 @@ class PageErrorBoundary extends React.Component {
             return (
                 <styled.Container>
                     <styled.Label>
-                        Oops! Something went wrong... {this.state.error}
+                        Oops! Something went wrong... {this.state.error?.message || String(this.state.error)}
                     </styled.Label>
-                    {/* <styled.ReloadButton
-                        onClick={this.handleReloadPage}
-                        className="btn btn-outline-danger"
-                    >
-                        Reload Page
-                    </styled.ReloadButton>
-                    <styled.Text style={{color: 'grey', marginTop: '1rem', cursor: 'pointer'}} onClick={() => this.setState({showTrace: !this.state.showTrace})}>Trace</styled.Text>
+                    <styled.Text style={{color: 'grey', marginTop: '1rem', cursor: 'pointer'}} onClick={() => this.setState({showTrace: !this.state.showTrace})}>Show Trace</styled.Text>
                     {this.state.showTrace &&
                         <>
-                            <styled.Text>{this.state.error?.stack || 'NA'}</styled.Text>
-                            <styled.Text>{this.state.info?.componentStack || 'NA'}</styled.Text>
+                            <styled.Text style={{whiteSpace:'pre-wrap',fontSize:'0.75rem'}}>{this.state.error?.stack || 'NA'}</styled.Text>
+                            <styled.Text style={{whiteSpace:'pre-wrap',fontSize:'0.75rem'}}>{this.state.info?.componentStack || 'NA'}</styled.Text>
                         </>
-                    } */}
+                    }
                 </styled.Container>
             );
         } else {

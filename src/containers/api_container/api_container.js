@@ -12,7 +12,6 @@ import { getLotTemplates } from '../../redux/actions/lot_template_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
-import { postDevSettings } from '../../api/local_api'
 
 import { getLoggers } from '../../redux/actions/local_actions';
 
@@ -67,6 +66,8 @@ const ApiContainer = (props) => {
     const localSettings = localReducer.localSettings
     const maps = useSelector(state => state.mapReducer.maps)
 
+    const params = useParams()
+
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiError, setApiError] = useState(false)
@@ -75,7 +76,6 @@ const ApiContainer = (props) => {
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
     const [localParams, setLocalParams] = useState(params)
     const [localPath, setLocalPath] = useState(history?.location?.pathname)
-    const params = useParams()
 
     useEffect(() => {
         loadInitialData() // initial call to load data when app opens

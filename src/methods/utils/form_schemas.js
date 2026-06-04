@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { lazy, object } from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";

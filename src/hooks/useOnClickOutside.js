@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 // custom hook that listens for clicks outside of the ref component,
 // and calls the provided handler when outside click is detected

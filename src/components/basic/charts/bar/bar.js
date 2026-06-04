@@ -1,3 +1,4 @@
+import React from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 
 import { theme, defaultColors } from '../nivo_theme';

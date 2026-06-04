@@ -19,7 +19,7 @@ import RightMenu from '../right_menu/right_menu'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // import logger
-import log, { disableAll } from '../../logger.js';
+import log from '../../logger.js';
 
 // import styles
 import * as styled from './status_header.style'
