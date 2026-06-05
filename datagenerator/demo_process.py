@@ -47,23 +47,34 @@ class OptioLocal:
             sys.exit("No maps found — run seed_local_map.py first")
         return maps[0]["_id"]
 
+    HEADERS = {"Content-Type": "application/json", "Authorization": "local-dev"}
+
+    @staticmethod
+    def _parse(r):
+        # Flask returns bson.json_util.dumps which double-serializes — unwrap if needed
+        data = r.json()
+        if isinstance(data, str):
+            import json
+            data = json.loads(data)
+        return data
+
     def get(self, path):
-        r = requests.get(self.base + path, headers={"Content-Type": "application/json"})
+        r = requests.get(self.base + path, headers=self.HEADERS)
         r.raise_for_status()
-        return r.json()
+        return self._parse(r)
 
     def post(self, path, body):
-        r = requests.post(self.base + path, json=body, headers={"Content-Type": "application/json"})
+        r = requests.post(self.base + path, json=body, headers=self.HEADERS)
         r.raise_for_status()
-        return r.json()
+        return self._parse(r)
 
     def put(self, path, body):
-        r = requests.put(self.base + path, json=body, headers={"Content-Type": "application/json"})
+        r = requests.put(self.base + path, json=body, headers=self.HEADERS)
         r.raise_for_status()
-        return r.json()
+        return self._parse(r)
 
     def delete(self, path):
-        r = requests.delete(self.base + path, headers={"Content-Type": "application/json"})
+        r = requests.delete(self.base + path, headers=self.HEADERS)
         r.raise_for_status()
 
     # ---- domain helpers --------------------------------------------------- #
@@ -118,7 +129,7 @@ class OptioLocal:
         })
 
     def create_lot_template(self, name, process_id):
-        return self.post("lot_templates", {
+        return self.post("cards/templates", {
             "_id": str(uuid.uuid4()),
             "name": name,
             "map_id": self.map_id,
@@ -141,25 +152,13 @@ class OptioLocal:
         })
 
     def move_lot(self, lot, from_station_id, to_station_id, quantity):
-        """Move a lot from one station to another via PUT card."""
+        """Move a lot from one station to another by updating its bins."""
         updated = dict(lot)
         bins = dict(lot.get("bins", {}))
-        # Remove from source, add to destination
         bins.pop(from_station_id, None)
-        bins[to_station_id] = {"count": quantity}
+        if to_station_id != "__DONE__":
+            bins[to_station_id] = {"count": quantity}
         updated["bins"] = bins
-
-        now_ms = int(time.time() * 1000)
-        self.post("touch_events", {
-            "_id": str(uuid.uuid4()),
-            "lot_id": lot["_id"],
-            "load_station_id": from_station_id,
-            "unload_station_id": to_station_id,
-            "start_datetime": now_ms,
-            "move_datetime": now_ms,
-            "quantity": quantity,
-            "operator": "demo_script",
-        })
         self.put(f"cards/{lot['_id']}", updated)
         return updated
 
@@ -284,7 +283,7 @@ def cleanup(api: OptioLocal, stations, process, routes, template):
         api.delete(f"tasks/{route['_id']}")
         print(f"  Deleted route '{name}'")
 
-    api.delete(f"lot_templates/{template['_id']}")
+    api.delete(f"cards/templates/{template['_id']}")
     print(f"  Deleted template '{TEMPLATE_NAME}'")
 
     api.delete(f"processes/{process['_id']}")
