@@ -139,12 +139,15 @@ export default function TaskPaths(props) {
     let tempX2 = !!x2 ? x2 : x1
     let tempY2 = !!y2 ? y2 : y1
     const lineLen = Math.sqrt(Math.pow(tempX2 - x1, 2) + Math.pow(tempY2 - y1, 2));
+
+    // Positions not loaded yet or scale not ready — skip rendering
+    if (!isFinite(lineLen) || !props.d3?.scale) return null
+
     const lineRot = Math.atan2(tempY2 - y1, tempX2 - x1);
     const arrowRot = (lineRot * 180) / Math.PI;
 
-    const dashes = [
-      ...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys(),
-    ];
+    const dashCount = Math.ceil(lineLen / (10 * props.d3.scale));
+    const dashes = isFinite(dashCount) && dashCount >= 0 ? [...Array(dashCount).keys()] : [];
 
     // Changes the color based on whether it's a selected task or part of a process
     const primaryColor = selectedHoveringTask?._id === route?._id ? 'rgba(56, 235, 135, 0.95)' : 'rgba(255, 182, 46, 0.95)'
