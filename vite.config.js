@@ -4,6 +4,11 @@ import svgr from 'vite-plugin-svgr'
 import { readFileSync } from 'fs'
 
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+  },
   plugins: [
     // Tell esbuild to parse .js files in src/ as JSX during dep optimization
     // (the actual JSX→JS transform is left to @vitejs/plugin-react so that
