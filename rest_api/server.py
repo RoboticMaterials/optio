@@ -10,6 +10,7 @@ import config
 
 # Get the application instance
 connex_app = config.connex_app
+socketio = config.socketio
 
 CORS(connex_app.app)
 
@@ -35,4 +36,4 @@ def create_app():
 
 
 if __name__ == "__main__":
-    connex_app.run(debug=False)
+    socketio.run(application, host='0.0.0.0', port=5000, debug=False)

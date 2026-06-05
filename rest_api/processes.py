@@ -8,6 +8,8 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 import json
+from config import socketio
+import json
 
 client = MongoClient('localhost:27017')
 db = client.ContactDB
@@ -55,6 +57,7 @@ def create(process):
     """
     result = collection.insert_one(process)
     process_with_id = collection.find_one({'_id':result.inserted_id})
+    socketio.emit('message', {'type': 'processes', 'method': 'POST', 'payload': json.loads(dumps(process_with_id))})
     return dumps(process_with_id)
 
 def update(process_id, process):
@@ -94,8 +97,8 @@ def update(process_id, process):
     for route in process_routes:
         if route['_id'] not in process_with_id['routes']:
             db.tasks.delete_one({'_id': route['_id']})
-        
     
+    socketio.emit('message', {'type': 'processes', 'method': 'PUT', 'payload': json.loads(dumps(process_with_id))})
     return dumps(process_with_id)
 
 
@@ -110,7 +113,7 @@ def delete(process_id):
     # Can we insert this process?
     if len(list(rtnd_process.clone())) != 0:
         collection.delete_one({"_id" : process_id})
-
+        socketio.emit('message', {'type': 'processes', 'method': 'DELETE', 'payload': process_id})
     # Otherwise, nope, didn't find that person
     else:
         abort(

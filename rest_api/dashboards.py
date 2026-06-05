@@ -8,6 +8,8 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 import json
+from config import socketio
+import json
 
 client = MongoClient('localhost:27017')
 db = client.ContactDB
@@ -60,6 +62,7 @@ def create(dashboard):
     # if rtnd_dashboard.count() == 0:
     result = collection.insert_one(dashboard)
     dashboard_with_id = collection.find_one({'_id':result.inserted_id})
+    socketio.emit('message', {'type': 'dashboards', 'method': 'POST', 'payload': json.loads(dumps(dashboard_with_id))})
     return dumps(dashboard_with_id)
 
     # Otherwise, nope, dashboard exists already
@@ -103,6 +106,7 @@ def update(dashboard_id, dashboard):
 
     result = collection.replace_one({"_id":ObjectId(dashboard_id)}, dashboard)
     dashboard_with_id = collection.find_one({"_id":ObjectId(dashboard_id)})
+    socketio.emit('message', {'type': 'dashboards', 'method': 'PUT', 'payload': json.loads(dumps(dashboard_with_id))})
     return dumps(dashboard_with_id)
 
 
@@ -117,7 +121,7 @@ def delete(dashboard_id):
     # Can we insert this dashboard?
     if len(list(rtnd_dashboard.clone())) != 0:
         collection.delete_one({"_id":ObjectId(dashboard_id)})
-        
+        socketio.emit('message', {'type': 'dashboards', 'method': 'DELETE', 'payload': dashboard_id})
         return dashboard_id
 
     # Otherwise, nope, didn't find that person

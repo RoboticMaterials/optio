@@ -7,6 +7,8 @@ from flask import make_response, abort
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+import json
+from config import socketio
 
 client = MongoClient('localhost:27017')
 db = client.ContactDB
@@ -60,6 +62,7 @@ def create(station):
     if len(list(rtnd_station.clone())) == 0:
         result = collection.insert_one(station)
         station_with_id = collection.find_one({'_id':result.inserted_id})
+        socketio.emit('message', {'type': 'stations', 'method': 'POST', 'payload': json.loads(dumps(station_with_id))})
         return dumps(station_with_id)
 
     # Otherwise, nope, station exists already
@@ -165,6 +168,7 @@ def update(station_id, station):
 
     result = collection.replace_one({"_id": station_id}, station)
     station_with_id = collection.find_one({"_id": station_id})
+    socketio.emit('message', {'type': 'stations', 'method': 'PUT', 'payload': json.loads(dumps(station_with_id))})
     return dumps(station_with_id)
 
 
@@ -179,6 +183,7 @@ def delete(station_id):
     # Can we delete  this station?
     if len(list(rtnd_station.clone())) != 0:
         collection.delete_one({"_id":station_id})
+        socketio.emit('message', {'type': 'stations', 'method': 'DELETE', 'payload': station_id})
 
     # Otherwise, nope, didn't find that person
     else:

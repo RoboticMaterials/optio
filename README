@@ -6,7 +6,7 @@ sudo systemctl status nginx.service
 Runinng Optio on "localhost"
 ----------------------------
 
-Run "npm start" in the main optio directory. Then switch to "optio/rest_api" and run "python3 server.py". When running on localhost (or 10.42.0.1), 
+On macOS, do not use the repository's default `npm start` script for local development because it forces port 80. Instead run `npm run start:local` in the main optio directory. Start the backend with `npm run backend:local`. To create a starter manufacturing map for drawing and graph editing, run `npm run seed:local-map` once. When running on localhost (or 10.42.0.1), 
 Optio does not use https. 
 
 

@@ -4,6 +4,7 @@ export const MapContainer = styled.div`
     height: 100%;
     width: 100%;
     flex: 1;
+    position: relative;
     background: ${props => props.isBlank ? '#F9FBFC' : props.theme.bg.quaternary};
     user-select: none;
 
