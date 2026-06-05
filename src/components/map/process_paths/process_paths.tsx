@@ -19,6 +19,7 @@ const ProcessPaths = (props) => {
     // Maps through all the associated routes with the process and displays them
     const handleTaskPaths = () => {
         const currProcess = !!(editingProcess && editingValues) ? editingValues : selectedProcess
+        if (!currProcess?.routes) return null
         return currProcess.routes
             .filter((route) => {
                 const {
