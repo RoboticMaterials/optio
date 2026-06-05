@@ -117,6 +117,9 @@ class OptioLocal:
             "routes": route_ids,
         })
 
+    def update_process(self, process):
+        return self.put(f"processes/{process['_id']}", process)
+
     def create_route(self, name, load_id, unload_id, process_id):
         return self.post("tasks", {
             "_id": str(uuid.uuid4()),
@@ -152,7 +155,7 @@ class OptioLocal:
         })
 
     def move_lot(self, lot, from_station_id, to_station_id, quantity):
-        """Move a lot from one station to another by updating its bins."""
+        """Move a lot from one station to another, verifying the server accepted it."""
         updated = dict(lot)
         bins = dict(lot.get("bins", {}))
         bins.pop(from_station_id, None)
@@ -160,7 +163,16 @@ class OptioLocal:
             bins[to_station_id] = {"count": quantity}
         updated["bins"] = bins
         self.put(f"cards/{lot['_id']}", updated)
-        return updated
+
+        # Verify the move actually landed
+        actual = self.get(f"cards/{lot['_id']}")
+        if to_station_id == "__DONE__":
+            if from_station_id in actual.get("bins", {}):
+                raise RuntimeError(f"Move failed: card {lot['_id']} still at {from_station_id}")
+        else:
+            if to_station_id not in actual.get("bins", {}):
+                raise RuntimeError(f"Move failed: card {lot['_id']} not at {to_station_id}, bins={actual.get('bins')}")
+        return actual
 
 
 # --------------------------------------------------------------------------- #
@@ -206,6 +218,12 @@ def setup(api: OptioLocal):
             r = api.create_route(name, stations[load]["_id"], stations[unload]["_id"], process_id)
             routes[name] = r
             print(f"  Created route '{name}' ({r['_id']})")
+
+    # Ensure process.routes lists all route IDs (process was created before routes existed)
+    route_ids = [r["_id"] for r in routes.values()]
+    if set(route_ids) != set(process.get("routes", [])):
+        process = api.update_process({**process, "routes": route_ids})
+        print(f"  Updated process routes: {route_ids}")
 
     # 4. lot template
     existing_templates = {t["name"]: t for t in api.get_lot_templates()}
