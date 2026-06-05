@@ -240,7 +240,7 @@ const Cards = (props) => {
         justDraggedRef.current = false
 
         const allColumns = ['QUEUE', 'FINISH',
-          ...Object.values(process.flattened_stations).map(s => s.stationID)]
+          ...Object.values(process.flattened_stations || {}).map(s => s.stationID)]
 
         let tempIds = deepCopy(orderedIdsRef.current)
         if(!tempIds[id]) tempIds[id] = {}
@@ -1074,7 +1074,7 @@ const Cards = (props) => {
 
     const renderStationColumns = useMemo(() => {
       return (
-        Object.values(process.flattened_stations).map((station) => {
+        Object.values(process.flattened_stations || {}).map((station) => {
           return (
             <React.Fragment key={station.stationID}>
               {renderStationColumn(station.stationID)}

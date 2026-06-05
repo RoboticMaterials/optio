@@ -59,6 +59,7 @@ const defaultState = {
 };
 
 export default function tasksReducer(state = defaultState, action) {
+    let tasksCopy
 
     switch (action.type) {
 

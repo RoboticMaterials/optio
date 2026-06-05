@@ -137,14 +137,12 @@ export default function cardsReducer(state = defaultState, action) {
         pending: false,
       }
 
-    case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
-      const {
-
-        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
-        ...unchangedProcessGroups
-
-      } = state.processCards; // extracts payload lot from rest
+    case DELETE + CARD + SUCCESS: {
+      const { [action.payload.cardId]: _removed, ...rest } = state.cards
+      const processCards = state.processCards || {}
+      const processGroup = processCards[action.payload.processId] || {}
+      const { [action.payload.cardId]: _removedCard, ...remaining } = processGroup
+      const { [action.payload.processId]: _pg, ...unchangedProcessGroups } = processCards
 
       return {
         ...state,
@@ -153,6 +151,7 @@ export default function cardsReducer(state = defaultState, action) {
         stationCards: removeCardFromStationCards(state.stationCards, action.payload.cardId),
         pending: false,
       }
+    }
 
     case GET + CARD_HISTORY + SUCCESS:
       return {
