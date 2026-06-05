@@ -4,6 +4,7 @@ import { hexToRGBA } from '../../methods/utils/color_utils';
 export const SideBarOpenCloseButton = styled.button`
     position: absolute;
     top: 0rem;
+    left: 0;
     z-index: 101;
     height: 3.2rem;
     width: 3.2rem;
@@ -44,7 +45,9 @@ export const SideBarOpenCloseButton = styled.button`
 export const SidebarWrapper = styled.div`
     position: absolute;
     top: 4rem;
+    left: 0;
     bottom: 0rem;
+    z-index: 100;
 
     display: flex;
     align-items: stretch;

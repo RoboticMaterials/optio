@@ -40,8 +40,8 @@
     "moment": "^2.29.1",
     "mongodb": "^4.4.1",
     "normalizr": "^3.6.1",
-    "popper.js": "^1.16.0",
     "pdfjs-dist": "2.6.347",
+    "popper.js": "^1.16.0",
     "prop-types": "^15.8.1",
     "ramda": "^0.27.1",
     "rc-time-picker": "^3.7.3",
@@ -90,12 +90,27 @@
     "yup": "^0.28.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@imaginary-cloud/prettier-config": "^1.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.9.1",
+    "@types/prop-types": "^15.7.15",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-redux": "^7.1.34",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/styled-components": "^5.1.36",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^10.4.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
     "prettier": "^2.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "replace-in-file": "^6.2.0",
+    "typescript": "^6.0.3",
     "vite": "^5.0.0",
     "vite-plugin-svgr": "^4.0.0"
   },
@@ -109,7 +124,8 @@
     "build": "node ./scripts/pre-start.js && vite build && node ./scripts/postinstall.js",
     "preview": "vite preview",
     "postinstall": "node ./scripts/postinstall.js",
-    "format": "prettier --write \"{,!(node_modules)/**/}*.js\""
+    "format": "prettier --write \"{,!(node_modules)/**/}*.js\"",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": {
     "production": [

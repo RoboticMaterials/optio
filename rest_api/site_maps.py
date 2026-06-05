@@ -60,13 +60,14 @@ def create(site_map):
     based on the passed in site_map data
 
     :param site_map:  site_map to create in site_maps structure
-    :return:        201 on success, 406 on site_map exists
+    :return:        created site_map on success, 409 on site_map exists
     """
     rtnd_site_map = collection.find({"name":site_map["name"]})
     # Can we insert this site_map?
     if len(list(rtnd_site_map.clone())) == 0:
-        collection.insert_one(site_map)
-        return 201
+        result = collection.insert_one(site_map)
+        created_map = collection.find_one({'_id': result.inserted_id})
+        return dumps(created_map)
 
     # Otherwise, nope, site_map exists already
     else:
