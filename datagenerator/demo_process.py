@@ -113,8 +113,12 @@ class OptioLocal:
             "_id": str(uuid.uuid4()),
             "name": name,
             "map_id": self.map_id,
-            "stations": station_ids,
             "routes": route_ids,
+            "flattened_stations": [{"stationID": sid, "depth": 0} for sid in station_ids],
+            "startDivergeType": None,
+            "showQueue": True,
+            "showFinish": True,
+            "showStatistics": True,
         })
 
     def update_process(self, process):
@@ -127,7 +131,8 @@ class OptioLocal:
             "map_id": self.map_id,
             "load": load_id,
             "unload": unload_id,
-            "process_id": process_id,
+            "processId": process_id,
+            "divergeType": None,
             "type": "human",
         })
 
@@ -219,11 +224,26 @@ def setup(api: OptioLocal):
             routes[name] = r
             print(f"  Created route '{name}' ({r['_id']})")
 
-    # Ensure process.routes lists all route IDs (process was created before routes existed)
+    # Ensure process has correct routes and flattened_stations
     route_ids = [r["_id"] for r in routes.values()]
-    if set(route_ids) != set(process.get("routes", [])):
-        process = api.update_process({**process, "routes": route_ids})
-        print(f"  Updated process routes: {route_ids}")
+    station_ids = [stations[n]["_id"] for n in ["Receiving", "Assembly", "Shipping"]]
+    flattened = [{"stationID": sid, "depth": 0} for sid in station_ids]
+    need_update = (
+        set(route_ids) != set(process.get("routes", []))
+        or "flattened_stations" not in process
+        or len(process.get("flattened_stations", [])) != len(station_ids)
+    )
+    if need_update:
+        process = api.update_process({
+            **process,
+            "routes": route_ids,
+            "flattened_stations": flattened,
+            "startDivergeType": None,
+            "showQueue": True,
+            "showFinish": True,
+            "showStatistics": True,
+        })
+        print(f"  Updated process routes + flattened_stations")
 
     # 4. lot template
     existing_templates = {t["name"]: t for t in api.get_lot_templates()}
